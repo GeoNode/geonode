@@ -82,6 +82,8 @@ class LayerUploadForm(forms.Form):
     metadata_upload_form = forms.BooleanField(required=False)
     style_upload_form = forms.BooleanField(required=False)
 
+    store_spatial_files = forms.BooleanField(required=False, initial=True)
+
     spatial_files = [
         "base_file",
         "dbf_file",
@@ -97,7 +99,7 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        files = self._get_files_paths_or_objects(cleaned)
+        uploaded, files = self._get_files_paths_or_objects(cleaned)
         base_file = files.get('base_file')
 
         if not base_file and "base_file" not in self.errors and "base_file_path" not in self.errors:
@@ -112,7 +114,7 @@ class LayerUploadForm(forms.Form):
         self.validate_files_sum_of_sizes(self.files)
 
         # Get remote files
-        self.data_retriever = DataRetriever(files=files, tranfer_at_creation=True)
+        self.data_retriever = DataRetriever(files=files, uploaded=uploaded, tranfer_at_creation=True)
         cleaned["data_retriever"] = self.data_retriever
         # Validate remote file sizes
         self.validate_files_sum_of_sizes(self.data_retriever)
@@ -132,6 +134,7 @@ class LayerUploadForm(forms.Form):
     def _get_files_paths_or_objects(self, cleaned_data):
         """Return a dict with all of the uploaded files"""
         files = {}
+        uploaded = True
         file_fields = (
             ("base_file", "base_file_path"),
             ("dbf_file", "dbf_file_path"),
@@ -148,10 +151,14 @@ class LayerUploadForm(forms.Form):
                 raise forms.ValidationError(_(
                     f"`{field_name}` field cannot have both a file and a path. Please choose one and try again."
                 ))
-            field_value = file_field_value or path_field_value
-            if field_value:
-                files[field_name] = field_value
-        return files
+            if path_field_value:
+                uploaded = False
+                files[field_name] = path_field_value
+            elif file_field_value:
+                uploaded = True
+                files[field_name] = file_field_value
+
+        return uploaded, files
 
     def validate_files_sum_of_sizes(self, file_dict):
         max_size = self._get_uploads_max_size()
