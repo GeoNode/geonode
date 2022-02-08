@@ -84,7 +84,7 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
                 )
         for layer in self.layers:
             perm_spec = layer.get_all_level_info()
-            self.assertTrue(get_user_model().objects.all()[0] in perm_spec["users"])
+            self.assertTrue(get_user_model().objects.first() in perm_spec["users"])
 
     @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_group_layer_permissions(self):
@@ -119,7 +119,7 @@ class TestSetUnsetUserLayerPermissions(GeoNodeBaseTestSupport):
         """
         Test that group permissions are unset for layers
         """
-        user = get_user_model().objects.all()[0]
+        user = get_user_model().objects.first()
         for layer in self.layers:
             layer.set_permissions({'users': {user.username: [
                                   'change_layer_data', 'view_resourcebase',
