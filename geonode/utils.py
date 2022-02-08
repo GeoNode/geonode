@@ -235,7 +235,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
         cook = f"csrftoken={csrftoken}"
         cookies = cook if not cookies else (f"{cookies}; {cook}")
 
-    if cookies:
+    if cookies and request and hasattr(request, 'session'):
         if 'JSESSIONID' in request.session and request.session['JSESSIONID']:
             cookies = f"{cookies}; JSESSIONID={request.session['JSESSIONID']}"
         headers['Cookie'] = cookies
