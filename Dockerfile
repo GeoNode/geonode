@@ -1,4 +1,4 @@
-FROM python:3.10.0-buster
+FROM python:3.11.0a4-buster
 LABEL GeoNode development team
 
 RUN mkdir -p /usr/src/geonode
