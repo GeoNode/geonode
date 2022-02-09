@@ -88,7 +88,9 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     if settings.RESOURCE_PUBLISHING:
         to_update['is_published'] = to_update['was_published'] = False
 
-    return resource_manager.update(layer.uuid, instance=layer, vals=to_update)
+    resource_manager.update(layer.uuid, instance=layer, vals=to_update)
+    resource_manager.set_thumbnail(None, instance=layer)
+    return layer
 
 
 def get_attributes(geometry_type, json_attrs=None):

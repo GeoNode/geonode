@@ -75,6 +75,17 @@ class Document(ResourceBase):
             groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
         }
 
+    @classproperty
+    def compact_permission_labels(cls):
+        return {
+            "none": _("None"),
+            "view": _("View Metadata"),
+            "download": _("View and Download"),
+            "edit": _("Edit"),
+            "manage": _("Manage"),
+            "owner": _("Owner")
+        }
+
     @property
     def name(self):
         if not self.title:

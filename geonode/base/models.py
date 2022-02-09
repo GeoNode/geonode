@@ -771,6 +771,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement_help_text = _(
         'general explanation of the data producer\'s knowledge about the lineage of a'
         ' dataset')
+    extra_metadata_help_text = _(
+        'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
     uuid = models.CharField(max_length=36)
     title = models.CharField(_('title'), max_length=255, help_text=_(
@@ -1062,6 +1064,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
 
+    metadata = models.ManyToManyField(
+        "ExtraMetadata",
+        verbose_name=_('Extra Metadata'),
+        null=True,
+        blank=True,
+        help_text=extra_metadata_help_text)
+
     objects = ResourceBaseManager()
 
     class Meta:
@@ -1107,6 +1116,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             "anonymous": VIEW_PERMISSIONS,
             "default": OWNER_PERMISSIONS,
             groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
+        }
+
+    @classproperty
+    def compact_permission_labels(cls):
+        return {
+            "none": _("None"),
+            "view": _("View"),
+            "download": _("Download"),
+            "edit": _("Edit"),
+            "manage": _("Manage"),
+            "owner": _("Owner")
         }
 
     @property
@@ -2086,3 +2106,12 @@ def rating_post_save(instance, *args, **kwargs):
 
 
 signals.post_save.connect(rating_post_save, sender=OverallRating)
+
+
+class ExtraMetadata(models.Model):
+    resource = models.ForeignKey(
+        ResourceBase,
+        null=False,
+        blank=False,
+        on_delete=models.CASCADE)
+    metadata = JSONField(null=True, default=dict, blank=True)

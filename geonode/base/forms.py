@@ -18,6 +18,7 @@
 #########################################################################
 import re
 import html
+import json
 import logging
 from django.db.models.query import QuerySet
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -49,6 +50,7 @@ from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from django.utils.translation import get_language
 from .fields import MultiThesauriField
+from geonode.base.utils import validate_extra_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -481,9 +483,22 @@ class ResourceBaseForm(TranslationModelForm):
 
     regions.widget.attrs = {"size": 20}
 
+    extra_metadata = forms.CharField(
+        required=False,
+        widget=forms.Textarea,
+        help_text=_('Additional metadata, must be in format [\
+                {"metadata_key": "metadata_value"},\
+                {"metadata_key": "metadata_value"} \
+            ]')
+    )
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.id and self.instance.metadata.exists():
+            self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
+
         for field in self.fields:
             if field == 'featured' and self.user and not self.user.is_superuser:
                 self.fields[field].disabled = True
@@ -530,6 +545,10 @@ class ResourceBaseForm(TranslationModelForm):
         if title:
             title = title.replace(",", "_")
         return title
+
+    def clean_extra_metadata(self):
+        cleaned_data = self.cleaned_data.get('extra_metadata', [])
+        return json.dumps(validate_extra_metadata(cleaned_data, self.instance), indent=4)
 
     class Meta:
         exclude = (

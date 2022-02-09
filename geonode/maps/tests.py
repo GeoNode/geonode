@@ -20,6 +20,7 @@ import json
 import logging
 
 from unittest.mock import patch
+from django.test import override_settings
 from owslib.etree import etree as dlxml
 from rest_framework import status
 
@@ -34,8 +35,10 @@ from geonode.maps import MapsAppConfig
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
+from geonode.maps.forms import MapForm
 from geonode.maps.models import Map, MapLayer
 from geonode.base.models import License, Region
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.resource.manager import resource_manager
@@ -43,6 +46,7 @@ from geonode.resource.manager import resource_manager
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
+    create_single_map,
     remove_models)
 
 logger = logging.getLogger(__name__)
@@ -320,9 +324,17 @@ community."
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
         with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url)
+            response = self.client.post(url, data={
+                "resource-owner": self.not_admin.id,
+                "resource-title": "doc",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng"
+            })
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
+        test_map.refresh_from_db()
+        self.assertEqual("doc", test_map.title)
 
     def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
         """
@@ -348,9 +360,18 @@ community."
         test_map.set_permissions({'users': {self.not_admin.username: ['base.view_resourcebase']}})
         url = reverse('map_metadata', args=(test_map.pk,))
         with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.post(url, data={'resource-keywords': 'wonderful-keyword'})
+            response = self.client.post(url, data={
+                "resource-owner": self.not_admin.id,
+                "resource-title": "map",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng",
+                'resource-keywords': 'wonderful-keyword'
+            })
             self.assertFalse(self.not_admin.is_superuser)
             self.assertEqual(response.status_code, 200)
+        test_map.refresh_from_db()
+        self.assertEqual("map", test_map.title)
 
     @patch('geonode.thumbs.thumbnails.create_thumbnail')
     def test_map_metadata(self, thumbnail_mock):
@@ -385,8 +406,15 @@ community."
         self.assertEqual(response.status_code, 200)
 
         # Now test with a valid user using POST method
+        user = get_user_model().objects.filter(username='admin').first()
         self.client.login(username=self.user, password=self.passwd)
-        response = self.client.post(url)
+        response = self.client.post(url, data={
+            "resource-owner": user.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+        })
         self.assertEqual(response.status_code, 200)
 
         # TODO: only invalid mapform is tested
@@ -641,3 +669,64 @@ community."
                                 rating=5)
                 rating.save()
                 self.assertTrue(self.check_notification_out('map_rated', self.u))
+
+
+class TestMapForm(GeoNodeBaseTestSupport):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.get(username='admin')
+        self.map = create_single_map("single_map", owner=self.user)
+        self.sut = MapForm
+
+    def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("map_metadata", args=(self.map.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.map.owner.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "not-a-json"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
+        self.assertDictEqual(expected, response.json())
+
+    @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
+    def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("map_metadata", args=(self.map.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.map.owner.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": "[{'key': 'value'}]"
+        })
+        expected = {"success": False, "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource map"]}
+        self.assertDictEqual(expected, response.json())
+
+    def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("map_metadata", args=(self.map.id,))
+        response = self.client.post(url, data={
+            "resource-owner": self.map.owner.id,
+            "resource-title": "map_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "resource-extra_metadata": '[{"key": "value"},{"id": "int", "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        })
+        expected = "extra_metadata: Missing keys: \'field_label\', \'field_name\', \'field_value\', \'filter_header\' at index 0 "
+        self.assertIn(expected, response.json()['errors'][0])
+
+    def test_resource_form_is_valid_extra_metadata(self):
+        form = self.sut(data={
+            "owner": self.map.owner.id,
+            "title": "map_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        })
+        self.assertTrue(form.is_valid())

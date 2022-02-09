@@ -337,7 +337,7 @@ class ResourceManager(ResourceManagerInterface):
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True) -> ResourceBase:
+               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True, extra_metadata: list = []) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -365,7 +365,13 @@ class ResourceManager(ResourceManagerInterface):
 
                     logger.debug(f'Update Dataset with information coming from XML File if available {_resource}')
                     _resource.save()
-                    _resource = update_resource(instance=_resource.get_real_instance(), regions=regions, keywords=keywords, vals=vals)
+                    _resource = update_resource(
+                        instance=_resource.get_real_instance(),
+                        regions=regions,
+                        keywords=keywords,
+                        vals=vals,
+                        extra_metadata=extra_metadata
+                    )
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
                     _resource = metadata_storers(_resource.get_real_instance(), custom)
 
@@ -479,6 +485,8 @@ class ResourceManager(ResourceManagerInterface):
                     anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
                     _perms['groups'].pop(anonymous_group)
                 self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                # Refresh from DB
+                _resource.refresh_from_db()
                 return self.update(_resource.uuid, _resource, vals=to_update)
         return instance
 

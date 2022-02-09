@@ -25,6 +25,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
+from django.db.models.query import QuerySet
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -46,7 +47,8 @@ from geonode.base.models import (
     TopicCategory,
     SpatialRepresentationType,
     ThesaurusKeyword,
-    ThesaurusKeywordLabel
+    ThesaurusKeywordLabel,
+    ExtraMetadata
 )
 from geonode.groups.models import (
     GroupCategory,
@@ -270,6 +272,24 @@ class DetailUrlField(DynamicComputedField):
         return build_absolute_uri(instance.detail_url)
 
 
+class ExtraMetadataSerializer(DynamicModelSerializer):
+    class Meta:
+        model = ExtraMetadata
+        name = 'ExtraMetadata'
+        fields = ('pk', 'metadata')
+
+    def to_representation(self, obj):
+
+        if isinstance(obj, QuerySet):
+            out = []
+            for el in obj:
+                out.append({**{"id": el.id}, **el.metadata})
+            return out
+        elif isinstance(obj, list):
+            return obj
+        return {**{"id": obj.id}, **obj.metadata}
+
+
 class ThumbnailUrlField(DynamicComputedField):
 
     def __init__(self, **kwargs):
@@ -375,7 +395,7 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                     'input_params': execution.input_params,
                     'output_params': execution.output_params
                 },
-            )
+                )
         return data
 
 
@@ -453,6 +473,8 @@ class ResourceBaseSerializer(
 
         self.fields['blob'] = serializers.JSONField(required=False, write_only=True)
 
+    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
+
     class Meta:
         model = ResourceBase
         name = 'resource'
@@ -471,7 +493,7 @@ class ResourceBaseSerializer(
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
             'data', 'subtype', 'sourcetype',
-            'blob', 'executions'
+            'blob', "metadata", 'executions'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
