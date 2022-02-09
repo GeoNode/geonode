@@ -678,10 +678,21 @@ class PermSpecCompact(PermSpecConverterBase):
                         getattr(self, _elem).add(_up)
 
 
-def get_compact_perms_list(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False, is_none_allowed: bool = True) -> list:
+def get_compact_perms_list(perms: list,
+                           resource_type: str = None,
+                           resource_subtype: str = None,
+                           is_owner: bool = False,
+                           is_none_allowed: bool = True,
+                           compact_perms_labels: dict = {}) -> list:
     """
     Transforms an extended "perm_spec" into a list of compact perms.
     """
+    def _get_labeled_compact_perm(compact_perm: str):
+        return {
+            "name": compact_perm,
+            "label": compact_perms_labels.get(compact_perm, compact_perm)
+        }
+
     _perms_list = []
     _perm = _to_compact_perms(perms, resource_type, resource_subtype, is_owner)
     if _perm:
@@ -689,11 +700,11 @@ def get_compact_perms_list(perms: list, resource_type: str = None, resource_subt
             if (_p[1] not in [DOWNLOAD_RIGHTS] + DATASET_ADMIN_PERMISSIONS or
                     _p[1] in [DOWNLOAD_RIGHTS] and any(__p in DOWNLOAD_PERMISSIONS for __p in perms) or
                     _p[1] in DATASET_ADMIN_PERMISSIONS and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES for __p in perms)):
-                _perms_list.append(_p[1])
+                _perms_list.append(_get_labeled_compact_perm(_p[1]))
                 if _p[1] == _perm:
                     break
     if is_owner and OWNER_RIGHTS not in _perms_list:
-        _perms_list.append(OWNER_RIGHTS)
+        _perms_list.append(_get_labeled_compact_perm(OWNER_RIGHTS))
     if is_none_allowed and NONE_RIGHTS not in _perms_list:
-        _perms_list.insert(0, NONE_RIGHTS)
+        _perms_list.insert(0, _get_labeled_compact_perm(NONE_RIGHTS))
     return _perms_list

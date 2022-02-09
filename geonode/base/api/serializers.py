@@ -395,7 +395,7 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                     'input_params': execution.input_params,
                     'output_params': execution.output_params
                 },
-            )
+                )
         return data
 
 
