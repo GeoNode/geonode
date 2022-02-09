@@ -50,11 +50,7 @@ class DataItemRetriever(object):
             raise ValueError()
 
     def delete_temporary_file(self):
-        if (self.temporary_folder and
-            self.file_path and
-            os.path.exists(self.temporary_folder) and
-            os.path.isfile(self.file_path)
-        ):
+        if (self.temporary_folder and self.file_path and os.path.exists(self.temporary_folder) and os.path.isfile(self.file_path)):
             # Remove File
             os.remove(self.file_path)
             # Verify and remove temp folder
@@ -148,10 +144,7 @@ class DataRetriever(object):
         return self.file_paths.copy()
 
     def delete_files(self):
-        if (self.temporary_folder and
-            os.path.exists(self.temporary_folder) and
-            settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))
-        ):
+        if (self.temporary_folder and os.path.exists(self.temporary_folder) and settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))):
             shutil.rmtree(self.temporary_folder, ignore_errors=True)
         self.temporary_folder = None
         self.file_paths = {}

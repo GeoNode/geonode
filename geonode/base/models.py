@@ -1118,6 +1118,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS
         }
 
+    @classproperty
+    def compact_permission_labels(cls):
+        return {
+            "none": _("None"),
+            "view": _("View"),
+            "download": _("Download"),
+            "edit": _("Edit"),
+            "manage": _("Manage"),
+            "owner": _("Owner")
+        }
+
     @property
     def raw_abstract(self):
         return self._remove_html_tags(self.abstract)
