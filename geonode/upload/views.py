@@ -135,7 +135,7 @@ def save_step_view(req, session):
         data_retriever = form.cleaned_data["data_retriever"]
         relevant_files = select_relevant_files(
             form.cleaned_data["valid_extensions"],
-            data_retriever.get_paths(allow_transfer=False)
+            data_retriever.get_paths(allow_transfer=False).values()
         )
         logger.debug(f"relevant_files: {relevant_files}")
         base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
