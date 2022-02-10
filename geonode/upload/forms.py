@@ -100,6 +100,7 @@ class LayerUploadForm(forms.Form):
     def clean(self):
         cleaned = super().clean()
         uploaded, files = self._get_files_paths_or_objects(cleaned)
+        cleaned["uploaded"] = uploaded
         base_file = files.get('base_file')
 
         if not base_file and "base_file" not in self.errors and "base_file_path" not in self.errors:

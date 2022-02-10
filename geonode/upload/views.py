@@ -181,7 +181,7 @@ def save_step_view(req, session):
         data_retriever = form.cleaned_data["data_retriever"]
         relevant_files = _select_relevant_files(
             form.cleaned_data["valid_extensions"],
-            data_retriever.get_paths(allow_transfer=False)
+            data_retriever.get_paths(allow_transfer=False).values()
         )
         logger.debug(f"relevant_files: {relevant_files}")
         base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
@@ -244,7 +244,7 @@ def save_step_view(req, session):
             layer_title=form.cleaned_data["layer_title"],
             permissions=form.cleaned_data["permissions"],
             import_sld_file=sld,
-            spatial_files_uploaded=data_retriever.uploaded,
+            spatial_files_uploaded=form.cleaned_data['uploaded'],
             upload_type=spatial_files[0].file_type.code,
             time=form.cleaned_data['time'],
             mosaic=form.cleaned_data['mosaic'],
