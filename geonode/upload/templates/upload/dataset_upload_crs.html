@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load dataset_tags %}
+{% load client_lib_tags %}
 
 {% block body_class %}data data-list upload{% endblock %}
 
@@ -52,7 +53,7 @@
             </span>
         </div>
 
-        <a href="{% url "dataset_upload" %}" class="btn btn-primary pull-left">{% trans "Cancel" %}</a> &nbsp;
+        <a href="{% dataset_upload_url %}" class="btn btn-primary pull-left">{% trans "Cancel" %}</a> &nbsp;
         <button id='next' class="btn btn-default" type="submit" value="{% trans 'Next' %}"> Next
             <i id="next-spinner" class="fa fa-spinner fa-spin hide"></i>
         </button>

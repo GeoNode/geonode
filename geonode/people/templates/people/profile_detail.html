@@ -151,13 +151,6 @@
       {% endif %}
     </ul>
     <ul class="list-group">
-      {% if "add_resource" in user.perms %}
-        <li class="list-group-item"><a href="{% url "dataset_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload new datasets" %}</a></li>
-        {% if USE_GEOSERVER and CREATE_LAYER %}
-          <li class="list-group-item"><a href="{% url "dataset_create" %}"><i class="fa fa-map-o"></i> {% trans "Create a new dataset" %}</a></li>
-        {% endif %}
-        <li class="list-group-item"><a href="{% url "document_upload" %}"><i class="fa fa-file"></i> {% trans "Upload new document" %}</a></li>
-      {% endif %}
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
       {% if FAVORITE_ENABLED %}
       <li class="list-group-item"><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li>

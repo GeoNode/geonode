@@ -99,9 +99,6 @@
                 <p><a href="{% dataset_list_url %}"><i class="fa fa-square-o fa-4x rotate-45"></i></a></p>
                 <h2><a href="{% dataset_list_url %}">{{ facets.layer|default:_("No") }} {% blocktrans count counter=facets.layer %}Layer{% plural %}Layers{% endblocktrans %}</a></h2>
                 <p>{% trans "Click to search for geospatial data published by other users, organizations and public sources. Download data in standard formats." %}</p>
-                {% if user.is_authenticated %}
-                <p class="text-center"><a class="btn btn-default" href="{% url "dataset_upload" %}" role="button">{% trans "Add datasets" %} &raquo;</a></p>
-                {% else %}
                 <p class="text-center"><a class="btn btn-default" href="{% dataset_list_url %}" role="button">{% trans "Explore datasetss" %} &raquo;</a></p>
                 {% endif %}
               </div>
