@@ -392,12 +392,18 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     @action(detail=False, methods=['get'])
     def resource_types(self, request):
 
-        def _to_compact_perms_list(allowed_perms: dict, resource_type: str, resource_subtype: str) -> list:
+        def _to_compact_perms_list(allowed_perms: dict, resource_type: str, resource_subtype: str, compact_perms_labels: dict = {}) -> list:
             _compact_perms_list = {}
             for _k, _v in allowed_perms.items():
                 _is_owner = _k not in ["anonymous", groups_settings.REGISTERED_MEMBERS_GROUP_NAME]
                 _is_none_allowed = not _is_owner
-                _compact_perms_list[_k] = get_compact_perms_list(_v, resource_type, resource_subtype, _is_owner, _is_none_allowed)
+                _compact_perms_list[_k] = get_compact_perms_list(
+                    _v,
+                    resource_type,
+                    resource_subtype,
+                    _is_owner,
+                    _is_none_allowed,
+                    compact_perms_labels)
             return _compact_perms_list
 
         resource_types = []
@@ -410,7 +416,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         _types.append(_m.__name__.lower())
                         _allowed_perms[_m.__name__.lower()] = {
                             "perms": _m.allowed_permissions,
-                            "compact": _to_compact_perms_list(_m.allowed_permissions, _m.__name__.lower(), _m.__name__.lower())
+                            "compact": _to_compact_perms_list(
+                                _m.allowed_permissions, _m.__name__.lower(), _m.__name__.lower(), _m.compact_permission_labels)
                         }
 
         if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
@@ -422,12 +429,15 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
                 _types += geoapp_types
 
-            if hasattr(settings, 'CLIENT_APP_ALLOWED_PERMS') and settings.CLIENT_APP_ALLOWED_PERMS:
-                for _type in settings.CLIENT_APP_ALLOWED_PERMS:
+            if hasattr(settings, 'CLIENT_APP_ALLOWED_PERMS_LIST') and settings.CLIENT_APP_ALLOWED_PERMS_LIST:
+                for _type in settings.CLIENT_APP_ALLOWED_PERMS_LIST:
                     for _type_name, _type_perms in _type.items():
+                        _compact_permission_labels = {}
+                        if hasattr(settings, 'CLIENT_APP_COMPACT_PERM_LABELS'):
+                            _compact_permission_labels = settings.CLIENT_APP_COMPACT_PERM_LABELS.get(_type_name, {})
                         _allowed_perms[_type_name] = {
                             "perms": _type_perms,
-                            "compact": _to_compact_perms_list(_type_perms, _type_name, _type_name)
+                            "compact": _to_compact_perms_list(_type_perms, _type_name, _type_name, _compact_permission_labels)
                         }
             else:
                 from geonode.geoapps.models import GeoApp
@@ -435,7 +445,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     if hasattr(_m, 'resource_type') and _m.resource_type and _m.resource_type not in _allowed_perms:
                         _allowed_perms[_m.resource_type] = {
                             "perms": _m.allowed_permissions,
-                            "compact": _to_compact_perms_list(_m.allowed_permissions, _m.resource_type, _m.subtype)
+                            "compact": _to_compact_perms_list(
+                                _m.allowed_permissions, _m.resource_type, _m.subtype, _m.compact_permission_labels)
                         }
 
         for _type in _types:

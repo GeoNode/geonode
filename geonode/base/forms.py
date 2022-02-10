@@ -484,9 +484,9 @@ class ResourceBaseForm(TranslationModelForm):
     regions.widget.attrs = {"size": 20}
 
     extra_metadata = forms.CharField(
-            required=False,
-            widget=forms.Textarea,
-            help_text=_('Additional metadata, must be in format [\
+        required=False,
+        widget=forms.Textarea,
+        help_text=_('Additional metadata, must be in format [\
                 {"metadata_key": "metadata_value"},\
                 {"metadata_key": "metadata_value"} \
             ]')

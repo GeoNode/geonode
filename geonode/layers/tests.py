@@ -198,17 +198,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(_ll)
         self.assertEqual(_ll.name, _ll_1.name)
 
-    # Test layer upload endpoint
-    def test_upload_dataset(self):
-        # Test redirection to login form when not logged in
-        response = self.client.get(reverse('dataset_upload'))
-        self.assertEqual(response.status_code, 302)
-
-        # Test return of upload form when logged in
-        self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse('dataset_upload'))
-        self.assertEqual(response.status_code, 200)
-
     def test_describe_data(self):
         '''/data/geonode:CA/metadata -> Test accessing the description of a layer '''
         self.assertEqual(10, get_user_model().objects.all().count())
