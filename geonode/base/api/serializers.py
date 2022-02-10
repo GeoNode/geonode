@@ -301,6 +301,15 @@ class ThumbnailUrlField(DynamicComputedField):
         return build_absolute_uri(thumbnail_url)
 
 
+class DownloadLinkField(DynamicComputedField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        _instance = instance.get_real_instance()
+        return build_absolute_uri(_instance.download_url) if hasattr(_instance, "download_url") else None
+
+
 class UserSerializer(BaseDynamicModelSerializer):
 
     class Meta:
@@ -473,6 +482,8 @@ class ResourceBaseSerializer(
 
         self.fields['blob'] = serializers.JSONField(required=False, write_only=True)
 
+        self.fields['download_url'] = DownloadLinkField(read_only=True)
+
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:
@@ -529,7 +540,8 @@ class ResourceBaseSerializer(
             "blob": {"required": False, "write_only": True},
             "executions": {"required": False, "embed": False, "deferred": True, "read_only": True},
             "owner": {"required": False},
-            "resource_type": {"required": False}
+            "resource_type": {"required": False},
+            "download_url": {"required": False}
         }
 
     def to_internal_value(self, data):

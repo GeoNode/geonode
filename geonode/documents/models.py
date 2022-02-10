@@ -155,6 +155,10 @@ class Document(ResourceBase):
     def embed_url(self):
         return reverse('document_embed', args=(self.id,))
 
+    @property
+    def download_url(self):
+        return reverse('document_download', args=(self.id,))
+
     class Meta(ResourceBase.Meta):
         pass
 
