@@ -144,14 +144,6 @@
             <li><a href="{% dataset_list_url %}">{% trans "Datasets" %}</a></li>
             <li><a href="{% document_list_url %}">{% trans "Documents" %}</a></li>
             <li><a href="{% url "services" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Remote Services" %}</a></li>
-            {% if "add_resource" in user.perms %}
-                <li role="separator" class="divider"></li>
-                <li><a href="{% url "dataset_upload" %}">{% trans "Upload Dataset" %}</a></li>
-                {% if USE_GEOSERVER and CREATE_LAYER %}
-                  <li><a href="{% url "dataset_create" %}">{% trans "Create a new dataset" %}</a></li>
-                {% endif %}
-                <li><a href="{% url "document_upload" %}">{% trans "Upload Document" %}</a></li>
-            {% endif %}
             {% if user.is_superuser or user.is_staff %}
               {% if "add_resource" in user.perms %}
                 <li><a href="{% url "register_service" %}">{% trans "Add Remote Service" %}</a></li>
@@ -252,7 +244,6 @@
           </div>
           <div class="modal-body">
             <ul class="list-unstyled">
-              <li><a href="{% url "dataset_upload" %}"><i class="fa fa-cloud-upload"></i> {% trans "Upload Datasets" %}</a></li>
               <li class="modal-divider"></li>
               <li><a href="{{ user.get_absolute_url }}"><i class="fa fa-user"></i> {% trans "Profile" %}</a></li>
               <li><a href="{% url "recent-activity" %}"><i class="fa fa-fire"></i> {% trans "Recent Activity" %}</a></li>
