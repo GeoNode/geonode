@@ -17,16 +17,17 @@
 #
 #########################################################################
 
-from geonode.base.models import ResourceBase
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 
+from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
+from geonode.utils import get_geonode_app_types
 
 
 class FavoriteManager(models.Manager):
@@ -80,7 +81,11 @@ class FavoriteManager(models.Manager):
 
     def create_favorite(self, content_object, user):
         if isinstance(content_object, ResourceBase):
-            content_type = ContentType.objects.get(model=content_object.resource_type)
+            geoapp_types = get_geonode_app_types()
+            if content_object.resource_type in geoapp_types:
+                content_type = ContentType.objects.get(model='geoapp')
+            else:
+                content_type = ContentType.objects.get(model=content_object.resource_type)
         else:
             content_type = ContentType.objects.get_for_model(type(content_object))
 
