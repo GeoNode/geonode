@@ -16,9 +16,9 @@ services:
     # docker-compose.yml file (the first in the devcontainer.json "dockerComposeFile"
     # array). The sample below assumes your primary file is in the root of your project.
     
-    build:
-      context: .
-      dockerfile: .devcontainer/Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: .devcontainer/Dockerfile
 
     restart: "no"
 
@@ -47,7 +47,7 @@ services:
     #   - seccomp:unconfined
 
     # Overrides default command so things don't shut down after the process ends.
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    command: sleep infinity
 
   celery:
     restart: "no"
@@ -57,10 +57,8 @@ services:
     volumes:
       - '.:/usr/src/geonode'
 
-  # Removes nginx when developing
   geonode:
-    deploy:
-      replicas: 0
+    restart: "no"
 
   # Removes letsencrypt when developing
   letsencrypt:
