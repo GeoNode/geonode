@@ -358,6 +358,7 @@ class BaseApiTests(APITestCase):
             'input_params': exec_req.input_params,
             'output_params': exec_req.output_params
         }]
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(f'{url}/{resource.id}?include[]=executions', format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data['resource'].get('executions'))

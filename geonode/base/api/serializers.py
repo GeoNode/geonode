@@ -380,7 +380,7 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
             _resource = ResourceBase.objects.get(pk=instance)
             executions = ExecutionRequest.objects.filter(
                 Q(user=self.context['request'].user) &
-                ~Q(status='finished') & (
+                ~Q(status=ExecutionRequest.STATUS_FINISHED) & (
                 (Q(input_params__uuid=_resource.uuid) |
                 Q(output_params__output__uuid=_resource.uuid) |
                 Q(geonode_resource=_resource)))
