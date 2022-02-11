@@ -303,7 +303,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         pass
 
-    def rest_upload_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
+    def rest_upload_file_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         assert authenticate(username=username, password=password)
