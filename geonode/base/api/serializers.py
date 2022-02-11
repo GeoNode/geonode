@@ -477,8 +477,8 @@ class ResourceBaseSerializer(
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
-
         self.fields['blob'] = serializers.JSONField(required=False, write_only=True)
+        self.fields['is_copyable'] = serializers.BooleanField(read_only=True)
 
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
@@ -499,7 +499,7 @@ class ResourceBaseSerializer(
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
-            'data', 'subtype', 'sourcetype',
+            'data', 'subtype', 'sourcetype', 'is_copyable',
             'blob', "metadata", 'executions'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
@@ -536,7 +536,8 @@ class ResourceBaseSerializer(
             "blob": {"required": False, "write_only": True},
             "executions": {"required": False, "embed": False, "deferred": True, "read_only": True},
             "owner": {"required": False},
-            "resource_type": {"required": False}
+            "resource_type": {"required": False},
+            "is_copyable": {"required": False},
         }
 
     def to_internal_value(self, data):

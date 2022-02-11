@@ -1860,6 +1860,18 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         cloned_resource = Dataset.objects.last()
         self.assertEqual(cloned_resource.owner.username, 'bobby')
+        # clone dataset with invalid file
+        resource.files = ['/path/invalid_file.wrong']
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
+        # clone dataset with no files
+        resource.files = []
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
         # clean
         resource.delete()
         cloned_resource.delete()

@@ -1116,6 +1116,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
+        if not resource.is_copyable:
+            return Response({"message": "Resource can not be cloned."}, status=400)
         try:
             request_params = QueryDict(request.body, mutable=True)
             _exec_request = ExecutionRequest.objects.create(
