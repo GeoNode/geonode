@@ -379,13 +379,16 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
         if ResourceBase.objects.filter(pk=instance).count() == 1:
             _resource = ResourceBase.objects.get(pk=instance)
             executions = ExecutionRequest.objects.filter(
-                Q(input_params__uuid=_resource.uuid) |
+                Q(user=self.context['request'].user) &
+                ~Q(status='finished') & (
+                (Q(input_params__uuid=_resource.uuid) |
                 Q(output_params__output__uuid=_resource.uuid) |
-                Q(geonode_resource=_resource)
+                Q(geonode_resource=_resource)))
             )
 
             for execution in executions:
                 data.append({
+                    'exec_id': execution.exec_id,
                     'user': execution.user.username,
                     'status': execution.status,
                     'func_name': execution.func_name,
@@ -393,7 +396,11 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                     'finished': execution.finished,
                     'last_updated': execution.last_updated,
                     'input_params': execution.input_params,
-                    'output_params': execution.output_params
+                    'output_params': execution.output_params,
+                    'status_url': urljoin(
+                        settings.SITEURL,
+                        reverse('rs-execution-status', kwargs={'execution_id': execution.exec_id})
+                    )    
                 },
                 )
         return data
