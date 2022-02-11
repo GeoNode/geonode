@@ -42,7 +42,6 @@ from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
-from django.utils.timezone import now
 
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
@@ -445,7 +444,6 @@ class ResourceManager(ResourceManagerInterface):
                 _resource = copy.copy(instance.get_real_instance())
                 _resource.pk = _resource.id = None
                 _resource.uuid = uuid or str(uuid1())
-                _resource.date = now()
                 _resource.save()
                 if isinstance(instance.get_real_instance(), Document):
                     for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
