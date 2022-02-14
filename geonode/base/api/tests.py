@@ -21,6 +21,7 @@ import json
 import logging
 import re
 import os
+from django.conf import settings
 import gisdata
 
 from PIL import Image
@@ -356,7 +357,8 @@ class BaseApiTests(APITestCase):
             'finished': exec_req.finished,
             'last_updated': exec_req.last_updated,
             'input_params': exec_req.input_params,
-            'output_params': exec_req.output_params
+            'output_params': exec_req.output_params,
+            'status_url': f'{settings.SITEURL}api/v2/resource-service/execution-status/{str(exec_req.exec_id)}'
         }]
         self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(f'{url}/{resource.id}?include[]=executions', format='json')

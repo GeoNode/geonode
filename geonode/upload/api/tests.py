@@ -669,31 +669,22 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         upload_size_limit_obj.max_size = 1
         upload_size_limit_obj.save()
 
-        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="file_upload_handler",
-            defaults={
-                "description": (
-                    "Request total size, validated before the upload process. "
-                    'This should be greater than "dataset_upload_size".'
-                ),
-                "max_size": 2,
-            },
-        )
-        handler_upload_size_limit_obj.max_size = 2
-        handler_upload_size_limit_obj.save()
-
         # Try to upload and verify if it passed by both size validations
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.rest_upload_file(fname)
-        # Assertions
-        self.assertEqual(resp.status_code, 400)
-        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
-        mocked_validation_error.assert_called_once_with(expected_error)
-        mocked_uploaded_file.assert_called_with(
-            name='relief_san_andres.tif',
-            content=b'',
-            content_type='image/tiff'
-        )
+        max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"
+        with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
+            max_size_mock.return_value = lambda: 1
+
+            resp, data = self.rest_upload_file(fname)
+            # Assertions
+            self.assertEqual(resp.status_code, 400)
+            expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+            mocked_validation_error.assert_called_once_with(expected_error)
+            mocked_uploaded_file.assert_called_with(
+                name='relief_san_andres.tif',
+                content=b'',
+                content_type='image/tiff'
+            )
 
 
 class UploadSizeLimitTests(APITestCase):
