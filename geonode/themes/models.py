@@ -61,9 +61,9 @@ class GeoNodeThemeCustomization(models.Model):
         help_text="Enabling this theme will disable the current enabled theme (if any)")
     logo = models.ImageField(upload_to='img/%Y/%m', null=True, blank=True)
     extra_css = models.TextField(
-        null=True, 
+        null=True,
         blank=True,
-        verbose_name = "Custom CSS rules",
+        verbose_name="Custom CSS rules",
         help_text="This field can be used to insert additional css rules. For example they can be used to customise the Mapstore client custom_theme.html template)"
     )
     jumbotron_bg = models.ImageField(
