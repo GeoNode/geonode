@@ -52,6 +52,9 @@ class BaseHookSet:
     def dataset_list_url(self):
         return NotImplemented
 
+    def dataset_upload_url(self):
+        return NotImplemented
+
     def dataset_detail_url(self, layer):
         return NotImplemented
 

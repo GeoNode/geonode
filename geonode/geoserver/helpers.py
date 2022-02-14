@@ -2271,4 +2271,4 @@ def wps_format_is_supported(_format, dataset_type):
         ('application/zip', 'raster'),
         ('text/csv', 'vector')
     ]
-    return (_format, dataset_type) in acceptable_formats 
+    return (_format, dataset_type) in acceptable_formats

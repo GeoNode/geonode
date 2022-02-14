@@ -48,6 +48,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 from geoserver.catalog import Catalog
+from django.views.decorators.http import require_http_methods
+
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
 from geonode.proxy.views import fetch_response_headers
@@ -176,34 +178,17 @@ def _resolve_dataset(request, alternate, permission='base.view_resourcebase', ms
 # Basic Dataset Views #
 
 @login_required
-def dataset_upload(request, template='upload/dataset_upload.html'):
-    if request.method == 'GET':
-        return dataset_upload_handle_get(request, template)
-    elif request.method == 'POST' and is_xml_upload_only(request):
+@require_http_methods(["POST"])
+def dataset_upload(request):
+    if is_xml_upload_only(request):
         return dataset_upload_metadata(request)
-    elif request.method == 'POST' and is_sld_upload_only(request):
+    elif is_sld_upload_only(request):
         return dataset_style_upload(request)
-    out = {"errormsgs": "Please, upload a valid XML file"}
+    out = {"errormsgs": "Please, execute a valid upload request"}
     return HttpResponse(
         json.dumps(out),
         content_type='application/json',
         status=500)
-
-
-def dataset_upload_handle_get(request, template):
-    mosaics = Dataset.objects.filter(is_mosaic=True).order_by('name')
-    ctx = {
-        'mosaics': mosaics,
-        'charsets': CHARSETS,
-        'is_dataset': True,
-    }
-    if 'geonode.upload' in settings.INSTALLED_APPS and \
-            settings.UPLOADER['BACKEND'] == 'geonode.importer':
-        from geonode.upload import utils as upload_utils, models
-        ctx['async_upload'] = upload_utils._ASYNC_UPLOAD
-        ctx['incomplete'] = models.Upload.objects.get_incomplete_uploads(
-            request.user)
-    return render(request, template, context=ctx)
 
 
 def dataset_upload_metadata(request):
@@ -831,7 +816,7 @@ def dataset_download(request, layername):
     if not settings.USE_GEOSERVER:
         # if GeoServer is not used, we redirect to the proxy download
         return HttpResponseRedirect(reverse('download', args=[dataset.id]))
-    
+
     download_format = request.GET.get('export_format', 'application/zip')
 
     if not wps_format_is_supported(download_format, dataset.subtype):
@@ -875,7 +860,6 @@ def dataset_download(request, layername):
         logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
         raise Exception(f"Download dataset exception: error during call with GeoServer: {response.content}")
 
-
     # error handling
     namespaces = {"ows": "http://www.opengis.net/ows/1.1"}
     if response.reason:
@@ -886,7 +870,7 @@ def dataset_download(request, layername):
             exc_text = content.find('ows:Exception/ows:ExceptionText', namespaces=namespaces)
             logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
             raise Exception(f"{exc.attrib.get('exceptionCode')}: {exc_text.text}")
-    
+
     return fetch_response_headers(
                 HttpResponse(
                     content=response.content,

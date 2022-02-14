@@ -323,12 +323,12 @@ class Dataset(ResourceBase):
         from geonode.maps.models import Map
         map_ids = list(self.maplayers.values_list('map__id', flat=True))
         return Map.objects.filter(id__in=map_ids)
-    
+
     @property
     def download_url(self):
-        if not self.subtype in ['vector', 'raster']:
+        if self.subtype not in ['vector', 'raster']:
             logger.error("Download URL is available only for datasets that have been harvested and copied locally")
-            return None        
+            return None
         return build_absolute_uri(reverse('dataset_download', args=(self.alternate,)))
 
     @property

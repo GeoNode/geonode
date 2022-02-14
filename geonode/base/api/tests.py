@@ -61,7 +61,6 @@ from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.security.utils import get_resources_with_perms
-from geonode.geoapps.models import GeoApp
 
 logger = logging.getLogger(__name__)
 
@@ -360,6 +359,7 @@ class BaseApiTests(APITestCase):
             'input_params': exec_req.input_params,
             'output_params': exec_req.output_params
         }]
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(f'{url}/{resource.id}?include[]=executions', format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data['resource'].get('executions'))
@@ -1861,6 +1861,18 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         cloned_resource = Dataset.objects.last()
         self.assertEqual(cloned_resource.owner.username, 'bobby')
+        # clone dataset with invalid file
+        resource.files = ['/path/invalid_file.wrong']
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
+        # clone dataset with no files
+        resource.files = []
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
         # clean
         resource.delete()
         cloned_resource.delete()
@@ -1888,7 +1900,7 @@ class BaseApiTests(APITestCase):
         """
         _dataset = Dataset.objects.first()
 
-        # From resource base API    
+        # From resource base API
         url = reverse('base-resources-detail', args=[_dataset.id])
         response = self.client.get(url, format='json')
         download_url = response.json().get('resource').get('download_url')
