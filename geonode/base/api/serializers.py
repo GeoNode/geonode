@@ -307,7 +307,7 @@ class DownloadLinkField(DynamicComputedField):
 
     def get_attribute(self, instance):
         _instance = instance.get_real_instance()
-        return build_absolute_uri(_instance.download_url) if hasattr(_instance, "download_url") else None
+        return _instance.download_url if hasattr(_instance, "download_url") else None
 
 
 class UserSerializer(BaseDynamicModelSerializer):

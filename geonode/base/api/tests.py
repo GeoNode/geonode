@@ -1915,22 +1915,6 @@ class BaseApiTests(APITestCase):
         download_url = response.json().get('resource').get('download_url')
         self.assertIsNone(download_url)
 
-    def test_base_resources_dont_return_download_link_if_geoapp(self):
-        """
-        Ensure we can access the Resource Base list.
-        """
-        _geoapp = GeoApp.objects.first()
-        url = reverse('base-resources-detail', args=[_geoapp.id])
-        # Anonymous
-        response = self.client.get(url, format='json')
-        download_url = response.json().get('resource').get('download_url', None)
-        self.assertIsNone(download_url)
-
-        # from geoapps api
-        url = reverse('geoapps-detail', args=[_geoapp.id])
-        download_url = response.json().get('resource').get('download_url')
-        self.assertIsNone(download_url)
-
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):
