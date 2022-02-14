@@ -1,7 +1,6 @@
 import base64
 import binascii
 import html
-from unittest.mock import DEFAULT
 
 from django.conf import settings
 from django.core.exceptions import RequestDataTooBig, TooManyFieldsSent
@@ -171,7 +170,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
         return file_name
 
     def _get_max_size(self):
-        return DEFAULT_MAX_BEFORE_UPLOAD_SIZE #  default size for each service + 2MB
+        return DEFAULT_MAX_BEFORE_UPLOAD_SIZE  # default size for each service + 2MB
 
     def receive_data_chunk(self, raw_data, start):
         """
