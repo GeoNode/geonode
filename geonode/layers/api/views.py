@@ -52,7 +52,7 @@ class DatasetViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, DatasetPermissionsFilter
     ]
-    queryset = Dataset.objects.all().order_by('-date')
+    queryset = Dataset.objects.all().order_by('-last_updated')
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
