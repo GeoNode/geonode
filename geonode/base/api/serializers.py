@@ -379,13 +379,17 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
         if ResourceBase.objects.filter(pk=instance).count() == 1:
             _resource = ResourceBase.objects.get(pk=instance)
             executions = ExecutionRequest.objects.filter(
-                Q(input_params__uuid=_resource.uuid) |
-                Q(output_params__output__uuid=_resource.uuid) |
-                Q(geonode_resource=_resource)
-            )
+                Q(user=self.context['request'].user) &
+                ~Q(status=ExecutionRequest.STATUS_FINISHED) & (
+                (Q(input_params__uuid=_resource.uuid) |
+                    Q(output_params__output__uuid=_resource.uuid) |
+                    Q(geonode_resource=_resource))
+                )
+            ).order_by('-last_updated')
 
             for execution in executions:
                 data.append({
+                    'exec_id': execution.exec_id,
                     'user': execution.user.username,
                     'status': execution.status,
                     'func_name': execution.func_name,
@@ -393,7 +397,11 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                     'finished': execution.finished,
                     'last_updated': execution.last_updated,
                     'input_params': execution.input_params,
-                    'output_params': execution.output_params
+                    'output_params': execution.output_params,
+                    'status_url': urljoin(
+                        settings.SITEURL,
+                        reverse('rs-execution-status', kwargs={'execution_id': execution.exec_id})
+                    )
                 },
                 )
         return data
@@ -470,8 +478,8 @@ class ResourceBaseSerializer(
             LicenseSerializer, embed=True, many=False)
         self.fields['spatial_representation_type'] = DynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False)
-
         self.fields['blob'] = serializers.JSONField(required=False, write_only=True)
+        self.fields['is_copyable'] = serializers.BooleanField(read_only=True)
 
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
@@ -492,7 +500,7 @@ class ResourceBaseSerializer(
             'detail_url', 'embed_url', 'created', 'last_updated',
             'raw_abstract', 'raw_purpose', 'raw_constraints_other',
             'raw_supplemental_information', 'raw_data_quality_statement', 'metadata_only', 'processed', 'state',
-            'data', 'subtype', 'sourcetype',
+            'data', 'subtype', 'sourcetype', 'is_copyable',
             'blob', "metadata", 'executions'
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
@@ -529,7 +537,8 @@ class ResourceBaseSerializer(
             "blob": {"required": False, "write_only": True},
             "executions": {"required": False, "embed": False, "deferred": True, "read_only": True},
             "owner": {"required": False},
-            "resource_type": {"required": False}
+            "resource_type": {"required": False},
+            "is_copyable": {"required": False},
         }
 
     def to_internal_value(self, data):

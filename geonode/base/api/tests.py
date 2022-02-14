@@ -30,6 +30,7 @@ from uuid import uuid1, uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
@@ -349,6 +350,7 @@ class BaseApiTests(APITestCase):
             }
         )
         expected_executions_results = [{
+            'exec_id': exec_req.exec_id,
             'user': exec_req.user.username,
             'status': exec_req.status,
             'func_name': exec_req.func_name,
@@ -356,8 +358,14 @@ class BaseApiTests(APITestCase):
             'finished': exec_req.finished,
             'last_updated': exec_req.last_updated,
             'input_params': exec_req.input_params,
-            'output_params': exec_req.output_params
+            'output_params': exec_req.output_params,
+            'status_url':
+                urljoin(
+                    settings.SITEURL,
+                    reverse('rs-execution-status', kwargs={'execution_id': exec_req.exec_id})
+                )
         }]
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
         response = self.client.get(f'{url}/{resource.id}?include[]=executions', format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data['resource'].get('executions'))
@@ -1859,6 +1867,18 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         cloned_resource = Dataset.objects.last()
         self.assertEqual(cloned_resource.owner.username, 'bobby')
+        # clone dataset with invalid file
+        resource.files = ['/path/invalid_file.wrong']
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
+        # clone dataset with no files
+        resource.files = []
+        resource.save()
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
         # clean
         resource.delete()
         cloned_resource.delete()
