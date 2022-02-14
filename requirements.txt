@@ -113,7 +113,7 @@ boto3==1.20.50
 
 # Django Caches
 python-memcached<=1.59
-whitenoise==5.3.0
+whitenoise==6.0.0
 Brotli==1.0.9
 
 # Contribs
