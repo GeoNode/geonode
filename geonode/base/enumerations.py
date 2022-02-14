@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 LINK_TYPES = ['original', 'data', 'image', 'metadata', 'html',
@@ -503,3 +504,5 @@ SOURCE_TYPES = (
 )
 
 LAYER_TYPES = ['vector', 'raster', 'remote', 'vector_time']
+
+DEFAULT_MAX_BEFORE_UPLOAD_SIZE = (settings.DEFAULT_MAX_UPLOAD_SIZE * 2) + 2097152

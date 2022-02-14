@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from geonode.base.enumerations import DEFAULT_MAX_BEFORE_UPLOAD_SIZE
 from geonode.upload.models import Upload, UploadSizeLimit
 
 from django import forms
@@ -60,21 +61,8 @@ class UploadSizeLimitAdminForm(forms.ModelForm):
 
         after_upload_slugs_list = ['dataset_upload_size', 'document_upload_size']
 
-        if slug == 'file_upload_handler':
-            after_upload_sizes = UploadSizeLimit.objects.filter(
-                slug__in=after_upload_slugs_list
-            ).values_list('max_size', flat=True)
-            if after_upload_sizes and max_size <= max(after_upload_sizes) * 2:
-                raise forms.ValidationError(_(
-                    "To avoid errors, max size should be at least 2 times "
-                    "greater than the value of others size limits."
-                ))
-
         if slug in after_upload_slugs_list:
-            handler_max_size = UploadSizeLimit.objects.filter(
-                slug='file_upload_handler'
-            ).values_list('max_size', flat=True)
-            if handler_max_size and max_size * 2 >= max(handler_max_size):
+            if max_size * 2 >= DEFAULT_MAX_BEFORE_UPLOAD_SIZE:
                 raise forms.ValidationError(_(
                     "To avoid errors, max size should be at least 2 times "
                     "smaller than the value of 'file_upload_handler'."
@@ -94,8 +82,7 @@ class UploadSizeLimitAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         protected_objects = [
             'dataset_upload_size',
-            'document_upload_size',
-            'file_upload_handler',
+            'document_upload_size'
         ]
         if obj and obj.slug in protected_objects:
             return False

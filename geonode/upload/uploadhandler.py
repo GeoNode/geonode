@@ -1,6 +1,7 @@
 import base64
 import binascii
 import html
+from unittest.mock import DEFAULT
 
 from django.conf import settings
 from django.core.exceptions import RequestDataTooBig, TooManyFieldsSent
@@ -10,8 +11,7 @@ from django.http import QueryDict
 from django.http.multipartparser import FIELD, FILE, ChunkIter, LazyStream, Parser, exhaust
 from django.utils.datastructures import MultiValueDict
 from django.utils.encoding import force_str
-
-from geonode.upload.models import UploadSizeLimit
+from geonode.base.enumerations import DEFAULT_MAX_BEFORE_UPLOAD_SIZE
 
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):
@@ -171,11 +171,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
         return file_name
 
     def _get_max_size(self):
-        try:
-            max_size_db_obj = UploadSizeLimit.objects.get(slug="file_upload_handler")
-        except UploadSizeLimit.DoesNotExist:
-            max_size_db_obj = UploadSizeLimit.objects.create_default_limit_for_upload_handler()
-        return max_size_db_obj.max_size
+        return DEFAULT_MAX_BEFORE_UPLOAD_SIZE #  default size for each service + 2MB
 
     def receive_data_chunk(self, raw_data, start):
         """
