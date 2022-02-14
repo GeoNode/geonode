@@ -33,7 +33,7 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 
 from django.db.models import F
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
@@ -820,7 +820,8 @@ def dataset_download(request, layername):
     download_format = request.GET.get('export_format', 'application/zip')
 
     if not wps_format_is_supported(download_format, dataset.subtype):
-        raise Exception("The format provided is not valid for the selected resource")
+        logger.error("The format provided is not valid for the selected resource")
+        return HttpResponseServerError("The format provided is not valid for the selected resource")
 
     # getting default payload
     tpl = get_template("geoserver/dataset_download.xml")

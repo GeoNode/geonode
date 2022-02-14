@@ -1127,6 +1127,34 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         actual = validate_input_source(layer, filename, files, action_type="append")
         self.assertTrue(actual)
 
+    def test_dataset_download_not_found_for_non_existing_dataset(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse('dataset_download', args=['foo-dataset'])
+        response = self.client.get(url)
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(USE_GEOSERVER=False)
+    def test_dataset_download_redirect_to_proxy_url(self):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(f"/download/{dataset.id}", response.url)
+
+    def test_dataset_download_invalid_wps_format(self):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(f"{url}?export_format=foo")
+        self.assertEqual(500, response.status_code)
+        self.assertEqual(
+            'The format provided is not valid for the selected resource',
+            response.text
+        )
+
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
