@@ -1886,7 +1886,7 @@ class BaseApiTests(APITestCase):
         """
         Ensure we can access the Resource Base list.
         """
-        _dataset = Document.objects.first()
+        _dataset = Dataset.objects.first()
 
         # From resource base API    
         url = reverse('base-resources-detail', args=[_dataset.id])
