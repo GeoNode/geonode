@@ -358,6 +358,7 @@ class BaseApiTests(APITestCase):
             'last_updated': exec_req.last_updated,
             'input_params': exec_req.input_params,
             'output_params': exec_req.output_params,
+            'exec_id': exec_req.exec_id,
             'status_url': f'{settings.SITEURL}api/v2/resource-service/execution-status/{str(exec_req.exec_id)}'
         }]
         self.assertTrue(self.client.login(username='bobby', password='bob'))
