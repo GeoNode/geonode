@@ -25,7 +25,7 @@ import logging
 import zipfile
 import tempfile
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from collections import namedtuple
 from pinax.ratings.models import OverallRating
 
@@ -1153,6 +1153,21 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(
             'The format provided is not valid for the selected resource',
             response.text
+        )
+
+    @patch("geonode.layers.views.Catalog.http_request")
+    def test_dataset_download_call_the_catalog_raise_error_for_no_200(self, mocked_catalog):
+        _response = MagicMock(status_code=500, content="foo-bar")
+        mocked_catalog.return_value = _response
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(500, response.status_code)
+        self.assertEqual(
+            b"Download dataset exception: error during call with GeoServer: foo-bar",
+            response.content
         )
 
 

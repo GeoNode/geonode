@@ -859,7 +859,7 @@ def dataset_download(request, layername):
 
     if response.status_code != 200:
         logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
-        raise Exception(f"Download dataset exception: error during call with GeoServer: {response.content}")
+        return HttpResponseServerError(f"Download dataset exception: error during call with GeoServer: {response.content}")
 
     # error handling
     namespaces = {"ows": "http://www.opengis.net/ows/1.1"}
