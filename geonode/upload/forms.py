@@ -25,7 +25,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.upload.models import UploadSizeLimit
-from geonode.resource.data_retriever import DataRetriever
+from geonode.upload.data_retriever import DataRetriever
 
 from .. import geoserver
 from ..utils import check_ogc_backend
