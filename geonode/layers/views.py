@@ -870,7 +870,7 @@ def dataset_download(request, layername):
         if exc:
             exc_text = content.find('ows:Exception/ows:ExceptionText', namespaces=namespaces)
             logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
-            raise Exception(f"{exc.attrib.get('exceptionCode')}: {exc_text.text}")
+            return HttpResponseServerError(f"{exc.attrib.get('exceptionCode')}: {exc_text.text}")
 
     return fetch_response_headers(
                 HttpResponse(

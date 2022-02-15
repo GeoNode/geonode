@@ -1170,6 +1170,48 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             response.content
         )
 
+    @patch("geonode.layers.views.Catalog.http_request")
+    def test_dataset_download_call_the_catalog_raise_error_for_error_content(self, mocked_catalog):
+        _response = MagicMock(
+            status_code=200, 
+            text='''<?xml version="1.0" encoding="UTF-8"?>
+                <ows:ExceptionReport xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://localhost:8080/geoserver/schemas/ows/1.1.0/owsAll.xsd">
+                    <ows:Exception exceptionCode="InvalidParameterValue" locator="ResponseDocument">
+                        <ows:ExceptionText>Foo Bar Exception</ows:ExceptionText>
+                    </ows:Exception>
+                </ows:ExceptionReport>
+                ''',
+            reason="error"
+        )
+        mocked_catalog.return_value = _response
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(500, response.status_code)
+        self.assertEqual(
+            b"InvalidParameterValue: Foo Bar Exception",
+            response.content
+        )
+
+    @patch("geonode.layers.views.Catalog.http_request")
+    @patch("geonode.layers.views.fetch_response_headers")
+    def test_dataset_download_call_the_catalog_works(self, fetch_header_mock, mocked_catalog):
+        _response = MagicMock(
+            status_code=200, 
+            text="",
+            reason="",
+            headers={'Authorization': ""}
+        )
+        mocked_catalog.return_value = _response
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        fetch_header_mock.assert_has_calls()
+
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
