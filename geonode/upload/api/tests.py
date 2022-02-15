@@ -282,7 +282,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             url = urljoin(
                 f"{reverse('uploads-list')}/",
                 'upload/')
-            params["custom_steps"] = custom_steps_str
+            if custom_steps_str:
+                params["custom_steps"] = custom_steps_str
             logger.error(f" ---- UPLOAD URL: {url}")
             response = self.client.post(url, data=params)
 

@@ -145,13 +145,14 @@ class UploadViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         # Custom upload steps defined by user
-        custom_steps = json.loads(request.data.get("custom_steps", "[]"))
+        custom_steps = request.data.get("custom_steps", None)
         if custom_steps:
+            custom_steps_list = json.loads(custom_steps)
             # Ensure first step is None
-            if not custom_steps[0] is None:
-                custom_steps = [None] + custom_steps
+            if not custom_steps_list[0] is None:
+                custom_steps_list = [None] + custom_steps_list
             # Execute steps and get response
-            for step in custom_steps:
+            for step in custom_steps_list:
                 response, _, _ = self._emulate_client_upload_step(
                     request,
                     step
