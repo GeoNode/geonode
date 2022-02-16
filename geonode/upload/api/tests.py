@@ -247,7 +247,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    def rest_upload_file(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
+    def rest_upload_file(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD, non_interactive=False):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         assert authenticate(username=username, password=password)
@@ -279,6 +279,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             url = urljoin(
                 f"{reverse('uploads-list')}/",
                 'upload/')
+            if non_interactive:
+                params["non_interactive"] = 'true'
             logger.error(f" ---- UPLOAD URL: {url}")
             response = self.client.put(url, data=params)
 
@@ -419,6 +421,162 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.rest_upload_file(fname)
+        self.assertEqual(resp.status_code, 201)
+        self.assertTrue(data['success'])
+        self.assertIn('redirect_to', data)
+
+        url = reverse('uploads-list')
+        # Anonymous
+        self.client.logout()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 0)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 0)
+        logger.debug(response.data)
+
+        # Admin
+        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 1)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 1)
+        logger.debug(response.data)
+
+        url = f"{reverse('uploads-detail', kwargs={'pk': response.data['uploads'][0]['id']})}/"
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        upload_data = response.data['upload']
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'relief_san_andres')
+
+        if upload_data['state'] != Upload.STATE_PROCESSED:
+            self.assertLess(upload_data['progress'], 100.0)
+            self.assertIsNone(upload_data['detail_url'])
+            self.assertIsNone(upload_data['resume_url'])
+            self.assertIsNotNone(upload_data['delete_url'])
+
+            self.assertIn('uploadfile_set', upload_data)
+            self.assertEqual(len(upload_data['uploadfile_set']), 0)
+        else:
+            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertIsNone(upload_data['resume_url'])
+            self.assertIsNone(upload_data['delete_url'])
+            self.assertIsNotNone(upload_data['detail_url'])
+
+            self.assertNotIn('layer', upload_data)
+            self.assertNotIn('session', upload_data)
+            response = self.client.get(f'{url}?full=true', format='json')
+            self.assertEqual(response.status_code, 200)
+            upload_data = response.data['upload']
+            self.assertIsNotNone(upload_data)
+            self.assertIn('layer', upload_data)
+            self.assertIn('session', upload_data)
+
+            self.assertIn('uploadfile_set', upload_data)
+            self.assertEqual(len(upload_data['uploadfile_set']), 1)
+
+        self.assertNotIn('upload_dir', upload_data)
+
+        response = self.client.get(upload_data['delete_url'], format='json')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('uploads-list'), format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 0)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 0)
+        logger.debug(response.data)
+
+    def test_rest_uploads_non_interactive(self):
+        """
+        Ensure we can access the Local Server Uploads list.
+        """
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file(fname, non_interactive=True)
+        self.assertEqual(resp.status_code, 201)
+        self.assertTrue(data['success'])
+        self.assertIn('redirect_to', data)
+
+        url = reverse('uploads-list')
+        # Anonymous
+        self.client.logout()
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 0)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 0)
+        logger.debug(response.data)
+
+        # Admin
+        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 1)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 1)
+        logger.debug(response.data)
+
+        url = f"{reverse('uploads-detail', kwargs={'pk': response.data['uploads'][0]['id']})}/"
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        upload_data = response.data['upload']
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'relief_san_andres')
+
+        if upload_data['state'] != Upload.STATE_PROCESSED:
+            self.assertLess(upload_data['progress'], 100.0)
+            self.assertIsNone(upload_data['detail_url'])
+            self.assertIsNone(upload_data['resume_url'])
+            self.assertIsNotNone(upload_data['delete_url'])
+
+            self.assertIn('uploadfile_set', upload_data)
+            self.assertEqual(len(upload_data['uploadfile_set']), 0)
+        else:
+            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertIsNone(upload_data['resume_url'])
+            self.assertIsNone(upload_data['delete_url'])
+            self.assertIsNotNone(upload_data['detail_url'])
+
+            self.assertNotIn('layer', upload_data)
+            self.assertNotIn('session', upload_data)
+            response = self.client.get(f'{url}?full=true', format='json')
+            self.assertEqual(response.status_code, 200)
+            upload_data = response.data['upload']
+            self.assertIsNotNone(upload_data)
+            self.assertIn('layer', upload_data)
+            self.assertIn('session', upload_data)
+
+            self.assertIn('uploadfile_set', upload_data)
+            self.assertEqual(len(upload_data['uploadfile_set']), 1)
+
+        self.assertNotIn('upload_dir', upload_data)
+
+        response = self.client.get(upload_data['delete_url'], format='json')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('uploads-list'), format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 0)
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 0)
+        logger.debug(response.data)
+
+    def test_rest_uploads_by_path(self):
+        """
+        Ensure we can access the Local Server Uploads list.
+        """
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_file_by_path(fname)
         self.assertEqual(resp.status_code, 201)
         self.assertTrue(data['success'])
         self.assertIn('redirect_to', data)
