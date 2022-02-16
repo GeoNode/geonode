@@ -250,7 +250,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    def rest_upload_file(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD, custom_steps_str=""):
+    def rest_upload_file(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD, non_interactive=False):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         assert authenticate(username=username, password=password)
@@ -282,8 +282,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             url = urljoin(
                 f"{reverse('uploads-list')}/",
                 'upload/')
-            if custom_steps_str:
-                params["custom_steps"] = custom_steps_str
+            if non_interactive:
+                params["non_interactive"] = 'true'
             logger.error(f" ---- UPLOAD URL: {url}")
             response = self.client.post(url, data=params)
 
@@ -512,13 +512,13 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
 
-    def test_rest_uploads_with_custom_steps(self):
+    def test_rest_uploads_non_interactive(self):
         """
         Ensure we can access the Local Server Uploads list.
         """
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.rest_upload_file(fname, custom_steps_str='["final"]')
+        resp, data = self.rest_upload_file(fname, non_interactive=True)
         self.assertEqual(resp.status_code, 200)
 
         url = reverse('uploads-list')
