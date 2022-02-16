@@ -504,5 +504,3 @@ SOURCE_TYPES = (
 )
 
 LAYER_TYPES = ['vector', 'raster', 'remote', 'vector_time']
-
-DEFAULT_MAX_BEFORE_UPLOAD_SIZE = (settings.DEFAULT_MAX_UPLOAD_SIZE * 2) + 2097152

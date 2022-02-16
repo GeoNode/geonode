@@ -1,0 +1,50 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Python: local runserver",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "runserver",
+                "--settings=geonode.local_settings"
+            ],
+            "justMyCode": false,
+            "envFile": "${workspaceFolder}/.env_dev",
+            "django": true
+        },
+        {
+            "name": "Python: Tests",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "test",
+                "geonode.layers.tests.DatasetsTest.test_dataset_download_call_the_catalog_works",
+                "--settings=geonode.local_settings",
+                "--keepdb"
+            ],
+            "envFile": "${workspaceFolder}/.env_dev",
+            "justMyCode": false,
+            "django": true
+        },
+        {
+            "name": "Python: Migrate",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/manage.py",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "migrate",
+                "--settings=geonode.local_settings",
+            ],
+            "envFile": "${workspaceFolder}/.env_dev",
+            "justMyCode": false,
+            "django": true
+        }
+    ]
+}

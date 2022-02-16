@@ -10,7 +10,6 @@ from django.http import QueryDict
 from django.http.multipartparser import FIELD, FILE, ChunkIter, LazyStream, Parser, exhaust
 from django.utils.datastructures import MultiValueDict
 from django.utils.encoding import force_str
-from geonode.base.enumerations import DEFAULT_MAX_BEFORE_UPLOAD_SIZE
 
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):
@@ -34,6 +33,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
 
         # If the post is too large, we create a empty UploadedFile, otherwise another handler will take care or it.
         if self.is_view_elegible_for_size_restriction:
+            file_type = 'dataset_upload_size' if 'dataset/' in input_data else 'document_upload_size'
             self.max_size_allowed = self._get_max_size()
             self.activated = content_length > self.max_size_allowed
             if self.activated:
@@ -170,7 +170,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
         return file_name
 
     def _get_max_size(self):
-        return DEFAULT_MAX_BEFORE_UPLOAD_SIZE  # default size for each service + 2MB
+        return 1  # default size for each service + 2MB
 
     def receive_data_chunk(self, raw_data, start):
         """

@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from geonode.base.enumerations import DEFAULT_MAX_BEFORE_UPLOAD_SIZE
 from geonode.upload.models import Upload, UploadSizeLimit
 
 from django import forms
@@ -61,8 +60,10 @@ class UploadSizeLimitAdminForm(forms.ModelForm):
 
         after_upload_slugs_list = ['dataset_upload_size', 'document_upload_size']
 
+        max_size_before_upload = (max_size* 2) + 2097152
+
         if slug in after_upload_slugs_list:
-            if max_size * 2 >= DEFAULT_MAX_BEFORE_UPLOAD_SIZE:
+            if max_size * 2 >= max_size_before_upload:
                 raise forms.ValidationError(_(
                     "To avoid errors, max size should be at least 2 times "
                     "smaller than the value of 'file_upload_handler'."
