@@ -421,7 +421,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.rest_upload_file(fname)
-        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
         self.assertIn('redirect_to', data)
 
@@ -499,7 +499,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.rest_upload_file(fname, non_interactive=True)
-        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
         self.assertIn('redirect_to', data)
 
@@ -577,7 +577,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
         resp, data = self.rest_upload_file_by_path(fname)
-        self.assertEqual(resp.status_code, 201)
+        self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
         self.assertIn('redirect_to', data)
 
