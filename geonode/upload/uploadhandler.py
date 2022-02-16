@@ -11,6 +11,8 @@ from django.http.multipartparser import FIELD, FILE, ChunkIter, LazyStream, Pars
 from django.utils.datastructures import MultiValueDict
 from django.utils.encoding import force_str
 
+from geonode.upload.models import UploadSizeLimit
+
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):
     """
@@ -33,8 +35,8 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
 
         # If the post is too large, we create a empty UploadedFile, otherwise another handler will take care or it.
         if self.is_view_elegible_for_size_restriction:
-            file_type = 'dataset_upload_size' if 'dataset/' in input_data else 'document_upload_size'
-            self.max_size_allowed = self._get_max_size()
+            file_type = 'dataset_upload_size' if 'uploads/upload' in input_data.path else 'document_upload_size'
+            self.max_size_allowed = self._get_max_size(file_type)
             self.activated = content_length > self.max_size_allowed
             if self.activated:
                 return self._handle_raw_input_without_file_stream(input_data, META, content_length, boundary, encoding)
@@ -169,8 +171,12 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
             return None
         return file_name
 
-    def _get_max_size(self):
-        return 1  # default size for each service + 2MB
+    def _get_max_size(self, file_type):
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug=file_type)
+        except UploadSizeLimit.DoesNotExist:
+            max_size_db_obj = UploadSizeLimit.objects.create_default_limit_with_slug(slug=file_type)
+        return (max_size_db_obj.max_size * 2) + 2097152
 
     def receive_data_chunk(self, raw_data, start):
         """

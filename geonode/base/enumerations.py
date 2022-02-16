@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 LINK_TYPES = ['original', 'data', 'image', 'metadata', 'html',

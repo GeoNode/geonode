@@ -31,7 +31,6 @@ from uuid import uuid1, uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
-from django.conf import settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
