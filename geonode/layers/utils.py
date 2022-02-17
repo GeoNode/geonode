@@ -454,11 +454,11 @@ def file_upload(filename,
     # Create a new upload session
     if layer:
         latest_uploads = UploadSession.objects.filter(resource=layer).order_by('-date')
-        if latest_uploads.count() > 1:
+        if len(latest_uploads) >= 1:
             upload_session = latest_uploads.first()
+            upload_session.user = theuser
         else:
-            upload_session, _created = UploadSession.objects.get_or_create(resource=layer)
-        upload_session.user = theuser
+            upload_session = UploadSession.objects.create(resource=layer, user=theuser)
         upload_session.layerfile_set.all().delete()
     else:
         upload_session = UploadSession.objects.create(user=theuser)
