@@ -144,11 +144,11 @@ class UploadViewSet(DynamicModelViewSet):
         if not user or not user.is_authenticated:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        # Custom upload steps defined by user
-        non_interactive = json.loads(
-            request.data.get("non_interactive", "false").lower()
+        # Custom upload steps -> None (Save), Check and Final
+        interactive = json.loads(
+            request.data.get("interactive", "true").lower()
         )
-        if non_interactive:
+        if not interactive:
             steps_list = (None, "check", "final")
             # Execute steps and get response
             for step in steps_list:
