@@ -401,7 +401,8 @@ def bbox_to_projection(native_bbox, target_srid=4326):
             g.Transform(CoordinateTransformation(source, dest))
             projected_bbox = [str(x) for x in g.GetEnvelope()]
             # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
-            return tuple([projected_bbox[0], projected_bbox[1], projected_bbox[2], projected_bbox[3]]) + \
+            return tuple(
+                [float(projected_bbox[0]), float(projected_bbox[1]), float(projected_bbox[2]), float(projected_bbox[3])]) + \
                 (f"EPSG:{target_srid}",)
         except Exception as e:
             logger.exception(e)
@@ -898,8 +899,8 @@ def resolve_object(request, model, query, permission='base.view_resourcebase',
     obj = get_object_or_404(model, **query)
     obj_to_check = obj.get_self_resource()
 
-    from geonode.groups.models import GroupProfile
     from guardian.shortcuts import get_groups_with_perms
+    from geonode.groups.models import GroupProfile
 
     groups = get_groups_with_perms(obj_to_check,
                                    attach_perms=True)
@@ -1448,7 +1449,6 @@ class HttpClient:
                 content = str(e)
         else:
             response = session.get(url, headers=headers, timeout=self.timeout)
-
         if response:
             try:
                 content = ensure_string(response.content) if not stream else response.raw
