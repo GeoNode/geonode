@@ -136,7 +136,7 @@ class GeoNodeUploader:
                             files[name] = (os.path.basename(value.name), value)
                             params[name] = os.path.basename(value.name)
 
-                    params["interactive"] = 'false'
+                    params["non_interactive"] = 'true'
                     response = client.post(
                         urljoin(self.host, "/api/v2/uploads/upload/"),
                         auth=HTTPBasicAuth(self.username, self.password),
