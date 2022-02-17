@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     libmemcached-dev libldap2-dev libsasl2-dev libffi-dev
 
 RUN apt-get update && apt-get install -y \
-    gcc zip gettext geoip-bin cron \
+    gcc zip gettext geoip-bin cron netcat \
     postgresql-client-13 \
     sqlite3 spatialite-bin libsqlite3-mod-spatialite \
     python3-dev python3-gdal python3-psycopg2 python3-ldap \

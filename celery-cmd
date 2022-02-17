@@ -14,6 +14,29 @@ CELERY__LOG_LEVEL=${CELERY__LOG_LEVEL:-"INFO"}
 CELERY__LOG_FILE=${CELERY__LOG_FILE:-"/var/log/celery.log"}
 CELERY__WORKER_NAME=${CELERY__WORKER_NAME:-"worker1@%h"}
 CELERY__WORKER_CONCURRENCY=${CELERY__WORKER_CONCURRENCY:-"4"}
+CELERY_DONT_WAIT_FOR_GEONODE=${CELERY_DONT_WAIT_FOR_GEONODE:-"0"}
+CELERY_GEONODE_CONTAINER_HOSTNAME=${CELERY_GEONODE_CONTAINER_HOSTNAME:-"django"}
+CELERY_GEONODE_CONTAINER_PORT=${CELERY_GEONODE_CONTAINER_PORT:-"8000"}
+
+#
+# wait for django to become ready if waiting is not disabled
+#
+if [ -z ${CELERY_DONT_WAIT_FOR_GEONODE+x} ] || [ "${CELERY_DONT_WAIT_FOR_GEONODE}" = "0" ]; then
+
+  echo "Waiting for GeoNode to launch..."
+
+  while ! netcat -z "${CELERY_GEONODE_CONTAINER_HOSTNAME}" "${CELERY_GEONODE_CONTAINER_PORT}"; do
+    sleep 1
+    echo -n "."
+  done
+
+  echo "GeoNode launched"
+
+else
+
+  echo "Do not wait for GeoNode to launch"
+
+fi
 
 $CELERY_BIN -A $CELERY_APP worker --autoscale=$CELERY__AUTOSCALE_VALUES \
     --max-memory-per-child=$CELERY__MAX_MEMORY_PER_CHILD $CELERY__OPTS \
