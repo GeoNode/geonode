@@ -76,7 +76,7 @@ class LayerUploadForm(forms.Form):
 
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
-    permissions = JSONField()
+    permissions = JSONField(required=False)
 
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
@@ -115,7 +115,7 @@ class LayerUploadForm(forms.Form):
         self.validate_files_sum_of_sizes(self.files)
 
         # Get remote files
-        self.data_retriever = DataRetriever(files=files, uploaded=uploaded, tranfer_at_creation=True)
+        self.data_retriever = DataRetriever(files=files, tranfer_at_creation=True)
         cleaned["data_retriever"] = self.data_retriever
         # Validate remote file sizes
         self.validate_files_sum_of_sizes(self.data_retriever)

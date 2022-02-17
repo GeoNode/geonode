@@ -28,6 +28,7 @@ from django.core.files.uploadedfile import UploadedFile
 
 
 class DataItemRetriever(object):
+
     def __init__(self, file):
         self.temporary_folder = None
         self.file_path = None
@@ -49,11 +50,7 @@ class DataItemRetriever(object):
             raise ValueError()
 
     def delete_temporary_file(self):
-        if (self.temporary_folder and
-            self.file_path and
-            os.path.exists(self.temporary_folder) and
-            os.path.isfile(self.file_path)
-        ):
+        if (self.temporary_folder and self.file_path and os.path.exists(self.temporary_folder) and os.path.isfile(self.file_path)):
             # Remove File
             os.remove(self.file_path)
             # Verify and remove temp folder
@@ -99,7 +96,6 @@ class DataItemRetriever(object):
             with open(self.file_path, "wb") as tmp_file:
                 for chunk in self._django_form_file.chunks():
                     tmp_file.write(chunk)
-
         else:
             with open(self.file_path, "wb") as tmp_file, smart_open.open(uri=self._original_file_uri, mode="rb") as original_file:
                 for chunk in file_chunks_iterable(original_file):
@@ -122,7 +118,8 @@ class DataItemRetriever(object):
 
 
 class DataRetriever:
-    def __init__(self, files, uploaded=True, tranfer_at_creation=False):
+
+    def __init__(self, files, tranfer_at_creation=False):
         self.temporary_folder = None
         self.file_paths = {}
 
@@ -147,10 +144,7 @@ class DataRetriever:
         return self.file_paths.copy()
 
     def delete_files(self):
-        if (self.temporary_folder and
-            os.path.exists(self.temporary_folder) and
-            settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))
-        ):
+        if (self.temporary_folder and os.path.exists(self.temporary_folder) and settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))):
             shutil.rmtree(self.temporary_folder, ignore_errors=True)
         self.temporary_folder = None
         self.file_paths = {}

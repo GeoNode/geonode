@@ -19,6 +19,7 @@
 import re
 import os
 import json
+import shutil
 import logging
 import zipfile
 import tempfile
@@ -51,7 +52,7 @@ def _log(msg, *args):
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
-                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:T(?P<hour>([01][0-9])' +
+                     r'([/-]?(?P<mday>(0[1-9])|([12]\d)|(3[01])))?)?(?:[ T]?(?P<hour>([01][0-9])' +
                      r'|(?:2[0123]))(\:?(?P<min>[0-5][0-9])(\:?(?P<sec>[0-5][0-9]([\,\.]\d{1,10})?))?)' +
                      r'?(?:Z|([\-+](?:([01][0-9])|(?:2[0123]))(\:?(?:[0-5][0-9]))?))?)?))$').match
 
@@ -83,7 +84,7 @@ if _ALLOW_MOSAIC_STEP:
         'MOSAIC_ENABLED',
         False)
 
-_ASYNC_UPLOAD = ogc_server_settings and ogc_server_settings.DATASTORE
+_ASYNC_UPLOAD = (ogc_server_settings and ogc_server_settings.DATASTORE is not None and len(ogc_server_settings.DATASTORE) > 0)
 
 # at the moment, the various time support transformations require the database
 if _ALLOW_TIME_STEP and not _ASYNC_UPLOAD:
@@ -321,9 +322,10 @@ def next_step_response(req, upload_session, force_ajax=True):
     if next == 'time':
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
-        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(req,
-                                                                         layer,
-                                                                         upload_session=upload_session)
+        (has_time_dim, layer_values) = layer_eligible_for_time_dimension(
+            req,
+            layer,
+            upload_session=upload_session)
         if store_type == 'coverageStore' or not has_time_dim:
             # @TODO we skip time steps for coverages currently
             upload_session.completed_step = 'time'
@@ -462,7 +464,7 @@ def check_import_session_is_valid(request, upload_session, import_session):
         return True
 
 
-def _get_time_dimensions(layer, upload_session):
+def _get_time_dimensions(layer, upload_session, values=None):
     date_time_keywords = [
         'date',
         'time',
@@ -475,7 +477,7 @@ def _get_time_dimensions(layer, upload_session):
         'enddate']
 
     def filter_name(b):
-        return any([_kw in b for _kw in date_time_keywords])
+        return any([_kw in b.lower() for _kw in date_time_keywords])
 
     att_list = []
     try:
@@ -510,9 +512,11 @@ def _get_time_dimensions(layer, upload_session):
 
 
 def _fixup_base_file(absolute_base_file, tempdir=None):
+    tempdir_was_created = False
     if not tempdir or not os.path.exists(tempdir):
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-    if os.path.exists(tempdir):
+        tempdir_was_created = True
+    try:
         if not os.path.isfile(absolute_base_file):
             tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
             for f in tmp_files:
@@ -525,23 +529,31 @@ def _fixup_base_file(absolute_base_file, tempdir=None):
                                             '.shp', tempdir=tempdir)
             absolute_base_file = os.path.join(tempdir,
                                               absolute_base_file)
-    if os.path.exists(absolute_base_file):
-        return absolute_base_file
-    else:
-        raise Exception(_(f'File does not exist: {absolute_base_file}'))
+        if os.path.exists(absolute_base_file):
+            return absolute_base_file
+        else:
+            raise Exception(_(f'File does not exist: {absolute_base_file}'))
+    finally:
+        if tempdir_was_created:
+            # Get rid if temporary files that have been uploaded via Upload form
+            try:
+                logger.debug(f"... Cleaning up the temporary folders {tempdir}")
+                shutil.rmtree(tempdir)
+            except Exception as e:
+                logger.warning(e)
 
 
 def _get_layer_values(layer, upload_session, expand=0):
     layer_values = []
     if upload_session:
-        absolute_base_file = _fixup_base_file(
-            upload_session.base_file[0].base_file,
-            upload_session.tempdir)
-
-        inDataSource = ogr.Open(absolute_base_file)
-        lyr = inDataSource.GetLayer(str(layer.name))
-        limit = 10
         try:
+            absolute_base_file = _fixup_base_file(
+                upload_session.base_file[0].base_file,
+                upload_session.tempdir)
+
+            inDataSource = ogr.Open(absolute_base_file)
+            lyr = inDataSource.GetLayer(str(layer.name))
+            limit = 10
             for feat in islice(lyr, 0, limit):
                 feat_values = json_loads_byteified(
                     feat.ExportToJson(),

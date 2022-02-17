@@ -112,7 +112,7 @@ class Upload(models.Model):
     date = models.DateTimeField('date', default=now)
     layer = models.ForeignKey(Layer, null=True, on_delete=models.CASCADE)
     upload_dir = models.TextField(null=True)
-    spatial_files_uploaded = models.BooleanField(default=True)
+    store_spatial_files = models.BooleanField(default=True)
     name = models.CharField(max_length=64, null=True)
     complete = models.BooleanField(default=False)
     # hold our serialized session object
@@ -154,7 +154,6 @@ class Upload(models.Model):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
         self.name = upload_session.name
         self.user = upload_session.user
-        self.spatial_files_uploaded = upload_session.spatial_files_uploaded
         self.date = now()
 
         if not self.upload_dir:
@@ -170,7 +169,7 @@ class Upload(models.Model):
                 sld_files = uploaded_files.sld_files
                 xml_files = uploaded_files.xml_files
 
-                if not UploadFile.objects.filter(upload=self, file=base_file).count():
+                if self.store_spatial_files and not UploadFile.objects.filter(upload=self, file=base_file).count():
                     uploaded_file = UploadFile.objects.create_from_upload(
                         self,
                         base_file,
@@ -200,7 +199,7 @@ class Upload(models.Model):
         if "COMPLETE" == self.state:
             self.complete = True
         if self.layer and self.layer.processed:
-            self.state = Upload.STATE_PROCESSED
+            self.state = Upload.STATE_RUNNING
         elif self.state in (Upload.STATE_READY, Upload.STATE_PENDING):
             self.state = upload_session.import_session.state
         self.save()
@@ -217,6 +216,10 @@ class Upload(models.Model):
         elif self.state == Upload.STATE_PROCESSED:
             return 100.0
         elif self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
+            if self.layer and self.layer.processed and self.layer.state == Upload.STATE_PROCESSED:
+                self.state = Upload.STATE_PROCESSED
+                self.save()
+                return 90.0
             return 80.0
 
     def set_resume_url(self, resume_url):
@@ -300,9 +303,8 @@ class Upload(models.Model):
             self.state = state
             Upload.objects.filter(id=self.id).update(state=state)
         if self.layer:
-            if self.state == Upload.STATE_PROCESSED:
-                self.layer.clear_dirty_state()
-            else:
+            self.layer.set_processing_state(state)
+            if self.state != Upload.STATE_PROCESSED:
                 self.layer.set_dirty_state()
 
     def __str__(self):
