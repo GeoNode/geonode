@@ -1176,7 +1176,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             status_code=200,
             text='''<?xml version="1.0" encoding="UTF-8"?>
                 <ows:ExceptionReport xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://localhost:8080/geoserver/schemas/ows/1.1.0/owsAll.xsd"> 
-
                     <ows:Exception exceptionCode="InvalidParameterValue" locator="ResponseDocument">
                         <ows:ExceptionText>Foo Bar Exception</ows:ExceptionText>
                     </ows:Exception>
@@ -1196,14 +1195,13 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             response.content
         )
 
-    @patch("geonode.layers.views.Catalog.http_request")
-    def test_dataset_download_call_the_catalog_works(self, fetch_header_mock):
+    def test_dataset_download_call_the_catalog_works(self):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
         url = reverse('dataset_download', args=[dataset.alternate])
         response = self.client.get(url)
-        self.assertTrue(response)
+        self.assertTrue(response.status_code == 200)
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
