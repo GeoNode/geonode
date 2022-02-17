@@ -49,36 +49,8 @@ class UploadAdmin(admin.ModelAdmin):
             obj.delete()
 
 
-class UploadSizeLimitAdminForm(forms.ModelForm):
-    def clean(self):
-        cleaned_data = super(UploadSizeLimitAdminForm, self).clean()
-
-        default_slug = self.instance.slug if self.instance else None
-        default_max_size = self.instance.max_size if self.instance else settings.DEFAULT_MAX_UPLOAD_SIZE
-        slug = cleaned_data.get('slug', default_slug)
-        max_size = cleaned_data.get('max_size', default_max_size)
-
-        after_upload_slugs_list = ['dataset_upload_size', 'document_upload_size']
-
-        max_size_before_upload = (max_size * 2) + 2097152
-
-        if slug in after_upload_slugs_list:
-            if max_size * 2 >= max_size_before_upload:
-                raise forms.ValidationError(_(
-                    "To avoid errors, max size should be at least 2 times "
-                    "smaller than the value of 'file_upload_handler'."
-                ))
-
-        return cleaned_data
-
-    class Meta:
-        model = UploadSizeLimit
-        fields = '__all__'
-
-
 class UploadSizeLimitAdmin(admin.ModelAdmin):
     list_display = ('slug', 'description', 'max_size', 'max_size_label')
-    form = UploadSizeLimitAdminForm
 
     def has_delete_permission(self, request, obj=None):
         protected_objects = [

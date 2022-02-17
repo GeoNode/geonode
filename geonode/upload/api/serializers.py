@@ -251,35 +251,3 @@ class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
             'max_size',
             'max_size_label',
         )
-
-    def validate(self, data):
-        validated_data = super(UploadSizeLimitSerializer, self).validate(data)
-
-        default_slug = self.instance.slug if self.instance else None
-        default_max_size = self.instance.max_size if self.instance else settings.DEFAULT_MAX_UPLOAD_SIZE
-        slug = validated_data.get('slug', default_slug)
-        max_size = validated_data.get("max_size", default_max_size)
-
-        after_upload_slugs_list = ['dataset_upload_size', 'document_upload_size']
-
-        if slug == 'file_upload_handler':
-            after_upload_sizes = UploadSizeLimit.objects.filter(
-                slug__in=after_upload_slugs_list
-            ).values_list('max_size', flat=True)
-            if after_upload_sizes and max_size <= max(after_upload_sizes) * 2:
-                raise serializers.ValidationError(_(
-                    "To avoid errors, max size should be at least 2 times "
-                    "greater than the value of others size limits."
-                ))
-
-        if slug in after_upload_slugs_list:
-            handler_max_size = UploadSizeLimit.objects.filter(
-                slug='file_upload_handler'
-            ).values_list('max_size', flat=True)
-            if handler_max_size and max_size * 2 >= max(handler_max_size):
-                raise serializers.ValidationError(_(
-                    "To avoid errors, max size should be at least 2 times "
-                    "smaller than the value of 'file_upload_handler'."
-                ))
-
-        return validated_data
