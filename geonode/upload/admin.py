@@ -19,10 +19,7 @@
 
 from geonode.upload.models import Upload, UploadSizeLimit
 
-from django import forms
-from django.conf import settings
 from django.contrib import admin
-from django.utils.translation import ugettext as _
 
 
 def import_link(obj):

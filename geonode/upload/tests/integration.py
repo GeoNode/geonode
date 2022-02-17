@@ -27,7 +27,6 @@ See the README.rst in this directory for details on running these tests.
 """
 
 from unittest import mock
-from django.forms import ValidationError
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os.path
@@ -693,8 +692,8 @@ class TestUpload(UploaderBase):
 
         max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"
 
-        with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:         
-            max_size_mock.return_value = lambda x: 2   
+        with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
+            max_size_mock.return_value = lambda x: 2
             with self.assertRaises(HTTPError) as error:
                 self.client.upload_file(csv_file)
             expected_error = "Unexpected exception Expecting value: line 1 column 1 (char 0)"

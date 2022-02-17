@@ -20,9 +20,6 @@ import os
 
 from rest_framework import serializers
 
-from django.conf import settings
-from django.utils.translation import ugettext as _
-
 from dynamic_rest.fields.fields import (
     DynamicRelationField,
     DynamicComputedField,
