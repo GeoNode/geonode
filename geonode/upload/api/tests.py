@@ -638,7 +638,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload and verify if it passed only by the form size validation
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
 
-        max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"        
+        max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"
         with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
             max_size_mock.return_value = lambda x: 209715200
 
