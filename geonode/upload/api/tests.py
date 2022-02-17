@@ -280,7 +280,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 f"{reverse('uploads-list')}/",
                 'upload/')
             if non_interactive:
-                params["non_interactive"] = 'true'
+                params["interactive"] = 'false'
             logger.error(f" ---- UPLOAD URL: {url}")
             response = self.client.put(url, data=params)
 
