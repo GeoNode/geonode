@@ -1151,8 +1151,8 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         response = self.client.get(f"{url}?export_format=foo")
         self.assertEqual(500, response.status_code)
         self.assertEqual(
-            'The format provided is not valid for the selected resource',
-            response.text
+            b'The format provided is not valid for the selected resource',
+            response.content
         )
 
     @patch("geonode.layers.views.Catalog.http_request")
@@ -1197,21 +1197,13 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         )
 
     @patch("geonode.layers.views.Catalog.http_request")
-    @patch("geonode.layers.views.fetch_response_headers")
-    def test_dataset_download_call_the_catalog_works(self, fetch_header_mock, mocked_catalog):
-        _response = MagicMock(
-            status_code=200,
-            text="",
-            reason="",
-            headers={'Authorization': ""}
-        )
-        mocked_catalog.return_value = _response
+    def test_dataset_download_call_the_catalog_works(self, fetch_header_mock):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
         url = reverse('dataset_download', args=[dataset.alternate])
-        _ = self.client.get(url)
-        fetch_header_mock.assert_has_calls()
+        response = self.client.get(url)
+        self.assertTrue(response)
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
