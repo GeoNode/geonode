@@ -131,16 +131,13 @@ class StorageManager(StorageManagerInterface):
     def copy_files_list(self, files: List[str]):
         out = []
         for f in files:
-            try:
-                out.append(self.path(f))
-            except SuspiciousFileOperation:
-                with self.open(f, 'rb+') as open_file:
-                    old_path = str(os.path.basename(Path(f).parent.absolute()))
-                    old_file_name, _ = os.path.splitext(os.path.basename(f))
-                    _, ext = os.path.splitext(open_file.name)
-                    path = os.path.join(old_path, f'{uuid1().hex[:8]}')
-                    new_file = f"{path}/{self.generate_filename(old_file_name)}{ext}"
-                    out.append(self.copy_single_file(open_file, new_file))
+            with self.open(f, 'rb+') as open_file:
+                old_path = str(os.path.basename(Path(f).parent.absolute()))
+                old_file_name, _ = os.path.splitext(os.path.basename(f))
+                _, ext = os.path.splitext(open_file.name)
+                path = os.path.join(old_path, f'{uuid1().hex[:8]}')
+                new_file = f"{path}/{self.generate_filename(old_file_name)}{ext}"
+                out.append(self.copy_single_file(open_file, new_file))
         return out
 
     def copy_single_file(self, old_file: BinaryIO, new_file: str):
