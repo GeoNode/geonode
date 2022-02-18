@@ -376,10 +376,11 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
 
     def to_representation(self, instance):
         data = []
-        if not self.context['request'].user.is_anonymous and ResourceBase.objects.filter(pk=instance).count() == 1:
+        request = self.context.get('request', None)
+        if request and request.user and not request.user.is_anonymous and ResourceBase.objects.filter(pk=instance).count() == 1:
             _resource = ResourceBase.objects.get(pk=instance)
             executions = ExecutionRequest.objects.filter(
-                Q(user=self.context['request'].user) &
+                Q(user=request.user) &
                 ~Q(status=ExecutionRequest.STATUS_FINISHED) & (
                 (Q(input_params__uuid=_resource.uuid) |
                     Q(output_params__output__uuid=_resource.uuid) |

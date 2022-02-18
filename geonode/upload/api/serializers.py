@@ -211,8 +211,8 @@ class UploadSerializer(BaseDynamicModelSerializer):
         # Instantiate the superclass normally
         super().__init__(*args, **kwargs)
 
-        if 'request' in self.context and \
-                self.context['request'].query_params.get('full'):
+        request = self.context.get('request', None)
+        if request.query_params.get('full'):
             self.fields['resource'] = DynamicRelationField(
                 DatasetSerializer,
                 embed=True,
