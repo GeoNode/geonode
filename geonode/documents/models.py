@@ -42,6 +42,7 @@ from geonode.security.permissions import (
     VIEW_PERMISSIONS,
     OWNER_PERMISSIONS,
     DOWNLOAD_PERMISSIONS)
+from geonode.utils import build_absolute_uri
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +155,10 @@ class Document(ResourceBase):
     @property
     def embed_url(self):
         return reverse('document_embed', args=(self.id,))
+
+    @property
+    def download_url(self):
+        return build_absolute_uri(reverse('document_download', args=(self.id,)))
 
     class Meta(ResourceBase.Meta):
         pass

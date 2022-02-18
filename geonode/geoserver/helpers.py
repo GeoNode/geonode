@@ -2256,3 +2256,19 @@ def get_dataset_type(spatial_files):
     else:
         the_dataset_type = spatial_files[0].file_type.dataset_type
     return the_dataset_type
+
+
+def wps_format_is_supported(_format, dataset_type):
+    acceptable_formats = [
+        ('application/json', 'vector'),
+        ('application/arcgrid', 'raster'),
+        ('image/tiff', 'raster'),
+        ('image/png', 'raster'),
+        ('image/jpeg', 'raster'),
+        ('application/wfs-collection-1.0', 'vector'),
+        ('application/wfs-collection-1.1', 'vector'),
+        ('application/zip', 'vector'),
+        ('application/zip', 'raster'),
+        ('text/csv', 'vector')
+    ]
+    return (_format, dataset_type) in acceptable_formats
