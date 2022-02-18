@@ -17,7 +17,7 @@
 #
 #########################################################################
 
-from geonode.upload.models import Upload, UploadSizeLimit
+from geonode.upload.models import Upload, UploadFile, UploadSizeLimit
 
 from django.contrib import admin
 
@@ -28,6 +28,13 @@ def import_link(obj):
 
 import_link.short_description = 'Link'
 import_link.allow_tags = True
+
+
+class UploadFileAdmin(admin.ModelAdmin):
+    list_display = ('id', 'upload', 'slug', 'base')
+    list_display_links = ('id',)
+    list_filter = ('slug', )
+    search_fields = ('slug', )
 
 
 class UploadAdmin(admin.ModelAdmin):
@@ -60,4 +67,5 @@ class UploadSizeLimitAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Upload, UploadAdmin)
+admin.site.register(UploadFile, UploadFileAdmin)
 admin.site.register(UploadSizeLimit, UploadSizeLimitAdmin)
