@@ -29,7 +29,7 @@ from django.utils.translation import ugettext_lazy as _
 from tinymce.models import HTMLField
 
 from geonode.client.hooks import hookset
-from geonode.utils import check_shp_columnnames
+from geonode.utils import build_absolute_uri, check_shp_columnnames
 from geonode.security.models import PermissionLevelMixin
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import (
@@ -185,6 +185,10 @@ class Dataset(ResourceBase):
         return self.subtype == 'vector'
 
     @property
+    def is_raster(self):
+        return self.subtype == 'raster'
+
+    @property
     def display_type(self):
         if self.subtype == "vector":
             return "Vector Data"
@@ -319,6 +323,13 @@ class Dataset(ResourceBase):
         from geonode.maps.models import Map
         map_ids = list(self.maplayers.values_list('map__id', flat=True))
         return Map.objects.filter(id__in=map_ids)
+
+    @property
+    def download_url(self):
+        if self.subtype not in ['vector', 'raster']:
+            logger.error("Download URL is available only for datasets that have been harvested and copied locally")
+            return None
+        return build_absolute_uri(reverse('dataset_download', args=(self.alternate,)))
 
     @property
     def maplayers(self):

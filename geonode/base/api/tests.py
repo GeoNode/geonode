@@ -21,6 +21,7 @@ import json
 import logging
 import re
 import os
+from django.conf import settings
 import gisdata
 
 from PIL import Image
@@ -30,7 +31,6 @@ from uuid import uuid1, uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
-from django.conf import settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
@@ -39,6 +39,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
+from geonode.maps.models import Map
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base import enumerations
@@ -1882,6 +1883,56 @@ class BaseApiTests(APITestCase):
         # clean
         resource.delete()
         cloned_resource.delete()
+
+    def test_base_resources_return_download_link_if_document(self):
+        """
+        Ensure we can access the Resource Base list.
+        """
+        doc = Document.objects.first()
+
+        # From resource base API
+        url = reverse('base-resources-detail', args=[doc.id])
+        response = self.client.get(url, format='json')
+        download_url = response.json().get('resource').get('download_url')
+        self.assertEqual(build_absolute_uri(doc.download_url), download_url)
+
+        # from documents api
+        url = reverse('documents-detail', args=[doc.id])
+        download_url = response.json().get('resource').get('download_url')
+        self.assertEqual(build_absolute_uri(doc.download_url), download_url)
+
+    def test_base_resources_return_download_link_if_dataset(self):
+        """
+        Ensure we can access the Resource Base list.
+        """
+        _dataset = Dataset.objects.first()
+
+        # From resource base API
+        url = reverse('base-resources-detail', args=[_dataset.id])
+        response = self.client.get(url, format='json')
+        download_url = response.json().get('resource').get('download_url')
+        self.assertEqual(_dataset.download_url, download_url)
+
+        # from dataset api
+        url = reverse('datasets-detail', args=[_dataset.id])
+        download_url = response.json().get('resource').get('download_url')
+        self.assertEqual(_dataset.download_url, download_url)
+
+    def test_base_resources_dont_return_download_link_if_map(self):
+        """
+        Ensure we can access the Resource Base list.
+        """
+        _map = Map.objects.first()
+        # From resource base API
+        url = reverse('base-resources-detail', args=[_map.id])
+        response = self.client.get(url, format='json')
+        download_url = response.json().get('resource').get('download_url', None)
+        self.assertIsNone(download_url)
+
+        # from maps api
+        url = reverse('maps-detail', args=[_map.id])
+        download_url = response.json().get('resource').get('download_url')
+        self.assertIsNone(download_url)
 
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
