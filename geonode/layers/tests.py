@@ -43,6 +43,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.test.utils import override_settings
 from django.contrib.admin.sites import AdminSite
+from geonode.geoserver.createlayer.utils import create_dataset
 
 from geonode.layers import utils
 from geonode.layers import DatasetAppConfig
@@ -1150,9 +1151,9 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         url = reverse('dataset_download', args=[dataset.alternate])
         response = self.client.get(f"{url}?export_format=foo")
         self.assertEqual(500, response.status_code)
-        self.assertEqual(
-            b'The format provided is not valid for the selected resource',
-            response.content
+        self.assertDictEqual(
+            {"error": "The format provided is not valid for the selected resource"},
+            response.json()
         )
 
     @patch("geonode.layers.views.Catalog.http_request")
@@ -1197,11 +1198,24 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
     def test_dataset_download_call_the_catalog_works(self):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
+        _response = MagicMock(
+            status_code=200,
+            text="", # noqa
+            headers={"Content-Type": ""}
+        )
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
-        url = reverse('dataset_download', args=[dataset.alternate])
-        response = self.client.get(url)
-        self.assertTrue(response.status_code == 200)
+        layer = create_dataset(
+            dataset.title,
+            dataset.title,
+            dataset.owner,
+            'Point'
+        )
+        with patch("geonode.layers.views.Catalog.http_request") as mocked_catalog:
+            mocked_catalog.return_value = _response
+            url = reverse('dataset_download', args=[layer.alternate])
+            response = self.client.get(url)
+            self.assertTrue(response.status_code == 200)
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
