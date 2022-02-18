@@ -301,6 +301,15 @@ class ThumbnailUrlField(DynamicComputedField):
         return build_absolute_uri(thumbnail_url)
 
 
+class DownloadLinkField(DynamicComputedField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        _instance = instance.get_real_instance()
+        return _instance.download_url if hasattr(_instance, "download_url") else None
+
+
 class UserSerializer(BaseDynamicModelSerializer):
 
     class Meta:
@@ -376,10 +385,11 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
 
     def to_representation(self, instance):
         data = []
-        if ResourceBase.objects.filter(pk=instance).count() == 1:
+        request = self.context.get('request', None)
+        if request and request.user and not request.user.is_anonymous and ResourceBase.objects.filter(pk=instance).count() == 1:
             _resource = ResourceBase.objects.get(pk=instance)
             executions = ExecutionRequest.objects.filter(
-                Q(user=self.context['request'].user) &
+                Q(user=request.user) &
                 ~Q(status=ExecutionRequest.STATUS_FINISHED) & (
                 (Q(input_params__uuid=_resource.uuid) |
                     Q(output_params__output__uuid=_resource.uuid) |
@@ -481,6 +491,8 @@ class ResourceBaseSerializer(
         self.fields['blob'] = serializers.JSONField(required=False, write_only=True)
         self.fields['is_copyable'] = serializers.BooleanField(read_only=True)
 
+        self.fields['download_url'] = DownloadLinkField(read_only=True)
+
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:
@@ -538,6 +550,7 @@ class ResourceBaseSerializer(
             "executions": {"required": False, "embed": False, "deferred": True, "read_only": True},
             "owner": {"required": False},
             "resource_type": {"required": False},
+            "download_url": {"required": False},
             "is_copyable": {"required": False},
         }
 

@@ -25,18 +25,21 @@ import logging
 import tempfile
 import warnings
 import traceback
+from django.urls import reverse
 
 from owslib.wfs import WebFeatureService
+import xml.etree.ElementTree as ET
 
 from django.conf import settings
 
 from django.db.models import F
-from django.http import Http404
+from django.http import Http404, HttpResponseServerError
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
 from django.forms.utils import ErrorList
 from django.contrib.auth import get_user_model
+from django.template.loader import get_template
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
@@ -44,12 +47,14 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
+from geoserver.catalog import Catalog
 from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
+from geonode.proxy.views import fetch_response_headers
 from geonode.resource.manager import resource_manager
-from geonode.geoserver.helpers import set_dataset_style
+from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
@@ -795,6 +800,84 @@ def dataset_metadata_advanced(request, layername):
         request,
         layername,
         template='datasets/dataset_metadata_advanced.html')
+
+
+@login_required
+def dataset_download(request, layername):
+    try:
+        dataset = _resolve_dataset(
+            request,
+            layername,
+            'base.change_resourcebase_metadata',
+            _PERMISSION_MSG_METADATA)
+    except Exception as e:
+        raise Http404(Exception(_("Not found"), e))
+
+    if not settings.USE_GEOSERVER:
+        # if GeoServer is not used, we redirect to the proxy download
+        return HttpResponseRedirect(reverse('download', args=[dataset.id]))
+
+    download_format = request.GET.get('export_format', 'application/zip')
+
+    if not wps_format_is_supported(download_format, dataset.subtype):
+        logger.error("The format provided is not valid for the selected resource")
+        return HttpResponseServerError("The format provided is not valid for the selected resource")
+
+    # getting default payload
+    tpl = get_template("geoserver/dataset_download.xml")
+    ctx = {
+        "alternate": dataset.alternate,
+        "download_format": download_format
+    }
+    # applying context for the payload
+    payload = tpl.render(ctx)
+
+    # define access token for the user
+    access_token = get_or_create_token(request.user)
+
+    # init of Catalog
+    cat = Catalog(
+        service_url=settings.OGC_SERVER["default"]["LOCATION"],
+        access_token=access_token
+    )
+
+    headers = {
+        "Content-type": "application/xml",
+        "Accept": "application/xml"
+    }
+
+    # defining the URL needed fr the download
+    url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?service=WPS&version=1.0.0&REQUEST=Execute&access_token={access_token}"
+
+    # request to geoserver
+    response = cat.http_request(
+        url=url,
+        data=payload,
+        method="post",
+        headers=headers
+    )
+
+    if response.status_code != 200:
+        logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
+        return HttpResponseServerError(f"Download dataset exception: error during call with GeoServer: {response.content}")
+
+    # error handling
+    namespaces = {"ows": "http://www.opengis.net/ows/1.1"}
+    if response.reason:
+        # parsing XML for get exception
+        content = ET.fromstring(response.text)
+        exc = content.find('ows:Exception', namespaces=namespaces)
+        if exc:
+            exc_text = content.find('ows:Exception/ows:ExceptionText', namespaces=namespaces)
+            logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
+            return HttpResponseServerError(f"{exc.attrib.get('exceptionCode')}: {exc_text.text}")
+
+    return fetch_response_headers(
+                HttpResponse(
+                    content=response.content,
+                    status=response.status_code,
+                    content_type=download_format
+            ), response.headers)
 
 
 @login_required

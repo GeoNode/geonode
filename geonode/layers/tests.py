@@ -25,7 +25,7 @@ import logging
 import zipfile
 import tempfile
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from collections import namedtuple
 from pinax.ratings.models import OverallRating
 
@@ -1126,6 +1126,82 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         }
         actual = validate_input_source(layer, filename, files, action_type="append")
         self.assertTrue(actual)
+
+    def test_dataset_download_not_found_for_non_existing_dataset(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse('dataset_download', args=['foo-dataset'])
+        response = self.client.get(url)
+        self.assertEqual(404, response.status_code)
+
+    @override_settings(USE_GEOSERVER=False)
+    def test_dataset_download_redirect_to_proxy_url(self):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(f"/download/{dataset.id}", response.url)
+
+    def test_dataset_download_invalid_wps_format(self):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(f"{url}?export_format=foo")
+        self.assertEqual(500, response.status_code)
+        self.assertEqual(
+            b'The format provided is not valid for the selected resource',
+            response.content
+        )
+
+    @patch("geonode.layers.views.Catalog.http_request")
+    def test_dataset_download_call_the_catalog_raise_error_for_no_200(self, mocked_catalog):
+        _response = MagicMock(status_code=500, content="foo-bar")
+        mocked_catalog.return_value = _response
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(500, response.status_code)
+        self.assertEqual(
+            b"Download dataset exception: error during call with GeoServer: foo-bar",
+            response.content
+        )
+
+    @patch("geonode.layers.views.Catalog.http_request")
+    def test_dataset_download_call_the_catalog_raise_error_for_error_content(self, mocked_catalog):
+        _response = MagicMock(
+            status_code=200,
+            text='''<?xml version="1.0" encoding="UTF-8"?>
+                <ows:ExceptionReport xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://localhost:8080/geoserver/schemas/ows/1.1.0/owsAll.xsd"> 
+                    <ows:Exception exceptionCode="InvalidParameterValue" locator="ResponseDocument">
+                        <ows:ExceptionText>Foo Bar Exception</ows:ExceptionText>
+                    </ows:Exception>
+                </ows:ExceptionReport>
+                ''', # noqa
+            reason="error"
+        )
+        mocked_catalog.return_value = _response
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(500, response.status_code)
+        self.assertEqual(
+            b"InvalidParameterValue: Foo Bar Exception",
+            response.content
+        )
+
+    def test_dataset_download_call_the_catalog_works(self):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        self.client.login(username="admin", password="admin")
+        dataset = Dataset.objects.first()
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertTrue(response.status_code == 200)
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
