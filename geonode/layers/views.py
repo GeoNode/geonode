@@ -33,7 +33,7 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 
 from django.db.models import F
-from django.http import Http404, HttpResponseServerError
+from django.http import Http404, JsonResponse
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
@@ -84,11 +84,7 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
-from geonode.utils import (
-    resolve_object,
-    check_ogc_backend,
-    llbbox_to_mercator,
-)
+from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     select_relevant_files,
@@ -821,7 +817,7 @@ def dataset_download(request, layername):
 
     if not wps_format_is_supported(download_format, dataset.subtype):
         logger.error("The format provided is not valid for the selected resource")
-        return HttpResponseServerError("The format provided is not valid for the selected resource")
+        return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
 
     # getting default payload
     tpl = get_template("geoserver/dataset_download.xml")
@@ -859,18 +855,22 @@ def dataset_download(request, layername):
 
     if response.status_code != 200:
         logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
-        return HttpResponseServerError(f"Download dataset exception: error during call with GeoServer: {response.content}")
+        return JsonResponse(
+            {"error": f"Download dataset exception: error during call with GeoServer: {response.content}"},
+            status=500
+        )
 
     # error handling
-    namespaces = {"ows": "http://www.opengis.net/ows/1.1"}
-    if response.reason:
+    namespaces = {"ows": "http://www.opengis.net/ows/1.1", "wps": "http://www.opengis.net/wps/1.0.0"}
+    response_type = response.headers.get('Content-Type')
+    if response_type == 'text/xml':
         # parsing XML for get exception
         content = ET.fromstring(response.text)
-        exc = content.find('ows:Exception', namespaces=namespaces)
+        exc = content.find('*//ows:Exception', namespaces=namespaces) or content.find('ows:Exception', namespaces=namespaces)
         if exc:
-            exc_text = content.find('ows:Exception/ows:ExceptionText', namespaces=namespaces)
+            exc_text = exc.find('ows:ExceptionText', namespaces=namespaces)
             logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
-            return HttpResponseServerError(f"{exc.attrib.get('exceptionCode')}: {exc_text.text}")
+            return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
 
     return fetch_response_headers(
                 HttpResponse(

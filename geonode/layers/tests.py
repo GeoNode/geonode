@@ -1165,9 +1165,9 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         url = reverse('dataset_download', args=[dataset.alternate])
         response = self.client.get(url)
         self.assertEqual(500, response.status_code)
-        self.assertEqual(
-            b"Download dataset exception: error during call with GeoServer: foo-bar",
-            response.content
+        self.assertDictEqual(
+            {"error": "Download dataset exception: error during call with GeoServer: foo-bar"},
+            response.json()
         )
 
     @patch("geonode.layers.views.Catalog.http_request")
@@ -1181,7 +1181,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
                     </ows:Exception>
                 </ows:ExceptionReport>
                 ''', # noqa
-            reason="error"
+            headers={"Content-Type": "text/xml"}
         )
         mocked_catalog.return_value = _response
         # if settings.USE_GEOSERVER is false, the URL must be redirected
@@ -1190,9 +1190,9 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         url = reverse('dataset_download', args=[dataset.alternate])
         response = self.client.get(url)
         self.assertEqual(500, response.status_code)
-        self.assertEqual(
-            b"InvalidParameterValue: Foo Bar Exception",
-            response.content
+        self.assertDictEqual(
+            {"error": "InvalidParameterValue: Foo Bar Exception"},
+            response.json()
         )
 
     def test_dataset_download_call_the_catalog_works(self):
