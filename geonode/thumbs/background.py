@@ -23,13 +23,14 @@ import typing
 import logging
 import mercantile
 
-from PIL import Image, UnidentifiedImageError
-from math import ceil, floor, copysign
 from io import BytesIO
-from abc import ABC, abstractmethod
 from pyproj import Transformer
+from abc import ABC, abstractmethod
+from math import ceil, floor, copysign
+from PIL import Image, UnidentifiedImageError
 
 from django.conf import settings
+from django.utils.html import strip_tags
 
 from geonode.thumbs import utils
 from geonode.utils import http_client
@@ -196,11 +197,11 @@ class GenericXYZBackground(BaseThumbBackground):
         self._mercantile_bbox = None  # BBOX compliant with mercantile lib: [west, south, east, north] bounds list
 
     def point3857to4326(self, x, y):
-        transformer = Transformer.from_crs("epsg:3857", "epsg:4326", always_xy=True)
+        transformer = Transformer.from_crs("EPSG:3857", "EPSG:4326", always_xy=True)
         return transformer.transform(x, y)
 
     def point4326to3857(self, x, y):
-        transformer = Transformer.from_crs("epsg:4326", "epsg:3857", always_xy=True)
+        transformer = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
         return transformer.transform(x, y)
 
     def bbox3857to4326(self, x_min, x_max, y_min, y_max):
@@ -347,24 +348,28 @@ class GenericXYZBackground(BaseThumbBackground):
                     y = (2 ** zoom) - y - 1
                 imgurl = self.url.format(x=x, y=y, z=zoom)
 
+                im = None
                 for retries in range(self.max_retries):
                     try:
                         resp, content = http_client.request(imgurl)
+                        if resp.status_code > 400:
+                            retries = self.max_retries - 1
+                            raise Exception(f"{strip_tags(content)}")
                         im = BytesIO(content)
                         Image.open(im).verify()  # verify that it is, in fact an image
+                        break
                     except Exception as e:
                         logger.error(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
                         if retries + 1 == self.max_retries:
-                            logger.exception(e)
                             raise e
                         time.sleep(self.retry_delay)
                         continue
-                    else:
-                        break
-                image = Image.open(im)  # "re-open" the file (required after running verify method)
 
-                # add the fetched tile to the background image, placing it under proper coordinates
-                background.paste(image, (offset_x * self.tile_size, offset_y * self.tile_size + fixed_top_offset))
+                if im:
+                    image = Image.open(im)  # "re-open" the file (required after running verify method)
+
+                    # add the fetched tile to the background image, placing it under proper coordinates
+                    background.paste(image, (offset_x * self.tile_size, offset_y * self.tile_size + fixed_top_offset))
 
         # get BBOX of the tiles
         top_left_bounds = mercantile.bounds(top_left_tile)

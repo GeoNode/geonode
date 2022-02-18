@@ -41,6 +41,10 @@ class UploadAdmin(admin.ModelAdmin):
     search_fields = ('name', 'layer', 'user', 'date', 'state')
 
     def delete_queryset(self, request, queryset):
+        """
+        We need to invoke the 'Upload.delete' method even when deleting
+        through the admin batch action
+        """
         for obj in queryset:
             obj.delete()
 

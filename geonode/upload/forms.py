@@ -25,6 +25,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.upload.models import UploadSizeLimit
+from geonode.upload.data_retriever import DataRetriever
 
 from .. import geoserver
 from ..utils import check_ogc_backend
@@ -45,15 +46,21 @@ class UploadFileForm(forms.ModelForm):
 
 
 class LayerUploadForm(forms.Form):
-    base_file = forms.FileField()
+    base_file = forms.FileField(required=False)
+    base_file_path = forms.CharField(required=False)
     dbf_file = forms.FileField(required=False)
+    dbf_file_path = forms.CharField(required=False)
     shx_file = forms.FileField(required=False)
+    shx_file_path = forms.CharField(required=False)
     prj_file = forms.FileField(required=False)
+    prj_file_path = forms.CharField(required=False)
     xml_file = forms.FileField(required=False)
+    xml_file_path = forms.CharField(required=False)
     charset = forms.CharField(required=False)
 
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         sld_file = forms.FileField(required=False)
+        sld_file_path = forms.CharField(required=False)
 
     time = forms.BooleanField(required=False)
 
@@ -69,11 +76,13 @@ class LayerUploadForm(forms.Form):
 
     abstract = forms.CharField(required=False)
     layer_title = forms.CharField(required=False)
-    permissions = JSONField()
+    permissions = JSONField(required=False)
 
     metadata_uploaded_preserve = forms.BooleanField(required=False)
     metadata_upload_form = forms.BooleanField(required=False)
     style_upload_form = forms.BooleanField(required=False)
+
+    store_spatial_files = forms.BooleanField(required=False, initial=True)
 
     spatial_files = [
         "base_file",
@@ -90,22 +99,71 @@ class LayerUploadForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
+        uploaded, files = self._get_files_paths_or_objects(cleaned)
+        cleaned["uploaded"] = uploaded
+        base_file = files.get('base_file')
+
+        if not base_file and "base_file" not in self.errors and "base_file_path" not in self.errors:
+            logger.error("Base file must be a file or url.")
+            raise forms.ValidationError(_("Base file must be a file or url."))
+
         if self.errors:
             # Something already went wrong
             return cleaned
-        self.validate_files_sum_of_sizes()
-        uploaded_files = self._get_uploaded_files()
+
+        # Validate form file sizes
+        self.validate_files_sum_of_sizes(self.files)
+
+        # Get remote files
+        self.data_retriever = DataRetriever(files=files, tranfer_at_creation=True)
+        cleaned["data_retriever"] = self.data_retriever
+        # Validate remote file sizes
+        self.validate_files_sum_of_sizes(self.data_retriever)
+
+        file_paths_without_base = self.data_retriever.get_paths()
+        base_file_path = file_paths_without_base.pop("base_file")
+
         valid_extensions = validate_uploaded_files(
             cleaned=cleaned,
-            uploaded_files=uploaded_files,
-            field_spatial_types=self.spatial_files
+            uploaded_files=file_paths_without_base,
+            field_spatial_types=self.spatial_files,
+            base_file_path=base_file_path,
         )
         cleaned["valid_extensions"] = valid_extensions
         return cleaned
 
-    def validate_files_sum_of_sizes(self):
+    def _get_files_paths_or_objects(self, cleaned_data):
+        """Return a dict with all of the uploaded files"""
+        files = {}
+        uploaded = True
+        file_fields = (
+            ("base_file", "base_file_path"),
+            ("dbf_file", "dbf_file_path"),
+            ("shx_file", "shx_file_path"),
+            ("prj_file", "prj_file_path"),
+            ("xml_file", "xml_file_path"),
+            ("sld_file", "sld_fil_path")
+        )
+        for file_field in file_fields:
+            field_name = file_field[0]
+            file_field_value = cleaned_data.get(file_field[0], None)
+            path_field_value = cleaned_data.get(file_field[1], None)
+            if file_field_value and path_field_value:
+                raise forms.ValidationError(_(
+                    f"`{field_name}` field cannot have both a file and a path. Please choose one and try again."
+                ))
+            if path_field_value:
+                uploaded = False
+                files[field_name] = path_field_value
+            elif file_field_value:
+                uploaded = True
+                files[field_name] = file_field_value
+
+        return uploaded, files
+
+    def validate_files_sum_of_sizes(self, file_dict):
         max_size = self._get_uploads_max_size()
-        total_size = self._get_uploaded_files_total_size()
+        total_size = self._get_uploaded_files_total_size(file_dict)
         if total_size > max_size:
             raise forms.ValidationError(_(
                 f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
@@ -123,11 +181,11 @@ class LayerUploadForm(forms.Form):
         return [django_file for field_name, django_file in self.files.items()
                 if field_name != "base_file"]
 
-    def _get_uploaded_files_total_size(self):
+    def _get_uploaded_files_total_size(self, file_dict):
         """Return a list with all of the uploaded files"""
         excluded_files = ("zip_file", "shp_file", )
         uploaded_files_sizes = [
-            django_file.size for field_name, django_file in self.files.items()
+            file_obj.size for field_name, file_obj in file_dict.items()
             if field_name not in excluded_files
         ]
         total_size = sum(uploaded_files_sizes)

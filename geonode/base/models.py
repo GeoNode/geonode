@@ -16,12 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 import re
 import html
 import math
 import uuid
+import shutil
 import logging
 import traceback
 
@@ -68,6 +68,11 @@ from geonode.base.enumerations import (
     UPDATE_FREQUENCIES,
     DEFAULT_SUPPLEMENTAL_INFORMATION)
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
+from geonode.thumbs.utils import (
+    get_unique_upload_path,
+    thumb_path,
+    thumb_size,
+    remove_thumbs)
 from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
@@ -638,6 +643,32 @@ class ResourceBaseManager(PolymorphicManager):
     def polymorphic_queryset(self):
         return super().get_queryset()
 
+    @staticmethod
+    def cleanup_uploaded_files(resource_id):
+        """Remove uploaded files, if any"""
+        if ResourceBase.objects.filter(id=resource_id).exists():
+            _resource = ResourceBase.objects.filter(id=resource_id).get()
+
+            # Remove generated thumbnails, if any
+            filename = f"{_resource.get_real_instance().resource_type}-{_resource.get_real_instance().uuid}"
+            remove_thumbs(filename)
+
+            # Remove the uploaded sessions, if any
+            try:
+                if 'geonode.upload' in settings.INSTALLED_APPS:
+                    from geonode.upload.models import Upload
+                    # Need to call delete one by one in order to invoke the
+                    #  'delete' overridden method
+                    for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                        try:
+                            if upload.upload_dir:
+                                if os.path.exists(upload.upload_dir):
+                                    shutil.rmtree(upload.upload_dir, ignore_errors=True)
+                        finally:
+                            upload.delete()
+            except Exception as e:
+                logger.exception(e)
+
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
@@ -1099,6 +1130,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
+        # Remove uploaded files, if any
+        ResourceBase.objects.cleanup_uploaded_files(resource_id=self.id)
+
+        try:
+            self.get_real_instance().styles.delete()
+            self.get_real_instance().default_style.delete()
+        except Exception as e:
+            logger.debug(f"Error occurred while trying to delete the Dataset Styles: {e}")
+
         super().delete(*args, **kwargs)
 
     def get_upload_session(self):
@@ -1321,6 +1361,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if not self.dirty_state:
             self.dirty_state = True
             ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
+
+    def set_processing_state(self, state):
+        if state == "PROCESSED":
+            self.clear_dirty_state()
 
     def clear_dirty_state(self):
         if self.dirty_state:
@@ -1581,11 +1625,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        from geonode.thumbs.utils import (
-            get_unique_upload_path,
-            thumb_path,
-            thumb_size,
-            remove_thumbs)
         upload_path = get_unique_upload_path(self, filename)
 
         try:
