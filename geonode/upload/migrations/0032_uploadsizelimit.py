@@ -6,14 +6,9 @@ from django.conf import settings
 
 UPLOAD_SIZE_LIMIT_OBJECTS = [
     {
-        "slug": "total_upload_size_sum",
+        "slug": "dataset_upload_size",
         "description": "The sum of sizes for the files of a dataset upload.",
         "max_size": settings.DEFAULT_MAX_UPLOAD_SIZE
-    },
-    {
-        "slug": "file_upload_handler",
-        "description": 'Request total size, validated before the upload process. This should be greater than "total_upload_size_sum".',
-        "max_size": settings.DEFAULT_MAX_BEFORE_UPLOAD_SIZE
     },
     {
         "slug": "document_upload_size",

@@ -105,7 +105,7 @@ class LayerUploadForm(forms.Form):
 
         if not base_file and "base_file" not in self.errors and "base_file_path" not in self.errors:
             logger.error("Base file must be a file or url.")
-            raise forms.ValidationError(_("Base file must be a file or url."))
+            raise ValidationError(_("Base file must be a file or url."))
 
         if self.errors:
             # Something already went wrong
@@ -149,7 +149,7 @@ class LayerUploadForm(forms.Form):
             file_field_value = cleaned_data.get(file_field[0], None)
             path_field_value = cleaned_data.get(file_field[1], None)
             if file_field_value and path_field_value:
-                raise forms.ValidationError(_(
+                raise ValidationError(_(
                     f"`{field_name}` field cannot have both a file and a path. Please choose one and try again."
                 ))
             if path_field_value:
@@ -165,7 +165,7 @@ class LayerUploadForm(forms.Form):
         max_size = self._get_uploads_max_size()
         total_size = self._get_uploaded_files_total_size(file_dict)
         if total_size > max_size:
-            raise forms.ValidationError(_(
+            raise ValidationError(_(
                 f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
             ))
 

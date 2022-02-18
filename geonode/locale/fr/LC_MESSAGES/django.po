@@ -6350,13 +6350,6 @@ msgstr ""
 
 msgid ""
 "To avoid errors, max size should be at least 2 times "
-"greater than the value of others size limits."
-msgstr ""
-"Pour éviter les erreurs, la taille maximale doit être au moins 2 fois "
-"supérieure à la valeur des autres limites de taille."
-
-msgid ""
-"To avoid errors, max size should be at least 2 times "
 "smaller than the value of 'file_upload_handler'."
 msgstr ""
 "Pour éviter les erreurs, la taille maximale doit être au moins 2 fois "
