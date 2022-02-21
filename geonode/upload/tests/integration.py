@@ -26,6 +26,7 @@ See the README.rst in this directory for details on running these tests.
 @todo only test_time seems to work correctly with database backend test settings
 """
 
+from unittest import mock
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os.path
@@ -673,6 +674,9 @@ class TestUpload(UploaderBase):
         # Set ``total_upload_size_sum`` to 3 and to ``file_upload_handler`` 2
         # In production ``total_upload_size_sum`` should not be greater than ``file_upload_handler``
         # It's used here to make sure that the uploadhandler is called
+        self.client.login()
+        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+
         total_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
             slug="total_upload_size_sum",
             defaults={
@@ -683,25 +687,17 @@ class TestUpload(UploaderBase):
         total_upload_size_limit_obj.max_size = 1024  # Greater than 689 bytes (test csv request size)
         total_upload_size_limit_obj.save()
 
-        handler_upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="file_upload_handler",
-            defaults={
-                "description": (
-                    "Request total size, validated before the upload process. "
-                    'This should be greater than "total_upload_size_sum".'
-                ),
-                "max_size": 2,
-            },
-        )
-        handler_upload_size_limit_obj.max_size = 2
-        handler_upload_size_limit_obj.save()
-
         csv_file = self.make_csv(
             ['lat', 'lon', 'thing'], {'lat': -100, 'lon': -40, 'thing': 'foo'})
-        with self.assertRaises(HTTPError) as error:
-            self.client.upload_file(csv_file)
-        expected_error = "Unexpected exception Expecting value: line 1 column 1 (char 0)"
-        self.assertIn(expected_error, error.exception.msg)
+
+        max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"
+
+        with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
+            max_size_mock.return_value = lambda x: 2
+            with self.assertRaises(HTTPError) as error:
+                self.client.upload_file(csv_file)
+            expected_error = "Unexpected exception Expecting value: line 1 column 1 (char 0)"
+            self.assertIn(expected_error, error.exception.msg)
 
     def test_final_step_for_csv_file(self):
         '''make sure a csv upload fails gracefully/normally when not activated'''

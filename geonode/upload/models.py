@@ -81,17 +81,6 @@ class UploadSizeLimitManager(models.Manager):
         )
         return max_size_db_obj
 
-    def create_default_limit_for_upload_handler(self):
-        max_size_db_obj = UploadSizeLimit.objects.create(
-            slug="file_upload_handler",
-            description=(
-                'Request total size, validated before the upload process. '
-                'This should be greater than "total_upload_size_sum".'
-            ),
-            max_size=settings.DEFAULT_MAX_BEFORE_UPLOAD_SIZE,
-        )
-        return max_size_db_obj
-
     def create_default_limit_with_slug(self, slug):
         max_size_db_obj = self.create(
             slug=slug,
