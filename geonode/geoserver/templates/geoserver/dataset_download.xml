@@ -11,7 +11,7 @@
         <wps:Input>
             <ows:Identifier>outputFormat</ows:Identifier>
             <wps:Data>
-                <wps:LiteralData>application/zip</wps:LiteralData>
+                <wps:LiteralData>{{download_format}}</wps:LiteralData>
             </wps:Data>
         </wps:Input>
       <wps:Input>
