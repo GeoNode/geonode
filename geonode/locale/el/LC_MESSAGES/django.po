@@ -843,9 +843,9 @@ msgid ""
 msgstr ""
 
 #, fuzzy
-#| msgid "Planning"
+#| msgid "Planning Cadastre"
 msgid "Planning Cadastre"
-msgstr "Σχεδιασμος"
+msgstr "Αστικος Σχεδιασμος"
 
 msgid ""
 "Settlements, anthropology, archaeology, education, traditional beliefs, "
@@ -893,7 +893,7 @@ msgid ""
 msgstr ""
 
 msgid "Utilities Communication"
-msgstr ""
+msgstr "Τηλεπικοινωνιες"
 
 msgid "Document Created"
 msgstr "Έγγραφο Δημιουργήθηκε"
