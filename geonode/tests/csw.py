@@ -109,15 +109,15 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw.catalogue.getrecords(typenames='csw:Record')
         self.assertEqual(
             csw.catalogue.results['matches'],
-            16,
-            'Expected 16 records')
+            15,
+            'Expected 15 records')
 
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
         self.assertEqual(
             csw.catalogue.results['matches'],
-            16,
-            'Expected 16 records against ISO typename')
+            15,
+            'Expected 15 records against ISO typename')
 
         # Make sure it currently counts both published and unpublished ones too
         try:
@@ -126,8 +126,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
             self.assertEqual(
                 csw.catalogue.results['matches'],
-                16,
-                'Expected 16 records against ISO typename')
+                15,
+                'Expected 15 records against ISO typename')
         finally:
             ResourceBase.objects.filter(is_published=False).update(is_published=True)
 
@@ -146,7 +146,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.title, "San Andres Y Providencia Location")
+        self.assertEqual(record.title, "san_andres_y_providencia_location")
 
         # test that the ISO abstract maps correctly in Dublin Core
         self.assertEqual(record.abstract, 'No abstract provided')
@@ -176,7 +176,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.identification.title, "San Andres Y Providencia Location")
+        self.assertEqual(record.identification.title, "san_andres_y_providencia_location")
 
         # test that the ISO abstract maps correctly in Dublin Core
         self.assertEqual(record.identification.abstract, 'No abstract provided')
@@ -239,7 +239,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             record = list(csw.catalogue.records.values())[0]
 
             # test that the ISO title maps correctly in FGDC
-            self.assertEqual(record.idinfo.citation.citeinfo['title'], "San Andres Y Providencia Location")
+            self.assertEqual(record.idinfo.citation.citeinfo['title'], "san_andres_y_providencia_location")
 
             # test that the ISO abstract maps correctly in FGDC
             self.assertEqual(record.idinfo.descript.abstract, 'No abstract provided')
