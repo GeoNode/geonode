@@ -513,43 +513,45 @@ class GeoServerResourceManager(ResourceManagerInterface):
         try:
             if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                 if isinstance(instance.get_real_instance(), Dataset):
-                    _disable_cache = []
-                    gf_services = _get_gf_services(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                    if instance.is_approved:
-                        # Set the GeoFence Rules (user = None)
-                        _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                        _members_group_group = Group.objects.get(name=_members_group_name)
-                        sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
-                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, _members_group_group, gf_services)
-                        _disable_cache.append(_disable_dataset_cache)
-                    if instance.is_published:
-                        # Set the GeoFence Rules (user = None)
-                        sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, None, gf_services)
-                        _disable_cache.append(_disable_dataset_cache)
+                    _is_remote_instance = hasattr(instance.get_real_instance(), 'subtype') and getattr(instance.get_real_instance(), 'subtype') in ['tileStore', 'remote']
+                    if not _is_remote_instance:
+                        _disable_cache = []
+                        gf_services = _get_gf_services(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+                        if instance.is_approved:
+                            # Set the GeoFence Rules (user = None)
+                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
+                            _members_group_group = Group.objects.get(name=_members_group_name)
+                            sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
+                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, _members_group_group, gf_services)
+                            _disable_cache.append(_disable_dataset_cache)
+                        if instance.is_published:
+                            # Set the GeoFence Rules (user = None)
+                            sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, None, gf_services)
+                            _disable_cache.append(_disable_dataset_cache)
 
-                    if _disable_cache and any(_disable_cache):
-                        filters = None
-                        formats = None
-                    else:
-                        filters = [{
-                            "styleParameterFilter": {
-                                "STYLES": ""
-                            }
-                        }]
-                        formats = [
-                            'application/json;type=utfgrid',
-                            'image/gif',
-                            'image/jpeg',
-                            'image/png',
-                            'image/png8',
-                            'image/vnd.jpeg-png',
-                            'image/vnd.jpeg-png8'
-                        ]
-                    try:
-                        toggle_dataset_cache(f'{get_dataset_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
-                    except Dataset.DoesNotExist:
-                        pass
+                        if _disable_cache and any(_disable_cache):
+                            filters = None
+                            formats = None
+                        else:
+                            filters = [{
+                                "styleParameterFilter": {
+                                    "STYLES": ""
+                                }
+                            }]
+                            formats = [
+                                'application/json;type=utfgrid',
+                                'image/gif',
+                                'image/jpeg',
+                                'image/png',
+                                'image/png8',
+                                'image/vnd.jpeg-png',
+                                'image/vnd.jpeg-png8'
+                            ]
+                        try:
+                            toggle_dataset_cache(f'{get_dataset_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
+                        except Dataset.DoesNotExist:
+                            pass
         except Exception as e:
             logger.exception(e)
         return permissions
