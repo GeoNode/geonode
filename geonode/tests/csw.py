@@ -109,8 +109,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw.catalogue.getrecords(typenames='csw:Record')
         self.assertEqual(
             csw.catalogue.results['matches'],
-            15,
-            'Expected 15 records')
+            16,
+            'Expected 16 records')
 
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
