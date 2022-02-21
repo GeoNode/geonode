@@ -460,7 +460,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(len(response_data), 5)
         self.assertEqual(response_data['total'], total_uploads - 1)
         # Pagination
-        self.assertEqual(len(response_data['uploads']), total_uploads - 1)
+        self.assertEqual(len(response_data['uploads']), 10)
         logger.debug(response_data)
 
     def test_rest_uploads(self):
@@ -622,7 +622,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         resp, data = self.rest_upload_file_by_path(fname)
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertIn('redirect_to', data)
 
         url = reverse('uploads-list')
         # Anonymous
