@@ -216,7 +216,7 @@ class Upload(models.Model):
         elif self.state == Upload.STATE_PROCESSED:
             return 100.0
         elif self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
-            if self.layer and self.layer.processed and self.layer.state == Upload.STATE_PROCESSED:
+            if self.layer and self.layer.processed and self.layer.instance_is_processed:
                 self.state = Upload.STATE_PROCESSED
                 self.save()
                 return 90.0
