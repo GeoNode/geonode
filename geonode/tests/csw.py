@@ -105,12 +105,19 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             urljoin('http://localhost:8001/', '/catalogue/csw')
         )
 
+        # get all records
+        csw.catalogue.getrecords(typenames='csw:Record')
+        self.assertEqual(
+            csw.catalogue.results['matches'],
+            16,
+            'Expected 16 records')
+
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
         self.assertEqual(
             csw.catalogue.results['matches'],
-            15,
-            'Expected 15 records against ISO typename')
+            16,
+            'Expected 16 records against ISO typename')
 
         # Make sure it currently counts both published and unpublished ones too
         try:
@@ -119,8 +126,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
             self.assertEqual(
                 csw.catalogue.results['matches'],
-                15,
-                'Expected 15 records against ISO typename')
+                16,
+                'Expected 16 records against ISO typename')
         finally:
             ResourceBase.objects.filter(is_published=False).update(is_published=True)
 
