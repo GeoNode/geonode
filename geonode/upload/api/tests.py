@@ -658,7 +658,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIsNotNone(upload_data['delete_url'])
 
             self.assertIn('uploadfile_set', upload_data)
-            self.assertEqual(len(upload_data['uploadfile_set']), 0)
         else:
             self.assertEqual(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['resume_url'])
@@ -675,7 +674,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('session', upload_data)
 
             self.assertIn('uploadfile_set', upload_data)
-            self.assertEqual(len(upload_data['uploadfile_set']), 1)
 
         self.assertNotIn('upload_dir', upload_data)
 

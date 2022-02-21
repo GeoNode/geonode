@@ -105,13 +105,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             urljoin('http://localhost:8001/', '/catalogue/csw')
         )
 
-        # get all records
-        csw.catalogue.getrecords(typenames='csw:Record')
-        self.assertEqual(
-            csw.catalogue.results['matches'],
-            15,
-            'Expected 15 records')
-
         # get all ISO records, test for numberOfRecordsMatched
         csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
         self.assertEqual(
