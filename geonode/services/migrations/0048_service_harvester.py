@@ -21,6 +21,7 @@ def set_harvester(apps, _):
         for _service in _services_with_empty_harvesters:
             service_harvester = Harvester.objects.create(
                 name=_service.name,
+                scheduling_enabled=False,
                 default_owner=get_user_model().objects.get(id=_service.owner.id),
                 remote_url=Service._get_service_url(_service),
                 harvester_type=enumerations.HARVESTER_TYPES[_service.type]

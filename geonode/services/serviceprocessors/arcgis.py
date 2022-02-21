@@ -29,7 +29,6 @@ from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify, safe
 
 from geonode import GeoNodeException
-from geonode.layers.models import Dataset
 from geonode.base.bbox_utils import BBOXHelper
 from geonode.harvesting.models import Harvester
 
@@ -124,6 +123,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             service_harvester = Harvester.objects.create(
                 name=self.name,
                 default_owner=owner,
+                scheduling_enabled=False,
                 remote_url=instance.service_url,
                 harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
                 harvester_type_specific_configuration=self.get_harvester_configuration_options()
@@ -176,27 +176,6 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         if not _ll['title'] and getattr(layer, 'name'):
             _ll['title'] = getattr(layer, 'name')
         return MapLayer(**_ll)
-
-    def _harvest_resource(self, dataset_meta, geonode_service):
-        resource_fields = self._get_indexed_dataset_fields(dataset_meta)
-        keywords = resource_fields.pop("keywords")
-        existance_test_qs = Dataset.objects.filter(
-            name=resource_fields["name"],
-            store=resource_fields["store"],
-            workspace=resource_fields["workspace"]
-        )
-        if existance_test_qs.exists():
-            raise RuntimeError(
-                f"Resource {resource_fields['name']} has already been harvested")
-        resource_fields["keywords"] = keywords
-        resource_fields["is_approved"] = True
-        resource_fields["is_published"] = True
-        if settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS:
-            resource_fields["is_approved"] = False
-            resource_fields["is_published"] = False
-        geonode_dataset = self._create_dataset(
-            geonode_service, **resource_fields)
-        self._create_dataset_service_link(geonode_service, geonode_dataset)
 
     def _offers_geonode_projection(self, srs):
         geonode_projection = getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857")
