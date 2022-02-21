@@ -301,7 +301,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
         response = self.client.get(reverse('document_upload'))
-        self.assertTrue('Upload Documents' in ensure_string(response.content))
+        self.assertEqual(response.status_code, 405)
 
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
