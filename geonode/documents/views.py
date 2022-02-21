@@ -137,7 +137,6 @@ def document_embed(request, docid):
 
 
 class DocumentUploadView(CreateView):
-    template_name = 'documents/document_upload.html'
     form_class = DocumentCreateForm
 
     def get_context_data(self, **kwargs):
