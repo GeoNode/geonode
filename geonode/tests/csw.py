@@ -146,7 +146,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.title, "San Andres Y Providencia Location")
+        self.assertEqual(record.title, "san_andres_y_providencia_location")
 
         # test that the ISO abstract maps correctly in Dublin Core
         self.assertEqual(record.abstract, 'No abstract provided')
@@ -176,7 +176,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.identification.title, "San Andres Y Providencia Location")
+        self.assertEqual(record.identification.title, "san_andres_y_providencia_location")
 
         # test that the ISO abstract maps correctly in Dublin Core
         self.assertEqual(record.identification.abstract, 'No abstract provided')
@@ -239,7 +239,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             record = list(csw.catalogue.records.values())[0]
 
             # test that the ISO title maps correctly in FGDC
-            self.assertEqual(record.idinfo.citation.citeinfo['title'], "San Andres Y Providencia Location")
+            self.assertEqual(record.idinfo.citation.citeinfo['title'], "san_andres_y_providencia_location")
 
             # test that the ISO abstract maps correctly in FGDC
             self.assertEqual(record.idinfo.descript.abstract, 'No abstract provided')
