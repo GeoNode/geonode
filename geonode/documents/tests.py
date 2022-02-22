@@ -301,7 +301,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
         response = self.client.get(reverse('document_upload'))
-        self.assertTrue('Upload Documents' in ensure_string(response.content))
+        self.assertEqual(response.status_code, 405)
 
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
@@ -314,14 +314,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         self.client.login(username='admin', password='admin')
         response = self.client.post(
-            reverse('document_upload'),
+            f"{reverse('document_upload')}?no__redirect=true",
             data={
-                'file': f,
+                'doc_file': f,
                 'title': 'uploaded_document',
                 'q': m.id,
-                'type': 'map',
+                'type': 'document',
                 'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
-            follow=True)
+            )
         self.assertEqual(response.status_code, 200)
 
     # Permissions Tests
