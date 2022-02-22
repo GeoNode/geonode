@@ -2673,7 +2673,7 @@ msgstr "E-mail"
 
 #: geonode/invitations/views.py:71
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Pozvánky boli úspešne odoslané na adresu '%(email)s'"
 
 #: geonode/invitations/views.py:78

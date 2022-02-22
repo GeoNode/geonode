@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-08 09:02+0300\n"
+"POT-Creation-Date: 2022-02-22 10:29+0100\n"
 "PO-Revision-Date: 2020-06-10 09:21+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -199,6 +199,12 @@ msgstr ""
 msgid "Regions"
 msgstr "المناطق"
 
+msgid ""
+"Additional metadata, must be in format [                {\"metadata_key\": "
+"\"metadata_value\"},                {\"metadata_key\": \"metadata_value"
+"\"}             ]"
+msgstr ""
+
 msgid "Group"
 msgstr "مجموعة"
 
@@ -210,25 +216,6 @@ msgstr "رخصة"
 
 msgid "Language"
 msgstr "لغة"
-
-msgid "User"
-msgid_plural "Users"
-msgstr[0] "المستخدم"
-msgstr[1] "المستخدم"
-msgstr[2] "مستخدمين/مستخدمان"
-msgstr[3] "مستخدمين"
-msgstr[4] "مستخدمين"
-msgstr[5] "مستخدمين"
-
-#, fuzzy
-#| msgid "Permissions"
-msgid "Permission Type"
-msgstr "أذونات"
-
-#, fuzzy
-#| msgid "Model"
-msgid "Mode"
-msgstr "نموذج"
 
 #, fuzzy
 #| msgid "Resources"
@@ -334,6 +321,11 @@ msgid ""
 "dataset"
 msgstr "شرح عام لمعرف منتجي البيانات حول نسب مجموعة البيانات"
 
+msgid ""
+"Additional metadata, must be in format [ {\"metadata_key\": \"metadata_value"
+"\"}, {\"metadata_key\": \"metadata_value\"} ]"
+msgstr ""
+
 msgid "title"
 msgstr "عنوان"
 
@@ -423,11 +415,27 @@ msgstr "متميز"
 msgid "Should this resource be advertised in home page?"
 msgstr "هل يجب الإعلان عن هذا المورد في الصفحة الرئيسية؟"
 
+#, fuzzy
+#| msgid "Is Published"
+msgid "Was Published"
+msgstr "تم نشره"
+
+msgid "Previous Published state."
+msgstr ""
+
 msgid "Is Published"
 msgstr "تم نشره"
 
 msgid "Should this resource be published and searchable?"
 msgstr "هل ينبغي نشر هذه الموارد والبحث فيها؟"
+
+#, fuzzy
+#| msgid "Map Approved"
+msgid "Was Approved"
+msgstr "خريطة موافق عليها"
+
+msgid "Previous Approved state."
+msgstr ""
 
 msgid "Approved"
 msgstr "موافق عليه"
@@ -439,12 +447,37 @@ msgid "Thumbnail url"
 msgstr "رابط الصورة المصغرة"
 
 #, fuzzy
+#| msgid "Thumbnail"
+msgid "Thumbnail path"
+msgstr "صورة مصغرة"
+
+#, fuzzy
 #| msgid "Dirty State"
 msgid "State"
 msgstr "الدولة القذرة"
 
 msgid "Hold the resource processing state."
 msgstr ""
+
+#, fuzzy
+#| msgid "Resources"
+msgid "Source Type"
+msgstr "موارد"
+
+msgid ""
+"The resource source type, which can be one of \"LOCAL\", \"REMOTE\" or "
+"\"COPYREMOTE\"."
+msgstr ""
+
+#, fuzzy
+#| msgid "Remote Services"
+msgid "Remote Service Typename"
+msgstr "الخدمات عن بعد"
+
+#, fuzzy
+#| msgid "Remove Remote Service"
+msgid "Name of the Remote Service if any."
+msgstr "إزالة الخدمة عن بعد"
 
 msgid "Dirty State"
 msgstr "الدولة القذرة"
@@ -462,6 +495,26 @@ msgstr "البيانات الوصفية"
 
 msgid "If true, will be excluded from search"
 msgstr ""
+
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Extra Metadata"
+msgstr "تعديل البيانات الوصفية"
+
+msgid "None"
+msgstr ""
+
+msgid "View"
+msgstr "View"
+
+msgid "Download"
+msgstr "تحميل"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Manage"
+msgstr "إدارة"
 
 msgid "For example \"kml\""
 msgstr "على سبيل المثال “kml”"
@@ -565,9 +618,6 @@ msgstr "في انتظار الموافقة"
 msgid "UNPUBLISHED"
 msgstr "غير منشورة"
 
-msgid "Create a Map"
-msgstr "إنشاء خريطة"
-
 msgid "View Map"
 msgstr "عرض الخريطة"
 
@@ -579,11 +629,6 @@ msgstr "إلغاء"
 
 msgid "Submit"
 msgstr "قدم"
-
-#, fuzzy
-#| msgid "Set permissions"
-msgid "Set Permissions"
-msgstr "تعيين صلاحيات"
 
 msgid "Discover the available datasets."
 msgstr "اكتشف مجموعات البيانات المتوفرة."
@@ -607,14 +652,14 @@ msgid "Auto generated thumbnail"
 msgstr "لا يمكن توليد الصورة المصغرة"
 
 #, fuzzy
-#| msgid "Create Layer"
-msgid "Raster Layer"
-msgstr "إنشاء طبقة"
+#| msgid "Featured Datasets"
+msgid "Raster Dataset"
+msgstr "مجموعات البيانات المميزة"
 
 #, fuzzy
-#| msgid "View Layer"
-msgid "Vector Layer"
-msgstr "عرض طبقة"
+#| msgid "Edit Metadata"
+msgid "Vector Dataset"
+msgstr "تعديل البيانات الوصفية"
 
 #, fuzzy
 #| msgid "Temporal Serie"
@@ -623,12 +668,12 @@ msgstr "سلسلة زمنية"
 
 #, fuzzy
 #| msgid "Remove Layers"
-msgid "Remote Layer"
+msgid "Remote Dataset"
 msgstr "إزالة الطبقات"
 
 #, fuzzy
 #| msgid "Create Layer"
-msgid "WMS Cascade Layer"
+msgid "WMS Cascade Dataset"
 msgstr "إنشاء طبقة"
 
 msgid "me"
@@ -666,6 +711,16 @@ msgstr "تم إعادة فحص الخدمة بنجاح"
 #| msgid "Some error occurred while trying to access the uploaded schema: %s"
 msgid "Error Occurred while Cloning the Resource: {e}"
 msgstr "حدث بعض الأخطاء أثناء محاولة الوصول إلى المخطط الذي تم تحميله: %s"
+
+#, fuzzy
+#| msgid "You are not permitted to view this document"
+msgid "You are not permitted to view this resource"
+msgstr "لا يسمح لك بعرض هذه الوثيقة"
+
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not allowed"
+msgstr "غير مزود"
 
 msgid "Resource Metadata"
 msgstr "بيانات تعريف المورد"
@@ -1017,11 +1072,19 @@ msgstr "زائف"
 msgid "Speed Rating"
 msgstr "تقييم سريع"
 
+msgid ""
+"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
+"smaller file."
+msgstr ""
+
 msgid "Link to"
 msgstr "رابط ل"
 
 msgid "File"
 msgstr "ملف"
+
+msgid "Permissions must be valid JSON."
+msgstr "يجب أن تكون الأذونات JSON صالحة."
 
 msgid "Document must be a file or url."
 msgstr "يجب أن يكون المستند ملفًا أو رابطًا."
@@ -1032,8 +1095,10 @@ msgstr "لا يمكن أن يحتوي المستند على ملف ورابط."
 msgid "This file type is not allowed"
 msgstr "لا يسمح هذا النوع من الملفات"
 
-msgid "Permissions must be valid JSON."
-msgstr "يجب أن تكون الأذونات JSON صالحة."
+#, fuzzy
+#| msgid "Document must be a file or url."
+msgid "Document must be a file."
+msgstr "يجب أن يكون المستند ملفًا أو رابطًا."
 
 msgid "The URL of the document if it is external."
 msgstr "عنوان المستند إذا كان خارجيًا."
@@ -1041,109 +1106,15 @@ msgstr "عنوان المستند إذا كان خارجيًا."
 msgid "URL"
 msgstr "رابط"
 
-msgid "Your browser does not support the audio element."
-msgstr ""
-
-msgid "Your browser does not support the video tag."
-msgstr ""
-
-msgid "Download the"
-msgstr "تحميل"
-
-msgid "document"
-msgstr "وثيقة"
-
-msgid "External Resource"
-msgstr "الموارد الخارجية"
-
-msgid "Rate this document"
-msgstr "قيم هذا المستند"
-
-msgid "Average Rating"
-msgstr "متوسط ​​التقييم"
-
-msgid "Metadata Detail"
-msgstr "تفاصيل البيانات الوصفية"
-
-msgid "Download Document"
-msgstr "تحميل الوثيقة"
-
-msgid "Request Download"
-msgstr "طلب تحميل"
-
-msgid "Edit Document"
-msgstr "تحرير المستند"
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "View Metadata"
+msgstr "تعديل البيانات الوصفية"
 
 #, fuzzy
-#| msgid "Request Download"
-msgid "Request change"
-msgstr "طلب تحميل"
-
-msgid "Wizard"
-msgstr "معالج"
-
-msgid "Advanced Edit"
-msgstr "تعديل متقدم"
-
-msgid "Document"
-msgid_plural "Documents"
-msgstr[0] "مستند"
-msgstr[1] "مستند"
-msgstr[2] "مستندان/مستندين"
-msgstr[3] "مستندات"
-msgstr[4] "مستندات"
-msgstr[5] "مستندات"
-
-msgid "Clone"
-msgstr ""
-
-msgid "Replace"
-msgstr "استبدال"
-
-msgid "Remove"
-msgstr "إزالة"
-
-msgid "Close"
-msgstr "أغلق"
-
-msgid "Download Metadata"
-msgstr "تحميل البيانات الوصفية"
-
-msgid "Full metadata"
-msgstr "بيانات وصفيه كامله"
-
-msgid "Text format"
-msgstr "تنسيق النص"
-
-msgid "HTML format"
-msgstr "تنسيق HTML"
-
-msgid "Standard Metadata - XML format"
-msgstr "البيانات الوصفية القياسية-تنسيق XML"
-
-msgid "Resources using this document"
-msgstr "الموارد باستخدام هذا المستند"
-
-msgid "List of resources using this document:"
-msgstr "قائمة الموارد باستخدام هذه الوثيقة:"
-
-msgid "This document is not related to any maps or layers"
-msgstr "لا تتعلق هذه الوثيقة إلى أي خرائط أو طبقات"
-
-msgid "Permissions"
-msgstr "أذونات"
-
-msgid "Click the button below to change the permissions of this document."
-msgstr "انقر فوق الزر أدناه لتغيير صلاحيات هذه الوثيقة."
-
-msgid "Change Document Permissions"
-msgstr "تغيير صلاحيات الوثيقة"
-
-msgid "Explore Documents"
-msgstr "تصفح المستندات"
-
-msgid "Upload Documents"
-msgstr "تحميل المستندات"
+#| msgid "Download"
+msgid "View and Download"
+msgstr "تحميل"
 
 #, python-format
 msgid "for %(document_title)s"
@@ -1179,6 +1150,9 @@ msgstr "التالي >>"
 msgid "Select an option"
 msgstr "حدد خيار"
 
+msgid "Explore Documents"
+msgstr "تصفح المستندات"
+
 msgid "Edit Metadata"
 msgstr "تعديل البيانات الوصفية"
 
@@ -1187,30 +1161,6 @@ msgstr "تعديل تفاصيل ل"
 
 msgid "Return to Document"
 msgstr "العودة إلى المستند"
-
-msgid "Deleting"
-msgstr "حذف"
-
-msgid "Remove Document"
-msgstr "حذف مستند"
-
-#, python-format
-msgid ""
-"\n"
-"          Are you sure you want to remove <a href="
-"\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
-"        "
-msgstr ""
-"\n"
-"هل تريد بالتأكيد إزالة <a href=\"%(document.get_absolute_url)s\">"
-"%(document_title)s</a>?\n"
-"        "
-
-msgid "Yes, I am sure"
-msgstr "نعم، أنا متأكد"
-
-msgid "No, don't remove it"
-msgstr "لا، لا تقم بإزالته"
 
 msgid "Replace Document"
 msgstr "استبدال الوثيقة"
@@ -1245,17 +1195,25 @@ msgstr "تحميل الملفات"
 msgid "Upload Document"
 msgstr "تحميل الوثيقة"
 
+msgid "Permissions"
+msgstr "أذونات"
+
+msgid "Upload Documents"
+msgstr "تحميل المستندات"
+
 msgid "Allowed document types"
 msgstr "أنواع المستندات المسموح بها"
 
 msgid "Done!"
 msgstr "منجز!"
 
-msgid "Edit"
-msgstr "تعديل"
-
 msgid "Settings"
 msgstr "الإعدادات"
+
+#, fuzzy
+#| msgid "Metadata"
+msgid "Advanced Metadata"
+msgstr "البيانات الوصفية"
 
 msgid "Mandatory"
 msgstr "إلزامي"
@@ -1311,11 +1269,6 @@ msgstr "غير مسموح لك بتعديل البيانات الأولية له
 
 msgid "You are not permitted to view this document"
 msgstr "لا يسمح لك بعرض هذه الوثيقة"
-
-#, fuzzy
-#| msgid "Not provided"
-msgid "Not allowed"
-msgstr "غير مزود"
 
 #, fuzzy
 #| msgid "Maps found"
@@ -1427,74 +1380,9 @@ msgstr "وقدم تصنيف للخريطة"
 msgid "Name"
 msgstr "اسم"
 
-msgid "zoom"
-msgstr "تكبير"
-
-msgid "projection"
-msgstr "إسقاط"
-
-msgid "center X"
-msgstr "مركز X"
-
-msgid "center Y"
-msgstr "مركز Y"
-
-msgid "Site URL"
-msgstr "رابط الموقع"
-
-#, fuzzy, python-format
-#| msgid "Resources"
-msgid "%(resource.type)s"
-msgstr "موارد"
-
-#, fuzzy
-#| msgid "Rate this Map"
-msgid "Rate this"
-msgstr "قيم هذه الخريطة"
-
-msgid "Editing Tools"
-msgstr "أدوات التعديل"
-
-msgid "Set"
-msgstr "وضع"
-
-msgid "View"
-msgstr "View"
-
-msgid "Specify which users can view or modify this map"
-msgstr "حدد المستخدمين الذين يمكنهم عرض هذه الخريطة أو تعديلها"
-
-#, fuzzy
-#| msgid "Change Permissions of this Map"
-msgid "Change Permissions of this"
-msgstr "تغيير أذونات هذه الخريطة"
-
-msgid "Embed Iframe"
-msgstr "تضمين Iframe"
-
-msgid ""
-"To embed this map, add the following code snippet and customize its "
-"properties (scrolling, width, height) based on your needs to your site"
-msgstr ""
-"لتضمين هذه الخريطة ، أضف مقتطف الشفرة التالي و عدل خصائصه (التمرير ، العرض ، "
-"الارتفاع) بناء علي احتياجاتك إلى موقعك"
-
-msgid "Download"
-msgstr "تحميل"
-
 #, python-format
 msgid "%(GEONODE_APPS_NAME)s"
 msgstr ""
-
-#, fuzzy
-#| msgid "Create a New Map"
-msgid "Create New"
-msgstr "إنشاء خريطة جديدة"
-
-#, fuzzy
-#| msgid "GeoExplorer"
-msgid "Explore"
-msgstr "GeoExplorer"
 
 #, python-format
 msgid "for %(map_title)s"
@@ -1524,7 +1412,7 @@ msgstr ""
 
 #, fuzzy
 #| msgid "Explore Maps"
-msgid "Explore Apps"
+msgid "Explore GeoApps"
 msgstr "تصفح الخرائط"
 
 #, python-format
@@ -1536,29 +1424,11 @@ msgstr ""
 "\n"
 "‫‫‫تعديل التفاصيل ل%(map_title)s"
 
-#, fuzzy
-#| msgid "Return to Map"
-msgid "Return to GeoApp"
-msgstr "العودة إلى الخريطة"
+msgid "Return to"
+msgstr "العودة إلى"
 
 msgid "New Map"
 msgstr "خريطة جديدة"
-
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "          Are you sure you want to remove <a href="
-#| "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
-#| "        "
-msgid ""
-"\n"
-"          Are you sure you want to remove <a href="
-"\"%(resource.get_absolute_url)s\">%(resource_title)s</a>?\n"
-"        "
-msgstr ""
-"\n"
-"هل تريد بالتأكيد إزالة <a href=\"%(layer.get_absolute_url)s\">"
-"%(layer_title)s</a>?"
 
 msgid "Other Settings"
 msgstr "اعدادات اخرى"
@@ -1596,19 +1466,25 @@ msgstr "لا يسمح لك بعرض هذه الخريطة."
 msgid "An unknown error has occured."
 msgstr "حدث خطأ غير معروف."
 
-msgid "Layer Uploaded"
+#, fuzzy
+#| msgid "Layer Uploaded"
+msgid "Dataset Uploaded"
 msgstr "طبقة محملة"
 
 msgid "A layer was uploaded"
 msgstr "تم رفع طبقة"
 
-msgid "Comment on Layer"
+#, fuzzy
+#| msgid "Comment on Layer"
+msgid "Comment on Dataset"
 msgstr "التعليق على طبقة"
 
 msgid "A layer was commented on"
 msgstr "تم التعليق على طبقة"
 
-msgid "Rating for Layer"
+#, fuzzy
+#| msgid "Rating for Layer"
+msgid "Rating for Dataset"
 msgstr "تصنيف لطبقة"
 
 msgid "A rating was given to a layer"
@@ -1642,11 +1518,6 @@ msgstr "نوع الهندسة"
 #| msgid "Featured Datasets"
 msgid "Create Dataset"
 msgstr "مجموعات البيانات المميزة"
-
-#, fuzzy
-#| msgid "Explore Layers"
-msgid "Explore Datasets"
-msgstr "تصفح الطبقات"
 
 #, fuzzy
 #| msgid "Create an empty layer"
@@ -1684,11 +1555,8 @@ msgstr "حدث اعتراض أثناء تحميل البيانات إلى PostGI
 msgid " Additionally an error occured during database cleanup"
 msgstr " بالإضافة إلى ذلك حدث خطأ أثناء تنظيف قاعدة البيانات"
 
-msgid "Invalid Projection. Layer is missing CRS!"
+msgid "Invalid Projection. Dataset is missing CRS!"
 msgstr ""
-
-msgid "GZIP"
-msgstr "GZIP"
 
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
@@ -1806,8 +1674,10 @@ msgstr "خلاصة الأنشطة ل"
 msgid "All"
 msgstr "جميع"
 
-msgid "Layers"
-msgstr "طبقات"
+#, fuzzy
+#| msgid "dataset"
+msgid "Datasets"
+msgstr "مجموعة البيانات"
 
 msgid "Maps"
 msgstr "خرائط"
@@ -1866,9 +1736,9 @@ msgid ""
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
 msgstr ""
-"‫‬\n"
-"‬\n"
-"‫‫‫هذه المجموعة هي<strong>%(access)s</strong>"
+"\n"
+"\n"
+"هذه المجموعة هي<strong>%(access)s</strong>"
 
 msgid "Anyone may join this group."
 msgstr "يمكن لأي شخص الانضمام إلى هذه المجموعة."
@@ -1897,6 +1767,9 @@ msgstr "تعديل أعضاء ل"
 msgid "Current Members"
 msgstr "الأعضاء الحاليين"
 
+msgid "Remove"
+msgstr "إزالة"
+
 msgid "Promote"
 msgstr "ترويج"
 
@@ -1918,9 +1791,15 @@ msgid ""
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
 msgstr ""
-"‫‬\n"
-"‬\n"
-"‫‫هل أنت متأكد أنك تريد إزالة المجموعة: %(group_title)s"
+"\n"
+"\n"
+"هل أنت متأكد أنك تريد إزالة المجموعة: %(group_title)s"
+
+msgid "Yes, I am sure"
+msgstr "نعم، أنا متأكد"
+
+msgid "No, don't remove it"
+msgstr "لا، لا تقم بإزالته"
 
 msgid "Remove Maps/Data from Group"
 msgstr "إزالة خرائط / بيانات من المجموعة"
@@ -1946,15 +1825,45 @@ msgstr "تعديل فئة المجموعة"
 msgid "Save"
 msgstr "حفظ"
 
+msgid "No ready harvesters have been selected, skipping..."
+msgstr ""
+
+msgid ""
+"No active refresh sessions have been found for the selected harvesters. "
+"Skipping..."
+msgstr ""
+
+msgid ""
+"No active harvesting sessions have been found for the selected harvesters. "
+"Skipping..."
+msgstr ""
+
+#, python-format
+msgid "Resetting status for harvester %(name)s..."
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "Harvestable resources"
+msgstr "حصاد الموارد ..."
+
 msgid "ready"
 msgstr ""
 
 msgid "updating-harvestable-resources"
 msgstr ""
 
+msgid "aborting-update-harvestable-resources"
+msgstr ""
+
 #, fuzzy
 #| msgid "Harvesting resources..."
 msgid "harvesting-resources"
+msgstr "حصاد الموارد ..."
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "aborting-harvesting-resources"
 msgstr "حصاد الموارد ..."
 
 msgid "checking-availability"
@@ -1975,8 +1884,12 @@ msgstr ""
 
 msgid ""
 "How often (in minutes) should new harvesting sessions be automatically "
-"scheduled? Setting this value to zero has the same effect as setting "
-"`scheduling_enabled` to False "
+"scheduled?"
+msgstr ""
+
+msgid ""
+"How often (in minutes) should new refresh sessions be automatically "
+"scheduled?"
 msgstr ""
 
 msgid "Whether the remote service is known to be available or not"
@@ -1996,11 +1909,6 @@ msgstr ""
 #| msgid "version of the cited resource"
 msgid "Default owner of harvested resources"
 msgstr "نسخة من الموارد المذكورة"
-
-#, fuzzy
-#| msgid "Set permissions on selected resources"
-msgid "Default access permissions of harvested resources"
-msgstr "تعيين الصلاحيات على الموارد المختارة"
 
 msgid ""
 "Should new resources be harvested automatically without explicit selection?"
@@ -2029,15 +1937,46 @@ msgid ""
 "the very least an empty object (i.e. {}) must be supplied."
 msgstr ""
 
-msgid "Periodic task used to configure harvest scheduling"
+msgid "pending"
 msgstr ""
 
-msgid "Periodic task used to check availability of the remote"
+msgid "on-going"
 msgstr ""
 
-#, python-brace-format
-msgid "Check availability of {self.name}"
+msgid "finished-all-ok"
 msgstr ""
+
+msgid "finished-all-failed"
+msgstr ""
+
+msgid "finished-some-failed"
+msgstr ""
+
+#, fuzzy
+#| msgid "Ratings"
+msgid "aborting"
+msgstr "تصنيفات"
+
+msgid "aborted"
+msgstr ""
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "harvesting"
+msgstr "حصاد الموارد ..."
+
+#, fuzzy
+#| msgid "Harvesting resources..."
+msgid "discover-harvestable-resources"
+msgstr "حصاد الموارد ..."
+
+msgid "Number of records being processed in this session"
+msgstr ""
+
+#, fuzzy
+#| msgid "All resources have already been imported"
+msgid "Number of records that have already been processed"
+msgstr "تم بالفعل استيراد جميع الموارد"
 
 msgid "updating-harvestable-resource"
 msgstr ""
@@ -2080,7 +2019,7 @@ msgid "E-mail"
 msgstr "بريد إلكتروني"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "تم إرسال الدعوات بنجاح إلى '%(email)s'"
 
 #, python-format
@@ -2091,34 +2030,54 @@ msgstr ""
 "عذرًا ، لم يكن من الممكن دعوة '%(email)s' بسبب المشكلة التالية: %(error)s "
 "(%(type)s)"
 
-msgid "Layer Created"
-msgstr "تم إنشاء طبقة"
+#, fuzzy
+#| msgid "dataset"
+msgid "Dataset Created"
+msgstr "مجموعة البيانات"
 
-msgid "A Layer was created"
+#, fuzzy
+#| msgid "A Layer was created"
+msgid "A Dataset was created"
 msgstr "‫تم إنشاء طبقة مسبقا"
 
-msgid "Layer Updated"
-msgstr "تم تحديث الطبقة"
+#, fuzzy
+#| msgid "dataset"
+msgid "Dataset Updated"
+msgstr "مجموعة البيانات"
 
-msgid "A Layer was updated"
+#, fuzzy
+#| msgid "A Layer was updated"
+msgid "A Dataset was updated"
 msgstr "تم تحديث الطبقة مسبقا"
 
-msgid "Layer Approved"
+#, fuzzy
+#| msgid "Layer Approved"
+msgid "Dataset Approved"
 msgstr "طبقة موافق عليها"
 
-msgid "A Layer was approved by a Manager"
+#, fuzzy
+#| msgid "A Layer was approved by a Manager"
+msgid "A Dataset was approved by a Manager"
 msgstr "تمت الموافقة على طبقة من قبل مدير"
 
-msgid "Layer Published"
-msgstr "طبقة نشرت"
+#, fuzzy
+#| msgid "Is Published"
+msgid "Dataset Published"
+msgstr "تم نشره"
 
-msgid "A Layer was published"
+#, fuzzy
+#| msgid "A Layer was published"
+msgid "A Dataset was published"
 msgstr "تم نشر طبقة"
 
-msgid "Layer Deleted"
-msgstr "تم حذف الطبقة"
+#, fuzzy
+#| msgid "Layer Default Style"
+msgid "Dataset Deleted"
+msgstr "طبقة النمط الافتراضي"
 
-msgid "A Layer was deleted"
+#, fuzzy
+#| msgid "A Layer was deleted"
+msgid "A Dataset was deleted"
 msgstr "تم حذف الطبقة مسبقا"
 
 msgid "YYYYMMDD"
@@ -2148,11 +2107,14 @@ msgstr "مساحة العمل"
 msgid "Store"
 msgstr "مخزن"
 
-msgid "Storetype"
-msgstr "نوع المخزن"
-
 msgid "Typename"
 msgstr "أكتب اسم"
+
+msgid "ows URL"
+msgstr "ows URL"
+
+msgid "The URL of the OWS service providing this layer, if any exists."
+msgstr ""
 
 msgid "Is mosaic?"
 msgstr "هل هي فسيفساء؟"
@@ -2168,6 +2130,11 @@ msgstr "وقت التعبير العادي"
 
 msgid "Elevation regex"
 msgstr "ارتفاع التعبير العادي"
+
+#, fuzzy
+#| msgid "Type"
+msgid "P-Type"
+msgstr "نوع"
 
 msgid "use featureinfo custom template?"
 msgstr ""
@@ -2323,6 +2290,11 @@ msgid "Append to Dataset"
 msgstr "العودة إلى الطبقة"
 
 #, fuzzy
+#| msgid "Explore Layers"
+msgid "Explore Datasets"
+msgstr "تصفح الطبقات"
+
+#, fuzzy
 #| msgid "Return to Layer"
 msgid "Return to Dataset"
 msgstr "العودة إلى الطبقة"
@@ -2332,15 +2304,6 @@ msgstr "الحفاظ على البيانات الوصفية لXML"
 
 msgid "Select the charset or leave default"
 msgstr "حدد محارف أو اترك الإفتراضي"
-
-msgid "Home"
-msgstr "الرئيسية"
-
-msgid "Change point of contact"
-msgstr "تغيير جهة اتصال"
-
-msgid "Assign a new point of contact to the layers below:"
-msgstr "تعيين نقطة اتصال جديدة إلى الطبقات التالية:"
 
 #, fuzzy
 #| msgid "Layer WMS GetCapabilities document"
@@ -2406,6 +2369,9 @@ msgstr "الانحراف المعياري"
 msgid "Rate this dataset"
 msgstr "قيم هذه الطبقة"
 
+msgid "Average Rating"
+msgstr "متوسط ​​التقييم"
+
 msgid "Analyze with"
 msgstr "تحليل ب"
 
@@ -2414,13 +2380,18 @@ msgstr "تحليل ب"
 msgid "Download Dataset"
 msgstr "تحميل"
 
+msgid "Request Download"
+msgstr "طلب تحميل"
+
 msgid "Images"
 msgstr "الصور"
 
 msgid "Data"
 msgstr "البيانات"
 
-msgid "Click to filter the layer"
+#, fuzzy
+#| msgid "Click to filter the layer"
+msgid "Click to filter the dataset"
 msgstr "انقر لتصفية الطبقة"
 
 msgid "Do you want to filter it?"
@@ -2465,8 +2436,30 @@ msgstr ""
 msgid "Warning"
 msgstr "تحذير"
 
-msgid "Edit Layer"
-msgstr "تعديل طبقة"
+msgid "Close"
+msgstr "أغلق"
+
+msgid "Metadata Detail"
+msgstr "تفاصيل البيانات الوصفية"
+
+#, fuzzy
+#| msgid "Request Download"
+msgid "Request change"
+msgstr "طلب تحميل"
+
+msgid "Editing Tools"
+msgstr "أدوات التعديل"
+
+#, fuzzy
+#| msgid "Edit data"
+msgid "Edit dataset"
+msgstr "تعديل البيانات"
+
+msgid "Wizard"
+msgstr "معالج"
+
+msgid "Advanced Edit"
+msgstr "تعديل متقدم"
 
 msgid "Upload Metadata"
 msgstr "تحميل البيانات الوصفية"
@@ -2474,30 +2467,32 @@ msgstr "تحميل البيانات الوصفية"
 msgid "Styles"
 msgstr "الأنماط"
 
-msgid "Manage"
-msgstr "إدارة"
+msgid "Set"
+msgstr "وضع"
 
-#, fuzzy
-#| msgid "Layer"
-msgid "Layer"
-msgid_plural "Layers"
-msgstr[0] "طبقة"
-msgstr[1] "طبقة"
-msgstr[2] "طبقة"
-msgstr[3] "طبقة"
-msgstr[4] "طبقة"
-msgstr[5] "طبقة"
+msgid "Clone"
+msgstr ""
+
+msgid "Replace"
+msgstr "استبدال"
 
 msgid "Append Data"
 msgstr ""
 
-msgid "Edit data"
-msgstr "تعديل البيانات"
+msgid "Download Metadata"
+msgstr "تحميل البيانات الوصفية"
 
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "View Dataset"
-msgstr "تعديل البيانات الوصفية"
+msgid "Full metadata"
+msgstr "بيانات وصفيه كامله"
+
+msgid "Text format"
+msgstr "تنسيق النص"
+
+msgid "HTML format"
+msgstr "تنسيق HTML"
+
+msgid "Standard Metadata - XML format"
+msgstr "البيانات الوصفية القياسية-تنسيق XML"
 
 msgid "Attribute Information"
 msgstr "معلومات السمة"
@@ -2524,53 +2519,44 @@ msgid "This dataset is not currently used in any maps."
 msgstr "لا تستخدم هذه الطبقة في الوقت الراهن في أي خرائط."
 
 #, fuzzy
-#| msgid "Create a map using this layer"
-msgid "Create a map using this dataset"
-msgstr "إنشاء خريطة باستخدام هذه الطبقة"
-
-#, fuzzy
-#| msgid "Click the button below to generate a new map based on this layer."
-msgid "Click the button below to generate a new map based on this dataset."
-msgstr "انقر فوق الزر أدناه لتوليد خريطة جديدة مبنية على هذه الطبقة."
-
-#, fuzzy
-#| msgid "Add the layer to an existing map"
-msgid "Add the dataset to an existing map"
-msgstr "أضف الطبقة إلى خريطة حالية"
-
-#, fuzzy
-#| msgid "Click the button below to add the layer to the selected map."
-msgid "Click the button below to add the dataset to the selected map."
-msgstr "انقر فوق الزر أدناه لإضافة الطبقة إلى الخريطة المحددة."
-
-msgid "Add to Map"
-msgstr "أضف إلى الخريطة"
-
-msgid "Documents related to this layer"
+#| msgid "Documents related to this layer"
+msgid "Documents related to this dataset"
 msgstr "الوثائق المتصلة بهذه الطبقة"
 
-msgid "List of documents related to this layer:"
+#, fuzzy
+#| msgid "List of documents related to this layer:"
+msgid "List of documents related to this dataset:"
 msgstr "قائمة الوثائق ذات الصلة لهذه الطبقة:"
 
+#, fuzzy
+#| msgid ""
+#| "The following styles are associated with this layer. Choose a style to "
+#| "view it in the preview map."
 msgid ""
-"The following styles are associated with this layer. Choose a style to view "
-"it in the preview map."
+"The following styles are associated with this dataset. Choose a style to "
+"view it in the preview map."
 msgstr ""
 "ترتبط الأنماط التالية مع هذه الطبقة. اختر نمط لمشاهدته في معاينة الخريطة."
 
 msgid "(default style)"
 msgstr "(أسلوب إفتراضي)"
 
-msgid "No styles associated with this layer"
+#, fuzzy
+#| msgid "No styles associated with this layer"
+msgid "No styles associated with this dataset"
 msgstr "لا توجد أنماط مرتبطة بهذه الطبقة"
 
-msgid "External service layer"
+#, fuzzy
+#| msgid "External service layer"
+msgid "External service dataset"
 msgstr "طبقة الخدمة الخارجية"
 
 msgid "Source"
 msgstr "مصدر"
 
-msgid "Refresh Attributes and Statistics of this layer"
+#, fuzzy
+#| msgid "Refresh Attributes and Statistics of this layer"
+msgid "Refresh Attributes and Statistics of this dataset"
 msgstr "تحديث سمات وإحصائيات هذه الطبقة"
 
 #, fuzzy
@@ -2590,10 +2576,14 @@ msgstr ""
 msgid "Refresh Attributes and Statistics"
 msgstr "تحديث السمات والإحصائيات"
 
-msgid "Clear the Server Cache of this layer"
+#, fuzzy
+#| msgid "Clear the Server Cache of this layer"
+msgid "Clear the Server Cache of this dataset"
 msgstr "امسح ذاكرة التخزين المؤقتة للخادم في هذه الطبقة"
 
-msgid "Click the button below to wipe the tile-cache of this layer."
+#, fuzzy
+#| msgid "Click the button below to wipe the tile-cache of this layer."
+msgid "Click the button below to wipe the tile-cache of this dataset."
 msgstr "انقر فوق الزر أدناه لمسح ذاكرة التخزين المؤقت للبلاط لهذه الطبقة."
 
 #, fuzzy
@@ -2601,7 +2591,9 @@ msgstr "انقر فوق الزر أدناه لمسح ذاكرة التخزين �
 msgid "Empty Tiled-Dataset Cache"
 msgstr "ذاكرة التخزين المؤقت لطبقةالبلاط فارغة"
 
-msgid "Click the button below to change the permissions of this layer."
+#, fuzzy
+#| msgid "Click the button below to change the permissions of this layer."
+msgid "Click the button below to change the permissions of this dataset."
 msgstr "انقر فوق الزر أدناه لتغيير الأذونات من هذه الطبقة."
 
 #, fuzzy
@@ -2612,11 +2604,16 @@ msgstr "غير صلاحيات طبقة"
 msgid "Remove Mosaic Granules"
 msgstr "إزالة حبيبات الفسيفساء"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "          Are you sure you want to remove Granule %(granule_id)s of the "
+#| "Mosaic <a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+#| "        "
 msgid ""
 "\n"
 "          Are you sure you want to remove Granule %(granule_id)s of the "
-"Mosaic <a href=\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+"Mosaic <a href=\"%(dataset.get_absolute_url)s\">%(dataset_title)s</a>?\n"
 "        "
 msgstr ""
 "\n"
@@ -2626,16 +2623,14 @@ msgstr ""
 msgid "This action affects the following maps:"
 msgstr "هذا العمل يؤثر على الخرائط التالية:"
 
-msgid "No maps are using this layer"
+#, fuzzy
+#| msgid "No maps are using this layer"
+msgid "No maps are using this dataset"
 msgstr "لا خرائط تستخدم هذه الطبقة"
 
-#, fuzzy
-#| msgid "Upload Metadata"
-msgid "Upload Datasets"
-msgstr "تحميل البيانات الوصفية"
-
-#, python-format
-msgid "for %(layer_title)s"
+#, fuzzy, python-format
+#| msgid "for %(layer_title)s"
+msgid "for %(dataset_title)s"
 msgstr "لـ%(layer_title)s"
 
 msgid ""
@@ -2661,10 +2656,14 @@ msgstr ""
 "‬\n"
 "‫           ربما فقدت بعض البيانات الوصفية الأصلية."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "        Editing details for %(layer_title)s\n"
+#| "      "
 msgid ""
 "\n"
-"        Editing details for %(layer_title)s\n"
+"        Editing details for %(dataset_title)s\n"
 "      "
 msgstr ""
 "‫\n"
@@ -2699,21 +2698,8 @@ msgstr "تحميل البيانات الوصفية للطبقة"
 msgid "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 msgstr "(XML - ISO, FGDC, ebRIM, Dublin Core)"
 
-#, fuzzy
-#| msgid "Remove Layers"
-msgid "Remove Datasets"
-msgstr "إزالة الطبقات"
-
-#, python-format
-msgid ""
-"\n"
-"          Are you sure you want to remove <a href="
-"\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
-"        "
-msgstr ""
-"\n"
-"هل تريد بالتأكيد إزالة <a href=\"%(layer.get_absolute_url)s\">"
-"%(layer_title)s</a>?"
+msgid "Click the button below to change the permissions of this layer."
+msgstr "انقر فوق الزر أدناه لتغيير الأذونات من هذه الطبقة."
 
 #, fuzzy
 #| msgid "Replace Layer"
@@ -2723,17 +2709,21 @@ msgstr "استبدال طبقة"
 msgid "Manage Styles"
 msgstr "إدارة أنماط"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "      Manage Available Styles for <a href=\"{{ layer_url }}\">"
+#| "%(layer_title)s</a>\n"
+#| "    "
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
-"%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"%(dataset_url)s\">"
+"%(dataset_title)s</a>\n"
 "    "
 msgstr ""
 "‫\n"
 "‬\n"
-"‫‫إدارة الأنماط المتاحة ل <a href=\"{{ layer_url }}\">%(layer_title)s</"
-"a> "
+"‫‫إدارة الأنماط المتاحة ل <a href=\"{{ layer_url }}\">%(layer_title)s</a> "
 
 #, fuzzy
 #| msgid "Layer Default Style"
@@ -2752,9 +2742,6 @@ msgstr ""
 
 msgid "Update Available Styles"
 msgstr "تحديث الأنماط المتوفرة"
-
-msgid "Return to Layer"
-msgstr "العودة إلى الطبقة"
 
 #, fuzzy
 #| msgid "Upload Layer Style"
@@ -2775,607 +2762,6 @@ msgstr "معاينة"
 
 msgid "Dataset Attributes"
 msgstr "سمات مجموعة البيانات"
-
-#, fuzzy
-#| msgid "Upload Metadata"
-msgid "Upload Dataset"
-msgstr "تحميل البيانات الوصفية"
-
-#, fuzzy
-#| msgid "Upload Metadata"
-msgid "Upload status"
-msgstr "تحميل البيانات الوصفية"
-
-msgid ""
-"This file needs additional configuration to complete the upload process. "
-"Please click on the button to fill the required configuration"
-msgstr ""
-
-msgid "Delete"
-msgstr "حذف"
-
-#, fuzzy
-#| msgid "Upload Document"
-msgid "Upload process completed"
-msgstr "تحميل الوثيقة"
-
-msgid ""
-"The upload process cannot be completed because the original file is no more "
-"available"
-msgstr ""
-
-#, fuzzy
-#| msgid "Create"
-msgid "Created"
-msgstr "إنشاء"
-
-msgid "Progress"
-msgstr ""
-
-msgid "page"
-msgstr "صفحة"
-
-msgid "of"
-msgstr "من"
-
-#, fuzzy
-#| msgid "Incomplete Uploads"
-msgid "Delete incomplete upload"
-msgstr "عمليات التحميل غير مكتملة"
-
-#, fuzzy
-#| msgid "Are you sure you want to delete this upload?"
-msgid "Are you sure you want to remove this incomplete upload?"
-msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
-
-#, fuzzy
-#| msgid "Upload Layer Step: Set SRS"
-msgid "Upload Dataset Step: Set SRS"
-msgstr "خطوة تحميل طبقة: تعيين نظام المرجع المكاني"
-
-msgid "Provide CRS for "
-msgstr "توفيرنظام تنسيق مرجعي ل "
-
-msgid "Coordinate Reference System"
-msgstr "تنسيق النظام المرجعي"
-
-#, fuzzy
-#| msgid ""
-#| "\n"
-#| "                A coordinate reference system for this layer could not be "
-#| "determined.\n"
-#| "                Locate or enter the appropriate ESPG code for this layer "
-#| "below.\n"
-#| "                One way to do this is do visit:\n"
-#| "                <a href=\"http://prj2epsg.org/search\" target=\"_"
-#| "\">prj2epsg</a>\n"
-#| "                and enter the following:\n"
-#| "            "
-msgid ""
-"\n"
-"                A coordinate reference system for this dataset could not be "
-"determined.\n"
-"                Locate or enter the appropriate ESPG code for this dataset "
-"below.\n"
-"                One way to do this is do visit:\n"
-"                <a href=\"http://prj2epsg.org/search\" target=\"_"
-"\">prj2epsg</a>\n"
-"                and enter the following:\n"
-"            "
-msgstr ""
-"\n"
-"‫‫لا يمكن تحديد وتنسيق نظام مرجعي لهذه الطبقة.\n"
-" حدد موقع أو أدخل رمز ESPG مناسب لهذه الطبقة أدناه.\n"
-" طريقة واحدة للقيام بذلك هي القيام بزيارة : \n"
-"<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
-" وأدخل ما يلي"
-
-msgid "Native CRS could not be found!"
-msgstr "لا يمكن العثور على CRS الأصلي!"
-
-msgid "Provide EPSG code for Source SRS"
-msgstr "توفير رمز EPSG للمصدر SRS"
-
-msgid "EPSG Code (Source SRS)"
-msgstr "كود EPSG (مصدر نظام المرجع المكاني)"
-
-msgid "Select a Source SRS"
-msgstr "حدد نظام المصدر المكاني المرجعي"
-
-msgid ""
-"Source SRS EPSG Code is mandatory and represents the native data Spatial "
-"Reference System.\n"
-"                    <br><br>\n"
-"                    This must be coherent with the Geometry values (lon/lat "
-"coordinates as an instance) stored on the geospatial dataset.\n"
-"                    <br><br>\n"
-"                    If not specified on the geospatial data itself, it must "
-"be manually declared by the operator.\n"
-"                    <br><br>\n"
-"                    More information is provided at the bottom of the page "
-"in the \"Additional Help\" sections.\n"
-"                    "
-msgstr ""
-"شفرة مصدر SRS EPSG إلزامية وتمثل نظام البيانات المكانية المرجعي الأصلي.\n"
-"                    <br><br>\n"
-"هذا يجب أن يكون متسقا مع القيم الهندسة (خط الطول / العرض كمثال) المخزنة على "
-"مجموعة البيانات الجغرافية المكانية.\n"
-"                    <br><br>\n"
-"إذا لم يتم تحديدها على البيانات الجغرافية المكانية نفسها ، فيجب أن يعلن عنها "
-"المشغل يدويًا.\n"
-"                    <br><br>\n"
-"يتم توفير المزيد من المعلومات في أسفل الصفحة في قسم \"المساعدة الإضافية\"."
-
-msgid "Next"
-msgstr "التالي"
-
-msgid "Advanced Options"
-msgstr "خيارات متقدمة"
-
-msgid "Target SRS"
-msgstr "النظام المرجعي المكاني المستهدف"
-
-msgid "EPSG Code (Target SRS)"
-msgstr "كود EPSG (نظام المرجع المكاني المستهدف)"
-
-msgid "Select a Target SRS"
-msgstr "حدد نظام المرجع المكاني المستهدف"
-
-msgid "leave it empty to use only Source SRS"
-msgstr "اتركه فارغًا لاستخدام مصدر SRS فقط"
-
-msgid "Additional Help"
-msgstr "مساعدة إضافية"
-
-msgid "Spatial Reference System"
-msgstr "نظام المرجع المكاني"
-
-msgid ""
-"A spatial reference system (SRS) or coordinate reference system (CRS) is a "
-"coordinate-based local,\n"
-"                            regional or global system used to locate "
-"geographical entities. A spatial reference system defines a specific map\n"
-"                            projection, as well as transformations between "
-"different spatial reference systems. Spatial reference systems are\n"
-"                            defined by the OGC's Simple feature access using "
-"well-known text, and support has been implemented by several\n"
-"                            standards-based geographic information systems. "
-"Spatial reference systems can be referred to using a SRID integer,\n"
-"                            including EPSG codes defined by the "
-"International Association of Oil and Gas Producers.\n"
-"                            It is specified in ISO 19111:2007 Geographic "
-"information—Spatial referencing by coordinates, also published as\n"
-"                            OGC Abstract Specification, Topic 2: Spatial "
-"referencing by coordinate."
-msgstr ""
-"نظام المرجع المكاني (SRS) أو نظام الإحالة المرجعي (CRS) هو نظام إحداثي قائم "
-"محلي ،\n"
-"                             إقليمي أو عالمي يستخدم لتحديد مواقع الكيانات "
-"الجغرافية.يحدد نظام المرجع المكاني خريطة معينة\n"
-"                             الإسقاط ، وكذلك التحولات بين أنظمة مرجعية "
-"مكانية مختلفة. النظم المرجعية المكانية \n"
-"                             تم تعريفها بواسطة الوصول البسيط إلى ميزة OGC "
-"باستخدام نص مشهور ، وتم تنفيذ الدعم من قِبل عدة \n"
-"                             نظم معلومات جغرافية قائمة على معايير. يمكن "
-"الرجوع إلى أنظمة المرجع المكاني باستخدام عدد صحيح SRID ،\n"
-"                             بما في ذلك رموز EPSG المحددة من قبل الرابطة "
-"الدولية لمنتجي النفط والغاز.\n"
-"تم تحديده في ISO 19111: 2007 المعلومات الجغرافية — المرجع المكاني "
-"بالإحداثيات ، كما تم نشره كـ\n"
-"                             مواصفات مجردةOGC ، الموضوع 2: الإحالة المكانية "
-"بالتنسيق."
-
-msgid "Identifiers"
-msgstr "معرفات"
-
-msgid ""
-"\n"
-"                        A Spatial Reference System Identifier (SRID) is a "
-"unique value used to unambiguously identify projected, unprojected,\n"
-"                        and local spatial coordinate system definitions. "
-"These coordinate systems form the heart of all GIS applications.\n"
-"\n"
-"                        Virtually all major spatial vendors have created "
-"their own SRID implementation or refer to those of an authority,\n"
-"                        such as the European Petroleum Survey Group (EPSG).\n"
-"                        "
-msgstr ""
-"\n"
-"معرف النظام المرجعي المكاني (SRID) هو قيمة فريدة تُستخدم في التعرف بشكل لا "
-"لبس فيه على ما هو متوقع أو غير متوقع ،\n"
-"   و تعريفات نظام التنسيق المكاني المحلي . تشكل أنظمة الإحداثيات هذه قلب "
-"جميع تطبيقات نظم المعلومات الجغرافية.\n"
-"\n"
-"عملياً ، قام جميع البائعين المكانيين الرئيسيين بإنشاء تطبيق SRID الخاص بهم أو "
-"الرجوع إلى تلك الخاصة بالسلطة ،\n"
-"                         مثل المجموعة الأوروبية لمسح النفط (EPSG)."
-
-msgid ""
-"NOTE: As of 2005 the EPSG SRID values are now maintained by the "
-"International\n"
-"                            Association of Oil & Gas Producers (OGP) "
-"Surveying & Positioning Committee"
-msgstr ""
-"ملاحظة: اعتبارًا من عام 2005 ، يتم الاحتفاظ بقيم EPSG SRID من قبل الجنة "
-"الدولية\n"
-"                             للمسح وتحديد المواقع التابعة لمنتجي النفط والغاز"
-
-msgid ""
-"\n"
-"                        SRIDs are the primary key for the Open Geospatial "
-"Consortium (OGC) spatial_ref_sys metadata table for the Simple\n"
-"                        Features for SQL Specification, Versions 1.1 and "
-"1.2, which is defined as follows:\n"
-"                        "
-msgstr ""
-"\n"
-"تمثل SRIDs المفاتيح الرئيسية لمجموعة البيانات الوصفية المكانية المفتوحة "
-"(OGC) spatial_ref_sys\n"
-"                         للميزات البسيطة لمواصفات SQL ، الإصدارات 1.1 و "
-"1.2 ، والتي يتم تعريفها على النحو التالي:"
-
-msgid ""
-"\n"
-"                        In spatially enabled databases (such as IBM DB2, IBM "
-"Informix, Microsoft SQL Server, MySQL, Oracle RDBMS, Teradata, PostGIS and\n"
-"                        SQL Anywhere), SRIDs are used to uniquely identify "
-"the coordinate systems used to define columns of spatial data or individual\n"
-"                        spatial objects in a spatial column (depending on "
-"the spatial implementation). SRIDs are typically associated with a well "
-"known\n"
-"                        text (WKT) string definition of the coordinate "
-"system (SRTEXT, above). From the Well Known Text Wikipedia page\n"
-"                        "
-msgstr ""
-"\n"
-"في قواعد البيانات الممكنة مكانيًا (مثل IBM DB2 و IBM Informix و Microsoft SQL "
-"Server و MySQL و Oracle RDBMS و Teradata و PostGIS و\n"
-"                         SQL في أي مكان) ، وتستخدم SRIDs فقط لتحديد أنظمة "
-"الإحداثيات المستخدمة لتحديد أعمدة البيانات المكانية أو \n"
-"                         كائنات مكانية فردية في عمود مكاني (حسب التطبيق "
-"المكاني). عادة ما ترتبط SRIDs مع \n"
-"                         تعريف سلسلة نص معروفة (WKT) لنظام الإحداثيات "
-"(SRTEXT ، أعلاه). من النص المعروف في صفحة ويكيبيديا."
-
-msgid ""
-"“A WKT string for a spatial reference system describes the datum, geoid, "
-"coordinate system,\n"
-"                            and map projection of the spatial objects”."
-msgstr ""
-"\"سلسلة WKT تصف النظام ، الجيوديسي ، الإحداثي ،\n"
-"                             وخريطة الإسقاط للأجسام المكانية \" لنظام مرجعي "
-"مكاني."
-
-msgid ""
-"\n"
-"                        Here are two common coordinate systems with their "
-"EPSG SRID value followed by their well known text:\n"
-"                        "
-msgstr ""
-"\n"
-"فيما يلي نظامان إحداثيان شائعان بقيمة EPSG SRID يتبعهما نصهما المشهور:"
-
-msgid ""
-"\n"
-"                        UTM, Zone 17N, NAD27 — SRID 2029\n"
-"                        "
-msgstr ""
-"\n"
-"UTM ، المنطقة 17N ، NAD27 - SRID 2029"
-
-msgid ""
-"\n"
-"                        WGS84 — SRID 4326\n"
-"                        "
-msgstr ""
-"\n"
-"                        WGS84 — SRID 4326\n"
-"                        "
-
-msgid ""
-"\n"
-"                        SRID values associated with spatial data can be used "
-"to constrain spatial operations — for instance, spatial operations cannot be "
-"performed\n"
-"                        between spatial objects with differing SRIDs in some "
-"systems, or trigger coordinate system transformations between spatial "
-"objects in others.\n"
-"                        "
-msgstr ""
-"\n"
-"يمكن استخدام قيم SRID المرتبطة بالبيانات المكانية لتقييد العمليات المكانية - "
-"على سبيل المثال ، لا يمكن تنفيذ العمليات المكانية\n"
-"                         بين الكائنات المكانية ذات SRIDs المختلفة في بعض "
-"الأنظمة ، أو تشغيل تحويلات تنسيق النظام بين الكائنات المكانية في أنظمة أخرى."
-
-msgid ""
-"Source SRS EPSG Code is mandatory and represents the native data Spatial "
-"Reference System. This must be coherent with the\n"
-"                            Geometry values (lon/lat coordinates as an "
-"instance) stored on the geospatial dataset. If not specified on the "
-"geospatial data itself, it\n"
-"                            must be manually declared by the operator."
-msgstr ""
-"شفرة المصدر SRS EPSG إلزامية وتمثل نظام البيانات المكانية المرجعي الأصلي. "
-"هذا يجب أن يكون متماسكاً مع\n"
-"                             القيم الهندسية (إحداثيات خطوط الطول / العرض "
-"كنسخة) المخزنة على مجموعة البيانات الجغرافية المكانية. إذا لم يتم تحديدها "
-"على البيانات الجغرافية المكانية نفسها ، فإنه\n"
-"                             يجب أن تعلن يدويا من قبل المشغل."
-
-msgid ""
-"Target SRS EPSG Code is optional. This must be used only if we need to re-"
-"project the coordinates from Source SRS to another one.\n"
-"                        "
-msgstr ""
-"رمز الهدف من SRS EPSG اختياري. يجب استخدام هذا فقط إذا احتجنا إلى إعادة عرض "
-"الإحداثيات من مصدر SRS إلى آخر.\n"
-"                        "
-
-#, fuzzy
-#| msgid "Upload Layer Step: CSV Field Mapping"
-msgid "Upload Dataset Step: CSV Field Mapping"
-msgstr "خطوة تحميل طبقة: تعيين حقل CSV"
-
-msgid "Geospatial Data"
-msgstr "بيانات الجغرافية"
-
-msgid ""
-"Please indicate which attributes contain the latitude and longitude "
-"coordinates in the CSV data."
-msgstr ""
-"يرجى توضيح السمات التي تحتوي على خطوط العرض وإحداثيات خطوط الطول في بيانات "
-"CSV."
-
-msgid ""
-"With this data, GeoNode was able to guess which attributes contain the\n"
-"                latitude and longitude coordinates, but please confirm that "
-"the correct\n"
-"                attributes are selected below."
-msgstr ""
-"باستخدام هذه البيانات ، تمكنت GeoNode من تخمين السمات التي تحتوي على\n"
-"                 إحداثيات خطوط الطول والعرض ، ولكن يرجى التأكد من صحة ذلك\n"
-"                 تم تحديد السمات أدناه."
-
-msgid "Select an attribute"
-msgstr "حدد سمة"
-
-msgid ""
-"We did not detect columns that could be used for the latitude and "
-"longitude.\n"
-"        Please verify that you have two columns in your csv file that can be "
-"used for\n"
-"        the latitude and longitude."
-msgstr ""
-"لم نكتشف الأعمدة التي يمكن استخدامها لخطوط الطول والعرض.\n"
-"         يرجى التحقق من وجود عمودين في ملف CSV الخاص بك والذي يمكن استخدامه\n"
-"         لخطوط الطول والعرض."
-
-msgid "Your upload is either complete or you haven't resumed an earlier one."
-msgstr "التحميل إما مكتمل أو لم تستأنف عملية تحميل سابقة."
-
-msgid "Return to"
-msgstr "العودة إلى"
-
-msgid "Upload Form"
-msgstr "نموذج التحميل"
-
-#, fuzzy
-#| msgid "Upload Layer Step: Time"
-msgid "Upload Dataset Step: Time"
-msgstr "خطوة تحميل طبقة: الوقت"
-
-msgid "Inspect data for "
-msgstr "فحص البيانات ل "
-
-msgid "Configure as Time-Series"
-msgstr "تكوين كسلسلة زمنية"
-
-msgid ""
-"Toggling this selector allows you to configure (or not) this data as a time "
-"series; in this case you will also have to select an attribute\n"
-"                      to drive the time dimension.\n"
-"                      <br><br>\n"
-"                      If GeoNode is not able to parse any of the values for "
-"the selected attribute red markers will appear to highlight the problems.\n"
-"                      <br><br>\n"
-"                      More information is provided at the bottom of the page "
-"in the \"Additional Help\" sections.\n"
-"                      "
-msgstr ""
-"بالنقر على هذا المحدد يسمح لك تهيئة (أو عدم) هذه البيانات كسلسلة زمنية ؛ في "
-"هذه الحالة ، سيكون عليك أيضًا تحديد سمة\n"
-"                       لدفع البعد الزمني.\n"
-"                       <BR> <BR>\n"
-"                       إذا لم يكن GeoNode قادراً على تحليل أي من قيم السمة "
-"المحددة ، ستظهر العلامات الحمراء لتسليط الضوء على المشاكل.\n"
-"                       <BR> <BR>\n"
-"                       يتم توفير المزيد من المعلومات في أسفل الصفحة في قسم "
-"\"المساعدة الإضافية\"."
-
-msgid "No"
-msgstr "لا"
-
-msgid "Use an existing timestamp attribute in the data"
-msgstr "استخدم سمة الطابع الزمني الموجودة في البيانات"
-
-msgid "Yes: with an existing Time-Attribute"
-msgstr "نعم: مع سمة الوقت الحالية"
-
-msgid ""
-"Yes: by converting data to a timestamp using standard date/time "
-"representation"
-msgstr ""
-"نعم: عن طريق تحويل البيانات إلى طابع زمني باستخدام تمثيل التاريخ / الوقت "
-"القياسي"
-
-msgid "Convert a number field into a year"
-msgstr "تحويل حقل الرقم إلى سنة"
-
-msgid "Yes: by converting a number as Year"
-msgstr "نعم: عن طريق تحويل رقم كسنة"
-
-msgid ""
-"Convert data to a timestamp using standard date/time representation or a "
-"custom format"
-msgstr ""
-"تحويل البيانات إلى طابع زمني باستخدام تمثيل التاريخ / الوقت القياسي أو تنسيق "
-"مخصص"
-
-msgid "Start Importer"
-msgstr "بدء المستورد"
-
-msgid "Date Format"
-msgstr "تنسيق التاريخ"
-
-msgid "Text Attribute Date Format"
-msgstr "تنسيق النص سمة التاريخ"
-
-msgid "Best Guess"
-msgstr "أفضل تخمين"
-
-msgid "Custom"
-msgstr "مخصص"
-
-msgid "Optional End-Time attribute"
-msgstr "سمة نهاية الوقت إختيارية"
-
-msgid "Existing Time Attribute"
-msgstr "سمة الوقت الحالية"
-
-msgid "Convert Text Attribute"
-msgstr "تحويل سمة النص"
-
-msgid "Convert Number (As Year)"
-msgstr "تحويل الرقم (كسنة)"
-
-msgid "Time attribute Presentation"
-msgstr "عرض السمة الزمنية"
-
-msgid "List"
-msgstr "قائمة"
-
-msgid "of all the distinct time values"
-msgstr "من جميع القيم الزمنية المميزة"
-
-msgid "Intervals"
-msgstr "فترات"
-
-msgid "defined by the resolution"
-msgstr "التي حددها القرار"
-
-msgid "Continuous Intervals"
-msgstr "فترات متواصلة"
-
-msgid ""
-"for data that is frequently updated, resolution describes the frequency of "
-"updates"
-msgstr ""
-"بالنسبة للبيانات التي يتم تحديثها بشكل متكرر ، توضح الدقة عدد مرات تكرار "
-"التحديثات"
-
-msgid "Resolution of time attribute"
-msgstr "دقة سمة الوقت"
-
-msgid "Enabling Time"
-msgstr "تمكين الوقت"
-
-#, fuzzy
-#| msgid ""
-#| "A layer can support one or two time attributes. If a single\n"
-#| "                        attribute is used, the layer is considered to "
-#| "contain data that is valid at single points in time. If two\n"
-#| "                        attributes are used, the second attribute "
-#| "represents the end of a valid period  hence the layer is considered\n"
-#| "                        to contain data that is valid at certain periods "
-#| "in time."
-msgid ""
-"A dataset can support one or two time attributes. If a single\n"
-"                        attribute is used, the dataset is considered to "
-"contain data that is valid at single points in time. If two\n"
-"                        attributes are used, the second attribute represents "
-"the end of a valid period  hence the dataset is considered\n"
-"                        to contain data that is valid at certain periods in "
-"time."
-msgstr ""
-"الطبقة يمكن أن تدعم سمة أو اثنين من سمات الوقت. إذا كانت سمة واحدة\n"
-"                       يتم استخدامها ، تعتبر الطبقة تحتوي على بيانات صالحة "
-"في نقطة وقت واحدة. إذا تم\n"
-"                         استخدام سمتين ، تمثل السمة الثانية نهاية فترة صالحة "
-"وبالتالي تحتوي الطبقة\n"
-"                         بيانات صالحة في فترات زمنية محددة."
-
-msgid "Selecting an Attribute"
-msgstr "تحديد سمة"
-
-msgid "A time attribute can be"
-msgstr "السمة الزمنية يمكن أن تكون"
-
-msgid "An existing date"
-msgstr "تاريخ حالي"
-
-msgid "Text that can be converted to a timestamp"
-msgstr "النص الذي يمكن تحويله إلى الطابع الزمني"
-
-msgid "A number representing a year"
-msgstr "عدد يمثل سنة"
-
-msgid ""
-"\n"
-"                        For text attributes, one can specify a custom format "
-"(as part of the \"Advanced Options\") or use the 'best guess' approach which "
-"will try to\n"
-"                        automatically translate well-known recognized "
-"patterns into valid times.\n"
-"                        "
-msgstr ""
-"\n"
-"بالنسبة للسمات النصية ، يمكن للمرء تحديد تنسيق مخصص (كجزء من \"الخيارات "
-"المتقدمة\") أو استخدام نهج \"أفضل تخمين\" الذي سيحاول تلقائيًا \n"
-"                         ترجمة الأنماط المعروفة جيدا إلى أوقات صالحة."
-
-msgid "The 'best guess' will handle date and optional time variants of"
-msgstr "إن 'أفضل تخمين \"سيتعامل مع التاريخ والوقت الاختياري من الخيارين"
-
-msgid "In terms of the formatting flags noted above, these are"
-msgstr "من ناحية تنسيق البلاط المشار إليه أعلاه، هؤلاء هم"
-
-msgid "Modal Header"
-msgstr "رأس الشكل"
-
-msgid "Some text in the modal"
-msgstr "بعض النصوص في الوسائط"
-
-msgid " does NOT match any valid ISO-8601 Date-Time string!"
-msgstr "لا يطابق أي سلسلة تاريخ وقت ISO-8601 صالحة!"
-
-msgid "Valid ISO-8601 for"
-msgstr "ISO-8601 صالح ل"
-
-msgid "matches a valid ISO-8601 Date-Time string!"
-msgstr "يطابق سلسلة تاريخ وقت ISO-8601 صالحة!"
-
-msgid "Not Valid ISO-8601 for"
-msgstr "ISO-8601 غير صالح لـ"
-
-msgid "does NOT match any valid ISO-8601 Date-Time string!"
-msgstr "لا يطابق أي سلسلة تاريخ وقت ISO-8601 صالحة!"
-
-msgid "Wrong Selection"
-msgstr "اختيار خاطئ"
-
-msgid "Please, select one Time Attribute to test!"
-msgstr "من فضلك ، حدد سمة وقت واحدة للاختبار!"
-
-msgid ""
-"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
-msgstr "العودة إلى صفحة بدء التحميل في  <span id=\"cnt\">5</span>  ثوان "
-
-msgid " Or just go "
-msgstr " أو الذهاب فقط "
-
-msgid "now"
-msgstr "الآن"
 
 #, fuzzy, python-brace-format
 #| msgid "You are attempting to replace a vector layer with a raster."
@@ -3485,10 +2871,26 @@ msgid ""
 msgstr ""
 "هذه الطبقة عضو في مجموعة الطبقات، يجب إزالة الطبقة من المجموعة قبل الحذف."
 
-#, fuzzy, python-format
-#| msgid "couldn't generate thumbnail"
-msgid "couldn't generate thumbnail: %s"
-msgstr "لا يمكن توليد الصورة المصغرة"
+#, fuzzy
+#| msgid "Position Name"
+msgid "Positional Arguments"
+msgstr "اسم المركز"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr ""
+
+#, fuzzy
+#| msgid "Keywords"
+msgid "Keyword Arguments"
+msgstr "الكلمات الدالة"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
 
 msgid "Map Created"
 msgstr "تم إنشاء الخريطة"
@@ -3532,14 +2934,29 @@ msgstr "تصنيف للخريطة"
 msgid "A rating was given to a map"
 msgstr "وقدم تصنيف للخريطة"
 
+msgid "You are not permitted to delete this map."
+msgstr "لا يسمح لك بحذف هذه الخريطة."
+
+msgid "You do not have permissions for this map."
+msgstr "ليس لديك صلاحيات لهذه الخريطة."
+
+msgid "You must be logged in to save this map"
+msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة"
+
+msgid "You are not permitted to save or edit this map."
+msgstr "لا يسمح لك بحفظ أو تعديل هذه الخريطة."
+
+msgid "You are not allowed to modify this map's metadata."
+msgstr "لا يسمح لك بتعديل البيانات الوصفية هذه الخريطة ل."
+
+msgid "You are not allowed to view this map."
+msgstr "لا يسمح لك بعرض هذه الخريطة."
+
+msgid "Site URL"
+msgstr "رابط الموقع"
+
 msgid "Featured Map URL"
 msgstr "رابط خريطة مميزة"
-
-msgid "stack order"
-msgstr "طلب حزمة"
-
-msgid "format"
-msgstr "شكل"
 
 msgid "name"
 msgstr "اسم"
@@ -3549,74 +2966,8 @@ msgstr "اسم"
 msgid "store"
 msgstr "مخزن"
 
-msgid "opacity"
-msgstr "اللاإنفاذية"
-
-msgid "styles"
-msgstr "الأساليب"
-
-msgid "transparent"
-msgstr "شفاف"
-
-msgid "fixed"
-msgstr "ثابت"
-
-msgid "group"
-msgstr "مجموعة"
-
-msgid "visibility"
-msgstr "وضوح"
-
-msgid "ows URL"
-msgstr "ows URL"
-
-msgid "layer params"
-msgstr "إعدادات طبقة"
-
-msgid "source params"
-msgstr "إعدادات مصدر"
-
-msgid "Map layers WMS GetCapabilities document"
-msgstr "احصل على مستند القدرات لطبقات المستخدم لبرنامج إدارة المستودعات"
-
-msgid "Rate this Map"
-msgstr "قيم هذه الخريطة"
-
-msgid "Download Map"
-msgstr "تحميل خريطة"
-
-msgid "Map"
-msgid_plural "Maps"
-msgstr[0] "خريطة"
-msgstr[1] "خريطة"
-msgstr[2] "خريطتين"
-msgstr[3] "خرائط"
-msgstr[4] "خرائط"
-msgstr[5] "خرائط"
-
-msgid "Map Layers"
-msgstr "خريطة الطبقات"
-
-msgid "This map uses the following layers:"
-msgstr "هذه الخريطة تستخدم الطبقات التالية:"
-
-msgid "Documents related to this map"
-msgstr "الوثائق المتعلقة بهذه الخريطة"
-
-msgid "List of documents related to this map:"
-msgstr "قائمة الوثائق المتعلقة بهذا الخارطة:"
-
-msgid "Change Permissions of this Map"
-msgstr "تغيير أذونات هذه الخريطة"
-
-msgid "Copy this map"
-msgstr "نسخ هذه الخريطة"
-
-msgid "Duplicate this map and modify it for your own purposes"
-msgstr "تكرار هذه الخريطة وتعديلها لأغراض خاصة بك"
-
-msgid "Create a New Map"
-msgstr "إنشاء خريطة جديدة"
+msgid "current style"
+msgstr ""
 
 msgid ""
 "\n"
@@ -3673,12 +3024,6 @@ msgstr "تحميل منتهي"
 msgid "Download Failed"
 msgstr "فشل تحميل"
 
-msgid "Edit Map"
-msgstr "تعديل خريطة"
-
-msgid "Explore Maps"
-msgstr "تصفح الخرائط"
-
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -3694,43 +3039,11 @@ msgstr ""
 "‬\n"
 "‫          ربما فقدت بعض البيانات الوصفية الأصلية."
 
+msgid "Explore Maps"
+msgstr "تصفح الخرائط"
+
 msgid "Return to Map"
 msgstr "العودة إلى الخريطة"
-
-msgid "Remove Map"
-msgstr "إزالة الخريطة"
-
-#, python-format
-msgid ""
-"\n"
-"          Are you sure you want to remove <a href=\"%(map.get_absolute_url)s"
-"\">%(map_title)s</a>?\n"
-"        "
-msgstr ""
-"\n"
-"هل تريد بالتأكيد إزالة <a href=\"%(map.get_absolute_url)s\">%(map_title)s</"
-"a>?"
-
-msgid "You are not permitted to delete this map."
-msgstr "لا يسمح لك بحذف هذه الخريطة."
-
-msgid "You do not have permissions for this map."
-msgstr "ليس لديك صلاحيات لهذه الخريطة."
-
-msgid "You must be logged in to save this map"
-msgstr "يجب أن تكون مسجلا لحفظ هذه الخريطة"
-
-msgid "You are not permitted to save or edit this map."
-msgstr "لا يسمح لك بحفظ أو تعديل هذه الخريطة."
-
-msgid "You are not allowed to modify this map's metadata."
-msgstr "لا يسمح لك بتعديل البيانات الوصفية هذه الخريطة ل."
-
-msgid "You are not allowed to view this map."
-msgstr "لا يسمح لك بعرض هذه الخريطة."
-
-msgid "error saving thumbnail"
-msgstr "خطأ في حفظ الصورة المصغرة"
 
 #, fuzzy
 #| msgid "Message User"
@@ -3850,9 +3163,32 @@ msgid "No resource"
 msgstr "لا مورد"
 
 #, fuzzy
+#| msgid "dataset"
+msgid "Dataset"
+msgstr "مجموعة البيانات"
+
+msgid "Map"
+msgid_plural "Maps"
+msgstr[0] "خريطة"
+msgstr[1] "خريطة"
+msgstr[2] "خريطتين"
+msgstr[3] "خرائط"
+msgstr[4] "خرائط"
+msgstr[5] "خرائط"
+
+#, fuzzy
 #| msgid "Resources"
 msgid "Resource base"
 msgstr "موارد"
+
+msgid "Document"
+msgid_plural "Documents"
+msgstr[0] "مستند"
+msgstr[1] "مستند"
+msgstr[2] "مستندان/مستندين"
+msgstr[3] "مستندات"
+msgstr[4] "مستندات"
+msgstr[5] "مستندات"
 
 msgid "Style"
 msgstr "نمط"
@@ -3920,11 +3256,6 @@ msgstr "تغيير"
 #| msgid "Metadata"
 msgid "Change Metadata"
 msgstr "البيانات الوصفية"
-
-#, fuzzy
-#| msgid "Edit Metadata"
-msgid "View Metadata"
-msgstr "تعديل البيانات الوصفية"
 
 #, fuzzy
 #| msgid "Published"
@@ -4233,20 +3564,6 @@ msgstr "رسائل البريد الإلكتروني المرتبطة"
 msgid "Set/Change password"
 msgstr "تعيين / تغيير كلمة المرور"
 
-msgid "Upload new layers"
-msgstr "تحميل طبقات جديدة"
-
-msgid "Create a new layer"
-msgstr "إنشاء طبقة جديدة"
-
-#, fuzzy
-#| msgid "Upload Document"
-msgid "Upload new document"
-msgstr "تحميل الوثيقة"
-
-msgid "Create a new map"
-msgstr "إنشاء خريطة جديدة"
-
 msgid "My Activities"
 msgstr "نشاطاتي"
 
@@ -4312,6 +3629,26 @@ msgstr "وثائق وجدت."
 msgid "Not Authorized"
 msgstr "غير مزود"
 
+#, fuzzy, python-brace-format
+#| msgid "Some error occurred while trying to access the uploaded schema: %s"
+msgid "Error occurred while executin the operation: '{_request.func_name}'"
+msgstr "حدث بعض الأخطاء أثناء محاولة الوصول إلى المخطط الذي تم تحميله: %s"
+
+#, python-brace-format
+msgid "Could not find the operation name: '{_request.func_name}'"
+msgstr ""
+
+msgid "failed"
+msgstr ""
+
+#, fuzzy
+#| msgid "Warning"
+msgid "running"
+msgstr "تحذير"
+
+msgid "finished"
+msgstr ""
+
 #, fuzzy
 #| msgid "GeoNode Themes Library"
 msgid "GeoNode Resource Processing Library"
@@ -4327,6 +3664,12 @@ msgid "Session is Expired. Please login again!"
 msgstr "انتهت الجلسة. الرجاد الدخول على الحساب من جديد!"
 
 msgid "Permissions successfully updated!"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"User {username} has download permissions but cannot access the resource. "
+"Please update permission consistently!"
 msgstr ""
 
 #, fuzzy
@@ -4365,17 +3708,11 @@ msgstr "مزامنة الأذونات على الفور"
 msgid "error delivering notification"
 msgstr "هوية"
 
-msgid "Auto-detect"
-msgstr "اكتشاف تلقائي"
-
 msgid "Paired WMS/WFS/WCS"
 msgstr "يقترن WMS/WFS/WCS"
 
 msgid "Web Map Service"
 msgstr "خدمة خرائط الويب"
-
-msgid "Catalogue Service"
-msgstr "خدمة كتالوج"
 
 msgid "ArcGIS REST MapServer"
 msgstr "خادم خريطة ArcGIS REST"
@@ -4383,17 +3720,8 @@ msgstr "خادم خريطة ArcGIS REST"
 msgid "ArcGIS REST ImageServer"
 msgstr "ArcGIS REST ImageServer"
 
-msgid "OpenGeoPortal"
-msgstr "OpenGeoPortal"
-
-msgid "Harvard Geospatial Library"
-msgstr "مكتبة هارفارد الجغرافية المكانية "
-
 msgid "GeoNode (Web Map Service)"
 msgstr "GeoNode (خدمة خريطة الويب)"
-
-msgid "GeoNode (Catalogue Service)"
-msgstr "GeoNode (خدمة الكتالوج)"
 
 msgid "Service URL"
 msgstr "عنوان الخدمة"
@@ -4408,10 +3736,6 @@ msgstr "الخدمة%(url)s مسجلة بالفعل"
 #, python-format
 msgid "Could not connect to the service at %(url)s"
 msgstr "لا يمكن الاتصال بالخدمة على%(url)s"
-
-#, python-format
-msgid "Could not find importable resources for the service at %(url)s"
-msgstr "تعذر العثور على موارد قابلة للاستيراد للخدمة على%(url)s"
 
 #, python-format
 msgid "Found service of type %(found_type)s instead of %(service_type)s"
@@ -4432,8 +3756,8 @@ msgstr "مفهرس"
 msgid "Live"
 msgstr "مباشر"
 
-msgid "Resource is queued"
-msgstr "المورد في قائمة الانتظار"
+msgid "OpenGeoPortal"
+msgstr "OpenGeoPortal"
 
 msgid "Remote service unavailable"
 msgstr "الخدمة عن بعد غير متوفرة"
@@ -4450,16 +3774,19 @@ msgstr "اتصال"
 msgid "Service Resources"
 msgstr "موارد الخدمة"
 
+#, fuzzy
+#| msgid "Resource is already being processed"
+msgid "Resource harvesting in progress..."
+msgstr "المورد قيد المعالجة بالفعل"
+
 msgid "No resources have been imported yet."
 msgstr "لم يتم استيراد أي موارد حتى الآن."
 
-#, fuzzy
-#| msgid "Retry job"
-msgid "Retry job"
-msgstr "إعادة محاولة الوظيفة"
-
 msgid "previous"
 msgstr "السابق"
+
+msgid "Next"
+msgstr "التالي"
 
 msgid "next"
 msgstr "التالي"
@@ -4497,12 +3824,6 @@ msgstr "تسجيل خدمة"
 msgid "Register New Service"
 msgstr "تسجيل خدمة جديدة"
 
-msgid "Service has been created:"
-msgstr "تم إنشاء خدمة:"
-
-msgid "The following layers will be imported"
-msgstr "سيتم استيراد الطبقات التالية"
-
 msgid "Remove Remote Service"
 msgstr "إزالة الخدمة عن بعد"
 
@@ -4523,9 +3844,6 @@ msgstr "يمكن استيراد الموارد"
 
 msgid "- These will be cascaded through your local geoserver instance"
 msgstr "- سيتم تتابع هذه من خلال مثيلك الجغرافي المحلي"
-
-msgid "Id"
-msgstr "معرف"
 
 msgid "Clear Filter"
 msgstr "مسح فلتر"
@@ -4556,9 +3874,6 @@ msgstr "يتم استيراد الموارد المحددة"
 
 msgid "The selected resources have been imported"
 msgstr "تم استيراد الموارد المحددة"
-
-msgid "Resource is already being processed"
-msgstr "المورد قيد المعالجة بالفعل"
 
 #, fuzzy, python-brace-format
 #| msgid "Resource {} is being processed"
@@ -4605,6 +3920,9 @@ msgstr "تم رفعها"
 msgid "Recent activity"
 msgstr "النشاط الأخير"
 
+msgid "Layers"
+msgstr "طبقات"
+
 msgid "to"
 msgstr "إلى"
 
@@ -4643,17 +3961,8 @@ msgstr ""
 msgid "Toggle navigation"
 msgstr "تبديل الإبحار"
 
-#, fuzzy
-#| msgid "dataset"
-msgid "Datasets"
-msgstr "مجموعة البيانات"
-
 msgid "People"
 msgstr "الاشخاص"
-
-#, fuzzy
-msgid "Search"
-msgstr "بحث"
 
 msgid "Register"
 msgstr "تسجيل"
@@ -4683,24 +3992,16 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
-"‫\n"
-"‬\n"
-"‫‫يرجى الاتصال بمسؤول GeoNode (قد يكون قد تلقى رسالة إلكترونية تلقائيا إذا قام "
+"\n"
+"\n"
+"يرجى الاتصال بمسؤول GeoNode (قد يكون قد تلقى رسالة إلكترونية تلقائيا إذا قام "
 "بتهيئته بشكل صحيح).\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‫‬‏‫‫إذا كنت مشرف الموقع، فيمكنك تمكين وضع التصحيح للاطلاع على الخطأ الفعلي "
+"\n"
+"\n"
+"\n"
+"إذا كنت مشرف الموقع، فيمكنك تمكين وضع التصحيح للاطلاع على الخطأ الفعلي "
 "وإصلاحه أو تقديم طلب في <a href=\"http://github.com/GeoNode/geonode/issues"
 "\"> تعقب المشكلة فيGeoNode </a> "
-
-#, fuzzy
-#| msgid "Create a new layer"
-msgid "Create a new dataset"
-msgstr "إنشاء طبقة جديدة"
-
-msgid "Create Map"
-msgstr "إنشاء خريطة"
 
 msgid "Add User"
 msgstr "اضافة مستخدم"
@@ -4771,6 +4072,9 @@ msgstr "تسجيل الدخول لإضافة تعليق"
 msgid "By"
 msgstr "بواسطة"
 
+msgid "Delete"
+msgstr "حذف"
+
 msgid "Submit Comment"
 msgstr "إرسال تعليق"
 
@@ -4822,6 +4126,10 @@ msgstr "الحدود الجغرافية"
 #| msgid_plural "Users"
 msgid "Users"
 msgstr "المستخدم"
+
+#, fuzzy
+msgid "Search"
+msgstr "بحث"
 
 msgid "Show Geo Limits"
 msgstr "إظهار الحدود الجغرافية"
@@ -5060,9 +4368,16 @@ msgstr "إضافة البريد الإلكتروني"
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr "هل تريد حقًا إزالة عنوان البريد الإلكتروني المحدد؟"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because user %(user_display)s has given "
+#| "yours as an e-mail address to connect their account.\n"
+#| "\n"
+#| "To confirm this is correct, go to %(activate_url)s\n"
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because user %(user_display)s has given yours "
 "as an e-mail address to connect their account.\n"
@@ -5077,24 +4392,30 @@ msgstr ""
 "لتأكيد ان هذا صحيح ، انتقل إلى%(activate_url)s\n"
 "\n"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you from %(site_name)s!\n"
+#| "%(site_domain)s"
 msgid ""
-"Thank you from %(site_name)s!\n"
+"Thank you from %(site_name|urlencode)s!\n"
 "%(site_domain)s"
 msgstr ""
 "شكرًا لك من%(site_name)s!\n"
 "%(site_domain)s"
 
-#, python-format
-msgid "Please confirm email address for %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Please confirm email address for %(site_name)s"
+msgid "Please confirm email address for %(site_name|urlencode)s"
 msgstr "الرجاء تأكيد عنوان البريد الإلكتروني ل %(site_name)s"
 
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
+#, fuzzy, python-format
+#| msgid "You have been invited to sign up at %(site_name)s."
+msgid "You have been invited to sign up at %(site_name|urlencode)s."
 msgstr "لقد تمت دعوتك للتسجيل في%(site_name)s."
 
-#, python-format
-msgid "Create an account on %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Create an account on %(site_name)s"
+msgid "Create an account on %(site_name|urlencode)s"
 msgstr "إنشاء حساب علي%(site_name)s "
 
 msgid ""
@@ -5104,9 +4425,16 @@ msgstr "هذا هو الاعلام بالبريد الكتروني لتاكيد 
 msgid "Change password email notification"
 msgstr "إشعار البريد الإلكتروني لتغيير كلمة المرور"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because you or someone else has requested a "
+#| "password for your user account.\n"
+#| "It can be safely ignored if you did not request a password reset. Click "
+#| "the link below to reset your password."
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because you or someone else has requested a "
 "password for your user account.\n"
@@ -5124,17 +4452,21 @@ msgstr ""
 msgid "In case you forgot, your username is %(username)s."
 msgstr "في حال نسيت ، اسم المستخدم الخاص بك هو %(username)s."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you for using %(site_name)s!\n"
+#| "%(site_domain)s"
 msgid ""
-"Thank you for using %(site_name)s!\n"
+"Thank you for using %(site_name|urlencode)s!\n"
 "%(site_domain)s"
 msgstr ""
 "شكرًا لك على استخدام%(site_name)s!\n"
 "%(site_domain)s"
 
-#, python-format
-msgid "[%(site_name)s] Password reset"
-msgstr "[%(site_name)s] إعادة تعيين كلمة المرور"
+#, fuzzy
+#| msgid "Password reset"
+msgid " Password reset"
+msgstr "إعادة تعيين كلمة المرور"
 
 msgid "Confirm E-mail Address"
 msgstr "أكد عنوانك الإلكتروني"
@@ -5393,9 +4725,9 @@ msgid ""
 "b>.\n"
 "          "
 msgstr ""
-"‫\n"
-"‬\n"
-"‫‫‫تم النشر من <b>%(publish_start)s</b> إلى <b>%(publish_end)s</b>"
+"\n"
+"\n"
+"تم النشر من <b>%(publish_start)s</b> إلى <b>%(publish_end)s</b>"
 
 #, python-format
 msgid "Announcements : %(announcement)s"
@@ -5436,11 +4768,10 @@ msgstr "حذف هذه"
 msgid "GeoNode Search"
 msgstr "بحث GeoNode"
 
-msgid "Contact Us"
-msgstr "اتصل بنا"
-
-msgid "Tel"
-msgstr "الهاتف"
+#, fuzzy
+#| msgid "GeoExplorer"
+msgid "Explore"
+msgstr "GeoExplorer"
 
 msgid "Uploading..."
 msgstr "تحميل ..."
@@ -5456,6 +4787,9 @@ msgstr "جارٍ تحديث الصورة المصغرة ..."
 
 msgid "Message. Do you want to proceed?"
 msgstr "هل أنت متأكد من أنك تريد إزالة?"
+
+msgid "Some text in the modal"
+msgstr "بعض النصوص في الوسائط"
 
 #, fuzzy
 #| msgid "Harvesting resources..."
@@ -5934,6 +5268,98 @@ msgstr ""
 "توفر هذه الصفحة معلومات مفيدة حول كيفية استخدام ‫(GeoNode)‬. يمكنك استخدام "
 "روابط الشريط الجانبي للانتقال إلى ما تريد معرفته."
 
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "    <p>The GeoNode provides access to data sets and a map editing "
+#| "application allows users to browse existing maps and contribute their own."
+#| "</p>\n"
+#| "\n"
+#| "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+#| "    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you "
+#| "to browse data uploaded to this GeoNode.</p>\n"
+#| "    <p>All data can be downloaded in a variety of formats, for use in "
+#| "other applications.</p>\n"
+#| "\n"
+#| "    <h4 id=\"developer-access\">Developer Access</h4>\n"
+#| "    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the "
+#| "place for developers to get started building applications against the "
+#| "GeoNode. It includes instructions on using the web services, links to the "
+#| "source code of the GeoNode, and information about the open source "
+#| "projects used to create it.</p>\n"
+#| "\n"
+#| "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+#| "    <p>The GeoNode allows users to create and share maps with one another."
+#| "</p>\n"
+#| "    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to "
+#| "map exploration on GeoNode.  From here you can <strong>search for a map</"
+#| "strong> or <strong>create a map</strong>, which will open the <a href="
+#| "\"{{ url_maps_new }}\">Map Composer</a>.</p>\n"
+#| "    <h5>Google Earth Mode</h5>\n"
+#| "    <p>Any map viewed in the interactive map editor can be seen in 3D "
+#| "mode with the Google Earth plugin. To switch to 3D mode select the Google "
+#| "Earth globe logo, the rightmost button on top toolbar. If you do not have "
+#| "the Google Earth plugin installed you will be prompted to install it.</"
+#| "p>\n"
+#| "\n"
+#| "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+#| "    <p>To create a new map go to the <a href="
+#| "\"{{ url_maps_browse }}\">Contributed Maps</a> tab and click the <a href="
+#| "\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+#| "    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map "
+#| "Composer</a> with a base layer loaded.</p>\n"
+#| "    <p>To add data layers from the GeoNode click on the green plus button "
+#| "located below the layers tab on the left hand side of the screen. This "
+#| "will open a dialog listing all the layers available on the GeoNode.</p>\n"
+#| "    <p>To add layers to your map select them and hit the <strong>Add "
+#| "Layers</strong> button. When finished you may hit <strong>Done</strong> "
+#| "to close the dialog and go back to the map.</p>\n"
+#| "\n"
+#| "    <h5>Reordering and Removing Layers</h5>\n"
+#| "    <p>Change the display order of the layers listed in the data tab by "
+#| "simply dragging and dropping their names. The order in the map will be "
+#| "updated to reflect that. To turn a layer's visibility off simply uncheck "
+#| "it, and to remove it entirely select it and hit the red minus button.</"
+#| "p>\n"
+#| "\n"
+#| "    <h5>Saving your map</h5>\n"
+#| "    <p>Once a suitable set of layers and zoom level has been found it's "
+#| "time to save it so others can see it.  Click the Save button--the left "
+#| "most icon on the top toolbar, an image of a map with a disk--on the top "
+#| "menu and fill out the title and abstract of the map.</p>\n"
+#| "\n"
+#| "    <h4 id=\"exporting-a-map\">Publishing a Map</h4>\n"
+#| "    <p>Any map from the GeoNode can be embedded for use in another site "
+#| "or blog. To publish a map:</p>\n"
+#| "    <ol>\n"
+#| "      <li>Select the from the list of maps on the community or map page "
+#| "and then hit the 'Publish map' button.</li>\n"
+#| "      <li>Choose your desired height and width for the widget in the "
+#| "wizard.</li>\n"
+#| "      <li>Copy the HTML snippet provided in the wizard to any HTML page "
+#| "or iFrame-supporting blog post.</li>\n"
+#| "    </ol>\n"
+#| "    <p>This will put an interactive widget showing you map in your web "
+#| "page or blog post.</p>\n"
+#| "    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also "
+#| "has a button to publish the map. Just be sure to save the map before "
+#| "publishing if there are changes that you want others to see. It publishes "
+#| "the last saved version, not the last viewed version.</p>\n"
+#| "\n"
+#| "    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+#| "    <p>Any map available can serve as a starting point for a new map.</"
+#| "p>\n"
+#| "    <ol>\n"
+#| "      <li>Open the map in the Map Composer.</li>\n"
+#| "      <li>Add and remove layers as you like.</li>\n"
+#| "      <li>Pan and zoom to highlight the area of interest.</li>\n"
+#| "      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+#| "info and tags to reflect the new map.</li>\n"
+#| "      <li>Save the map.</li>\n"
+#| "    </ol>\n"
+#| "    <p>You will be able to see your new map when you search for it from "
+#| "the <a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
+#| "    "
 msgid ""
 "\n"
 "    <p>The GeoNode provides access to data sets and a map editing "
@@ -5941,14 +5367,14 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
-"uploaded to this GeoNode.</p>\n"
+"    <p>The <a href=\"%(url_dataset_browse)s\">Layers</a> tab allows you to "
+"browse data uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
-"developers to get started building applications against the GeoNode. It "
+"    <p>The <a href=\"%(url_developer)s\"> Developer</a> page is the place "
+"for developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
@@ -5956,10 +5382,9 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
-"GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
-"Composer</a>.</p>\n"
+"    <p>The <a href=\"%(url_maps_browse)s\">Maps</a> tab is a gateway to map "
+"exploration on GeoNode.  From here you can <strong>search for a map</strong> "
+"or <strong>create a map</strong>, which will open the Map Composer.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
@@ -5967,10 +5392,9 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
-"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
-"a base layer loaded.</p>\n"
+"    <p>To create a new map go to the <a href=\"%(url_maps_browse)s"
+"\">Contributed Maps</a> tab and click the create your own map link.</p>\n"
+"    <p>This will take you to the Map Composer with a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
@@ -6003,10 +5427,10 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
-"button to publish the map. Just be sure to save the map before publishing if "
-"there are changes that you want others to see. It publishes the last saved "
-"version, not the last viewed version.</p>\n"
+"    <p>Note that the Map Composer also has a button to publish the map. Just "
+"be sure to save the map before publishing if there are changes that you want "
+"others to see. It publishes the last saved version, not the last viewed "
+"version.</p>\n"
 "\n"
 "    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
 "    <p>Any map available can serve as a starting point for a new map.</p>\n"
@@ -6019,7 +5443,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
+"<a href=\"%(url_maps_browse)s\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 "‫\n"
@@ -6558,11 +5982,19 @@ msgstr "مرحبا!"
 msgid "Get Started &raquo;"
 msgstr "ابدأ &raquo;"
 
-msgid "Search for Data."
-msgstr "البحث عن البيانات."
+msgid "No"
+msgstr "لا"
 
-msgid "Advanced Search"
-msgstr "بحث متقدم"
+#, fuzzy
+#| msgid "Layer"
+msgid "Layer"
+msgid_plural "Layers"
+msgstr[0] "طبقة"
+msgstr[1] "طبقة"
+msgstr[2] "طبقة"
+msgstr[3] "طبقة"
+msgstr[4] "طبقة"
+msgstr[5] "طبقة"
 
 msgid ""
 "Click to search for geospatial data published by other users, organizations "
@@ -6572,25 +6004,22 @@ msgstr ""
 "والمصادر العامة. تنزيل البيانات بتنسيقات قياسية."
 
 #, fuzzy
-#| msgid "dataset"
-msgid "Add datasets"
-msgstr "مجموعة البيانات"
-
-#, fuzzy
 #| msgid "Explore Layers"
 msgid "Explore datasetss"
 msgstr "تصفح الطبقات"
 
+#, fuzzy
+#| msgid ""
+#| "Data is available for browsing, aggregating and styling to generate maps "
+#| "which can be saved, downloaded, shared publicly or restricted to specify "
+#| "users only."
 msgid ""
 "Data is available for browsing, aggregating and styling to generate maps "
-"which can be saved, downloaded, shared publicly or restricted to specify "
+"which can be saved, downloaded, shared publicly or restricted to specific "
 "users only."
 msgstr ""
 "تتوفر البيانات للتصفح والتجميع والتصميم لإنشاء خرائط يمكن حفظها أو تنزيلها "
 "أو مشاركتها بشكل عام أو تقييدها لمستخدمين معينين فقط."
-
-msgid "Create maps"
-msgstr "إنشاء خرائط"
 
 msgid "Explore maps"
 msgstr "تصفح الخرائط"
@@ -6607,6 +6036,15 @@ msgstr "أضف مستندات"
 
 msgid "Explore documents"
 msgstr "تصفح المستندات"
+
+msgid "User"
+msgid_plural "Users"
+msgstr[0] "المستخدم"
+msgstr[1] "المستخدم"
+msgstr[2] "مستخدمين/مستخدمان"
+msgstr[3] "مستخدمين"
+msgstr[4] "مستخدمين"
+msgstr[5] "مستخدمين"
 
 msgid ""
 "Geonode allows registered users to easily upload geospatial data and various "
@@ -6633,14 +6071,18 @@ msgstr "غادر"
 msgid "Dear Sir/Madam,"
 msgstr "سيدي العزيز/سيدتي،"
 
-#, python-format
-msgid "is inviting you to join (%(site_name)s)."
+#, fuzzy, python-format
+#| msgid "is inviting you to join (%(site_name)s)."
+msgid "is inviting you to join (%(site_name|urlencode)s)."
 msgstr "يدعوك للانضمام (%(site_name)s)."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
+#| "Registration</a>."
 msgid ""
-"To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
-"Registration</a>."
+"To do so, please register at <a href=\"%(invite_url)s\">"
+"%(site_name|urlencode)s Registration</a>."
 msgstr ""
 "للقيام بذلك ، يرجى التسجيل في <a href=\"%(invite_url)s\">%(site_name)s "
 "التسجيل</a>."
@@ -6687,6 +6129,9 @@ msgstr "موضوع الفئة إلزامي ولا يمكن أن يكون فار�
 
 msgid "Group is mandatory and cannot be empty!"
 msgstr "المجموعة إلزامية ولا يمكن أن تكون فارغة!"
+
+msgid "Return to Layer"
+msgstr "العودة إلى الطبقة"
 
 msgid "Identification"
 msgstr "هوية"
@@ -6783,6 +6228,11 @@ msgid ""
 "You can enable access by setting the user as active on the admin section"
 msgstr "يمكنك تمكين الدخول عن طريق تعيين المستخدم نشطا في قسم المشرف"
 
+#, fuzzy
+#| msgid "has requested access to the site."
+msgid "has created an account and has access to the site."
+msgstr "طلب الوصول إلى الموقع."
+
 msgid "A user has requested access to the site"
 msgstr "لقد طلب أحد المستخدمين الدخول إلى الموقع"
 
@@ -6834,7 +6284,9 @@ msgstr "تم تصنيفه"
 msgid "the following document"
 msgstr "الوثيقة التالية"
 
-msgid "You can visit the layer's detail page here"
+#, fuzzy
+#| msgid "You can visit the layer's detail page here"
+msgid "You can visit the dataset's detail page here"
 msgstr "يمكنك زيارة صفحة تفاصيل الطبقة هنا"
 
 msgid "A document has been rated"
@@ -6860,46 +6312,74 @@ msgstr "[%(current_site)s] %(message)s"
 msgid "%(notice)s"
 msgstr "%(notice)s"
 
-msgid "The following layer was approved"
+#, fuzzy
+#| msgid "The following layer was approved"
+msgid "The following dataset was approved"
 msgstr "تمت الموافقة على الطبقة التالية"
 
-msgid "A layer has been approved"
+#, fuzzy
+#| msgid "A layer has been approved"
+msgid "A dataset has been approved"
 msgstr "تمت الموافقة على طبقة"
 
-msgid "A comment has been posted for the layer"
+#, fuzzy
+#| msgid "A comment has been posted for the layer"
+msgid "A comment has been posted for the dataset"
 msgstr "تم نشر تعليق للطبقة"
 
-msgid "A comment has been posted for a layer"
+#, fuzzy
+#| msgid "A comment has been posted for a layer"
+msgid "A comment has been posted for a dataset"
 msgstr "تم نشر تعليق لطبقة"
 
-msgid "uploaded the following layer"
+#, fuzzy
+#| msgid "uploaded the following layer"
+msgid "uploaded the following dataset"
 msgstr "تحميل الطبقة التالية"
 
-msgid "A new layer has been uploaded"
+#, fuzzy
+#| msgid "A new layer has been uploaded"
+msgid "A new dataset has been uploaded"
 msgstr "تم رفع طبقة جديدة"
 
-msgid "The following layer was deleted"
+#, fuzzy
+#| msgid "The following layer was deleted"
+msgid "The following dataset was deleted"
 msgstr "تم حذف الطبقة التالية"
 
-msgid "A layer has been deleted"
+#, fuzzy
+#| msgid "A layer has been deleted"
+msgid "A dataset has been deleted"
 msgstr "تم حذف طبقة"
 
-msgid "The following layer was published"
+#, fuzzy
+#| msgid "The following layer was published"
+msgid "The following dataset was published"
 msgstr "تم نشر الطبقة التالية"
 
-msgid "A layer has been published"
+#, fuzzy
+#| msgid "A layer has been published"
+msgid "A dataset has been published"
 msgstr "تم نشر طبقة"
 
-msgid "the following layer"
+#, fuzzy
+#| msgid "the following layer"
+msgid "the following dataset"
 msgstr "الطبقة التالية"
 
-msgid "A layer has been rated"
+#, fuzzy
+#| msgid "A layer has been rated"
+msgid "A dataset has been rated"
 msgstr "تم تصنيف طبقة"
 
-msgid "The following layer was updated"
+#, fuzzy
+#| msgid "The following layer was updated"
+msgid "The following dataset was updated"
 msgstr "تم تحديث الطبقة التالية"
 
-msgid "A layer has been updated"
+#, fuzzy
+#| msgid "A layer has been updated"
+msgid "A dataset has been updated"
 msgstr "تم تحديث طبقة"
 
 msgid "The following map was approved"
@@ -7031,6 +6511,9 @@ msgstr "نجاح"
 msgid "You are "
 msgstr "أنتم "
 
+msgid "now"
+msgstr "الآن"
+
 msgid "no longer"
 msgstr "ليس بعد"
 
@@ -7038,47 +6521,11 @@ msgstr "ليس بعد"
 msgid "%(to_user_username)s's profile"
 msgstr "الملف الشخصي %(to_user_username)s'"
 
-msgid "Responsibles"
-msgstr "الأطراف المسؤولة"
+msgid "page"
+msgstr "صفحة"
 
-msgid "Date begins after:"
-msgstr "يبدأ التاريخ بعد:"
-
-msgid "yyyy-mm-dd"
-msgstr "‫yyyy-mm-dd"
-
-msgid "Date ends before:"
-msgstr "التاريخ ينتهي قبل:"
-
-msgid "Search by region"
-msgstr "البحث حسب المنطقة"
-
-#, fuzzy
-#| msgid "Sections"
-msgid "Selection"
-msgstr "أقسام"
-
-msgid "No list items selected. Use the selection fields to add."
-msgstr ""
-
-msgid "Filters"
-msgstr "مرشحات"
-
-#, fuzzy
-#| msgid "Layers found"
-msgid "Datasets found"
-msgstr "طبقات وجدت"
-
-msgid "Maps found"
-msgstr "خرائط وجدت"
-
-msgid "Documents found"
-msgstr "وثائق وجدت"
-
-#, fuzzy
-#| msgid "Maps found"
-msgid "found"
-msgstr "خرائط وجدت"
+msgid "of"
+msgstr "من"
 
 msgid "search"
 msgstr "بحث"
@@ -7105,9 +6552,6 @@ msgstr "ي - أ"
 
 msgid "Most popular"
 msgstr "الأكثر شعبية"
-
-msgid "Text"
-msgstr "نص"
 
 #, fuzzy
 #| msgid "Share This"
@@ -7248,10 +6692,9 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
-#, fuzzy
-#| msgid "All contents"
-msgid "Empty content"
-msgstr "جميع المحتويات"
+#, python-brace-format
+msgid "The limit `{instance.slug}` should not be deleted."
+msgstr ""
 
 msgid "Could not access to uploaded data."
 msgstr "لا يمكن الوصول إلى البيانات التي تم تحميلها."
@@ -7269,8 +6712,566 @@ msgstr ""
 "تم تقديم ملف SLD واحد أو أكثر ، ولكن لم يتم العثور على ملفات مطابقة لهم."
 
 #, fuzzy
+#| msgid "Document must be a file or url."
+msgid "Base file must be a file or url."
+msgstr "يجب أن يكون المستند ملفًا أو رابطًا."
+
+#, python-brace-format
+msgid ""
+"`{field_name}` field cannot have both a file and a path. Please choose one "
+"and try again."
+msgstr ""
+
+msgid ""
+"Total upload size exceeds {filesizeformat(max_size)}. Please try again with "
+"smaller files."
+msgstr ""
+
+msgid "The maximum file size allowed for upload (bytes)."
+msgstr ""
+
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Upload Datasets"
+msgstr "تحميل البيانات الوصفية"
+
+#, fuzzy
+#| msgid "Upload Layer Step: Set SRS"
+msgid "Upload Dataset Step: Set SRS"
+msgstr "خطوة تحميل طبقة: تعيين نظام المرجع المكاني"
+
+msgid "Provide CRS for "
+msgstr "توفيرنظام تنسيق مرجعي ل "
+
+msgid "Coordinate Reference System"
+msgstr "تنسيق النظام المرجعي"
+
+#, fuzzy
+#| msgid ""
+#| "\n"
+#| "                A coordinate reference system for this layer could not be "
+#| "determined.\n"
+#| "                Locate or enter the appropriate ESPG code for this layer "
+#| "below.\n"
+#| "                One way to do this is do visit:\n"
+#| "                <a href=\"http://prj2epsg.org/search\" target=\"_"
+#| "\">prj2epsg</a>\n"
+#| "                and enter the following:\n"
+#| "            "
+msgid ""
+"\n"
+"                A coordinate reference system for this dataset could not be "
+"determined.\n"
+"                Locate or enter the appropriate ESPG code for this dataset "
+"below.\n"
+"                One way to do this is do visit:\n"
+"                <a href=\"http://prj2epsg.org/search\" target=\"_"
+"\">prj2epsg</a>\n"
+"                and enter the following:\n"
+"            "
+msgstr ""
+"\n"
+"‫‫لا يمكن تحديد وتنسيق نظام مرجعي لهذه الطبقة.\n"
+" حدد موقع أو أدخل رمز ESPG مناسب لهذه الطبقة أدناه.\n"
+" طريقة واحدة للقيام بذلك هي القيام بزيارة : \n"
+"<a href=\"http://prj2epsg.org/search\" target=\"_\">prj2epsg</a>\n"
+" وأدخل ما يلي"
+
+msgid "Native CRS could not be found!"
+msgstr "لا يمكن العثور على CRS الأصلي!"
+
+msgid "Provide EPSG code for Source SRS"
+msgstr "توفير رمز EPSG للمصدر SRS"
+
+msgid "EPSG Code (Source SRS)"
+msgstr "كود EPSG (مصدر نظام المرجع المكاني)"
+
+msgid "Select a Source SRS"
+msgstr "حدد نظام المصدر المكاني المرجعي"
+
+msgid ""
+"Source SRS EPSG Code is mandatory and represents the native data Spatial "
+"Reference System.\n"
+"                    <br><br>\n"
+"                    This must be coherent with the Geometry values (lon/lat "
+"coordinates as an instance) stored on the geospatial dataset.\n"
+"                    <br><br>\n"
+"                    If not specified on the geospatial data itself, it must "
+"be manually declared by the operator.\n"
+"                    <br><br>\n"
+"                    More information is provided at the bottom of the page "
+"in the \"Additional Help\" sections.\n"
+"                    "
+msgstr ""
+"شفرة مصدر SRS EPSG إلزامية وتمثل نظام البيانات المكانية المرجعي الأصلي.\n"
+"                    <br><br>\n"
+"هذا يجب أن يكون متسقا مع القيم الهندسة (خط الطول / العرض كمثال) المخزنة على "
+"مجموعة البيانات الجغرافية المكانية.\n"
+"                    <br><br>\n"
+"إذا لم يتم تحديدها على البيانات الجغرافية المكانية نفسها ، فيجب أن يعلن عنها "
+"المشغل يدويًا.\n"
+"                    <br><br>\n"
+"يتم توفير المزيد من المعلومات في أسفل الصفحة في قسم \"المساعدة الإضافية\"."
+
+msgid "Advanced Options"
+msgstr "خيارات متقدمة"
+
+msgid "Target SRS"
+msgstr "النظام المرجعي المكاني المستهدف"
+
+msgid "EPSG Code (Target SRS)"
+msgstr "كود EPSG (نظام المرجع المكاني المستهدف)"
+
+msgid "Select a Target SRS"
+msgstr "حدد نظام المرجع المكاني المستهدف"
+
+msgid "leave it empty to use only Source SRS"
+msgstr "اتركه فارغًا لاستخدام مصدر SRS فقط"
+
+msgid "Additional Help"
+msgstr "مساعدة إضافية"
+
+msgid "Spatial Reference System"
+msgstr "نظام المرجع المكاني"
+
+msgid ""
+"A spatial reference system (SRS) or coordinate reference system (CRS) is a "
+"coordinate-based local,\n"
+"                            regional or global system used to locate "
+"geographical entities. A spatial reference system defines a specific map\n"
+"                            projection, as well as transformations between "
+"different spatial reference systems. Spatial reference systems are\n"
+"                            defined by the OGC's Simple feature access using "
+"well-known text, and support has been implemented by several\n"
+"                            standards-based geographic information systems. "
+"Spatial reference systems can be referred to using a SRID integer,\n"
+"                            including EPSG codes defined by the "
+"International Association of Oil and Gas Producers.\n"
+"                            It is specified in ISO 19111:2007 Geographic "
+"information—Spatial referencing by coordinates, also published as\n"
+"                            OGC Abstract Specification, Topic 2: Spatial "
+"referencing by coordinate."
+msgstr ""
+"نظام المرجع المكاني (SRS) أو نظام الإحالة المرجعي (CRS) هو نظام إحداثي قائم "
+"محلي ،\n"
+"                             إقليمي أو عالمي يستخدم لتحديد مواقع الكيانات "
+"الجغرافية.يحدد نظام المرجع المكاني خريطة معينة\n"
+"                             الإسقاط ، وكذلك التحولات بين أنظمة مرجعية "
+"مكانية مختلفة. النظم المرجعية المكانية \n"
+"                             تم تعريفها بواسطة الوصول البسيط إلى ميزة OGC "
+"باستخدام نص مشهور ، وتم تنفيذ الدعم من قِبل عدة \n"
+"                             نظم معلومات جغرافية قائمة على معايير. يمكن "
+"الرجوع إلى أنظمة المرجع المكاني باستخدام عدد صحيح SRID ،\n"
+"                             بما في ذلك رموز EPSG المحددة من قبل الرابطة "
+"الدولية لمنتجي النفط والغاز.\n"
+"تم تحديده في ISO 19111: 2007 المعلومات الجغرافية — المرجع المكاني "
+"بالإحداثيات ، كما تم نشره كـ\n"
+"                             مواصفات مجردةOGC ، الموضوع 2: الإحالة المكانية "
+"بالتنسيق."
+
+msgid "Identifiers"
+msgstr "معرفات"
+
+msgid ""
+"\n"
+"                        A Spatial Reference System Identifier (SRID) is a "
+"unique value used to unambiguously identify projected, unprojected,\n"
+"                        and local spatial coordinate system definitions. "
+"These coordinate systems form the heart of all GIS applications.\n"
+"\n"
+"                        Virtually all major spatial vendors have created "
+"their own SRID implementation or refer to those of an authority,\n"
+"                        such as the European Petroleum Survey Group (EPSG).\n"
+"                        "
+msgstr ""
+"\n"
+"معرف النظام المرجعي المكاني (SRID) هو قيمة فريدة تُستخدم في التعرف بشكل لا "
+"لبس فيه على ما هو متوقع أو غير متوقع ،\n"
+"   و تعريفات نظام التنسيق المكاني المحلي . تشكل أنظمة الإحداثيات هذه قلب "
+"جميع تطبيقات نظم المعلومات الجغرافية.\n"
+"\n"
+"عملياً ، قام جميع البائعين المكانيين الرئيسيين بإنشاء تطبيق SRID الخاص بهم أو "
+"الرجوع إلى تلك الخاصة بالسلطة ،\n"
+"                         مثل المجموعة الأوروبية لمسح النفط (EPSG)."
+
+msgid ""
+"NOTE: As of 2005 the EPSG SRID values are now maintained by the "
+"International\n"
+"                            Association of Oil & Gas Producers (OGP) "
+"Surveying & Positioning Committee"
+msgstr ""
+"ملاحظة: اعتبارًا من عام 2005 ، يتم الاحتفاظ بقيم EPSG SRID من قبل الجنة "
+"الدولية\n"
+"                             للمسح وتحديد المواقع التابعة لمنتجي النفط والغاز"
+
+msgid ""
+"\n"
+"                        SRIDs are the primary key for the Open Geospatial "
+"Consortium (OGC) spatial_ref_sys metadata table for the Simple\n"
+"                        Features for SQL Specification, Versions 1.1 and "
+"1.2, which is defined as follows:\n"
+"                        "
+msgstr ""
+"\n"
+"تمثل SRIDs المفاتيح الرئيسية لمجموعة البيانات الوصفية المكانية المفتوحة "
+"(OGC) spatial_ref_sys\n"
+"                         للميزات البسيطة لمواصفات SQL ، الإصدارات 1.1 و "
+"1.2 ، والتي يتم تعريفها على النحو التالي:"
+
+msgid ""
+"\n"
+"                        In spatially enabled databases (such as IBM DB2, IBM "
+"Informix, Microsoft SQL Server, MySQL, Oracle RDBMS, Teradata, PostGIS and\n"
+"                        SQL Anywhere), SRIDs are used to uniquely identify "
+"the coordinate systems used to define columns of spatial data or individual\n"
+"                        spatial objects in a spatial column (depending on "
+"the spatial implementation). SRIDs are typically associated with a well "
+"known\n"
+"                        text (WKT) string definition of the coordinate "
+"system (SRTEXT, above). From the Well Known Text Wikipedia page\n"
+"                        "
+msgstr ""
+"\n"
+"في قواعد البيانات الممكنة مكانيًا (مثل IBM DB2 و IBM Informix و Microsoft SQL "
+"Server و MySQL و Oracle RDBMS و Teradata و PostGIS و\n"
+"                         SQL في أي مكان) ، وتستخدم SRIDs فقط لتحديد أنظمة "
+"الإحداثيات المستخدمة لتحديد أعمدة البيانات المكانية أو \n"
+"                         كائنات مكانية فردية في عمود مكاني (حسب التطبيق "
+"المكاني). عادة ما ترتبط SRIDs مع \n"
+"                         تعريف سلسلة نص معروفة (WKT) لنظام الإحداثيات "
+"(SRTEXT ، أعلاه). من النص المعروف في صفحة ويكيبيديا."
+
+msgid ""
+"“A WKT string for a spatial reference system describes the datum, geoid, "
+"coordinate system,\n"
+"                            and map projection of the spatial objects”."
+msgstr ""
+"\"سلسلة WKT تصف النظام ، الجيوديسي ، الإحداثي ،\n"
+"                             وخريطة الإسقاط للأجسام المكانية \" لنظام مرجعي "
+"مكاني."
+
+msgid ""
+"\n"
+"                        Here are two common coordinate systems with their "
+"EPSG SRID value followed by their well known text:\n"
+"                        "
+msgstr ""
+"\n"
+"فيما يلي نظامان إحداثيان شائعان بقيمة EPSG SRID يتبعهما نصهما المشهور:"
+
+msgid ""
+"\n"
+"                        UTM, Zone 17N, NAD27 — SRID 2029\n"
+"                        "
+msgstr ""
+"\n"
+"UTM ، المنطقة 17N ، NAD27 - SRID 2029"
+
+msgid ""
+"\n"
+"                        WGS84 — SRID 4326\n"
+"                        "
+msgstr ""
+"\n"
+"                        WGS84 — SRID 4326\n"
+"                        "
+
+msgid ""
+"\n"
+"                        SRID values associated with spatial data can be used "
+"to constrain spatial operations — for instance, spatial operations cannot be "
+"performed\n"
+"                        between spatial objects with differing SRIDs in some "
+"systems, or trigger coordinate system transformations between spatial "
+"objects in others.\n"
+"                        "
+msgstr ""
+"\n"
+"يمكن استخدام قيم SRID المرتبطة بالبيانات المكانية لتقييد العمليات المكانية - "
+"على سبيل المثال ، لا يمكن تنفيذ العمليات المكانية\n"
+"                         بين الكائنات المكانية ذات SRIDs المختلفة في بعض "
+"الأنظمة ، أو تشغيل تحويلات تنسيق النظام بين الكائنات المكانية في أنظمة أخرى."
+
+msgid ""
+"Source SRS EPSG Code is mandatory and represents the native data Spatial "
+"Reference System. This must be coherent with the\n"
+"                            Geometry values (lon/lat coordinates as an "
+"instance) stored on the geospatial dataset. If not specified on the "
+"geospatial data itself, it\n"
+"                            must be manually declared by the operator."
+msgstr ""
+"شفرة المصدر SRS EPSG إلزامية وتمثل نظام البيانات المكانية المرجعي الأصلي. "
+"هذا يجب أن يكون متماسكاً مع\n"
+"                             القيم الهندسية (إحداثيات خطوط الطول / العرض "
+"كنسخة) المخزنة على مجموعة البيانات الجغرافية المكانية. إذا لم يتم تحديدها "
+"على البيانات الجغرافية المكانية نفسها ، فإنه\n"
+"                             يجب أن تعلن يدويا من قبل المشغل."
+
+msgid ""
+"Target SRS EPSG Code is optional. This must be used only if we need to re-"
+"project the coordinates from Source SRS to another one.\n"
+"                        "
+msgstr ""
+"رمز الهدف من SRS EPSG اختياري. يجب استخدام هذا فقط إذا احتجنا إلى إعادة عرض "
+"الإحداثيات من مصدر SRS إلى آخر.\n"
+"                        "
+
+#, fuzzy
+#| msgid "Upload Layer Step: CSV Field Mapping"
+msgid "Upload Dataset Step: CSV Field Mapping"
+msgstr "خطوة تحميل طبقة: تعيين حقل CSV"
+
+msgid "Geospatial Data"
+msgstr "بيانات الجغرافية"
+
+msgid ""
+"Please indicate which attributes contain the latitude and longitude "
+"coordinates in the CSV data."
+msgstr ""
+"يرجى توضيح السمات التي تحتوي على خطوط العرض وإحداثيات خطوط الطول في بيانات "
+"CSV."
+
+msgid ""
+"With this data, GeoNode was able to guess which attributes contain the\n"
+"                latitude and longitude coordinates, but please confirm that "
+"the correct\n"
+"                attributes are selected below."
+msgstr ""
+"باستخدام هذه البيانات ، تمكنت GeoNode من تخمين السمات التي تحتوي على\n"
+"                 إحداثيات خطوط الطول والعرض ، ولكن يرجى التأكد من صحة ذلك\n"
+"                 تم تحديد السمات أدناه."
+
+msgid "Select an attribute"
+msgstr "حدد سمة"
+
+msgid ""
+"We did not detect columns that could be used for the latitude and "
+"longitude.\n"
+"        Please verify that you have two columns in your csv file that can be "
+"used for\n"
+"        the latitude and longitude."
+msgstr ""
+"لم نكتشف الأعمدة التي يمكن استخدامها لخطوط الطول والعرض.\n"
+"         يرجى التحقق من وجود عمودين في ملف CSV الخاص بك والذي يمكن استخدامه\n"
+"         لخطوط الطول والعرض."
+
+msgid "Your upload is either complete or you haven't resumed an earlier one."
+msgstr "التحميل إما مكتمل أو لم تستأنف عملية تحميل سابقة."
+
+msgid "Upload Form"
+msgstr "نموذج التحميل"
+
+#, fuzzy
+#| msgid "Upload Layer Step: Time"
+msgid "Upload Dataset Step: Time"
+msgstr "خطوة تحميل طبقة: الوقت"
+
+msgid "Inspect data for "
+msgstr "فحص البيانات ل "
+
+msgid "Configure as Time-Series"
+msgstr "تكوين كسلسلة زمنية"
+
+msgid ""
+"Toggling this selector allows you to configure (or not) this data as a time "
+"series; in this case you will also have to select an attribute\n"
+"                      to drive the time dimension.\n"
+"                      <br><br>\n"
+"                      If GeoNode is not able to parse any of the values for "
+"the selected attribute red markers will appear to highlight the problems.\n"
+"                      <br><br>\n"
+"                      More information is provided at the bottom of the page "
+"in the \"Additional Help\" sections.\n"
+"                      "
+msgstr ""
+"بالنقر على هذا المحدد يسمح لك تهيئة (أو عدم) هذه البيانات كسلسلة زمنية ؛ في "
+"هذه الحالة ، سيكون عليك أيضًا تحديد سمة\n"
+"                       لدفع البعد الزمني.\n"
+"                       <BR> <BR>\n"
+"                       إذا لم يكن GeoNode قادراً على تحليل أي من قيم السمة "
+"المحددة ، ستظهر العلامات الحمراء لتسليط الضوء على المشاكل.\n"
+"                       <BR> <BR>\n"
+"                       يتم توفير المزيد من المعلومات في أسفل الصفحة في قسم "
+"\"المساعدة الإضافية\"."
+
+msgid "Use an existing timestamp attribute in the data"
+msgstr "استخدم سمة الطابع الزمني الموجودة في البيانات"
+
+msgid "Yes: with an existing Time-Attribute"
+msgstr "نعم: مع سمة الوقت الحالية"
+
+msgid ""
+"Yes: by converting data to a timestamp using standard date/time "
+"representation"
+msgstr ""
+"نعم: عن طريق تحويل البيانات إلى طابع زمني باستخدام تمثيل التاريخ / الوقت "
+"القياسي"
+
+msgid "Convert a number field into a year"
+msgstr "تحويل حقل الرقم إلى سنة"
+
+msgid "Yes: by converting a number as Year"
+msgstr "نعم: عن طريق تحويل رقم كسنة"
+
+msgid ""
+"Convert data to a timestamp using standard date/time representation or a "
+"custom format"
+msgstr ""
+"تحويل البيانات إلى طابع زمني باستخدام تمثيل التاريخ / الوقت القياسي أو تنسيق "
+"مخصص"
+
+msgid "Start Importer"
+msgstr "بدء المستورد"
+
+msgid "Date Format"
+msgstr "تنسيق التاريخ"
+
+msgid "Text Attribute Date Format"
+msgstr "تنسيق النص سمة التاريخ"
+
+msgid "Best Guess"
+msgstr "أفضل تخمين"
+
+msgid "Custom"
+msgstr "مخصص"
+
+msgid "Optional End-Time attribute"
+msgstr "سمة نهاية الوقت إختيارية"
+
+msgid "Existing Time Attribute"
+msgstr "سمة الوقت الحالية"
+
+msgid "Convert Text Attribute"
+msgstr "تحويل سمة النص"
+
+msgid "Convert Number (As Year)"
+msgstr "تحويل الرقم (كسنة)"
+
+msgid "Time attribute Presentation"
+msgstr "عرض السمة الزمنية"
+
+msgid "List"
+msgstr "قائمة"
+
+msgid "of all the distinct time values"
+msgstr "من جميع القيم الزمنية المميزة"
+
+msgid "Intervals"
+msgstr "فترات"
+
+msgid "defined by the resolution"
+msgstr "التي حددها القرار"
+
+msgid "Continuous Intervals"
+msgstr "فترات متواصلة"
+
+msgid ""
+"for data that is frequently updated, resolution describes the frequency of "
+"updates"
+msgstr ""
+"بالنسبة للبيانات التي يتم تحديثها بشكل متكرر ، توضح الدقة عدد مرات تكرار "
+"التحديثات"
+
+msgid "Resolution of time attribute"
+msgstr "دقة سمة الوقت"
+
+msgid "Enabling Time"
+msgstr "تمكين الوقت"
+
+#, fuzzy
+#| msgid ""
+#| "A layer can support one or two time attributes. If a single\n"
+#| "                        attribute is used, the layer is considered to "
+#| "contain data that is valid at single points in time. If two\n"
+#| "                        attributes are used, the second attribute "
+#| "represents the end of a valid period  hence the layer is considered\n"
+#| "                        to contain data that is valid at certain periods "
+#| "in time."
+msgid ""
+"A dataset can support one or two time attributes. If a single\n"
+"                        attribute is used, the dataset is considered to "
+"contain data that is valid at single points in time. If two\n"
+"                        attributes are used, the second attribute represents "
+"the end of a valid period  hence the dataset is considered\n"
+"                        to contain data that is valid at certain periods in "
+"time."
+msgstr ""
+"الطبقة يمكن أن تدعم سمة أو اثنين من سمات الوقت. إذا كانت سمة واحدة\n"
+"                       يتم استخدامها ، تعتبر الطبقة تحتوي على بيانات صالحة "
+"في نقطة وقت واحدة. إذا تم\n"
+"                         استخدام سمتين ، تمثل السمة الثانية نهاية فترة صالحة "
+"وبالتالي تحتوي الطبقة\n"
+"                         بيانات صالحة في فترات زمنية محددة."
+
+msgid "Selecting an Attribute"
+msgstr "تحديد سمة"
+
+msgid "A time attribute can be"
+msgstr "السمة الزمنية يمكن أن تكون"
+
+msgid "An existing date"
+msgstr "تاريخ حالي"
+
+msgid "Text that can be converted to a timestamp"
+msgstr "النص الذي يمكن تحويله إلى الطابع الزمني"
+
+msgid "A number representing a year"
+msgstr "عدد يمثل سنة"
+
+msgid ""
+"\n"
+"                        For text attributes, one can specify a custom format "
+"(as part of the \"Advanced Options\") or use the 'best guess' approach which "
+"will try to\n"
+"                        automatically translate well-known recognized "
+"patterns into valid times.\n"
+"                        "
+msgstr ""
+"\n"
+"بالنسبة للسمات النصية ، يمكن للمرء تحديد تنسيق مخصص (كجزء من \"الخيارات "
+"المتقدمة\") أو استخدام نهج \"أفضل تخمين\" الذي سيحاول تلقائيًا \n"
+"                         ترجمة الأنماط المعروفة جيدا إلى أوقات صالحة."
+
+msgid "The 'best guess' will handle date and optional time variants of"
+msgstr "إن 'أفضل تخمين \"سيتعامل مع التاريخ والوقت الاختياري من الخيارين"
+
+msgid "In terms of the formatting flags noted above, these are"
+msgstr "من ناحية تنسيق البلاط المشار إليه أعلاه، هؤلاء هم"
+
+msgid "Modal Header"
+msgstr "رأس الشكل"
+
+msgid " does NOT match any valid ISO-8601 Date-Time string!"
+msgstr "لا يطابق أي سلسلة تاريخ وقت ISO-8601 صالحة!"
+
+msgid "Valid ISO-8601 for"
+msgstr "ISO-8601 صالح ل"
+
+msgid "matches a valid ISO-8601 Date-Time string!"
+msgstr "يطابق سلسلة تاريخ وقت ISO-8601 صالحة!"
+
+msgid "Not Valid ISO-8601 for"
+msgstr "ISO-8601 غير صالح لـ"
+
+msgid "does NOT match any valid ISO-8601 Date-Time string!"
+msgstr "لا يطابق أي سلسلة تاريخ وقت ISO-8601 صالحة!"
+
+msgid "Wrong Selection"
+msgstr "اختيار خاطئ"
+
+msgid "Please, select one Time Attribute to test!"
+msgstr "من فضلك ، حدد سمة وقت واحدة للاختبار!"
+
+msgid ""
+"Returning to the upload starting page in <span id=\"cnt\">5</span>seconds "
+msgstr "العودة إلى صفحة بدء التحميل في  <span id=\"cnt\">5</span>  ثوان "
+
+msgid " Or just go "
+msgstr " أو الذهاب فقط "
+
+#, fuzzy
 #| msgid "Layer Created"
-msgid "Layer already exists"
+msgid "Dataset already exists"
 msgstr "تم إنشاء طبقة"
 
 msgid "Name already in use and overwrite is False"
@@ -7289,11 +7290,13 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
+#, fuzzy
+#| msgid "Upload Metadata"
+msgid "Error uploading Dataset"
+msgstr "تحميل البيانات الوصفية"
+
 msgid ""
 "The UUID identifier from the XML Metadata is already in use in this system."
-msgstr ""
-
-msgid "Error configuring Layer"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -7372,6 +7375,459 @@ msgstr "مستوى صلاحية غير صالح."
 
 msgid "Permission Denied"
 msgstr "طلب الاذن مرفوض"
+
+#, fuzzy
+#~| msgid "Permissions"
+#~ msgid "Permission Type"
+#~ msgstr "أذونات"
+
+#, fuzzy
+#~| msgid "Model"
+#~ msgid "Mode"
+#~ msgstr "نموذج"
+
+#~ msgid "Create a Map"
+#~ msgstr "إنشاء خريطة"
+
+#, fuzzy
+#~| msgid "Set permissions"
+#~ msgid "Set Permissions"
+#~ msgstr "تعيين صلاحيات"
+
+#, fuzzy
+#~| msgid "Create Layer"
+#~ msgid "Raster Layer"
+#~ msgstr "إنشاء طبقة"
+
+#, fuzzy
+#~| msgid "View Layer"
+#~ msgid "Vector Layer"
+#~ msgstr "عرض طبقة"
+
+#, fuzzy
+#~| msgid "Remove Layers"
+#~ msgid "Remote Layer"
+#~ msgstr "إزالة الطبقات"
+
+#~ msgid "Download the"
+#~ msgstr "تحميل"
+
+#~ msgid "document"
+#~ msgstr "وثيقة"
+
+#~ msgid "External Resource"
+#~ msgstr "الموارد الخارجية"
+
+#~ msgid "Rate this document"
+#~ msgstr "قيم هذا المستند"
+
+#~ msgid "Download Document"
+#~ msgstr "تحميل الوثيقة"
+
+#~ msgid "Edit Document"
+#~ msgstr "تحرير المستند"
+
+#~ msgid "Resources using this document"
+#~ msgstr "الموارد باستخدام هذا المستند"
+
+#~ msgid "List of resources using this document:"
+#~ msgstr "قائمة الموارد باستخدام هذه الوثيقة:"
+
+#~ msgid "This document is not related to any maps or layers"
+#~ msgstr "لا تتعلق هذه الوثيقة إلى أي خرائط أو طبقات"
+
+#~ msgid "Click the button below to change the permissions of this document."
+#~ msgstr "انقر فوق الزر أدناه لتغيير صلاحيات هذه الوثيقة."
+
+#~ msgid "Change Document Permissions"
+#~ msgstr "تغيير صلاحيات الوثيقة"
+
+#~ msgid "Deleting"
+#~ msgstr "حذف"
+
+#~ msgid "Remove Document"
+#~ msgstr "حذف مستند"
+
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove <a href="
+#~ "\"%(document.get_absolute_url)s\">%(document_title)s</a>?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "هل تريد بالتأكيد إزالة <a href=\"%(document.get_absolute_url)s\">"
+#~ "%(document_title)s</a>?\n"
+#~ "        "
+
+#~ msgid "zoom"
+#~ msgstr "تكبير"
+
+#~ msgid "projection"
+#~ msgstr "إسقاط"
+
+#~ msgid "center X"
+#~ msgstr "مركز X"
+
+#~ msgid "center Y"
+#~ msgstr "مركز Y"
+
+#, fuzzy
+#~| msgid "Resources"
+#~ msgid "%(resource.type)s"
+#~ msgstr "موارد"
+
+#, fuzzy
+#~| msgid "Rate this Map"
+#~ msgid "Rate this"
+#~ msgstr "قيم هذه الخريطة"
+
+#~ msgid "Specify which users can view or modify this map"
+#~ msgstr "حدد المستخدمين الذين يمكنهم عرض هذه الخريطة أو تعديلها"
+
+#, fuzzy
+#~| msgid "Change Permissions of this Map"
+#~ msgid "Change Permissions of this"
+#~ msgstr "تغيير أذونات هذه الخريطة"
+
+#~ msgid "Embed Iframe"
+#~ msgstr "تضمين Iframe"
+
+#~ msgid ""
+#~ "To embed this map, add the following code snippet and customize its "
+#~ "properties (scrolling, width, height) based on your needs to your site"
+#~ msgstr ""
+#~ "لتضمين هذه الخريطة ، أضف مقتطف الشفرة التالي و عدل خصائصه (التمرير ، "
+#~ "العرض ، الارتفاع) بناء علي احتياجاتك إلى موقعك"
+
+#, fuzzy
+#~| msgid "Create a New Map"
+#~ msgid "Create New"
+#~ msgstr "إنشاء خريطة جديدة"
+
+#, fuzzy
+#~| msgid "Return to Map"
+#~ msgid "Return to GeoApp"
+#~ msgstr "العودة إلى الخريطة"
+
+#, fuzzy
+#~| msgid ""
+#~| "\n"
+#~| "          Are you sure you want to remove <a href="
+#~| "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+#~| "        "
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove <a href="
+#~ "\"%(resource.get_absolute_url)s\">%(resource_title)s</a>?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "هل تريد بالتأكيد إزالة <a href=\"%(layer.get_absolute_url)s\">"
+#~ "%(layer_title)s</a>?"
+
+#~ msgid "GZIP"
+#~ msgstr "GZIP"
+
+#, fuzzy
+#~| msgid "Set permissions on selected resources"
+#~ msgid "Default access permissions of harvested resources"
+#~ msgstr "تعيين الصلاحيات على الموارد المختارة"
+
+#~ msgid "Layer Created"
+#~ msgstr "تم إنشاء طبقة"
+
+#~ msgid "Layer Updated"
+#~ msgstr "تم تحديث الطبقة"
+
+#~ msgid "Layer Published"
+#~ msgstr "طبقة نشرت"
+
+#~ msgid "Layer Deleted"
+#~ msgstr "تم حذف الطبقة"
+
+#~ msgid "Storetype"
+#~ msgstr "نوع المخزن"
+
+#~ msgid "Home"
+#~ msgstr "الرئيسية"
+
+#~ msgid "Change point of contact"
+#~ msgstr "تغيير جهة اتصال"
+
+#~ msgid "Assign a new point of contact to the layers below:"
+#~ msgstr "تعيين نقطة اتصال جديدة إلى الطبقات التالية:"
+
+#~ msgid "Edit Layer"
+#~ msgstr "تعديل طبقة"
+
+#, fuzzy
+#~| msgid "Create a map using this layer"
+#~ msgid "Create a map using this dataset"
+#~ msgstr "إنشاء خريطة باستخدام هذه الطبقة"
+
+#, fuzzy
+#~| msgid "Click the button below to generate a new map based on this layer."
+#~ msgid "Click the button below to generate a new map based on this dataset."
+#~ msgstr "انقر فوق الزر أدناه لتوليد خريطة جديدة مبنية على هذه الطبقة."
+
+#, fuzzy
+#~| msgid "Add the layer to an existing map"
+#~ msgid "Add the dataset to an existing map"
+#~ msgstr "أضف الطبقة إلى خريطة حالية"
+
+#, fuzzy
+#~| msgid "Click the button below to add the layer to the selected map."
+#~ msgid "Click the button below to add the dataset to the selected map."
+#~ msgstr "انقر فوق الزر أدناه لإضافة الطبقة إلى الخريطة المحددة."
+
+#~ msgid "Add to Map"
+#~ msgstr "أضف إلى الخريطة"
+
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove <a href="
+#~ "\"%(layer.get_absolute_url)s\">%(layer_title)s</a>?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "هل تريد بالتأكيد إزالة <a href=\"%(layer.get_absolute_url)s\">"
+#~ "%(layer_title)s</a>?"
+
+#, fuzzy
+#~| msgid "Upload Metadata"
+#~ msgid "Upload status"
+#~ msgstr "تحميل البيانات الوصفية"
+
+#, fuzzy
+#~| msgid "Upload Document"
+#~ msgid "Upload process completed"
+#~ msgstr "تحميل الوثيقة"
+
+#, fuzzy
+#~| msgid "Create"
+#~ msgid "Created"
+#~ msgstr "إنشاء"
+
+#, fuzzy
+#~| msgid "Incomplete Uploads"
+#~ msgid "Delete incomplete upload"
+#~ msgstr "عمليات التحميل غير مكتملة"
+
+#, fuzzy
+#~| msgid "Are you sure you want to delete this upload?"
+#~ msgid "Are you sure you want to remove this incomplete upload?"
+#~ msgstr "هل أنت متأكد أنك تريد حذف هذا التحميل؟"
+
+#, fuzzy
+#~| msgid "couldn't generate thumbnail"
+#~ msgid "couldn't generate thumbnail: %s"
+#~ msgstr "لا يمكن توليد الصورة المصغرة"
+
+#~ msgid "stack order"
+#~ msgstr "طلب حزمة"
+
+#~ msgid "format"
+#~ msgstr "شكل"
+
+#~ msgid "opacity"
+#~ msgstr "اللاإنفاذية"
+
+#~ msgid "styles"
+#~ msgstr "الأساليب"
+
+#~ msgid "transparent"
+#~ msgstr "شفاف"
+
+#~ msgid "fixed"
+#~ msgstr "ثابت"
+
+#~ msgid "group"
+#~ msgstr "مجموعة"
+
+#~ msgid "visibility"
+#~ msgstr "وضوح"
+
+#~ msgid "layer params"
+#~ msgstr "إعدادات طبقة"
+
+#~ msgid "source params"
+#~ msgstr "إعدادات مصدر"
+
+#~ msgid "Map layers WMS GetCapabilities document"
+#~ msgstr "احصل على مستند القدرات لطبقات المستخدم لبرنامج إدارة المستودعات"
+
+#~ msgid "Rate this Map"
+#~ msgstr "قيم هذه الخريطة"
+
+#~ msgid "Download Map"
+#~ msgstr "تحميل خريطة"
+
+#~ msgid "Map Layers"
+#~ msgstr "خريطة الطبقات"
+
+#~ msgid "This map uses the following layers:"
+#~ msgstr "هذه الخريطة تستخدم الطبقات التالية:"
+
+#~ msgid "Documents related to this map"
+#~ msgstr "الوثائق المتعلقة بهذه الخريطة"
+
+#~ msgid "List of documents related to this map:"
+#~ msgstr "قائمة الوثائق المتعلقة بهذا الخارطة:"
+
+#~ msgid "Change Permissions of this Map"
+#~ msgstr "تغيير أذونات هذه الخريطة"
+
+#~ msgid "Copy this map"
+#~ msgstr "نسخ هذه الخريطة"
+
+#~ msgid "Duplicate this map and modify it for your own purposes"
+#~ msgstr "تكرار هذه الخريطة وتعديلها لأغراض خاصة بك"
+
+#~ msgid "Create a New Map"
+#~ msgstr "إنشاء خريطة جديدة"
+
+#~ msgid "Edit Map"
+#~ msgstr "تعديل خريطة"
+
+#~ msgid "Remove Map"
+#~ msgstr "إزالة الخريطة"
+
+#~ msgid ""
+#~ "\n"
+#~ "          Are you sure you want to remove <a href="
+#~ "\"%(map.get_absolute_url)s\">%(map_title)s</a>?\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "هل تريد بالتأكيد إزالة <a href=\"%(map.get_absolute_url)s\">"
+#~ "%(map_title)s</a>?"
+
+#~ msgid "error saving thumbnail"
+#~ msgstr "خطأ في حفظ الصورة المصغرة"
+
+#~ msgid "Upload new layers"
+#~ msgstr "تحميل طبقات جديدة"
+
+#~ msgid "Create a new layer"
+#~ msgstr "إنشاء طبقة جديدة"
+
+#, fuzzy
+#~| msgid "Upload Document"
+#~ msgid "Upload new document"
+#~ msgstr "تحميل الوثيقة"
+
+#~ msgid "Create a new map"
+#~ msgstr "إنشاء خريطة جديدة"
+
+#~ msgid "Auto-detect"
+#~ msgstr "اكتشاف تلقائي"
+
+#~ msgid "Catalogue Service"
+#~ msgstr "خدمة كتالوج"
+
+#~ msgid "Harvard Geospatial Library"
+#~ msgstr "مكتبة هارفارد الجغرافية المكانية "
+
+#~ msgid "GeoNode (Catalogue Service)"
+#~ msgstr "GeoNode (خدمة الكتالوج)"
+
+#~ msgid "Could not find importable resources for the service at %(url)s"
+#~ msgstr "تعذر العثور على موارد قابلة للاستيراد للخدمة على%(url)s"
+
+#~ msgid "Resource is queued"
+#~ msgstr "المورد في قائمة الانتظار"
+
+#, fuzzy
+#~| msgid "Retry job"
+#~ msgid "Retry job"
+#~ msgstr "إعادة محاولة الوظيفة"
+
+#~ msgid "Service has been created:"
+#~ msgstr "تم إنشاء خدمة:"
+
+#~ msgid "The following layers will be imported"
+#~ msgstr "سيتم استيراد الطبقات التالية"
+
+#~ msgid "Id"
+#~ msgstr "معرف"
+
+#, fuzzy
+#~| msgid "Create a new layer"
+#~ msgid "Create a new dataset"
+#~ msgstr "إنشاء طبقة جديدة"
+
+#~ msgid "Create Map"
+#~ msgstr "إنشاء خريطة"
+
+#~ msgid "[%(site_name)s] Password reset"
+#~ msgstr "[%(site_name)s] إعادة تعيين كلمة المرور"
+
+#~ msgid "Contact Us"
+#~ msgstr "اتصل بنا"
+
+#~ msgid "Tel"
+#~ msgstr "الهاتف"
+
+#~ msgid "Search for Data."
+#~ msgstr "البحث عن البيانات."
+
+#~ msgid "Advanced Search"
+#~ msgstr "بحث متقدم"
+
+#, fuzzy
+#~| msgid "dataset"
+#~ msgid "Add datasets"
+#~ msgstr "مجموعة البيانات"
+
+#~ msgid "Create maps"
+#~ msgstr "إنشاء خرائط"
+
+#~ msgid "Responsibles"
+#~ msgstr "الأطراف المسؤولة"
+
+#~ msgid "Date begins after:"
+#~ msgstr "يبدأ التاريخ بعد:"
+
+#~ msgid "yyyy-mm-dd"
+#~ msgstr "‫yyyy-mm-dd"
+
+#~ msgid "Date ends before:"
+#~ msgstr "التاريخ ينتهي قبل:"
+
+#~ msgid "Search by region"
+#~ msgstr "البحث حسب المنطقة"
+
+#, fuzzy
+#~| msgid "Sections"
+#~ msgid "Selection"
+#~ msgstr "أقسام"
+
+#~ msgid "Filters"
+#~ msgstr "مرشحات"
+
+#, fuzzy
+#~| msgid "Layers found"
+#~ msgid "Datasets found"
+#~ msgstr "طبقات وجدت"
+
+#~ msgid "Maps found"
+#~ msgstr "خرائط وجدت"
+
+#~ msgid "Documents found"
+#~ msgstr "وثائق وجدت"
+
+#, fuzzy
+#~| msgid "Maps found"
+#~ msgid "found"
+#~ msgstr "خرائط وجدت"
+
+#~ msgid "Text"
+#~ msgstr "نص"
+
+#, fuzzy
+#~| msgid "All contents"
+#~ msgid "Empty content"
+#~ msgstr "جميع المحتويات"
 
 #~ msgid "Layer name"
 #~ msgstr "اسم الطبقة"
