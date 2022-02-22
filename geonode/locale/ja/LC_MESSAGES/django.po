@@ -1864,7 +1864,7 @@ msgid "E-mail"
 msgstr "Eメール"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "招待が「%(email)s」に正常に送信されました。"
 
 #, python-format

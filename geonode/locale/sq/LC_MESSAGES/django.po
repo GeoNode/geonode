@@ -1929,7 +1929,7 @@ msgid "E-mail"
 msgstr ""
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr ""
 
 #, python-format

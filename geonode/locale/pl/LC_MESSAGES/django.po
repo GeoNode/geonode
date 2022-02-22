@@ -1888,7 +1888,7 @@ msgid "E-mail"
 msgstr "E-mail"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Zaproszenia zostały pomyślnie wysłane do '%(email)s'"
 
 #, python-format

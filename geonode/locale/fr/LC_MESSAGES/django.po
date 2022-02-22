@@ -1988,7 +1988,7 @@ msgid "E-mail"
 msgstr "Courrier électronique"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Les invitations ont été envoyées avec succès à '%(email)s'"
 
 #, python-format

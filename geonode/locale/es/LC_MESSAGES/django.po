@@ -2099,7 +2099,7 @@ msgid "E-mail"
 msgstr "Correo Electrónico"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Invitaciones enviadas con éxito a '%(email)s'"
 
 #, python-format
@@ -6946,8 +6946,6 @@ msgstr ""
 "Argumentos opcionales codificados en formato JSON. (Ejemplo: {\"argument\": "
 "\"value\"})"
 
-#~ msgid "Home"
-#~ msgstr "Inicio"
 #~ msgid "Layer name"
 #~ msgstr "Nombre de la Capa"
 
