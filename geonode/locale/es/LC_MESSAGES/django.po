@@ -41,7 +41,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-11 14:19+0000\n"
+"POT-Creation-Date: 2022-02-22 10:45+0100\n"
 "PO-Revision-Date: 2021-08-31 08:03-0600\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Spanish (http://www.transifex.com/geonode/geonode/language/"
@@ -210,6 +210,12 @@ msgstr ""
 msgid "Regions"
 msgstr "Regiones"
 
+msgid ""
+"Additional metadata, must be in format [            {\"metadata_key\": "
+"\"metadata_value\"},            {\"metadata_key\": \"metadata_value"
+"\"}         ]"
+msgstr ""
+
 msgid "Group"
 msgstr "Grupo"
 
@@ -337,6 +343,11 @@ msgstr ""
 "explicación general del conocimientos del productor de datos acerca del "
 "linaje del conjunto de datos"
 
+msgid ""
+"Additional metadata, must be in format [ {\"metadata_key\": \"metadata_value"
+"\"}, {\"metadata_key\": \"metadata_value\"} ]"
+msgstr ""
+
 msgid "title"
 msgstr "título"
 
@@ -424,11 +435,27 @@ msgstr "Destacado"
 msgid "Should this resource be advertised in home page?"
 msgstr "Debería ser publicado éste recurso en la página de incio?"
 
+#, fuzzy
+#| msgid "Is Published"
+msgid "Was Published"
+msgstr "Esta Publicado"
+
+msgid "Previous Published state."
+msgstr ""
+
 msgid "Is Published"
 msgstr "Esta Publicado"
 
 msgid "Should this resource be published and searchable?"
 msgstr "Debería éste recurso ser público e indexado?"
+
+#, fuzzy
+#| msgid "Map Approved"
+msgid "Was Approved"
+msgstr "Mapa Aprobado"
+
+msgid "Previous Approved state."
+msgstr ""
 
 msgid "Approved"
 msgstr "Aprobado"
@@ -453,6 +480,11 @@ msgstr "Metadata"
 
 msgid "If true, will be excluded from search"
 msgstr "Si es verdadero, se excluirá de la búsqueda"
+
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Extra Metadata"
+msgstr "Editar Metadatos"
 
 msgid "For example \"kml\""
 msgstr "Por ejemplo \"kml\""
@@ -620,6 +652,14 @@ msgstr ""
 "Para permitir el cambio, configure el recurso para que no esté \"Aprobado\" "
 "en la configuración de metadatos y escriba un mensaje al propietario para "
 "notificarle"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this resource"
+msgstr "No tienes permiso para ver esta capa"
+
+msgid "Not allowed"
+msgstr "No permitido"
 
 msgid "Resource Metadata"
 msgstr "Metadatos de recursos"
@@ -992,6 +1032,11 @@ msgstr "Falso"
 msgid "Speed Rating"
 msgstr "Índice de Velocidad"
 
+msgid ""
+"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
+"smaller file."
+msgstr ""
+
 msgid "Link to"
 msgstr "Enlazar a"
 
@@ -1004,11 +1049,11 @@ msgstr "Un documento no pueden tener ambos un archivo y un url."
 msgid "This file type is not allowed"
 msgstr "Este tipo de archivo no esta permitido"
 
-msgid "Permissions must be valid JSON."
-msgstr "Permisos deben ser JSON valido."
-
 msgid "File"
 msgstr "Archivo"
+
+msgid "Permissions must be valid JSON."
+msgstr "Permisos deben ser JSON valido."
 
 msgid "The URL of the document if it is external."
 msgstr "La URL del documento si este es externo."
@@ -1269,9 +1314,6 @@ msgstr "Usted no tiene permitido modificar los metadatos de este documento"
 msgid "You are not permitted to view this document"
 msgstr "Usted no tiene permitido ver este documento"
 
-msgid "Not allowed"
-msgstr "No permitido"
-
 msgid "Not found"
 msgstr "No encontrado"
 
@@ -1381,7 +1423,9 @@ msgstr "Establecer"
 msgid "View"
 msgstr "View"
 
-msgid "Specify which users can view or modify this map"
+#, fuzzy
+#| msgid "Specify which users can view or modify this map"
+msgid "Specify which users can view or modify this"
 msgstr "Especificar qué usuarios pueden ver o modificar este mapa"
 
 msgid "Change Permissions of this"
@@ -1428,7 +1472,9 @@ msgstr ""
 "elementos metadatos ISO, FGDC, y Dublin Core.\n"
 "        Algunos de sus metadatos originales pueden haberse perdido."
 
-msgid "Explore Apps"
+#, fuzzy
+#| msgid "Explore Apps"
+msgid "Explore GeoApps"
 msgstr "Explora Apps"
 
 #, python-format
@@ -1441,8 +1487,8 @@ msgstr ""
 "        Editando detalles para %(map_title)s\n"
 "      "
 
-msgid "Return to GeoApp"
-msgstr "Volver a la GeoApp"
+msgid "Return to"
+msgstr "Volver a"
 
 msgid "New Map"
 msgstr "Nuevo mapa"
@@ -1555,8 +1601,16 @@ msgstr "Se produjo una excepción en la carga de datos de PostGIS"
 msgid " Additionally an error occured during database cleanup"
 msgstr " Adicionalmente ocurrió un error durante la limpieza de base de datos"
 
-msgid "GZIP"
-msgstr "GZIP"
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr "Proyección no válida. ¡Falta CRS en la capa!"
+
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr ""
+"No se pudo encontrar ninguna expresión regular de tiempo válida para los "
+"archivos de mosaico."
+
+msgid "Unsupported DataBase for Mosaics!"
+msgstr "Base de datos no compatible para Mosaicos!"
 
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
@@ -1587,9 +1641,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr "Proyección no válida. ¡Falta CRS en la capa!"
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Usted no tiene permisos para cambiar el estilo de ésta capa"
@@ -1838,7 +1889,7 @@ msgid "E-mail"
 msgstr "Correo Electrónico"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Invitaciones enviadas con éxito a '%(email)s'"
 
 #, python-format
@@ -2149,6 +2200,9 @@ msgstr "Desviación Estándar"
 msgid "Rate this layer"
 msgstr "Califica esta Capa"
 
+msgid "Legend"
+msgstr "Leyenda"
+
 msgid "Analyze with"
 msgstr "Analizar con"
 
@@ -2161,51 +2215,15 @@ msgstr "Imágenes"
 msgid "Data"
 msgstr "Datos"
 
-msgid "Click to filter the layer"
-msgstr "Haga clic para filtrar la capa"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Export Layer"
+msgstr "Explora Capas"
 
-msgid "Do you want to filter it?"
-msgstr "Quieres filtrarlo?"
-
-msgid "Loading..."
-msgstr "Cargando..."
-
-msgid "Filter by attributes"
-msgstr "Filtrar por atributos"
-
-msgid "Match"
-msgstr "Igualar"
-
-msgid "all"
-msgstr "todos"
-
-msgid "any"
-msgstr "cualquiera"
-
-msgid "of the following:"
-msgstr "de los siguientes:"
-
-msgid "Attribute"
-msgstr "Atributo"
-
-msgid "Operator"
-msgstr "Operador"
-
-msgid "Feature limit"
-msgstr "Límite de entidades"
-
-msgid "Pick your download format:"
-msgstr "Elige tu formato de descarga:"
-
-msgid ""
-"No data available for this resource. Please contact a system administrator "
-"or a manager."
-msgstr ""
-"No hay datos disponibles para este recurso. Póngase en contacto con un "
-"administrador del sistema."
-
-msgid "Warning"
-msgstr "Advertencia"
+#, fuzzy
+#| msgid "Download Failed"
+msgid "Download original files"
+msgstr "Descarga Fallida"
 
 msgid "Edit Layer"
 msgstr "Editar Capa"
@@ -2238,9 +2256,6 @@ msgstr "Información de atributo"
 
 msgid "ISO Feature Catalogue"
 msgstr "Catálogo de características ISO"
-
-msgid "Legend"
-msgstr "Leyenda"
 
 msgid "Maps using this layer"
 msgstr "Mapas que utilizan esta Capa"
@@ -2326,12 +2341,6 @@ msgstr "Haga clic en el botón de abajo para cambiar los permisos de esta Capa."
 msgid "Change Layer Permissions"
 msgstr "Cambia los permisos de la Capa"
 
-msgid "Processing..."
-msgstr "Procesando..."
-
-msgid "Updating Permissions..."
-msgstr "Actualizando permisos ..."
-
 msgid "Remove Mosaic Granules"
 msgstr "Eliminar gránulos de mosaico"
 
@@ -2395,6 +2404,9 @@ msgstr ""
 
 msgid "Use a custom template?"
 msgstr "¿Utiliza una plantilla personalizada?"
+
+msgid "Attribute"
+msgstr "Atributo"
 
 msgid "Display Order"
 msgstr "Mostar Orden"
@@ -2870,9 +2882,6 @@ msgstr ""
 msgid "Your upload is either complete or you haven't resumed an earlier one."
 msgstr "Su carga está completa o no se ha reanudado una anterior."
 
-msgid "Return to"
-msgstr "Volver a"
-
 msgid "Upload Form"
 msgstr "Formulario para Subir"
 
@@ -3190,6 +3199,27 @@ msgstr ""
 "Esta capa es miembro de un grupo de capas , debe quitar la capa del grupo "
 "antes de borrar."
 
+msgid "Positional Arguments"
+msgstr "Argumentos posicionales"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr ""
+"Argumentos posicionales codificados en formato JSON. (Ejemplo: [\"arg1\", "
+"\"arg2\"])"
+
+msgid "Keyword Arguments"
+msgstr "Argumentos opcionales"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr ""
+"Argumentos opcionales codificados en formato JSON. (Ejemplo: {\"argument\": "
+"\"value\"})"
+
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
+
 msgid "Map Created"
 msgstr "Mapa Creado"
 
@@ -3274,11 +3304,14 @@ msgstr "parámetros de capa"
 msgid "source params"
 msgstr "parámetros de fuente"
 
-msgid "Map layers WMS GetCapabilities document"
-msgstr "Documento de capas de mapa WMS GetCapabilities"
-
 msgid "Rate this Map"
 msgstr "Puntaje de este Mapa"
+
+msgid "Map Layers"
+msgstr "Capas del mapa"
+
+msgid "This map uses the following layers:"
+msgstr "Este mapa utiliza las siguientes capas:"
 
 msgid "Download Map"
 msgstr "Descargar Mapa"
@@ -3288,17 +3321,14 @@ msgid_plural "Maps"
 msgstr[0] "Mapa"
 msgstr[1] "Mapas"
 
-msgid "Map Layers"
-msgstr "Capas del mapa"
-
-msgid "This map uses the following layers:"
-msgstr "Este mapa utiliza las siguientes capas:"
-
 msgid "Documents related to this map"
 msgstr "Documentos relacionados con este Mapa"
 
 msgid "List of documents related to this map:"
 msgstr "Lista de documentos relacionados con este Mapa:"
+
+msgid "Specify which users can view or modify this map"
+msgstr "Especificar qué usuarios pueden ver o modificar este mapa"
 
 msgid "Change Permissions of this Map"
 msgstr "Modifica permisos de este Mapa"
@@ -3418,9 +3448,6 @@ msgstr "No tienes permiso para modificar los metadatos de este mapa."
 
 msgid "You are not allowed to view this map."
 msgstr "No tienes permiso para ver este mapa."
-
-msgid "error saving thumbnail"
-msgstr "error al guardar la miniatura"
 
 msgid "Message received"
 msgstr "Mensaje recibido"
@@ -3632,6 +3659,9 @@ msgstr "30 minutos"
 
 msgid "1 hour"
 msgstr "1 hora"
+
+msgid "Warning"
+msgstr "Advertencia"
 
 msgid "Error"
 msgstr "Error"
@@ -3865,6 +3895,10 @@ msgstr "Sin Grupo"
 msgid "All contents"
 msgstr "Todos los Contenidos"
 
+#, python-format
+msgid "%(app)s"
+msgstr ""
+
 msgid "No Organization Info"
 msgstr "Sin información de la organización"
 
@@ -3927,6 +3961,11 @@ msgid "Upload new document"
 msgstr "Cargar documento nuevo"
 
 msgid "Create a new map"
+msgstr "Crea un nuevo mapa"
+
+#, fuzzy, python-format
+#| msgid "Create a new map"
+msgid " Create a new %(app)s"
 msgstr "Crea un nuevo mapa"
 
 msgid "My Activities"
@@ -3997,6 +4036,12 @@ msgstr "La sesión ha expirado. Por favor inicie sesión de nuevo!"
 
 msgid "Permissions successfully updated!"
 msgstr "¡Permisos actualizados con éxito!"
+
+#, python-brace-format
+msgid ""
+"User {username} has download permissions but cannot access the resource. "
+"Please update permission consistently!"
+msgstr ""
 
 msgid "Error updating permissions :("
 msgstr "Error al actualizar los permisos :("
@@ -4586,6 +4631,12 @@ msgstr "Marcador de posición para mensaje de estado"
 msgid "Placeholder for status-message-body"
 msgstr "Marcador de posición para status-message-body"
 
+msgid "Processing..."
+msgstr "Procesando..."
+
+msgid "Updating Permissions..."
+msgstr "Actualizando permisos ..."
+
 msgid "About GeoNode"
 msgstr "Acerca de GeoNode"
 
@@ -4694,9 +4745,16 @@ msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
 "Realmente desea eliminar la dirección de correo electrónico seleccionada?"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because user %(user_display)s has given "
+#| "yours as an e-mail address to connect their account.\n"
+#| "\n"
+#| "To confirm this is correct, go to %(activate_url)s\n"
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because user %(user_display)s has given yours "
 "as an e-mail address to connect their account.\n"
@@ -4711,26 +4769,32 @@ msgstr ""
 "\n"
 "Para confirmar que esto es correcto, vaya a %(activate_url)s\n"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you from %(site_name)s!\n"
+#| "\n"
+#| "https://%(site_domain)s"
 msgid ""
-"Thank you from %(site_name)s!\n"
-"\n"
-"https://%(site_domain)s"
+"Thank you from %(site_name|urlencode)s!\n"
+"%(site_domain)s"
 msgstr ""
 "Gracias de parte de %(site_name)s!\n"
 "\n"
 "https://%(site_domain)s"
 
-#, python-format
-msgid "Please confirm email address for %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Please confirm email address for %(site_name)s"
+msgid "Please confirm email address for %(site_name|urlencode)s"
 msgstr "Confirme la dirección de correo electrónico para %(site_name)s"
 
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
+#, fuzzy, python-format
+#| msgid "You have been invited to sign up at %(site_name)s."
+msgid "You have been invited to sign up at %(site_name|urlencode)s."
 msgstr "Te invitaron a registrarte en %(site_name)s."
 
-#, python-format
-msgid "Create an account on %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Create an account on %(site_name)s"
+msgid "Create an account on %(site_name|urlencode)s"
 msgstr "Crear una cuenta en %(site_name)s"
 
 msgid ""
@@ -4742,9 +4806,16 @@ msgstr ""
 msgid "Change password email notification"
 msgstr "Notificación de Cambio de contraseña"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because you or someone else has requested a "
+#| "password for your user account.\n"
+#| "It can be safely ignored if you did not request a password reset. Click "
+#| "the link below to reset your password."
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because you or someone else has requested a "
 "password for your user account.\n"
@@ -4763,9 +4834,12 @@ msgstr ""
 msgid "In case you forgot, your username is %(username)s."
 msgstr "En caso de que lo haya olvidado, su nombre de usuario es %(username)s."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you for using %(site_name)s!\n"
+#| "%(site_domain)s"
 msgid ""
-"Thank you for using %(site_name)s!\n"
+"Thank you for using %(site_name|urlencode)s!\n"
 "%(site_domain)s"
 msgstr ""
 "¡Gracias por usar %(site_name)s!\n"
@@ -5082,18 +5156,6 @@ msgstr "Eliminar estos"
 msgid "GeoNode Search"
 msgstr "Búsqueda GeoNode"
 
-msgid "Apps"
-msgstr "Apps"
-
-msgid "ETA-IOTA Comparison"
-msgstr "Comparación ETA-IOTA"
-
-msgid "Global Forest Loss"
-msgstr "Pérdida de Bosque Global"
-
-msgid "Timelapse"
-msgstr "Timelapse"
-
 msgid "Contact Us"
 msgstr "Contáctenos"
 
@@ -5345,12 +5407,6 @@ msgstr "Búsqueda de metadatos vía OAI-PMH:"
 
 msgid "Cached tiles via WMTS:"
 msgstr "Teseleas cacheadas vía WMTS:"
-
-msgid "ETA-IOTA"
-msgstr "ETA-IOTA"
-
-msgid "Perdida Bosque Global"
-msgstr "Pérdida de Bosque Global"
 
 msgid "User Guide"
 msgstr "Guía para el Usuario"
@@ -5648,14 +5704,18 @@ msgstr "Salir"
 msgid "Dear Sir/Madam,"
 msgstr "Querido Sr./Sra./Srita.,"
 
-#, python-format
-msgid "is inviting you to join (%(site_name)s)."
+#, fuzzy, python-format
+#| msgid "is inviting you to join (%(site_name)s)."
+msgid "is inviting you to join (%(site_name|urlencode)s)."
 msgstr "te está invitando a unirte (%(site_name)s)."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
+#| "Registration</a>."
 msgid ""
-"To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
-"Registration</a>."
+"To do so, please register at <a href=\"%(invite_url)s\">"
+"%(site_name|urlencode)s Registration</a>."
 msgstr ""
 "Para hacerlo, regístrese en <a href=\"%(invite_url)s\">%(site_name)s "
 "Registro</a>."
@@ -5799,6 +5859,11 @@ msgid ""
 msgstr ""
 "Puede habilitar el acceso para ese usuario activandolo en la seccion de "
 "administracion"
+
+#, fuzzy
+#| msgid "has requested access to the site."
+msgid "has created an account and has access to the site."
+msgstr "ha solicitado acceso al sitio."
 
 msgid "A user has requested access to the site"
 msgstr "Un nuevo usuario ha solicitado acceso al sitio"
@@ -6079,6 +6144,11 @@ msgstr ""
 "No se seleccionaron elementos de la lista. Utilice los campos de selección "
 "para agregar."
 
+#, fuzzy
+#| msgid "set permissions"
+msgid "Set permissions"
+msgstr "establecer permisos"
+
 msgid "Filters"
 msgstr "Filtros"
 
@@ -6255,8 +6325,9 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr "Elija entre usar el fondo jumbotron y la presentación de diapositivas"
 
-msgid "Empty content"
-msgstr "Contenido vacío"
+#, python-brace-format
+msgid "The limit `{instance.slug}` should not be deleted."
+msgstr ""
 
 msgid "Could not access to uploaded data."
 msgstr "No se pudo acceder a los datos cargados."
@@ -6274,6 +6345,25 @@ msgid ""
 msgstr ""
 "Se proporcionaron uno o más archivos SLD, pero no se encontraron archivos "
 "coincidentes para ellos."
+
+#, fuzzy
+#| msgid "Document must be a file or url."
+msgid "Base file must be a file or url."
+msgstr "El Documento debe ser un archivo o url."
+
+#, python-brace-format
+msgid ""
+"`{field_name}` field cannot have both a file and a path. Please choose one "
+"and try again."
+msgstr ""
+
+msgid ""
+"Total upload size exceeds {filesizeformat(max_size)}. Please try again with "
+"smaller files."
+msgstr ""
+
+msgid "The maximum file size allowed for upload (bytes)."
+msgstr ""
 
 msgid "Layer already exists"
 msgstr "La capa ya existe"
@@ -6295,8 +6385,8 @@ msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 "Se produjo una excepción al analizar el archivo de metadatos proporcionado."
 
-msgid "Error configuring Layer"
-msgstr "Error al configurar la capa"
+msgid "Error uploading Dataset"
+msgstr ""
 
 msgid "Invalid zip file detected"
 msgstr "Archivo zip no válido detectado"
@@ -6360,14 +6450,6 @@ msgstr "estado del elemento desconocido: {task.state}"
 msgid "error during import: {progress.get('message')}"
 msgstr "error durante la importación: {progress.get('message')}"
 
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr ""
-"No se pudo encontrar ninguna expresión regular de tiempo válida para los "
-"archivos de mosaico."
-
-msgid "Unsupported DataBase for Mosaics!"
-msgstr "Base de datos no compatible para Mosaicos!"
-
 msgid "Upload Session invalid or no more accessible!"
 msgstr "¡La sesión de subida no es válida o ya no es accesible!"
 
@@ -6377,21 +6459,81 @@ msgstr "Nivel de permiso inválido."
 msgid "Permission Denied"
 msgstr "Permiso Denegado"
 
-msgid "Positional Arguments"
-msgstr "Argumentos posicionales"
+#~ msgid "Return to GeoApp"
+#~ msgstr "Volver a la GeoApp"
 
-msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
-msgstr ""
-"Argumentos posicionales codificados en formato JSON. (Ejemplo: [\"arg1\", "
-"\"arg2\"])"
+#~ msgid "GZIP"
+#~ msgstr "GZIP"
 
-msgid "Keyword Arguments"
-msgstr "Argumentos opcionales"
+#~ msgid "Click to filter the layer"
+#~ msgstr "Haga clic para filtrar la capa"
 
-msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
-msgstr ""
-"Argumentos opcionales codificados en formato JSON. (Ejemplo: {\"argument\": "
-"\"value\"})"
+#~ msgid "Do you want to filter it?"
+#~ msgstr "Quieres filtrarlo?"
+
+#~ msgid "Loading..."
+#~ msgstr "Cargando..."
+
+#~ msgid "Filter by attributes"
+#~ msgstr "Filtrar por atributos"
+
+#~ msgid "Match"
+#~ msgstr "Igualar"
+
+#~ msgid "all"
+#~ msgstr "todos"
+
+#~ msgid "any"
+#~ msgstr "cualquiera"
+
+#~ msgid "of the following:"
+#~ msgstr "de los siguientes:"
+
+#~ msgid "Operator"
+#~ msgstr "Operador"
+
+#~ msgid "Feature limit"
+#~ msgstr "Límite de entidades"
+
+#~ msgid "Pick your download format:"
+#~ msgstr "Elige tu formato de descarga:"
+
+#~ msgid ""
+#~ "No data available for this resource. Please contact a system "
+#~ "administrator or a manager."
+#~ msgstr ""
+#~ "No hay datos disponibles para este recurso. Póngase en contacto con un "
+#~ "administrador del sistema."
+
+#~ msgid "Map layers WMS GetCapabilities document"
+#~ msgstr "Documento de capas de mapa WMS GetCapabilities"
+
+#~ msgid "error saving thumbnail"
+#~ msgstr "error al guardar la miniatura"
+
+#~ msgid "Apps"
+#~ msgstr "Apps"
+
+#~ msgid "ETA-IOTA Comparison"
+#~ msgstr "Comparación ETA-IOTA"
+
+#~ msgid "Global Forest Loss"
+#~ msgstr "Pérdida de Bosque Global"
+
+#~ msgid "Timelapse"
+#~ msgstr "Timelapse"
+
+#~ msgid "ETA-IOTA"
+#~ msgstr "ETA-IOTA"
+
+#~ msgid "Perdida Bosque Global"
+#~ msgstr "Pérdida de Bosque Global"
+
+#~ msgid "Empty content"
+#~ msgstr "Contenido vacío"
+
+#~ msgid "Error configuring Layer"
+#~ msgstr "Error al configurar la capa"
 
 #~ msgid "Home"
 #~ msgstr "Inicio"
@@ -6405,7 +6547,7 @@ msgstr ""
 #~ msgid "Failed to upload the layer"
 #~ msgstr "Error al cargar la capa"
 
-#, fuzzy, python-format
+#, fuzzy
 #~| msgid "couldn't generate thumbnail"
 #~ msgid "couldn't generate thumbnail: %s"
 #~ msgstr "no se pudo generar la miniatura"
@@ -6415,9 +6557,6 @@ msgstr ""
 
 #~ msgid "batch edit"
 #~ msgstr "edición por lotes"
-
-#~ msgid "set permissions"
-#~ msgstr "establecer permisos"
 
 #~ msgid "documents"
 #~ msgstr "documentos"
