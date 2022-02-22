@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-03 14:51+0000\n"
+"POT-Creation-Date: 2022-02-22 10:45+0100\n"
 "PO-Revision-Date: 2020-06-10 09:21+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Arabic (http://www.transifex.com/geonode/geonode/language/"
@@ -199,6 +199,12 @@ msgstr ""
 msgid "Regions"
 msgstr "المناطق"
 
+msgid ""
+"Additional metadata, must be in format [            {\"metadata_key\": "
+"\"metadata_value\"},            {\"metadata_key\": \"metadata_value"
+"\"}         ]"
+msgstr ""
+
 msgid "Group"
 msgstr "مجموعة"
 
@@ -334,6 +340,11 @@ msgid ""
 "dataset"
 msgstr "شرح عام لمعرف منتجي البيانات حول نسب مجموعة البيانات"
 
+msgid ""
+"Additional metadata, must be in format [ {\"metadata_key\": \"metadata_value"
+"\"}, {\"metadata_key\": \"metadata_value\"} ]"
+msgstr ""
+
 msgid "title"
 msgstr "عنوان"
 
@@ -423,11 +434,27 @@ msgstr "متميز"
 msgid "Should this resource be advertised in home page?"
 msgstr "هل يجب الإعلان عن هذا المورد في الصفحة الرئيسية؟"
 
+#, fuzzy
+#| msgid "Is Published"
+msgid "Was Published"
+msgstr "تم نشره"
+
+msgid "Previous Published state."
+msgstr ""
+
 msgid "Is Published"
 msgstr "تم نشره"
 
 msgid "Should this resource be published and searchable?"
 msgstr "هل ينبغي نشر هذه الموارد والبحث فيها؟"
+
+#, fuzzy
+#| msgid "Map Approved"
+msgid "Was Approved"
+msgstr "خريطة موافق عليها"
+
+msgid "Previous Approved state."
+msgstr ""
 
 msgid "Approved"
 msgstr "موافق عليه"
@@ -454,6 +481,11 @@ msgstr "البيانات الوصفية"
 
 msgid "If true, will be excluded from search"
 msgstr ""
+
+#, fuzzy
+#| msgid "Edit Metadata"
+msgid "Extra Metadata"
+msgstr "تعديل البيانات الوصفية"
 
 msgid "For example \"kml\""
 msgstr "على سبيل المثال “kml”"
@@ -649,6 +681,16 @@ msgstr ""
 "للسماح بالتغيير، قم بتعيين المورد إلى \"تمت الموافقة عليه\" ضمن إعدادات "
 "بيانات التعريف وكتابة رسالة إلى المالك لإخطاره"
 
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this resource"
+msgstr "لا يسمح لك بمشاهدة هذه الطبقة"
+
+#, fuzzy
+#| msgid "Not provided"
+msgid "Not allowed"
+msgstr "غير مزود"
+
 msgid "Resource Metadata"
 msgstr "بيانات تعريف المورد"
 
@@ -681,6 +723,30 @@ msgstr "وصف"
 
 msgid "GeoNode Client Library"
 msgstr "مكتبة عميل GeoNode"
+
+msgid "Explore Maps"
+msgstr "تصفح الخرائط"
+
+msgid "Edit Map"
+msgstr "تعديل خريطة"
+
+msgid "Update"
+msgstr "تحديث"
+
+msgid "Create a New Map"
+msgstr "إنشاء خريطة جديدة"
+
+msgid "Available layers"
+msgstr "الطبقات المتاحة"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Save Map"
+msgstr "حفظ خريطة"
+
+msgid "Close"
+msgstr "أغلق"
 
 msgid ""
 "Flora and/or fauna in natural environment. Examples: wildlife, vegetation, "
@@ -999,6 +1065,11 @@ msgstr "زائف"
 msgid "Speed Rating"
 msgstr "تقييم سريع"
 
+msgid ""
+"File size size exceeds {filesizeformat(max_size)}. Please try again with a "
+"smaller file."
+msgstr ""
+
 msgid "Link to"
 msgstr "رابط ل"
 
@@ -1011,11 +1082,11 @@ msgstr "لا يمكن أن يحتوي المستند على ملف ورابط."
 msgid "This file type is not allowed"
 msgstr "لا يسمح هذا النوع من الملفات"
 
-msgid "Permissions must be valid JSON."
-msgstr "يجب أن تكون الأذونات JSON صالحة."
-
 msgid "File"
 msgstr "ملف"
+
+msgid "Permissions must be valid JSON."
+msgstr "يجب أن تكون الأذونات JSON صالحة."
 
 msgid "The URL of the document if it is external."
 msgstr "عنوان المستند إذا كان خارجيًا."
@@ -1082,9 +1153,6 @@ msgstr "استبدال"
 msgid "Remove"
 msgstr "إزالة"
 
-msgid "Close"
-msgstr "أغلق"
-
 msgid "Download Metadata"
 msgstr "تحميل البيانات الوصفية"
 
@@ -1148,9 +1216,6 @@ msgstr "مزود بيانات التعريف"
 
 msgid "<< Back"
 msgstr "<< رجوع"
-
-msgid "Update"
-msgstr "تحديث"
 
 msgid "Next >>"
 msgstr "التالي >>"
@@ -1290,11 +1355,6 @@ msgstr "غير مسموح لك بتعديل البيانات الأولية له
 
 msgid "You are not permitted to view this document"
 msgstr "لا يسمح لك بعرض هذه الوثيقة"
-
-#, fuzzy
-#| msgid "Not provided"
-msgid "Not allowed"
-msgstr "غير مزود"
 
 #, fuzzy
 #| msgid "Maps found"
@@ -1440,7 +1500,9 @@ msgstr "وضع"
 msgid "View"
 msgstr "View"
 
-msgid "Specify which users can view or modify this map"
+#, fuzzy
+#| msgid "Specify which users can view or modify this map"
+msgid "Specify which users can view or modify this"
 msgstr "حدد المستخدمين الذين يمكنهم عرض هذه الخريطة أو تعديلها"
 
 #, fuzzy
@@ -1501,6 +1563,11 @@ msgstr ""
 "‬\n"
 "‫          ربما فقدت بعض البيانات الوصفية الأصلية."
 
+#, fuzzy
+#| msgid "Explore Groups"
+msgid "Explore GeoApps"
+msgstr "تصفح المجموعات"
+
 #, python-format
 msgid ""
 "\n"
@@ -1509,6 +1576,9 @@ msgid ""
 msgstr ""
 "\n"
 "‫‫‫تعديل التفاصيل ل%(map_title)s"
+
+msgid "Return to"
+msgstr "العودة إلى"
 
 msgid "New Map"
 msgstr "خريطة جديدة"
@@ -1643,8 +1713,14 @@ msgstr "حدث اعتراض أثناء تحميل البيانات إلى PostGI
 msgid " Additionally an error occured during database cleanup"
 msgstr " بالإضافة إلى ذلك حدث خطأ أثناء تنظيف قاعدة البيانات"
 
-msgid "GZIP"
-msgstr "GZIP"
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr ""
+
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr "تعذر العثور على أي وقت صالح للتعبير النمطي لملفات الفسيفساء."
+
+msgid "Unsupported DataBase for Mosaics!"
+msgstr "قاعدة بيانات غير مدعومة للفسيفساء!"
 
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
@@ -1675,9 +1751,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr ""
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "لم يكن لديك صلاحيات لتغيير نمط هذه الطبقة"
@@ -1825,9 +1898,9 @@ msgid ""
 "            This group is <strong>%(access)s</strong>.\n"
 "          "
 msgstr ""
-"‫‬\n"
-"‬\n"
-"‫‫‫هذه المجموعة هي<strong>%(access)s</strong>"
+"\n"
+"\n"
+"هذه المجموعة هي<strong>%(access)s</strong>"
 
 msgid "Anyone may join this group."
 msgstr "يمكن لأي شخص الانضمام إلى هذه المجموعة."
@@ -1877,9 +1950,9 @@ msgid ""
 "          Are you sure you want to remove the group: %(group_title)s?\n"
 "        "
 msgstr ""
-"‫‬\n"
-"‬\n"
-"‫‫هل أنت متأكد أنك تريد إزالة المجموعة: %(group_title)s"
+"\n"
+"\n"
+"هل أنت متأكد أنك تريد إزالة المجموعة: %(group_title)s"
 
 msgid "Remove Maps/Data from Group"
 msgstr "إزالة خرائط / بيانات من المجموعة"
@@ -1902,9 +1975,6 @@ msgstr "إنشاء فئة المجموعة"
 msgid "Edit Group Category"
 msgstr "تعديل فئة المجموعة"
 
-msgid "Save"
-msgstr "حفظ"
-
 #, fuzzy, python-brace-format
 #| msgid "The e-mail address '%(email)s' has already been invited."
 msgid "The e-mail address '{email}' has already been invited."
@@ -1924,7 +1994,7 @@ msgid "E-mail"
 msgstr "بريد إلكتروني"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "تم إرسال الدعوات بنجاح إلى '%(email)s'"
 
 #, python-format
@@ -2175,15 +2245,6 @@ msgstr "الحفاظ على البيانات الوصفية لXML"
 msgid "Select the charset or leave default"
 msgstr "حدد محارف أو اترك الإفتراضي"
 
-msgid "Home"
-msgstr "الرئيسية"
-
-msgid "Change point of contact"
-msgstr "تغيير جهة اتصال"
-
-msgid "Assign a new point of contact to the layers below:"
-msgstr "تعيين نقطة اتصال جديدة إلى الطبقات التالية:"
-
 msgid "Layer WMS GetCapabilities document"
 msgstr "احصل على مستند القدرات لطبقات المستخدم لبرنامج إدارة المستودعات"
 
@@ -2244,6 +2305,9 @@ msgstr "الانحراف المعياري"
 msgid "Rate this layer"
 msgstr "قيم هذه الطبقة"
 
+msgid "Legend"
+msgstr "مفتاح رسم بياني"
+
 msgid "Analyze with"
 msgstr "تحليل ب"
 
@@ -2256,50 +2320,15 @@ msgstr "الصور"
 msgid "Data"
 msgstr "البيانات"
 
-msgid "Click to filter the layer"
-msgstr "انقر لتصفية الطبقة"
+#, fuzzy
+#| msgid "Explore Layers"
+msgid "Export Layer"
+msgstr "تصفح الطبقات"
 
-msgid "Do you want to filter it?"
-msgstr "هل تريد تصفية ذلك؟"
-
-msgid "Loading..."
-msgstr "جار التحميل..."
-
-msgid "Filter by attributes"
-msgstr "تصفية حسب السمات"
-
-msgid "Match"
-msgstr "مباراة"
-
-msgid "all"
-msgstr "جميع"
-
-msgid "any"
-msgstr "أي"
-
-msgid "of the following:"
-msgstr "الخريطة التالية:"
-
-msgid "Attribute"
-msgstr "سمة"
-
-msgid "Operator"
-msgstr "المشغل"
-
-msgid "Feature limit"
-msgstr "حد الميزة"
-
-msgid "Pick your download format:"
-msgstr "اختر تنسيق التنزيل الخاص بك:"
-
-msgid ""
-"No data available for this resource. Please contact a system administrator "
-"or a manager."
-msgstr ""
-"لا توجد بيانات متوفرة لهذا المورد. الرجاء الاتصال بمسؤول النظام أو مدير."
-
-msgid "Warning"
-msgstr "تحذير"
+#, fuzzy
+#| msgid "Download Failed"
+msgid "Download original files"
+msgstr "فشل تحميل"
 
 msgid "Edit Layer"
 msgstr "تعديل طبقة"
@@ -2338,9 +2367,6 @@ msgstr "معلومات السمة"
 
 msgid "ISO Feature Catalogue"
 msgstr "كتالوج ميزة ISO"
-
-msgid "Legend"
-msgstr "مفتاح رسم بياني"
 
 msgid "Maps using this layer"
 msgstr "خرائط باستخدام هذه الطبقة"
@@ -2420,12 +2446,6 @@ msgstr "انقر فوق الزر أدناه لتغيير الأذونات من �
 msgid "Change Layer Permissions"
 msgstr "غير صلاحيات طبقة"
 
-msgid "Processing..."
-msgstr "معالجة..."
-
-msgid "Updating Permissions..."
-msgstr "جارٍ تحديث الصلاحيات ..."
-
 msgid "Remove Mosaic Granules"
 msgstr "إزالة حبيبات الفسيفساء"
 
@@ -2470,11 +2490,11 @@ msgid ""
 msgstr ""
 "ملاحظة: تم ملء بيانات التعريف الأولية لهذه الطبقة باستيراد ملف XML شمل "
 "للبيانات الوصفية.\n"
-"‬\n"
-"‫           يدعم استيراد البيانات الوصفية ل GeoNode مجموعة فرعية من عناصر "
+"\n"
+"           يدعم استيراد البيانات الوصفية ل GeoNode مجموعة فرعية من عناصر "
 "البيانات الوصفية ISO, FGDC, and Dublin Core.\n"
-"‬\n"
-"‫           ربما فقدت بعض البيانات الوصفية الأصلية."
+"\n"
+"           ربما فقدت بعض البيانات الوصفية الأصلية."
 
 #, python-format
 msgid ""
@@ -2482,12 +2502,15 @@ msgid ""
 "        Editing details for %(layer_title)s\n"
 "      "
 msgstr ""
-"‫\n"
-"‬\n"
-"‫‫‫‫‫تعديل التفاصيل ل%(layer_title)s "
+"\n"
+"\n"
+"تعديل التفاصيل ل%(layer_title)s "
 
 msgid "Use a custom template?"
 msgstr ""
+
+msgid "Attribute"
+msgstr "سمة"
 
 msgid "Display Order"
 msgstr "ترتيب العرض"
@@ -2532,17 +2555,21 @@ msgstr "استبدال طبقة"
 msgid "Manage Styles"
 msgstr "إدارة أنماط"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "      Manage Available Styles for <a href=\"{{ layer_url }}\">"
+#| "%(layer_title)s</a>\n"
+#| "    "
 msgid ""
 "\n"
-"      Manage Available Styles for <a href=\"{{ layer_url }}\">"
-"%(layer_title)s</a>\n"
+"      Manage Available Styles for <a href=\"%(layer_url)s\">%(layer_title)s</"
+"a>\n"
 "    "
 msgstr ""
 "‫\n"
 "‬\n"
-"‫‫إدارة الأنماط المتاحة ل <a href=\"{{ layer_url }}\">%(layer_title)s</"
-"a> "
+"‫‫إدارة الأنماط المتاحة ل <a href=\"{{ layer_url }}\">%(layer_title)s</a> "
 
 msgid "Layer Default Style"
 msgstr "طبقة النمط الافتراضي"
@@ -2938,9 +2965,6 @@ msgstr ""
 msgid "Your upload is either complete or you haven't resumed an earlier one."
 msgstr "التحميل إما مكتمل أو لم تستأنف عملية تحميل سابقة."
 
-msgid "Return to"
-msgstr "العودة إلى"
-
 msgid "Upload Form"
 msgstr "نموذج التحميل"
 
@@ -3241,9 +3265,6 @@ msgstr "لا يسمح لك بتعديل البيانات الوصفية لهذه
 msgid "You are not permitted to view this layer"
 msgstr "لا يسمح لك بمشاهدة هذه الطبقة"
 
-msgid "Failed to upload the layer"
-msgstr "فشل تحميل الطبقة"
-
 msgid "You are attempting to replace a vector layer with a raster."
 msgstr "أنت تحاول استبدال طبقة متجه بنقطية."
 
@@ -3256,10 +3277,26 @@ msgid ""
 msgstr ""
 "هذه الطبقة عضو في مجموعة الطبقات، يجب إزالة الطبقة من المجموعة قبل الحذف."
 
-#, fuzzy, python-format
-#| msgid "couldn't generate thumbnail"
-msgid "couldn't generate thumbnail: %s"
-msgstr "لا يمكن توليد الصورة المصغرة"
+#, fuzzy
+#| msgid "Position Name"
+msgid "Positional Arguments"
+msgstr "اسم المركز"
+
+msgid "JSON encoded positional arguments (Example: [\"arg1\", \"arg2\"])"
+msgstr ""
+
+#, fuzzy
+#| msgid "Keywords"
+msgid "Keyword Arguments"
+msgstr "الكلمات الدالة"
+
+msgid "JSON encoded keyword arguments (Example: {\"argument\": \"value\"})"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"You can not start the job {job.id} because its status is \"{job.status}\"."
+msgstr ""
 
 msgid "Map Created"
 msgstr "تم إنشاء الخريطة"
@@ -3347,11 +3384,14 @@ msgstr "إعدادات طبقة"
 msgid "source params"
 msgstr "إعدادات مصدر"
 
-msgid "Map layers WMS GetCapabilities document"
-msgstr "احصل على مستند القدرات لطبقات المستخدم لبرنامج إدارة المستودعات"
-
 msgid "Rate this Map"
 msgstr "قيم هذه الخريطة"
+
+msgid "Map Layers"
+msgstr "خريطة الطبقات"
+
+msgid "This map uses the following layers:"
+msgstr "هذه الخريطة تستخدم الطبقات التالية:"
 
 msgid "Download Map"
 msgstr "تحميل خريطة"
@@ -3365,17 +3405,14 @@ msgstr[3] "خرائط"
 msgstr[4] "خرائط"
 msgstr[5] "خرائط"
 
-msgid "Map Layers"
-msgstr "خريطة الطبقات"
-
-msgid "This map uses the following layers:"
-msgstr "هذه الخريطة تستخدم الطبقات التالية:"
-
 msgid "Documents related to this map"
 msgstr "الوثائق المتعلقة بهذه الخريطة"
 
 msgid "List of documents related to this map:"
 msgstr "قائمة الوثائق المتعلقة بهذا الخارطة:"
+
+msgid "Specify which users can view or modify this map"
+msgstr "حدد المستخدمين الذين يمكنهم عرض هذه الخريطة أو تعديلها"
 
 msgid "Change Permissions of this Map"
 msgstr "تغيير أذونات هذه الخريطة"
@@ -3385,9 +3422,6 @@ msgstr "نسخ هذه الخريطة"
 
 msgid "Duplicate this map and modify it for your own purposes"
 msgstr "تكرار هذه الخريطة وتعديلها لأغراض خاصة بك"
-
-msgid "Create a New Map"
-msgstr "إنشاء خريطة جديدة"
 
 msgid ""
 "\n"
@@ -3444,12 +3478,6 @@ msgstr "تحميل منتهي"
 msgid "Download Failed"
 msgstr "فشل تحميل"
 
-msgid "Edit Map"
-msgstr "تعديل خريطة"
-
-msgid "Explore Maps"
-msgstr "تصفح الخرائط"
-
 msgid ""
 "Note: this map's orginal metadata was populated by importing a metadata XML "
 "file.\n"
@@ -3499,9 +3527,6 @@ msgstr "لا يسمح لك بتعديل البيانات الوصفية هذه �
 
 msgid "You are not allowed to view this map."
 msgstr "لا يسمح لك بعرض هذه الخريطة."
-
-msgid "error saving thumbnail"
-msgstr "خطأ في حفظ الصورة المصغرة"
 
 #, fuzzy
 #| msgid "Message User"
@@ -3728,6 +3753,9 @@ msgstr "30 دقيقة"
 msgid "1 hour"
 msgstr "ساعة واحدة"
 
+msgid "Warning"
+msgstr "تحذير"
+
 msgid "Error"
 msgstr "قاتلة - مهلك"
 
@@ -3952,6 +3980,10 @@ msgstr "لا توجد مجموعة"
 msgid "All contents"
 msgstr "جميع المحتويات"
 
+#, python-format
+msgid "%(app)s"
+msgstr ""
+
 msgid "No Organization Info"
 msgstr "لا معلومات على المنظمة"
 
@@ -4016,6 +4048,11 @@ msgid "Upload new document"
 msgstr "تحميل الوثيقة"
 
 msgid "Create a new map"
+msgstr "إنشاء خريطة جديدة"
+
+#, fuzzy, python-format
+#| msgid "Create a new map"
+msgid " Create a new %(app)s"
 msgstr "إنشاء خريطة جديدة"
 
 msgid "My Activities"
@@ -4087,6 +4124,12 @@ msgid "Session is Expired. Please login again!"
 msgstr "انتهت الجلسة. الرجاد الدخول على الحساب من جديد!"
 
 msgid "Permissions successfully updated!"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"User {username} has download permissions but cannot access the resource. "
+"Please update permission consistently!"
 msgstr ""
 
 #, fuzzy
@@ -4242,8 +4285,8 @@ msgstr "تعديل الخدمة"
 msgid "Services"
 msgstr "الخدمات"
 
-msgid "Register a new Service"
-msgstr "تسجيل خدمة جديدة"
+msgid "Add Remote Service"
+msgstr "إضافة خدمة عن بعد"
 
 msgid "Remote Services"
 msgstr "الخدمات عن بعد"
@@ -4327,6 +4370,11 @@ msgstr "المورد {} قيد المعالجة"
 
 msgid "Service rescanned successfully"
 msgstr "تم إعادة فحص الخدمة بنجاح"
+
+#, fuzzy
+#| msgid "You are not permitted to save or edit this resource."
+msgid "You dont have enougth rigths to see the resource detail"
+msgstr "غير مسموح لك بحفظ أو تعديل هذا المورد."
 
 msgid "You are not permitted to change this service."
 msgstr "غير مسموح لك بتغيير هذه الخدمة."
@@ -4433,19 +4481,16 @@ msgid ""
 "GeoNode/geonode/issues\">GeoNode's issue tracker</a>\n"
 "            "
 msgstr ""
-"‫\n"
-"‬\n"
-"‫‫يرجى الاتصال بمسؤول GeoNode (قد يكون قد تلقى رسالة إلكترونية تلقائيا إذا قام "
+"\n"
+"\n"
+"يرجى الاتصال بمسؤول GeoNode (قد يكون قد تلقى رسالة إلكترونية تلقائيا إذا قام "
 "بتهيئته بشكل صحيح).\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‫‬‏‫‫إذا كنت مشرف الموقع، فيمكنك تمكين وضع التصحيح للاطلاع على الخطأ الفعلي "
+"\n"
+"\n"
+"\n"
+"إذا كنت مشرف الموقع، فيمكنك تمكين وضع التصحيح للاطلاع على الخطأ الفعلي "
 "وإصلاحه أو تقديم طلب في <a href=\"http://github.com/GeoNode/geonode/issues"
 "\"> تعقب المشكلة فيGeoNode </a> "
-
-msgid "Add Remote Service"
-msgstr "إضافة خدمة عن بعد"
 
 msgid "Create Map"
 msgstr "إنشاء خريطة"
@@ -4704,6 +4749,12 @@ msgstr "عنصر نائب لحالة الرسالة"
 msgid "Placeholder for status-message-body"
 msgstr "عنصر نائب لحالة الرسائل النصية"
 
+msgid "Processing..."
+msgstr "معالجة..."
+
+msgid "Updating Permissions..."
+msgstr "جارٍ تحديث الصلاحيات ..."
+
 msgid "About GeoNode"
 msgstr "حول GeoNode"
 
@@ -4804,9 +4855,16 @@ msgstr "إضافة البريد الإلكتروني"
 msgid "Do you really want to remove the selected e-mail address?"
 msgstr "هل تريد حقًا إزالة عنوان البريد الإلكتروني المحدد؟"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because user %(user_display)s has given "
+#| "yours as an e-mail address to connect their account.\n"
+#| "\n"
+#| "To confirm this is correct, go to %(activate_url)s\n"
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because user %(user_display)s has given yours "
 "as an e-mail address to connect their account.\n"
@@ -4821,24 +4879,30 @@ msgstr ""
 "لتأكيد ان هذا صحيح ، انتقل إلى%(activate_url)s\n"
 "\n"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you from %(site_name)s!\n"
+#| "%(site_domain)s"
 msgid ""
-"Thank you from %(site_name)s!\n"
+"Thank you from %(site_name|urlencode)s!\n"
 "%(site_domain)s"
 msgstr ""
 "شكرًا لك من%(site_name)s!\n"
 "%(site_domain)s"
 
-#, python-format
-msgid "Please confirm email address for %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Please confirm email address for %(site_name)s"
+msgid "Please confirm email address for %(site_name|urlencode)s"
 msgstr "الرجاء تأكيد عنوان البريد الإلكتروني ل %(site_name)s"
 
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
+#, fuzzy, python-format
+#| msgid "You have been invited to sign up at %(site_name)s."
+msgid "You have been invited to sign up at %(site_name|urlencode)s."
 msgstr "لقد تمت دعوتك للتسجيل في%(site_name)s."
 
-#, python-format
-msgid "Create an account on %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Create an account on %(site_name)s"
+msgid "Create an account on %(site_name|urlencode)s"
 msgstr "إنشاء حساب علي%(site_name)s "
 
 msgid ""
@@ -4848,9 +4912,16 @@ msgstr "هذا هو الاعلام بالبريد الكتروني لتاكيد 
 msgid "Change password email notification"
 msgstr "إشعار البريد الإلكتروني لتغيير كلمة المرور"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because you or someone else has requested a "
+#| "password for your user account.\n"
+#| "It can be safely ignored if you did not request a password reset. Click "
+#| "the link below to reset your password."
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because you or someone else has requested a "
 "password for your user account.\n"
@@ -4868,9 +4939,12 @@ msgstr ""
 msgid "In case you forgot, your username is %(username)s."
 msgstr "في حال نسيت ، اسم المستخدم الخاص بك هو %(username)s."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you for using %(site_name)s!\n"
+#| "%(site_domain)s"
 msgid ""
-"Thank you for using %(site_name)s!\n"
+"Thank you for using %(site_name|urlencode)s!\n"
 "%(site_domain)s"
 msgstr ""
 "شكرًا لك على استخدام%(site_name)s!\n"
@@ -5137,9 +5211,9 @@ msgid ""
 "b>.\n"
 "          "
 msgstr ""
-"‫\n"
-"‬\n"
-"‫‫‫تم النشر من <b>%(publish_start)s</b> إلى <b>%(publish_end)s</b>"
+"\n"
+"\n"
+"تم النشر من <b>%(publish_start)s</b> إلى <b>%(publish_end)s</b>"
 
 #, python-format
 msgid "Announcements : %(announcement)s"
@@ -5304,40 +5378,40 @@ msgid ""
 "</p>\n"
 "    "
 msgstr ""
-"‫\n"
-"‬\n"
-"‫‏‫<p> <a href=\"http://geonode.org/\"> GeoNode </a> هي خدمة مفتوحة مبنية على "
+"\n"
+"\n"
+"<p> <a href=\"http://geonode.org/\"> GeoNode </a> هي خدمة مفتوحة مبنية على "
 "برنامج مفتوح المصدر. نحن نشجعك على إنشاء تطبيقات جديدة باستخدام المكونات "
 "والموارد التي توفرها. هذه الصفحة هي نقطة انطلاق للمطورين المهتمين بالاستفادة "
 "الكاملة من GeoNode. ويشمل أيضًا روابط إلى الكود المصدري للمشروع حتى يتمكن أي "
 "شخص من بناء وتخصيص GeoNode الخاص به. </ P>\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‏‫\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‏‫    <h3> GeoNode تطبيق</h3>\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‏‫\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‏‫    <p> كل الشفرة التي تدير GeoNode مفتوحة المصدر. الكود متاح على <a href="
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"    <h3> GeoNode تطبيق</h3>\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"    <p> كل الشفرة التي تدير GeoNode مفتوحة المصدر. الكود متاح على <a href="
 "\"http://github.com/GeoNode/geonode\"> http://github.com/GeoNode/geonode/ </"
 "a>. يتوفر متتبع المشكلات للمشروع على <a href=\"http://github.com/GeoNode/"
 "geonode/issues\"> http://github.com/GeoNode/geonode/issues </a>. </p>\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‏‫\n"
-"‬\n"
-"‏‫‬\n"
-"‬\n"
-"‫‏‫    <p> تم تصميم GeoNode باستخدام عدة مشاريع مفتوحة المصدر ، لكل منها "
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"\n"
+"    <p> تم تصميم GeoNode باستخدام عدة مشاريع مفتوحة المصدر ، لكل منها "
 "مجتمعها الخاص. إذا كنت مهتمًا بالمساهمة بميزات جديدة في GeoNode ، فنحن نشجعك "
 "على القيام بذلك من خلال المساهمة في أحد المشاريع التي تم تصميمها عليها: </ "
 "p>\n"
@@ -5568,6 +5642,98 @@ msgstr ""
 "توفر هذه الصفحة معلومات مفيدة حول كيفية استخدام ‫(GeoNode)‬. يمكنك استخدام "
 "روابط الشريط الجانبي للانتقال إلى ما تريد معرفته."
 
+#, fuzzy, python-format
+#| msgid ""
+#| "\n"
+#| "    <p>The GeoNode provides access to data sets and a map editing "
+#| "application allows users to browse existing maps and contribute their own."
+#| "</p>\n"
+#| "\n"
+#| "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
+#| "    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you "
+#| "to browse data uploaded to this GeoNode.</p>\n"
+#| "    <p>All data can be downloaded in a variety of formats, for use in "
+#| "other applications.</p>\n"
+#| "\n"
+#| "    <h4 id=\"developer-access\">Developer Access</h4>\n"
+#| "    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the "
+#| "place for developers to get started building applications against the "
+#| "GeoNode. It includes instructions on using the web services, links to the "
+#| "source code of the GeoNode, and information about the open source "
+#| "projects used to create it.</p>\n"
+#| "\n"
+#| "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
+#| "    <p>The GeoNode allows users to create and share maps with one another."
+#| "</p>\n"
+#| "    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to "
+#| "map exploration on GeoNode.  From here you can <strong>search for a map</"
+#| "strong> or <strong>create a map</strong>, which will open the <a href="
+#| "\"{{ url_maps_new }}\">Map Composer</a>.</p>\n"
+#| "    <h5>Google Earth Mode</h5>\n"
+#| "    <p>Any map viewed in the interactive map editor can be seen in 3D "
+#| "mode with the Google Earth plugin. To switch to 3D mode select the Google "
+#| "Earth globe logo, the rightmost button on top toolbar. If you do not have "
+#| "the Google Earth plugin installed you will be prompted to install it.</"
+#| "p>\n"
+#| "\n"
+#| "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
+#| "    <p>To create a new map go to the <a href="
+#| "\"{{ url_maps_browse }}\">Contributed Maps</a> tab and click the <a href="
+#| "\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
+#| "    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map "
+#| "Composer</a> with a base layer loaded.</p>\n"
+#| "    <p>To add data layers from the GeoNode click on the green plus button "
+#| "located below the layers tab on the left hand side of the screen. This "
+#| "will open a dialog listing all the layers available on the GeoNode.</p>\n"
+#| "    <p>To add layers to your map select them and hit the <strong>Add "
+#| "Layers</strong> button. When finished you may hit <strong>Done</strong> "
+#| "to close the dialog and go back to the map.</p>\n"
+#| "\n"
+#| "    <h5>Reordering and Removing Layers</h5>\n"
+#| "    <p>Change the display order of the layers listed in the data tab by "
+#| "simply dragging and dropping their names. The order in the map will be "
+#| "updated to reflect that. To turn a layer's visibility off simply uncheck "
+#| "it, and to remove it entirely select it and hit the red minus button.</"
+#| "p>\n"
+#| "\n"
+#| "    <h5>Saving your map</h5>\n"
+#| "    <p>Once a suitable set of layers and zoom level has been found it's "
+#| "time to save it so others can see it.  Click the Save button--the left "
+#| "most icon on the top toolbar, an image of a map with a disk--on the top "
+#| "menu and fill out the title and abstract of the map.</p>\n"
+#| "\n"
+#| "    <h4 id=\"exporting-a-map\">Publishing a Map</h4>\n"
+#| "    <p>Any map from the GeoNode can be embedded for use in another site "
+#| "or blog. To publish a map:</p>\n"
+#| "    <ol>\n"
+#| "      <li>Select the from the list of maps on the community or map page "
+#| "and then hit the 'Publish map' button.</li>\n"
+#| "      <li>Choose your desired height and width for the widget in the "
+#| "wizard.</li>\n"
+#| "      <li>Copy the HTML snippet provided in the wizard to any HTML page "
+#| "or iFrame-supporting blog post.</li>\n"
+#| "    </ol>\n"
+#| "    <p>This will put an interactive widget showing you map in your web "
+#| "page or blog post.</p>\n"
+#| "    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also "
+#| "has a button to publish the map. Just be sure to save the map before "
+#| "publishing if there are changes that you want others to see. It publishes "
+#| "the last saved version, not the last viewed version.</p>\n"
+#| "\n"
+#| "    <h4 id=\"remixing-a-map\">Remixing a Map</h4>\n"
+#| "    <p>Any map available can serve as a starting point for a new map.</"
+#| "p>\n"
+#| "    <ol>\n"
+#| "      <li>Open the map in the Map Composer.</li>\n"
+#| "      <li>Add and remove layers as you like.</li>\n"
+#| "      <li>Pan and zoom to highlight the area of interest.</li>\n"
+#| "      <li><strong>IMPORTANT:</strong> Update the title, abstract, contact "
+#| "info and tags to reflect the new map.</li>\n"
+#| "      <li>Save the map.</li>\n"
+#| "    </ol>\n"
+#| "    <p>You will be able to see your new map when you search for it from "
+#| "the <a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
+#| "    "
 msgid ""
 "\n"
 "    <p>The GeoNode provides access to data sets and a map editing "
@@ -5575,14 +5741,14 @@ msgid ""
 "p>\n"
 "\n"
 "    <h4 id=\"browsing-data\">Browsing Layers</h4>\n"
-"    <p>The <a href=\"{{ url_layer_browse }}\">Layers</a> tab allows you to browse data "
-"uploaded to this GeoNode.</p>\n"
+"    <p>The <a href=\"%(url_layer_browse)s\">Layers</a> tab allows you to "
+"browse data uploaded to this GeoNode.</p>\n"
 "    <p>All data can be downloaded in a variety of formats, for use in other "
 "applications.</p>\n"
 "\n"
 "    <h4 id=\"developer-access\">Developer Access</h4>\n"
-"    <p>The <a href=\"{{ url_developer }}\"> Developer</a> page is the place for "
-"developers to get started building applications against the GeoNode. It "
+"    <p>The <a href=\"%(url_developer)s\"> Developer</a> page is the place "
+"for developers to get started building applications against the GeoNode. It "
 "includes instructions on using the web services, links to the source code of "
 "the GeoNode, and information about the open source projects used to create "
 "it.</p>\n"
@@ -5590,10 +5756,10 @@ msgid ""
 "    <h4 id=\"browsing-maps\">Browsing Maps</h4>\n"
 "    <p>The GeoNode allows users to create and share maps with one another.</"
 "p>\n"
-"    <p>The <a href=\"{{ url_maps_browse }}\">Maps</a> tab is a gateway to map exploration on "
-"GeoNode.  From here you can <strong>search for a map</strong> or "
-"<strong>create a map</strong>, which will open the <a href=\"{{ url_maps_new }}\">Map "
-"Composer</a>.</p>\n"
+"    <p>The <a href=\"%(url_maps_browse)s\">Maps</a> tab is a gateway to map "
+"exploration on GeoNode.  From here you can <strong>search for a map</strong> "
+"or <strong>create a map</strong>, which will open the <a href="
+"\"%(url_new_map)s\">Map Composer</a>.</p>\n"
 "    <h5>Google Earth Mode</h5>\n"
 "    <p>Any map viewed in the interactive map editor can be seen in 3D mode "
 "with the Google Earth plugin. To switch to 3D mode select the Google Earth "
@@ -5601,10 +5767,11 @@ msgid ""
 "Google Earth plugin installed you will be prompted to install it.</p>\n"
 "\n"
 "    <h4 id=\"creating-a-map\">Creating a Map</h4>\n"
-"    <p>To create a new map go to the <a href=\"{{ url_maps_browse }}\">Contributed Maps</a> "
-"tab and click the <a href=\"{{ url_maps_new }}\">create your own map</a> link.</p>\n"
-"    <p>This will take you to the <a href=\"{{ url_maps_new }}\">Map Composer</a> with "
-"a base layer loaded.</p>\n"
+"    <p>To create a new map go to the <a href=\"%(url_maps_browse)s"
+"\">Contributed Maps</a> tab and click the <a href=\"%(url_new_map)s\">create "
+"your own map</a> link.</p>\n"
+"    <p>This will take you to the <a href=\"%(url_new_map)s\">Map Composer</"
+"a> with a base layer loaded.</p>\n"
 "    <p>To add data layers from the GeoNode click on the green plus button "
 "located below the layers tab on the left hand side of the screen. This will "
 "open a dialog listing all the layers available on the GeoNode.</p>\n"
@@ -5637,7 +5804,7 @@ msgid ""
 "    </ol>\n"
 "    <p>This will put an interactive widget showing you map in your web page "
 "or blog post.</p>\n"
-"    <p>Note that the <a href=\"{{ url_maps_new }}\">Map Composer</a> also has a "
+"    <p>Note that the <a href=\"%(url_new_map)s\">Map Composer</a> also has a "
 "button to publish the map. Just be sure to save the map before publishing if "
 "there are changes that you want others to see. It publishes the last saved "
 "version, not the last viewed version.</p>\n"
@@ -5653,7 +5820,7 @@ msgid ""
 "      <li>Save the map.</li>\n"
 "    </ol>\n"
 "    <p>You will be able to see your new map when you search for it from the "
-"<a href=\"{{ url_maps_browse }}\">Maps</a> tab.</p>\n"
+"<a href=\"%(url_maps_browse)s\">Maps</a> tab.</p>\n"
 "    "
 msgstr ""
 "‫\n"
@@ -6263,14 +6430,18 @@ msgstr "غادر"
 msgid "Dear Sir/Madam,"
 msgstr "سيدي العزيز/سيدتي،"
 
-#, python-format
-msgid "is inviting you to join (%(site_name)s)."
+#, fuzzy, python-format
+#| msgid "is inviting you to join (%(site_name)s)."
+msgid "is inviting you to join (%(site_name|urlencode)s)."
 msgstr "يدعوك للانضمام (%(site_name)s)."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
+#| "Registration</a>."
 msgid ""
-"To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
-"Registration</a>."
+"To do so, please register at <a href=\"%(invite_url)s\">"
+"%(site_name|urlencode)s Registration</a>."
 msgstr ""
 "للقيام بذلك ، يرجى التسجيل في <a href=\"%(invite_url)s\">%(site_name)s "
 "التسجيل</a>."
@@ -6412,6 +6583,11 @@ msgstr "طلب الوصول إلى الموقع."
 msgid ""
 "You can enable access by setting the user as active on the admin section"
 msgstr "يمكنك تمكين الدخول عن طريق تعيين المستخدم نشطا في قسم المشرف"
+
+#, fuzzy
+#| msgid "has requested access to the site."
+msgid "has created an account and has access to the site."
+msgstr "طلب الوصول إلى الموقع."
 
 msgid "A user has requested access to the site"
 msgstr "لقد طلب أحد المستخدمين الدخول إلى الموقع"
@@ -6691,6 +6867,11 @@ msgstr "أقسام"
 msgid "No list items selected. Use the selection fields to add."
 msgstr ""
 
+#, fuzzy
+#| msgid "Set permissions"
+msgid "Set permissions"
+msgstr "تعيين صلاحيات"
+
 msgid "Filters"
 msgstr "مرشحات"
 
@@ -6871,10 +7052,9 @@ msgstr ""
 msgid "Choose between using jumbotron background and slide show"
 msgstr ""
 
-#, fuzzy
-#| msgid "All contents"
-msgid "Empty content"
-msgstr "جميع المحتويات"
+#, python-brace-format
+msgid "The limit `{instance.slug}` should not be deleted."
+msgstr ""
 
 msgid "Could not access to uploaded data."
 msgstr "لا يمكن الوصول إلى البيانات التي تم تحميلها."
@@ -6890,6 +7070,25 @@ msgid ""
 "them."
 msgstr ""
 "تم تقديم ملف SLD واحد أو أكثر ، ولكن لم يتم العثور على ملفات مطابقة لهم."
+
+#, fuzzy
+#| msgid "Document must be a file or url."
+msgid "Base file must be a file or url."
+msgstr "يجب أن يكون المستند ملفًا أو رابطًا."
+
+#, python-brace-format
+msgid ""
+"`{field_name}` field cannot have both a file and a path. Please choose one "
+"and try again."
+msgstr ""
+
+msgid ""
+"Total upload size exceeds {filesizeformat(max_size)}. Please try again with "
+"smaller files."
+msgstr ""
+
+msgid "The maximum file size allowed for upload (bytes)."
+msgstr ""
 
 #, fuzzy
 #| msgid "Layer Created"
@@ -6912,7 +7111,7 @@ msgstr ""
 msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 
-msgid "Error configuring Layer"
+msgid "Error uploading Dataset"
 msgstr ""
 
 msgid "Invalid zip file detected"
@@ -6977,12 +7176,6 @@ msgstr "حالة عنصر غير معروفة: %s"
 msgid "error during import: {progress.get('message')}"
 msgstr "خطأ أثناء الاستيراد: %s"
 
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr "تعذر العثور على أي وقت صالح للتعبير النمطي لملفات الفسيفساء."
-
-msgid "Unsupported DataBase for Mosaics!"
-msgstr "قاعدة بيانات غير مدعومة للفسيفساء!"
-
 msgid "Upload Session invalid or no more accessible!"
 msgstr ""
 
@@ -6992,13 +7185,81 @@ msgstr "مستوى صلاحية غير صالح."
 msgid "Permission Denied"
 msgstr "طلب الاذن مرفوض"
 
-#~ msgid "batch edit"
-#~ msgstr "تعديل دفعة"
+#~ msgid "GZIP"
+#~ msgstr "GZIP"
+
+#~ msgid "Home"
+#~ msgstr "الرئيسية"
+
+#~ msgid "Change point of contact"
+#~ msgstr "تغيير جهة اتصال"
+
+#~ msgid "Assign a new point of contact to the layers below:"
+#~ msgstr "تعيين نقطة اتصال جديدة إلى الطبقات التالية:"
+
+#~ msgid "Click to filter the layer"
+#~ msgstr "انقر لتصفية الطبقة"
+
+#~ msgid "Do you want to filter it?"
+#~ msgstr "هل تريد تصفية ذلك؟"
+
+#~ msgid "Loading..."
+#~ msgstr "جار التحميل..."
+
+#~ msgid "Filter by attributes"
+#~ msgstr "تصفية حسب السمات"
+
+#~ msgid "Match"
+#~ msgstr "مباراة"
+
+#~ msgid "all"
+#~ msgstr "جميع"
+
+#~ msgid "any"
+#~ msgstr "أي"
+
+#~ msgid "of the following:"
+#~ msgstr "الخريطة التالية:"
+
+#~ msgid "Operator"
+#~ msgstr "المشغل"
+
+#~ msgid "Feature limit"
+#~ msgstr "حد الميزة"
+
+#~ msgid "Pick your download format:"
+#~ msgstr "اختر تنسيق التنزيل الخاص بك:"
+
+#~ msgid ""
+#~ "No data available for this resource. Please contact a system "
+#~ "administrator or a manager."
+#~ msgstr ""
+#~ "لا توجد بيانات متوفرة لهذا المورد. الرجاء الاتصال بمسؤول النظام أو مدير."
+
+#~ msgid "Failed to upload the layer"
+#~ msgstr "فشل تحميل الطبقة"
 
 #, fuzzy
-#~| msgid "Set permissions"
-#~ msgid "set permissions"
-#~ msgstr "تعيين صلاحيات"
+#~| msgid "couldn't generate thumbnail"
+#~ msgid "couldn't generate thumbnail: %s"
+#~ msgstr "لا يمكن توليد الصورة المصغرة"
+
+#~ msgid "Map layers WMS GetCapabilities document"
+#~ msgstr "احصل على مستند القدرات لطبقات المستخدم لبرنامج إدارة المستودعات"
+
+#~ msgid "error saving thumbnail"
+#~ msgstr "خطأ في حفظ الصورة المصغرة"
+
+#~ msgid "Register a new Service"
+#~ msgstr "تسجيل خدمة جديدة"
+
+#, fuzzy
+#~| msgid "All contents"
+#~ msgid "Empty content"
+#~ msgstr "جميع المحتويات"
+
+#~ msgid "batch edit"
+#~ msgstr "تعديل دفعة"
 
 #~ msgid "documents"
 #~ msgstr "الوثائق"
@@ -7066,12 +7327,6 @@ msgstr "طلب الاذن مرفوض"
 
 #~ msgid "Delete, and don't ask me again."
 #~ msgstr "حذف، ولا تسألني مرة أخرى."
-
-#~ msgid "Available layers"
-#~ msgstr "الطبقات المتاحة"
-
-#~ msgid "Save Map"
-#~ msgstr "حفظ خريطة"
 
 #~ msgid "Climate"
 #~ msgstr "مناخ"

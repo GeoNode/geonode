@@ -2009,7 +2009,7 @@ msgid "E-mail"
 msgstr "e-post"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr ""
 
 #, python-format

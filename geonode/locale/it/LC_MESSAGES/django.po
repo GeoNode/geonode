@@ -1813,7 +1813,7 @@ msgid "E-mail"
 msgstr "E-mail"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Inviti mandati con successo a '%(email)s'"
 
 #, python-format
