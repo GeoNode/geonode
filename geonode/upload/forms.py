@@ -134,7 +134,7 @@ class LayerUploadForm(forms.Form):
             ("shx_file", "shx_file_path"),
             ("prj_file", "prj_file_path"),
             ("xml_file", "xml_file_path"),
-            ("sld_file", "sld_fil_path")
+            ("sld_file", "sld_file_path")
         )
         for file_field in file_fields:
             field_name = file_field[0]
