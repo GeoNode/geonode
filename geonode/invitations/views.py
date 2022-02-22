@@ -68,7 +68,7 @@ class GeoNodeSendInvite(SendInvite):
 
         return self.render_to_response(
             self.get_context_data(
-                success_message=_("Invitations succefully sent to '%(email)s'") % {
+                success_message=_("Invitations successfully sent to '%(email)s'") % {
                     "email": ', '.join(invited)}))
 
     def form_invalid(self, form, emails=None, e=None):

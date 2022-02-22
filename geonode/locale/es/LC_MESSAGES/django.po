@@ -41,7 +41,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-11 14:19+0000\n"
+"POT-Creation-Date: 2022-02-22 10:50+0100\n"
 "PO-Revision-Date: 2021-08-31 08:03-0600\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Spanish (http://www.transifex.com/geonode/geonode/language/"
@@ -620,6 +620,14 @@ msgstr ""
 "Para permitir el cambio, configure el recurso para que no esté \"Aprobado\" "
 "en la configuración de metadatos y escriba un mensaje al propietario para "
 "notificarle"
+
+#, fuzzy
+#| msgid "You are not permitted to view this layer"
+msgid "You are not permitted to view this resource"
+msgstr "No tienes permiso para ver esta capa"
+
+msgid "Not allowed"
+msgstr "No permitido"
 
 msgid "Resource Metadata"
 msgstr "Metadatos de recursos"
@@ -1269,9 +1277,6 @@ msgstr "Usted no tiene permitido modificar los metadatos de este documento"
 msgid "You are not permitted to view this document"
 msgstr "Usted no tiene permitido ver este documento"
 
-msgid "Not allowed"
-msgstr "No permitido"
-
 msgid "Not found"
 msgstr "No encontrado"
 
@@ -1555,8 +1560,16 @@ msgstr "Se produjo una excepción en la carga de datos de PostGIS"
 msgid " Additionally an error occured during database cleanup"
 msgstr " Adicionalmente ocurrió un error durante la limpieza de base de datos"
 
-msgid "GZIP"
-msgstr "GZIP"
+msgid "Invalid Projection. Layer is missing CRS!"
+msgstr "Proyección no válida. ¡Falta CRS en la capa!"
+
+msgid "Could not find any valid Time Regex for the Mosaic files."
+msgstr ""
+"No se pudo encontrar ninguna expresión regular de tiempo válida para los "
+"archivos de mosaico."
+
+msgid "Unsupported DataBase for Mosaics!"
+msgstr "Base de datos no compatible para Mosaicos!"
 
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
@@ -1587,9 +1600,6 @@ msgstr "PDF"
 
 msgid "PNG"
 msgstr "PNG"
-
-msgid "Invalid Projection. Layer is missing CRS!"
-msgstr "Proyección no válida. ¡Falta CRS en la capa!"
 
 msgid "You don't have permissions to change style for this layer"
 msgstr "Usted no tiene permisos para cambiar el estilo de ésta capa"
@@ -1838,7 +1848,7 @@ msgid "E-mail"
 msgstr "Correo Electrónico"
 
 #, python-format
-msgid "Invitations succefully sent to '%(email)s'"
+msgid "Invitations successfully sent to '%(email)s'"
 msgstr "Invitaciones enviadas con éxito a '%(email)s'"
 
 #, python-format
@@ -2325,12 +2335,6 @@ msgstr "Haga clic en el botón de abajo para cambiar los permisos de esta Capa."
 
 msgid "Change Layer Permissions"
 msgstr "Cambia los permisos de la Capa"
-
-msgid "Processing..."
-msgstr "Procesando..."
-
-msgid "Updating Permissions..."
-msgstr "Actualizando permisos ..."
 
 msgid "Remove Mosaic Granules"
 msgstr "Eliminar gránulos de mosaico"
@@ -3419,9 +3423,6 @@ msgstr "No tienes permiso para modificar los metadatos de este mapa."
 msgid "You are not allowed to view this map."
 msgstr "No tienes permiso para ver este mapa."
 
-msgid "error saving thumbnail"
-msgstr "error al guardar la miniatura"
-
 msgid "Message received"
 msgstr "Mensaje recibido"
 
@@ -4259,6 +4260,10 @@ msgstr "subido"
 msgid "Recent activity"
 msgstr "Actividad reciente"
 
+#, python-format
+msgid "%(app)s"
+msgstr ""
+
 msgid "to"
 msgstr "para"
 
@@ -4586,6 +4591,12 @@ msgstr "Marcador de posición para mensaje de estado"
 msgid "Placeholder for status-message-body"
 msgstr "Marcador de posición para status-message-body"
 
+msgid "Processing..."
+msgstr "Procesando..."
+
+msgid "Updating Permissions..."
+msgstr "Actualizando permisos ..."
+
 msgid "About GeoNode"
 msgstr "Acerca de GeoNode"
 
@@ -4694,9 +4705,16 @@ msgid "Do you really want to remove the selected e-mail address?"
 msgstr ""
 "Realmente desea eliminar la dirección de correo electrónico seleccionada?"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because user %(user_display)s has given "
+#| "yours as an e-mail address to connect their account.\n"
+#| "\n"
+#| "To confirm this is correct, go to %(activate_url)s\n"
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because user %(user_display)s has given yours "
 "as an e-mail address to connect their account.\n"
@@ -4711,26 +4729,32 @@ msgstr ""
 "\n"
 "Para confirmar que esto es correcto, vaya a %(activate_url)s\n"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you from %(site_name)s!\n"
+#| "\n"
+#| "https://%(site_domain)s"
 msgid ""
-"Thank you from %(site_name)s!\n"
-"\n"
-"https://%(site_domain)s"
+"Thank you from %(site_name|urlencode)s!\n"
+"%(site_domain)s"
 msgstr ""
 "Gracias de parte de %(site_name)s!\n"
 "\n"
 "https://%(site_domain)s"
 
-#, python-format
-msgid "Please confirm email address for %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Please confirm email address for %(site_name)s"
+msgid "Please confirm email address for %(site_name|urlencode)s"
 msgstr "Confirme la dirección de correo electrónico para %(site_name)s"
 
-#, python-format
-msgid "You have been invited to sign up at %(site_name)s."
+#, fuzzy, python-format
+#| msgid "You have been invited to sign up at %(site_name)s."
+msgid "You have been invited to sign up at %(site_name|urlencode)s."
 msgstr "Te invitaron a registrarte en %(site_name)s."
 
-#, python-format
-msgid "Create an account on %(site_name)s"
+#, fuzzy, python-format
+#| msgid "Create an account on %(site_name)s"
+msgid "Create an account on %(site_name|urlencode)s"
 msgstr "Crear una cuenta en %(site_name)s"
 
 msgid ""
@@ -4742,9 +4766,16 @@ msgstr ""
 msgid "Change password email notification"
 msgstr "Notificación de Cambio de contraseña"
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Hello from %(site_name)s!\n"
+#| "\n"
+#| "You're receiving this e-mail because you or someone else has requested a "
+#| "password for your user account.\n"
+#| "It can be safely ignored if you did not request a password reset. Click "
+#| "the link below to reset your password."
 msgid ""
-"Hello from %(site_name)s!\n"
+"Hello from %(site_name|urlencode)s!\n"
 "\n"
 "You're receiving this e-mail because you or someone else has requested a "
 "password for your user account.\n"
@@ -4763,9 +4794,12 @@ msgstr ""
 msgid "In case you forgot, your username is %(username)s."
 msgstr "En caso de que lo haya olvidado, su nombre de usuario es %(username)s."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "Thank you for using %(site_name)s!\n"
+#| "%(site_domain)s"
 msgid ""
-"Thank you for using %(site_name)s!\n"
+"Thank you for using %(site_name|urlencode)s!\n"
 "%(site_domain)s"
 msgstr ""
 "¡Gracias por usar %(site_name)s!\n"
@@ -5082,18 +5116,6 @@ msgstr "Eliminar estos"
 msgid "GeoNode Search"
 msgstr "Búsqueda GeoNode"
 
-msgid "Apps"
-msgstr "Apps"
-
-msgid "ETA-IOTA Comparison"
-msgstr "Comparación ETA-IOTA"
-
-msgid "Global Forest Loss"
-msgstr "Pérdida de Bosque Global"
-
-msgid "Timelapse"
-msgstr "Timelapse"
-
 msgid "Contact Us"
 msgstr "Contáctenos"
 
@@ -5345,12 +5367,6 @@ msgstr "Búsqueda de metadatos vía OAI-PMH:"
 
 msgid "Cached tiles via WMTS:"
 msgstr "Teseleas cacheadas vía WMTS:"
-
-msgid "ETA-IOTA"
-msgstr "ETA-IOTA"
-
-msgid "Perdida Bosque Global"
-msgstr "Pérdida de Bosque Global"
 
 msgid "User Guide"
 msgstr "Guía para el Usuario"
@@ -5648,14 +5664,18 @@ msgstr "Salir"
 msgid "Dear Sir/Madam,"
 msgstr "Querido Sr./Sra./Srita.,"
 
-#, python-format
-msgid "is inviting you to join (%(site_name)s)."
+#, fuzzy, python-format
+#| msgid "is inviting you to join (%(site_name)s)."
+msgid "is inviting you to join (%(site_name|urlencode)s)."
 msgstr "te está invitando a unirte (%(site_name)s)."
 
-#, python-format
+#, fuzzy, python-format
+#| msgid ""
+#| "To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
+#| "Registration</a>."
 msgid ""
-"To do so, please register at <a href=\"%(invite_url)s\">%(site_name)s "
-"Registration</a>."
+"To do so, please register at <a href=\"%(invite_url)s\">"
+"%(site_name|urlencode)s Registration</a>."
 msgstr ""
 "Para hacerlo, regístrese en <a href=\"%(invite_url)s\">%(site_name)s "
 "Registro</a>."
@@ -6079,6 +6099,11 @@ msgstr ""
 "No se seleccionaron elementos de la lista. Utilice los campos de selección "
 "para agregar."
 
+#, fuzzy
+#| msgid "set permissions"
+msgid "Set permissions"
+msgstr "establecer permisos"
+
 msgid "Filters"
 msgstr "Filtros"
 
@@ -6295,8 +6320,8 @@ msgid "Exception occurred while parsing the provided Metadata file."
 msgstr ""
 "Se produjo una excepción al analizar el archivo de metadatos proporcionado."
 
-msgid "Error configuring Layer"
-msgstr "Error al configurar la capa"
+msgid "Error uploading Dataset"
+msgstr ""
 
 msgid "Invalid zip file detected"
 msgstr "Archivo zip no válido detectado"
@@ -6360,14 +6385,6 @@ msgstr "estado del elemento desconocido: {task.state}"
 msgid "error during import: {progress.get('message')}"
 msgstr "error durante la importación: {progress.get('message')}"
 
-msgid "Could not find any valid Time Regex for the Mosaic files."
-msgstr ""
-"No se pudo encontrar ninguna expresión regular de tiempo válida para los "
-"archivos de mosaico."
-
-msgid "Unsupported DataBase for Mosaics!"
-msgstr "Base de datos no compatible para Mosaicos!"
-
 msgid "Upload Session invalid or no more accessible!"
 msgstr "¡La sesión de subida no es válida o ya no es accesible!"
 
@@ -6376,6 +6393,33 @@ msgstr "Nivel de permiso inválido."
 
 msgid "Permission Denied"
 msgstr "Permiso Denegado"
+
+#~ msgid "GZIP"
+#~ msgstr "GZIP"
+
+#~ msgid "error saving thumbnail"
+#~ msgstr "error al guardar la miniatura"
+
+#~ msgid "Apps"
+#~ msgstr "Apps"
+
+#~ msgid "ETA-IOTA Comparison"
+#~ msgstr "Comparación ETA-IOTA"
+
+#~ msgid "Global Forest Loss"
+#~ msgstr "Pérdida de Bosque Global"
+
+#~ msgid "Timelapse"
+#~ msgstr "Timelapse"
+
+#~ msgid "ETA-IOTA"
+#~ msgstr "ETA-IOTA"
+
+#~ msgid "Perdida Bosque Global"
+#~ msgstr "Pérdida de Bosque Global"
+
+#~ msgid "Error configuring Layer"
+#~ msgstr "Error al configurar la capa"
 
 #~ msgid "Home"
 #~ msgstr "Inicio"
@@ -6389,7 +6433,7 @@ msgstr "Permiso Denegado"
 #~ msgid "Failed to upload the layer"
 #~ msgstr "Error al cargar la capa"
 
-#, fuzzy, python-format
+#, fuzzy
 #~| msgid "couldn't generate thumbnail"
 #~ msgid "couldn't generate thumbnail: %s"
 #~ msgstr "no se pudo generar la miniatura"
@@ -6399,9 +6443,6 @@ msgstr "Permiso Denegado"
 
 #~ msgid "batch edit"
 #~ msgstr "edición por lotes"
-
-#~ msgid "set permissions"
-#~ msgstr "establecer permisos"
 
 #~ msgid "documents"
 #~ msgstr "documentos"
