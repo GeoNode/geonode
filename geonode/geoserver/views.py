@@ -382,17 +382,22 @@ def style_change_check(request, path, access_token=None):
                     user = request.user
                     if user.is_anonymous and access_token:
                         user = get_auth_user(access_token)
-                    style = Style.objects.get(name=style_name)
-                    for layer in style.layer_styles.all():
-                        if not user.has_perm('change_layer_style', obj=layer):
-                            authorized = False
-                            break
-                        else:
-                            authorized = True
-                            break
-                except Exception:
-                    authorized = (request.method == 'POST')  # The user is probably trying to create a new style
+                    if not user or user.is_anonymous:
+                        authorized = False
+                    else:
+                        style = Style.objects.get(name=style_name)
+                        for layer in style.layer_styles.all():
+                            if not user.has_perm('change_layer_style', obj=layer):
+                                authorized = False
+                                break
+                            else:
+                                authorized = True
+                                break
+                except Style.DoesNotExist:
                     logger.warn(f'There is not a style with such a name: {style_name}.')
+                except Exception as e:
+                    logger.exception(e)
+                    authorized = (request.method == 'POST')  # The user is probably trying to create a new style
     return authorized
 
 
