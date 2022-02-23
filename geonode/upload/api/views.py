@@ -40,10 +40,14 @@ from geonode.base.api.permissions import IsOwnerOrReadOnly, IsSelfOrAdminOrReadO
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.upload.utils import get_max_amount_of_steps
 
-from .serializers import UploadSerializer, UploadSizeLimitSerializer
+from .serializers import (
+    UploadSerializer,
+    UploadParallelismLimitSerializer,
+    UploadSizeLimitSerializer,
+)
 from .permissions import UploadPermissionsFilter
 
-from ..models import Upload, UploadSizeLimit
+from ..models import Upload, UploadParallelismLimit, UploadSizeLimit
 from ..views import view as upload_view
 
 import logging
@@ -191,3 +195,49 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
             raise ValidationError(detail)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UploadParallelismLimitViewSet(DynamicModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsSelfOrAdminOrReadOnly]
+    queryset = UploadParallelismLimit.objects.all()
+    serializer_class = UploadParallelismLimitSerializer
+    pagination_class = GeoNodeApiPagination
+
+    def get_queryset(self, queryset=None):
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            queryset = super(UploadParallelismLimitViewSet, self).get_queryset(queryset=queryset)
+        else:
+            queryset = UploadParallelismLimit.objects.get_limits_for_user(user=self.request.user)
+        return queryset
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super(UploadParallelismLimitViewSet, self).get_serializer(*args, **kwargs)
+        if self.action == "create":
+            serializer.fields["slug"].read_only = False
+            serializer.fields["user"].read_only = False
+            serializer.fields["group"].read_only = False
+        return serializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.slug == "default_max_parallel_uploads":
+            detail = _("The limit `default_max_parallel_uploads` should not be deleted.")
+            raise ValidationError(detail)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['get'])
+    def get_limits_for_current_user(self, request):
+        current_user_limit_value = UploadParallelismLimit.objects.get_limit_for_user_or_group(user=request.user)
+        queryset = UploadParallelismLimit.objects.get_limits_for_user(user=request.user)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            data = {"current-user-parallelism-limit-value": current_user_limit_value, **serializer.data}
+            return self.get_paginated_response(data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        data = {"current-user-parallelism-limit-value": current_user_limit_value, **serializer.data}
+        return Response(data)

@@ -26,8 +26,12 @@ from gsimporter.api import NotFound
 from django.utils.timezone import now
 
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.validators import MinLengthValidator
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
@@ -87,6 +91,52 @@ class UploadSizeLimitManager(models.Manager):
             max_size=settings.DEFAULT_MAX_UPLOAD_SIZE,
         )
         return max_size_db_obj
+
+
+class UploadParallelismLimitManager(models.Manager):
+    def get_limit_for_user_or_group(self, user=None, group=None):
+        if user and group and not user.groups.filter(pk=group.pk).exists():
+            raise ValidationError()
+
+        # Get user Specific Limits
+        if user and not user.is_anonymous:
+            try:
+                return self.get(user=user).max_number
+            except UploadParallelismLimit.DoesNotExist:
+                pass
+
+        # Get group limits if user limit was not available
+        if group:
+            try:
+                return self.get(group=group).max_number
+            except UploadParallelismLimit.DoesNotExist:
+                pass
+        else:
+            group_limits = self.filter(
+                group__in=user.groups.all().values_list('id', flat=True)
+            )
+            if group_limits.exists():
+                return min(group_limits.values_list('max_number', flat=True))
+
+        # Default limit
+        default_limit, created = self.get_or_create(
+            slug="default_max_parallel_uploads",
+            defaults={
+                "description": "The default maximum parallel uploads per user.",
+                "max_number": settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER,
+            }
+        )
+        return default_limit.max_number
+
+    def get_limits_for_user(self, user=None):
+        if not user or user.is_anonymous:
+            return self.filter(slug="default_max_parallel_uploads")
+        queryset = self.filter(
+            Q(user=user) |
+            Q(slug="default_max_parallel_uploads") |
+            Q(group__in=user.groups.all().values_list('id', flat=True))
+        )
+        return queryset
 
 
 class Upload(models.Model):
@@ -301,6 +351,65 @@ class UploadSizeLimit(models.Model):
 
     def __str__(self):
         return f'UploadSizeLimit for "{self.slug}" (max_size: {self.max_size_label})'
+
+    class Meta:
+        ordering = ("slug",)
+
+
+class UploadParallelismLimit(models.Model):
+    objects = UploadParallelismLimitManager()
+
+    slug = models.SlugField(
+        primary_key=True,
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=True,
+        validators=[MinLengthValidator(limit_value=3)],
+    )
+    description = models.TextField(
+        max_length=255,
+        default=None,
+        null=True,
+        blank=True,
+    )
+    max_number = models.PositiveSmallIntegerField(
+        help_text=_("The maximum number of parallel uploads (0 to 32767)."),
+        default=settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER,
+    )
+    user = models.OneToOneField(
+        get_user_model(),
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+    group = models.OneToOneField(
+        Group,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+
+    def clean(self):
+        if not self.slug and not self.user and not self.group:
+            raise ValidationError(_(
+                "You need at least one of the following fields: `slug`, `user` or `group`."
+            ))
+
+        if self.user and self.group:
+            raise ValidationError(_(
+                "You should choose an user or a group, but not both at the same time."
+            ))
+
+        if self.user:
+            self.slug = f"user_{self.user.username}"
+        if self.group:
+            self.slug = f"group_{self.group.name}"
+
+        return super().clean()
+
+    def __str__(self):
+        return f'UploadParallelismLimit for "{self.slug}" (max_number: {self.max_number})'
 
     class Meta:
         ordering = ("slug",)
