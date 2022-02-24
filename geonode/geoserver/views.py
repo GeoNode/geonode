@@ -358,7 +358,7 @@ def style_change_check(request, path, style_name=None, access_token=None):
     if request.method in ('PUT', 'POST'):
         if not request.user.is_authenticated and not access_token:
             authorized = False
-        elif path == 'rest/styles' or re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*', path):
+        elif re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*', path):
             # style new/update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
