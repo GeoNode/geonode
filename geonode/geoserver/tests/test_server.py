@@ -754,6 +754,32 @@ class LayerTests(GeoNodeBaseTestSupport):
         authorized = style_change_check(post_request, 'rest/workspaces', access_token=access_token)
         self.assertTrue(authorized)
 
+        put_request = rf.put(
+            change_style_url,
+            data=san_andres_y_providencia_sld,
+            content_type='application/vnd.ogc.sld+xml',
+            **valid_auth_headers
+        )
+        put_request.user = AnonymousUser()
+        raw_url, headers, access_token = check_geoserver_access(
+            put_request,
+            '/gs/rest/workspaces',
+            'rest/workspaces',
+            workspace='geonode',
+            layername=layer.name,
+            allowed_hosts=[urlsplit(ogc_server_settings.public_url).hostname, ])
+        self.assertIsNotNone(raw_url)
+        self.assertIsNotNone(headers)
+        self.assertIsNotNone(access_token)
+
+        # Check that, if we have been authorized through the "access_token",
+        # we can still update a style no more present on GeoNode
+        # ref: 05b000cdb06b0b6e9b72bd9eb8a8e03abeb204a8
+        #  [Regression] "style_change_check" always fails in the case the style does not exist on GeoNode too, preventing a user editing temporary generated styles
+        Style.objects.filter(name=layer.name).delete()
+        authorized = style_change_check(put_request, 'rest/workspaces', access_token=access_token)
+        self.assertTrue(authorized)
+
         # Check is NOT 'authorized'
         post_request = rf.post(
             change_style_url,
