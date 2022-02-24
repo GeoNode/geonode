@@ -358,7 +358,7 @@ def style_change_check(request, path, style_name=None, access_token=None):
     if request.method in ('PUT', 'POST'):
         if not request.user.is_authenticated and not access_token:
             authorized = False
-        elif re.match(r'^.*/rest/styles.*|^(?<!/rest)(?<!/styles).*/rest/.*/styles.*', path):
+        elif re.match(r'^.*(?<!/rest/)/rest/.*/?styles.*', path):
             # style new/update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
@@ -486,7 +486,7 @@ def geoserver_proxy(request,
     url = urlsplit(raw_url)
 
     if re.match(r'^.*/rest/', url.path) and request.method in ("POST", "PUT", "DELETE"):
-        if re.match(r'^.*/rest/styles.*|^(?<!/rest)(?<!/styles).*/rest/.*/styles.*', url.path):
+        if re.match(r'^.*(?<!/rest/)/rest/.*/?styles.*', url.path):
             logger.debug(
                 f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
             _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
@@ -505,7 +505,7 @@ def geoserver_proxy(request,
             if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
                     not re.match(temp_style_name_regex, _style_name):
                 affected_datasets = style_update(request, raw_url, workspace)
-        elif re.match(r'^.*/rest/layers.*|^(?<!/rest)(?<!/layers).*/rest/.*/layers.*', url.path):
+        elif re.match(r'^.*(?<!/rest/)/rest/.*/?layers.*', url.path):
             logger.debug(f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
             try:
                 _dataset_name = os.path.splitext(os.path.basename(request.path))[0]
