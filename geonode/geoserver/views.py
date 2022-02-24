@@ -340,7 +340,7 @@ def dataset_style_manage(request, layername):
             )
 
 
-def style_change_check(request, path, access_token=None):
+def style_change_check(request, path, style_name=None, access_token=None):
     """
     If the layer has not change_dataset_style permission, return a status of
     401 (unauthorized)
@@ -358,16 +358,12 @@ def style_change_check(request, path, access_token=None):
     if request.method in ('PUT', 'POST'):
         if not request.user.is_authenticated and not access_token:
             authorized = False
-        elif path == 'rest/layers' and request.method == 'PUT':
-            # layer update, should be safe to always authorize it
-            authorized = True
-        else:
+        elif path == 'rest/styles' or re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*', path):
             # style new/update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
             # and check if the user has change_style_dataset permissions on each
             # of them
-            style_name = os.path.splitext(request.path)[0].split('/')[-1]
             if style_name == 'styles' and 'raw' in request.GET:
                 authorized = True
             elif re.match(temp_style_name_regex, style_name):
@@ -389,7 +385,8 @@ def style_change_check(request, path, access_token=None):
                                 authorized = True
                                 break
                 except Style.DoesNotExist:
-                    logger.warn(f'There is not a style with such a name: {style_name}.')
+                    if request.method != 'POST':
+                        logger.warn(f'There is not a style with such a name: {style_name}.')
                 except Exception as e:
                     logger.exception(e)
                     authorized = (request.method == 'POST')  # The user is probably trying to create a new style
@@ -463,7 +460,7 @@ def check_geoserver_access(request,
 
     # Collecting headers and cookies
     headers, access_token = get_headers(request, url, unquote(raw_url), allowed_hosts=allowed_hosts)
-    return (raw_url, headers, access_token)
+    return (raw_url, headers, access_token, downstream_path)
 
 
 @csrf_exempt
@@ -479,7 +476,7 @@ def geoserver_proxy(request,
     affected_datasets = None
     allowed_hosts = [urlsplit(ogc_server_settings.public_url).hostname, ]
 
-    raw_url, headers, access_token = check_geoserver_access(
+    raw_url, headers, access_token, downstream_path = check_geoserver_access(
         request,
         proxy_path,
         downstream_path,
@@ -489,14 +486,8 @@ def geoserver_proxy(request,
     url = urlsplit(raw_url)
 
     if request.method in ("POST", "PUT", "DELETE"):
-        if downstream_path in ('rest/styles', 'rest/layers',
-                               'rest/workspaces'):
-            if not style_change_check(request, downstream_path, access_token=access_token):
-                return HttpResponse(
-                    _("You don't have permissions to change style for this layer"),
-                    content_type="text/plain",
-                    status=401)
-            elif downstream_path == 'rest/styles':
+        if re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*|.*(/rest/layers)|.*(/rest)/.*(/layers).*.*(/rest/workspaces)|.*(/rest)/.*(/workspaces).*', url.path):
+            if re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*', url.path):
                 logger.debug(
                     f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
                 _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
@@ -506,10 +497,16 @@ def geoserver_proxy(request,
                         _style_name, _style_ext = os.path.splitext(_parsed_get_args.get('name'))
                 else:
                     _style_name, _style_ext = os.path.splitext(_style_name)
+
+                if not style_change_check(request, url.path, style_name=_style_name, access_token=access_token):
+                    return HttpResponse(
+                        _("You don't have permissions to change style for this layer"),
+                        content_type="text/plain",
+                        status=401)
                 if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
                         not re.match(temp_style_name_regex, _style_name):
                     affected_datasets = style_update(request, raw_url, workspace)
-            elif downstream_path == 'rest/layers':
+            elif re.match(r'.*(/rest/layers)|.*(/rest)/.*(/layers).*', url.path):
                 logger.debug(f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
                 try:
                     _dataset_name = os.path.splitext(os.path.basename(request.path))[0]
