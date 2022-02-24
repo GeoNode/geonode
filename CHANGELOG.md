@@ -1,5 +1,61 @@
 # Change Log
 
+## [3.3.1](https://github.com/GeoNode/geonode/tree/3.3.1) (2022-02-23)
+
+<li> Wed Feb 23 11:27:46 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/c57b603145dbce52ebe07b89908752834f7a36d4 target=blank>[Dependencies] Bump django-geonode-mapstore-client to version 3.3.1</a></li>
+<li> Tue Feb 22 11:43:25 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/3868ab5ed11d032056dbe903ef814f1ed0ad90f0 target=blank>Update forms.py (#8851)</a></li>
+<li> Tue Feb 22 09:55:51 2022 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/17368a6f38de812415db83bdd444e793f60d2000 target=blank>[Backport to 3.3.x][Fixes #8844] Typo in valid user invite submission message (#8846)</a></li>
+<li> Mon Feb 21 21:05:48 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/16defc0a84f38b2518e2381e108ed440457346d1 target=blank>[Dependencies] Bump geoserver-restconfig to version 2.0.5</a></li>
+<li> Mon Feb 21 17:07:15 2022 -0300: Ítalo Fernandes <a href=https://github.com/GeoNode/geonode/commit/f42486f44e7a9466f94b6c411fb5cd4bf903e64f target=blank>[3.3.x][Fixes #8736] Align importlayers command to the new upload interface (#8815)</a></li>
+<li> Mon Feb 21 12:05:30 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/40f005e73af61a849d307bb97fef9042ffbc3691 target=blank>Merge branch '3.3.x' of https://github.com/GeoNode/geonode into 3.3.x</a></li>
+<li> Mon Feb 21 12:05:21 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/477108b5c0075003c8011b37de22139fe99d1e4d target=blank> - Fix a regression on the "Upload" model progress check</a></li>
+<li> Mon Feb 21 11:16:32 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/7d74adaf9f98a7051351577c07bc14b4d2f3c098 target=blank>[Backport  #8687] Simplify Upload Size Limiting setup (#8828)</a></li>
+<li> Fri Feb 18 17:59:12 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/883e653d8ed9730d9fc6ee186a5c39c7bea2e928 target=blank>[Fixes #8813] Total in responsible facet for Apps and layers does not match with total of resources found. (#8826) (#8827)</a></li>
+<li> Fri Feb 18 16:26:00 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/689ec6960d7fe16b50463fbbcd7d0097d0134349 target=blank>[Dependencies] Update setuptools==60.9.3 pip==22.0.3</a></li>
+<li> Thu Feb 17 12:06:10 2022 -0300: Ítalo Fernandes <a href=https://github.com/GeoNode/geonode/commit/aeb52f48681c8aeff2e4349da42302a60fa3c086 target=blank>[3.3.x][Fixes #8667] Implement the upload of files from remote locations (#8776)</a></li>
+<li> Mon Feb 14 14:00:40 2022 +1300: Alistair McIntyre <a href=https://github.com/GeoNode/geonode/commit/2d07d9fbc892b8f9eb1f8a262622eae22bd56a96 target=blank>Correctly assign a user when creating a new upload session. (#8777)</a></li>
+<li> Tue Feb 8 11:59:12 2022 +0100: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/e54db6257e963efabf8b8a3b8163a8357db420f9 target=blank>[Backport to 3.3.x][Fixes #8760] Support Basic Auth for proxied… (#8768)</a></li>
+<li> Fri Feb 4 16:28:58 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/a3b682d1ba91b4e9bbf6aacfacca11dc8ae56d30 target=blank>[Fixes #8712] Improve/fix GEONODE_APPS_ENABLE handling (#8730)</a></li>
+<li> Fri Feb 4 15:00:55 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/34a9746310ec0852be78460916b2cdff6ddac5b6 target=blank>[3.3.x] [Fixes #8690] Custom filters available for the “ResourceBase” opaque filters (#8733)</a></li>
+<li> Thu Feb 3 20:25:35 2022 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/6d2fe7fcaf973adeed9c550d7517d1b139196d85 target=blank>[Fixes #8732] Notifications for account approval are sent even if GeoNode is configured for open signup (#8735)</a></li>
+<li> Thu Feb 3 12:55:33 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/b24c8e8660ef812a54f37dc4ae9692052b60b2b4 target=blank>[3.3.x][Fixes #8689] Extend the ResourceBase metadata model with an opaque JSONField (#8727)</a></li>
+<li> Thu Feb 3 14:49:21 2022 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/410b2c0f3bbaecdcbfab274d0d17f9a440031f73 target=blank>- [Fixes #8454] Rating average available only in English (#8717)</a></li>
+<li> Wed Feb 2 11:20:32 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/72740ed7c2a9f1f785a6442e3f304860514d6509 target=blank> - Hyde internal fields from the "metadata" forms</a></li>
+<li> Thu Jan 27 10:36:00 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/e41ff1bb882296ed4e4f6fca7a14fa63ce0a9c7c target=blank> - Typo</a></li>
+<li> Thu Jan 27 09:34:50 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/b06d40d0a6aaa3a2778b7ff20b7459266e18667c target=blank>[LGTM] Fix issues</a></li>
+<li> Thu Jan 27 09:30:42 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/19011387e8b9391dea97b6c5bf6dcd5cedabe4ec target=blank>[Backport to 3.3.x][Fixes #8499] Added GeoApp types missing to search filter (#8684)</a></li>
+<li> Thu Jan 27 11:25:44 2022 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/58939163155d14d97ceedcb9676146c8d0faf258 target=blank>[3.3.x][Fixes #8641] Replace Layer (stable 3.2.x) (#8695)</a></li>
+<li> Wed Jan 26 16:10:05 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/56804560154545ba78c85f354c1969545220b499 target=blank>[Fixes #8691] Geonode 3.3.x build is broken (#8692)</a></li>
+<li> Tue Jan 25 13:32:16 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/c2f28c6ba8a41c74929de0fd38d86021d8408c42 target=blank>[Fixes #8422] Added pluggable service types (#8682)</a></li>
+<li> Mon Jan 24 13:18:16 2022 -0300: Ítalo Fernandes <a href=https://github.com/GeoNode/geonode/commit/abd82e34239e4da5eca13228833ccfbbeec401b7 target=blank>[Fixes #8347] Implement upload parallelism limit per user (#8662)</a></li>
+<li> Fri Jan 21 18:59:28 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/9f5e13bc77783283d9aa2f1774b39da6a5946bcf target=blank>[Pep8] Fix pep8 issues</a></li>
+<li> Thu Jan 20 15:28:56 2022 +0100: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/1368c7bac43ea9a8c5de19a931a6176e28fc5506 target=blank>[Fixes #8611] Setting style version for upload, re-generate thumbnail  (#8612) (#8657)</a></li>
+<li> Tue Jan 18 11:38:17 2022 +0100: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/70cfe23940118f201e0442766e07acfba51e77a7 target=blank>[Backport to 3.3.x][Fixes #8610] API v2 does not return keywords belo… (#8626)</a></li>
+<li> Thu Jan 13 12:56:51 2022 +0100: stefano bovio <a href=https://github.com/GeoNode/geonode/commit/df17ba27546fbd90c3355e1db5c99bd485ed539c target=blank>improve loading of geolimits map tiles (#8596)</a></li>
+<li> Thu Jan 13 09:41:54 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b1199abf9b3fea9bb03fa347fe4cd1abfd1dd127 target=blank>[Fixes #8551] raster uploads require sending the same file twice (#8586) (#8595)</a></li>
+<li> Wed Dec 22 13:14:07 2021 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/be510d7d5bedb338d423eb614c887e02faa2b735 target=blank>[Fixes #8425] Space in sitename not escaped in invitation mail body (#8538) (#8540)</a></li>
+<li> Wed Dec 22 12:06:06 2021 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/9c24afcf59c8d4914cae4e91a43d68866745fd13 target=blank>[Backport 3.3.x][Fixes #8534] Include links inside resources API v2 response (#8536)</a></li>
+<li> Mon Dec 20 16:17:21 2021 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/f322c8792d5cc3f14c4b6bfa0db8a837567dcb8f target=blank>[Backport to 3.3.x][Fixes #8524] Missing "anonymous group" permissions within GeoFence r… (#8525)</a></li>
+<li> Mon Dec 20 06:44:47 2021 -0300: Ítalo Fernandes <a href=https://github.com/GeoNode/geonode/commit/b40b0f481b3c37d788a2e13f1693d50578774fa0 target=blank>[3.3.x][Fixes #8458] Direct download timeout with big files (#8462)</a></li>
+<li> Thu Dec 16 18:39:20 2021 +0200: Yann Jouanique <a href=https://github.com/GeoNode/geonode/commit/9daff2044b87f4c1edab12575470def909eae817 target=blank>Fix dockerhub image build (#8468)</a></li>
+<li> Thu Dec 16 17:43:19 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/30871f4e43e88708787d37734b22d55ba4a7d60d target=blank>Merge branch '3.3.x' of https://github.com/GeoNode/geonode into 3.3.x</a></li>
+<li> Thu Dec 16 17:43:09 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/16f899e65a02e84ff179adb74a4f2fa58a8082f5 target=blank> - Rename "spcgeonode" to "geonode" on letsencrypt docker image</a></li>
+<li> Thu Dec 16 17:04:59 2021 +0100: EHJ-52n <a href=https://github.com/GeoNode/geonode/commit/8dce675f8795faae068b37dacf871ff7520359c2 target=blank>Fix typo in Authorizaton header: Berarer -> Bearer (#8498)</a></li>
+<li> Wed Dec 15 12:30:40 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/160ab52adf432fc2d956694f6100fb93b99326ba target=blank> - Bump the version number to 3.3.1</a></li>
+<li> Fri Dec 10 18:48:08 2021 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/702837981e79c975fcca5dcd594bfb3ea3501971 target=blank>[3.3.x][Fixes #8429]GeoApps have empty uuid (#8473)</a></li>
+<li> Fri Dec 10 09:53:49 2021 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/3c74396581238356af14ad75b889e77967590dd5 target=blank>[Fixes #8459] Create a New Group button should be hidden to non-superusers (#8476) (#8478)</a></li>
+<li> Thu Dec 9 11:25:03 2021 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/2af9d1f8714c70026263032bf0cbfd05f90ebf6b target=blank>[Fixes #8461] WCS getCoverage links have wrong params (#8471)</a></li>
+<li> Mon Dec 6 16:56:42 2021 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/3418d0917f1b5c131f40087a97e689daed713e6c target=blank>[Fixes #8454] Rating average available only in English (#8455)</a></li>
+<li> Thu Dec 2 13:01:06 2021 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/819d4ca3e9d2d70f6fd12b480bdb90b33217eba5 target=blank>[Fixes #8420] Hide Connected social accounts link from profile if no social provider + app is configured (#8451)</a></li>
+<li> Wed Dec 1 10:31:34 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/49e08f5507b162b02a2fc12181499f8c8796bb17 target=blank>[CircleCI] Fix tests</a></li>
+<li> Wed Dec 1 10:11:08 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/084c56e293d7394b390582687e250343fe39944f target=blank>[Pep8] Fix flake8 issues</a></li>
+<li> Wed Dec 1 10:10:38 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/0caeec38ec7d3989ec64a80fddd14ede3c31d424 target=blank>[CircleCI] Fix tests</a></li>
+<li> Wed Dec 1 01:38:54 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/148fb937c73360416bb033117f0966a583dca58b target=blank> - Fix: race on upload transaction</a></li>
+<li> Mon Nov 29 14:17:35 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/3e7f2b847b00be505ad8727ddc044af652fcd2a2 target=blank>[Dependencies] Bump django-geonode-mapstore-client to version >=3.3.0,<4.0.0</a></li>
+<li> Mon Nov 29 11:18:56 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/cb7d0dbfd4e6b0b6a24062be16bf1c35e4725685 target=blank> - Fix: race on upload transaction</a></li>
+<li> Fri Nov 26 17:36:28 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/218773cbaedcbd76d2949612f9e1fb88ca5767ec target=blank> - Fix: race on upload transaction</a></li>
+<li> Fri Nov 26 16:51:47 2021 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/a081b8678f4c632148f6c1400afb25d396c10235 target=blank> - Fix: race on upload transaction</a></li>
+
 ## [3.3.0](https://github.com/GeoNode/geonode/tree/3.3.0) (2021-11-24)
 
 ### Breaking Changes
