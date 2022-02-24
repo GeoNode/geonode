@@ -163,11 +163,11 @@ class Layer(ResourceBase):
 
     # internal fields
     objects = LayerManager()
-    workspace = models.CharField(_('Workspace'), max_length=128)
-    store = models.CharField(_('Store'), max_length=128)
-    storeType = models.CharField(_('Storetype'), max_length=128)
-    name = models.CharField(_('Name'), max_length=128)
-    typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
+    workspace = models.CharField(_('Workspace'), max_length=255)
+    store = models.CharField(_('Store'), max_length=255)
+    storeType = models.CharField(_('Storetype'), max_length=255)
+    name = models.CharField(_('Name'), max_length=255)
+    typename = models.CharField(_('Typename'), max_length=255, null=True, blank=True)
 
     is_mosaic = models.BooleanField(_('Is mosaic?'), default=False)
     has_time = models.BooleanField(_('Has time?'), default=False)
