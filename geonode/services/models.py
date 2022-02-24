@@ -29,9 +29,9 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django_jsonfield_backport.models import JSONField
 
+from geonode.services.serviceprocessors.handler import get_available_service_type
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
-from geonode.services.serviceprocessors.handler import get_available_service_type
 
 from . import enumerations
 

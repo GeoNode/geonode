@@ -23,9 +23,9 @@ from collections import OrderedDict
 import logging
 
 from geonode.services import enumerations
+from geonode.services.utils import parse_services_types
 from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler
 from geonode.services.serviceprocessors.wms import GeoNodeServiceHandler, WmsServiceHandler
-from geonode.services.utils import parse_services_types
 from django.utils.translation import ugettext as _
 
 logger = logging.getLogger(__name__)
