@@ -358,7 +358,7 @@ def style_change_check(request, path, style_name=None, access_token=None):
     if request.method in ('PUT', 'POST'):
         if not request.user.is_authenticated and not access_token:
             authorized = False
-        elif re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*', path):
+        elif re.match(r'^.*/rest/styles|^.*/rest/.*/styles', path):
             # style new/update
             # we will iterate all layers (should be just one if not using GS)
             # to which the posted style is associated
@@ -486,34 +486,33 @@ def geoserver_proxy(request,
     url = urlsplit(raw_url)
 
     if request.method in ("POST", "PUT", "DELETE"):
-        if re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*|.*(/rest/layers)|.*(/rest)/.*(/layers).*.*(/rest/workspaces)|.*(/rest)/.*(/workspaces).*', url.path):
-            if re.match(r'.*(/rest/styles)|.*(/rest)/.*(/styles).*', url.path):
-                logger.debug(
-                    f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
-                _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
-                _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
-                if _style_name == 'styles.json' and request.method == "PUT":
-                    if _parsed_get_args.get('name'):
-                        _style_name, _style_ext = os.path.splitext(_parsed_get_args.get('name'))
-                else:
-                    _style_name, _style_ext = os.path.splitext(_style_name)
+        if re.match(r'^.*/rest/styles|^.*/rest/.*/styles', url.path):
+            logger.debug(
+                f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
+            _style_name, _style_ext = os.path.splitext(os.path.basename(urlsplit(url.geturl()).path))
+            _parsed_get_args = dict(parse_qsl(urlsplit(url.geturl()).query))
+            if _style_name == 'styles.json' and request.method == "PUT":
+                if _parsed_get_args.get('name'):
+                    _style_name, _style_ext = os.path.splitext(_parsed_get_args.get('name'))
+            else:
+                _style_name, _style_ext = os.path.splitext(_style_name)
 
-                if not style_change_check(request, url.path, style_name=_style_name, access_token=access_token):
-                    return HttpResponse(
-                        _("You don't have permissions to change style for this layer"),
-                        content_type="text/plain",
-                        status=401)
-                if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
-                        not re.match(temp_style_name_regex, _style_name):
-                    affected_datasets = style_update(request, raw_url, workspace)
-            elif re.match(r'.*(/rest/layers)|.*(/rest)/.*(/layers).*', url.path):
-                logger.debug(f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
-                try:
-                    _dataset_name = os.path.splitext(os.path.basename(request.path))[0]
-                    _dataset = Dataset.objects.get(name=_dataset_name)
-                    affected_datasets = [_dataset]
-                except Exception:
-                    logger.warn(f"Could not find any Dataset {os.path.basename(request.path)} on DB")
+            if not style_change_check(request, url.path, style_name=_style_name, access_token=access_token):
+                return HttpResponse(
+                    _("You don't have permissions to change style for this layer"),
+                    content_type="text/plain",
+                    status=401)
+            if _style_name != 'style-check' and (_style_ext == '.json' or _parsed_get_args.get('raw')) and \
+                    not re.match(temp_style_name_regex, _style_name):
+                affected_datasets = style_update(request, raw_url, workspace)
+        elif re.match(r'^.*/rest/layers|^.*/rest/.*/layers', url.path):
+            logger.debug(f"[geoserver_proxy] Updating Dataset ---> url {url.geturl()}")
+            try:
+                _dataset_name = os.path.splitext(os.path.basename(request.path))[0]
+                _dataset = Dataset.objects.get(name=_dataset_name)
+                affected_datasets = [_dataset]
+            except Exception:
+                logger.warn(f"Could not find any Dataset {os.path.basename(request.path)} on DB")
 
     kwargs = {'affected_datasets': affected_datasets}
     raw_url = unquote(raw_url)
