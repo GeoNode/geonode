@@ -38,7 +38,7 @@ from .. import enumerations
 from ..enumerations import INDEXED
 from .. import models
 from .. import utils
-from .import base
+from . import base
 
 from collections import namedtuple
 
