@@ -49,9 +49,10 @@ from . import enumerations, forms
 from .models import Service
 from .serviceprocessors import (
     base,
-    handler,
     wms,
-    arcgis)
+    arcgis,
+    get_service_handler,
+    get_available_service_types)
 from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
 
-    @mock.patch("geonode.services.serviceprocessors.handler.get_available_service_type",
+    @mock.patch("geonode.services.serviceprocessors.get_available_service_types",
                 autospec=True)
     def test_get_service_handler_wms(self, mock_wms_handler):
         _handler = MagicMock()
@@ -116,7 +117,7 @@ class ModuleFunctionsTestCase(StandardTestCase):
             enumerations.WMS: {"OWS": True, "handler": _handler, "label": 'Web Map Service'}
         }
         phony_url = "http://fake"
-        handler.get_service_handler(phony_url, service_type=enumerations.WMS)
+        get_service_handler(phony_url, service_type=enumerations.WMS)
         _handler.assert_called_with(phony_url, None)
 
     @mock.patch("arcrest.MapService",
@@ -1005,7 +1006,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
     def test_will_use_multiple_service_types_defined_for_choices(self):
-        elems = handler.get_available_service_type()
+        elems = get_available_service_types()
         expected = {
             'WMS': {'OWS': True, 'handler': wms.WmsServiceHandler, 'label': 'Web Map Service'},
             'GN_WMS': {'OWS': True, 'handler': wms.GeoNodeServiceHandler, 'label': 'GeoNode (Web Map Service)'},

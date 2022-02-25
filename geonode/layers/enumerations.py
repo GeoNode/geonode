@@ -45,4 +45,5 @@ GXP_PTYPES = {
     'REST_IMG': 'gxp_arcrestsource',
     'HGL': 'gxp_hglsource',
     'GN_WMS': 'gxp_wmscsource',
+    'SOS': 'gxp_sos',
 }
