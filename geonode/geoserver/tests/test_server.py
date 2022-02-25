@@ -740,7 +740,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             **valid_auth_headers
         )
         post_request.user = AnonymousUser()
-        raw_url, headers, access_token = check_geoserver_access(
+        raw_url, headers, access_token, downstream_path = check_geoserver_access(
             post_request,
             '/gs/rest/workspaces',
             'rest/workspaces',
@@ -751,7 +751,19 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(headers)
         self.assertIsNotNone(access_token)
 
-        authorized = style_change_check(post_request, 'rest/workspaces', access_token=access_token)
+        authorized = style_change_check(post_request, downstream_path, style_name='styles', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(post_request, 'rest/styles', style_name=f'{layer.name}', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(post_request, f'rest/workspaces/{layer.workspace}/styles/{layer.name}', style_name=f'{layer.name}', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(post_request, f'rest/layers/{layer.name}', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(post_request, f'rest/workspaces/{layer.workspace}/layers/{layer.name}', access_token=access_token)
         self.assertTrue(authorized)
 
         put_request = rf.put(
@@ -761,7 +773,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             **valid_auth_headers
         )
         put_request.user = AnonymousUser()
-        raw_url, headers, access_token = check_geoserver_access(
+        raw_url, headers, access_token, downstream_path = check_geoserver_access(
             put_request,
             '/gs/rest/workspaces',
             'rest/workspaces',
@@ -777,7 +789,20 @@ class LayerTests(GeoNodeBaseTestSupport):
         # ref: 05b000cdb06b0b6e9b72bd9eb8a8e03abeb204a8
         #  [Regression] "style_change_check" always fails in the case the style does not exist on GeoNode too, preventing a user editing temporary generated styles
         Style.objects.filter(name=layer.name).delete()
-        authorized = style_change_check(put_request, 'rest/workspaces', access_token=access_token)
+
+        authorized = style_change_check(put_request, downstream_path, style_name='styles', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(put_request, 'rest/styles', style_name=f'{layer.name}', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(put_request, f'rest/workspaces/{layer.workspace}/styles/{layer.name}', style_name=f'{layer.name}', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(put_request, f'rest/layers/{layer.name}', access_token=access_token)
+        self.assertTrue(authorized)
+
+        authorized = style_change_check(put_request, f'rest/workspaces/{layer.workspace}/layers/{layer.name}', access_token=access_token)
         self.assertTrue(authorized)
 
         # Check is NOT 'authorized'
@@ -788,7 +813,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             **invalid_auth_headers
         )
         post_request.user = AnonymousUser()
-        raw_url, headers, access_token = check_geoserver_access(
+        raw_url, headers, access_token, downstream_path = check_geoserver_access(
             post_request,
             '/gs/rest/workspaces',
             'rest/workspaces',
@@ -799,7 +824,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.assertIsNotNone(headers)
         self.assertIsNone(access_token)
 
-        authorized = style_change_check(post_request, 'rest/workspaces', access_token=access_token)
+        authorized = style_change_check(post_request, downstream_path, access_token=access_token)
         self.assertFalse(authorized)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
