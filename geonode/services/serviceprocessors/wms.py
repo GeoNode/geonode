@@ -452,7 +452,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
         if store is None and create:  # store did not exist. Create it
-            logger.error(f"name: {self.name} - store: {store}")
+            logger.debug(f"name: {self.name} - store: {store}")
             store = cat.create_wmsstore(
                 name=self.name,
                 workspace=workspace,
