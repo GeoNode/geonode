@@ -38,7 +38,7 @@ from .. import enumerations
 from ..enumerations import INDEXED
 from .. import models
 from .. import utils
-from .base import ServiceHandlerBase
+from .import base
 
 from collections import namedtuple
 
@@ -58,13 +58,13 @@ MapLayer = namedtuple("MapLayer",
                       maxScale")
 
 
-class ArcMapServiceHandler(ServiceHandlerBase):
+class ArcMapServiceHandler(base.ServiceHandlerBase):
     """Remote service handler for ESRI:ArcGIS:MapServer services"""
 
     service_type = enumerations.REST_MAP
 
     def __init__(self, url):
-        ServiceHandlerBase.__init__(self, url)
+        base.ServiceHandlerBase.__init__(self, url)
         self.proxy_base = None
         self.url = url
         extent, srs = utils.get_esri_extent(self.parsed_service)
