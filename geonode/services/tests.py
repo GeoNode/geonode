@@ -754,28 +754,30 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         result = handler._offers_geonode_projection()
         self.assertTrue(result)
 
-    @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
-                autospec=True)
-    @mock.patch("geonode.services.serviceprocessors.wms.settings",
-                autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.wms.WebMapService", autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.wms.settings", autospec=True)
     def test_does_not_offer_geonode_projection(self, mock_settings, mock_wms):
         mock_settings.DEFAULT_MAP_CRS = "EPSG:3857"
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
-        self.parsed_wms.contents[self.phony_layer_name].crsOptions = [
-            "EPSG:4326"]
+        self.parsed_wms.contents[self.phony_layer_name].crsOptions = ["EPSG:4326"]
         handler = wms.WmsServiceHandler(self.phony_url)
         result = handler._offers_geonode_projection()
         self.assertFalse(result)
 
     @mock.patch("geonode.services.serviceprocessors.wms.WebMapService", autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.wms.WmsServiceHandler.parsed_service", autospec=True)
     @mock.patch("geonode.services.serviceprocessors.base.get_geoserver_cascading_workspace", autospec=True)
-    def test_get_store(self, mock_get_gs_cascading_store, mock_wms):
+    def test_get_store(self, mock_get_gs_cascading_store, mock_wms_parsed_service, mock_wms):
         mock_workspace = mock_get_gs_cascading_store.return_value
         mock_catalog = mock_workspace.catalog
         mock_catalog.get_store.return_value = None
         mock_wms.return_value = (self.phony_url, self.parsed_wms)
+        mock_wms_parsed_service.return_value = self.parsed_wms
         handler = wms.WmsServiceHandler(self.phony_url)
         handler._get_store(create=True)
+        mock_get_gs_cascading_store.assert_called_with(
+            create=True
+        )
         mock_catalog.create_wmsstore.assert_called_with(
             name=handler.name,
             workspace=mock_workspace,
