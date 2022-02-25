@@ -26,8 +26,10 @@ import taggit
 
 from . import enumerations
 from .models import Service
-from .serviceprocessors import get_service_handler
-from geonode.services.serviceprocessors.handler import get_available_service_type
+from .serviceprocessors import (
+    get_service_handler,
+    get_available_service_types
+)
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +50,7 @@ class CreateServiceForm(forms.Form):
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
-        choices=[(k, v["label"]) for k, v in get_available_service_type().items()],  # from dictionary to tuple
+        choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
         initial='AUTO',
     )
 

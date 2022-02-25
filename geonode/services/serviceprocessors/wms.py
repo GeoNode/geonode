@@ -451,9 +451,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = base.get_geoserver_cascading_workspace(create=create)
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
-        logger.debug(f"name: {self.name}")
-        logger.debug(f"store: {store}")
         if store is None and create:  # store did not exist. Create it
+            logger.debug(f"name: {self.name} - store: {store}")
             store = cat.create_wmsstore(
                 name=self.name,
                 workspace=workspace,
