@@ -29,15 +29,15 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django_jsonfield_backport.models import JSONField
 
-from geonode.services.serviceprocessors.handler import get_available_service_type
 from geonode.base.models import ResourceBase
 from geonode.people.enumerations import ROLE_VALUES
+from geonode.services.serviceprocessors import get_available_service_types
 
 from . import enumerations
 
-logger = logging.getLogger("geonode.services")
+service_type_as_tuple = [(k, v["label"]) for k, v in get_available_service_types().items()]
 
-service_type_as_tuple = [(k, v["label"]) for k, v in get_available_service_type().items()]
+logger = logging.getLogger("geonode.services")
 
 
 class Service(ResourceBase):

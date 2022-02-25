@@ -59,7 +59,12 @@ from ..enumerations import CASCADED
 from ..enumerations import INDEXED
 from .. import models
 from .. import utils
-from . import base
+from .base import (
+    ServiceHandlerBase,
+    CascadableServiceHandlerMixin,
+    get_proxified_ows_url,
+    get_geoserver_cascading_workspace
+)
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +97,7 @@ def WebMapService(url,
         clean_url = clean_ows_url(url)
         base_ows_url = clean_url
     else:
-        (clean_version, proxified_url, base_ows_url) = base.get_proxified_ows_url(
+        (clean_version, proxified_url, base_ows_url) = get_proxified_ows_url(
             url, version=version, proxy_base=proxy_base)
         version = clean_version
         clean_url = proxified_url
@@ -121,14 +126,14 @@ def WebMapService(url,
         f'The WMS version ({version}) you requested is not implemented. Please use 1.1.1 or 1.3.0.')
 
 
-class WmsServiceHandler(base.ServiceHandlerBase,
-                        base.CascadableServiceHandlerMixin):
+class WmsServiceHandler(ServiceHandlerBase,
+                        CascadableServiceHandlerMixin):
     """Remote service handler for OGC WMS services"""
 
     service_type = enumerations.WMS
 
     def __init__(self, url):
-        base.ServiceHandlerBase.__init__(self, url)
+        ServiceHandlerBase.__init__(self, url)
         self.proxy_base = urljoin(
             settings.SITEURL, reverse('proxy'))
         self.url = url
@@ -448,7 +453,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         and belongs to the default geonode workspace for cascaded layers.
 
         """
-        workspace = base.get_geoserver_cascading_workspace(create=create)
+        workspace = get_geoserver_cascading_workspace(create=create)
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
         logger.debug(f"name: {self.name}")

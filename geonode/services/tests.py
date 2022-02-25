@@ -43,9 +43,10 @@ from . import enumerations, forms
 from .models import HarvestJob, Service
 from .serviceprocessors import (
     base,
-    handler,
     wms,
-    arcgis)
+    arcgis,
+    get_service_handler,
+    get_available_service_types)
 from .serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler, MapLayer
 from .serviceprocessors.wms import GeoNodeServiceHandler, WebMapService, WmsServiceHandler
 
@@ -107,14 +108,14 @@ class ModuleFunctionsTestCase(StandardTestCase):
             f"http://www.geonode.org/{mock_settings.CASCADE_WORKSPACE}"
         )
 
-    @mock.patch("geonode.services.serviceprocessors.handler.get_available_service_type")
+    @mock.patch("geonode.services.serviceprocessors.get_available_service_types")
     def test_get_service_handler_wms(self, mock_wms_handler):
         _handler = MagicMock()
         mock_wms_handler.return_value = {
             enumerations.WMS: {"OWS": True, "handler": _handler, "label": 'Web Map Service'}
         }
         phony_url = "http://fake"
-        handler.get_service_handler(phony_url, service_type=enumerations.WMS)
+        get_service_handler(phony_url, service_type=enumerations.WMS)
         _handler.assert_called_with(phony_url)
 
     @mock.patch("arcrest.MapService",
@@ -766,10 +767,8 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         result = handler._offers_geonode_projection()
         self.assertFalse(result)
 
-    @mock.patch("geonode.services.serviceprocessors.wms.WebMapService",
-                autospec=True)
-    @mock.patch("geonode.services.serviceprocessors.base.get_geoserver_"
-                "cascading_workspace", autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.wms.WebMapService", autospec=True)
+    @mock.patch("geonode.services.serviceprocessors.base.get_geoserver_cascading_workspace", autospec=True)
     def test_get_store(self, mock_get_gs_cascading_store, mock_wms):
         mock_workspace = mock_get_gs_cascading_store.return_value
         mock_catalog = mock_workspace.catalog
@@ -982,7 +981,7 @@ class TestServiceViews(GeoNodeBaseTestSupport):
 
     @override_settings(SERVICES_TYPE_MODULES=SERVICES_TYPE_MODULES)
     def test_will_use_multiple_service_types_defined_for_choices(self):
-        elems = handler.get_available_service_type()
+        elems = get_available_service_types()
         expected = {
             'WMS': {'OWS': True, 'handler': WmsServiceHandler, 'label': 'Web Map Service'},
             'GN_WMS': {'OWS': True, 'handler': GeoNodeServiceHandler, 'label': 'GeoNode (Web Map Service)'},
