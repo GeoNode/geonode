@@ -977,7 +977,15 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     then store in GeoNode database using Attribute model
     """
     attribute_map = []
-    server_url = ogc_server_settings.LOCATION if layer.storeType != "remoteStore" else layer.remote_service.service_url
+    if getattr(layer, 'remote_service') and layer.remote_service:
+        server_url = layer.remote_service.service_url
+        if layer.remote_service.operations.get('GetCapabilities', None) and layer.remote_service.operations.get('GetCapabilities').get('methods'):
+            for _method in layer.remote_service.operations.get('GetCapabilities').get('methods'):
+                if _method.get('type', '').upper() == 'GET':
+                    server_url = _method.get('url', server_url)
+                    break
+    else:
+        server_url = ogc_server_settings.LOCATION
     if layer.storeType == "remoteStore" and layer.remote_service.ptype == "gxp_arcrestsource":
         dft_url = f"{server_url}{(layer.alternate or layer.typename)}?f=json"
         try:
@@ -992,13 +1000,16 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             attribute_map = []
     elif layer.storeType in {"dataStore", "remoteStore", "wmsStore"}:
         typename = layer.alternate if layer.alternate else layer.typename
-        dft_url = re.sub(r"\/wms\/?$",
-                         "/",
-                         server_url) + "ows?" + urlencode({"service": "wfs",
-                                                           "version": "1.0.0",
-                                                           "request": "DescribeFeatureType",
-                                                           "typename": typename,
-                                                           })
+        dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
+        dft_query = urlencode(
+            {
+                "service": "wfs",
+                "version": "1.0.0",
+                "request": "DescribeFeatureType",
+                "typename": typename
+            }
+        )
+        dft_url = urljoin(dft_url_path, f"ows?{dft_query}")
         try:
             # The code below will fail if http_client cannot be imported or WFS not supported
             req, body = http_client.get(dft_url, user=_user)
