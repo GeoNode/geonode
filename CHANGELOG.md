@@ -1,7 +1,16 @@
 # Change Log
 
-## [3.3.1](https://github.com/GeoNode/geonode/tree/3.3.1) (2022-02-23)
+## [3.3.1](https://github.com/GeoNode/geonode/tree/3.3.1.post1) (2022-02-25)
 
+<li> Fri Feb 25 14:41:37 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/559956d574b509b582dab266f58c14bda005a2c9 target=blank>[Fixes #8855] Plugged service type are ignored in the model validation (#8856)</a></li>
+<li> Fri Feb 25 14:24:18 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/aace1b6706123c09703d436e0244fce8cd95beb2 target=blank> - Allow 'post' suffix on GeoNode release versions</a></li>
+<li> Fri Feb 25 09:09:36 2022 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/28cc0a18a1a6ef20ac69331266d08a07dd4fdc00 target=blank>[Backport to 3.3.x][Fixes #8858] Support "workspaced" requests on GeoServer proxy view (#8860)</a></li>
+<li> Thu Feb 24 10:59:47 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/00d09259fdcb1f993079da5e7c7cecc38ed647e5 target=blank>[CircleCI][Regression] Test: "style_change_check" always fails in the case the style does not exist on GeoNode too, preventing a user editing temporary generated styles</a></li>
+<li> Wed Feb 23 19:27:06 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/796c5768f80594aadbb1d5f5f177e9be6aab6585 target=blank>[Regression] "style_change_check" always fails in the case the style does not exist on GeoNode too, preventing a user editing temporary generated styles</a></li>
+<li> Wed Feb 23 17:45:15 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/a91418253e59ad7cf79b108cdb3df5e958f45f27 target=blank> - Update docker images names to version 3.3.x</a></li>
+<li> Wed Feb 23 14:24:06 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/e775d37c22c3f1b7c6e26546bbe84105f8ad5281 target=blank>[Dependencies] Bump django_geonode_mapstore_client to 3.3.x</a></li>
+<li> Wed Feb 23 14:22:31 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/65bf18a13670c4fa396eafd0644e64ce456ac882 target=blank>Bump to version 3.3.2</a></li>
+<li> Wed Feb 23 12:29:46 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/e521c9c7c9cef953bfd74d003daeab0501668c1e target=blank>CHANGELOG version 3.3.1</a></li>
 <li> Wed Feb 23 11:27:46 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/c57b603145dbce52ebe07b89908752834f7a36d4 target=blank>[Dependencies] Bump django-geonode-mapstore-client to version 3.3.1</a></li>
 <li> Tue Feb 22 11:43:25 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/3868ab5ed11d032056dbe903ef814f1ed0ad90f0 target=blank>Update forms.py (#8851)</a></li>
 <li> Tue Feb 22 09:55:51 2022 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/17368a6f38de812415db83bdd444e793f60d2000 target=blank>[Backport to 3.3.x][Fixes #8844] Typo in valid user invite submission message (#8846)</a></li>
