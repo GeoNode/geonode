@@ -136,7 +136,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode('utf-8') or self.name,
                 abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode('utf-8') or _(
                     "Not provided"),
-                operations=OgcWmsHarvester.get_wms_operations(cleaned_url.geturl(), version=version)
+                operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version)
             )
             service_harvester = Harvester.objects.create(
                 name=self.name,
