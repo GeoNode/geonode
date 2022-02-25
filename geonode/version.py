@@ -29,7 +29,7 @@ def get_version(version=None):
         from geonode import __version__ as version
     else:
         assert len(version) == 5
-        assert version[3] in ('unstable', 'beta', 'rc', 'final')
+        assert version[3] in ('unstable', 'beta', 'rc', 'final', 'post')
 
     # Now build the two parts of the version number:
     # main = X.Y[.Z]
@@ -38,12 +38,14 @@ def get_version(version=None):
     git_changeset = get_git_changeset()
     main = '.'.join(str(x) for x in version[:3])
     sub = ''
-    if version[3] not in ('unstable', 'final'):
+    if version[3] not in ('unstable', 'final', 'post'):
         mapping = {'beta': 'b', 'rc': 'rc'}
         sub = mapping[version[3]] + str(version[4])
     if git_changeset:
         if version[3] == 'unstable':
             sub += f'.dev{git_changeset}'
+        elif version[3] == 'post':
+            sub += f'.post{version[4]}'
         elif version[3] != 'final':
             sub += f'.build{git_changeset}'
     return main + sub
