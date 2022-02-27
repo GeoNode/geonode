@@ -30,8 +30,11 @@ from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.layers.enumerations import GXP_PTYPES
 from geonode.people.enumerations import ROLE_VALUES
+from geonode.services.serviceprocessors import get_available_service_types
 
 from . import enumerations
+
+service_type_as_tuple = [(k, v["label"]) for k, v in get_available_service_types().items()]
 
 logger = logging.getLogger("geonode.services")
 
@@ -40,8 +43,8 @@ class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
     type = models.CharField(
-        max_length=100,
-        choices=enumerations.SERVICE_TYPES
+        max_length=10,
+        choices=service_type_as_tuple
     )
     method = models.CharField(
         max_length=1,
@@ -126,7 +129,7 @@ class Service(ResourceBase):
     @property
     def service_type(self):
         # Return the gxp ptype that should be used to display layers
-        return [x for x in enumerations.SERVICE_TYPES if x[0] == self.type][0][1]
+        return [x for x in service_type_as_tuple if x[0] == self.type][0][1]
 
     def get_absolute_url(self):
         return '/services/%i' % self.id

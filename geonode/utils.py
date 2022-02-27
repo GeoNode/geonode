@@ -66,8 +66,8 @@ from django.utils.translation import ugettext_lazy as _
 from geonode import geoserver, GeoNodeException  # noqa
 from geonode.compat import ensure_string
 from geonode.layers.enumerations import GXP_PTYPES
-from geonode.services.enumerations import SERVICE_TYPES
 from geonode.storage.manager import storage_manager
+from geonode.services.serviceprocessors import get_available_service_types
 from geonode.base.auth import (
     extend_token,
     get_or_create_token,
@@ -1598,7 +1598,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                                 )
                             )
             else:
-                from geonode.services.serviceprocessors.handler import get_service_handler
+                from geonode.services.serviceprocessors import get_service_handler
                 handler = get_service_handler(
                     instance.remote_service.service_url, service_type=instance.remote_service.type)
                 if handler and hasattr(handler, '_create_dataset_legend_link'):
@@ -1677,7 +1677,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
 
             elif hasattr(instance.get_real_instance(), 'ptype') and instance.get_real_instance().ptype:
                 ptype_link = dict((v, k) for k, v in GXP_PTYPES.items()).get(instance.get_real_instance().ptype)
-                ptype_link_name = dict(SERVICE_TYPES).get(ptype_link)
+                ptype_link_name = get_available_service_types().get(ptype_link)
                 ptype_link_url = instance.ows_url
                 if Link.objects.filter(resource=instance.resourcebase_ptr, name=ptype_link_name, url=ptype_link_url).count() < 2:
                     Link.objects.get_or_create(

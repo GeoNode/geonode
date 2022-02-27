@@ -128,10 +128,10 @@ class Dataset(ResourceBase):
 
     # internal fields
     objects = DatasetManager()
-    workspace = models.CharField(_('Workspace'), max_length=128)
-    store = models.CharField(_('Store'), max_length=128)
-    name = models.CharField(_('Name'), max_length=128)
-    typename = models.CharField(_('Typename'), max_length=128, null=True, blank=True)
+    workspace = models.CharField(_('Workspace'), max_length=255)
+    store = models.CharField(_('Store'), max_length=255)
+    name = models.CharField(_('Name'), max_length=255)
+    typename = models.CharField(_('Typename'), max_length=255, null=True, blank=True)
     ows_url = models.URLField(
         _('ows URL'),
         null=True,
@@ -153,7 +153,7 @@ class Dataset(ResourceBase):
         _('P-Type'),
         null=False,
         blank=False,
-        max_length=80,
+        max_length=255,
         default="gxp_wmscsource")
 
     default_style = models.ForeignKey(

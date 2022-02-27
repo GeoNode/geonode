@@ -99,7 +99,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
     def create_cascaded_store(self, service):
         return None
 
-    def create_geonode_service(self, owner):
+    def create_geonode_service(self, owner, parent=None):
         """Create a new geonode.service.models.Service instance
 
         :arg owner: The user who will own the service instance

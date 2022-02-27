@@ -69,7 +69,6 @@ from .utils import (
     resourcebase_post_save)
 
 from ..base import enumerations
-from ..services.models import Service
 from ..base.models import ResourceBase
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document, DocumentResourceLink
@@ -296,6 +295,8 @@ class ResourceManager(ResourceManagerInterface):
                     logger.exception(e)
 
                 try:
+                    from ..services.models import Service
+
                     if _resource.remote_typename and Service.objects.filter(name=_resource.remote_typename).exists():
                         _service = Service.objects.filter(name=_resource.remote_typename).get()
                         if _service.harvester:

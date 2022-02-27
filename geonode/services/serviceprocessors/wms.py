@@ -115,10 +115,11 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         cat.save(store)
         return store
 
-    def create_geonode_service(self, owner):
+    def create_geonode_service(self, owner, parent=None):
         """Create a new geonode.service.models.Service instance
         :arg owner: The user who will own the service instance
         :type owner: geonode.people.models.Profile
+
         """
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
         with transaction.atomic():
@@ -135,7 +136,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode('utf-8') or self.name,
                 abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode('utf-8') or _(
                     "Not provided"),
-                operations=OgcWmsHarvester.get_wms_operations(cleaned_url.geturl(), version=version)
+                operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version)
             )
             service_harvester = Harvester.objects.create(
                 name=self.name,
@@ -206,9 +207,8 @@ class WmsServiceHandler(base.ServiceHandlerBase,
         workspace = base.get_geoserver_cascading_workspace(create=create)
         cat = workspace.catalog
         store = cat.get_store(self.name, workspace=workspace)
-        logger.debug(f"name: {self.name}")
-        logger.debug(f"store: {store}")
         if store is None and create:  # store did not exist. Create it
+            logger.debug(f"name: {self.name} - store: {store}")
             store = cat.create_wmsstore(
                 name=self.name,
                 workspace=workspace,
