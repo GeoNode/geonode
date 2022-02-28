@@ -59,6 +59,7 @@ from taggit.managers import TaggableManager, _TaggableManager
 
 from guardian.shortcuts import get_anonymous_user, get_objects_for_user
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
+from geonode import GeoNodeException
 
 from geonode.base import enumerations
 from geonode.singleton import SingletonModel
@@ -1513,30 +1514,38 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, ymin, xmax, ymax]
         :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
         """
-        bbox_polygon = Polygon.from_bbox(bbox)
-        self.bbox_polygon = bbox_polygon.clone()
-        self.srid = srid
-        if srid == 4326 or srid == "EPSG:4326":
-            self.ll_bbox_polygon = bbox_polygon
-        else:
-            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-            bbox_polygon.srid = int(match.group('srid')) if match else 4326
-            try:
-                # self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
-                # self.ll_bbox_polygon = Polygon.from_bbox(
-                #     bbox_to_projection(
-                #         [
-                #             bbox_polygon.extent[0],
-                #             bbox_polygon.extent[2],
-                #             bbox_polygon.extent[1],
-                #             bbox_polygon.extent[3]
-                #         ] + [f'EPSG:{bbox_polygon.srs.srid}']
-                #     )[:-1])
+        try:
+            bbox_polygon = Polygon.from_bbox(bbox)
+            self.bbox_polygon = bbox_polygon.clone()
+            self.srid = srid
+            # This is a trick in order to avoid PostGIS reprojecting the bbox at save time
+            # by assuming the default geometries have 'EPSG:4326' as srid.
+            ResourceBase.objects.filter(id=self.id).update(
+                bbox_polygon=self.bbox_polygon, srid='EPSG:4326')
+        finally:
+            self.set_ll_bbox_polygon(bbox, srid=srid)
+
+    def set_ll_bbox_polygon(self, bbox, srid="EPSG:4326"):
+        """
+        Set `ll_bbox_polygon` from bbox values.
+
+        :param bbox: list or tuple formatted as
+            [xmin, ymin, xmax, ymax]
+        :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
+        """
+        try:
+            bbox_polygon = Polygon.from_bbox(bbox)
+            if srid == 4326 or srid.upper() == "EPSG:4326":
+                self.ll_bbox_polygon = bbox_polygon
+            else:
+                match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                bbox_polygon.srid = int(match.group('srid')) if match else 4326
                 self.ll_bbox_polygon = Polygon.from_bbox(
                     bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
-            except Exception as e:
-                logger.error(e)
-                self.ll_bbox_polygon = bbox_polygon
+            ResourceBase.objects.filter(id=self.id).update(
+                ll_bbox_polygon=self.ll_bbox_polygon, srid=srid)
+        except Exception as e:
+            raise GeoNodeException(e)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """

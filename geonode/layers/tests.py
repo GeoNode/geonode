@@ -1181,7 +1181,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
                         <ows:ExceptionText>Foo Bar Exception</ows:ExceptionText>
                     </ows:Exception>
                 </ows:ExceptionReport>
-                ''', # noqa
+                ''',  # noqa
             headers={"Content-Type": "text/xml"}
         )
         mocked_catalog.return_value = _response
@@ -1200,7 +1200,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         _response = MagicMock(
             status_code=200,
-            text="", # noqa
+            text="",  # noqa
             headers={"Content-Type": ""}
         )
         self.client.login(username="admin", password="admin")

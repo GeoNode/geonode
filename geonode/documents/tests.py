@@ -321,7 +321,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 'q': m.id,
                 'type': 'document',
                 'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
-            )
+        )
         self.assertEqual(response.status_code, 200)
 
     # Permissions Tests
