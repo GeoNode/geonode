@@ -57,7 +57,7 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_append_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
-        _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="append")
+        _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="append")
         basic_auth = base64.b64encode(b'admin:geoserver')
         result = requests.get(
             f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}',
@@ -68,7 +68,7 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
-        _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
+        _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         basic_auth = base64.b64encode(b'admin:geoserver')
         result = requests.get(
             f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}',
@@ -79,5 +79,5 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_return_none_for_not_existing_dataset(self):
         layer = create_single_dataset('fake_dataset')
-        _gs_import_session_info = self.geoserver_manager._revise_resource_value(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
+        _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
         self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_PENDING)

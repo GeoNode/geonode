@@ -213,7 +213,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
         if instance and isinstance(instance.get_real_instance(), Dataset):
             try:
-                _gs_import_session_info = self._revise_resource_value(
+                _gs_import_session_info = self._execute_resource_import(
                     instance,
                     kwargs.get('files', None),
                     kwargs.get('user', instance.owner),
@@ -247,7 +247,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     instance = None
         return instance
 
-    def _revise_resource_value(self, instance, files: list, user, action_type: str, importer_session_opts: typing.Optional[typing.Dict] = None):
+    def _execute_resource_import(self, instance, files: list, user, action_type: str, importer_session_opts: typing.Optional[typing.Dict] = None):
         from geonode.upload.files import ALLOWED_EXTENSIONS
         session_opts = dict(importer_session_opts) if importer_session_opts is not None else {}
 
