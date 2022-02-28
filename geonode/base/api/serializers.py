@@ -391,9 +391,9 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
             executions = ExecutionRequest.objects.filter(
                 Q(user=request.user) &
                 ~Q(status=ExecutionRequest.STATUS_FINISHED) & (
-                (Q(input_params__uuid=_resource.uuid) |
-                    Q(output_params__output__uuid=_resource.uuid) |
-                    Q(geonode_resource=_resource))
+                    (Q(input_params__uuid=_resource.uuid) |
+                     Q(output_params__output__uuid=_resource.uuid) |
+                     Q(geonode_resource=_resource))
                 )
             ).order_by('-last_updated')
 

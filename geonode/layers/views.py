@@ -873,11 +873,11 @@ def dataset_download(request, layername):
             return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
 
     return fetch_response_headers(
-                HttpResponse(
-                    content=response.content,
-                    status=response.status_code,
-                    content_type=download_format
-            ), response.headers)
+        HttpResponse(
+            content=response.content,
+            status=response.status_code,
+            content_type=download_format
+        ), response.headers)
 
 
 @login_required

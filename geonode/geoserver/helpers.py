@@ -524,7 +524,10 @@ def cascading_delete(dataset_name=None, catalog=None):
                 store.connection_parameters['dbtype'] == 'postgis':
             delete_from_postgis(resource_name, store)
         else:
-            if store.resource_type == 'coverageStore':
+            # AF: for the time being this one mitigates the issue #8671
+            # until we find a suitable solution for the GeoTools ImageMosaic plugin
+            # ref: https://github.com/geotools/geotools/blob/main/modules/plugin/imagemosaic/src/main/java/org/geotools/gce/imagemosaic/catalog/AbstractGTDataStoreGranuleCatalog.java#L753
+            if store.resource_type == 'coverageStore' and store.type != 'ImageMosaic':
                 try:
                     logger.debug(f" - Going to purge the {store.resource_type} : {store.href}")
                     cat.reset()  # this resets the coverage readers and unlocks the files
@@ -578,7 +581,7 @@ def delete_from_postgis(dataset_name, store):
 
 
 def gs_slurp(
-        ignore_errors=True,
+        ignore_errors=False,
         verbosity=1,
         console=None,
         owner=None,
@@ -594,6 +597,8 @@ def gs_slurp(
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
+    from geonode.resource.manager import resource_manager
+
     if console is None:
         console = open(os.devnull, 'w')
 
@@ -705,43 +710,43 @@ def gs_slurp(
             created = False
             layer = Dataset.objects.filter(name=name, workspace=workspace.name).first()
             if not layer:
-                layer = Dataset.objects.create(
-                    name=name,
-                    workspace=workspace.name,
-                    store=the_store.name,
-                    subtype=get_dataset_storetype(the_store.resource_type),
-                    alternate=f"{workspace.name}:{resource.name}",
-                    title=resource.title or _('No title provided'),
-                    abstract=resource.abstract or _('No abstract provided'),
-                    owner=owner,
-                    uuid=str(uuid.uuid4())
+                layer = resource_manager.create(
+                    str(uuid.uuid4()),
+                    resource_type=Dataset,
+                    defaults=dict(
+                        name=name,
+                        workspace=workspace.name,
+                        store=the_store.name,
+                        subtype=get_dataset_storetype(the_store.resource_type),
+                        alternate=f"{workspace.name}:{resource.name}",
+                        title=resource.title or _('No title provided'),
+                        abstract=resource.abstract or _('No abstract provided'),
+                        owner=owner
+                    )
                 )
                 created = True
-            bbox = resource.native_bbox
-            layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
-            layer.set_permissions(perm_spec)
+            resource_manager.set_permissions(
+                layer.uuid,
+                permissions=perm_spec)
 
             # recalculate the layer statistics
             set_attributes_from_geoserver(layer, overwrite=True)
 
             # in some cases we need to explicitily save the resource to execute the signals
             # (for sure when running updatelayers)
-            if execute_signals:
-                layer.save(notify=True)
+            resource_manager.update(
+                layer.uuid,
+                instance=layer,
+                notify=execute_signals)
 
-            # Fix metadata links if the ip has changed
-            if layer.link_set.metadata().count() > 0:
-                if not created and settings.SITEURL not in layer.link_set.metadata()[0].url:
-                    layer.link_set.metadata().delete()
-                    layer.save()
-                    metadata_links = []
-                    for link in layer.link_set.metadata():
-                        metadata_links.append((link.mime, link.name, link.url))
-                    resource.metadata_links = metadata_links
-                    cat.save(resource)
+            # Creating the Thumbnail
+            resource_manager.set_thumbnail(
+                layer.uuid,
+                overwrite=True, check_bbox=False
+            )
 
         except Exception as e:
             if ignore_errors:
@@ -1055,12 +1060,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 attribute_map = []
     elif layer.subtype in ["coverageStore"]:
         typename = layer.alternate if layer.alternate else layer.typename
-        dc_url = server_url + "wcs?" + urlencode({
-            "service": "wcs",
-            "version": "1.1.0",
-            "request": "DescribeCoverage",
-            "identifiers": typename
-        })
+        dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:
             req, body = http_client.get(dc_url, user=_user)
             doc = dlxml.fromstring(body.encode())
@@ -2067,23 +2067,25 @@ def sync_instance_with_geoserver(
                     * Bounding Box
                     * SRID
                     """
+                    # This is usually done in Dataset.pre_save, however if the hooks
+                    # are bypassed by custom create/updates we need to ensure the
+                    # bbox is calculated properly.
+                    srid = gs_resource.projection
+                    bbox = gs_resource.native_bbox
+                    ll_bbox = gs_resource.latlon_bbox
                     try:
-                        # This is usually done in Dataset.pre_save, however if the hooks
-                        # are bypassed by custom create/updates we need to ensure the
-                        # bbox is calculated properly.
-                        srid = gs_resource.projection
-                        bbox = gs_resource.native_bbox
                         instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                    except Exception as e:
-                        logger.exception(e)
-                        srid = instance.srid
-                        bbox = instance.bbox
+                    except GeoNodeException as e:
+                        if not ll_bbox:
+                            raise
+                        else:
+                            logger.exception(e)
+                            instance.srid = 'EPSG:4326'
+                            Dataset.objects.filter(id=instance.id).update(srid=instance.srid)
+                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
 
                     if instance.srid:
                         instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
-                    elif instance.bbox_polygon is not None:
-                        # Guessing 'EPSG:4326' by default
-                        instance.srid = 'EPSG:4326'
                     else:
                         raise GeoNodeException(_("Invalid Projection. Dataset is missing CRS!"))
 
@@ -2111,42 +2113,12 @@ def sync_instance_with_geoserver(
                         to_update['store'] = gs_resource.store.name
                         to_update['subtype'] = instance.subtype
                         to_update['typename'] = instance.alternate
-
                         Dataset.objects.filter(id=instance.id).update(**to_update)
-
-                        if updatebbox:
-                            # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
-                            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
-                            Dataset.objects.filter(id=instance.id).update(
-                                bbox_polygon=instance.bbox_polygon, srid=srid)
 
                         # Refresh from DB
                         instance.refresh_from_db()
                 except Exception as e:
-                    logger.exception(e)
-
-                if updatebbox:
-                    try:
-                        with transaction.atomic():
-                            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                            instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                            Dataset.objects.filter(id=instance.id).update(
-                                ll_bbox_polygon=instance.bbox_polygon, srid=srid)
-
-                            # Refresh from DB
-                            instance.refresh_from_db()
-                    except Exception as e:
-                        logger.warning(e)
-                        try:
-                            with transaction.atomic():
-                                instance.bbox_polygon.srid = 4326
-                                Dataset.objects.filter(id=instance.id).update(
-                                    ll_bbox_polygon=instance.bbox_polygon, srid=srid)
-
-                                # Refresh from DB
-                                instance.refresh_from_db()
-                        except Exception as e:
-                            logger.warning(e)
+                    raise GeoNodeException(e)
 
                 if updatemetadata:
                     # Save dataset styles
@@ -2165,8 +2137,7 @@ def sync_instance_with_geoserver(
             else:
                 return None
         except Exception as e:
-            logger.exception(e)
-            return None
+            raise GeoNodeException(e)
 
     # Refreshing dataset links
     logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
@@ -2181,7 +2152,7 @@ def sync_instance_with_geoserver(
     try:
         catalogue_post_save(instance=instance, sender=instance.__class__)
     except Exception as e:
-        logger.exception(e)
+        raise GeoNodeException(e)
 
     return instance
 
