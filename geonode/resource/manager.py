@@ -387,8 +387,10 @@ class ResourceManager(ResourceManagerInterface):
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
-            _resource.save(notify=notify)
-            resourcebase_post_save(_resource.get_real_instance())
+                raise
+            finally:
+                _resource.save(notify=notify)
+                resourcebase_post_save(_resource.get_real_instance())
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
