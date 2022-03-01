@@ -1521,7 +1521,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             # This is a trick in order to avoid PostGIS reprojecting the bbox at save time
             # by assuming the default geometries have 'EPSG:4326' as srid.
             ResourceBase.objects.filter(id=self.id).update(
-                bbox_polygon=self.bbox_polygon, srid='EPSG:4326')
+                bbox_polygon=self.bbox_polygon, srid=srid)
         finally:
             self.set_ll_bbox_polygon(bbox, srid=srid)
 
@@ -1543,7 +1543,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.ll_bbox_polygon = Polygon.from_bbox(
                     bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
             ResourceBase.objects.filter(id=self.id).update(
-                ll_bbox_polygon=self.ll_bbox_polygon, srid=srid)
+                ll_bbox_polygon=self.ll_bbox_polygon)
         except Exception as e:
             raise GeoNodeException(e)
 

@@ -2113,6 +2113,7 @@ def sync_instance_with_geoserver(
                         to_update['store'] = gs_resource.store.name
                         to_update['subtype'] = instance.subtype
                         to_update['typename'] = instance.alternate
+                        to_update['srid'] = instance.srid
                         Dataset.objects.filter(id=instance.id).update(**to_update)
 
                         # Refresh from DB
