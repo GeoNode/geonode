@@ -398,11 +398,10 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             'properties': layer.srid
         }
     # Add required parameters for GXP lazy-loading
-    layer_bbox = layer.bbox[0:4]
     # Must be in the form xmin, ymin, xmax, ymax
     bbox = [
-        float(layer_bbox[0]), float(layer_bbox[2]),
-        float(layer_bbox[1]), float(layer_bbox[3])
+        float(layer.bbox[0:4][0]), float(layer.bbox[0:4][2]),
+        float(layer.bbox[0:4][1]), float(layer.bbox[0:4][3])
     ]
 
     # Add required parameters for GXP lazy-loading
@@ -417,7 +416,9 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
     config["wrapDateLine"] = True
     config["visibility"] = True
     config["srs"] = srs
-    config["bbox"] = bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+    layer_bbox = layer.ll_bbox[0:4]
+    layer_srid = 'EPSG:4326'
+    config["bbox"] = bbox_to_projection([float(coord) for coord in layer_bbox] + ['EPSG:4326', ],
                                         target_srid=int(srs.split(":")[1]))[:4]
 
     config["capability"] = {
@@ -435,20 +436,20 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
             },
             srs: {
                 "srs": srs,
-                "bbox": bbox_to_projection([float(coord) for coord in layer_bbox] + [layer.srid, ],
+                "bbox": bbox_to_projection([float(coord) for coord in layer_bbox] + [layer_srid, ],
                                            target_srid=srs_srid)[:4]
             },
             "EPSG:4326": {
                 "srs": "EPSG:4326",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
                 bbox_to_projection(
-                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
+                    [float(coord) for coord in layer_bbox] + [layer_srid, ], target_srid=4326)[:4]
             },
             "EPSG:900913": {
                 "srs": "EPSG:900913",
                 "bbox": decimal_encode(bbox) if layer.srid == 'EPSG:900913' else
                 bbox_to_projection(
-                    [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=3857)[:4]
+                    [float(coord) for coord in layer_bbox] + [layer_srid, ], target_srid=3857)[:4]
             }
         },
         "srs": {
@@ -474,7 +475,7 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         "keywords": [k.name for k in layer.keywords.all()] if layer.keywords else [],
         "llbbox": decimal_encode(bbox) if layer.srid == 'EPSG:4326' else
         bbox_to_projection(
-            [float(coord) for coord in layer_bbox] + [layer.srid, ], target_srid=4326)[:4]
+            [float(coord) for coord in layer_bbox] + [layer_srid, ], target_srid=4326)[:4]
     }
 
     granules = None
