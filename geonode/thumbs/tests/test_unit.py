@@ -180,7 +180,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], ["geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1", layer.alternate], ["test_style"]]])
 
     def test_layers_locations_simple_map_default_bbox(self):
-        expected_bbox = [-74.00933448096204, -73.84439803442388, 40.71125142832557, 40.8100474377091, "epsg:3857"]
+        expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.093033709, 4984363.884452854, "EPSG:3857"]
 
         layer = Layer.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
@@ -192,7 +192,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [layer.alternate], []]])
 
     def test_layers_locations_composition_map_default_bbox(self):
-        expected_bbox = [-165.43333, 180.0, -85.06, 81.16667, 'EPSG:3857']
+        expected_bbox = [-18415954.05583559, 20037397.023298446, -20048966.1040146, 16333507.057976719, 'EPSG:3857']
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
