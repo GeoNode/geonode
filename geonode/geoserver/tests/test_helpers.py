@@ -27,7 +27,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from unittest.mock import patch, PropertyMock
 
-from geonode import geoserver
+from geonode import GeoNodeException, geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.models import Layer
@@ -249,14 +249,18 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
                 ogc_sett.BACKEND_WRITE_ENABLED = False
                 # sync the attributes with GeoServer
                 # With update gs resource disabled
-                _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
-                if _layer:
+                try:
+                    _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
                     self.assertEqual(_layer.bbox, original_gs_bbox)
+                except GeoNodeException:
+                    pass
             # With update gs resource enabled
             self.change_bbox(layer)
-            _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
-            if _layer:
+            try:
+                _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
                 self.assertEqual(_layer.bbox, original_gs_bbox)
+            except GeoNodeException:
+                pass
         finally:
             # Clean up and completely delete the layers
             layer.delete()

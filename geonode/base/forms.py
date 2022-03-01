@@ -486,7 +486,7 @@ class ResourceBaseForm(TranslationModelForm):
             {"metadata_key": "metadata_value"},\
             {"metadata_key": "metadata_value"} \
         ]')
-)
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

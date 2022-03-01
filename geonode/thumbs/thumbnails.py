@@ -355,9 +355,9 @@ def _layers_locations(
                         and target_crs.upper() == 'EPSG:3857'
                         and utils.exceeds_epsg3857_area_of_use(layer.bbox)
                 ):
-                    layer_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs.lower())
+                    layer_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs)
                 else:
-                    layer_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
+                    layer_bbox = utils.transform_bbox(layer.bbox, target_crs)
 
                 if not bbox:
                     bbox = layer_bbox

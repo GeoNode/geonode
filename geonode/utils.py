@@ -377,35 +377,32 @@ def bbox_to_projection(native_bbox, target_srid=4326):
         source_srid = target_srid
 
     if source_srid != target_srid:
-        try:
-            wkt = bbox_to_wkt(_v(minx, x=True, source_srid=source_srid, target_srid=target_srid),
-                              _v(maxx, x=True, source_srid=source_srid, target_srid=target_srid),
-                              _v(miny, x=False, source_srid=source_srid, target_srid=target_srid),
-                              _v(maxy, x=False, source_srid=source_srid, target_srid=target_srid),
-                              srid=source_srid, include_srid=False)
-            # AF: This causses error with GDAL 3.0.4 due to a breaking change on GDAL
-            #     https://code.djangoproject.com/ticket/30645
-            import osgeo.gdal
-            _gdal_ver = osgeo.gdal.__version__.split(".", 2)
-            from osgeo import ogr
-            from osgeo.osr import SpatialReference, CoordinateTransformation
-            g = ogr.Geometry(wkt=wkt)
-            source = SpatialReference()
-            source.ImportFromEPSG(source_srid)
-            dest = SpatialReference()
-            dest.ImportFromEPSG(target_srid)
-            if int(_gdal_ver[0]) >= 3 and \
-                    ((int(_gdal_ver[1]) == 0 and int(_gdal_ver[2]) >= 4) or int(_gdal_ver[1]) > 0):
-                source.SetAxisMappingStrategy(0)
-                dest.SetAxisMappingStrategy(0)
-            g.Transform(CoordinateTransformation(source, dest))
-            projected_bbox = [str(x) for x in g.GetEnvelope()]
-            # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
-            return tuple(
-                [float(projected_bbox[0]), float(projected_bbox[1]), float(projected_bbox[2]), float(projected_bbox[3])]) + \
-                (f"EPSG:{target_srid}",)
-        except Exception as e:
-            logger.exception(e)
+        wkt = bbox_to_wkt(_v(minx, x=True, source_srid=source_srid, target_srid=target_srid),
+                          _v(maxx, x=True, source_srid=source_srid, target_srid=target_srid),
+                          _v(miny, x=False, source_srid=source_srid, target_srid=target_srid),
+                          _v(maxy, x=False, source_srid=source_srid, target_srid=target_srid),
+                          srid=source_srid, include_srid=False)
+        # AF: This causses error with GDAL 3.0.4 due to a breaking change on GDAL
+        #     https://code.djangoproject.com/ticket/30645
+        import osgeo.gdal
+        _gdal_ver = osgeo.gdal.__version__.split(".", 2)
+        from osgeo import ogr
+        from osgeo.osr import SpatialReference, CoordinateTransformation
+        g = ogr.Geometry(wkt=wkt)
+        source = SpatialReference()
+        source.ImportFromEPSG(source_srid)
+        dest = SpatialReference()
+        dest.ImportFromEPSG(target_srid)
+        if int(_gdal_ver[0]) >= 3 and \
+                ((int(_gdal_ver[1]) == 0 and int(_gdal_ver[2]) >= 4) or int(_gdal_ver[1]) > 0):
+            source.SetAxisMappingStrategy(0)
+            dest.SetAxisMappingStrategy(0)
+        g.Transform(CoordinateTransformation(source, dest))
+        projected_bbox = [str(x) for x in g.GetEnvelope()]
+        # Must be in the form : [x0, x1, y0, y1, EPSG:<target_srid>)
+        return tuple(
+            [float(projected_bbox[0]), float(projected_bbox[1]), float(projected_bbox[2]), float(projected_bbox[3])]) + \
+            (f"EPSG:{target_srid}",)
 
     return native_bbox
 
@@ -1653,7 +1650,16 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 if gs_resource:
                     srid = gs_resource.projection
                     bbox = gs_resource.native_bbox
-                    instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+                    ll_bbox = gs_resource.latlon_bbox
+                    try:
+                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+                    except GeoNodeException as e:
+                        if not ll_bbox:
+                            raise
+                        else:
+                            logger.exception(e)
+                            instance.srid = 'EPSG:4326'
+                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
                     if instance.srid:
                         instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
                     elif instance.bbox_polygon is not None:
@@ -1661,41 +1667,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         instance.srid = 'EPSG:4326'
                     else:
                         raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
-
-                    from geonode.layers.models import Layer
-                    try:
-                        with transaction.atomic():
-                            # Dealing with the BBOX: this is a trick to let GeoDjango storing original coordinates
-                            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], 'EPSG:4326')
-                            Layer.objects.filter(id=instance.id).update(
-                                bbox_polygon=instance.bbox_polygon, srid=srid)
-
-                            # Refresh from DB
-                            instance.refresh_from_db()
-                    except Exception as e:
-                        logger.exception(e)
-
-                    try:
-                        with transaction.atomic():
-                            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-                            instance.bbox_polygon.srid = int(match.group('srid')) if match else 4326
-                            Layer.objects.filter(id=instance.id).update(
-                                ll_bbox_polygon=instance.bbox_polygon, srid=srid)
-
-                            # Refresh from DB
-                            instance.refresh_from_db()
-                    except Exception as e:
-                        logger.warning(e)
-                        try:
-                            with transaction.atomic():
-                                instance.bbox_polygon.srid = 4326
-                                Layer.objects.filter(id=instance.id).update(
-                                    ll_bbox_polygon=instance.bbox_polygon, srid=srid)
-
-                                # Refresh from DB
-                                instance.refresh_from_db()
-                        except Exception as e:
-                            logger.warning(e)
                     dx = float(bbox[1]) - float(bbox[0])
                     dy = float(bbox[3]) - float(bbox[2])
                     dataAspect = 1 if dy == 0 else dx / dy
