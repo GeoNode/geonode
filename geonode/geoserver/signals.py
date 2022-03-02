@@ -109,7 +109,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             dataset_queryset = dataset_queryset.filter(remote_service__base_url=instance.ows_url)
         try:
             instance.dataset = dataset_queryset.get()
-        except Dataset.DoesNotExist:
+        except (Dataset.DoesNotExist, Dataset.MultipleObjectsReturned):
             pass
 
 
