@@ -300,12 +300,13 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_default_anonymous_permissions(self):
+        anonymous = get_user_model().objects.get(username="AnonymousUser")
+        norman = get_user_model().objects.get(username="norman")
         with override_settings(RESOURCE_PUBLISHING=False,
                                ADMIN_MODERATE_UPLOADS=False,
                                DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
                                DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
             self.client.login(username='norman', password='norman')
-            norman = get_user_model().objects.get(username="norman")
 
             saved_dataset = create_dataset(
                 name='san_andres_y_providencia_poi_by_norman',
@@ -334,5 +335,45 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
                 layercap = dlxml.fromstring(resp.content)
                 self.assertIsNotNone(layercap)
             finally:
+                # annonymous can not download created resource
+                self.assertEqual(['view_resourcebase'], self.get_user_resource_perms(saved_dataset, anonymous))
                 # Cleanup
                 saved_dataset.delete()
+
+        with override_settings(
+            DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
+            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True
+        ):
+            saved_dataset = create_dataset(
+                name='san_andres_y_providencia_poi_by_norman',
+                title='san_andres_y_providencia_poi',
+                owner_name=norman,
+                geometry_type='Point'
+            )
+            # annonymous can view/download created resource
+            self.assertEqual(
+                ['download_resourcebase', 'view_resourcebase'],
+                self.get_user_resource_perms(saved_dataset, anonymous)
+            )
+            # Cleanup
+            saved_dataset.delete()
+
+        with override_settings(
+            DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
+            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False
+        ):
+            saved_dataset = create_dataset(
+                name='san_andres_y_providencia_poi_by_norman',
+                title='san_andres_y_providencia_poi',
+                owner_name=norman,
+                geometry_type='Point'
+            )
+            # annonymous can not view/download created resource
+            self.assertEqual([], self.get_user_resource_perms(saved_dataset, anonymous))
+            # Cleanup
+            saved_dataset.delete()
+
+    def get_user_resource_perms(self, instance, user):
+        return list(
+            instance.get_user_perms(user).union(instance.get_self_resource().get_user_perms(user))
+        )
