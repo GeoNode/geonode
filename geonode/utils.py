@@ -1511,22 +1511,21 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             """
             links = wcs_links(instance_ows_url,
                               instance.alternate)
-
-        for ext, name, mime, wcs_url in links:
-            if (Link.objects.filter(resource=instance.resourcebase_ptr,
-                                    url=wcs_url,
-                                    name=name,
-                                    link_type='data').count() < 2):
-                Link.objects.update_or_create(
-                    resource=instance.resourcebase_ptr,
-                    url=wcs_url,
-                    name=name,
-                    link_type='data',
-                    defaults=dict(
-                        extension=ext,
-                        mime=mime,
+            for ext, name, mime, wcs_url in links:
+                if (Link.objects.filter(resource=instance.resourcebase_ptr,
+                                        url=wcs_url,
+                                        name=name,
+                                        link_type='data').count() < 2):
+                    Link.objects.update_or_create(
+                        resource=instance.resourcebase_ptr,
+                        url=wcs_url,
+                        name=name,
+                        link_type='data',
+                        defaults=dict(
+                            extension=ext,
+                            mime=mime,
+                        )
                     )
-                )
 
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
         html_link_url = f'{site_url}{instance.get_absolute_url()}'
