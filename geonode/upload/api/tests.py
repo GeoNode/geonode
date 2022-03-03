@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 import os
 import shutil
 import logging
@@ -695,17 +696,18 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
 
-    @mock.patch("geonode.upload.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
-    def test_rest_uploads_with_size_limit(self, mocked_uploaded_file, mocked_validation_error):
+    def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
         """
         Try to upload a file larger than allowed by ``dataset_upload_size``
         but not larger than ``file_upload_handler`` max_size.
         """
 
-        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
+        expected_error = {
+            "success": False, 
+            "errors": ["Unexpected exception Total upload size exceeded. Please try again with smaller files."]
+        }
 
-        mocked_validation_error.side_effect = ValidationError(expected_error)
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
             slug="dataset_upload_size",
             defaults={
@@ -725,19 +727,18 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)
-
-            mocked_validation_error.assert_called_once_with(expected_error)
+            self.assertDictEqual(expected_error, json.loads(data))
             mocked_uploaded_file.assert_not_called()
 
-    @mock.patch("geonode.upload.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
-    def test_rest_uploads_with_size_limit_before_upload(self, mocked_uploaded_file, mocked_validation_error):
+    def test_rest_uploads_with_size_limit_before_upload(self, mocked_uploaded_file):
         """
         Try to upload a file larger than allowed by ``file_upload_handler``.
         """
-        expected_error = 'Total upload size exceeds 1\xa0byte. Please try again with smaller files.'
-
-        mocked_validation_error.side_effect = ValidationError(expected_error)
+        expected_error = {
+            "success": False, 
+            "errors": ["Unexpected exception Total upload size exceeded. Please try again with smaller files."]
+        }
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
             slug="dataset_upload_size",
             defaults={
@@ -757,7 +758,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             resp, data = self.rest_upload_file(fname)
             # Assertions
             self.assertEqual(resp.status_code, 400)
-            mocked_validation_error.assert_called_once_with(expected_error)
+            self.assertDictEqual(expected_error, json.loads(data))
             mocked_uploaded_file.assert_called_with(
                 name='relief_san_andres.tif',
                 content=b'',

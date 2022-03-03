@@ -23,6 +23,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
+from geonode.upload.api.exceptions import FileUploadLimitException
 
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.data_retriever import DataRetriever
@@ -158,9 +159,7 @@ class LayerUploadForm(forms.Form):
         max_size = self._get_uploads_max_size()
         total_size = self._get_uploaded_files_total_size(file_dict)
         if total_size > max_size:
-            raise ValidationError(_(
-                f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
-            ))
+            raise FileUploadLimitException()
 
     def _get_uploads_max_size(self):
         try:
