@@ -473,6 +473,11 @@ def cascading_delete(dataset_name=None, catalog=None):
             return None
         else:
             raise e
+    finally:
+        # Let's reset the connections first
+        cat._cache.clear()
+        cat.reset()
+        cat.reload()
 
     if resource is None:
         # If there is no associated resource,
@@ -517,8 +522,7 @@ def cascading_delete(dataset_name=None, catalog=None):
         try:
             cat.delete(resource, recurse=True)  # This may fail
         except Exception:
-            cat._cache.clear()
-            cat.reset()
+            pass
 
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and \
                 store.connection_parameters['dbtype'] == 'postgis':
@@ -1978,11 +1982,16 @@ def sync_instance_with_geoserver(
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
     _is_remote_instance = hasattr(instance, 'subtype') and getattr(instance, 'subtype') in ['tileStore', 'remote']
 
+    # Let's reset the connections first
+    gs_catalog._cache.clear()
+    gs_catalog.reset()
+    gs_catalog.reload()
+
     gs_resource = None
     if not _is_remote_instance:
         values = None
         _tries = 0
-        _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
+        _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
 
         try:
             # If the store in None then it's a new instance from an upload,
@@ -1991,24 +2000,24 @@ def sync_instance_with_geoserver(
                 base_file, info = instance.get_base_file()
 
                 # There is no need to process it if there is no file.
-                if base_file is None:
-                    return
-                from geonode.geoserver.upload import geoserver_upload
-                gs_name, workspace, values, gs_resource = geoserver_upload(
-                    instance,
-                    base_file.file.path,
-                    instance.owner,
-                    instance.name,
-                    overwrite=True,
-                    title=instance.title,
-                    abstract=instance.abstract,
-                    charset=instance.charset
-                )
+                if base_file:
+                    from geonode.geoserver.upload import geoserver_upload
+                    gs_name, workspace, values, gs_resource = geoserver_upload(
+                        instance,
+                        base_file.file.path,
+                        instance.owner,
+                        instance.name,
+                        overwrite=True,
+                        title=instance.title,
+                        abstract=instance.abstract,
+                        charset=instance.charset
+                    )
 
             values, gs_resource = fetch_gs_resource(instance, values, _tries)
             while not gs_resource and _tries < _max_tries:
                 values, gs_resource = fetch_gs_resource(instance, values, _tries)
                 _tries += 1
+                time.sleep(5)
 
             # Get metadata links
             metadata_links = []
@@ -2135,16 +2144,13 @@ def sync_instance_with_geoserver(
                         _invalidate_geowebcache_dataset(instance.alternate)
                     except Exception:
                         pass
-            else:
-                return None
         except Exception as e:
             raise GeoNodeException(e)
 
     # Refreshing dataset links
     logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")
     try:
-        _prune = (_is_remote_instance or gs_resource is not None)
-        set_resource_default_links(instance, instance, prune=_prune)
+        set_resource_default_links(instance, instance, prune=_is_remote_instance)
     except Exception as e:
         logger.exception(e)
 
