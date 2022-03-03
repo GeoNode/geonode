@@ -1217,6 +1217,14 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             response = self.client.get(url)
             self.assertTrue(response.status_code == 200)
 
+    def test_dataset_download_call_the_catalog_now_work_without_download_resurcebase_perm(self):
+        dataset = Dataset.objects.first()
+        dataset.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
+        self.client.login(username="bobby", password="bob")
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(404, response.status_code)
+
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
