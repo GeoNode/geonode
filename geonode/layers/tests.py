@@ -1225,6 +1225,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         response = self.client.get(url)
         self.assertEqual(404, response.status_code)
 
+
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
     fixtures = [
