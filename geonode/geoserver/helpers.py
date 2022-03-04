@@ -1985,7 +1985,6 @@ def sync_instance_with_geoserver(
     # Let's reset the connections first
     gs_catalog._cache.clear()
     gs_catalog.reset()
-    gs_catalog.reload()
 
     gs_resource = None
     if not _is_remote_instance:
