@@ -3,7 +3,6 @@ from rest_framework import status
 from django.utils.translation import ugettext_lazy as _
 
 
-
 class GeneralUploadException(APIException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     default_detail = 'Exception during resource upload'
