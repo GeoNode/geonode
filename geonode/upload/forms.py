@@ -22,7 +22,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from geonode.upload.api.exceptions import FileUploadLimitException
+from geonode.base.api.exceptions import FileUploadLimitException
 
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.data_retriever import DataRetriever

@@ -701,12 +701,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         Try to upload a file larger than allowed by ``dataset_upload_size``
         but not larger than ``file_upload_handler`` max_size.
         """
-
         expected_error = {
             "success": False,
-            "errors": ["Unexpected exception Total upload size exceeded. Please try again with smaller files."]
+            "errors": ["Total upload size exceeded. Please try again with smaller files.."],
+            "code": "total_upload_size_exceeded"
         }
-
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
             slug="dataset_upload_size",
             defaults={
@@ -736,7 +735,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         expected_error = {
             "success": False,
-            "errors": ["Unexpected exception Total upload size exceeded. Please try again with smaller files."]
+            "errors": ["Total upload size exceeded. Please try again with smaller files.."],
+            "code": "total_upload_size_exceeded"
         }
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
             slug="dataset_upload_size",
@@ -757,7 +757,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             resp, data = self.rest_upload_file(fname)
             # Assertions
             self.assertEqual(resp.status_code, 400)
-            self.assertDictEqual(expected_error, json.loads(data))
+            self.assertDictEqual(expected_error, data)
             mocked_uploaded_file.assert_called_with(
                 name='relief_san_andres.tif',
                 content=b'',

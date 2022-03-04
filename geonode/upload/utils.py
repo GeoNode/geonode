@@ -39,8 +39,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
-from geonode.upload import UploadException
-from geonode.upload.api.exceptions import GeneralUploadException
+from rest_framework.exceptions import APIException
+from geonode.base.api.exceptions import GeneralUploadException
 from geonode.upload.models import UploadSizeLimit
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (
@@ -141,6 +141,10 @@ def error_response(req, exception=None, errors=None, force_ajax=True):
     else:
         logger.error(f'Upload error response: {errors}')
     if req.is_ajax() or force_ajax:
+        if isinstance(exception, APIException):
+            # if is a class means that a particular exception should be handled
+            # if not, a default exception is raised
+            raise exception
         raise GeneralUploadException(detail=f"{exception} - {errors}")
     # not sure if any responses will (ideally) ever be non-ajax
     if errors:
@@ -731,7 +735,7 @@ def import_imagemosaic_granules(
 
     # 0. A Time Regex is mandartory to validate the files
     if not mosaic_time_regex:
-        raise UploadException(_("Could not find any valid Time Regex for the Mosaic files."))
+        raise GeneralUploadException(detail=_("Could not find any valid Time Regex for the Mosaic files."))
 
     for spatial_file in spatial_files:
         f = spatial_file.base_file
@@ -762,7 +766,7 @@ def import_imagemosaic_granules(
         'postgis' in db['ENGINE'] else db['ENGINE']
 
     if not db_engine == 'postgis':
-        raise UploadException(_("Unsupported DataBase for Mosaics!"))
+        raise GeneralUploadException(detail=_("Unsupported DataBase for Mosaics!"))
 
     # dsname = ogc_server_settings.DATASTORE
     dsname = db['NAME']
@@ -794,7 +798,7 @@ def import_imagemosaic_granules(
         ds_exists = (ds is not None)
 
     if not ds_exists:
-        raise UploadException(_("Unsupported DataBase for Mosaics!"))
+        raise GeneralUploadException(detail=_("Unsupported DataBase for Mosaics!"))
 
     context = {
         "abs_path_flag": "True",
