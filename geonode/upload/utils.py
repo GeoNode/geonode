@@ -40,7 +40,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from rest_framework.exceptions import APIException
-from geonode.base.api.exceptions import GeneralUploadException
+from geonode.upload.api.exceptions import GeneralUploadException
 from geonode.upload.models import UploadSizeLimit
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (
