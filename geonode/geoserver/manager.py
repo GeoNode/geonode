@@ -103,7 +103,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     # Let's reset the connections first
                     gs_catalog._cache.clear()
                     gs_catalog.reset()
-                    gs_catalog.reload()
                     if gs_catalog.get_layer(_real_instance.alternate):
                         return True
                 except Exception as e:
@@ -297,7 +296,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
         # Let's reset the connections first
         gs_catalog._cache.clear()
         gs_catalog.reset()
-        gs_catalog.reload()
         # Let's now try the new ingestion
         import_session = gs_uploader.start_import(
             import_id=upload_session.id,
