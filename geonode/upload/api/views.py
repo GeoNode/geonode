@@ -66,6 +66,7 @@ class UploadViewSet(DynamicModelViewSet):
     queryset = Upload.objects.all()
     serializer_class = UploadSerializer
     pagination_class = GeoNodeApiPagination
+    http_method_names = ['get', 'post']
 
     def _emulate_client_upload_step(self, request, _step):
         """Emulates the calls of a client to the upload flow.
@@ -120,7 +121,7 @@ class UploadViewSet(DynamicModelViewSet):
         else:
             return response, None, True
 
-    @extend_schema(methods=['put'],
+    @extend_schema(methods=['post'],
                    responses={201: None},
                    description="""
         Starts an upload session based on the Dataset Upload Form.
