@@ -134,26 +134,6 @@ def json_response(*args, **kw):
     return do_json_response(*args, **kw)
 
 
-''' comment as a test
-def error_response(req, exception=None, errors=None, force_ajax=True):
-    if exception:
-        logger.exception(f'Unexpected error in upload step: {exception}')
-    else:
-        logger.error(f'Upload error response: {errors}')
-    if req.is_ajax() or force_ajax:
-        content_type = 'text/html' if not req.is_ajax() else None
-        return json_response(exception=exception, errors=errors,
-                             content_type=content_type, status=400)
-    # not sure if any responses will (ideally) ever be non-ajax
-    if errors:
-        exception = "<br>".join(errors)
-    return render(
-        req,
-        'upload/dataset_upload_error.html',
-        context={'error_msg': f'Unexpected error : {exception}'})
-'''
-
-
 def json_load_byteified(file_handle):
     return _byteify(
         json.load(file_handle, object_hook=_byteify),

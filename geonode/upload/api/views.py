@@ -150,7 +150,7 @@ class UploadViewSet(DynamicModelViewSet):
             request.data.get("non_interactive", "false").lower()
         )
         if non_interactive:
-            steps_list = (None, "check", "final")
+            steps_list = (None, "final")
             # Execute steps and get response
             for step in steps_list:
                 response, _, _ = self._emulate_client_upload_step(
