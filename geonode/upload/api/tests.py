@@ -725,7 +725,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)
-            self.assertDictEqual(expected_error, json.loads(data))
+            self.assertDictEqual(expected_error, data)
             mocked_uploaded_file.assert_not_called()
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")

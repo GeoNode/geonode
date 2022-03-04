@@ -51,7 +51,7 @@ from django.contrib.auth.decorators import login_required
 from geonode.layers.models import Dataset
 from geonode.base.models import Configuration
 from geonode.upload.api.exceptions import GeneralUploadException
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import APIException
 from geonode.utils import fixup_shp_columnnames
 from geonode.decorators import logged_in_or_basicauth
 
@@ -742,7 +742,9 @@ def view(req, step=None):
         logger.exception('bad request')
         raise GeneralUploadException(detail=e.args[0])
     except Exception as e:
-        raise GeneralUploadException(detail=e.args[0])
+        if isinstance(e, APIException):
+            raise e
+        raise GeneralUploadException(detail=e)
 
 
 @login_required

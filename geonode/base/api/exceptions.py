@@ -6,7 +6,8 @@ def geonode_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    if response is not None:
+    if response is not None and hasattr(exc, "category") and exc.category == 'upload':
+        # for the upload exception we need a custom response
         response.data = {
             "success": False,
             "errors": [str(exc.detail) if hasattr(exc, "detail") else exc.default_detail],
