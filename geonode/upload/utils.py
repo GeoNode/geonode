@@ -40,6 +40,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from geonode.upload import UploadException
+from geonode.upload.api.exceptions import GeneralUploadException
 from geonode.upload.models import UploadSizeLimit
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (
@@ -140,9 +141,7 @@ def error_response(req, exception=None, errors=None, force_ajax=True):
     else:
         logger.error(f'Upload error response: {errors}')
     if req.is_ajax() or force_ajax:
-        content_type = 'text/html' if not req.is_ajax() else None
-        return json_response(exception=exception, errors=errors,
-                             content_type=content_type, status=400)
+        raise GeneralUploadException(detail=f"{exception} - {errors}")
     # not sure if any responses will (ideally) ever be non-ajax
     if errors:
         exception = "<br>".join(errors)

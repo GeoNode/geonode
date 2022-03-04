@@ -24,7 +24,6 @@ import tempfile
 from unittest import mock
 
 from io import IOBase
-from django.core.exceptions import ValidationError
 from gisdata import GOOD_DATA
 from urllib.request import urljoin
 
@@ -704,7 +703,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
 
         expected_error = {
-            "success": False, 
+            "success": False,
             "errors": ["Unexpected exception Total upload size exceeded. Please try again with smaller files."]
         }
 
@@ -736,7 +735,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         Try to upload a file larger than allowed by ``file_upload_handler``.
         """
         expected_error = {
-            "success": False, 
+            "success": False,
             "errors": ["Unexpected exception Total upload size exceeded. Please try again with smaller files."]
         }
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(

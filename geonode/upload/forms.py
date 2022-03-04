@@ -21,7 +21,6 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 from geonode.upload.api.exceptions import FileUploadLimitException
 

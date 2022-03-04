@@ -26,7 +26,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -142,7 +142,7 @@ class UploadViewSet(DynamicModelViewSet):
     def upload(self, request, format=None):
         user = request.user
         if not user or not user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            raise AuthenticationFailed()
 
         # Custom upload steps defined by user
         non_interactive = json.loads(
