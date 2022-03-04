@@ -798,14 +798,13 @@ def dataset_metadata_advanced(request, layername):
         template='datasets/dataset_metadata_advanced.html')
 
 
-@login_required
 def dataset_download(request, layername):
     try:
         dataset = _resolve_dataset(
             request,
             layername,
-            'base.change_resourcebase_metadata',
-            _PERMISSION_MSG_METADATA)
+            'base.download_resourcebase',
+            _PERMISSION_MSG_GENERIC)
     except Exception as e:
         raise Http404(Exception(_("Not found"), e))
 

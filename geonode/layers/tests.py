@@ -1217,6 +1217,34 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             response = self.client.get(url)
             self.assertTrue(response.status_code == 200)
 
+    def test_dataset_download_call_the_catalog_not_work_without_download_resurcebase_perm(self):
+        dataset = Dataset.objects.first()
+        dataset.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
+        self.client.login(username="bobby", password="bob")
+        url = reverse('dataset_download', args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertEqual(404, response.status_code)
+
+    def test_dataset_download_call_the_catalog_work_anonymous(self):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        _response = MagicMock(
+            status_code=200,
+            text="",  # noqa
+            headers={"Content-Type": ""}
+        )
+        dataset = Dataset.objects.first()
+        layer = create_dataset(
+            dataset.title,
+            dataset.title,
+            dataset.owner,
+            'Point'
+        )
+        with patch("geonode.layers.views.Catalog.http_request") as mocked_catalog:
+            mocked_catalog.return_value = _response
+            url = reverse('dataset_download', args=[layer.alternate])
+            response = self.client.get(url)
+            self.assertTrue(response.status_code == 200)
+
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
