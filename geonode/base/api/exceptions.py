@@ -5,9 +5,11 @@ def geonode_exception_handler(exc, context):
     # Call REST framework's default exception handler first,
     # to get the standard error response.
     response = exception_handler(exc, context)
-    response.data = {
-        "success": False,
-        "errors": [str(exc.detail) if hasattr(exc, "detail") else exc.default_detail],
-        "code": exc.code if hasattr(exc, "code") else exc.default_code
-    }
+
+    if response is not None:
+        response.data = {
+            "success": False,
+            "errors": [str(exc.detail) if hasattr(exc, "detail") else exc.default_detail],
+            "code": exc.code if hasattr(exc, "code") else exc.default_code
+        }
     return response

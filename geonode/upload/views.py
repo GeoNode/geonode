@@ -49,8 +49,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
 from geonode.layers.models import Dataset
-from geonode.upload import UploadException
 from geonode.base.models import Configuration
+from geonode.upload.api.exceptions import GeneralUploadException
+from rest_framework.exceptions import AuthenticationFailed
 from geonode.utils import fixup_shp_columnnames
 from geonode.decorators import logged_in_or_basicauth
 
@@ -75,7 +76,6 @@ from .utils import (
     _geoserver_down_error_msg,
     _get_time_dimensions,
     check_import_session_is_valid,
-    error_response,
     is_async_step,
     is_latitude,
     is_longitude,
@@ -216,7 +216,7 @@ def save_step_view(req, session):
         errors = []
         for e in form.errors.values():
             errors.extend([escape(v) for v in e])
-        return error_response(req, errors=errors)
+        raise GeneralUploadException(detail=errors)
 
 
 def srs_step_view(request, upload_session):
@@ -483,7 +483,7 @@ def time_step_view(request, upload_session):
     form = create_time_form(request, upload_session, request.POST)
     if not form.is_valid():
         logger.warning('Invalid upload form: %s', form.errors)
-        return error_response(request, errors=["Invalid Submission"])
+        raise GeneralUploadException(detail="Invalid Submission")
 
     cleaned = form.cleaned_data
     start_attribute_and_type = cleaned.get('start_attribute', None)
@@ -510,8 +510,7 @@ def time_step_view(request, upload_session):
         upload_session.import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
         Upload.objects.invalidate_from_session(upload_session)
-        raise UploadException.from_exc(
-            _("The GeoServer Import Session is no more available"), e)
+        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
 
     if start_attribute_and_type:
         def tx(type_name):
@@ -641,7 +640,7 @@ def view(req, step=None):
 
     config = Configuration.load()
     if config.read_only or config.maintenance:
-        return error_response(req, errors=["Not Authorized"])
+        raise AuthenticationFailed()
 
     upload_session = None
     upload_id = req.GET.get('id', None)
@@ -691,8 +690,7 @@ def view(req, step=None):
                     step)
                 upload_session.completed_step = _completed_step
             except Exception as e:
-                logger.warning(e)
-                return error_response(req, errors=e.args)
+                raise GeneralUploadException(detail=e.args[0])
 
         resp = _steps[step](req, upload_session)
         resp_js = None
@@ -704,7 +702,7 @@ def view(req, step=None):
                 resp_js = json.loads(content)
         except Exception as e:
             logger.warning(e)
-            return error_response(req, errors=e.args)
+            raise GeneralUploadException(detail=e.args[0])
 
         # must be put back to update object in session
         if upload_session:
@@ -732,19 +730,19 @@ def view(req, step=None):
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')
-        return error_response(req, errors=[_geoserver_down_error_msg])
+        raise GeneralUploadException(detail=_geoserver_down_error_msg)
     except gsimporter.RequestFailed as e:
         logger.exception('request failed')
         errors = e.args
         # http bad gateway or service unavailable
         if int(errors[0]) in (502, 503):
             errors = [_geoserver_down_error_msg]
-        return error_response(req, errors=errors)
+        raise GeneralUploadException(detail=errors)
     except gsimporter.BadRequest as e:
         logger.exception('bad request')
-        return error_response(req, errors=e.args)
+        raise GeneralUploadException(detail=e.args[0])
     except Exception as e:
-        return error_response(req, exception=e)
+        raise GeneralUploadException(detail=e.args[0])
 
 
 @login_required

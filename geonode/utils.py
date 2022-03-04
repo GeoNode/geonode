@@ -21,6 +21,7 @@ import os
 import gc
 import re
 import json
+from rest_framework.exceptions import APIException
 import time
 import base64
 import select
@@ -46,6 +47,7 @@ from contextlib import closing
 from collections import namedtuple, defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+from geonode.upload.api.exceptions import GeneralUploadException
 from requests.packages.urllib3.util.retry import Retry
 
 from django.conf import settings
@@ -713,6 +715,8 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
             'url': url
         }
     elif exception:
+        if isinstance(exception, APIException):
+            raise exception
         if body is None:
             body = f"Unexpected exception {exception}"
         else:
@@ -721,6 +725,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
             'success': False,
             'errors': [body]
         }
+        raise GeneralUploadException(detail=body)
     elif body:
         pass
     else:
