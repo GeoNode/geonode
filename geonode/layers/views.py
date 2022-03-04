@@ -798,7 +798,6 @@ def dataset_metadata_advanced(request, layername):
         template='datasets/dataset_metadata_advanced.html')
 
 
-@login_required
 def dataset_download(request, layername):
     try:
         dataset = _resolve_dataset(
