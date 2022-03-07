@@ -279,7 +279,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         test_file.size = settings.DEFAULT_MAX_UPLOAD_SIZE * 5  # Set as a large file
 
         file_data = {'doc_file': test_file}
-        
+
         with self.assertRaises(FileUploadLimitException):
             form = DocumentCreateForm(form_data, file_data)
 
