@@ -466,7 +466,11 @@ class ResourceManager(ResourceManagerInterface):
                         _maplayer.pk = _maplayer.id = None
                         _maplayer.map = _resource.get_real_instance()
                         _maplayer.save()
-                to_update = storage_manager.copy(_resource).copy()
+                to_update = {}
+                try:
+                    to_update = storage_manager.copy(_resource).copy()
+                except Exception as e:
+                    logger.exception(e)
                 _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
             except Exception as e:
                 logger.exception(e)
@@ -491,6 +495,9 @@ class ResourceManager(ResourceManagerInterface):
                 # Refresh from DB
                 _resource.refresh_from_db()
                 return self.update(_resource.uuid, _resource, vals=to_update)
+            else:
+                instance.set_processing_state(enumerations.STATE_INVALID)
+                instance.save(notify=False)
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
