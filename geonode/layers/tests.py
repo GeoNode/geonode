@@ -1159,7 +1159,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     @patch("geonode.layers.views.HttpClient.request")
     def test_dataset_download_call_the_catalog_raise_error_for_no_200(self, mocked_catalog):
         _response = MagicMock(status_code=500, content="foo-bar")
-        mocked_catalog.return_value = _response, ''
+        mocked_catalog.return_value = _response, 'foo-bar'
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
