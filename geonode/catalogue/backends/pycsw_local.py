@@ -148,7 +148,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 'startposition': start,
                 'maxrecords': limit
             }
-            response = csw.getrecords()
+            response = csw.getrecords2()
         else:  # it's a GetRecordById request
             csw.kvp = {
                 'service': 'CSW',
