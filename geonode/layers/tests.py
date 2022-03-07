@@ -1213,7 +1213,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             'Point'
         )
         with patch("geonode.layers.views.HttpClient.request") as mocked_catalog:
-            mocked_catalog.return_value = _response
+            mocked_catalog.return_value = _response, ''
             url = reverse('dataset_download', args=[layer.alternate])
             response = self.client.get(url)
             self.assertTrue(response.status_code == 200)
