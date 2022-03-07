@@ -45,9 +45,9 @@ from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
-from geoserver.catalog import Catalog
 from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
@@ -74,9 +74,7 @@ from geonode.layers.models import (
     Dataset,
     Attribute)
 from geonode.layers.utils import (
-    get_files,
-    is_sld_upload_only,
-    is_xml_upload_only,
+    get_files, is_sld_upload_only, is_xml_upload_only,
     validate_input_source)
 from geonode.services.models import Service
 from geonode.base import register_event
@@ -84,7 +82,7 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
-from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
+from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     select_relevant_files,
@@ -798,6 +796,7 @@ def dataset_metadata_advanced(request, layername):
         template='datasets/dataset_metadata_advanced.html')
 
 
+@csrf_exempt
 def dataset_download(request, layername):
     try:
         dataset = _resolve_dataset(
@@ -812,9 +811,9 @@ def dataset_download(request, layername):
         # if GeoServer is not used, we redirect to the proxy download
         return HttpResponseRedirect(reverse('download', args=[dataset.id]))
 
-    download_format = request.GET.get('export_format', 'application/zip')
+    download_format = request.GET.get('export_format')
 
-    if not wps_format_is_supported(download_format, dataset.subtype):
+    if download_format and not wps_format_is_supported(download_format, dataset.subtype):
         logger.error("The format provided is not valid for the selected resource")
         return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
 
@@ -822,19 +821,13 @@ def dataset_download(request, layername):
     tpl = get_template("geoserver/dataset_download.xml")
     ctx = {
         "alternate": dataset.alternate,
-        "download_format": download_format
+        "download_format": 'application/zip' if dataset.is_vector() else 'image/tiff'
     }
     # applying context for the payload
     payload = tpl.render(ctx)
 
-    # define access token for the user
-    access_token = get_or_create_token(request.user)
-
-    # init of Catalog
-    cat = Catalog(
-        service_url=settings.OGC_SERVER["default"]["LOCATION"],
-        access_token=access_token
-    )
+    # init of Client
+    client = HttpClient()
 
     headers = {
         "Content-type": "application/xml",
@@ -842,10 +835,14 @@ def dataset_download(request, layername):
     }
 
     # defining the URL needed fr the download
-    url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?service=WPS&version=1.0.0&REQUEST=Execute&access_token={access_token}"
+    url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?service=WPS&version=1.0.0&REQUEST=Execute"
+    if not request.user.is_anonymous:
+        # define access token for the user
+        access_token = get_or_create_token(request.user)
+        url += f"&access_token={access_token}"
 
     # request to geoserver
-    response = cat.http_request(
+    response, content = client.request(
         url=url,
         data=payload,
         method="post",
@@ -853,9 +850,9 @@ def dataset_download(request, layername):
     )
 
     if response.status_code != 200:
-        logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
+        logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
         return JsonResponse(
-            {"error": f"Download dataset exception: error during call with GeoServer: {response.content}"},
+            {"error": f"Download dataset exception: error during call with GeoServer: {content}"},
             status=500
         )
 
@@ -873,7 +870,7 @@ def dataset_download(request, layername):
 
     return fetch_response_headers(
         HttpResponse(
-            content=response.content,
+            content=content,
             status=response.status_code,
             content_type=download_format
         ), response.headers)
