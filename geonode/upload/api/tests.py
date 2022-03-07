@@ -702,7 +702,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         expected_error = {
             "success": False,
-            "errors": ["Total upload size exceeded. Please try again with smaller files."],
+            "errors": ["Total upload size exceeds 1\xa0byte. Please try again with smaller files."],
             "code": "total_upload_size_exceeded"
         }
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
@@ -734,7 +734,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         expected_error = {
             "success": False,
-            "errors": ["Total upload size exceeded. Please try again with smaller files."],
+            "errors": ["Total upload size exceeds 1\xa0byte. Please try again with smaller files."],
             "code": "total_upload_size_exceeded"
         }
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
