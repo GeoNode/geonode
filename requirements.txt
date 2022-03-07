@@ -5,7 +5,7 @@ psycopg2==2.9.3
 Django==3.2.12
 
 # Other
-amqp==5.0.9
+amqp==5.1.0
 beautifulsoup4==4.10.0
 httplib2<0.20.5
 hyperlink==21.0.0
