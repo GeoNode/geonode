@@ -39,7 +39,7 @@ from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly, IsSelfOrAdminOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.upload.utils import get_max_amount_of_steps
-
+from geonode.layers.utils import is_vector
 from .serializers import UploadSerializer, UploadSizeLimitSerializer
 from .permissions import UploadPermissionsFilter
 
@@ -150,7 +150,8 @@ class UploadViewSet(DynamicModelViewSet):
             request.data.get("non_interactive", "false").lower()
         )
         if non_interactive:
-            steps_list = (None, "final")
+            is_vector_dataset = is_vector(request.FILES.get('base_file').name)
+            steps_list = (None, "check", "final") if is_vector_dataset else (None, "final")
             # Execute steps and get response
             for step in steps_list:
                 response, _, _ = self._emulate_client_upload_step(
