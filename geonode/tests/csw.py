@@ -27,6 +27,8 @@ from lxml import etree
 from owslib import fes
 from urllib.parse import urljoin
 from owslib.etree import etree as dlxml
+from owslib.fes import PropertyIsLike
+# ref.: https://geopython.github.io/OWSLib/_sources/index.txt
 
 from django.conf import settings
 
@@ -37,6 +39,8 @@ from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
 
+LOCAL_TEST_CATALOG_URL = 'http://localhost:8001/'
+
 
 class GeoNodeCSWTest(GeoNodeBaseTestSupport):
     """Tests geonode.catalogue app/module"""
@@ -46,13 +50,13 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue(
             backend={
                 'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-                'URL': urljoin('http://localhost:8001/', '/catalogue/csw'),
+                'URL': urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw'),
             },
             skip_caps=False)
 
         self.assertEqual(
             csw.catalogue.url,
-            urljoin('http://localhost:8001/', '/catalogue/csw')
+            urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw')
         )
 
         # test that OGC:CSW URLs are identical to what is defined in GeoNode
@@ -96,24 +100,24 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue(
             backend={
                 'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-                'URL': urljoin('http://localhost:8001/', '/catalogue/csw'),
+                'URL': urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw'),
             },
             skip_caps=False)
 
         self.assertEqual(
             csw.catalogue.url,
-            urljoin('http://localhost:8001/', '/catalogue/csw')
+            urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw')
         )
 
         # get all records
-        csw.catalogue.getrecords(typenames='csw:Record')
+        csw.catalogue.getrecords2(typenames='csw:Record')
         self.assertGreaterEqual(
             csw.catalogue.results['matches'],
             15,
             'Expected 15+ records')
 
         # get all ISO records, test for numberOfRecordsMatched
-        csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
+        csw.catalogue.getrecords2(typenames='gmd:MD_Metadata')
         self.assertGreaterEqual(
             csw.catalogue.results['matches'],
             15,
@@ -123,7 +127,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         try:
             ResourceBase.objects.filter(is_published=True).update(is_published=False)
             # get all ISO records, test for numberOfRecordsMatched
-            csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
+            csw.catalogue.getrecords2(typenames='gmd:MD_Metadata')
             self.assertGreaterEqual(
                 csw.catalogue.results['matches'],
                 15,
@@ -137,16 +141,17 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue()
 
         # search for 'san_andres_y_providencia_location', output as Dublin Core
-        csw.catalogue.getrecords(
+        dataset_query_like = PropertyIsLike('csw:AnyText', '%san_andres_y_providencia_location%')
+        csw.catalogue.getrecords2(
             typenames='gmd:MD_Metadata',
-            keywords=['%san_andres_y_providencia_location%'],
+            constraints=[dataset_query_like],
             outputschema='http://www.opengis.net/cat/csw/2.0.2',
             esn='full')
 
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.title, "san_andres_y_providencia_location.shp")
+        self.assertTrue(record.title in "san_andres_y_providencia_location.shp")
 
         # test that the ISO abstract maps correctly in Dublin Core
         self.assertEqual(record.abstract, 'No abstract provided')
@@ -167,16 +172,18 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue()
 
         # search for 'san_andres_y_providencia_location', output as Dublin Core
-        csw.catalogue.getrecords(
+        dataset_query_like = PropertyIsLike('csw:AnyText', '%san_andres_y_providencia_location%')
+        csw.catalogue.getrecords2(
             typenames='gmd:MD_Metadata',
-            keywords=['%san_andres_y_providencia_location%'],
+            constraints=[dataset_query_like],
+            maxrecords=20,
             outputschema='http://www.isotc211.org/2005/gmd',
             esn='full')
 
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertEqual(record.identification.title, "san_andres_y_providencia_location.shp")
+        self.assertTrue(record.identification.title in "san_andres_y_providencia_location.shp")
 
         # test that the ISO abstract maps correctly in Dublin Core
         self.assertEqual(record.identification.abstract, 'No abstract provided')
@@ -205,11 +212,12 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
     def test_csw_outputschema_dc_bbox(self):
         """Verify that GeoNode CSW can handle ISO metadata BBOX model with Dublin Core outputSchema"""
         csw = get_catalogue()
-        # search for 'san_andres_y_providencia_location', output as Dublin
-        # Core
-        csw.catalogue.getrecords(
+
+        # search for 'san_andres_y_providencia_location', output as DublinCore
+        dataset_query_like = PropertyIsLike('csw:AnyText', '%san_andres_y_providencia_location%')
+        csw.catalogue.getrecords2(
             typenames='gmd:MD_Metadata',
-            keywords=['san_andres_y_providencia_location'],
+            constraints=[dataset_query_like],
             outputschema='http://www.opengis.net/cat/csw/2.0.2',
             esn='full')
 
@@ -231,15 +239,16 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue()
         if csw.catalogue.type in {'pycsw_http', 'pycsw_local'}:
             # get all ISO records in FGDC schema
-            csw.catalogue.getrecords(
+            dataset_query_like = PropertyIsLike('csw:AnyText', '%san_andres_y_providencia_location%')
+            csw.catalogue.getrecords2(
                 typenames='gmd:MD_Metadata',
-                keywords=['san_andres_y_providencia_location'],
+                constraints=[dataset_query_like],
                 outputschema='http://www.opengis.net/cat/csw/csdgm')
 
             record = list(csw.catalogue.records.values())[0]
 
             # test that the ISO title maps correctly in FGDC
-            self.assertEqual(record.idinfo.citation.citeinfo['title'], "san_andres_y_providencia_location.shp")
+            self.assertTrue(record.idinfo.citation.citeinfo['title'] in "san_andres_y_providencia_location.shp")
 
             # test that the ISO abstract maps correctly in FGDC
             self.assertEqual(record.idinfo.descript.abstract, 'No abstract provided')
@@ -279,7 +288,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             self.assertEqual(csw.catalogue.results['inserted'], 1)
 
             # query against FGDC typename, output FGDC
-            csw.catalogue.getrecords(typenames='fgdc:metadata')
+            csw.catalogue.getrecords2(typenames='fgdc:metadata')
             self.assertEqual(csw.catalogue.results['matches'], 1)
 
             record = list(csw.catalogue.records.values())[0]
@@ -301,7 +310,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             self.assertEqual(Decimal(record.bbox.maxy), Decimal('33.51'))
 
             # query against FGDC typename, return in ISO
-            csw.catalogue.getrecords(
+            csw.catalogue.getrecords2(
                 typenames='fgdc:metadata',
                 esn='brief',
                 outputschema='http://www.isotc211.org/2005/gmd')
@@ -352,21 +361,21 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
                 identifiers.append(csw.catalogue.results['insertresults'][0])
 
             # query against FGDC typename
-            csw.catalogue.getrecords(typenames='fgdc:metadata')
+            csw.catalogue.getrecords2(typenames='fgdc:metadata')
             self.assertEqual(
                 csw.catalogue.results['matches'],
                 72,
                 'Expected 187 records in FGDC model')
 
             # query against ISO typename
-            csw.catalogue.getrecords(typenames='gmd:MD_Metadata')
+            csw.catalogue.getrecords2(typenames='gmd:MD_Metadata')
             self.assertEqual(
                 csw.catalogue.results['matches'],
                 115,
                 'Expected 194 records in ISO model')
 
             # query against FGDC and ISO typename
-            csw.catalogue.getrecords(typenames='gmd:MD_Metadata fgdc:metadata')
+            csw.catalogue.getrecords2(typenames='gmd:MD_Metadata fgdc:metadata')
             self.assertEqual(
                 csw.catalogue.results['matches'],
                 187,
