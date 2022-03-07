@@ -26,6 +26,7 @@ from django.template.loader import get_template
 from owslib.catalogue.csw2 import CatalogueServiceWeb, namespaces
 from owslib.util import http_post
 from owslib.etree import etree as dlxml
+from owslib.fes import PropertyIsLike, BBox
 from geonode.catalogue.backends.base import BaseCatalogueBackend
 
 logger = logging.getLogger(__name__)
@@ -180,13 +181,20 @@ class Catalogue(CatalogueServiceWeb):
         for f in self.formats:
             formats.append(METADATA_FORMATS[f][0])
 
-        return self.getrecords(typenames=' '.join(formats),
-                               keywords=keywords,
-                               startposition=startposition,
-                               maxrecords=maxrecords,
-                               bbox=bbox,
-                               outputschema='http://www.isotc211.org/2005/gmd',
-                               esn='full')
+        dataset_query_like = []
+        if keywords:
+            for _kw in keywords:
+                dataset_query_like.append(PropertyIsLike('csw:AnyText', _kw))
+        bbox_query = []
+        if bbox:
+            bbox_query = BBox(bbox)
+        return self.getrecords2(
+            typenames=' '.join(formats),
+            constraints=dataset_query_like + bbox_query,
+            startposition=startposition,
+            maxrecords=maxrecords,
+            outputschema='http://www.isotc211.org/2005/gmd',
+            esn='full')
 
     def normalize_bbox(self, bbox):
         return [bbox[1], bbox[0], bbox[3], bbox[2]]
