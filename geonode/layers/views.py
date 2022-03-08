@@ -52,7 +52,7 @@ from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
-from geonode.proxy.views import fetch_response_headers
+from geonode.proxy.views import download, fetch_response_headers
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
 from geonode.resource.utils import update_resource
@@ -817,11 +817,12 @@ def dataset_download(request, layername):
         logger.error("The format provided is not valid for the selected resource")
         return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
 
+    _format = 'application/zip' if dataset.is_vector() else 'image/tiff'
     # getting default payload
     tpl = get_template("geoserver/dataset_download.xml")
     ctx = {
         "alternate": dataset.alternate,
-        "download_format": 'application/zip' if dataset.is_vector() else 'image/tiff'
+        "download_format": download_format or _format
     }
     # applying context for the payload
     payload = tpl.render(ctx)
@@ -868,12 +869,14 @@ def dataset_download(request, layername):
             logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
             return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
 
-    return fetch_response_headers(
+    return_response = fetch_response_headers(
         HttpResponse(
             content=response.content,
             status=response.status_code,
             content_type=download_format
         ), response.headers)
+    return_response.headers['Content-Type'] = download_format or _format
+    return return_response
 
 
 @login_required
