@@ -164,7 +164,7 @@ class LayerUploadForm(forms.Form):
         max_parallel_uploads = self._get_max_parallel_uploads()
         parallel_uploads_count = self._get_parallel_uploads_count()
         if parallel_uploads_count >= max_parallel_uploads:
-            raise forms.ValidationError(_(
+            raise ValidationError(_(
                 f"The number of active parallel uploads exceeds {max_parallel_uploads}. Wait for the pending ones to finish."
             ))
 
