@@ -52,7 +52,7 @@ from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
-from geonode.proxy.views import download, fetch_response_headers
+from geonode.proxy.views import fetch_response_headers
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
 from geonode.resource.utils import update_resource
