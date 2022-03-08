@@ -850,9 +850,9 @@ def dataset_download(request, layername):
     )
 
     if response.status_code != 200:
-        logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
+        logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
         return JsonResponse(
-            {"error": f"Download dataset exception: error during call with GeoServer: {content}"},
+            {"error": f"Download dataset exception: error during call with GeoServer: {response.content}"},
             status=500
         )
 
@@ -870,7 +870,7 @@ def dataset_download(request, layername):
 
     return fetch_response_headers(
         HttpResponse(
-            content=content,
+            content=response.content,
             status=response.status_code,
             content_type=download_format
         ), response.headers)
