@@ -89,6 +89,10 @@ class LayerUploadForm(forms.Form):
 
     spatial_files = tuple(spatial_files)
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(LayerUploadForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cleaned = super().clean()
         uploaded, files = self._get_files_paths_or_objects(cleaned)
