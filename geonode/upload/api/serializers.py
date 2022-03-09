@@ -18,8 +18,6 @@
 #########################################################################
 import os
 
-from django.utils.translation import ugettext_lazy as _
-
 from rest_framework import serializers
 
 from dynamic_rest.fields.fields import (
@@ -35,11 +33,7 @@ from geonode.upload.models import (
 from geonode.base.models import ResourceBase
 from geonode.utils import build_absolute_uri
 from geonode.layers.api.serializers import DatasetSerializer
-from geonode.base.api.serializers import (
-    BaseDynamicModelSerializer,
-    GroupSerializer,
-    UserSerializer,
-)
+from geonode.base.api.serializers import BaseDynamicModelSerializer
 
 import logging
 
@@ -261,9 +255,6 @@ class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
 
 
 class UploadParallelismLimitSerializer(BaseDynamicModelSerializer):
-    group = DynamicRelationField(GroupSerializer, embed=True, many=False)
-    user = DynamicRelationField(UserSerializer, embed=True, many=False)
-
     class Meta:
         model = UploadParallelismLimit
         name = 'upload-parallelism-limit'
@@ -272,35 +263,7 @@ class UploadParallelismLimitSerializer(BaseDynamicModelSerializer):
             'slug',
             'description',
             'max_number',
-            'user',
-            'group',
         )
         read_only_fields = (
             'slug',
-            'user',
-            'group',
         )
-
-    def validate(self, data):
-        validated_data = super(UploadParallelismLimitSerializer, self).validate(data)
-
-        slug = validated_data.get("slug", None)
-        user = validated_data.get("user", None)
-        group = validated_data.get("group", None)
-
-        if not self.instance and not slug and not user and not group:
-            raise serializers.ValidationError(_(
-                "You need at least one of the following fields: `slug`, `user` or `group`."
-            ))
-
-        if user and group:
-            raise serializers.ValidationError(_(
-                "You should choose an user or a group, but not both at the same time."
-            ))
-
-        if user:
-            validated_data['slug'] = f"user_{user.username}"
-        if group:
-            validated_data['slug'] = f"group_{group.name}"
-
-        return validated_data

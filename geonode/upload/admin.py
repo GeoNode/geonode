@@ -63,7 +63,7 @@ class UploadSizeLimitAdmin(admin.ModelAdmin):
 
 
 class UploadParallelismLimitAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'description', 'max_number', 'user', 'group')
+    list_display = ('slug', 'description', 'max_number',)
 
     def has_delete_permission(self, request, obj=None):
         if obj and obj.slug == "default_max_parallel_uploads":

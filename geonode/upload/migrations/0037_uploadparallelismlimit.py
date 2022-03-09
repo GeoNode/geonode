@@ -21,8 +21,6 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(blank=True, max_length=255, primary_key=True, serialize=False, unique=True, validators=[django.core.validators.MinLengthValidator(limit_value=3)])),
                 ('description', models.TextField(blank=True, default=None, max_length=255, null=True)),
                 ('max_number', models.PositiveSmallIntegerField(default=5, help_text='The maximum number of parallel uploads (0 to 32767).')),
-                ('group', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='auth.group')),
-                ('user', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'ordering': ('slug',),

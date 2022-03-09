@@ -204,13 +204,6 @@ class UploadParallelismLimitViewSet(DynamicModelViewSet):
     serializer_class = UploadParallelismLimitSerializer
     pagination_class = GeoNodeApiPagination
 
-    def get_queryset(self, queryset=None):
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            queryset = super(UploadParallelismLimitViewSet, self).get_queryset(queryset=queryset)
-        else:
-            queryset = UploadParallelismLimit.objects.get_limits_for_user(user=self.request.user)
-        return queryset
-
     def get_serializer(self, *args, **kwargs):
         serializer = super(UploadParallelismLimitViewSet, self).get_serializer(*args, **kwargs)
         if self.action == "create":
@@ -226,18 +219,3 @@ class UploadParallelismLimitViewSet(DynamicModelViewSet):
             raise ValidationError(detail)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @action(detail=False, methods=['get'])
-    def get_limits_for_current_user(self, request):
-        current_user_limit_value = UploadParallelismLimit.objects.get_limit_for_user_or_group(user=request.user)
-        queryset = UploadParallelismLimit.objects.get_limits_for_user(user=request.user)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            data = {"current-user-parallelism-limit-value": current_user_limit_value, **serializer.data}
-            return self.get_paginated_response(data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        data = {"current-user-parallelism-limit-value": current_user_limit_value, **serializer.data}
-        return Response(data)

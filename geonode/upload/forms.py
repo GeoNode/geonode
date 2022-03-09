@@ -89,10 +89,6 @@ class LayerUploadForm(forms.Form):
 
     spatial_files = tuple(spatial_files)
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user")
-        super(LayerUploadForm, self).__init__(*args, **kwargs)
-
     def clean(self):
         cleaned = super().clean()
         uploaded, files = self._get_files_paths_or_objects(cleaned)
@@ -199,7 +195,11 @@ class LayerUploadForm(forms.Form):
         return total_size
 
     def _get_max_parallel_uploads(self):
-        return UploadParallelismLimit.objects.get_limit_for_user_or_group(user=self.user)
+        try:
+            max_size_db_obj = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
+        except UploadParallelismLimit.DoesNotExist:
+            max_size_db_obj = UploadParallelismLimit.objects.create_default_limit()
+        return max_size_db_obj.max_size
 
     def _get_parallel_uploads_count(self):
         return Upload.objects.get_incomplete_uploads(self.user).count()
