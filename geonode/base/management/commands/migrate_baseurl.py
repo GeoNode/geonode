@@ -86,6 +86,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                 _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} Maps")
                 logger.info(f"Updated {_cnt} Maps")
 
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
@@ -94,21 +95,25 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                 MapLayer.objects.filter(layer_params__icontains=source_address).update(
                     layer_params=Func(
                         F('layer_params'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} MapLayers")
                 logger.info(f"Updated {_cnt} MapLayers")
 
                 _cnt = Layer.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} Layers")
                 logger.info(f"Updated {_cnt} Layers")
 
                 _cnt = Style.objects.filter(sld_url__icontains=source_address).update(
                     sld_url=Func(
                         F('sld_url'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} Styles")
                 logger.info(f"Updated {_cnt} Styles")
 
                 _cnt = Link.objects.filter(url__icontains=source_address).update(
                     url=Func(
                         F('url'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} Links")
                 logger.info(f"Updated {_cnt} Links")
 
                 _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
@@ -120,6 +125,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                 _cnt += ResourceBase.objects.filter(metadata_xml__icontains=source_address).update(
                     metadata_xml=Func(
                         F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} ResourceBases")
                 logger.info(f"Updated {_cnt} ResourceBases")
 
                 _cnt = 0
@@ -130,6 +136,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                         GeoAppData.objects.filter(id=_app.id).update(blob=_blob)
                         _cnt += 1
                 finally:
+                    print(f"Updated {_cnt} GeoAppDatas")
                     logger.info(f"Updated {_cnt} GeoAppDatas")
 
                 _cnt = 0
@@ -142,6 +149,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                         MapStoreData.objects.filter(id=_app.id).update(blob=_blob)
                         _cnt += 1
                 finally:
+                    print(f"Updated {_cnt} MapStoreDatas")
                     logger.info(f"Updated {_cnt} MapStoreDatas")
 
                 site = Site.objects.get_current()
@@ -149,6 +157,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                     site.name = site.name.replace(source_address, target_address)
                     site.domain = site.domain.replace(source_address, target_address)
                     site.save()
+                    print("Updated 1 Site")
                     logger.info("Updated 1 Site")
 
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -156,6 +165,7 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                         _cnt = Application.objects.filter(name='GeoServer').update(
                             redirect_uris=Func(
                                 F('redirect_uris'), Value(source_address), Value(target_address), function='replace'))
+                        print(f"Updated {_cnt} OAUth2 Redirect URIs")
                         logger.info(f"Updated {_cnt} OAUth2 Redirect URIs")
             finally:
                 print("...done!")
