@@ -16,11 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
+import logging
 
 from . import helpers
 
+from django.db import connection
 from django.db.models import Func, F, Value
 from django.contrib.sites.models import Site
+from django_jsonfield_backport.features import extend_features
 from django.core.management.base import BaseCommand, CommandError
 
 from oauth2_provider.models import Application
@@ -31,8 +35,6 @@ from geonode.utils import check_ogc_backend
 from geonode.base.models import ResourceBase
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Layer, Style
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +65,7 @@ class Command(BaseCommand):
             help='Target Address (the one to be changed e.g. http://my-public.geonode.org)')
 
     def handle(self, **options):
+        extend_features(connection)
         force_exec = options.get('force_exec')
         source_address = options.get('source_address')
         target_address = options.get('target_address')
@@ -119,12 +122,34 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                         F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
                 logger.info(f"Updated {_cnt} ResourceBases")
 
+                _cnt = 0
+                try:
+                    from geonode.geoapps.models import GeoAppData
+                    for _app in GeoAppData.objects.all():
+                        _blob = _app.blob.replace(source_address, target_address)
+                        GeoAppData.objects.filter(id=_app.id).update(blob=_blob)
+                        _cnt += 1
+                finally:
+                    logger.info(f"Updated {_cnt} GeoAppDatas")
+
+                _cnt = 0
+                try:
+                    from mapstore2_adapter.api.models import MapStoreData
+                    for _app in MapStoreData.objects.all():
+                        _blob = json.dumps(_app.blob)
+                        _blob = _blob.replace(source_address, target_address)
+                        _blob = json.loads(_blob)
+                        MapStoreData.objects.filter(id=_app.id).update(blob=_blob)
+                        _cnt += 1
+                finally:
+                    logger.info(f"Updated {_cnt} MapStoreDatas")
+
                 site = Site.objects.get_current()
                 if site:
                     site.name = site.name.replace(source_address, target_address)
                     site.domain = site.domain.replace(source_address, target_address)
                     site.save()
-                    print("Updated 1 Site")
+                    logger.info("Updated 1 Site")
 
                 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                     if Application.objects.filter(name='GeoServer').exists():
@@ -132,6 +157,5 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                             redirect_uris=Func(
                                 F('redirect_uris'), Value(source_address), Value(target_address), function='replace'))
                         logger.info(f"Updated {_cnt} OAUth2 Redirect URIs")
-
             finally:
                 print("...done!")
