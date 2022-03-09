@@ -1156,10 +1156,10 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             response.json()
         )
 
-    @patch("geonode.layers.views.Catalog.http_request")
+    @patch("geonode.layers.views.HttpClient.request")
     def test_dataset_download_call_the_catalog_raise_error_for_no_200(self, mocked_catalog):
         _response = MagicMock(status_code=500, content="foo-bar")
-        mocked_catalog.return_value = _response
+        mocked_catalog.return_value = _response, 'foo-bar'
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
@@ -1171,20 +1171,21 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             response.json()
         )
 
-    @patch("geonode.layers.views.Catalog.http_request")
+    @patch("geonode.layers.views.HttpClient.request")
     def test_dataset_download_call_the_catalog_raise_error_for_error_content(self, mocked_catalog):
-        _response = MagicMock(
-            status_code=200,
-            text='''<?xml version="1.0" encoding="UTF-8"?>
-                <ows:ExceptionReport xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://localhost:8080/geoserver/schemas/ows/1.1.0/owsAll.xsd"> 
+        content = '''<?xml version="1.0" encoding="UTF-8"?>
+                <ows:ExceptionReport xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/ows/1.1 http://localhost:8080/geoserver/schemas/ows/1.1.0/owsAll.xsd">
                     <ows:Exception exceptionCode="InvalidParameterValue" locator="ResponseDocument">
                         <ows:ExceptionText>Foo Bar Exception</ows:ExceptionText>
                     </ows:Exception>
                 </ows:ExceptionReport>
-                ''',  # noqa
+                ''' # noqa
+        _response = MagicMock(
+            status_code=200,
+            text=content,
             headers={"Content-Type": "text/xml"}
         )
-        mocked_catalog.return_value = _response
+        mocked_catalog.return_value = _response, content
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
         dataset = Dataset.objects.first()
@@ -1211,8 +1212,8 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             dataset.owner,
             'Point'
         )
-        with patch("geonode.layers.views.Catalog.http_request") as mocked_catalog:
-            mocked_catalog.return_value = _response
+        with patch("geonode.layers.views.HttpClient.request") as mocked_catalog:
+            mocked_catalog.return_value = _response, ''
             url = reverse('dataset_download', args=[layer.alternate])
             response = self.client.get(url)
             self.assertTrue(response.status_code == 200)
@@ -1239,11 +1240,76 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             dataset.owner,
             'Point'
         )
-        with patch("geonode.layers.views.Catalog.http_request") as mocked_catalog:
-            mocked_catalog.return_value = _response
+        with patch("geonode.layers.views.HttpClient.request") as mocked_catalog:
+            mocked_catalog.return_value = _response, ''
             url = reverse('dataset_download', args=[layer.alternate])
             response = self.client.get(url)
             self.assertTrue(response.status_code == 200)
+
+    @override_settings(USE_GEOSERVER=True)
+    @patch("geonode.layers.views.get_template")
+    def test_dataset_download_call_the_catalog_work_for_raster(self, pathed_template):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        _response = MagicMock(
+            status_code=200,
+            text="",  # noqa
+            headers={"Content-Type": ""}
+        )
+        dataset = Dataset.objects.filter(subtype="raster").first()
+        layer = create_dataset(
+            dataset.title,
+            dataset.title,
+            dataset.owner,
+            'Point'
+        )
+        Dataset.objects.filter(alternate=layer.alternate).update(subtype='raster')
+        with patch("geonode.layers.views.HttpClient.request") as mocked_catalog:
+            mocked_catalog.return_value = _response, ''
+            url = reverse('dataset_download', args=[layer.alternate])
+            response = self.client.get(url)
+            self.assertTrue(response.status_code == 200)
+        '''
+        Evaluate that the context used by the template contains the right mimetype for the resource
+        '''
+        self.assertTupleEqual(
+            ({
+                "alternate": layer.alternate,
+                "download_format": "image/tiff"
+            },),
+            pathed_template.mock_calls[1].args
+        )
+
+    @override_settings(USE_GEOSERVER=True)
+    @patch("geonode.layers.views.get_template")
+    def test_dataset_download_call_the_catalog_work_for_vector(self, pathed_template):
+        # if settings.USE_GEOSERVER is false, the URL must be redirected
+        _response = MagicMock(
+            status_code=200,
+            text="",  # noqa
+            headers={"Content-Type": ""}
+        )
+        dataset = Dataset.objects.filter(subtype="vector").first()
+        layer = create_dataset(
+            dataset.title,
+            dataset.title,
+            dataset.owner,
+            'Point'
+        )
+        with patch("geonode.layers.views.HttpClient.request") as mocked_catalog:
+            mocked_catalog.return_value = _response, ''
+            url = reverse('dataset_download', args=[layer.alternate])
+            response = self.client.get(url)
+            self.assertTrue(response.status_code == 200)
+        '''
+        Evaluate that the context used by the template contains the right mimetype for the resource
+        '''
+        self.assertTupleEqual(
+            ({
+                "alternate": layer.alternate,
+                "download_format": "application/zip"
+            },),
+            pathed_template.mock_calls[1].args
+        )
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
