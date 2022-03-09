@@ -208,8 +208,6 @@ class UploadParallelismLimitViewSet(DynamicModelViewSet):
         serializer = super(UploadParallelismLimitViewSet, self).get_serializer(*args, **kwargs)
         if self.action == "create":
             serializer.fields["slug"].read_only = False
-            serializer.fields["user"].read_only = False
-            serializer.fields["group"].read_only = False
         return serializer
 
     def destroy(self, request, *args, **kwargs):

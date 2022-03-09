@@ -196,10 +196,10 @@ class LayerUploadForm(forms.Form):
 
     def _get_max_parallel_uploads(self):
         try:
-            max_size_db_obj = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
+            parallelism_limit = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
         except UploadParallelismLimit.DoesNotExist:
-            max_size_db_obj = UploadParallelismLimit.objects.create_default_limit()
-        return max_size_db_obj.max_size
+            parallelism_limit = UploadParallelismLimit.objects.create_default_limit()
+        return parallelism_limit.max_number
 
     def _get_parallel_uploads_count(self):
         return Upload.objects.get_incomplete_uploads(self.user).count()
