@@ -70,6 +70,9 @@ class UploadParallelismLimitAdmin(admin.ModelAdmin):
             return False
         return super(UploadParallelismLimitAdmin, self).has_delete_permission(request, obj)
 
+    def has_add_permission(self, request):
+        return False
+
 
 admin.site.register(Upload, UploadAdmin)
 admin.site.register(UploadSizeLimit, UploadSizeLimitAdmin)

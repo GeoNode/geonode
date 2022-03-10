@@ -2,6 +2,21 @@
 
 import django.core.validators
 from django.db import migrations, models
+from django.conf import settings
+
+DEFAULT_UPLOAD_PARALLELISM_LIMIT = {
+    "slug": "default_max_parallel_uploads",
+    "description": "The default maximum parallel uploads per user.",
+    "max_number": settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER
+}
+
+def create_upload_parallelism_limit_objects(apps, schema_editor):
+    UploadParallelismLimit = apps.get_model("upload", "UploadParallelismLimit")
+    UploadParallelismLimit.objects.create(**DEFAULT_UPLOAD_PARALLELISM_LIMIT)
+
+def remove_upload_parallelism_limit_objects(apps, schema_editor):
+    UploadParallelismLimit = apps.get_model("upload", "UploadParallelismLimit")
+    UploadParallelismLimit.objects.all().delete()
 
 
 class Migration(migrations.Migration):
@@ -22,4 +37,5 @@ class Migration(migrations.Migration):
                 'ordering': ('slug',),
             },
         ),
+        migrations.RunPython(create_upload_parallelism_limit_objects, remove_upload_parallelism_limit_objects),
     ]
