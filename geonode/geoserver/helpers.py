@@ -92,6 +92,19 @@ LAYER_SUBTYPES = {
     "vectorTimeSeries": "vector_time"
 }
 
+WPS_ACCEPTABLE_FORMATS = [
+        ('application/json', 'vector'),
+        ('application/arcgrid', 'raster'),
+        ('image/tiff', 'raster'),
+        ('image/png', 'raster'),
+        ('image/jpeg', 'raster'),
+        ('application/wfs-collection-1.0', 'vector'),
+        ('application/wfs-collection-1.1', 'vector'),
+        ('application/zip', 'vector'),
+        ('text/csv', 'vector')
+    ]
+
+
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
         'Please configure OGC_SERVER when enabling geonode.geoserver.'
@@ -2247,16 +2260,4 @@ def get_dataset_type(spatial_files):
 
 
 def wps_format_is_supported(_format, dataset_type):
-    acceptable_formats = [
-        ('application/json', 'vector'),
-        ('application/arcgrid', 'raster'),
-        ('image/tiff', 'raster'),
-        ('image/png', 'raster'),
-        ('image/jpeg', 'raster'),
-        ('application/wfs-collection-1.0', 'vector'),
-        ('application/wfs-collection-1.1', 'vector'),
-        ('application/zip', 'vector'),
-        ('application/zip', 'raster'),
-        ('text/csv', 'vector')
-    ]
-    return (_format, dataset_type) in acceptable_formats
+    return (_format, dataset_type) in WPS_ACCEPTABLE_FORMATS
