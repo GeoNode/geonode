@@ -60,7 +60,7 @@ from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCa
 
 from ..people.utils import get_default_user
 from ..layers.metadata import convert_keyword, parse_metadata
-from ..layers.utils import get_valid_layer_name, resolve_regions
+from ..layers.utils import get_valid_layer_name, is_vector, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
@@ -366,15 +366,36 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                 error_msg = 'No valid Importer Session could be found'
         else:
             # moving forward with a regular Importer session
-            import_session = gs_uploader.upload_files(
-                files_to_upload,
-                use_url=False,
-                import_id=next_id,
-                mosaic=False,
-                target_store=target_store,
-                name=name,
-                charset_encoding=charset_encoding
-            )
+            if overwrite:
+                gs_layer = gs_catalog.get_layer(name)
+                _target_store = gs_layer.resource.store.name if is_vector(layer) else None
+                #  opening Import session for the selected layer
+                # Let's reset the connections first
+                gs_catalog._cache.clear()
+                gs_catalog.reset()
+
+                import_session = gs_uploader.start_import(
+                    import_id=next_id, name=name, target_store=_target_store
+                )
+                import_session.upload_task(files_to_upload)
+                task = import_session.tasks[0]
+                #  Changing layer name, mode and target
+                task.set_update_mode("REPLACE")
+                task.layer.set_target_layer_name(name)
+                task.set_target(store_name=_target_store, workspace=gs_layer.resource.workspace.name)
+                #  Starting import process
+
+                import_session = import_session.reload()
+            else:
+                import_session = gs_uploader.upload_files(
+                    files_to_upload,
+                    use_url=False,
+                    import_id=next_id,
+                    mosaic=False,
+                    target_store=target_store,
+                    name=name,
+                    charset_encoding=charset_encoding
+                )
         upload.import_id = import_session.id
         upload.save()
 
@@ -603,6 +624,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     task = import_session.tasks[0]
     task.set_charset(charset)
 
+    overwrite = task.updateMode == 'REPLACE'
+
     # @todo see above in save_step, regarding computed unique name
     name = task.layer.name
 
@@ -679,7 +702,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 _("Exception occurred while parsing the provided Metadata file."), e)
 
     # Make sure the layer does not exists already
-    if layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
+    if not overwrite and layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
@@ -776,7 +799,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     assert saved_layer
 
-    if not created:
+    if not created and not overwrite:
         return saved_layer
 
     # Hide the resource until finished
@@ -907,7 +930,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     # Updating layer with information coming from the XML file
-    if xml_file:
+    if xml_file and os.path.exists(xml_file):
         saved_layer.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(convert_keyword(regions_unresolved))

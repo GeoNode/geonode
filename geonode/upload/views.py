@@ -254,6 +254,10 @@ def save_step_view(req, session):
             mosaic_time_value=form.cleaned_data['mosaic_time_value'],
             user=upload.user
         )
+
+        if overwrite:
+            upload_session.update_mode = "REPLACE"
+
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)
     else:
