@@ -62,6 +62,7 @@ class UploadViewSet(DynamicModelViewSet):
     """
     parser_class = [FileUploadParser, ]
 
+    http_method_names = ['get', 'post']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
@@ -180,6 +181,7 @@ class UploadViewSet(DynamicModelViewSet):
 
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
+    http_method_names = ['get', 'post']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadSizeLimit.objects.all()
