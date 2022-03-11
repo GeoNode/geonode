@@ -50,7 +50,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.upload.models import Upload, UploadSizeLimit
+from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
 
 GEONODE_USER = 'admin'
 GEONODE_PASSWD = 'admin'
@@ -764,6 +764,29 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 content_type='image/tiff'
             )
 
+    @mock.patch("geonode.upload.forms.ValidationError")
+    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
+    def test_rest_uploads_with_parallelism_limit(self, mocked_uploaded_file, mocked_validation_error):
+        """
+        Try to upload a file when there are many others being handled.
+        """
+
+        expected_error = f"The number of active parallel uploads exceeds {settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER}. Wait for the pending ones to finish."
+        mocked_validation_error.side_effect = ValidationError(expected_error)
+
+        # Try to upload and verify if it passed only by the form size validation
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+
+        _get_parallel_uploads_count_path = "geonode.upload.forms.LayerUploadForm._get_parallel_uploads_count"
+        with mock.patch(_get_parallel_uploads_count_path, new_callable=mock.PropertyMock) as mocked_get_parallel_uploads_count:
+            mocked_get_parallel_uploads_count.return_value = lambda: 20
+
+            resp, data = self.rest_upload_file(fname)
+            self.assertEqual(resp.status_code, 400)
+
+            mocked_validation_error.assert_called_once_with(expected_error)
+            mocked_uploaded_file.assert_not_called()
+
 
 class UploadSizeLimitTests(APITestCase):
     fixtures = [
@@ -957,6 +980,219 @@ class UploadSizeLimitTests(APITestCase):
         url = reverse('upload-size-limits-detail', args=('some-other-size-limit',))
 
         # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.delete(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+
+class UploadParallelismLimitTests(APITestCase):
+    fixtures = [
+        'group_test_data.json',
+    ]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.admin = get_user_model().objects.get(username="admin")
+        cls.norman_user = get_user_model().objects.get(username="norman")
+        cls.test_user = get_user_model().objects.get(username="test_user")
+        try:
+            cls.default_parallelism_limit = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
+        except UploadParallelismLimit.DoesNotExist:
+            cls.default_parallelism_limit = UploadParallelismLimit.objects.create_default_limit()
+
+    def test_list_parallelism_limits_admin_user(self):
+        url = reverse('upload-parallelism-limits-list')
+
+        # List as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        parallelism_limits = [
+            (parallelism_limit['slug'], parallelism_limit['max_number'])
+            for parallelism_limit in response.json()['upload-parallelism-limits']
+        ]
+        expected_parallelism_limits = [
+            (self.default_parallelism_limit.slug, self.default_parallelism_limit.max_number),
+        ]
+        for parallelism_limit in expected_parallelism_limits:
+            self.assertIn(parallelism_limit, parallelism_limits)
+
+    def test_list_parallelism_limits_anonymous_user(self):
+        url = reverse('upload-parallelism-limits-list')
+
+        # List as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+        # Response Content
+        parallelism_limits = [
+            (parallelism_limit['slug'], parallelism_limit['max_number'])
+            for parallelism_limit in response.json()['upload-parallelism-limits']
+        ]
+        expected_parallelism_limits = [
+            (self.default_parallelism_limit.slug, self.default_parallelism_limit.max_number),
+        ]
+        for parallelism_limit in expected_parallelism_limits:
+            self.assertIn(parallelism_limit, parallelism_limits)
+
+    def test_retrieve_parallelism_limit_admin_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Retrieve as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        parallelism_limit = response.json()['upload-parallelism-limit']
+        self.assertEqual(parallelism_limit['slug'], self.default_parallelism_limit.slug)
+        self.assertEqual(parallelism_limit['max_number'], self.default_parallelism_limit.max_number)
+
+    def test_retrieve_parallelism_limit_norman_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Retrieve as a norman user
+        self.client.force_authenticate(user=self.norman_user)
+        response = self.client.get(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.norman_user)
+        # Response Content
+        parallelism_limit = response.json()['upload-parallelism-limit']
+        self.assertEqual(parallelism_limit['slug'], self.default_parallelism_limit.slug)
+        self.assertEqual(parallelism_limit['max_number'], self.default_parallelism_limit.max_number)
+
+    def test_patch_parallelism_limit_admin_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Patch as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(url, data={"max_number": 3})
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        parallelism_limit = response.json()['upload-parallelism-limit']
+        self.assertEqual(parallelism_limit['slug'], self.default_parallelism_limit.slug)
+        self.assertEqual(parallelism_limit['max_number'], 3)
+
+    def test_patch_parallelism_limit_norman_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Patch as a norman user
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(url, data={"max_number": 4})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_patch_parallelism_limit_anonymous_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Patch as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.patch(url, data={"max_number": 6})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_put_parallelism_limit_admin_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Put as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.put(url, data={"slug": self.default_parallelism_limit.slug, "max_number": 7})
+
+        # Assertions
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        parallelism_limit = response.json()['upload-parallelism-limit']
+        self.assertEqual(parallelism_limit['slug'], self.default_parallelism_limit.slug)
+        self.assertEqual(parallelism_limit['max_number'], 7)
+
+    def test_put_parallelism_limit_anonymous_user(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Put as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.put(url, data={"slug": self.default_parallelism_limit.slug, "max_number": 8})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_post_parallelism_limit_admin_user(self):
+        url = reverse('upload-parallelism-limits-list')
+
+        # Post as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(url, data={"slug": "some-parallelism-limit", "max_number": 9})
+
+        # Assertions
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+        # Response Content
+        parallelism_limit = response.json()['upload-parallelism-limit']
+        self.assertEqual(parallelism_limit['slug'], 'some-parallelism-limit')
+        self.assertEqual(parallelism_limit['max_number'], 9)
+
+    def test_post_parallelism_limit_anonymous_user(self):
+        url = reverse('upload-parallelism-limits-list')
+
+        # Post as an Anonymous user
+        self.client.force_authenticate(user=None)
+        response = self.client.post(url, data={"slug": 'some-parallelism-limit', "max_number": 8})
+
+        # Assertions
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(response.wsgi_request.user.is_anonymous)
+
+    def test_delete_parallelism_limit_admin_user(self):
+        UploadParallelismLimit.objects.create(slug="test-parallelism-limit", max_number=123,)
+        url = reverse('upload-parallelism-limits-detail', args=('test-parallelism-limit',))
+
+        # Delete as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+
+    def test_delete_parallelism_limit_admin_user_protected(self):
+        url = reverse('upload-parallelism-limits-detail', args=(self.default_parallelism_limit.slug,))
+
+        # Delete as an admin user
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(url)
+
+        # Assertions
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.wsgi_request.user, self.admin)
+
+    def test_delete_parallelism_limit_anonymous_user(self):
+        UploadParallelismLimit.objects.create(slug="test-parallelism-limit", max_number=123,)
+        url = reverse('upload-parallelism-limits-detail', args=('test-parallelism-limit',))
+
+        # Delete as an Anonymous user
         self.client.force_authenticate(user=None)
         response = self.client.delete(url)
 
