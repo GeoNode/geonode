@@ -126,7 +126,7 @@ def data_upload_progress(req):
 
 
 def save_step_view(req, session):
-    form = LayerUploadForm(req.POST, req.FILES)
+    form = LayerUploadForm(req.POST, req.FILES, user=req.user)
 
     overwrite = req.path_info.endswith('/replace')
     target_store = None

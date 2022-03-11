@@ -2078,7 +2078,7 @@ FILE_UPLOAD_HANDLERS = [
 ]
 
 DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_UPLOAD_SIZE', 104857600))  # 100 MB
-
+DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER = int(os.getenv('DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER', 5))
 
 '''
 Default schema used to store extra and dynamic metadata for the resource

@@ -40,10 +40,15 @@ from geonode.base.api.permissions import IsOwnerOrReadOnly, IsSelfOrAdminOrReadO
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.upload.utils import get_max_amount_of_steps
 from geonode.layers.utils import is_vector
-from .serializers import UploadSerializer, UploadSizeLimitSerializer
+
+from .serializers import (
+    UploadSerializer,
+    UploadParallelismLimitSerializer,
+    UploadSizeLimitSerializer,
+)
 from .permissions import UploadPermissionsFilter
 
-from ..models import Upload, UploadSizeLimit
+from ..models import Upload, UploadParallelismLimit, UploadSizeLimit
 from ..views import view as upload_view
 
 import logging
@@ -190,6 +195,28 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
         instance = self.get_object()
         if instance.slug in protected_objects:
             detail = _(f"The limit `{instance.slug}` should not be deleted.")
+            raise ValidationError(detail)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UploadParallelismLimitViewSet(DynamicModelViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsSelfOrAdminOrReadOnly]
+    queryset = UploadParallelismLimit.objects.all()
+    serializer_class = UploadParallelismLimitSerializer
+    pagination_class = GeoNodeApiPagination
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super(UploadParallelismLimitViewSet, self).get_serializer(*args, **kwargs)
+        if self.action == "create":
+            serializer.fields["slug"].read_only = False
+        return serializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.slug == "default_max_parallel_uploads":
+            detail = _("The limit `default_max_parallel_uploads` should not be deleted.")
             raise ValidationError(detail)
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)

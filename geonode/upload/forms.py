@@ -25,7 +25,7 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
 from geonode.upload.api.exceptions import FileUploadLimitException
 
-from geonode.upload.models import UploadSizeLimit
+from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.data_retriever import DataRetriever
 
 from .. import geoserver
@@ -90,6 +90,10 @@ class LayerUploadForm(forms.Form):
 
     spatial_files = tuple(spatial_files)
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(LayerUploadForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cleaned = super().clean()
         uploaded, files = self._get_files_paths_or_objects(cleaned)
@@ -103,6 +107,8 @@ class LayerUploadForm(forms.Form):
         if self.errors:
             # Something already went wrong
             return cleaned
+
+        self.validate_parallelism_limit_per_user()
 
         # Validate form file sizes
         self.validate_files_sum_of_sizes(self.files)
@@ -155,6 +161,14 @@ class LayerUploadForm(forms.Form):
 
         return uploaded, files
 
+    def validate_parallelism_limit_per_user(self):
+        max_parallel_uploads = self._get_max_parallel_uploads()
+        parallel_uploads_count = self._get_parallel_uploads_count()
+        if parallel_uploads_count >= max_parallel_uploads:
+            raise ValidationError(_(
+                f"The number of active parallel uploads exceeds {max_parallel_uploads}. Wait for the pending ones to finish."
+            ))
+
     def validate_files_sum_of_sizes(self, file_dict):
         max_size = self._get_uploads_max_size()
         total_size = self._get_uploaded_files_total_size(file_dict)
@@ -184,6 +198,16 @@ class LayerUploadForm(forms.Form):
         ]
         total_size = sum(uploaded_files_sizes)
         return total_size
+
+    def _get_max_parallel_uploads(self):
+        try:
+            parallelism_limit = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
+        except UploadParallelismLimit.DoesNotExist:
+            parallelism_limit = UploadParallelismLimit.objects.create_default_limit()
+        return parallelism_limit.max_number
+
+    def _get_parallel_uploads_count(self):
+        return Upload.objects.get_incomplete_uploads(self.user).count()
 
 
 class TimeForm(forms.Form):
