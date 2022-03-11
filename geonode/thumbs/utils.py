@@ -225,7 +225,7 @@ def get_map(
                 layers=layers,
                 styles=styles,
                 srs=bbox[-1] if bbox else None,
-                bbox=[bbox[0], bbox[1], bbox[2], bbox[3]] if bbox else None,
+                bbox=[bbox[0], bbox[2], bbox[1], bbox[3]] if bbox else None,
                 size=(width, height),
                 format=mime_type,
                 transparent=True,
