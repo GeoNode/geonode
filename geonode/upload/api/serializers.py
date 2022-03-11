@@ -25,7 +25,11 @@ from dynamic_rest.fields.fields import (
     DynamicComputedField,
 )
 
-from geonode.upload.models import Upload, UploadSizeLimit
+from geonode.upload.models import (
+    Upload,
+    UploadParallelismLimit,
+    UploadSizeLimit,
+)
 from geonode.base.models import ResourceBase
 from geonode.utils import build_absolute_uri
 from geonode.layers.api.serializers import DatasetSerializer
@@ -247,4 +251,19 @@ class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
             'description',
             'max_size',
             'max_size_label',
+        )
+
+
+class UploadParallelismLimitSerializer(BaseDynamicModelSerializer):
+    class Meta:
+        model = UploadParallelismLimit
+        name = 'upload-parallelism-limit'
+        view_name = 'upload-parallelism-limits-list'
+        fields = (
+            'slug',
+            'description',
+            'max_number',
+        )
+        read_only_fields = (
+            'slug',
         )

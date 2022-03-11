@@ -17,8 +17,11 @@
 #
 #########################################################################
 
-from geonode.upload.models import Upload, UploadSizeLimit
-
+from geonode.upload.models import (
+    Upload,
+    UploadParallelismLimit,
+    UploadSizeLimit,
+)
 from django.contrib import admin
 
 
@@ -59,5 +62,18 @@ class UploadSizeLimitAdmin(admin.ModelAdmin):
         return super(UploadSizeLimitAdmin, self).has_delete_permission(request, obj)
 
 
+class UploadParallelismLimitAdmin(admin.ModelAdmin):
+    list_display = ('slug', 'description', 'max_number',)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.slug == "default_max_parallel_uploads":
+            return False
+        return super(UploadParallelismLimitAdmin, self).has_delete_permission(request, obj)
+
+    def has_add_permission(self, request):
+        return False
+
+
 admin.site.register(Upload, UploadAdmin)
 admin.site.register(UploadSizeLimit, UploadSizeLimitAdmin)
+admin.site.register(UploadParallelismLimit, UploadParallelismLimitAdmin)
