@@ -16,9 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import json
 
 from . import helpers
 
+from django.db import transaction
 from django.db.models import Func, F, Value
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
@@ -88,10 +90,6 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
                     ows_url=Func(
                         F('ows_url'), Value(source_address), Value(target_address), function='replace'))
-                MapLayer.objects.filter(dataset_params__icontains=source_address).update(
-                    dataset_params=Func(
-                        F('dataset_params'), Value(source_address), Value(target_address), function='replace'))
-                logger.info(f"Updated {_cnt} MapLayers")
 
                 _cnt = Dataset.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
@@ -118,6 +116,12 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                     metadata_xml=Func(
                         F('metadata_xml'), Value(source_address), Value(target_address), function='replace'))
                 logger.info(f"Updated {_cnt} ResourceBases")
+                # update blob context
+                with transaction.atomic():
+                    for resource in ResourceBase.objects.filter(blob__icontains=source_address):
+                        current_blob = json.dumps(resource.blob)
+                        resource.blob = json.loads(current_blob.replace(source_address, target_address))
+                        resource.save()
 
                 site = Site.objects.get_current()
                 if site:
