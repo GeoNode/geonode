@@ -26,7 +26,6 @@ from django.conf import settings
 from django.templatetags.static import static
 from django.utils.module_loading import import_string
 
-from geonode.base.bbox_utils import BBOXHelper
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
@@ -114,12 +113,13 @@ def create_thumbnail(
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
-        _bbox = BBOXHelper(instance.ll_bbox_polygon.extent)
+        _bbox = instance.ll_bbox_polygon.extent
         srid = instance.ll_bbox_polygon.srid
-        bbox = [_bbox.xmin, _bbox.xmax, _bbox.ymin, _bbox.ymax, f"EPSG:{srid}"]
+        bbox = [_bbox[0], _bbox[1], _bbox[2], _bbox[3], f"EPSG:{srid}"]
         bbox = utils.clean_bbox(bbox, target_crs)
     else:
         compute_bbox_from_datasets = True
+
     # --- define dataset locations ---
     locations, datasets_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
 
