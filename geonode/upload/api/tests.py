@@ -763,16 +763,17 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 content_type='image/tiff'
             )
 
-    @mock.patch("geonode.upload.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
-    def test_rest_uploads_with_parallelism_limit(self, mocked_uploaded_file, mocked_validation_error):
+    def test_rest_uploads_with_parallelism_limit(self, mocked_uploaded_file):
         """
         Try to upload a file when there are many others being handled.
         """
 
-        expected_error = f"The number of active parallel uploads exceeds {settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER}. Wait for the pending ones to finish."
-        mocked_validation_error.side_effect = ValidationError(expected_error)
-
+        expected_error = {
+            "success": False,
+            "errors": [f"The number of active parallel uploads exceeds {settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER}. Wait for the pending ones to finish."],
+            "code": "upload_parallelism_limit_exceeded"
+        }
         # Try to upload and verify if it passed only by the form size validation
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
 
@@ -783,8 +784,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)
 
-            mocked_validation_error.assert_called_once_with(expected_error)
             mocked_uploaded_file.assert_not_called()
+            self.assertDictEqual(expected_error, data)
 
 
 class UploadSizeLimitTests(APITestCase):
