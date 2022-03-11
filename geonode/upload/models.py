@@ -89,6 +89,16 @@ class UploadSizeLimitManager(models.Manager):
         return max_size_db_obj
 
 
+class UploadParallelismLimitManager(models.Manager):
+    def create_default_limit(self):
+        default_limit = self.create(
+            slug="default_max_parallel_uploads",
+            description="The default maximum parallel uploads per user.",
+            max_number=settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER,
+        )
+        return default_limit
+
+
 class Upload(models.Model):
 
     objects = UploadManager()
@@ -301,6 +311,35 @@ class UploadSizeLimit(models.Model):
 
     def __str__(self):
         return f'UploadSizeLimit for "{self.slug}" (max_size: {self.max_size_label})'
+
+    class Meta:
+        ordering = ("slug",)
+
+
+class UploadParallelismLimit(models.Model):
+    objects = UploadParallelismLimitManager()
+
+    slug = models.SlugField(
+        primary_key=True,
+        max_length=255,
+        unique=True,
+        null=False,
+        blank=False,
+        validators=[MinLengthValidator(limit_value=3)],
+    )
+    description = models.TextField(
+        max_length=255,
+        default=None,
+        null=True,
+        blank=True,
+    )
+    max_number = models.PositiveSmallIntegerField(
+        help_text=_("The maximum number of parallel uploads (0 to 32767)."),
+        default=settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER,
+    )
+
+    def __str__(self):
+        return f'UploadParallelismLimit for "{self.slug}" (max_number: {self.max_number})'
 
     class Meta:
         ordering = ("slug",)

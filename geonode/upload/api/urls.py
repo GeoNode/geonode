@@ -22,5 +22,6 @@ from . import views
 
 router.register(r'uploads', views.UploadViewSet, 'uploads')
 router.register(r'upload-size-limits', views.UploadSizeLimitViewSet, 'upload-size-limits')
+router.register(r'upload-parallelism-limits', views.UploadParallelismLimitViewSet, 'upload-parallelism-limits')
 
 urlpatterns = []
