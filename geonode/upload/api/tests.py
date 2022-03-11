@@ -892,13 +892,8 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_size": 5242880})
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
-        # Response Content
-        size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some-size-limit')
-        self.assertEqual(size_limit['max_size'], 5242880)
-        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_patch_size_limit_anonymous_user(self):
         url = reverse('upload-size-limits-detail', args=('some-size-limit',))
@@ -908,7 +903,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_put_size_limit_admin_user(self):
@@ -919,13 +914,8 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 5242880})
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
-        # Response Content
-        size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some-size-limit')
-        self.assertEqual(size_limit['max_size'], 5242880)
-        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_put_size_limit_anonymous_user(self):
         url = reverse('upload-size-limits-detail', args=('some-size-limit',))
@@ -935,7 +925,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_post_size_limit_admin_user(self):
@@ -973,7 +963,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
 
     def test_delete_size_limit_anonymous_user(self):
@@ -984,7 +974,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 405)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
 
