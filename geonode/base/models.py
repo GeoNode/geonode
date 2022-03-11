@@ -1428,7 +1428,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except Exception as e:
             raise GeoNodeException(e)
 
-    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
+    def set_bounds_from_center_and_zoom(self, center_x, center_y, center_srid, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
         """
@@ -1440,10 +1440,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # covert center in lat lon
         def get_lon_lat():
-            wgs84 = Proj(init='epsg:4326')
-            mercator = Proj(init='epsg:3857')
-            lon, lat = transform(mercator, wgs84, center_x, center_y)
-            return lon, lat
+            if not center_srid or center_srid.lower() != 'epsg:4326':
+                wgs84 = Proj(init='epsg:4326')
+                mercator = Proj(init='epsg:3857')
+                lon, lat = transform(mercator, wgs84, center_x, center_y)
+                return lon, lat
+            else:
+                return center_x, center_y
 
         # calculate the degree length at this latitude
         def deg_len():
@@ -1469,7 +1472,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_y0 = lat - distance_y_degrees
         bbox_y1 = lat + distance_y_degrees
         self.srid = 'EPSG:4326'
-        self.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), self.srid)
+        self.set_bbox_polygon((bbox_x0, bbox_x1, bbox_y0, bbox_y1), self.srid)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """

@@ -186,10 +186,12 @@ class Map(ResourceBase, GXPMapBase):
         _map = conf.get("map", {})
         center = _map.get("center", settings.DEFAULT_MAP_CENTER)
         self.zoom = _map.get("zoom", settings.DEFAULT_MAP_ZOOM)
+        center_srid = 'EPSG:4326'
 
         if isinstance(center, dict):
             self.center_x = center.get('x')
             self.center_y = center.get('y')
+            center_srid = center.get('crs', center_srid)
         else:
             self.center_x, self.center_y = center
 
@@ -202,6 +204,7 @@ class Map(ResourceBase, GXPMapBase):
             self.set_bounds_from_center_and_zoom(
                 self.center_x,
                 self.center_y,
+                center_srid,
                 self.zoom)
 
         if self.projection is None or self.projection == '':
