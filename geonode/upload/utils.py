@@ -40,7 +40,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from geonode.upload import UploadException
-from geonode.upload.models import UploadSizeLimit
+from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (
     gs_catalog,
@@ -672,6 +672,14 @@ def get_max_upload_size(slug):
     except ObjectDoesNotExist:
         max_size = getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600)
     return max_size
+
+
+def get_max_upload_parallelism_limit(slug):
+    try:
+        max_number = UploadParallelismLimit.objects.get(slug=slug).max_number
+    except ObjectDoesNotExist:
+        max_number = getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
+    return max_number
 
 
 """
