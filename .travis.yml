@@ -1,0 +1,253 @@
+language: python
+python:
+  - 3.8
+
+git:
+  depth: 3
+
+cache:
+  bundler: true
+  yarn: true
+  pip: true
+  directories:
+    - node_modules
+    - $HOME/buildout-cache
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+
+dist: focal
+
+services:
+  - docker
+
+addons:
+  hosts:
+    - geonode
+  chrome: stable
+  firefox: "latest-esr"
+  postgresql: "12"
+  apt:
+    packages:
+      - postgresql-12
+      - postgresql-client-12
+      - postgresql-server-dev-12
+      - postgresql-12-postgis-3
+      - nginx
+
+branches:
+  only:
+    - master
+    - 3.x
+
+jobs:
+  include:
+    - stage: unit-tests
+      name: "GeoServer-backend Core Modules Smoke Tests"
+      virtualenv:
+          system_site_packages: false
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_CORE: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - GEOFENCE_SECURITY_ENABLED: 'False'
+
+    - stage: unit-tests
+      name: "GeoServer-backend Contrib Apps Smoke Tests"
+      virtualenv:
+          system_site_packages: false
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTERNAL_APPS: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+
+    - stage: integration-tests
+      name: "Backend Integration Tests"
+      virtualenv:
+          system_site_packages: false
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'False'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'False'
+          - TEST_RUN_INTEGRATION_MONITORING: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: integration-tests
+      name: "GeoServer Integration Tests"
+      virtualenv:
+          system_site_packages: false
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUNNER_KEEPDB: 'True'
+          - TEST_RUN_INTEGRATION: 'True'
+          - TEST_RUN_INTEGRATION_SERVER: 'True'
+          - TEST_RUN_INTEGRATION_UPLOAD: 'False'
+          - TEST_RUN_INTEGRATION_MONITORING: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'False'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+          - DATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
+          - GEODATABASE_URL: 'postgis://geonode:geonode@localhost:5432/upload_test'
+          - DEFAULT_BACKEND_DATASTORE: 'datastore'
+
+    - stage: frontend-tests
+      name: "BDD Tests"
+      virtualenv:
+          system_site_packages: false
+      env:
+          - BACKEND: 'geonode.geoserver'
+          - DOCKER_COMPOSE_VERSION: 1.19.0
+          - GEOSERVER_SERVER_URL: http://localhost:8080/geoserver/
+          - GEOSERVER_SERVER_PORT: 8080
+          - ON_TRAVIS: 'True'
+          - TEST_RUN_INTEGRATION: 'False'
+          - TEST_RUN_INTEGRATION_CSW: 'False'
+          - TEST_RUN_INTEGRATION_BDD: 'True'
+          - MONITORING_ENABLED: 'False'
+          - SESSION_EXPIRED_CONTROL_ENABLED: 'True'
+          - CELERY_ALWAYS_EAGER: 'True'
+
+    - stage: frontend-tests
+      name: "Selenium Tests Core"
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+
+    - stage: frontend-tests
+      name: "Selenium Tests SPCGeoNode"
+      env:
+          - TEST_RUN_SELENIUM: 'True'
+          - SPCGEONODE: 'True'
+
+  fast_finish: true
+
+  allow_failures:
+    - name: "Backend Integration Tests"
+    - name: "Selenium Tests Core"
+    - name: "Selenium Tests SPCGeoNode"
+
+before_install:
+  - if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+      git clone --depth 1 https://github.com/GeoNode/geonode-selenium.git;
+      export GEONODE_REPOSITORY=$(pwd);
+      GECKODRIVER_VERSION="v0.24.0";
+    else
+      sudo apt-get update;
+      mkdir -p $HOME/buildout-cache/{eggs,downloads};
+      scripts/misc/geoserver_server_setup.sh before_install;
+      sudo apt-get autoremove sqlite3;
+      sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf;
+      sudo sed -i 's/peer/trust/' /etc/postgresql/12/main/pg_hba.conf;
+      sudo pg_ctlcluster 12 main restart;
+    fi
+  - python --version;
+
+install:
+  - set -ex;
+    if [ "$TEST_RUN_INTEGRATION_BDD" = "True" ]; then
+      /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 & export DISPLAY=":99";
+      GECKODRIVER_VERSION="v0.24.0";
+      wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
+      mkdir bin;
+      tar zxf geckodriver.tar.gz -C bin;
+      export PATH=$PATH:$PWD/bin;
+    fi
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" == "True" ]; then
+      :;
+    elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
+      pip install -r geonode-selenium/requirements.txt --upgrade --no-cache;
+      wget --no-check-certificate https://download.osgeo.org/geotiff/samples/spot/chicago/UTM2GTIF.TIF -P geonode-selenium/data;
+      wget --no-check-certificate https://download.osgeo.org/geotiff/samples/made_up/ntf_nord.tif -P geonode-selenium/data;
+      wget --no-check-certificate https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz -O geckodriver.tar.gz;
+      mkdir bin;
+      tar zxf geckodriver.tar.gz -C bin;
+      export PATH=$PATH:$PWD/bin;
+    else
+      sudo apt -qq -y update;
+      sudo apt install -y build-essential gdal-bin python3.8-dev python3.8-venv virtualenvwrapper libxml2 libxml2-dev gettext libxslt1-dev libjpeg-dev libpng-dev libpq-dev libgdal-dev software-properties-common build-essential git unzip gcc zlib1g-dev libgeos-dev libproj-dev sqlite3 spatialite-bin libsqlite3-mod-spatialite libsqlite3-dev;
+      sudo apt install -y openjdk-8-jre openjdk-8-jdk;
+      sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;
+      export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");
+      export PATH=$JAVA_HOME'bin/java':$PATH;
+      pip install -r requirements.txt --upgrade --no-cache;
+      pip install -e . --upgrade;
+      pip install pygdal==`gdal-config --version`.*;
+    fi;
+    pip install codecov --no-cache;
+
+before_script:
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+      sudo service nginx stop;
+    else
+      echo "Initialize DB";
+      psql -U postgres -c "create extension postgis";
+      chmod +x scripts/misc/create_dbs_travis.sh;
+      scripts/misc/create_dbs_travis.sh before_script;
+      echo "For GeoServer Server Travis steps";
+      scripts/misc/geoserver_server_setup.sh before_script;
+      echo "Start NGINX server";
+      sudo nginx -s stop;
+      sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf;
+      echo "Setup GeoNode";
+      paver setup;
+    fi
+
+script:
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ] && [ "$SPCGEONODE" = "True" ]; then
+      geonode-selenium/test-docker.sh;
+    elif [ "$TEST_RUN_SELENIUM" = "True" ]; then
+      docker-compose -f docker-compose.yml -f docker-compose.override.localhost.yml up --build -d;
+      URL="http://localhost";
+      GEONODE_USER=admin GEONODE_PASS=admin GEONODE_URL="$URL" geonode-selenium/test-core.sh;
+    else
+      paver run_tests --coverage --local false;
+    fi
+
+after_script:
+  - set -ex;
+    if [ "$TEST_RUN_SELENIUM" = "True" ]; then
+      true;
+    else
+      echo "For GeoServer Server Travis steps";
+      scripts/misc/geoserver_server_setup.sh after_script;
+      echo "Stop NGINX server";
+      sudo nginx -c `pwd`/scripts/misc/nginx_integration.conf -s stop;
+      echo "Cleanup";
+      paver reset_hard;
+    fi
+
+after_success:
+  - codecov
+  - bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8
+
+notifications:
+  email:
+    - alessio.fabiani@gmail.com
