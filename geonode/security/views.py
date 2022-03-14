@@ -29,6 +29,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 from django.utils.translation import ugettext as _
+from geonode import GeoNodeException
 from geonode.utils import resolve_object
 from geonode.base.models import (
     ResourceBase,
@@ -85,9 +86,9 @@ def resource_permissions_handle_post(request, resource):
                not view_any:
 
                 success = False
-                message = f"User {user.username} has download permissions but cannot " \
-                          "access the resource. Please update permission " \
-                          "consistently!"
+                message = _("User {username} has download permissions but cannot "
+                            "access the resource. Please update permission "
+                            "consistently!").format(username=user.username)
 
         return HttpResponse(
             json.dumps({'success': success, 'message': message}),
@@ -343,12 +344,17 @@ def attributes_sats_refresh(request):
                     content_type='text/plain')
 
             bbox = gs_resource.native_bbox
-            layer.set_bbox_polygon(
-                [bbox[0], bbox[2], bbox[1], bbox[3]],
-                gs_resource.projection
-            )
+            ll_bbox = gs_resource.latlon_bbox
+            try:
+                layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], gs_resource.projection)
+            except GeoNodeException as e:
+                if not ll_bbox:
+                    raise
+                else:
+                    logger.exception(e)
+                    layer.srid = 'EPSG:4326'
+            layer.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
             layer.save()
-
         except Exception as e:
             # traceback.print_exc()
             return HttpResponse(

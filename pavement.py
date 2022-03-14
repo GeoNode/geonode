@@ -90,7 +90,7 @@ assert sys.version_info >= (2, 6), \
     SystemError("GeoNode Build requires python 2.6 or better")
 
 dev_config = None
-with open("dev_config.yml", 'r') as f:
+with open("dev_config.yml") as f:
     dev_config = yaml.load(f, Loader=yaml.Loader)
 
 
@@ -653,12 +653,12 @@ def start_geoserver(options):
         with pushd(data_dir):
             javapath = "java"
             if on_travis:
-                sh((
+                sh(
                     'sudo apt install -y openjdk-8-jre openjdk-8-jdk;'
                     ' sudo update-java-alternatives --set java-1.8.0-openjdk-amd64;'
                     ' export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::");'
                     ' export PATH=$JAVA_HOME\'bin/java\':$PATH;'
-                ))
+                )
                 # import subprocess
                 # result = subprocess.run(['update-alternatives', '--list', 'java'], stdout=subprocess.PIPE)
                 # javapath = result.stdout
@@ -696,7 +696,7 @@ def start_geoserver(options):
                 # if there are spaces
                 javapath = f"START /B \"\" \"{javapath_opt}\""
 
-            sh((
+            sh(
                 '%(javapath)s -Xms512m -Xmx2048m -server -XX:+UseConcMarkSweepGC -XX:MaxPermSize=512m'
                 ' -DGEOSERVER_DATA_DIR=%(data_dir)s'
                 ' -DGEOSERVER_CSRF_DISABLED=true'
@@ -710,7 +710,7 @@ def start_geoserver(options):
                 ' --log %(log_file)s'
                 ' %(config)s'
                 ' > %(loggernullpath)s &' % locals()
-            ))
+            )
 
         info(f'Starting GeoServer on {url}')
 
@@ -721,8 +721,8 @@ def start_geoserver(options):
     if not started:
         # If applications did not start in time we will give the user a chance
         # to inspect them and stop them manually.
-        info(('GeoServer never started properly or timed out.'
-              'It may still be running in the background.'))
+        info('GeoServer never started properly or timed out.'
+             'It may still be running in the background.')
         sys.exit(1)
 
 
@@ -969,7 +969,8 @@ def setup_data(options):
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
-    sh(f"{settings} python -W ignore manage.py importlayers {data_dir} -v2")
+    from geonode import settings as geonode_settings
+    sh(f"{settings} python -W ignore manage.py importlayers -v2 -hh {geonode_settings.SITEURL} {data_dir}")
 
 
 @needs(['package'])

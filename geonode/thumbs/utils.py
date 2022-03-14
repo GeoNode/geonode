@@ -18,11 +18,12 @@
 #
 #########################################################################
 import os
+import re
 import time
 import base64
 import logging
 
-from pyproj import Transformer, CRS
+from pyproj import CRS
 from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
 from uuid import uuid4
@@ -32,14 +33,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.core.files.storage import default_storage as storage
 
-
-from geonode.maps.models import Map
-from geonode.layers.models import Layer
+from geonode.utils import bbox_to_projection
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
-from geonode.geoserver.helpers import OGC_Servers_Handler
 
 logger = logging.getLogger(__name__)
+BASE64_PATTERN = 'data:image/(jpeg|png|jpg);base64'
 
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
@@ -72,16 +71,14 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
     )
 
 
-def transform_bbox(bbox: List, target_crs: str = "epsg:3857"):
+def transform_bbox(bbox: List, target_crs: str = "EPSG:3857"):
     """
     Function transforming BBOX in layer compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
     preserving overflow values.
     """
-    transformer = Transformer.from_crs(bbox[-1].lower(), target_crs.lower(), always_xy=True)
-    x_min, y_min = transformer.transform(bbox[0], bbox[2])
-    x_max, y_max = transformer.transform(bbox[1], bbox[3])
-
-    return [x_min, x_max, y_min, y_max, target_crs]
+    match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(target_crs))
+    target_srid = int(match.group('srid')) if match else 4326
+    return list(bbox_to_projection(bbox, target_srid=target_srid))[:-1] + [target_crs]
 
 
 def expand_bbox_to_ratio(
@@ -139,7 +136,7 @@ def expand_bbox_to_ratio(
     return new_bbox
 
 
-def assign_missing_thumbnail(instance: Union[Layer, Map]) -> None:
+def assign_missing_thumbnail(instance) -> None:
     """
     Function assigning settings.MISSING_THUMBNAIL to a provided instance
 
@@ -180,7 +177,7 @@ def get_map(
     :param retry_delay: number of seconds waited between retries
     :returns: retrieved image
     """
-
+    from geonode.geoserver.helpers import OGC_Servers_Handler
     ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
     if ogc_server_location is not None:
@@ -207,7 +204,6 @@ def get_map(
 
     # prepare authorization for WMS service
     headers = {}
-
     if thumbnail_url.startswith(ogc_server_settings.LOCATION):
         if "access_token" not in additional_kwargs.keys():
             # for the Geoserver backend, use Basic Auth, if access_token is not provided
@@ -217,7 +213,10 @@ def get_map(
         else:
             headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
 
-    wms = WebMapService(f"{thumbnail_url}{wms_endpoint}", version=wms_version, headers=headers)
+    wms = WebMapService(
+        f"{thumbnail_url}{wms_endpoint}",
+        version=wms_version,
+        headers=headers)
 
     image = None
     for retry in range(max_retries):
@@ -226,8 +225,8 @@ def get_map(
             image = wms.getmap(
                 layers=layers,
                 styles=styles,
-                srs=bbox[-1],
-                bbox=[bbox[0], bbox[2], bbox[1], bbox[3]],
+                srs=bbox[-1] if bbox else None,
+                bbox=[bbox[0], bbox[2], bbox[1], bbox[3]] if bbox else None,
                 size=(width, height),
                 format=mime_type,
                 transparent=True,
@@ -286,7 +285,7 @@ def crop_to_3857_area_of_use(bbox: List) -> List:
         else:
             bbox.append(coord)
 
-    bbox.append('EPSG:4236')
+    bbox.append('EPSG:4326')
 
     return bbox
 
@@ -312,6 +311,25 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
             exceeds = True
 
     return exceeds
+
+
+def clean_bbox(bbox, target_crs):
+    # make sure BBOX is provided with the CRS in a correct format
+    source_crs = bbox[-1]
+
+    srid_regex = re.match(r"EPSG:\d+", source_crs)
+    if not srid_regex:
+        logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
+        raise ThumbnailError("Wrong BBOX format")
+
+    # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
+    # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
+    # the provided bbox is impossible.
+    if target_crs == 'EPSG:3857' and bbox[-1].upper() != 'EPSG:3857':
+        bbox = crop_to_3857_area_of_use(bbox)
+
+    bbox = transform_bbox(bbox, target_crs=target_crs)
+    return bbox
 
 
 def thumb_path(filename):
@@ -374,3 +392,21 @@ def get_unique_upload_path(resource, filename):
     unique_file_name = f'{filename}-{uuid4()}{ext}'
     upload_path = thumb_path(unique_file_name)
     return upload_path
+
+
+def _decode_base64(data):
+    """Decode base64, padding being optional.
+
+    :param data: Base64 data as an ASCII byte string
+    :returns: The decoded byte string.
+
+    """
+    _thumbnail_format = "png"
+    _invalid_padding = data.find(";base64,")
+    if _invalid_padding:
+        _thumbnail_format = data[data.find("image/") + len("image/"):_invalid_padding]
+        data = data[_invalid_padding + len(";base64,"):]
+    missing_padding = len(data) % 4
+    if missing_padding != 0:
+        data += b"=" * (4 - missing_padding)
+    return (base64.b64decode(data), _thumbnail_format)
