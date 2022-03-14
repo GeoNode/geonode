@@ -121,19 +121,16 @@ class KeywordHandler:
 
     def _set_free_keyword(self, keywords):
         if len(keywords) > 0:
-            if not self.instance.keywords:
-                self.instance.keywords = keywords
-            else:
+            if self.instance.keywords.exists():
                 self.instance.keywords.clear()
-                self.instance.keywords.add(*keywords)
+            self.instance.keywords.add(*keywords)
         return keywords
 
     def _set_tkeyword(self, tkeyword):
         if len(tkeyword) > 0:
-            if not self.instance.tkeywords:
-                self.instance.tkeywords = tkeyword
-            else:
-                self.instance.tkeywords.add(*tkeyword)
+            if self.instance.tkeywords.exists():
+                self.instance.tkeywords.clear()
+            self.instance.tkeywords.add(*tkeyword)
         return [t.alt_label for t in tkeyword]
 
 
