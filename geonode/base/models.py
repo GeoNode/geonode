@@ -1201,8 +1201,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
         if self.ll_bbox_polygon:
-            bbox = BBOXHelper(self.ll_bbox_polygon.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+            _bbox = self.ll_bbox_polygon.extent
+            srid = self.ll_bbox_polygon.srid
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3], f"EPSG:{srid}"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1472,7 +1473,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         bbox_y0 = lat - distance_y_degrees
         bbox_y1 = lat + distance_y_degrees
         self.srid = 'EPSG:4326'
-        self.set_bbox_polygon((bbox_x0, bbox_x1, bbox_y0, bbox_y1), self.srid)
+        self.set_bbox_polygon((bbox_x0, bbox_y0, bbox_x1, bbox_y1), self.srid)
 
     def set_bounds_from_bbox(self, bbox, srid):
         """
