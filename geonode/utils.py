@@ -38,15 +38,17 @@ import subprocess
 from lxml import etree
 from osgeo import ogr
 from PIL import Image
+from urllib3 import Retry
 from io import BytesIO, StringIO
 from decimal import Decimal
 from threading import local
 from slugify import slugify
 from contextlib import closing
 from collections import namedtuple, defaultdict
+from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
-from requests.packages.urllib3.util.retry import Retry
+from geonode.upload.api.exceptions import GeneralUploadException
 
 from django.conf import settings
 from django.db.models import signals
@@ -713,6 +715,8 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
             'url': url
         }
     elif exception:
+        if isinstance(exception, APIException):
+            raise exception
         if body is None:
             body = f"Unexpected exception {exception}"
         else:
@@ -721,6 +725,7 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
             'success': False,
             'errors': [body]
         }
+        raise GeneralUploadException(detail=body)
     elif body:
         pass
     else:

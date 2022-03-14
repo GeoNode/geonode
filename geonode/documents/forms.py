@@ -39,6 +39,7 @@ from geonode.documents.models import (
     Document,
     DocumentResourceLink)
 from geonode.upload.models import UploadSizeLimit
+from geonode.upload.api.exceptions import FileUploadLimitException
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ class SizeRestrictedFileField(forms.FileField):
             max_size = self._get_max_size()
             # Validate
             if file_size is not None and file_size > max_size:
-                raise forms.ValidationError(_(
+                raise FileUploadLimitException(_(
                     f'File size size exceeds {filesizeformat(max_size)}. Please try again with a smaller file.'
                 ))
         return data

@@ -26,7 +26,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, AuthenticationFailed
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
@@ -39,6 +39,7 @@ from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly, IsSelfOrAdminOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.upload.utils import get_max_amount_of_steps
+from geonode.layers.utils import is_vector
 
 from .serializers import (
     UploadSerializer,
@@ -70,6 +71,7 @@ class UploadViewSet(DynamicModelViewSet):
     queryset = Upload.objects.all()
     serializer_class = UploadSerializer
     pagination_class = GeoNodeApiPagination
+    http_method_names = ['get', 'post']
 
     def _emulate_client_upload_step(self, request, _step):
         """Emulates the calls of a client to the upload flow.
@@ -124,7 +126,7 @@ class UploadViewSet(DynamicModelViewSet):
         else:
             return response, None, True
 
-    @extend_schema(methods=['put'],
+    @extend_schema(methods=['post'],
                    responses={201: None},
                    description="""
         Starts an upload session based on the Dataset Upload Form.
@@ -146,14 +148,15 @@ class UploadViewSet(DynamicModelViewSet):
     def upload(self, request, format=None):
         user = request.user
         if not user or not user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            raise AuthenticationFailed()
 
         # Custom upload steps defined by user
         non_interactive = json.loads(
             request.data.get("non_interactive", "false").lower()
         )
         if non_interactive:
-            steps_list = (None, "check", "final")
+            is_vector_dataset = is_vector(request.FILES.get('base_file').name)
+            steps_list = (None, "check", "final") if is_vector_dataset else (None, "final")
             # Execute steps and get response
             for step in steps_list:
                 response, _, _ = self._emulate_client_upload_step(

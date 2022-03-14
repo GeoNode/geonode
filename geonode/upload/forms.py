@@ -23,6 +23,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
 from django.utils.translation import ugettext_lazy as _
+from geonode.upload.api.exceptions import FileUploadLimitException, UploadParallelismLimitException
 
 from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.data_retriever import DataRetriever
@@ -164,7 +165,7 @@ class LayerUploadForm(forms.Form):
         max_parallel_uploads = self._get_max_parallel_uploads()
         parallel_uploads_count = self._get_parallel_uploads_count()
         if parallel_uploads_count >= max_parallel_uploads:
-            raise ValidationError(_(
+            raise UploadParallelismLimitException(_(
                 f"The number of active parallel uploads exceeds {max_parallel_uploads}. Wait for the pending ones to finish."
             ))
 
@@ -172,7 +173,7 @@ class LayerUploadForm(forms.Form):
         max_size = self._get_uploads_max_size()
         total_size = self._get_uploaded_files_total_size(file_dict)
         if total_size > max_size:
-            raise ValidationError(_(
+            raise FileUploadLimitException(_(
                 f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
             ))
 
