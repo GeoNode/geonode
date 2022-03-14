@@ -113,10 +113,7 @@ def create_thumbnail(
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
-        _bbox = instance.ll_bbox_polygon.extent
-        srid = instance.ll_bbox_polygon.srid
-        bbox = [_bbox[0], _bbox[2], _bbox[1], _bbox[3], f"EPSG:{srid}"]
-        bbox = utils.clean_bbox(bbox, target_crs)
+        bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
     else:
         compute_bbox_from_datasets = True
 
@@ -272,10 +269,7 @@ def _datasets_locations(
         )
         if compute_bbox:
             if instance.ll_bbox_polygon:
-                _bbox = instance.ll_bbox_polygon.extent
-                srid = instance.ll_bbox_polygon.srid
-                bbox = [_bbox[0], _bbox[2], _bbox[1], _bbox[3], f"EPSG:{srid}"]
-                bbox = utils.clean_bbox(bbox, target_crs)
+                bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
             elif (
                     instance.bbox[-1].upper() != 'EPSG:3857'
                     and target_crs.upper() == 'EPSG:3857'
@@ -341,10 +335,7 @@ def _datasets_locations(
 
             if compute_bbox:
                 if dataset.ll_bbox_polygon:
-                    _bbox = dataset.ll_bbox_polygon.extent
-                    srid = dataset.ll_bbox_polygon.srid
-                    dataset_bbox = [_bbox[0], _bbox[2], _bbox[1], _bbox[3], f"EPSG:{srid}"]
-                    dataset_bbox = utils.clean_bbox(dataset_bbox, target_crs)
+                    dataset_bbox = utils.clean_bbox(dataset.ll_bbox, target_crs)
                 elif (
                         dataset.bbox[-1].upper() != 'EPSG:3857'
                         and target_crs.upper() == 'EPSG:3857'
