@@ -25,8 +25,8 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from lxml import etree
 
 from geonode.upload import utils
-from geonode.upload.models import UploadSizeLimit
-from geonode.upload.utils import get_max_upload_size
+from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
+from geonode.upload.utils import get_max_upload_size, get_max_upload_parallelism_limit
 
 
 class UtilsTestCase(GeoNodeBaseTestSupport):
@@ -73,9 +73,26 @@ class UtilsTestCase(GeoNodeBaseTestSupport):
         # get upload size of existing obj
         self.assertEqual(get_max_upload_size("test_slug"), 1000)
 
-        # get upload size of existing obj will return settings default max size
+        # get upload size of non existing obj will return settings default max size
         self.assertEqual(
             get_max_upload_size("invalid"),
             getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600)
         )
         upload_size.delete()
+
+    def test_get_max_upload_parallelism_limit(self):
+        upload_parallelism_limit = UploadParallelismLimit.objects.create(
+            slug="test_slug",
+            max_number=3,
+            description="test description"
+        )
+        # get upload parallelism limit of existing obj
+        self.assertEqual(get_max_upload_parallelism_limit("test_slug"), 3)
+
+        # get upload parallelism limit of non existing obj will return settings default max size
+        self.assertEqual(
+            get_max_upload_parallelism_limit("invalid"),
+            getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
+        )
+        # cleanUp
+        upload_parallelism_limit.delete()
