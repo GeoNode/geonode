@@ -157,21 +157,13 @@ class BaseApiTests(APITestCase):
             # Registered member
             self.assertTrue(self.client.login(username='bobby', password='bob'))
             response = self.client.post(url, data=data, format='json')
-            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.status_code, 403)
 
-            # # Admin
+            # Admin
             self.assertTrue(self.client.login(username='admin', password='admin'))
-            data = {
-                "title": "group title 1",
-                "group": 1,
-                "slug": "group_title_1",
-                "description": "test",
-                "access": "private",
-                "categories": []
-            }
             response = self.client.post(url, data=data, format='json')
             self.assertEqual(response.status_code, 201)
-            self.assertEqual(response.json()['group_profile']['title'], 'group title 1')
+            self.assertEqual(response.json()['group_profile']['title'], 'group title')
         finally:
             GroupProfile.objects.get(slug='group_title').delete()
 
@@ -190,10 +182,10 @@ class BaseApiTests(APITestCase):
             # Registered member
             self.assertTrue(self.client.login(username='bobby', password='bob'))
             response = self.client.patch(url, data=data, format='json')
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 403)
 
             # Group manager
-            group.join(get_user_model().objects.get(username='bobby'), role='mamnager')
+            group.join(get_user_model().objects.get(username='bobby'), role='manager')
             response = self.client.patch(url, data=data, format='json')
             self.assertEqual(response.status_code, 200)
             self.assertEqual(GroupProfile.objects.get(id=group.id).title, data['title'])
@@ -211,8 +203,6 @@ class BaseApiTests(APITestCase):
         Ensure only admins can delete a group.
         """
         group = GroupProfile.objects.create(slug="pub_1", title="pub_1", access="public")
-        group1 = GroupProfile.objects.create(slug="pub_1", title="pub_1", access="public")
-        group2 = GroupProfile.objects.create(slug="pub_1", title="pub_1", access="public")
         try:
             # Anonymous
             url = f"{reverse('group-profiles-list')}/{group.id}/"
@@ -222,21 +212,19 @@ class BaseApiTests(APITestCase):
             # Registered member
             self.assertTrue(self.client.login(username='bobby', password='bob'))
             response = self.client.delete(url, format='json')
-            self.assertEqual(response.status_code, 204)
+            self.assertEqual(response.status_code, 403)
 
             # Group manager
-            group1.join(get_user_model().objects.get(username='bobby'), role='manager')
-            response = self.client.delete(f"{reverse('group-profiles-list')}/{group1.id}/", format='json')
-            self.assertEqual(response.status_code, 204)
+            group.join(get_user_model().objects.get(username='bobby'), role='manager')
+            response = self.client.delete(f"{reverse('group-profiles-list')}/{group.id}/", format='json')
+            self.assertEqual(response.status_code, 403)
 
-            # Admin can access all groups
+            # Admin can delete a group
             self.assertTrue(self.client.login(username='admin', password='admin'))
-            response = self.client.delete(f"{reverse('group-profiles-list')}/{group2.id}/", format='json')
+            response = self.client.delete(f"{reverse('group-profiles-list')}/{group.id}/", format='json')
             self.assertEqual(response.status_code, 204)
         finally:
             group.delete()
-            group1.delete()
-            group2.delete()
 
     def test_users_list(self):
         """

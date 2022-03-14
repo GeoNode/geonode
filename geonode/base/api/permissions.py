@@ -25,6 +25,7 @@ from rest_framework.filters import BaseFilterBackend
 from geonode.security.utils import (
     get_users_with_perms,
     get_resources_with_perms)
+from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +152,32 @@ class IsOwnerOrReadOnly(IsOwnerOrAdmin):
             return True
 
         return IsOwnerOrAdmin.has_object_permission(self, request, view, obj)
+
+
+class IsManagerEditOrAdmin(permissions.BasePermission):
+    """
+    Object-level permission to only allow admin and managers to edit a group.
+    """
+    def has_permission(self, request, view):
+        user = request.user
+        if request.method in ['POST', 'DELETE']:
+            return user and (user.is_superuser or user.is_staff)
+
+        return self.has_permission(self, request, view)
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        user = request.user
+        if user and user.is_superuser or user.is_staff:
+            return True
+        if user and isinstance(obj, GroupProfile) and obj.user_is_role(user, "manager"):
+            if request.method == 'PATCH':
+                return True
+
+        return False
 
 
 class ResourceBasePermissionsFilter(BaseFilterBackend):
