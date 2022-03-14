@@ -39,7 +39,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
-from geonode.upload import UploadException
+from geonode.upload.api.exceptions import GeneralUploadException
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.utils import json_response as do_json_response, unzip_file
 from geonode.geoserver.helpers import (
@@ -132,24 +132,6 @@ def json_response(*args, **kw):
     # if 'exception' in kw:
     #     logger.warn(traceback.format_exc(kw['exception']))
     return do_json_response(*args, **kw)
-
-
-def error_response(req, exception=None, errors=None, force_ajax=True):
-    if exception:
-        logger.exception(f'Unexpected error in upload step: {exception}')
-    else:
-        logger.error(f'Upload error response: {errors}')
-    if req.is_ajax() or force_ajax:
-        content_type = 'text/html' if not req.is_ajax() else None
-        return json_response(exception=exception, errors=errors,
-                             content_type=content_type, status=400)
-    # not sure if any responses will (ideally) ever be non-ajax
-    if errors:
-        exception = "<br>".join(errors)
-    return render(
-        req,
-        'upload/dataset_upload_error.html',
-        context={'error_msg': f'Unexpected error : {exception}'})
 
 
 def json_load_byteified(file_handle):
@@ -740,7 +722,7 @@ def import_imagemosaic_granules(
 
     # 0. A Time Regex is mandartory to validate the files
     if not mosaic_time_regex:
-        raise UploadException(_("Could not find any valid Time Regex for the Mosaic files."))
+        raise GeneralUploadException(detail=_("Could not find any valid Time Regex for the Mosaic files."))
 
     for spatial_file in spatial_files:
         f = spatial_file.base_file
@@ -771,7 +753,7 @@ def import_imagemosaic_granules(
         'postgis' in db['ENGINE'] else db['ENGINE']
 
     if not db_engine == 'postgis':
-        raise UploadException(_("Unsupported DataBase for Mosaics!"))
+        raise GeneralUploadException(detail=_("Unsupported DataBase for Mosaics!"))
 
     # dsname = ogc_server_settings.DATASTORE
     dsname = db['NAME']
@@ -803,7 +785,7 @@ def import_imagemosaic_granules(
         ds_exists = (ds is not None)
 
     if not ds_exists:
-        raise UploadException(_("Unsupported DataBase for Mosaics!"))
+        raise GeneralUploadException(detail=_("Unsupported DataBase for Mosaics!"))
 
     context = {
         "abs_path_flag": "True",
