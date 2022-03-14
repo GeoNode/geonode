@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import json
 import logging
 import tempfile
@@ -39,6 +40,7 @@ from geonode import geoserver
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
+from geonode.resource.manager import ResourceManager
 from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
@@ -489,9 +491,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.rm = ResourceManager()
         cls.user_admin = get_user_model().objects.get(username="admin")
-
-        admin, _ = get_user_model().objects.get_or_create(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             cls.dataset_coast_line = create_single_dataset('san_andres_y_providencia_coastline')
@@ -702,3 +703,29 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             self.map_composition.refresh_from_db()
 
             self._fetch_thumb_and_compare(self.map_composition.thumbnail_url, expected_thumb)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @timeout_decorator.timeout(LOCAL_TIMEOUT)
+    @override_settings(
+        THUMBNAIL_BACKGROUND={
+            "class": "geonode.thumbs.background.WikiMediaTileBackground",
+        }
+    )
+    def test_UTM_dataset_thumbnail(self):
+        res = None
+        try:
+            dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data', 'WY_USNG.zip')]
+            defaults = {"owner": self.user_admin}
+            # raises an exception if resource_type is not provided
+            self.rm.ingest(dt_files)
+            # ingest with datasets
+            res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
+            self.assertTrue(isinstance(res, Dataset))
+
+            expected_results_dir = f"{EXPECTED_RESULTS_DIR}thumbnails/"
+            expected_thumb_path = f"{expected_results_dir}WY_USNG_thumb.png"
+            expected_thumb = Image.open(expected_thumb_path)
+            self._fetch_thumb_and_compare(res.thumbnail_url, expected_thumb)
+        finally:
+            if res:
+                self.rm.delete(res.uuid)
