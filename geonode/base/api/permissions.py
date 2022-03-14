@@ -163,7 +163,7 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
         if request.method in ['POST', 'DELETE']:
             return user and (user.is_superuser or user.is_staff)
 
-        return self.has_permission(self, request, view)
+        return True
 
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
