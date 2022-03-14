@@ -27,8 +27,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from io import BytesIO
 from PIL import Image
 from guardian.shortcuts import assign_perm, get_perms
+from geonode.base.populate_test_data import create_single_dataset
 
 from geonode.maps.models import Map
+from geonode.resource.utils import KeywordHandler
 from geonode.thumbs import utils as thumb_utils
 from geonode.base import enumerations
 from geonode.layers.models import Dataset
@@ -1092,3 +1094,72 @@ class TestGenerateThesaurusReference(TestCase):
         '''
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
+
+
+class TestHandleMetadataKeyword(TestCase):
+    fixtures = [
+        "test_thesaurus.json"
+    ]
+
+    def setUp(self):
+        self.keyword = [
+            {
+                "keywords": ["features", "test_dataset"],
+                "thesaurus": {"date": None, "datetype": None, "title": None},
+                "type": "theme",
+            },
+            {
+                "keywords": ["no conditions to access and use"],
+                "thesaurus": {
+                    "date": "2020-10-30T16:58:34",
+                    "datetype": "publication",
+                    "title": "Test for ordering",
+                },
+                "type": None,
+            },
+            {
+                "keywords": ["ad", "af"],
+                "thesaurus": {
+                    "date": "2008-06-01",
+                    "datetype": "publication",
+                    "title": "GEMET - INSPIRE themes, version 1.0",
+                },
+                "type": None,
+            },
+            {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
+        ]
+        self.dataset = create_single_dataset('keyword-handler')
+        self.sut = KeywordHandler(
+            instance=self.dataset,
+            keywords=self.keyword
+        )
+
+    def test_return_empty_if_keywords_is_an_empty_list(self):
+        setattr(self.sut, 'keywords', [])
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
+        self.assertListEqual([], keyword)
+        self.assertListEqual([], thesaurus_keyword)
+
+    def test_should_return_the_expected_keyword_extracted_from_raw_and_the_thesaurus_keyword(self):
+        keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
+        self.assertSetEqual({"features", "test_dataset", "no conditions to access and use"}, set(keyword))
+        self.assertListEqual(["ad", "af"], [x.alt_label for x in thesaurus_keyword])
+
+    def test_should_assign_correclty_the_keyword_to_the_dataset_object(self):
+        self.sut.set_keywords()
+        current_keywords = [keyword.name for keyword in self.dataset.keywords.all()]
+        current_tkeyword = [t.alt_label for t in self.dataset.tkeywords.all()]
+        self.assertSetEqual({"features", "test_dataset", "no conditions to access and use"}, set(current_keywords))
+        self.assertSetEqual({"ad", "af"}, set(current_tkeyword))
+
+    def test_is_thesaurus_available_should_return_queryset_with_existing_thesaurus(self):
+        keyword = "ad"
+        thesaurus = {"title": "GEMET - INSPIRE themes, version 1.0"}
+        actual = self.sut.is_thesaurus_available(thesaurus, keyword)
+        self.assertEqual(1, len(actual))
+
+    def test_is_thesaurus_available_should_return_empty_queryset_for_non_existing_thesaurus(self):
+        keyword = "ad"
+        thesaurus = {"title": "Random Thesaurus Title"}
+        actual = self.sut.is_thesaurus_available(thesaurus, keyword)
+        self.assertEqual(0, len(actual))
