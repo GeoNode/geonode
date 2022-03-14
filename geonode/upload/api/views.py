@@ -203,6 +203,7 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
 
 class UploadParallelismLimitViewSet(DynamicModelViewSet):
+    http_method_names = ['get', 'post']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadParallelismLimit.objects.all()
