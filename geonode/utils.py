@@ -21,7 +21,6 @@ import os
 import gc
 import re
 import json
-from rest_framework.exceptions import APIException
 import time
 import base64
 import select
@@ -39,16 +38,17 @@ import subprocess
 from lxml import etree
 from osgeo import ogr
 from PIL import Image
+from urllib3 import Retry
 from io import BytesIO, StringIO
 from decimal import Decimal
 from threading import local
 from slugify import slugify
 from contextlib import closing
 from collections import namedtuple, defaultdict
+from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from geonode.upload.api.exceptions import GeneralUploadException
-from requests.packages.urllib3.util.retry import Retry
 
 from django.conf import settings
 from django.db.models import signals
