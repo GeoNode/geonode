@@ -254,7 +254,6 @@ class ResourceManager(ResourceManagerInterface):
         if _resource and ResourceBase.objects.filter(uuid=uuid).exists():
             try:
                 _resource.set_processing_state(enumerations.STATE_RUNNING)
-                self._concrete_resource_manager.delete(uuid, instance=_resource)
                 try:
                     if isinstance(_resource.get_real_instance(), Dataset):
                         """
@@ -304,6 +303,8 @@ class ResourceManager(ResourceManagerInterface):
                                 geonode_resource__uuid=_resource.get_real_instance().uuid).update(should_be_harvested=False)
                 except Exception as e:
                     logger.exception(e)
+
+                self._concrete_resource_manager.delete(uuid, instance=_resource)
                 try:
                     _resource.get_real_instance().delete()
                 except ResourceBase.DoesNotExist:
