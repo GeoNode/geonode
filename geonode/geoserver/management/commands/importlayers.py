@@ -149,7 +149,11 @@ class GeoNodeUploader:
                     params["tif_file"].close()
 
                 try:
+                    if response.status_code in [500, 400, 403]:
+                        raise Exception(response.content)
                     data = response.json()
+                    if not data.get('status', None):
+                        raise Exception(data)
                     if data['status'] == 'finished':
                         if data['success']:
                             success.append(file)
