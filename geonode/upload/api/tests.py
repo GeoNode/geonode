@@ -903,7 +903,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, 403)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_put_size_limit_admin_user(self):
@@ -925,7 +925,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 2621440})
 
         # Assertions
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, 403)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
     def test_post_size_limit_admin_user(self):
@@ -974,7 +974,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, 403)
         self.assertTrue(response.wsgi_request.user.is_anonymous)
 
 
