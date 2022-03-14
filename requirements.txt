@@ -19,7 +19,7 @@ kombu==5.2.4
 vine==5.0.0
 tqdm==4.63.0
 Deprecated==1.2.13
-wrapt==1.13.3
+wrapt==1.14.0
 jsonschema==4.4.0
 zipstream-new==1.1.8
 schema==0.7.5
@@ -108,8 +108,8 @@ django-bootstrap3-datetimepicker-2==2.8.2
 django-storages==1.12.3
 dropbox==11.28.0
 google-cloud-storage==2.1.0
-google-cloud-core==2.2.2
-boto3==1.21.13
+google-cloud-core==2.2.3
+boto3==1.21.18
 
 # Django Caches
 python-memcached<=1.59
@@ -149,7 +149,7 @@ invoke==1.6.0
 coverage==6.3.2
 requests-toolbelt==0.9.1
 flake8==4.0.1
-pytest==7.0.1
+pytest==7.1.0
 pytest-bdd==5.0.0
 splinter==0.17.0
 pytest-splinter==3.3.1
