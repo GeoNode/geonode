@@ -1179,7 +1179,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
                         <ows:ExceptionText>Foo Bar Exception</ows:ExceptionText>
                     </ows:Exception>
                 </ows:ExceptionReport>
-                ''' # noqa
+                '''  # noqa
         _response = MagicMock(
             status_code=200,
             text=content,

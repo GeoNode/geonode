@@ -21,17 +21,6 @@ from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
 
-class UploadException(Exception):
-
-    '''A handled exception meant to be presented to the user'''
-
-    @staticmethod
-    def from_exc(msg, ex):
-        args = [msg]
-        args.extend(ex.args)
-        return UploadException(*args)
-
-
 class LayerNotReady(Exception):
     pass
 

@@ -541,6 +541,7 @@ REST_FRAMEWORK = {
         'dynamic_rest.renderers.DynamicBrowsableAPIRenderer',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'geonode.base.api.exceptions.geonode_exception_handler'
 }
 REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_PARENT_LOOKUP_KWARG_NAME_PREFIX': '',
