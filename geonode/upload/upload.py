@@ -702,7 +702,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 _("Exception occurred while parsing the provided Metadata file."), e)
 
     # Make sure the layer does not exists already
-    if layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
+    if not overwrite and layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
         Upload.objects.invalidate_from_session(upload_session)
         logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
         raise GeoNodeException(
