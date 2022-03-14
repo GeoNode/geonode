@@ -15,6 +15,7 @@ RUN echo "deb http://deb.debian.org/debian/ bullseye main contrib non-free" | te
 # This section is borrowed from the official Django image but adds GDAL and others
 RUN apt-get update -y && apt-get upgrade -y
 
+# Prepraing dependencies
 RUN apt-get install -y \
     libgdal-dev libpq-dev libxml2-dev \
     libxml2 libxslt1-dev zlib1g-dev libjpeg-dev \
@@ -27,9 +28,8 @@ RUN apt-get install -y --no-install-recommends \
     python3-dev python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-pil python3-lxml python3-pylibmc \
     uwsgi uwsgi-plugin-python3 \
-    firefox-esr && rm -rf /var/lib/apt/lists/*
+    firefox-esr
 
-# Prepraing dependencies
 RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharutils
 # RUN git clone https://salsa.debian.org/debian-gis-team/proj.git /tmp/proj
 # RUN cd /tmp/proj && debuild -i -us -uc -b && dpkg -i ../*.deb
@@ -73,6 +73,9 @@ RUN chmod +x /usr/bin/celery-cmd
 
 RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt
 RUN pip install --upgrade  -e .
+
+# Cleanup apt update lists
+RUN rm -rf /var/lib/apt/lists/*
 
 # Export ports
 EXPOSE 8000
