@@ -106,17 +106,14 @@ def create_thumbnail(
     target_crs = forced_crs.upper() if forced_crs is not None else "EPSG:3857"
 
     compute_bbox_from_datasets = False
-    is_map_with_datasets = True
+    is_map_with_datasets = False
 
     if isinstance(instance, Map):
         is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).count() > 0
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
-        _bbox = instance.ll_bbox_polygon.extent
-        srid = instance.ll_bbox_polygon.srid
-        bbox = [_bbox[0], _bbox[1], _bbox[2], _bbox[3], f"EPSG:{srid}"]
-        bbox = utils.clean_bbox(bbox, target_crs)
+        bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
     else:
         compute_bbox_from_datasets = True
 
@@ -271,12 +268,14 @@ def _datasets_locations(
             ]
         )
         if compute_bbox:
-            # handle exceeding the area of use of the default thumb's CRS
-            if (
+            if instance.ll_bbox_polygon:
+                bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
+            elif (
                     instance.bbox[-1].upper() != 'EPSG:3857'
                     and target_crs.upper() == 'EPSG:3857'
                     and utils.exceeds_epsg3857_area_of_use(instance.bbox)
             ):
+                # handle exceeding the area of use of the default thumb's CRS
                 bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs)
             else:
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
@@ -335,12 +334,14 @@ def _datasets_locations(
                     ])
 
             if compute_bbox:
-                # handle exceeding the area of use of the default thumb's CRS
-                if (
+                if dataset.ll_bbox_polygon:
+                    dataset_bbox = utils.clean_bbox(dataset.ll_bbox, target_crs)
+                elif (
                         dataset.bbox[-1].upper() != 'EPSG:3857'
                         and target_crs.upper() == 'EPSG:3857'
                         and utils.exceeds_epsg3857_area_of_use(dataset.bbox)
                 ):
+                    # handle exceeding the area of use of the default thumb's CRS
                     dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(dataset.bbox), target_crs)
                 else:
                     dataset_bbox = utils.transform_bbox(dataset.bbox, target_crs)

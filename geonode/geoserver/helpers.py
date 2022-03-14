@@ -93,16 +93,16 @@ LAYER_SUBTYPES = {
 }
 
 WPS_ACCEPTABLE_FORMATS = [
-        ('application/json', 'vector'),
-        ('application/arcgrid', 'raster'),
-        ('image/tiff', 'raster'),
-        ('image/png', 'raster'),
-        ('image/jpeg', 'raster'),
-        ('application/wfs-collection-1.0', 'vector'),
-        ('application/wfs-collection-1.1', 'vector'),
-        ('application/zip', 'vector'),
-        ('text/csv', 'vector')
-    ]
+    ('application/json', 'vector'),
+    ('application/arcgrid', 'raster'),
+    ('image/tiff', 'raster'),
+    ('image/png', 'raster'),
+    ('image/jpeg', 'raster'),
+    ('application/wfs-collection-1.0', 'vector'),
+    ('application/wfs-collection-1.1', 'vector'),
+    ('application/zip', 'vector'),
+    ('text/csv', 'vector')
+]
 
 
 if not hasattr(settings, 'OGC_SERVER'):
