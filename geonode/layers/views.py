@@ -1187,13 +1187,16 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
     elif request.method == 'POST':
         form = UploadViewsetForm(request.POST, request.FILES)
 
-        tempdir = None
+        _tmpdir = None
         out = {}
         if form.is_valid():
             try:
                 data_retriever = form.cleaned_data["data_retriever"]
                 base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
                 files = {_file.split('.')[1]: _file for _file in data_retriever.file_paths.values()}
+                if '.zip' in base_file:
+                    files, _tmpdir = get_files(base_file)
+
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
                     out['errors'] = _(
@@ -1230,8 +1233,8 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 out['success'] = False
                 out['errors'] = str(e)
             finally:
-                if tempdir is not None:
-                    shutil.rmtree(tempdir, ignore_errors=True)
+                if _tmpdir is not None:
+                    shutil.rmtree(_tmpdir, ignore_errors=True)
         else:
             errormsgs = []
             for e in form.errors.values():

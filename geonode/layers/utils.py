@@ -1158,12 +1158,12 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
                     _(f"Please ensure the name is consistent with the file you are trying to {action_type}."))
             schema_is_compliant = False
             _ff = json.loads(lyr.GetFeature(0).ExportToJson())
-            if not gtype:
-                logger.warning(
-                    _("Local GeoNode layer has no geometry type."))
+            if gtype:
+                logger.info(
+                    _("Local GeoNode layer has geometry type."))
                 if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
                     schema_is_compliant = True
-            elif "geometry" in _ff and _ff["geometry"]["type"].lower() == gtype.lower():
+            elif "geometry" in _ff and _ff["geometry"]["type"]:
                 schema_is_compliant = True
 
             if not schema_is_compliant:
