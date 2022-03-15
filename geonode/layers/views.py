@@ -1193,6 +1193,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             try:
                 data_retriever = form.cleaned_data["data_retriever"]
                 base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
+                files = {_file.split('.')[1]: _file for _file in data_retriever.file_paths.values()}
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
                     out['errors'] = _(
@@ -1204,7 +1205,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 else:
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
-
+                resource_is_valid = validate_input_source(
+                    layer=layer, filename=base_file, files=files, action_type="replace"
+                )
+                if resource_is_valid:
                     # Create a new upload session
                     request.GET = {"layer_id": layer.id}
                     steps = [None, "check", "final"] if layer.is_vector() else [None]
@@ -1221,7 +1225,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     out['url'] = reverse(
                         'layer_detail', args=[
                             layer.service_typename])
-
             except Exception as e:
                 logger.exception(e)
                 out['success'] = False
