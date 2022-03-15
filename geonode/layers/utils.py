@@ -1134,7 +1134,7 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
         if 'shp' in files and os.path.exists(files['shp']):
             absolute_base_file = (
                 _fixup_base_file(files['shp'])
-                if not action_type=='replace'
+                if not action_type == 'replace'
                 else files['shp']
             )
         elif 'zip' in files and os.path.exists(files['zip']):
@@ -1168,8 +1168,8 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
 
             if not schema_is_compliant:
                 raise Exception(
-                    _(f"Please ensure there is at least one geometry type \
-                        that is consistent with the file you are trying to {action_type}."))
+                    _(f"Please ensure that the geometry type \
+                        is consistent with the file you are trying to {action_type}."))
 
             new_schema_fields = [field.name for field in lyr.schema]
             gs_layer = gs_catalog.get_layer(layer.name)
