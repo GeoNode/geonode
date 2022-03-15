@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2021 OSGeo
@@ -18,7 +17,6 @@
 #
 #########################################################################
 import json
-import re
 import logging
 
 from io import BytesIO
@@ -30,11 +28,12 @@ from django.utils.module_loading import import_string
 
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Layer
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.geoserver.helpers import OGC_Servers_Handler
 from geonode.utils import get_layer_name, get_layer_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
-
 
 logger = logging.getLogger(__name__)
 
@@ -107,26 +106,14 @@ def create_thumbnail(
     target_crs = forced_crs.upper() if forced_crs is not None else "EPSG:3857"
 
     compute_bbox_from_layers = False
-    is_map_with_datasets = True
+    is_map_with_datasets = False
 
     if isinstance(instance, Map):
         is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').count() > 0
     if bbox:
-        # make sure BBOX is provided with the CRS in a correct format
-        source_crs = bbox[-1]
-
-        srid_regex = re.match(r"EPSG:\d+", source_crs)
-        if not srid_regex:
-            logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
-            raise ThumbnailError("Wrong BBOX format")
-
-        # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
-        # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
-        # the provided bbox is impossible.
-        if target_crs == 'EPSG:3857' and bbox[-1].upper() != 'EPSG:3857':
-            bbox = utils.crop_to_3857_area_of_use(bbox)
-
-        bbox = utils.transform_bbox(bbox, target_crs=target_crs)
+        bbox = utils.clean_bbox(bbox, target_crs)
+    elif instance.ll_bbox_polygon:
+        bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
     else:
         compute_bbox_from_layers = True
 
@@ -154,18 +141,20 @@ def create_thumbnail(
         if isinstance(instance, Map) and len(layers) == len(_styles):
             styles = _styles
         try:
-            partial_thumbs.append(utils.get_map(
-                ogc_server,
-                layers,
-                wms_version=wms_version,
-                bbox=bbox,
-                mime_type=mime_type,
-                styles=styles,
-                width=width,
-                height=height,
-            ))
+            partial_thumbs.append(
+                utils.get_map(
+                    ogc_server,
+                    layers,
+                    wms_version=wms_version,
+                    bbox=bbox,
+                    mime_type=mime_type,
+                    styles=styles,
+                    width=width,
+                    height=height,
+                )
+            )
         except Exception as e:
-            logger.error(f"Exception occurred while fetching partial thumbnail for {instance.name}.")
+            logger.error(f"Exception occurred while fetching partial thumbnail for {instance.title}.")
             logger.exception(e)
 
     if not partial_thumbs and is_map_with_datasets:
@@ -234,9 +223,15 @@ def _generate_thumbnail_name(instance: Union[Layer, Map]) -> Optional[str]:
             return None
 
         file_name = f"map-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, Document):
+        file_name = f"document-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, GeoApp):
+        file_name = f"geoapp-{instance.uuid}-thumb.png"
     else:
         raise ThumbnailError(
-            "Thumbnail generation didn't recognize the provided instance: it's neither a Layer nor a Map."
+            "Thumbnail generation didn't recognize the provided instance."
         )
 
     return file_name
@@ -262,30 +257,27 @@ def _layers_locations(
              instance's boundaries and CRS
     """
     ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
-
     locations = []
     bbox = []
-
     if isinstance(instance, Layer):
-
         # for local layers
         if instance.remote_service is None:
             locations.append([ogc_server_settings.LOCATION, [instance.alternate], []])
         # for remote layers
         else:
             locations.append([instance.remote_service.service_url, [instance.alternate], []])
-
         if compute_bbox:
-            # handle exceeding the area of use of the default thumb's CRS
-            if (
+            if instance.ll_bbox_polygon:
+                bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
+            elif (
                     instance.bbox[-1].upper() != 'EPSG:3857'
                     and target_crs.upper() == 'EPSG:3857'
                     and utils.exceeds_epsg3857_area_of_use(instance.bbox)
             ):
-                bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs.lower())
+                # handle exceeding the area of use of the default thumb's CRS
+                bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs)
             else:
-                bbox = utils.transform_bbox(instance.bbox, target_crs.lower())
-
+                bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
 
         map_layers = instance.layers.copy()
@@ -321,7 +313,6 @@ def _layers_locations(
 
             elif Layer.objects.filter(alternate=map_layer.name).count() > 0:
                 layer = Layer.objects.filter(alternate=map_layer.name).first()
-
             else:
                 logger.warning(f"Layer for MapLayer {name} was not found. Skipping it in the thumbnail.")
                 continue
@@ -356,15 +347,17 @@ def _layers_locations(
                     ])
 
             if compute_bbox:
-                # handle exceeding the area of use of the default thumb's CRS
-                if (
+                if layer.ll_bbox_polygon:
+                    layer_bbox = utils.clean_bbox(layer.ll_bbox, target_crs)
+                elif (
                         layer.bbox[-1].upper() != 'EPSG:3857'
                         and target_crs.upper() == 'EPSG:3857'
                         and utils.exceeds_epsg3857_area_of_use(layer.bbox)
                 ):
-                    layer_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs.lower())
+                    # handle exceeding the area of use of the default thumb's CRS
+                    layer_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(layer.bbox), target_crs)
                 else:
-                    layer_bbox = utils.transform_bbox(layer.bbox, target_crs.lower())
+                    layer_bbox = utils.transform_bbox(layer.bbox, target_crs)
 
                 if not bbox:
                     bbox = layer_bbox

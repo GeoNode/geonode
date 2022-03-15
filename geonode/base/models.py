@@ -59,6 +59,7 @@ from taggit.managers import TaggableManager, _TaggableManager
 
 from guardian.shortcuts import get_anonymous_user, get_objects_for_user
 from treebeard.mp_tree import MP_Node, MP_NodeQuerySet, MP_NodeManager
+from geonode import GeoNodeException
 
 from geonode.singleton import SingletonModel
 from geonode.base.enumerations import (
@@ -68,6 +69,11 @@ from geonode.base.enumerations import (
     UPDATE_FREQUENCIES,
     DEFAULT_SUPPLEMENTAL_INFORMATION)
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
+from geonode.thumbs.utils import (
+    get_unique_upload_path,
+    thumb_path,
+    thumb_size,
+    remove_thumbs)
 from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
@@ -633,12 +639,10 @@ class ResourceBaseManager(PolymorphicManager):
         return superusers[0]
 
     def get_queryset(self):
-        return super(
-            ResourceBaseManager,
-            self).get_queryset().non_polymorphic()
+        return super().get_queryset().non_polymorphic()
 
     def polymorphic_queryset(self):
-        return super(ResourceBaseManager, self).get_queryset()
+        return super().get_queryset()
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
@@ -972,11 +976,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def __init__(self, *args, **kwargs):
         # Provide legacy support for bbox fields
-        bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
-        if all(bbox):
-            kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
-            kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
-        super(ResourceBase, self).__init__(*args, **kwargs)
+        try:
+            bbox = [kwargs.pop(key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+            if all(bbox):
+                kwargs['bbox_polygon'] = Polygon.from_bbox(bbox)
+                kwargs['ll_bbox_polygon'] = Polygon.from_bbox(bbox)
+        except Exception as e:
+            logger.exception(e)
+        super().__init__(*args, **kwargs)
 
     def __str__(self):
         return str(self.title)
@@ -1080,7 +1087,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             recipients = get_notification_recipients(notice_type_label, resource=self)
             send_notification(recipients, notice_type_label, {'resource': self})
 
-        super(ResourceBase, self).delete(*args, **kwargs)
+        try:
+            self.get_real_instance().styles.delete()
+            self.get_real_instance().default_style.delete()
+        except Exception as e:
+            logger.debug(f"Error occurred while trying to delete the Dataset Styles: {e}")
+
+        super().delete(*args, **kwargs)
 
     def get_upload_session(self):
         raise NotImplementedError()
@@ -1141,8 +1154,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
         if self.ll_bbox_polygon:
-            bbox = BBOXHelper(self.ll_bbox_polygon.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+            _bbox = self.ll_bbox_polygon.extent
+            srid = self.ll_bbox_polygon.srid
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3], f"EPSG:{srid}"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1331,32 +1345,40 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             [xmin, ymin, xmax, ymax]
         :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
         """
-        bbox_polygon = Polygon.from_bbox(bbox)
-        self.bbox_polygon = bbox_polygon.clone()
-        self.srid = srid
-        if srid == 4326 or srid == "EPSG:4326":
-            self.ll_bbox_polygon = bbox_polygon
-        else:
-            match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
-            bbox_polygon.srid = int(match.group('srid')) if match else 4326
-            try:
-                # self.ll_bbox_polygon = bbox_polygon.transform(4326, clone=True)
-                # self.ll_bbox_polygon = Polygon.from_bbox(
-                #     bbox_to_projection(
-                #         [
-                #             bbox_polygon.extent[0],
-                #             bbox_polygon.extent[2],
-                #             bbox_polygon.extent[1],
-                #             bbox_polygon.extent[3]
-                #         ] + [f'EPSG:{bbox_polygon.srs.srid}']
-                #     )[:-1])
+        try:
+            bbox_polygon = Polygon.from_bbox(bbox)
+            self.bbox_polygon = bbox_polygon.clone()
+            self.srid = srid
+            # This is a trick in order to avoid PostGIS reprojecting the bbox at save time
+            # by assuming the default geometries have 'EPSG:4326' as srid.
+            ResourceBase.objects.filter(id=self.id).update(
+                bbox_polygon=self.bbox_polygon, srid=srid)
+        finally:
+            self.set_ll_bbox_polygon(bbox, srid=srid)
+
+    def set_ll_bbox_polygon(self, bbox, srid="EPSG:4326"):
+        """
+        Set `ll_bbox_polygon` from bbox values.
+
+        :param bbox: list or tuple formatted as
+            [xmin, ymin, xmax, ymax]
+        :param srid: srid as string (e.g. 'EPSG:4326' or '4326')
+        """
+        try:
+            bbox_polygon = Polygon.from_bbox(bbox)
+            if srid == 4326 or srid.upper() == "EPSG:4326":
+                self.ll_bbox_polygon = bbox_polygon
+            else:
+                match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(srid))
+                bbox_polygon.srid = int(match.group('srid')) if match else 4326
                 self.ll_bbox_polygon = Polygon.from_bbox(
                     bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
-            except Exception as e:
-                logger.error(e)
-                self.ll_bbox_polygon = bbox_polygon
+            ResourceBase.objects.filter(id=self.id).update(
+                ll_bbox_polygon=self.ll_bbox_polygon)
+        except Exception as e:
+            raise GeoNodeException(e)
 
-    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
+    def set_bounds_from_center_and_zoom(self, center_x, center_y, center_srid, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
         """
@@ -1368,10 +1390,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # covert center in lat lon
         def get_lon_lat():
-            wgs84 = Proj(init='epsg:4326')
-            mercator = Proj(init='epsg:3857')
-            lon, lat = transform(mercator, wgs84, center_x, center_y)
-            return lon, lat
+            if not center_srid or center_srid.lower() != 'epsg:4326':
+                wgs84 = Proj(init='epsg:4326')
+                mercator = Proj(init='epsg:3857')
+                lon, lat = transform(mercator, wgs84, center_x, center_y)
+                return lon, lat
+            else:
+                return center_x, center_y
 
         # calculate the degree length at this latitude
         def deg_len():
@@ -1562,11 +1587,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
-        from geonode.thumbs.utils import (
-            get_unique_upload_path,
-            thumb_path,
-            thumb_size,
-            remove_thumbs)
         upload_path = get_unique_upload_path(self, filename)
 
         try:
