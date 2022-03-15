@@ -1625,6 +1625,54 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
 
+    # list of projections available in the mapstore client
+    # properties:
+    # - code: epsg code of the projection
+    # - def: definition of projection in Proj4js string
+    # - extent: max extent in projected coordinates [minx, miny, maxx, maxy]
+    # - worldExtent: max extent in WGS84 coordinates [minx, miny, maxx, maxy]
+    # example:
+    # MAPSTORE_PROJECTION_DEFS = [
+    #   {
+    #        "code": "EPSG:3395",
+    #        "def": "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    #        "extent": [-20026376.39, -15496570.74, 20026376.39, 18764656.23 ],
+    #        "worldExtent": [ -180.0, -80.0, 180.0, 84.0 ]
+    #    }
+    # ]
+    MAPSTORE_PROJECTION_DEFS = []
+
+    # list of rules to change the plugins configuration
+    # allowed operation: add, remove and replace
+    # example: remove Measure plugin from map_edit page
+    # MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = [
+    #     {
+    #         "op": "remove",
+    #         "jsonpath": "$.map_edit..[?(@.name == 'Measure')]"
+    #     }
+    # ]
+    # example: add SearchServicesConfig plugin to map_edit page
+    # MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = [
+    #     {
+    #         "op": "add",
+    #         "jsonpath": "/map_edit/-",
+    #         "value": {
+    #             "name": "SearchServicesConfig"
+    #         }
+    #     }
+    # ]
+    # example: replace default configuration of Print plugin in map_edit page
+    # MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = [
+    #     {
+    #         "op": "replace",
+    #         "jsonpath": "$.map_edit..[?(@.name == 'Print')].cfg",
+    #         "value": {
+    #             "useFixedScales": False
+    #         }
+    #     }
+    # ]
+    MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = []
+
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
