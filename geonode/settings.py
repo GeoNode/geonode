@@ -1533,6 +1533,54 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
     MAPSTORE_TRANSLATIONS_PATH = os.environ.get('MAPSTORE_TRANSLATIONS_PATH', ['/static/mapstore/ms-translations', '/static/mapstore/gn-translations'])
 
+    # list of projections available in the mapstore client
+    # properties:
+    # - code: epsg code of the projection
+    # - def: definition of projection in Proj4js string
+    # - extent: max extent in projected coordinates [minx, miny, maxx, maxy]
+    # - worldExtent: max extent in WGS84 coordinates [minx, miny, maxx, maxy]
+    # example:
+    # MAPSTORE_PROJECTION_DEFS = [
+    #   {
+    #        "code": "EPSG:3395",
+    #        "def": "+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs",
+    #        "extent": [-20026376.39, -15496570.74, 20026376.39, 18764656.23 ],
+    #        "worldExtent": [ -180.0, -80.0, 180.0, 84.0 ]
+    #    }
+    # ]
+    MAPSTORE_PROJECTION_DEFS = []
+
+    # list of rules to change the plugins configuration
+    # allowed operation: add, remove and replace
+    # example: remove Measure plugin from map_viewer page
+    # MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = [
+    #     {
+    #         "op": "remove",
+    #         "jsonpath": "$.map_viewer..[?(@.name == 'Measure')]"
+    #     }
+    # ]
+    # example: add SearchServicesConfig plugin to map_viewer page
+    # MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = [
+    #     {
+    #         "op": "add",
+    #         "jsonpath": "/map_viewer/-",
+    #         "value": {
+    #             "name": "SearchServicesConfig"
+    #         }
+    #     }
+    # ]
+    # example: replace default configuration of Print plugin in map_viewer page
+    # MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = [
+    #     {
+    #         "op": "replace",
+    #         "jsonpath": "$.map_viewer..[?(@.name == 'Print')].cfg",
+    #         "value": {
+    #             "useFixedScales": False
+    #         }
+    #     }
+    # ]
+    MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = []
+
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
