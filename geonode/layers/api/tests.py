@@ -169,7 +169,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
             "time": "false",
             "charset": "UTF-8",
             "store_spatial_files": False,
-            "base_file_path":f"{tempdir}/{layer.alternate.split(':')[1]}.shp",
+            "base_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.shp",
             "dbf_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.dbf",
             "prj_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.prj",
             "shx_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.shx",

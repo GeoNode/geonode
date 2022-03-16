@@ -1250,7 +1250,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             status_code = 400
 
         if _tmpdir is not None:
-            shutil.rmtree(_tmpdir, ignore_errors=True)            
+            shutil.rmtree(_tmpdir, ignore_errors=True)
 
         return HttpResponse(
             json.dumps(out),
