@@ -1214,7 +1214,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 if resource_is_valid:
                     # Create a new upload session
                     request.GET = {"layer_id": layer.id}
-                    steps = [None, "check", "final"] if layer.is_vector() else [None]
+                    steps = [None, "check", "final"] if layer.is_vector() else [None, "final"]
                     for _step in steps:
                         response, cat, valid = UploadViewSet()._emulate_client_upload_step(
                             request,
@@ -1248,6 +1248,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             register_event(request, 'change', layer)
         else:
             status_code = 400
+
+        if _tmpdir is not None:
+            shutil.rmtree(_tmpdir, ignore_errors=True)            
+
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',

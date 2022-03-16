@@ -18,6 +18,8 @@
 #########################################################################
 import logging
 import os
+import shutil
+import tempfile
 from django.conf import settings
 
 import gisdata
@@ -141,8 +143,8 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         layer = file_upload(
             os.path.join(
                 gisdata.VECTOR_DATA,
-                "single_point.shp"),
-            name='single_point',
+                "san_andres_y_providencia_water.shp"),
+            name='new_name',
             user=admin,
             overwrite=False,
         )
@@ -150,17 +152,28 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual('No abstract provided', layer.abstract)
         self.assertEqual(Layer.objects.count(), 10)
 
+        layer.refresh_from_db()
+        print(layer.alternate)
+        # renaming the file in the same way as the lasyer name
+        # the filename must be consiste with the layer name
+        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.shp", f"{tempdir}/{layer.alternate.split(':')[1]}.shp")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.dbf", f"{tempdir}/{layer.alternate.split(':')[1]}.dbf")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.prj", f"{tempdir}/{layer.alternate.split(':')[1]}.prj")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.shx", f"{tempdir}/{layer.alternate.split(':')[1]}.shx")
+        shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml", f"{tempdir}/{layer.alternate.split(':')[1]}.xml")
+
         payload = {
             "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
             "time": "false",
             "charset": "UTF-8",
             "store_spatial_files": False,
-            "base_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.shp",
-            "dbf_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.dbf",
-            "prj_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.prj",
-            "shx_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.shx",
-            "xml_file_path": f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml",
-
+            "base_file_path":f"{tempdir}/{layer.alternate.split(':')[1]}.shp",
+            "dbf_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.dbf",
+            "prj_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.prj",
+            "shx_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.shx",
+            "xml_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.xml"
         }
 
         url = reverse("layers-replace-layer", args=(layer.id,))
@@ -174,3 +187,6 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         # evaluate that the abstract is updated and the number of available layer is not changed
         self.assertEqual('real abstract', layer.abstract)
         self.assertEqual(Layer.objects.count(), 10)
+
+        if tempdir:
+            shutil.rmtree(tempdir)
