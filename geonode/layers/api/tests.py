@@ -28,6 +28,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from geonode import geoserver
 from geonode.base.populate_test_data import create_models
+from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
 from geonode.utils import check_ogc_backend
@@ -140,6 +141,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
     def test_layer_replace_should_work(self):
         admin = get_user_model().objects.get(username='admin')
+        prev_count = Layer.objects.count()
         layer = file_upload(
             os.path.join(
                 gisdata.VECTOR_DATA,
@@ -148,12 +150,22 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
             user=admin,
             overwrite=False,
         )
+        gs_layer = geoserver_upload(
+            layer,
+            os.path.join(
+                gisdata.VECTOR_DATA,
+                "san_andres_y_providencia_water.shp"),
+            admin,
+            layer.name,
+            overwrite=True
+        )
 
         self.assertEqual('No abstract provided', layer.abstract)
-        self.assertEqual(Layer.objects.count(), 10)
+        self.assertEqual(Layer.objects.count(), prev_count + 1)
 
         layer.refresh_from_db()
-        print(layer.alternate)
+        logger.error(layer.alternate)
+        logger.error(gs_layer)
         # renaming the file in the same way as the lasyer name
         # the filename must be consiste with the layer name
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
@@ -185,8 +197,8 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
         layer.refresh_from_db()
         # evaluate that the abstract is updated and the number of available layer is not changed
+        self.assertEqual(Layer.objects.count(), prev_count + 1)
         self.assertEqual('real abstract', layer.abstract)
-        self.assertEqual(Layer.objects.count(), 10)
 
         if tempdir:
             shutil.rmtree(tempdir)
