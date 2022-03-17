@@ -159,8 +159,8 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
     Object-level permission to only allow admin and managers to edit a group.
     """
     def has_permission(self, request, view):
-        user = request.user
         if request.method in ['POST', 'DELETE']:
+            user = request.user
             return user and (user.is_superuser or user.is_staff)
 
         return True
@@ -170,12 +170,14 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
         # so we'll always allow GET, HEAD or OPTIONS requests
         if request.method in permissions.SAFE_METHODS:
             return True
+
         user = request.user
         if user and user.is_superuser or user.is_staff:
             return True
-        if user and isinstance(obj, GroupProfile) and obj.user_is_role(user, "manager"):
-            if request.method == 'PATCH':
-                return True
+
+        is_group_manager = user and isinstance(obj, GroupProfile) and obj.user_is_role(user, "manager")
+        if is_group_manager and request.method == 'PATCH':
+            return True
 
         return False
 

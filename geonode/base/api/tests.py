@@ -159,6 +159,13 @@ class BaseApiTests(APITestCase):
             response = self.client.post(url, data=data, format='json')
             self.assertEqual(response.status_code, 403)
 
+            # Group manager
+            group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
+            group.join(get_user_model().objects.get(username='norman'), role='manager')
+            self.assertTrue(self.client.login(username='norman', password='norman'))
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+
             # Admin
             self.assertTrue(self.client.login(username='admin', password='admin'))
             response = self.client.post(url, data=data, format='json')
@@ -166,6 +173,7 @@ class BaseApiTests(APITestCase):
             self.assertEqual(response.json()['group_profile']['title'], 'group title')
         finally:
             GroupProfile.objects.get(slug='group_title').delete()
+            group.delete()
 
     def test_edit_group(self):
         """
@@ -339,6 +347,13 @@ class BaseApiTests(APITestCase):
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.patch(url, data=data, format='json')
             self.assertEqual(response.status_code, 403)
+            # Group manager
+            group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
+            group.join(user)
+            group.join(get_user_model().objects.get(username='norman'), role='manager')
+            self.assertTrue(self.client.login(username='norman', password='norman'))
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
             # Admin can edit user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.patch(url, data={'first_name': 'user_admin'}, format='json')
@@ -346,6 +361,7 @@ class BaseApiTests(APITestCase):
             self.assertEqual(get_user_model().objects.get(username='user_test_delete').first_name, 'user_admin')
         finally:
             user.delete()
+            group.delete()
 
     def test_delete_user_profile(self):
         """
