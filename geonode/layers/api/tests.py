@@ -236,6 +236,53 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(404, response.status_code)
         self.assertDictEqual(expected, response.json())
 
+    def test_dataset_append_anonymous_should_raise_error(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-append-dataset", args=(layer.id,))
+
+        expected = {
+            "success": False,
+            "errors": [
+                'Authentication credentials were not provided.'
+            ],
+            "code": "not_authenticated"
+        }
+
+        response = self.client.post(url)
+        self.assertEqual(403, response.status_code)
+        self.assertDictEqual(expected, response.json())
+
+    def test_dataset_append_should_redirect_for_not_accepted_method(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-append-dataset", args=(layer.id,))
+        self.client.login(username="admin", password="admin")
+
+        response = self.client.put(url)
+        self.assertEqual(405, response.status_code)
+
+        response = self.client.get(url)
+        self.assertEqual(405, response.status_code)
+
+        response = self.client.patch(url)
+        self.assertEqual(405, response.status_code)
+
+    def test_dataset_append_should_raise_error_if_layer_does_not_exists(self):
+        url = reverse("datasets-append-dataset", args=(999999999999999,))
+
+        expected = {
+            "success": False,
+            "errors": [
+                'Layer with ID 999999999999999 is not available'
+            ],
+            "code": "not_found"
+        }
+
+        self.client.login(username="admin", password="admin")
+
+        response = self.client.post(url)
+        self.assertEqual(404, response.status_code)
+        self.assertDictEqual(expected, response.json())
+
     @skip("Not implemented yet")
     @patch("geonode.layers.views.validate_input_source")
     def test_layer_replace_should_work(self, _validate_input_source):
