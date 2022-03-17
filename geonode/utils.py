@@ -275,9 +275,18 @@ class OGC_Servers_Handler:
 def mkdtemp(dir=settings.MEDIA_ROOT):
     if not os.path.exists(dir):
         os.makedirs(dir)
-    tempdir = tempfile.mkdtemp(dir=dir)
-    if not os.path.isdir(tempdir):
-        os.makedirs(tempdir)
+    tempdir = None
+    while not tempdir:
+        try:
+            tempdir = tempfile.mkdtemp(dir=dir)
+            if os.path.exists(tempdir) and os.path.isdir(tempdir):
+                if os.listdir(tempdir):
+                    raise Exception("Directory is not empty")
+            else:
+                raise Exception("Directory does not exist or is not accessible")
+        except Exception as e:
+            logger.exception(e)
+            tempdir = None
     return tempdir
 
 
