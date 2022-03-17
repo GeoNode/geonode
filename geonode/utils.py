@@ -275,7 +275,7 @@ class OGC_Servers_Handler:
 def mkdtemp(dir=settings.MEDIA_ROOT):
     if not os.path.exists(dir):
         os.makedirs(dir)
-    tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+    tempdir = tempfile.mkdtemp(dir=dir)
     if not os.path.isdir(tempdir):
         os.makedirs(tempdir)
     return tempdir
