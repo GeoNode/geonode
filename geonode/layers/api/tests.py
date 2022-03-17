@@ -17,9 +17,9 @@
 #
 #########################################################################
 import logging
-import os
 import shutil
 import tempfile
+from unittest.mock import patch
 from django.conf import settings
 
 import gisdata
@@ -28,9 +28,9 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from geonode import geoserver
 from geonode.base.populate_test_data import create_models
-from geonode.geoserver.upload import geoserver_upload
+from geonode.geoserver.createlayer.utils import create_layer
 from geonode.layers.models import Layer
-from geonode.layers.utils import file_upload
+from geonode.geoserver.helpers import gs_catalog
 from geonode.utils import check_ogc_backend
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
@@ -60,6 +60,9 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         create_models(b'document')
         create_models(b'map')
         create_models(b'layer')
+
+    def tearDown(self) -> None:
+        Layer.objects.filter(name='new_name').delete()
 
     def test_layers(self):
         """
@@ -139,41 +142,34 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(404, response.status_code)
         self.assertDictEqual(expected, response.json())
 
-    def test_layer_replace_should_work(self):
+    @patch("geonode.layers.views.validate_input_source")
+    def test_layer_replace_should_work(self, _validate_input_source):
+
+        _validate_input_source.return_value = True
+
         admin = get_user_model().objects.get(username='admin')
-        prev_count = Layer.objects.count()
-        layer = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_water.shp"),
-            name='new_name',
-            user=admin,
-            overwrite=False,
-        )
-        gs_layer = geoserver_upload(
-            layer,
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "san_andres_y_providencia_water.shp"),
+
+        layer = create_layer(
+            "new_name",
+            "new_name",
             admin,
-            layer.name,
-            overwrite=True
+            "Point",
         )
+        cnt = Layer.objects.count()
 
         self.assertEqual('No abstract provided', layer.abstract)
-        self.assertEqual(Layer.objects.count(), prev_count + 1)
+        self.assertEqual(Layer.objects.count(), cnt)
 
         layer.refresh_from_db()
         logger.error(layer.alternate)
-        logger.error(gs_layer)
         # renaming the file in the same way as the lasyer name
         # the filename must be consiste with the layer name
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
 
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.shp", f"{tempdir}/{layer.alternate.split(':')[1]}.shp")
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.dbf", f"{tempdir}/{layer.alternate.split(':')[1]}.dbf")
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.prj", f"{tempdir}/{layer.alternate.split(':')[1]}.prj")
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/san_andres_y_providencia_water.shx", f"{tempdir}/{layer.alternate.split(':')[1]}.shx")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.shp", f"{tempdir}/{layer.alternate.split(':')[1]}.shp")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.dbf", f"{tempdir}/{layer.alternate.split(':')[1]}.dbf")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.prj", f"{tempdir}/{layer.alternate.split(':')[1]}.prj")
+        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.shx", f"{tempdir}/{layer.alternate.split(':')[1]}.shx")
         shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml", f"{tempdir}/{layer.alternate.split(':')[1]}.xml")
 
         payload = {
@@ -197,8 +193,16 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
         layer.refresh_from_db()
         # evaluate that the abstract is updated and the number of available layer is not changed
-        self.assertEqual(Layer.objects.count(), prev_count + 1)
+        self.assertEqual(Layer.objects.count(), cnt)
         self.assertEqual('real abstract', layer.abstract)
+
+        # checking that the keywords in the geoserver layer are updated
+        gs_layer = gs_catalog.get_layer(layer.name)
+
+        self.assertSetEqual(
+            {'af', 'test_layer', 'no conditions to access and use', 'features', 'new_name', 'ad'},
+            set(gs_layer.resource.keywords)
+        )
 
         if tempdir:
             shutil.rmtree(tempdir)
