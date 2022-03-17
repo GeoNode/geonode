@@ -118,11 +118,10 @@ def get_files(filename):
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
-    import tempfile
-    from geonode.utils import unzip_file
+    from geonode.utils import unzip_file, mkdtemp
     tempdir = None
     if is_zipfile(filename):
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        tempdir = mkdtemp()
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
         if not _filename:

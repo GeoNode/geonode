@@ -22,7 +22,6 @@ import json
 import shutil
 import decimal
 import logging
-import tempfile
 import warnings
 import traceback
 from django.urls import reverse
@@ -82,7 +81,7 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
-from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object
+from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     select_relevant_files,
@@ -192,9 +191,7 @@ def dataset_upload_metadata(request):
     form = NewLayerUploadForm(request.POST, request.FILES)
 
     if form.is_valid():
-
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
-
+        tempdir = mkdtemp()
         relevant_files = select_relevant_files(
             ['xml'],
             iter(request.FILES.values())

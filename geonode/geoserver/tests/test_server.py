@@ -22,7 +22,6 @@ import os
 import json
 import base64
 import shutil
-import tempfile
 
 from os.path import basename, splitext
 from urllib.parse import urljoin, urlencode, urlsplit
@@ -44,7 +43,7 @@ from geonode import geoserver
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
-from geonode.utils import OGC_Servers_Handler
+from geonode.utils import mkdtemp, OGC_Servers_Handler
 from geonode.layers.models import Dataset, Style
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import (
@@ -638,7 +637,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         # getting picked up
         d = None
         try:
-            d = tempfile.mkdtemp()
+            d = mkdtemp()
             files = (
                 "san_andres_y_providencia.sld",
                 "lac.sld",

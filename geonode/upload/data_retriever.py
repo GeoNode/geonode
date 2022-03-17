@@ -21,10 +21,11 @@ import io
 import os
 import shutil
 import smart_open
-import tempfile
 
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
+
+from geonode.utils import mkdtemp
 
 
 class DataItemRetriever(object):
@@ -89,7 +90,7 @@ class DataItemRetriever(object):
                     break
                 yield data
 
-        self.temporary_folder = temporary_folder or tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        self.temporary_folder = temporary_folder or mkdtemp()
         self.file_path = os.path.join(self.temporary_folder, self.name)
 
         if self._is_django_form_file:
@@ -130,7 +131,7 @@ class DataRetriever(object):
             self.transfer_remote_files()
 
     def transfer_remote_files(self):
-        self.temporary_folder = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        self.temporary_folder = mkdtemp()
         for name, data_item_retriever in self.data_items.items():
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = file_path

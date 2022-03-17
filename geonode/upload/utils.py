@@ -22,7 +22,6 @@ import json
 import shutil
 import logging
 import zipfile
-import tempfile
 import traceback
 
 from osgeo import ogr
@@ -41,7 +40,7 @@ from geoserver.catalog import FailedRequestError, ConflictingDataError
 
 from geonode.upload.api.exceptions import GeneralUploadException
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
-from geonode.utils import json_response as do_json_response, unzip_file
+from geonode.utils import json_response as do_json_response, unzip_file, mkdtemp
 from geonode.geoserver.helpers import (
     gs_catalog,
     gs_uploader,
@@ -509,7 +508,7 @@ def _get_time_dimensions(layer, upload_session, values=None):
 def _fixup_base_file(absolute_base_file, tempdir=None):
     tempdir_was_created = False
     if not tempdir or not os.path.exists(tempdir):
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        tempdir = mkdtemp()
         tempdir_was_created = True
     try:
         if not os.path.isfile(absolute_base_file):
