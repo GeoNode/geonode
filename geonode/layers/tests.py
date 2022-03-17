@@ -55,7 +55,6 @@ from geonode import GeoNodeException, geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.layers.models import Layer, Style, Attribute
 from geonode.layers.utils import (
-    file_upload,
     is_sld_upload_only,
     is_xml_upload_only,
     layer_type,
@@ -2007,81 +2006,3 @@ class TestLayerForm(GeoNodeBaseTestSupport):
             "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
         })
         self.assertTrue(form.is_valid())
-
-
-class TestLayerReplace(GeoNodeBaseTestSupport):
-    def setUp(self):
-        self.fixture_path = f"{settings.PROJECT_ROOT}/base/fixtures"
-        self.admin = get_user_model().objects.get(username="admin")
-
-    def test_replace_layer_should_update_also_the_xml_data_vector(self):
-        layer = file_upload(
-            os.path.join(
-                gisdata.VECTOR_DATA,
-                "single_point.shp"),
-            name='single_point',
-            user=self.admin,
-            overwrite=False,
-        )
-        self.client.login(username='admin', password='admin')
-        url = reverse('layer_replace', args=[layer.alternate])
-
-        self.assertEqual('No abstract provided', layer.abstract)
-        self.assertEqual(Layer.objects.count(), 1)
-
-        payload = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "time": "false",
-            "charset": "UTF-8",
-            "store_spatial_files": False,
-            "base_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.shp",
-            "dbf_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.dbf",
-            "prj_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.prj",
-            "shx_file_path": f"{gisdata.GOOD_DATA}/vector/single_point.shx",
-            "xml_file_path": f"{self.fixture_path}/test_xml.xml",
-
-        }
-
-        response = self.client.post(url, payload)
-        self.assertTrue(response.status_code, 200)
-
-        layer.refresh_from_db()
-        # evaluate that the abstract is updated and the number of available layer is not changed
-        self.assertEqual('real abstract', layer.abstract)
-        self.assertEqual(Layer.objects.count(), 1)
-
-'''
-
-    def test_replace_layer_should_update_also_the_xml_data_raster(self):
-        layer_raster = file_upload(
-            os.path.join(
-                gisdata.RASTER_DATA,
-                "relief_san_andres.tif"),
-            name='relief_san_andres',
-            user=self.admin,
-            overwrite=False,
-        )
-        self.client.login(username='admin', password='admin')
-        url = reverse('layer_replace', args=[layer_raster.alternate])
-
-        self.assertEqual('No abstract provided', layer_raster.abstract)
-        self.assertEqual(Layer.objects.count(), 1)
-
-        payload = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "time": "false",
-            "charset": "UTF-8",
-            "store_spatial_files": False,
-            "base_file_path": f"{gisdata.RASTER_DATA}/relief_san_andres.tif",
-            "xml_file_path": f"{self.fixture_path}/test_xml.xml",
-
-        }
-
-        response = self.client.post(url, payload)
-        self.assertTrue(response.status_code, 200)
-
-        layer_raster.refresh_from_db()
-        # evaluate that the abstract is updated and the number of available layer is not changed
-        self.assertEqual('real abstract', layer_raster.abstract)
-        self.assertEqual(Layer.objects.count(), 1)
-''' # noqa

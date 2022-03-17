@@ -30,7 +30,6 @@ from geonode import geoserver
 from geonode.base.populate_test_data import create_models
 from geonode.geoserver.createlayer.utils import create_layer
 from geonode.layers.models import Layer
-from geonode.geoserver.helpers import gs_catalog
 from geonode.utils import check_ogc_backend
 from rest_framework.test import APITestCase, URLPatternsTestCase
 
@@ -195,14 +194,6 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         # evaluate that the abstract is updated and the number of available layer is not changed
         self.assertEqual(Layer.objects.count(), cnt)
         self.assertEqual('real abstract', layer.abstract)
-
-        # checking that the keywords in the geoserver layer are updated
-        gs_layer = gs_catalog.get_layer(layer.name)
-
-        self.assertSetEqual(
-            {'af', 'test_layer', 'no conditions to access and use', 'features', 'new_name', 'ad'},
-            set(gs_layer.resource.keywords)
-        )
 
         if tempdir:
             shutil.rmtree(tempdir)
