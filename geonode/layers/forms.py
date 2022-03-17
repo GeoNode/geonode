@@ -202,7 +202,7 @@ class LayerUploadForm(forms.Form):
 
     def write_files(self):
         absolute_base_file = None
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
             absolute_base_file = unzip_file(self.cleaned_data['base_file'],
                                             '.shp', tempdir=tempdir)

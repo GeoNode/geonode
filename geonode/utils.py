@@ -278,7 +278,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
     if not os.path.isdir(tempdir):
         os.makedirs(tempdir)
 
@@ -297,7 +297,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
 
     the_tar = tarfile.open(upload_file)
     the_tar.extractall(tempdir)
@@ -863,10 +863,11 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     """ Try to fix column names and warn the user
     """
     charset = charset if charset and 'undefined' not in charset else 'UTF-8'
-
+    tempdir_was_created = False
     try:
         if not tempdir:
-            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+            tempdir_was_created = True
 
         if is_zipfile(inShapefile):
             inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
@@ -943,7 +944,9 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                     f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
         return True, None, list_col
     finally:
-        if tempdir is not None:
+        if tempdir_was_created and tempdir:
+            # Get rid if temporary files that have been uploaded via Upload form
+            logger.debug(f"... Cleaning up the temporary folders {tempdir}")
             shutil.rmtree(tempdir, ignore_errors=True)
 
 

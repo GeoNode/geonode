@@ -509,7 +509,7 @@ def _get_time_dimensions(layer, upload_session, values=None):
 def _fixup_base_file(absolute_base_file, tempdir=None):
     tempdir_was_created = False
     if not tempdir or not os.path.exists(tempdir):
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
         tempdir_was_created = True
     try:
         if not os.path.isfile(absolute_base_file):
@@ -531,11 +531,8 @@ def _fixup_base_file(absolute_base_file, tempdir=None):
     finally:
         if tempdir_was_created:
             # Get rid if temporary files that have been uploaded via Upload form
-            try:
-                logger.debug(f"... Cleaning up the temporary folders {tempdir}")
-                shutil.rmtree(tempdir)
-            except Exception as e:
-                logger.warning(e)
+            logger.debug(f"... Cleaning up the temporary folders {tempdir}")
+            shutil.rmtree(tempdir, ignore_errors=True)
 
 
 def _get_dataset_values(layer, upload_session, expand=0):

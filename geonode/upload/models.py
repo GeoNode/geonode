@@ -169,13 +169,6 @@ class Upload(models.Model):
                             resource_id=self.resource.id,
                             files=files_to_upload)
                         self.resource.refresh_from_db()
-
-                # Now we delete the files from local file system
-                # only if it does not match with the default temporary path
-                if os.path.exists(self.upload_dir):
-                    if settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.upload_dir)):
-                        shutil.rmtree(self.upload_dir, ignore_errors=True)
-
         if "COMPLETE" == self.state:
             self.complete = True
         if self.resource and self.resource.processed:
@@ -256,18 +249,11 @@ class Upload(models.Model):
             except Exception:
                 logging.warning('error deleting upload session')
 
-        for _location in importer_locations:
-            try:
-                shutil.rmtree(_location)
-            except Exception as e:
-                logger.warning(e)
-
         # here we are deleting the local that soon will be removed
+        for _location in importer_locations:
+            shutil.rmtree(_location, ignore_errors=True)
         if self.upload_dir and os.path.exists(self.upload_dir):
-            try:
-                shutil.rmtree(self.upload_dir)
-            except Exception as e:
-                logger.warning(e)
+            shutil.rmtree(self.upload_dir, ignore_errors=True)
 
     def set_processing_state(self, state):
         if self.state != state:

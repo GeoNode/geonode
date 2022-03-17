@@ -123,7 +123,7 @@ def get_files(filename):
     from geonode.utils import unzip_file
     tempdir = None
     if is_zipfile(filename):
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
         if not _filename:
@@ -146,6 +146,7 @@ def get_files(filename):
         logger.debug(msg)
         if tempdir is not None:
             shutil.rmtree(tempdir, ignore_errors=True)
+            tempdir = None
         raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)
@@ -163,12 +164,14 @@ def get_files(filename):
                        f'{list(required_extensions.keys())}')
                 if tempdir is not None:
                     shutil.rmtree(tempdir, ignore_errors=True)
+                    tempdir = None
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
                        'distinct by spelling and not just case.') % filename
                 if tempdir is not None:
                     shutil.rmtree(tempdir, ignore_errors=True)
+                    tempdir = None
                 raise GeoNodeException(msg)
             else:
                 files[ext] = matches[0]
@@ -181,6 +184,7 @@ def get_files(filename):
                    'distinct by spelling and not just case.') % filename
             if tempdir is not None:
                 shutil.rmtree(tempdir, ignore_errors=True)
+                tempdir = None
             raise GeoNodeException(msg)
 
     elif extension.lower() in cov_exts:
@@ -200,6 +204,7 @@ def get_files(filename):
                        'distinct by spelling and not just case.') % filename
                 if tempdir is not None:
                     shutil.rmtree(tempdir, ignore_errors=True)
+                    tempdir = None
                 raise GeoNodeException(msg)
 
     matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
@@ -216,6 +221,7 @@ def get_files(filename):
                'distinct by spelling and not just case.') % filename
         if tempdir is not None:
             shutil.rmtree(tempdir, ignore_errors=True)
+            tempdir = None
         raise GeoNodeException(msg)
 
     return files, tempdir
