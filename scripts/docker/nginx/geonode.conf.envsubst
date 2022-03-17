@@ -150,9 +150,6 @@ location / {
   # when a client closes the connection then keep the channel to uwsgi open. Otherwise uwsgi throws an IOError
   uwsgi_ignore_client_abort on;
 
-  # uwsgi_params
-  include /etc/nginx/uwsgi_params;
-
   location ~* \.(?:js|jpg|jpeg|gif|png|tgz|gz|rar|bz2|doc|pdf|ppt|tar|wav|bmp|ttf|rtf|swf|ico|flv|woff|woff2|svg|xml)$ {
       gzip_static always;
       expires 30d;

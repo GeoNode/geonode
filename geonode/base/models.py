@@ -25,7 +25,7 @@ import shutil
 import logging
 import traceback
 
-from django.db import models
+from django.db import models, transaction
 from django.conf import settings
 from django.utils.functional import cached_property
 from django.utils.html import escape
@@ -465,13 +465,22 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
-        existing = self.through.tag_model().objects.filter(
+        '''
+        To avoid concurrency with the keyword in case of a massive upload.
+        With the transaction block and the select_for_update,
+        we can easily handle the concurrency.
+        DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
+        '''
+        existing = self.through.tag_model().objects.select_for_update().filter(
             name__in=str_tags, **tag_kwargs
         )
         tag_objs.update(existing)
         new_ids = set()
-        for new_tag in str_tags - set(t.name for t in existing):
-            if new_tag:
+        with transaction.atomic():
+            tag_objs.update(existing)
+            new_ids = set()
+            _new_keyword = str_tags - set(t.name for t in existing)
+            for new_tag in list(_new_keyword):
                 new_tag = escape(new_tag)
                 new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
                 tag_objs.add(new_tag_obj)
@@ -1201,8 +1210,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """BBOX is in the format [x0, x1, y0, y1, "EPSG:srid"]. Provides backwards
         compatibility after transition to polygons."""
         if self.ll_bbox_polygon:
-            bbox = BBOXHelper(self.ll_bbox_polygon.extent)
-            return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
+            _bbox = self.ll_bbox_polygon.extent
+            srid = self.ll_bbox_polygon.srid
+            return [_bbox[0], _bbox[2], _bbox[1], _bbox[3], f"EPSG:{srid}"]
         bbox = BBOXHelper.from_xy([-180, 180, -90, 90])
         return [bbox.xmin, bbox.xmax, bbox.ymin, bbox.ymax, "EPSG:4326"]
 
@@ -1428,7 +1438,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except Exception as e:
             raise GeoNodeException(e)
 
-    def set_bounds_from_center_and_zoom(self, center_x, center_y, zoom):
+    def set_bounds_from_center_and_zoom(self, center_x, center_y, center_srid, zoom):
         """
         Calculate zoom level and center coordinates in mercator.
         """
@@ -1440,10 +1450,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # covert center in lat lon
         def get_lon_lat():
-            wgs84 = Proj(init='epsg:4326')
-            mercator = Proj(init='epsg:3857')
-            lon, lat = transform(mercator, wgs84, center_x, center_y)
-            return lon, lat
+            if not center_srid or center_srid.lower() != 'epsg:4326':
+                wgs84 = Proj(init='epsg:4326')
+                mercator = Proj(init='epsg:3857')
+                lon, lat = transform(mercator, wgs84, center_x, center_y)
+                return lon, lat
+            else:
+                return center_x, center_y
 
         # calculate the degree length at this latitude
         def deg_len():

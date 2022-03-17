@@ -207,7 +207,7 @@ def save_step_view(req, session):
             name,
             spatial_files,
             overwrite=overwrite,
-            store_spatial_files=form.cleaned_data['store_spatial_files'] or True,
+            store_spatial_files=form.cleaned_data.get('store_spatial_files', True),
             mosaic=form.cleaned_data['mosaic'] or scan_hint == 'zip-mosaic',
             append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
             append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
