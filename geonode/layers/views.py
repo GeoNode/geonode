@@ -193,7 +193,7 @@ def dataset_upload_metadata(request):
 
     if form.is_valid():
 
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
 
         relevant_files = select_relevant_files(
             ['xml'],

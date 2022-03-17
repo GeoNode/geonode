@@ -123,7 +123,7 @@ def get_files(filename):
     from geonode.utils import unzip_file
     tempdir = None
     if is_zipfile(filename):
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
         if not _filename:

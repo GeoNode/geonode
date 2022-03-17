@@ -509,7 +509,7 @@ def _get_time_dimensions(layer, upload_session, values=None):
 def _fixup_base_file(absolute_base_file, tempdir=None):
     tempdir_was_created = False
     if not tempdir or not os.path.exists(tempdir):
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
         tempdir_was_created = True
     try:
         if not os.path.isfile(absolute_base_file):

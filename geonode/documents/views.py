@@ -174,7 +174,7 @@ class DocumentUploadView(CreateView):
 
         file = doc_form.pop('doc_file', None)
         if file:
-            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             storage_path = storage_manager.path(filepath)
@@ -282,7 +282,7 @@ class DocumentUpdateView(UpdateView):
 
         file = doc_form.pop('doc_file', None)
         if file:
-            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             storage_path = storage_manager.path(filepath)
