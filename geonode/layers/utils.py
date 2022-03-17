@@ -25,7 +25,6 @@ import re
 import os
 import glob
 import json
-import shutil
 import string
 import logging
 import tarfile
@@ -119,11 +118,10 @@ def get_files(filename):
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
-    import tempfile
-    from geonode.utils import unzip_file
+    from geonode.utils import unzip_file, mkdtemp
     tempdir = None
     if is_zipfile(filename):
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        tempdir = mkdtemp()
         _filename = unzip_file(filename,
                                '.shp', tempdir=tempdir)
         if not _filename:
@@ -144,9 +142,6 @@ def get_files(filename):
     if not os.path.exists(filename):
         msg = f'Could not open {filename}. Make sure you are using a valid file'
         logger.debug(msg)
-        if tempdir is not None:
-            shutil.rmtree(tempdir, ignore_errors=True)
-            tempdir = None
         raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)
@@ -162,16 +157,10 @@ def get_files(filename):
                 msg = (f'Expected helper file {base_name}.{ext} does not exist; a Shapefile '
                        'requires helper files with the following extensions: '
                        f'{list(required_extensions.keys())}')
-                if tempdir is not None:
-                    shutil.rmtree(tempdir, ignore_errors=True)
-                    tempdir = None
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
                 msg = ('Multiple helper files for %s exist; they need to be '
                        'distinct by spelling and not just case.') % filename
-                if tempdir is not None:
-                    shutil.rmtree(tempdir, ignore_errors=True)
-                    tempdir = None
                 raise GeoNodeException(msg)
             else:
                 files[ext] = matches[0]
@@ -182,9 +171,6 @@ def get_files(filename):
         elif len(matches) > 1:
             msg = ('Multiple helper files for %s exist; they need to be '
                    'distinct by spelling and not just case.') % filename
-            if tempdir is not None:
-                shutil.rmtree(tempdir, ignore_errors=True)
-                tempdir = None
             raise GeoNodeException(msg)
 
     elif extension.lower() in cov_exts:
@@ -202,9 +188,6 @@ def get_files(filename):
             elif len(matches) > 1:
                 msg = ('Multiple style files (sld) for %s exist; they need to be '
                        'distinct by spelling and not just case.') % filename
-                if tempdir is not None:
-                    shutil.rmtree(tempdir, ignore_errors=True)
-                    tempdir = None
                 raise GeoNodeException(msg)
 
     matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
@@ -219,9 +202,6 @@ def get_files(filename):
     elif len(matches) > 1:
         msg = ('Multiple XML files for %s exist; they need to be '
                'distinct by spelling and not just case.') % filename
-        if tempdir is not None:
-            shutil.rmtree(tempdir, ignore_errors=True)
-            tempdir = None
         raise GeoNodeException(msg)
 
     return files, tempdir

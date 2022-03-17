@@ -17,7 +17,6 @@
 #
 #########################################################################
 import uuid
-import shutil
 import logging
 import geoserver
 
@@ -143,9 +142,6 @@ def geoserver_upload(
         logger.warn(msg)
         e.args = (msg,)
         raise
-    finally:
-        if _tmpdir is not None:
-            shutil.rmtree(_tmpdir, ignore_errors=True)
     logger.debug(f'Finished upload of {name} to GeoServer without errors.')
 
     # Step 5. Create the resource in GeoServer

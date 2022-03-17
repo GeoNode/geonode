@@ -16,14 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base import enumerations
 import io
 import os
 import shutil
 import gisdata
 import logging
 import zipfile
-import tempfile
 
 from unittest.mock import MagicMock, patch
 from collections import namedtuple
@@ -46,11 +44,12 @@ from django.contrib.admin.sites import AdminSite
 from geonode.geoserver.createlayer.utils import create_dataset
 
 from geonode.layers import utils
+from geonode.base import enumerations
 from geonode.layers import DatasetAppConfig
 from geonode.layers.admin import DatasetAdmin
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
-from geonode.utils import DisableDjangoSignals
+from geonode.utils import DisableDjangoSignals, mkdtemp
 from geonode.layers.views import _resolve_dataset
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
@@ -557,7 +556,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             d = None
             expected_files = None
             try:
-                d = tempfile.mkdtemp()
+                d = mkdtemp()
                 fnames = [f"foo.{ext}" for ext in extensions]
                 expected_files = {ext.lower(): fname for ext, fname in zip(extensions, fnames)}
                 for f in fnames:
