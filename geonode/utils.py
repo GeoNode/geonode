@@ -278,7 +278,7 @@ def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
     if not os.path.isdir(tempdir):
         os.makedirs(tempdir)
 
@@ -297,7 +297,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
 
     the_tar = tarfile.open(upload_file)
     the_tar.extractall(tempdir)
@@ -866,7 +866,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     tempdir_was_created = False
     try:
         if not tempdir:
-            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
             tempdir_was_created = True
 
         if is_zipfile(inShapefile):

@@ -810,8 +810,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     except Exception as e:
         raise GeoNodeException(e)
     finally:
-        # Get rid if temporary files that have been uploaded via Upload form
-        logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
-        shutil.rmtree(upload_session.tempdir, ignore_errors=True)
+        if upload.state in (enumerations.STATE_PROCESSED, enumerations.STATE_INVALID):
+            # Get rid if temporary files that have been uploaded via Upload form
+            logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
+            shutil.rmtree(upload_session.tempdir, ignore_errors=True)
 
     return saved_dataset
