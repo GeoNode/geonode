@@ -17,17 +17,15 @@
 #
 #########################################################################
 import os
-import tempfile
 import zipfile
 
 from django import forms
-from django.conf import settings
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 
 import json
-from geonode.utils import unzip_file
+from geonode.utils import unzip_file, mkdtemp
 from geonode.base.forms import ResourceBaseForm
 from geonode.layers.models import Dataset, Attribute
 
@@ -202,7 +200,7 @@ class LayerUploadForm(forms.Form):
 
     def write_files(self):
         absolute_base_file = None
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        tempdir = mkdtemp()
         if zipfile.is_zipfile(self.cleaned_data['base_file']):
             absolute_base_file = unzip_file(self.cleaned_data['base_file'],
                                             '.shp', tempdir=tempdir)

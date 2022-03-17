@@ -220,27 +220,6 @@ def setup_geoserver(options):
         _configure_data_dir()
 
 
-def _robust_rmtree(path, logger=None, max_retries=5):
-    """Try to delete paths robustly .
-    Retries several times (with increasing delays) if an OSError
-    occurs.  If the final attempt fails, the Exception is propagated
-    to the caller. Taken from https://github.com/hashdist/hashdist/pull/116
-    """
-
-    for i in range(max_retries):
-        try:
-            shutil.rmtree(path)
-            return
-        except OSError:
-            if logger:
-                info(f'Unable to remove path: {path}')
-                info('Retrying after %d seconds' % i)
-            time.sleep(i)
-
-    # Final attempt, pass any Exceptions up to caller.
-    shutil.rmtree(path)
-
-
 def _configure_data_dir():
     try:
         config = path(

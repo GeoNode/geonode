@@ -272,15 +272,22 @@ class OGC_Servers_Handler:
         return [self[alias] for alias in self]
 
 
+def mkdtemp(dir=settings.MEDIA_ROOT):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    tempdir = tempfile.mkdtemp(dir=dir)
+    if not os.path.isdir(tempdir):
+        os.makedirs(tempdir)
+    return tempdir
+
+
 def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
     Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
-    if not os.path.isdir(tempdir):
-        os.makedirs(tempdir)
+        tempdir = mkdtemp()
 
     the_zip = ZipFile(upload_file, allowZip64=True)
     the_zip.extractall(tempdir)
@@ -297,7 +304,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        tempdir = mkdtemp()
 
     the_tar = tarfile.open(upload_file)
     the_tar.extractall(tempdir)
@@ -866,7 +873,7 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     tempdir_was_created = False
     try:
         if not tempdir:
-            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+            tempdir = mkdtemp()
             tempdir_was_created = True
 
         if is_zipfile(inShapefile):

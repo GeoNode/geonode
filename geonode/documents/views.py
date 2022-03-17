@@ -20,7 +20,6 @@ import os
 import json
 import shutil
 import logging
-import tempfile
 import warnings
 import traceback
 
@@ -38,7 +37,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 from geonode.client.hooks import hookset
-from geonode.utils import resolve_object
+from geonode.utils import mkdtemp, resolve_object
 from geonode.base.views import batch_modify
 from geonode.people.forms import ProfileForm
 from geonode.base import register_event
@@ -174,7 +173,7 @@ class DocumentUploadView(CreateView):
 
         file = doc_form.pop('doc_file', None)
         if file:
-            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+            tempdir = mkdtemp()
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             storage_path = storage_manager.path(filepath)
@@ -282,7 +281,7 @@ class DocumentUpdateView(UpdateView):
 
         file = doc_form.pop('doc_file', None)
         if file:
-            tempdir = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+            tempdir = mkdtemp()
             dirname = os.path.basename(tempdir)
             filepath = storage_manager.save(f"{dirname}/{file.name}", file)
             storage_path = storage_manager.path(filepath)
