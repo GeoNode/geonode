@@ -165,8 +165,8 @@ class GeoAppsApiTests(APITestCase):
 
         # Delete
         response = self.client.delete(url, format='json')
-        self.assertEqual(response.status_code, 204)  # 204 - No Content
+        self.assertEqual(response.status_code, 405)  # 405 - Method Not Allowed
 
         response = self.client.get(
             f"{url}?include[]=data", format='json')
-        self.assertEqual(response.status_code, 404)  # 404 - Not Found
+        self.assertEqual(response.status_code, 200)

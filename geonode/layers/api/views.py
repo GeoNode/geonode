@@ -46,6 +46,7 @@ class DatasetViewSet(DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
+    http_method_names = ['get', 'patch', 'put']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
