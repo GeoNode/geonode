@@ -41,8 +41,6 @@ import datetime
 import geoserver
 import gsimporter
 
-import traceback
-
 from geoserver.resource import (
     Coverage,
     FeatureType)
@@ -286,11 +284,13 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
         if not all(
                 [f.file_type.dataset_type == 'coverage' for f in spatial_files]):
             msg = "Please upload only one type of file at a time"
+            logger.exception(Exception(msg))
             raise GeneralUploadException(detail=msg)
     name = get_valid_dataset_name(layer, overwrite)
     logger.debug(f'Name for layer: {name}')
     if not any(spatial_files.all_files()):
         msg = "Unable to recognize the uploaded file(s)"
+        logger.exception(Exception(msg))
         raise GeneralUploadException(detail=msg)
     the_dataset_type = get_dataset_type(spatial_files)
     _check_geoserver_store(name, the_dataset_type, overwrite)
@@ -298,7 +298,8 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
             FeatureType.resource_type,
             Coverage.resource_type):
         msg = f"Expected layer type to FeatureType or Coverage, not {the_dataset_type}"
-        raise RuntimeError(msg)
+        logger.exception(Exception(msg))
+        raise GeneralUploadException(msg)
     files_to_upload = preprocess_files(spatial_files)
     logger.debug(f"files_to_upload: {files_to_upload}")
     logger.debug(f'Uploading {the_dataset_type}')
@@ -405,12 +406,11 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
         # around, need to track the name computed above, for now, the
         # target store name can be used
     except Exception as e:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-        logger.exception('Error creating import session')
+        logger.exception(e)
         raise e
 
     if error_msg:
+        logger.exception(Exception(error_msg))
         raise GeneralUploadException(detail=error_msg)
     else:
         _log("Finished upload of [%s] to GeoServer without errors.", name)
@@ -513,6 +513,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
             upload_session.time_transforms = transforms
             upload_session.time = True
         except gsimporter.BadRequest as br:
+            logger.exception(br)
             Upload.objects.invalidate_from_session(upload_session)
             raise GeneralUploadException(detail=_('Error configuring time: ') + br)
         upload_session.import_session.tasks[0].save_transforms()
@@ -534,6 +535,7 @@ def csv_step(upload_session, lat_field, lng_field):
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
+        logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
     upload_session.import_session = import_session
@@ -557,6 +559,7 @@ def srs_step(upload_session, source, target):
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
+        logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
     upload_session.import_session = import_session
@@ -571,6 +574,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
+        logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
 
@@ -614,6 +618,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     try:
         import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
+        logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
     upload_session.import_session = import_session
@@ -680,6 +685,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 logger.exception(e)
                 sld_file = sld_file[0]
             except Exception as e:
+                logger.exception(e)
                 raise GeneralUploadException(detail=_('Error uploading Dataset') + e.args[0])
         sld_uploaded = True
     else:

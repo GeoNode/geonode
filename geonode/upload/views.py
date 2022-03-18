@@ -482,7 +482,7 @@ def time_step_view(request, upload_session):
 
     form = create_time_form(request, upload_session, request.POST)
     if not form.is_valid():
-        logger.warning('Invalid upload form: %s', form.errors)
+        logger.exception('Invalid upload form: %s', form.errors)
         raise GeneralUploadException(detail="Invalid Submission")
 
     cleaned = form.cleaned_data
@@ -509,6 +509,7 @@ def time_step_view(request, upload_session):
     try:
         upload_session.import_session = import_session.reload()
     except gsimporter.api.NotFound as e:
+        logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
 
@@ -690,6 +691,7 @@ def view(req, step=None):
                     step)
                 upload_session.completed_step = _completed_step
             except Exception as e:
+                logger.exception(e)
                 raise GeneralUploadException(detail=e.args[0])
 
         resp = _steps[step](req, upload_session)
@@ -701,7 +703,7 @@ def view(req, step=None):
                     content = content.decode('UTF-8')
                 resp_js = json.loads(content)
         except Exception as e:
-            logger.warning(e)
+            logger.exception(e)
             raise GeneralUploadException(detail=e.args[0])
 
         # must be put back to update object in session
@@ -732,16 +734,17 @@ def view(req, step=None):
         logger.exception('bad status line, geoserver down?')
         raise GeneralUploadException(detail=_geoserver_down_error_msg)
     except gsimporter.RequestFailed as e:
-        logger.exception('request failed')
+        logger.exception(e)
         errors = e.args
         # http bad gateway or service unavailable
         if int(errors[0]) in (502, 503):
             errors = [_geoserver_down_error_msg]
         raise GeneralUploadException(detail=errors)
     except gsimporter.BadRequest as e:
-        logger.exception('bad request')
+        logger.exception(e)
         raise GeneralUploadException(detail=e.args[0])
     except Exception as e:
+        logger.exception(e)
         if isinstance(e, APIException):
             raise e
         raise GeneralUploadException(detail=e)
