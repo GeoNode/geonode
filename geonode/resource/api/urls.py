@@ -17,15 +17,9 @@
 #
 #########################################################################
 from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
 urlpatterns = [
-    path('resource-service/search/', views.resource_service_search),
-    path('resource-service/search/<str:resource_type>', views.resource_service_search),
-    path('resource-service/exists/<str:uuid>', views.resource_service_exists),
     path('resource-service/execution-status/<str:execution_id>', views.resource_service_execution_status, name='rs-execution-status')
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

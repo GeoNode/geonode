@@ -87,6 +87,7 @@ from .permissions import (
     IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
+    IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter
 )
 from .serializers import (
@@ -164,7 +165,7 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, ]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsManagerEditOrAdmin, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
