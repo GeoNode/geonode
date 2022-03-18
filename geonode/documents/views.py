@@ -35,6 +35,7 @@ from django.template import loader
 from django.views.generic.edit import CreateView, UpdateView
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from geonode.base.api.exceptions import geonode_exception_handler
 
 from geonode.client.hooks import hookset
 from geonode.utils import mkdtemp, resolve_object
@@ -138,6 +139,17 @@ def document_embed(request, docid):
 class DocumentUploadView(CreateView):
     http_method_names = ['post']
     form_class = DocumentCreateForm
+
+    def post(self, request, *args, **kwargs):
+        self.object = None
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            exception_response = geonode_exception_handler(e, {})
+            return HttpResponse(
+                json.dumps(exception_response.data),
+                content_type='application/json',
+                status=exception_response.status_code)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -267,6 +279,17 @@ class DocumentUpdateView(UpdateView):
     form_class = DocumentReplaceForm
     queryset = Document.objects.all()
     context_object_name = 'document'
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            exception_response = geonode_exception_handler(e, {})
+            return HttpResponse(
+                json.dumps(exception_response.data),
+                content_type='application/json',
+                status=exception_response.status_code)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
