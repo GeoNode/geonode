@@ -601,12 +601,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(resp.status_code, 200)
         resource_id = data['url'].split('/')[-1]
         upload = Upload.objects.get(resource_id=resource_id)
-        # temp folder is deleted after successful upload
-        self.assertFalse(os.path.exists(upload.upload_dir))
+        # temp folder is not deleted after successful upload
+        self.assertTrue(os.path.exists(upload.upload_dir))
 
         # delete resource with temp foler
         delete_resource_url = reverse('base-resources-detail', kwargs={'pk': resource_id})
-        os.mkdir(upload.upload_dir, mode=777)
         self.assertTrue(os.path.exists(upload.upload_dir))
 
         response = self.client.delete(f"{delete_resource_url}/delete")
