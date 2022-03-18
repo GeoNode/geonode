@@ -16,20 +16,18 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from hmac import trans_36
 import os
 import importlib
 
 from uuid import uuid1
 from pathlib import Path
 from typing import BinaryIO, List, Mapping, Union
-from xmlrpc.client import Boolean
 from django.conf import settings
 
 from django.core.exceptions import SuspiciousFileOperation
 from django.utils.deconstruct import deconstructible
 
-from geonode.storage.data_retriever import DataRetriever
+from geonode.storage.data_retriever import DataItemRetriever, DataRetriever
 
 from . import settings as sm_settings
 
@@ -84,10 +82,15 @@ class StorageManagerInterface(metaclass=ABCMeta):
 
 @deconstructible
 class StorageManager(StorageManagerInterface):
+    '''
+    Manage the files with different filestorages configured by default is the Filesystem one.
+    If the file is not in the FileSystem, we try to transfer it on the local filesystem and then
+    treat as a file_system file
+    '''
 
-    def __init__(self, files: Mapping = {}):
+    def __init__(self, remote_files: Mapping = {}):
         self._concrete_storage_manager = self._get_concrete_manager()
-        self.data_retriever = DataRetriever(files, tranfer_at_creation=True)
+        self.data_retriever = DataRetriever(remote_files, tranfer_at_creation=False)
 
     def _get_concrete_manager(self):
         module_name, class_name = sm_settings.STORAGE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -105,7 +108,15 @@ class StorageManager(StorageManagerInterface):
         return self._concrete_storage_manager.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._concrete_storage_manager.open(name, mode=mode)
+        try:
+            return self._concrete_storage_manager.open(name, mode=mode)
+        except Exception:
+            '''
+            If is not possible to retrieve the path with the normal manager
+            we try to transfer it and open it
+            '''
+            files_path = DataItemRetriever(_file=name).transfer_remote_file()
+            return self._concrete_storage_manager.open(files_path, mode=mode)
 
     def path(self, name):
         return self._concrete_storage_manager.path(name)
@@ -175,8 +186,24 @@ class StorageManager(StorageManagerInterface):
     def generate_filename(self, filename):
         return self._concrete_storage_manager.generate_filename(filename)
 
-    def get_paths(self):
+    def clone_remote_files(self) -> Mapping:
+        '''
+        Using the data retriever object clone the remote path into a local temporary storage
+        '''
+        return self.data_retriever.get_paths(allow_transfer=True)
+
+    def get_retrieved_paths(self) -> Mapping:
+        '''
+        Return the path of the local objects in the temporary folder
+        '''
         return self.data_retriever.get_paths(allow_transfer=False)
+
+    def delete_retrieved_paths(self) -> None:
+        '''
+        Delete cloned object from the temporary folder
+        '''
+        return self.data_retriever.delete_files()
+
 
 class DefaultStorageManager(StorageManagerInterface):
 

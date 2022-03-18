@@ -39,6 +39,7 @@ from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSeri
 from rest_framework.exceptions import NotFound
 
 from geonode.storage.manager import StorageManager
+from geonode.resource.manager import resource_manager
 
 from .serializers import DatasetReplaceAppendSerializer, DatasetSerializer, DatasetListSerializer
 from .permissions import DatasetPermissionsFilter
@@ -182,21 +183,46 @@ class DatasetViewSet(DynamicModelViewSet):
         This validation will ensure that the new input file are fully compliant
         with the existing dataset. If not, an InvalidDatasetException is raised
         """
-        store_spatial_files = data.pop("store_spatial_files")  # noqa
+        store_spatial_files = data.pop("store_spatial_files")
 
         try:
-            storage_manager = StorageManager(files=data)
+            storage_manager = StorageManager(remote_files=data)
+
+            storage_manager.clone_remote_files()
+
+            files = storage_manager.get_retrieved_paths()
+
+            validate_input_source(
+                layer=dataset,
+                filename=data.get("base_file"),
+                files={_file.split(".")[1]: _file for _file in files.values()},
+                gtype=dataset.gtype,
+                action_type=action,
+                storage_manager=storage_manager,
+            )
+
+            call_kwargs = {
+                "instance": dataset,
+                "vals": {'files': list(files.values()), 'user': request.user},
+                "xml_file": files.get('xml_file', None),
+                "store_spatial_files": store_spatial_files,
+                "metadata_uploaded": True if files.get('xml_file', None) else False
+            }
+
+            getattr(resource_manager, action)(**call_kwargs)
+
         except Exception as e:
             raise GeneralDatasetException(e)
-
-        validate_input_source(
-            layer=dataset,
-            filename=data.get("base_file"),
-            files={_file.split(".")[1]: _file for _file in storage_manager.get_paths().values()},
-            gtype=dataset.gtype,
-            action_type=action,
-            storage_manager=storage_manager,
-        )
-
+        finally:
+            '''
+            Always keep the tempoaray folder under control.
+            '''
+            if not store_spatial_files:
+                storage_manager.delete_retrieved_paths()
         # For now, we will return the input dataset
-        return Response(DatasetReplaceAppendSerializer(request.data).data)
+        data = {
+            "alternate": dataset.alternate,
+            "state": "success",
+            "action": action
+        }
+        return Response(data)
