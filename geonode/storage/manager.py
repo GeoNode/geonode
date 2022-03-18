@@ -16,16 +16,20 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from hmac import trans_36
 import os
 import importlib
 
 from uuid import uuid1
 from pathlib import Path
-from typing import BinaryIO, List, Union
+from typing import BinaryIO, List, Mapping, Union
+from xmlrpc.client import Boolean
 from django.conf import settings
 
 from django.core.exceptions import SuspiciousFileOperation
 from django.utils.deconstruct import deconstructible
+
+from geonode.storage.data_retriever import DataRetriever
 
 from . import settings as sm_settings
 
@@ -81,8 +85,9 @@ class StorageManagerInterface(metaclass=ABCMeta):
 @deconstructible
 class StorageManager(StorageManagerInterface):
 
-    def __init__(self):
+    def __init__(self, files: Mapping = {}):
         self._concrete_storage_manager = self._get_concrete_manager()
+        self.data_retriever = DataRetriever(files, tranfer_at_creation=True)
 
     def _get_concrete_manager(self):
         module_name, class_name = sm_settings.STORAGE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -170,6 +175,8 @@ class StorageManager(StorageManagerInterface):
     def generate_filename(self, filename):
         return self._concrete_storage_manager.generate_filename(filename)
 
+    def get_paths(self):
+        return self.data_retriever.get_paths(allow_transfer=False)
 
 class DefaultStorageManager(StorageManagerInterface):
 

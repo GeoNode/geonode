@@ -615,7 +615,7 @@ def get_uuid_handler():
     return import_string(settings.LAYER_UUID_HANDLER)
 
 
-def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):
+def validate_input_source(layer, filename, files, gtype=None, action_type='replace', storage_manager=storage_manager):
     if layer.is_vector() and is_raster(filename):
         raise InvalidDatasetException(_(
             f"You are attempting to {action_type} a vector dataset with a raster."))
@@ -624,13 +624,12 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             f"You are attempting to {action_type} a raster dataset with a vector."))
 
     if layer.is_vector():
-        from geonode.upload.utils import _fixup_base_file
         absolute_base_file = None
         try:
             if 'shp' in files and os.path.exists(files['shp']):
-                absolute_base_file = _fixup_base_file(files['shp'])
-            elif 'zip' in files and os.path.exists(files['zip']):
-                absolute_base_file = _fixup_base_file(files['zip'])
+                absolute_base_file = storage_manager.path(files['shp'])
+            elif 'zip' in files and os.path.exists(files['zip']): # the zip should be removed. The storage manager should always unzip it with the dataretriever
+                absolute_base_file = storage_manager.path(files['zip'])
         except InvalidDatasetException:
             absolute_base_file = None
 

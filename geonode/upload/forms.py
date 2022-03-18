@@ -26,7 +26,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode.upload.api.exceptions import FileUploadLimitException, UploadParallelismLimitException
 
 from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
-from geonode.upload.data_retriever import DataRetriever
+from geonode.storage.data_retriever import DataRetriever
 
 from .. import geoserver
 from ..utils import check_ogc_backend

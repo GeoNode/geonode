@@ -1,10 +1,10 @@
 from rest_framework.exceptions import APIException
 
 
-class DatasetReplaceException(APIException):
+class GeneralDatasetException(APIException):
     status_code = 500
     default_detail = 'Error during dataset replace.'
-    default_code = 'dataset_replace_exception'
+    default_code = 'dataset_exception'
     category = 'dataset_api'
 
 
