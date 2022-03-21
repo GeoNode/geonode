@@ -468,7 +468,7 @@ class AdvancedSecurityWorkflowManager:
         return _perm_spec
 
     @staticmethod
-    def get_workflow_permissions(uuid: str, /, instance=None, permissions: dict = {}) -> dict:
+    def get_permissions(uuid: str, /, instance=None, permissions: dict = {}) -> dict:
         """
         Adapts the provided "perm_spec" accordingly to the following schema:
 

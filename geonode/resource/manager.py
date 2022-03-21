@@ -550,7 +550,7 @@ class ResourceManager(ResourceManagerInterface):
                     _dataset = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
                     if not _dataset:
                         try:
-                            _dataset = _resource.dataset if hasattr(_resource, "layer") else None
+                            _dataset = _resource.dataset if hasattr(_resource, "dataset") else None
                         except Exception:
                             _dataset = None
                     if _dataset:
@@ -597,8 +597,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
                     """
-                    Remove all the permissions except for the owner and assign the
-                    view permission to the anonymous group
+                    Cleanup the Guardian tables
                     """
                     self.remove_permissions(uuid, instance=_resource)
 
@@ -627,7 +626,7 @@ class ResourceManager(ResourceManagerInterface):
                             _permissions = copy.deepcopy(permissions)
 
                         # Fixup Advanced Workflow permissions
-                        _perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
+                        _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
 
                         # Anonymous User group
                         if 'users' in _perm_spec and ("AnonymousUser" in _perm_spec['users'] or get_anonymous_user() in _perm_spec['users']):
@@ -703,7 +702,7 @@ class ResourceManager(ResourceManagerInterface):
                             raise Exception("Could not acquire 'anonymous' Group.")
 
                         # Fixup Advanced Workflow permissions
-                        _perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=None)
+                        _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=None)
 
                         # Anonymous
                         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
