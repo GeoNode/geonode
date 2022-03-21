@@ -120,7 +120,7 @@ def _validate_shapefile_components(possible_filenames):
 
     """
 
-    shp_files = [f for f in possible_filenames if f.lower().endswith(".shp")]
+    shp_files = [str(f) for f in possible_filenames if str(f).lower().endswith(".shp")]
     aux_mandatory = True
     if len(shp_files) > 1:
         raise forms.ValidationError(_("Only one shapefile per zip is allowed"))

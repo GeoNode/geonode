@@ -744,6 +744,7 @@ def view(req, step=None):
     except Exception as e:
         if isinstance(e, APIException):
             raise e
+        logger.exception(e.args[0])
         raise GeneralUploadException(detail=e)
 
 

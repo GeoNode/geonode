@@ -339,7 +339,8 @@ class ResourceManager(ResourceManagerInterface):
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True, extra_metadata: list = []) -> ResourceBase:
+               vals: dict = {}, regions: list = [], keywords: list = [], custom: dict = {}, notify: bool = True, extra_metadata: list = [],
+               *args, **kwargs) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
@@ -366,6 +367,10 @@ class ResourceManager(ResourceManagerInterface):
                                 uuid = _uuid
 
                     logger.debug(f'Update Dataset with information coming from XML File if available {_resource}')
+
+                    if not kwargs.get("store_spatial_files", True):
+                        vals['files'] = []
+
                     _resource.save()
                     _resource = update_resource(
                         instance=_resource.get_real_instance(),
@@ -392,6 +397,14 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.save(notify=notify)
                 resourcebase_post_save(_resource.get_real_instance())
+            if kwargs.get('sld_file', False) and kwargs.get('sld_uploaded', False):
+                self._concrete_resource_manager.set_style(
+                    method="",
+                    uuid=_resource.uuid,
+                    resource=_resource,
+                    sld_file=kwargs.get('sld_file', False),
+                    sld_uploaded=kwargs.get('sld_uploaded', False)
+                )
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -501,26 +514,26 @@ class ResourceManager(ResourceManagerInterface):
                 instance.save(notify=False)
         return instance
 
-    def append(self, instance: ResourceBase, vals: dict = {}):
+    def append(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs):
         if self._validate_resource(instance.get_real_instance(), 'append'):
             self._concrete_resource_manager.append(instance.get_real_instance(), vals=vals)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update, *args, **kwargs)
         return instance
 
-    def replace(self, instance: ResourceBase, vals: dict = {}):
+    def replace(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs):
         if self._validate_resource(instance.get_real_instance(), 'replace'):
-            if vals.get('files', None):
+            if vals.get('files', None) and kwargs.get('store_spatial_files', True):
                 vals.update(storage_manager.replace(instance.get_real_instance(), vals.get('files')))
-            self._concrete_resource_manager.replace(instance.get_real_instance(), vals=vals)
+            self._concrete_resource_manager.replace(instance.get_real_instance(), vals=vals, *args, **kwargs)
             to_update = vals.copy()
             if instance:
                 if 'user' in to_update:
                     to_update.pop('user')
-                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update)
+                return self.update(instance.uuid, instance.get_real_instance(), vals=to_update, *args, **kwargs)
         return instance
 
     def _validate_resource(self, instance: ResourceBase, action_type: str) -> bool:

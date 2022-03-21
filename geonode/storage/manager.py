@@ -21,11 +21,13 @@ import importlib
 
 from uuid import uuid1
 from pathlib import Path
-from typing import BinaryIO, List, Union
+from typing import BinaryIO, List, Mapping, Union
 from django.conf import settings
 
 from django.core.exceptions import SuspiciousFileOperation
 from django.utils.deconstruct import deconstructible
+
+from geonode.storage.data_retriever import DataItemRetriever, DataRetriever
 
 from . import settings as sm_settings
 
@@ -80,9 +82,15 @@ class StorageManagerInterface(metaclass=ABCMeta):
 
 @deconstructible
 class StorageManager(StorageManagerInterface):
+    '''
+    Manage the files with different filestorages configured by default is the Filesystem one.
+    If the file is not in the FileSystem, we try to transfer it on the local filesystem and then
+    treat as a file_system file
+    '''
 
-    def __init__(self):
+    def __init__(self, remote_files: Mapping = {}):
         self._concrete_storage_manager = self._get_concrete_manager()
+        self.data_retriever = DataRetriever(remote_files, tranfer_at_creation=False)
 
     def _get_concrete_manager(self):
         module_name, class_name = sm_settings.STORAGE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -100,7 +108,15 @@ class StorageManager(StorageManagerInterface):
         return self._concrete_storage_manager.listdir(path)
 
     def open(self, name, mode='rb'):
-        return self._concrete_storage_manager.open(name, mode=mode)
+        try:
+            return self._concrete_storage_manager.open(name, mode=mode)
+        except Exception:
+            '''
+            If is not possible to retrieve the path with the normal manager
+            we try to transfer it and open it
+            '''
+            files_path = DataItemRetriever(_file=name).transfer_remote_file()
+            return self._concrete_storage_manager.open(files_path, mode=mode)
 
     def path(self, name):
         return self._concrete_storage_manager.path(name)
@@ -150,6 +166,9 @@ class StorageManager(StorageManagerInterface):
             for f in new_files:
                 with self.open(f, 'rb+') as open_file:
                     out.append(self.replace_single_file(old_files[0], open_file))
+        elif len(old_files) == 0:
+            # if it comes from the DataRetriver, the list is made with Path objects and not strings
+            out = [str(x) for x in new_files]
         return out
 
     def replace_single_file(self, old_file: str, new_file: BinaryIO):
@@ -169,6 +188,28 @@ class StorageManager(StorageManagerInterface):
 
     def generate_filename(self, filename):
         return self._concrete_storage_manager.generate_filename(filename)
+
+    def clone_remote_files(self) -> Mapping:
+        '''
+        Using the data retriever object clone the remote path into a local temporary storage
+        '''
+        self.data_retriever.get_paths(allow_transfer=True)
+
+    def get_retrieved_paths(self) -> Mapping:
+        '''
+        Return the path of the local objects in the temporary folder.
+        We convert them as string instead of PosixPath
+        '''
+        _files = self.data_retriever.get_paths(allow_transfer=False)
+        return {_ext: str(_file) for _ext, _file in _files.items()}
+
+    def delete_retrieved_paths(self, force=False) -> None:
+        '''
+        Delete cloned object from the temporary folder.
+        By default if the folder is under the MEDIA_ROOT the file is not deleted.
+        In case should be deleted, the force=True is required
+        '''
+        return self.data_retriever.delete_files(force=force)
 
 
 class DefaultStorageManager(StorageManagerInterface):

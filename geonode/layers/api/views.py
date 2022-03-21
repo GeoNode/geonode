@@ -32,11 +32,14 @@ from rest_framework.response import Response
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.layers.api.exceptions import InvalidDatasetException
+from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import validate_input_source
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
 from rest_framework.exceptions import NotFound
+
+from geonode.storage.manager import StorageManager
+from geonode.resource.manager import resource_manager
 
 from .serializers import DatasetReplaceAppendSerializer, DatasetSerializer, DatasetListSerializer
 from .permissions import DatasetPermissionsFilter
@@ -50,18 +53,22 @@ class DatasetViewSet(DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, DatasetPermissionsFilter
+        DynamicFilterBackend,
+        DynamicSortingFilter,
+        DynamicSearchFilter,
+        ExtentFilter,
+        DatasetPermissionsFilter,
     ]
-    queryset = Dataset.objects.all().order_by('-last_updated')
+    queryset = Dataset.objects.all().order_by("-last_updated")
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return DatasetListSerializer
         return DatasetSerializer
 
@@ -93,9 +100,9 @@ class DatasetViewSet(DynamicModelViewSet):
         description="API endpoint allowing to replace a dataset.",
         examples=[
             OpenApiExample(
-                'Example1',
-                summary='expected payload',
-                description='Example of the input payload',
+                "Example1",
+                summary="expected payload",
+                description="Example of the input payload",
                 value='{\
                     "base_file": "/home/mattia/gis_data/single_point/single_point.shp",\
                     "dbf_file": "/home/mattia/gis_data/single_point/single_point.dbf",\
@@ -103,21 +110,21 @@ class DatasetViewSet(DynamicModelViewSet):
                     "prj_file": "/home/mattia/gis_data/single_point/single_point.prj",\
                     "xml_file": "/home/mattia/gis_data/single_point.xml",\
                     "store_spatial_files": False\
-                }'
+                }',
             )
-        ]
+        ],
     )
     @action(
         detail=False,
         url_path="(?P<dataset_id>\d+)/replace",  # noqa
         url_name="replace-dataset",
         methods=["post"],
-        serializer_class=DatasetReplaceAppendSerializer
+        serializer_class=DatasetReplaceAppendSerializer,
     )
     def replace(self, request, dataset_id=None):
-        '''
+        """
         Edpoint for replace data to an existing layer
-        '''
+        """
         return self._replace_or_append(request, dataset_id, action="replace")
 
     @extend_schema(
@@ -126,9 +133,9 @@ class DatasetViewSet(DynamicModelViewSet):
         description="API endpoint allowing to append data to dataset.",
         examples=[
             OpenApiExample(
-                'Example1',
-                summary='expected payload',
-                description='Example of the input payload',
+                "Example1",
+                summary="expected payload",
+                description="Example of the input payload",
                 value='{\
                     "base_file": "/home/mattia/gis_data/single_point/single_point.shp",\
                     "dbf_file": "/home/mattia/gis_data/single_point/single_point.dbf",\
@@ -136,35 +143,35 @@ class DatasetViewSet(DynamicModelViewSet):
                     "prj_file": "/home/mattia/gis_data/single_point/single_point.prj",\
                     "xml_file": "/home/mattia/gis_data/single_point.xml",\
                     "store_spatial_files": False\
-                }'
+                }',
             )
-        ]
+        ],
     )
     @action(
         detail=False,
         url_path="(?P<dataset_id>\d+)/append",  # noqa
         url_name="append-dataset",
         methods=["post"],
-        serializer_class=DatasetReplaceAppendSerializer
+        serializer_class=DatasetReplaceAppendSerializer,
     )
     def append(self, request, dataset_id=None):
-        '''
+        """
         Edpoint for replace data to an existing layer
-        '''
+        """
         return self._replace_or_append(request, dataset_id, action="append")
 
     def _replace_or_append(self, request: Request, dataset_id: int, action: str) -> Response:
-        '''
+        """
         Raise error if the datasets does not exists
-        '''
+        """
         if not self.queryset.filter(id=dataset_id).exists():
             raise NotFound(detail=f"Layer with ID {dataset_id} is not available")
 
         serializer = self.serializer_class(data=request.data)
-        '''
+        """
         Raise error if the serializer is invalid. Instead of the default exception
         We raise a custom one with the list of the erros from the serializer
-        '''
+        """
         if not serializer.is_valid(raise_exception=False):
             raise InvalidDatasetException(detail=serializer.errors)
 
@@ -172,19 +179,55 @@ class DatasetViewSet(DynamicModelViewSet):
 
         dataset = self.queryset.get(id=dataset_id)
 
-        '''
+        """
         This validation will ensure that the new input file are fully compliant
         with the existing dataset. If not, an InvalidDatasetException is raised
-        '''
-        store_spatial_files = data.pop('store_spatial_files') # noqa
+        """
+        store_spatial_files = data.pop("store_spatial_files")
 
-        validate_input_source(
-            layer=dataset,
-            filename=data.get('base_file'),
-            files={_file.split('.')[1]: _file for _file in data.values()},
-            gtype=dataset.gtype,
-            action_type=action
-        )
+        try:
+            storage_manager = StorageManager(remote_files=data)
 
+            storage_manager.clone_remote_files()
+
+            files = storage_manager.get_retrieved_paths()
+
+            validate_input_source(
+                layer=dataset,
+                filename=data.get("base_file"),
+                files={_file.split(".")[1]: _file for _file in files.values()},
+                gtype=dataset.gtype,
+                action_type=action,
+                storage_manager=storage_manager,
+            )
+
+            xml_file = files.pop('xml_file', None)
+            sld_file = files.pop('sld_file', None)
+
+            call_kwargs = {
+                "instance": dataset,
+                "vals": {'files': list(files.values()), 'user': request.user},
+                "store_spatial_files": store_spatial_files,
+                "xml_file": xml_file,
+                "metadata_uploaded": True if xml_file is not None else False,
+                "sld_file": sld_file,
+                "sld_uploaded": True if sld_file is not None else False
+            }
+
+            getattr(resource_manager, action)(**call_kwargs)
+
+        except Exception as e:
+            raise GeneralDatasetException(e)
+        finally:
+            '''
+            Always keep the temporary folder under control.
+            '''
+            if not store_spatial_files:
+                storage_manager.delete_retrieved_paths()
         # For now, we will return the input dataset
-        return Response(DatasetReplaceAppendSerializer(request.data).data)
+        data = {
+            "alternate": dataset.alternate,
+            "state": "success",
+            "action": action
+        }
+        return Response(data)

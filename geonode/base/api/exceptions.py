@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from rest_framework.exceptions import APIException
 from rest_framework.views import exception_handler
 
 
@@ -24,7 +25,7 @@ def geonode_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    if response is not None:
+    if response is not None and isinstance(response, APIException):
         # for the upload exception we need a custom response
         response.data = {
             "success": False,

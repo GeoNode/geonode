@@ -615,7 +615,7 @@ def get_uuid_handler():
     return import_string(settings.LAYER_UUID_HANDLER)
 
 
-def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):
+def validate_input_source(layer, filename, files, gtype=None, action_type='replace', storage_manager=storage_manager):
     if layer.is_vector() and is_raster(filename):
         raise InvalidDatasetException(_(
             f"You are attempting to {action_type} a vector dataset with a raster."))
@@ -628,9 +628,9 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
         absolute_base_file = None
         try:
             if 'shp' in files and os.path.exists(files['shp']):
-                absolute_base_file = _fixup_base_file(files['shp'])
+                absolute_base_file = storage_manager.path(files['shp'])
             elif 'zip' in files and os.path.exists(files['zip']):
-                absolute_base_file = _fixup_base_file(files['zip'])
+                absolute_base_file = _fixup_base_file(files['zip'])  # have to stay for compatibility reasons but will no longer be used in the future
         except InvalidDatasetException:
             absolute_base_file = None
 
@@ -642,6 +642,9 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             try:
                 gtype = layer.gtype if not gtype else gtype
                 inDataSource = ogr.Open(absolute_base_file)
+                if inDataSource is None:
+                    raise InvalidDatasetException(
+                        _(f"Please endure that the base_file {absolute_base_file} is not empty"))
                 lyr = inDataSource.GetLayer(str(layer.name))
                 if not lyr:
                     raise InvalidDatasetException(
