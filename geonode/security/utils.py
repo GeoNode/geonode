@@ -30,7 +30,6 @@ from django.contrib.auth.models import Group, Permission
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import get_objects_for_user
 
-from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import (
     PermSpecCompact,
@@ -56,6 +55,8 @@ def get_visible_resources(queryset,
                           unpublished_not_visible=False,
                           private_groups_not_visibile=False):
     # Get the list of objects the user has access to
+    from geonode.groups.models import GroupProfile
+
     is_admin = user.is_superuser if user and user.is_authenticated else False
     anonymous_group = None
     public_groups = GroupProfile.objects.exclude(access="private").values('group')
@@ -250,6 +251,8 @@ def get_user_visible_groups(user, include_public_invite: bool = False):
     - The user is member of
     - The group is public
     """
+    from geonode.groups.models import GroupProfile
+
     metadata_author_groups = []
     if user.is_superuser or user.is_staff:
         metadata_author_groups = GroupProfile.objects.all()

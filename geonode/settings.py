@@ -1865,29 +1865,6 @@ if os.name == 'nt':
 # ######################################################## #
 # Advanced Resource Publishing Worklow Settings - START    #
 # ######################################################## #
-"""
-    - if [ RESOURCE_PUBLISHING == True ]
-      1. "unpublished" won't be visibile to Anonymous users
-      2. "unpublished" will be visible to registered users **IF** they have view permissions
-      3. "unpublished" will be always visible to the owner and Group Managers
-      By default the uploaded resources will be "unpublished".
-      The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
-      If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
-       the Group "Managers" will be able to edit the Resource.
-
-    - if [ ADMIN_MODERATE_UPLOADS == True ]
-      1. The owner won't be able to change to neither "approved" nor "published" state (unless he is a superuser)
-      2. If the Resource belongs to a Group somehow, the Managers will be able to change the state to "approved"
-         but **NOT** to "published". Only a superuser can publish a resource.
-      3. Superusers can do enything.
-
-    - if [ GROUP_PRIVATE_RESOURCES == True ]
-      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of
-       the belonging groups.
-
-    - if [ GROUP_MANDATORY_RESOURCES == True ]
-      Editor will be **FORCED** to select a Group when editing the resource metadata.
-"""
 
 # option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
@@ -1902,6 +1879,7 @@ GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURC
 # If this option is enabled, Groups will become strictly Mandatory on
 # Metadata Wizard
 GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get('GROUP_MANDATORY_RESOURCES', 'False'))
+
 # ######################################################## #
 # Advanced Resource Publishing Worklow Settings - END      #
 # ######################################################## #
