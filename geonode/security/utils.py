@@ -376,7 +376,7 @@ class AdvancedSecurityWorkflowManager:
         return None
 
     @staticmethod
-    def set_group_manager_permissions_according_to_workflow(user, group, role):
+    def set_group_member_permissions(user, group, role):
 
         def _handle_perms(perms=None):
             '''
