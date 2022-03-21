@@ -83,7 +83,7 @@ class BaseApiTests(APITestCase):
         create_models(b'map')
         create_models(b'dataset')
 
-    def test_gropus_list(self):
+    def test_groups_list(self):
         """
         Ensure we can access the gropus list.
         """
@@ -135,6 +135,104 @@ class BaseApiTests(APITestCase):
             priv_2.delete()
             pub_invite_1.delete()
             pub_invite_2.delete()
+
+    def test_create_group(self):
+        """
+        Ensure only Admins can create groups.
+        """
+        data = {
+            "title": "group title",
+            "group": 1,
+            "slug": "group_title",
+            "description": "test",
+            "access": "private",
+            "categories": []
+            }
+        try:
+            # Anonymous
+            url = reverse('group-profiles-list')
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Registered member
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Group manager
+            group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
+            group.join(get_user_model().objects.get(username='norman'), role='manager')
+            self.assertTrue(self.client.login(username='norman', password='norman'))
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Admin
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.json()['group_profile']['title'], 'group title')
+        finally:
+            GroupProfile.objects.get(slug='group_title').delete()
+            group.delete()
+
+    def test_edit_group(self):
+        """
+        Ensure only admins and group managers can edit a group.
+        """
+        group = GroupProfile.objects.create(slug="pub_1", title="pub_1", access="public")
+        data = {'title': 'new_title'}
+        try:
+            # Anonymous
+            url = f"{reverse('group-profiles-list')}/{group.id}/"
+            response = self.client.patch(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Registered member
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            response = self.client.patch(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Group manager
+            group.join(get_user_model().objects.get(username='bobby'), role='manager')
+            response = self.client.patch(url, data=data, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(GroupProfile.objects.get(id=group.id).title, data['title'])
+
+            # Admin
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            response = self.client.patch(url, data={'title': 'admin_title'}, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(GroupProfile.objects.get(id=group.id).title, 'admin_title')
+        finally:
+            group.delete()
+
+    def test_delete_group(self):
+        """
+        Ensure only admins can delete a group.
+        """
+        group = GroupProfile.objects.create(slug="pub_1", title="pub_1", access="public")
+        try:
+            # Anonymous
+            url = f"{reverse('group-profiles-list')}/{group.id}/"
+            response = self.client.delete(url, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Registered member
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            response = self.client.delete(url, format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Group manager
+            group.join(get_user_model().objects.get(username='bobby'), role='manager')
+            response = self.client.delete(f"{reverse('group-profiles-list')}/{group.id}/", format='json')
+            self.assertEqual(response.status_code, 403)
+
+            # Admin can delete a group
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+            response = self.client.delete(f"{reverse('group-profiles-list')}/{group.id}/", format='json')
+            self.assertEqual(response.status_code, 204)
+        finally:
+            group.delete()
 
     def test_users_list(self):
         """
@@ -222,23 +320,79 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 201)
         # default contributor group_perm is returned in perms
         self.assertIn('add_resource', response.data['user']['perms'])
+        # Anonymous
+        self.assertIsNone(self.client.logout())
+        response = self.client.post(url, data={'username': 'new_user_1'}, format='json')
+        self.assertEqual(response.status_code, 403)
 
-    def test_delete_users(self):
+    def test_update_user_profile(self):
         """
-        Ensure users cannot delete others.
+        Ensure users cannot update others.
         """
-        norman = get_user_model().objects.get(username='norman')
-        url = reverse('users-detail', kwargs={'pk': norman.pk})
-        # Anonymous can read
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        # Anonymous can't write
-        response = self.client.delete(url, format='json')
-        self.assertEqual(response.status_code, 403)
-        # Bob can't delete Norman
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        response = self.client.delete(url, format='json')
-        self.assertEqual(response.status_code, 403)
+        try:
+            user = get_user_model().objects.create_user(
+                username='user_test_delete',
+                email="user_test_delete@geonode.org",
+                password='user')
+            url = reverse('users-detail', kwargs={'pk': user.pk})
+            data = {'first_name': 'user'}
+            # Anonymous
+            response = self.client.patch(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+            # Another registered user
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            response = self.client.patch(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+            # User self profile
+            self.assertTrue(self.client.login(username="user_test_delete", password="user"))
+            response = self.client.patch(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+            # Group manager
+            group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
+            group.join(user)
+            group.join(get_user_model().objects.get(username='norman'), role='manager')
+            self.assertTrue(self.client.login(username='norman', password='norman'))
+            response = self.client.post(url, data=data, format='json')
+            self.assertEqual(response.status_code, 403)
+            # Admin can edit user
+            self.assertTrue(self.client.login(username="admin", password="admin"))
+            response = self.client.patch(url, data={'first_name': 'user_admin'}, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(get_user_model().objects.get(username='user_test_delete').first_name, 'user_admin')
+        finally:
+            user.delete()
+            group.delete()
+
+    def test_delete_user_profile(self):
+        """
+        Ensure only admins can delete profiles.
+        """
+        try:
+            user = get_user_model().objects.create_user(
+                username='user_test_delete',
+                email="user_test_delete@geonode.org",
+                password='user')
+            url = reverse('users-detail', kwargs={'pk': user.pk})
+            # Anonymous can read
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            # Anonymous can't delete user
+            response = self.client.delete(url, format='json')
+            self.assertEqual(response.status_code, 403)
+            # Bob can't delete user
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            response = self.client.delete(url, format='json')
+            self.assertEqual(response.status_code, 403)
+            # User can not delete self profile
+            self.assertTrue(self.client.login(username="user_test_delete", password="user"))
+            response = self.client.delete(url, format='json')
+            self.assertEqual(response.status_code, 403)
+            # Admin can delete user
+            self.assertTrue(self.client.login(username="admin", password="admin"))
+            response = self.client.delete(url, format='json')
+            self.assertEqual(response.status_code, 204)
+        finally:
+            user.delete()
 
     def test_base_resources(self):
         """
