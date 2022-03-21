@@ -20,10 +20,8 @@ import logging
 import shutil
 import tempfile
 from django.conf import settings
-import gisdata
 
 from unittest.mock import patch
-from unittest import skip
 from django.contrib.auth import get_user_model
 
 from urllib.parse import urljoin
@@ -33,7 +31,7 @@ from rest_framework.test import APITestCase
 from geonode.geoserver.createlayer.utils import create_dataset
 
 from geonode.layers.models import Dataset, Attribute
-from geonode.base.populate_test_data import create_models
+from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.maps.models import Map, MapLayer
 
 logger = logging.getLogger(__name__)
@@ -51,9 +49,6 @@ class DatasetsApiTests(APITestCase):
         create_models(b'document')
         create_models(b'map')
         create_models(b'dataset')
-
-    def tearDown(self) -> None:
-        Dataset.objects.filter(name='new_name').delete()
 
     def test_datasets(self):
         """
@@ -195,10 +190,8 @@ class DatasetsApiTests(APITestCase):
 
         expected = {
             "success": False,
-            "errors": [
-                'Authentication credentials were not provided.'
-            ],
-            "code": "not_authenticated"
+            "errors": ["Authentication credentials were not provided."],
+            "code": "not_authenticated",
         }
 
         response = self.client.post(url)
@@ -222,13 +215,7 @@ class DatasetsApiTests(APITestCase):
     def test_layer_replace_should_raise_error_if_layer_does_not_exists(self):
         url = reverse("datasets-replace-dataset", args=(999999999999999,))
 
-        expected = {
-            "success": False,
-            "errors": [
-                'Layer with ID 999999999999999 is not available'
-            ],
-            "code": "not_found"
-        }
+        expected = {"success": False, "errors": ["Layer with ID 999999999999999 is not available"], "code": "not_found"}
 
         self.client.login(username="admin", password="admin")
 
@@ -242,10 +229,8 @@ class DatasetsApiTests(APITestCase):
 
         expected = {
             "success": False,
-            "errors": [
-                'Authentication credentials were not provided.'
-            ],
-            "code": "not_authenticated"
+            "errors": ["Authentication credentials were not provided."],
+            "code": "not_authenticated",
         }
 
         response = self.client.post(url)
@@ -269,13 +254,7 @@ class DatasetsApiTests(APITestCase):
     def test_dataset_append_should_raise_error_if_layer_does_not_exists(self):
         url = reverse("datasets-append-dataset", args=(999999999999999,))
 
-        expected = {
-            "success": False,
-            "errors": [
-                'Layer with ID 999999999999999 is not available'
-            ],
-            "code": "not_found"
-        }
+        expected = {"success": False, "errors": ["Layer with ID 999999999999999 is not available"], "code": "not_found"}
 
         self.client.login(username="admin", password="admin")
 
@@ -283,47 +262,54 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(404, response.status_code)
         self.assertDictEqual(expected, response.json())
 
-    @skip("Not implemented yet")
-    @patch("geonode.layers.views.validate_input_source")
+    @patch("geonode.layers.api.views.validate_input_source")
     def test_layer_replace_should_work(self, _validate_input_source):
 
         _validate_input_source.return_value = True
 
-        admin = get_user_model().objects.get(username='admin')
+        admin = get_user_model().objects.get(username="admin")
 
-        layer = create_dataset(
-            "new_name",
-            "new_name",
-            admin,
-            "Point",
-        )
+        if Dataset.objects.filter(name='single_point').exists():
+            '''
+            If the dataset already exists in the test env, we dont want that the test fail
+            so we rename it and then we will rollback the cnahge
+            '''
+            _dataset = Dataset.objects.get(name='single_point')
+            _dataset.name = "single_point_2"
+            old_id = _dataset.id
+            _dataset.save()
+
+        try:
+            layer = create_dataset(
+                "single_point",
+                "single_point",
+                admin,
+                "Point",
+            )
+        except Exception as e:
+            if 'There is already a layer named' not in e.args[0]:
+                raise e
+            else:
+                layer = create_single_dataset("single_point")
+
         cnt = Dataset.objects.count()
-
-        self.assertEqual('No abstract provided', layer.abstract)
-        self.assertEqual(Dataset.objects.count(), cnt)
 
         layer.refresh_from_db()
         logger.error(layer.alternate)
         # renaming the file in the same way as the lasyer name
         # the filename must be consiste with the layer name
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/single_point.xml", f"{tempdir}/single_point.xml")
+        shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld", f"{tempdir}/single_point.sld")
 
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.shp", f"{tempdir}/{layer.alternate.split(':')[1]}.shp")
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.dbf", f"{tempdir}/{layer.alternate.split(':')[1]}.dbf")
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.prj", f"{tempdir}/{layer.alternate.split(':')[1]}.prj")
-        shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.shx", f"{tempdir}/{layer.alternate.split(':')[1]}.shx")
-        shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml", f"{tempdir}/{layer.alternate.split(':')[1]}.xml")
-
+        github_path = "https://github.com/GeoNode/gisdata/tree/master/gisdata/data/good/vector/"
         payload = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "time": "false",
-            "charset": "UTF-8",
             "store_spatial_files": False,
-            "base_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.shp",
-            "dbf_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.dbf",
-            "prj_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.prj",
-            "shx_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.shx",
-            "xml_file_path": f"{tempdir}/{layer.alternate.split(':')[1]}.xml"
+            "base_file": f"{github_path}/single_point.shp",
+            "dbf_file": f"{github_path}/single_point.dbf",
+            "shx_file": f"{github_path}/single_point.shx",
+            "prj_file": f"{github_path}/single_point.prj",
+            "sld_file": f"{tempdir}/single_point.sld",
         }
 
         url = reverse("datasets-replace-dataset", args=(layer.id,))
@@ -331,12 +317,21 @@ class DatasetsApiTests(APITestCase):
         self.client.login(username="admin", password="admin")
 
         response = self.client.post(url, data=payload)
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(200, response.status_code, response.json())
 
         layer.refresh_from_db()
-        # evaluate that the abstract is updated and the number of available layer is not changed
+        # evaluate that the number of available layer is not changed
         self.assertEqual(Dataset.objects.count(), cnt)
-        self.assertEqual('real abstract', layer.abstract)
 
         if tempdir:
             shutil.rmtree(tempdir)
+
+        # restore the old stuff
+        if Dataset.objects.filter(name='single_point').exists():
+            '''
+            Rollback the previous changes for the test
+            '''
+            Dataset.objects.filter(name='single_point').delete()
+            _dataset = Dataset.objects.get(id=old_id)
+            _dataset.name = "single_point"
+            _dataset.save()

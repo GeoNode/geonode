@@ -201,12 +201,17 @@ class DatasetViewSet(DynamicModelViewSet):
                 storage_manager=storage_manager,
             )
 
+            xml_file = files.pop('xml_file', None)
+            sld_file = files.pop('sld_file', None)
+
             call_kwargs = {
                 "instance": dataset,
                 "vals": {'files': list(files.values()), 'user': request.user},
-                "xml_file": files.get('xml_file', None),
                 "store_spatial_files": store_spatial_files,
-                "metadata_uploaded": True if files.get('xml_file', None) else False
+                "xml_file": xml_file,
+                "metadata_uploaded": True if xml_file is not None else False,
+                "sld_file": sld_file,
+                "sld_uploaded": True if sld_file is not None else False
             }
 
             getattr(resource_manager, action)(**call_kwargs)
@@ -215,7 +220,7 @@ class DatasetViewSet(DynamicModelViewSet):
             raise GeneralDatasetException(e)
         finally:
             '''
-            Always keep the tempoaray folder under control.
+            Always keep the temporary folder under control.
             '''
             if not store_spatial_files:
                 storage_manager.delete_retrieved_paths()

@@ -3,13 +3,13 @@ from rest_framework.exceptions import APIException
 
 class GeneralDatasetException(APIException):
     status_code = 500
-    default_detail = 'Error during dataset replace.'
-    default_code = 'dataset_exception'
-    category = 'dataset_api'
+    default_detail = "Error during dataset replace."
+    default_code = "dataset_exception"
+    category = "dataset_api"
 
 
 class InvalidDatasetException(APIException):
     status_code = 500
     default_detail = "Input payload is not valid"
     default_code = "invalid_dataset_exception"
-    category = 'dataset_api'
+    category = "dataset_api"

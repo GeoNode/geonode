@@ -642,6 +642,9 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             try:
                 gtype = layer.gtype if not gtype else gtype
                 inDataSource = ogr.Open(absolute_base_file)
+                if inDataSource is None:
+                    raise InvalidDatasetException(
+                        _(f"Please endure that the base_file {absolute_base_file} is not empty"))
                 lyr = inDataSource.GetLayer(str(layer.name))
                 if not lyr:
                     raise InvalidDatasetException(

@@ -140,7 +140,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True, **kwargs) -> ResourceBase:
         if instance:
             if isinstance(instance.get_real_instance(), Dataset):
                 _synced_resource = sync_instance_with_geoserver(instance.id)
@@ -530,7 +530,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         raise NotImplementedError
 
-    def set_style(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+    def set_style(self, method: str, uuid: str, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         instance = instance or ResourceManager._get_instance(uuid)
 
         if instance and isinstance(instance.get_real_instance(), Dataset):

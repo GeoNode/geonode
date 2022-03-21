@@ -28,6 +28,8 @@ from pathlib import Path
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 
+from geonode.storage.exceptions import DataRetrieverExcepion
+
 
 class DataItemRetriever(object):
 
@@ -40,7 +42,7 @@ class DataItemRetriever(object):
         self._original_file_uri = None
         self._smart_open_uri = None
 
-        if isinstance(_file, UploadedFile) or os.path.exists(_file):
+        if isinstance(_file, UploadedFile):
             '''
             If the file exists and is reachable we can assume that is not a remote file
             '''
@@ -71,8 +73,8 @@ class DataItemRetriever(object):
         if not self.file_path:
             if allow_transfer:
                 self.transfer_remote_file()
-        if not self.file_path and self._is_django_form_file and os.path.exists(self._django_form_file):
-            return self._django_form_file
+        if not self.file_path and os.path.exists(self._original_file_uri):
+            return self._original_file_uri
         return self.file_path
 
     def transfer_remote_file(self, temporary_folder=None):
@@ -113,6 +115,8 @@ class DataItemRetriever(object):
             return os.path.getsize(self.file_path)
         if self._is_django_form_file:
             return os.path.getsize(self._django_form_file)
+        if os.path.exists(self._original_file_uri):
+            return os.path.getsize(self._original_file_uri)
         return None
 
     @property
@@ -120,7 +124,11 @@ class DataItemRetriever(object):
         if self.file_path:
             return os.path.basename(self.file_path)
         if self._is_django_form_file:
-            return self._django_form_file.name
+            return (
+                self._django_form_file.name
+                if hasattr(self._django_form_file, "name")
+                else self._django_form_file
+            )
         return os.path.basename(self._smart_open_uri.uri_path)
 
 
@@ -140,7 +148,7 @@ class DataRetriever(object):
         self.temporary_folder = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
         for name, data_item_retriever in self.data_items.items():
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
-            self.file_paths[name] = file_path
+            self.file_paths[name] = Path(file_path)
         '''
         Is more usefull to have always unzipped file than the zip file
         So in case is a zip_file, we unzip it and than delete it
@@ -154,12 +162,16 @@ class DataRetriever(object):
             if allow_transfer:
                 self.transfer_remote_files()
             else:
-                raise ValueError()
+                raise DataRetrieverExcepion(detail="You can't retrieve paths without clone file first!")
         return self.file_paths.copy()
 
-    def delete_files(self):
-        if (self.temporary_folder and os.path.exists(self.temporary_folder) and settings.MEDIA_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))):
+    def delete_files(self, force=False):
+        _folder_exists = self.temporary_folder and os.path.exists(self.temporary_folder)
+        if _folder_exists and settings.MEDIA_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder)):
             shutil.rmtree(self.temporary_folder, ignore_errors=True)
+        elif force:
+            shutil.rmtree(self.temporary_folder, ignore_errors=True)
+
         self.temporary_folder = None
         self.file_paths = {}
 

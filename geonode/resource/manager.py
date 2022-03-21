@@ -397,6 +397,14 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.save(notify=notify)
                 resourcebase_post_save(_resource.get_real_instance())
+            if kwargs.get('sld_file', False) and kwargs.get('sld_uploaded', False):
+                self._concrete_resource_manager.set_style(
+                    method="",
+                    uuid=_resource.uuid,
+                    resource=_resource,
+                    sld_file=kwargs.get('sld_file', False),
+                    sld_uploaded=kwargs.get('sld_uploaded', False)
+                )
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:

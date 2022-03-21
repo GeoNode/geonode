@@ -166,6 +166,9 @@ class StorageManager(StorageManagerInterface):
             for f in new_files:
                 with self.open(f, 'rb+') as open_file:
                     out.append(self.replace_single_file(old_files[0], open_file))
+        elif len(old_files) == 0:
+            # if it comes from the DataRetriver, the list is made with Path objects and not strings
+            out = [str(x) for x in new_files]
         return out
 
     def replace_single_file(self, old_file: str, new_file: BinaryIO):
@@ -190,19 +193,23 @@ class StorageManager(StorageManagerInterface):
         '''
         Using the data retriever object clone the remote path into a local temporary storage
         '''
-        return self.data_retriever.get_paths(allow_transfer=True)
+        self.data_retriever.get_paths(allow_transfer=True)
 
     def get_retrieved_paths(self) -> Mapping:
         '''
-        Return the path of the local objects in the temporary folder
+        Return the path of the local objects in the temporary folder.
+        We convert them as string instead of PosixPath
         '''
-        return self.data_retriever.get_paths(allow_transfer=False)
+        _files = self.data_retriever.get_paths(allow_transfer=False)
+        return {_ext: str(_file) for _ext, _file in _files.items()}
 
-    def delete_retrieved_paths(self) -> None:
+    def delete_retrieved_paths(self, force=False) -> None:
         '''
-        Delete cloned object from the temporary folder
+        Delete cloned object from the temporary folder.
+        By default if the folder is under the MEDIA_ROOT the file is not deleted.
+        In case should be deleted, the force=True is required
         '''
-        return self.data_retriever.delete_files()
+        return self.data_retriever.delete_files(force=force)
 
 
 class DefaultStorageManager(StorageManagerInterface):
