@@ -147,7 +147,7 @@ class BaseApiTests(APITestCase):
             "description": "test",
             "access": "private",
             "categories": []
-            }
+        }
         try:
             # Anonymous
             url = reverse('group-profiles-list')

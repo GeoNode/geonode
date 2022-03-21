@@ -43,7 +43,6 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.security.utils import (
     get_user_groups,
-    get_obj_group_managers,
     skip_registered_members_common_group)
 from geonode.resource.manager import (
     ResourceManager,
@@ -476,7 +475,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _owner, None, gf_services)
                             _disable_cache.append(_disable_dataset_cache)
 
-                            for _group_manager in get_obj_group_managers(_owner):
+                            _member_group_perm, _group_managers = instance.get_group_managers(get_user_groups(_owner))
+                            for _group_manager in _group_managers:
                                 sync_geofence_with_guardian(instance, perms, user=_group_manager)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _group_manager, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
