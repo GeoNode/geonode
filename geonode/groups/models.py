@@ -260,10 +260,15 @@ class GroupMember(models.Model):
         # add django.contrib.auth.group to user
         self.user.groups.add(self.group.group)
         super().save(*args, **kwargs)
+        _perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+        if self.role == self.MANAGER:
+            _perms += ADMIN_PERMISSIONS
+        self._handle_perms(perms=_perms)
 
     def delete(self, *args, **kwargs):
         self.user.groups.remove(self.group.group)
         super().delete(*args, **kwargs)
+        self._handle_perms(perms=VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
@@ -288,7 +293,7 @@ class GroupMember(models.Model):
                 self.user,
                 ["base.view_resourcebase", "base.change_resourcebase"],
                 any_perm=True)
-            .filter(group=self.group.group)
+            # .filter(group=self.group.group)
             .exclude(owner=self.user)
         )
         # A.F.: By including 'self.group.resources()' here, we will look also for resources
@@ -297,9 +302,8 @@ class GroupMember(models.Model):
         # _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
         _resources = queryset.iterator()
         for _r in _resources:
-            perm_spec = None
+            perm_spec = _r.get_all_level_info()
             if perms:
-                perm_spec = _r.get_all_level_info()
                 if "users" not in perm_spec:
                     perm_spec["users"] = {}
                 perm_spec["users"][self.user] = perms

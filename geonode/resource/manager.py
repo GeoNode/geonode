@@ -648,8 +648,8 @@ class ResourceManager(ResourceManagerInterface):
                         else:
                             _permissions = copy.deepcopy(permissions)
 
-                        # default permissions for resource owner
-                        _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
+                        # Fixup Advanced Workflow permissions
+                        _perm_spec = self.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
 
                         # Anonymous User group
                         if 'users' in _permissions and ("AnonymousUser" in _permissions['users'] or get_anonymous_user() in _permissions['users']):
@@ -724,8 +724,8 @@ class ResourceManager(ResourceManagerInterface):
                         if not anonymous_group:
                             raise Exception("Could not acquire 'anonymous' Group.")
 
-                        # default permissions for resource owner
-                        _perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_owner))
+                        # Fixup Advanced Workflow permissions
+                        _perm_spec = self.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=None)
 
                         # Anonymous
                         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -888,6 +888,7 @@ class ResourceManager(ResourceManagerInterface):
             _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
             if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
+                # compute advanced workflow permissions
                 if _resource_type not in DOWNLOADABLE_RESOURCES:
                     view_perms = VIEW_PERMISSIONS
                 else:
@@ -928,6 +929,9 @@ class ResourceManager(ResourceManagerInterface):
                 if _resource.is_published:
                     prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
                     perm_spec['groups'][anonymous_group] = list(set(prev_perms + view_perms))
+            else:
+                # default permissions for resource owner
+                perm_spec = set_owner_permissions(_resource, members=get_obj_group_managers(_resource.owner))
 
             return self._concrete_resource_manager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=perm_spec)
 
