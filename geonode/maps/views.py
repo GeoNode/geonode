@@ -75,8 +75,6 @@ from deprecated import deprecated
 
 from dal import autocomplete
 
-from geonode.base.utils import ManageResourceOwnerPermissions
-
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
     # should be moved to geonode.geoserver.
@@ -128,9 +126,6 @@ def map_detail(request, mapid, template='maps/map_detail.html'):
         raise Http404(_("Not found"))
     if not map_obj:
         raise Http404(_("Not found"))
-
-    permission_manager = ManageResourceOwnerPermissions(map_obj)
-    permission_manager.set_owner_permissions_according_to_workflow()
 
     # Add metadata_author or poc if missing
     map_obj.add_missing_metadata_author_or_poc()

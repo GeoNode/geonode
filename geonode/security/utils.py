@@ -40,6 +40,12 @@ from guardian.shortcuts import (
     get_objects_for_user)
 
 from geonode import geoserver
+from geonode.security.permissions import (
+    ADMIN_PERMISSIONS,
+    LAYER_ADMIN_PERMISSIONS,
+    VIEW_PERMISSIONS,
+    SERVICE_PERMISSIONS,
+)
 from geonode.utils import get_layer_workspace
 from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
@@ -115,7 +121,6 @@ def get_users_with_perms(obj):
     """
     Override of the Guardian get_users_with_perms
     """
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
@@ -661,34 +666,42 @@ def _get_gf_services(layer, perms):
     return gf_services
 
 
-def set_owner_permissions(resource, members=None):
-    """assign all admin permissions to the owner"""
+def get_owner_permissions_according_to_workflow(resource):
     from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
         admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
-        for perm in admin_perms:
-            if perm not in {'change_resourcebase_permissions', 'publish_resourcebase'} or not settings.RESOURCE_PUBLISHING or not settings.ADMIN_MODERATE_UPLOADS:
-                assign_perm(perm, resource.owner, resource.get_self_resource())
-            if members:
-                if perm not in {'change_resourcebase_permissions', 'publish_resourcebase'} or settings.ADMIN_MODERATE_UPLOADS:
-                    for user in members:
-                        assign_perm(perm, user, resource.get_self_resource())
 
-        # Set the GeoFence Owner Rule
+        # get the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
-            for perm in LAYER_ADMIN_PERMISSIONS:
-                assign_perm(perm, resource.owner, resource.layer)
-                if members:
-                    for user in members:
-                        assign_perm(perm, user, resource.layer)
+            admin_perms.extend(LAYER_ADMIN_PERMISSIONS)
 
         if resource.polymorphic_ctype.name == 'service':
-            for perm in SERVICE_PERMISSIONS:
-                assign_perm(perm, resource.owner, resource.service)
-                if members:
-                    for user in members:
-                        assign_perm(perm, user, resource.service)
+            admin_perms.extend(SERVICE_PERMISSIONS)
+
+        if settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS:
+            # Filter permissions when Advanced workflow is enabled
+            admin_manager_perms = ['change_resourcebase_permissions', 'publish_resourcebase']
+            if resource.is_approved or resource.is_published:
+                return VIEW_PERMISSIONS
+            # TODO check if owner is a manager to any group and add admin_manager_perms
+            return [perm for perm in admin_perms if perm not in admin_manager_perms]
+        else:
+            return admin_perms
+    return []
+
+
+def set_owner_permissions(resource, members=None, perms_list=[]):
+    """assign permissions to the owner"""
+    if perms_list:
+        owner_permissions = perms_list
+    else:
+        owner_permissions = get_owner_permissions_according_to_workflow(resource)
+    for perm in owner_permissions:
+        try:
+            assign_perm(perm, resource.owner, resource)
+        except Permission.DoesNotExist:
+            assign_perm(perm, resource.owner, resource.get_self_resource())
 
 
 def remove_object_permissions(instance, purge=True):

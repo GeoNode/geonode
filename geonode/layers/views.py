@@ -101,7 +101,7 @@ from geonode.utils import (
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     set_layer_style)
-from geonode.base.utils import ManageResourceOwnerPermissions
+
 from geonode.tasks.tasks import set_permissions
 
 from celery.utils.log import get_logger
@@ -363,8 +363,6 @@ def layer_detail(request, layername, template='layers/layer_detail.html'):
         raise Http404(_("Not found"))
     if not layer:
         raise Http404(_("Not found"))
-    permission_manager = ManageResourceOwnerPermissions(layer)
-    permission_manager.set_owner_permissions_according_to_workflow()
 
     # Add metadata_author or poc if missing
     layer.add_missing_metadata_author_or_poc()

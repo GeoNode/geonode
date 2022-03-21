@@ -59,6 +59,7 @@ from .utils import (
     get_users_with_perms,
     set_owner_permissions,
     get_user_obj_perms_model,
+    get_owner_permissions_according_to_workflow,
     remove_object_permissions,
     purge_geofence_layer_rules,
     sync_geofence_with_guardian,
@@ -663,6 +664,26 @@ class PermissionLevelMixin:
                 prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
                 perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
 
+            if settings.ADMIN_MODERATE_UPLOADS and settings.RESOURCE_PUBLISHING:
+                if self.is_approved or self.is_published:
+                    # Assign view and download permissions to owner and other users with edit permissions
+                    edit_perms = ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+                    new_perms = {"users": {}, "groups": {}}
+                    for user, perms in perm_spec["users"].items():
+                        if user in group_managers or user.is_superuser:
+                            new_perms["users"][user] = perms
+                        else:
+                            new_perms["users"][user] = [perm for perm in perms if perm not in edit_perms]
+                    for group, perms in perm_spec["groups"].items():
+                        new_perms["groups"][group] = [perm for perm in perms if perm not in edit_perms]
+
+                    perm_spec = new_perms
+                else:
+                    # restore owner perms
+                    for user, perms in perm_spec["users"].items():
+                        if user == self.owner:
+                            owner_permissions = get_owner_permissions_according_to_workflow(self)
+                            perm_spec["users"][user] = owner_permissions
         return perm_spec
 
     def get_user_perms(self, user):

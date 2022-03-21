@@ -35,7 +35,6 @@ from django.views.generic.edit import UpdateView, CreateView
 from django.db.models import F
 from django.forms.utils import ErrorList
 
-from geonode.base.utils import ManageResourceOwnerPermissions
 from geonode.decorators import check_keyword_write_perms
 from geonode.documents.utils import get_download_response
 from geonode.utils import resolve_object
@@ -97,9 +96,6 @@ def document_detail(request, docid):
         raise Http404(_("Not found"))
     if not document:
         raise Http404(_("Not found"))
-
-    permission_manager = ManageResourceOwnerPermissions(document)
-    permission_manager.set_owner_permissions_according_to_workflow()
 
     # Add metadata_author or poc if missing
     document.add_missing_metadata_author_or_poc()
