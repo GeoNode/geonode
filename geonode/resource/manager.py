@@ -19,7 +19,6 @@
 
 import os
 import copy
-import json
 import typing
 import logging
 import importlib
@@ -46,18 +45,7 @@ from django.contrib.contenttypes.models import ContentType
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.thumbs import utils as thumb_utils
-from geonode.security.permissions import (
-    PermSpecCompact,
-    VIEW_PERMISSIONS,
-    ADMIN_PERMISSIONS,
-    SERVICE_PERMISSIONS,
-    DOWNLOAD_PERMISSIONS,
-    DOWNLOADABLE_RESOURCES,
-    DATASET_ADMIN_PERMISSIONS,
-    DATASET_EDIT_DATA_PERMISSIONS,
-    DATASET_EDIT_STYLE_PERMISSIONS,
-    DATA_EDITABLE_RESOURCES_SUBTYPES,)
-from geonode.groups.conf import settings as groups_settings
+from geonode.security.permissions import PermSpecCompact
 from geonode.security.utils import (
     perms_as_set,
     get_user_groups,
@@ -71,7 +59,7 @@ from .utils import (
 
 from ..base import enumerations
 from ..base.models import ResourceBase
-from ..base.utils import OwnerRightsRequestViewUtils
+from ..security.utils import AdvancedSecurityWorkflowManager
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document, DocumentResourceLink
 from ..layers.models import Dataset, Attribute
@@ -203,11 +191,6 @@ class ResourceManagerInterface(metaclass=ABCMeta):
          - It optionally gets a JSON 'perm_spec' through the 'permissions' parameter
          - If no 'perm_spec' is provided, it will set the default permissions (owner only)
         """
-        pass
-
-    @abstractmethod
-    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
-        """Fix-up the permissions of a Resource accordingly to the currently active advanced workflow configuraiton"""
         pass
 
     @abstractmethod
@@ -606,13 +589,6 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     logger.debug(f'Setting permissions {permissions} on {_resource}')
 
-                    def assignable_perm_condition(perm, resource_type):
-                        _assignable_perm_policy_condition = (perm in DOWNLOAD_PERMISSIONS and resource_type in DOWNLOADABLE_RESOURCES) or \
-                            (perm in DATASET_EDIT_DATA_PERMISSIONS and resource_type in DATA_EDITABLE_RESOURCES_SUBTYPES) or \
-                            (perm not in (DOWNLOAD_PERMISSIONS + DATASET_EDIT_DATA_PERMISSIONS))
-                        logger.debug(f" perm: {perm} - resource_type: {resource_type} --> assignable: {_assignable_perm_policy_condition}")
-                        return _assignable_perm_policy_condition
-
                     # default permissions for owner
                     if owner and owner != _resource.owner:
                         _resource.owner = owner
@@ -651,7 +627,7 @@ class ResourceManager(ResourceManagerInterface):
                             _permissions = copy.deepcopy(permissions)
 
                         # Fixup Advanced Workflow permissions
-                        _perm_spec = self.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
+                        _perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
 
                         # Anonymous User group
                         if 'users' in _perm_spec and ("AnonymousUser" in _perm_spec['users'] or get_anonymous_user() in _perm_spec['users']):
@@ -664,7 +640,7 @@ class ResourceManager(ResourceManagerInterface):
                                     assign_perm(perm, anonymous_group, _resource.dataset)
                                     _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
                                     _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                                elif assignable_perm_condition(perm, _resource_type):
+                                elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
                                     _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
                                     _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
@@ -681,7 +657,7 @@ class ResourceManager(ResourceManagerInterface):
                                             assign_perm(perm, _user, _resource.dataset)
                                             _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
                                             _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                                        elif assignable_perm_condition(perm, _resource_type):
+                                        elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
                                             _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
                                             _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
@@ -697,7 +673,7 @@ class ResourceManager(ResourceManagerInterface):
                                         assign_perm(perm, _group, _resource.dataset)
                                         _prev_perm = _perm_spec["groups"].get(_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                                    elif assignable_perm_condition(perm, _resource_type):
+                                    elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
                                         _prev_perm = _perm_spec["groups"].get(_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
@@ -715,7 +691,7 @@ class ResourceManager(ResourceManagerInterface):
                                         assign_perm(perm, _user, _resource.dataset)
                                         _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
                                         _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                                    elif assignable_perm_condition(perm, _resource_type):
+                                    elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
                                         _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
                                         _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
@@ -727,7 +703,7 @@ class ResourceManager(ResourceManagerInterface):
                             raise Exception("Could not acquire 'anonymous' Group.")
 
                         # Fixup Advanced Workflow permissions
-                        _perm_spec = self.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=None)
+                        _perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=None)
 
                         # Anonymous
                         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -744,7 +720,7 @@ class ResourceManager(ResourceManagerInterface):
                                     _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                     _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
 
-                        if assignable_perm_condition('download_resourcebase', _resource_type):
+                        if AdvancedSecurityWorkflowManager.assignable_perm_condition('download_resourcebase', _resource_type):
                             anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
                             if anonymous_can_download:
                                 assign_perm('download_resourcebase',
@@ -782,191 +758,6 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_processing_state(enumerations.STATE_INVALID)
                 _resource.set_dirty_state()
         return False
-
-    def get_owner_permissions(self, uuid: str, /, instance: ResourceBase = None, members: list = []) -> dict:
-        """compute a perm_spec to assing all admin permissions to the owner"""
-        _resource = instance or ResourceManager._get_instance(uuid)
-        _perm_spec = {
-            "users": {},
-            "groups": {}
-        }
-
-        if _resource:
-            _resource = _resource.get_real_instance()
-            if _resource.polymorphic_ctype:
-                # Owner & Manager Admin Perms
-                admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
-                if _resource.polymorphic_ctype.name in DOWNLOADABLE_RESOURCES:
-                    admin_perms += DOWNLOAD_PERMISSIONS
-                for perm in admin_perms:
-                    if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                        _prev_perm = _perm_spec["users"].get(_resource.owner, []) if "users" in _perm_spec else []
-                        _perm_spec["users"][_resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                    elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                        _prev_perm = _perm_spec["users"].get(_resource.owner, []) if "users" in _perm_spec else []
-                        _perm_spec["users"][_resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                    if members:
-                        for user in members:
-                            _prev_perm = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
-                            _perm_spec["users"][user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-
-                # Set the GeoFence Owner Rule
-                if _resource.polymorphic_ctype.name == 'dataset':
-                    DATA_EDIT_PERMISSIONS = []
-                    if _resource.get_real_instance().subtype == 'vector':
-                        DATA_EDIT_PERMISSIONS = DATASET_ADMIN_PERMISSIONS
-                    elif _resource.get_real_instance().subtype == 'raster':
-                        DATA_EDIT_PERMISSIONS = DATASET_EDIT_STYLE_PERMISSIONS
-                    for perm in DATA_EDIT_PERMISSIONS:
-                        _prev_perm = _perm_spec["users"].get(_resource.owner, []) if "users" in _perm_spec else []
-                        _perm_spec["users"][_resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                        if members:
-                            for user in members:
-                                _prev_perm = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
-                                _perm_spec["users"][user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-
-                if _resource.polymorphic_ctype.name == 'service':
-                    for perm in SERVICE_PERMISSIONS:
-                        _prev_perm = _perm_spec["users"].get(_resource.owner, []) if "users" in _perm_spec else []
-                        _perm_spec["users"][_resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-                        if members:
-                            for user in members:
-                                _prev_perm = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
-                                _perm_spec["users"][user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
-        return _perm_spec
-
-    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
-        """
-        Adapts the provided "perm_spec" accordingly to the following schema:
-
-                          |  N/PUBLISHED   | PUBLISHED
-          --------------------------------------------
-            N/APPROVED    |     GM/OWR     |     -
-            APPROVED      |   registerd    |    all
-          --------------------------------------------
-
-        It also adds Group Managers as "editors" to the "perm_spec" in the case:
-         - The Advanced Workflow has been enabled
-         - The Group Managers are missing from the provided "perm_spec"
-
-        General Rules:
-         - OWNER can always publish, except in the ADVANCED WORKFLOW
-         - When the user is OWNER and MANAGER, the MANAGER wins!
-         - Group MANAGERS have publish privs only when `ADMIN_MODERATE_UPLOADS` is True (no DATA EDIT perms assigned by default)
-         - Group MEMBERS have always access to the resource, except for the AUTOPUBLISH, where everybody has access to it.
-        """
-        _resource = instance or ResourceManager._get_instance(uuid)
-
-        _permissions = None
-        if permissions:
-            if PermSpecCompact.validate(permissions):
-                _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
-            else:
-                _permissions = copy.deepcopy(permissions)
-
-        if _resource:
-            perm_spec = _permissions or copy.deepcopy(_resource.get_all_level_info())
-
-            # Sanity checks
-            if isinstance(perm_spec, str):
-                perm_spec = json.loads(perm_spec)
-
-            if "users" not in perm_spec:
-                perm_spec["users"] = {}
-            elif isinstance(perm_spec["users"], list):
-                _users = {}
-                for _item in perm_spec["users"]:
-                    _users[_item[0]] = _item[1]
-                perm_spec["users"] = _users
-
-            if "groups" not in perm_spec:
-                perm_spec["groups"] = {}
-            elif isinstance(perm_spec["groups"], list):
-                _groups = {}
-                for _item in perm_spec["groups"]:
-                    _groups[_item[0]] = _item[1]
-                perm_spec["groups"] = _groups
-
-            # Make sure we're dealing with "Profile"s and "Group"s...
-            perm_spec = _resource.fixup_perms(perm_spec)
-            _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
-
-            if not OwnerRightsRequestViewUtils.is_auto_publishing_workflow():
-                # compute advanced workflow permissions
-                if _resource_type not in DOWNLOADABLE_RESOURCES:
-                    view_perms = VIEW_PERMISSIONS
-                else:
-                    view_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
-
-                admin_perms = ADMIN_PERMISSIONS.copy()
-
-                admin_nopub_perms = ADMIN_PERMISSIONS.copy()
-                admin_nopub_perms.remove('publish_resourcebase')
-
-                admin_restricted_perms = ADMIN_PERMISSIONS.copy()
-                admin_restricted_perms.remove('publish_resourcebase')
-                admin_restricted_perms.remove('change_resourcebase_permissions')
-
-                anonymous_group = Group.objects.get(name='anonymous')
-                registered_members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                user_groups = Group.objects.filter(
-                    name__in=_resource.owner.groupmember_set.all().values_list("group__slug", flat=True))
-                member_group_perm, group_managers = _resource.get_group_managers(user_groups)
-
-                # Handle the owner perms
-                if _resource.owner:
-                    prev_perms = perm_spec['users'].get(_resource.owner, []) if isinstance(perm_spec['users'], dict) else []
-                    if OwnerRightsRequestViewUtils.is_advanced_workflow():
-                        perm_spec['users'][_resource.owner] = list(
-                                    set(prev_perms + view_perms + admin_restricted_perms))
-                    else:
-                        perm_spec['users'][_resource.owner] = list(
-                                    set(prev_perms + view_perms + admin_perms))
-
-                # Handle the Group Managers perms
-                if group_managers:
-                    for group_manager in group_managers:
-                        prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
-                        # AF: Should be a manager being able to change the dataset data and style too by default?
-                        #     For the time being let's give to the manager "management" perms only.
-                        # if _resource.polymorphic_ctype.name == 'layer':
-                        #     perm_spec['users'][group_manager] = list(
-                        #         set(prev_perms + view_perms + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
-                        # else:
-                        if OwnerRightsRequestViewUtils.is_simple_publishing_workflow():
-                            perm_spec['users'][group_manager] = list(
-                                set(prev_perms + view_perms + admin_nopub_perms))
-                        else:
-                            perm_spec['users'][group_manager] = list(
-                                set(prev_perms + view_perms + admin_perms))
-
-                # Handle the Group Members perms
-                if member_group_perm:
-                    for gr, perm in member_group_perm['groups'].items():
-                        if gr != anonymous_group and gr.name != registered_members_group_name:
-                            prev_perms = perm_spec['groups'].get(gr, []) if isinstance(perm_spec['groups'], dict) else []
-                            perm_spec['groups'][gr] = list(set(prev_perms + perm))
-
-                # Handle the Anoymous and other members perms
-                if _resource.is_approved:
-                    if getattr(groups_settings, 'AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME', False):
-                        registered_members_group = Group.objects.get(name=registered_members_group_name)
-                        prev_perms = perm_spec['groups'].get(registered_members_group, []) if isinstance(perm_spec['groups'], dict) else []
-                        perm_spec['groups'][registered_members_group] = list(set(prev_perms + view_perms))
-                    else:
-                        prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
-                        perm_spec['groups'][anonymous_group] = list(set(prev_perms + view_perms))
-
-                if _resource.is_published:
-                    prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
-                    perm_spec['groups'][anonymous_group] = list(set(prev_perms + view_perms))
-            else:
-                # default permissions for resource owner
-                perm_spec = self.get_owner_permissions(_resource.uuid)
-
-            return self._concrete_resource_manager.get_workflow_permissions(_resource.uuid, instance=_resource, permissions=perm_spec)
-
-        return _permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)

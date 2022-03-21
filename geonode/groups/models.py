@@ -274,8 +274,8 @@ class GroupMember(models.Model):
         self._handle_perms(self.user, self.group, self.role)
 
     def _handle_perms(self, user, group, role):
-        from geonode.base.utils import ManageResourceOwnerPermissions
-        ManageResourceOwnerPermissions(user, group, role).set_owner_permissions_according_to_workflow()
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+        AdvancedSecurityWorkflowManager.set_group_manager_permissions_according_to_workflow(user, group, role)
 
 
 def group_pre_delete(instance, sender, **kwargs):

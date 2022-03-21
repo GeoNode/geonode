@@ -34,18 +34,13 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 # Geonode functionality
-from guardian.shortcuts import get_objects_for_user
-
 from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase, Link, Configuration
+from geonode.security.utils import AdvancedSecurityWorkflowManager
 from geonode.thumbs.utils import (
     get_thumbs,
     remove_thumb)
 from geonode.utils import get_legend_url
-from geonode.security.permissions import (
-    VIEW_PERMISSIONS,
-    DOWNLOAD_PERMISSIONS,
-    BASIC_MANAGE_PERMISSIONS)
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -137,7 +132,7 @@ class OwnerRightsRequestViewUtils:
     def get_message_recipients(owner):
         User = get_user_model()
         allowed_users = User.objects.none()
-        if OwnerRightsRequestViewUtils.is_admin_moderate_mode():
+        if AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
             allowed_users |= User.objects.filter(is_superuser=True).exclude(pk=owner.pk)
             try:
                 from geonode.groups.models import GroupProfile
@@ -161,138 +156,6 @@ class OwnerRightsRequestViewUtils:
     @staticmethod
     def get_resource(resource_base):
         return resource_base.get_real_instance()
-
-    @staticmethod
-    def is_group_private_mode():
-        return settings.GROUP_PRIVATE_RESOURCES
-
-    @staticmethod
-    def is_manager_publish_mode():
-        return settings.RESOURCE_PUBLISHING
-
-    @staticmethod
-    def is_admin_moderate_mode():
-        return settings.ADMIN_MODERATE_UPLOADS
-
-    @staticmethod
-    def is_auto_publishing_workflow():
-        """
-          **AUTO PUBLISHING**
-            - `RESOURCE_PUBLISHING = False`
-            - `ADMIN_MODERATE_UPLOADS = False`
-
-            - When user creates a resource:
-              - OWNER gets all the owner permissions (publish resource included)
-              - ANONYMOUS can view and download
-            - No change to the Group Manager is applied
-        """
-        return not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
-
-    @staticmethod
-    def is_simple_publishing_workflow():
-        """
-          **SIMPLE PUBLISHING**
-            - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
-            - `ADMIN_MODERATE_UPLOADS = False`
-
-            - When user creates a resource:
-              - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
-              - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` EXCLUDED)
-              - Group MEMBERS of the user's groups will get the `view_resourcebase`, `download_resourcebase` permission
-              - ANONYMOUS can not view and download if the resource is not published
-
-            - When resource has a group assigned:
-              - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
-              - Group MANAGERS of the *resource's group* will get the owner permissions (`publish_resource` EXCLUDED)
-              - Group MEMBERS of the *resource's group* will get the `view_resourcebase`, `download_resourcebase` permission
-        """
-        return settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
-
-    @staticmethod
-    def is_advanced_workflow():
-        """
-          **ADVANCED WORKFLOW**
-            - `RESOURCE_PUBLISHING = True`
-            - `ADMIN_MODERATE_UPLOADS = True`
-
-            - When user creates a resource:
-              - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` EXCLUDED)
-              - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` INCLUDED)
-              - Group MEMBERS of the user's groups will get the `view_resourcebase`, `download_resourcebase` permission
-              - ANONYMOUS can not view and download if the resource is not published
-
-            - When resource has a group assigned:
-              - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` EXCLUDED)
-              - Group MANAGERS of the resource's group will get the owner permissions (`publish_resource` INCLUDED)
-              - Group MEMBERS of the resource's group will get the `view_resourcebase`, `download_resourcebase` permission
-        """
-        return settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
-
-    @staticmethod
-    def is_simplified_workflow():
-        """
-          **SIMPLIFIED WORKFLOW**
-            - `RESOURCE_PUBLISHING = False`
-            - `ADMIN_MODERATE_UPLOADS = True`
-
-            - **NOTE**: Is it even possibile? when the resource is automatically published, can it be un-published?
-            If this combination is not allowed, we should either stop the process when reading the settings or log a warning and force a safe combination.
-
-            - When user creates a resource:
-              - OWNER gets all the owner permissions (`publish_resource` and `change_resourcebase_permissions` INCLUDED)
-              - Group MANAGERS of the user's groups will get the owner permissions (`publish_resource` INCLUDED)
-              - Group MEMBERS of the user's group will get the `view_resourcebase`, `download_resourcebase` permission
-              - ANONYMOUS can view and download
-        """
-        return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
-
-
-class ManageResourceOwnerPermissions:
-
-    READ_ONLY_PERMS = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
-    MANAGER_PERMS = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + BASIC_MANAGE_PERMISSIONS
-
-    def __init__(self, user, group, role):
-        self.user = user
-        self.group = group
-        self.role = role
-
-    def set_owner_permissions_according_to_workflow(self):
-        if not OwnerRightsRequestViewUtils.is_auto_publishing_workflow():
-            if self.role and self.role == "manager":
-                self._handle_perms(perms=self.MANAGER_PERMS)
-            else:
-                self._handle_perms(perms=self.READ_ONLY_PERMS)
-
-    def _handle_perms(self, perms=None):
-        '''
-        Internally the set_permissions function will automatically handle the permissions
-        that needs to be assigned to re resource.
-        Background at: https://github.com/GeoNode/geonode/pull/8145
-        If the user is demoted, we assign by default at least the view and the download permission
-        to the resource
-        '''
-        queryset = (
-            get_objects_for_user(
-                self.user,
-                ["base.view_resourcebase", "base.change_resourcebase"],
-                any_perm=True)
-            .filter(group=self.group.group)
-            .exclude(owner=self.user)
-        )
-        # A.F.: By including 'self.group.resources()' here, we will look also for resources
-        #       having permissions related to the current 'group' and not only the ones assigned
-        #       to the 'group' through the metadata settings.
-        # _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
-        _resources = queryset.iterator()
-        for _r in _resources:
-            perm_spec = _r.get_all_level_info()
-            if perms:
-                if "users" not in perm_spec:
-                    perm_spec["users"] = {}
-                perm_spec["users"][self.user] = perms
-            # Let's the ResourceManager finally decide which are the correct security settings to apply
-            _r.set_permissions(perm_spec)
 
 
 def validate_extra_metadata(data, instance):
