@@ -431,7 +431,7 @@ class AdvancedSecurityWorkflowManager:
                 if _resource.polymorphic_ctype.name in DOWNLOADABLE_RESOURCES:
                     admin_perms += DOWNLOAD_PERMISSIONS
                 for perm in admin_perms:
-                    if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
+                    if AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                         _prev_perm = _perm_spec["users"].get(_resource.owner, []) if "users" in _perm_spec else []
                         _perm_spec["users"][_resource.owner] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                     elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:

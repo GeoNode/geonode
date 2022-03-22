@@ -692,7 +692,9 @@ def view(req, step=None):
                 upload_session.completed_step = _completed_step
             except Exception as e:
                 logger.exception(e)
-                raise GeneralUploadException(detail=e.args[0])
+                if isinstance(e, APIException):
+                    raise e
+                raise GeneralUploadException(detail=e)
 
         resp = _steps[step](req, upload_session)
         resp_js = None
@@ -704,7 +706,9 @@ def view(req, step=None):
                 resp_js = json.loads(content)
         except Exception as e:
             logger.exception(e)
-            raise GeneralUploadException(detail=e.args[0])
+            if isinstance(e, APIException):
+                raise e
+            raise GeneralUploadException(detail=e)
 
         # must be put back to update object in session
         if upload_session:

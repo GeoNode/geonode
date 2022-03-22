@@ -470,6 +470,7 @@ class BaseApiTests(APITestCase):
 
         # Check user permissions
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        resource.set_permissions()
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
