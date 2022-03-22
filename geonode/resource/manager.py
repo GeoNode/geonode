@@ -368,7 +368,7 @@ class ResourceManager(ResourceManagerInterface):
 
                     logger.debug(f'Update Dataset with information coming from XML File if available {_resource}')
 
-                    if not kwargs.get("store_spatial_files", True):
+                    if not kwargs.get("store_spatial_files", True) and vals.get('files', []):
                         vals['files'] = []
 
                     _resource.save()

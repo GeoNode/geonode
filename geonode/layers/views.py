@@ -16,11 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from asyncore import file_dispatcher
 import re
 import os
 import json
-import shutil
 import decimal
 import logging
 import warnings
@@ -67,14 +65,13 @@ from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     DatasetForm,
-    LayerUploadForm,
     LayerAttributeForm,
     NewLayerUploadForm)
 from geonode.layers.models import (
     Dataset,
     Attribute)
 from geonode.layers.utils import (
-    get_files, is_sld_upload_only, is_xml_upload_only,
+    is_sld_upload_only, is_xml_upload_only,
     validate_input_source)
 from geonode.services.models import Service
 from geonode.base import register_event
@@ -82,7 +79,6 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
-from geonode.storage.manager import storage_manager, StorageManager
 from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import (
     ogc_server_settings,
