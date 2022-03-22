@@ -24,9 +24,9 @@ from urllib.parse import urlparse
 from unittest.mock import patch, Mock
 from django.core.exceptions import ObjectDoesNotExist
 
-from io import BytesIO
 from PIL import Image
-from guardian.shortcuts import assign_perm, get_perms
+from io import BytesIO
+from guardian.shortcuts import assign_perm
 from geonode.base.populate_test_data import create_single_dataset
 
 from geonode.maps.models import Map
@@ -38,7 +38,7 @@ from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.templatetags.base_tags import display_change_perms_button
-from geonode.base.utils import OwnerRightsRequestViewUtils, ManageResourceOwnerPermissions
+from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.base.models import (
     ResourceBase,
     MenuPlaceholder,
@@ -645,75 +645,6 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         response = web_client.get('/')
 
         self.assertEqual(response.status_code, 503, 'User is allowed to get index page')
-
-
-class TestOwnerPermissionManagement(TestCase):
-    """
-    Only Layers has custom permissions so this is the only model which is tested.
-    Models are always treat in the same way
-    """
-
-    def setUp(self):
-        User = get_user_model()
-        self.user = User.objects.create(username='test', email='test@test.com')
-        self.la = Dataset.objects.create(owner=self.user, title='test', is_approved=True)
-
-    @override_settings(ADMIN_MODERATE_UPLOADS=True)
-    def test_owner_has_no_permissions(self):
-        l_manager = ManageResourceOwnerPermissions(self.la)
-        l_manager.set_owner_permissions_according_to_workflow()
-
-        self.assertEqual(self._retrieve_resource_perms_definition(self.la, ['read', 'download']).sort(),
-                         get_perms(self.user, self.la.get_self_resource()).sort()
-                         )
-
-    @override_settings(ADMIN_MODERATE_UPLOADS=False)
-    def test_user_has_own_permissions(self):
-        l_manager = ManageResourceOwnerPermissions(self.la)
-        l_manager.set_owner_permissions_according_to_workflow()
-
-        self.assertEqual(self._retrieve_resource_perms_definition(self.la).sort(),
-                         get_perms(self.user, self.la.get_self_resource()).sort()
-                         )
-
-    @override_settings(ADMIN_MODERATE_UPLOADS=True)
-    def test_user_has_permissions_restored(self):
-        self.la.is_approved = False
-        self.la.save()
-        l_manager = ManageResourceOwnerPermissions(self.la)
-        l_manager.set_owner_permissions_according_to_workflow()
-
-        self.assertEqual(self._retrieve_resource_perms_definition(self.la).sort(),
-                         get_perms(self.user, self.la.get_self_resource()).sort()
-                         )
-
-    @override_settings(ADMIN_MODERATE_UPLOADS=True)
-    def test_remove_and_add_perms(self):
-        l_manager = ManageResourceOwnerPermissions(self.la)
-        l_manager.set_owner_permissions_according_to_workflow()
-
-        self.assertEqual(self._retrieve_resource_perms_definition(self.la, ['read', 'download']).sort(),
-                         get_perms(self.user, self.la.get_self_resource()).sort()
-                         )
-
-        self.la.is_approved = False
-        self.la.save()
-
-        l_manager.set_owner_permissions_according_to_workflow()
-
-        self.assertEqual(self._retrieve_resource_perms_definition(self.la).sort(),
-                         get_perms(self.user, self.la.get_self_resource()).sort()
-                         )
-
-    def _retrieve_resource_perms_definition(self, resource, perm_key_bundle=[]):
-        ret = []
-        if perm_key_bundle:
-            for key in perm_key_bundle:
-                ret.extend(resource.BASE_PERMISSIONS.get(key, []))
-                ret.extend(resource.PERMISSIONS.get(key, []))
-        else:
-            [ret.extend(r) for r in list(resource.BASE_PERMISSIONS.values()) + list(resource.PERMISSIONS.values())]
-        return ret
 
 
 class TestOwnerRightsRequestUtils(TestCase):
