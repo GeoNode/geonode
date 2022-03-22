@@ -2281,6 +2281,17 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.layer_perms = ['change_layer_style', 'change_layer_data']
         self.adv_owner_limit = ["change_resourcebase_permissions", "publish_resourcebase"]
         self.safe_perms = ["download_resourcebase", "view_resourcebase"]
+        self.data = {
+            'resource-title': self.resource.title,
+            'resource-owner': self.author.id,
+            'resource-date': '2021-10-27 05:59 am',
+            'resource-date_type': 'publication',
+            'resource-language': self.resource.language,
+            'resource-is_approved': 'on',
+            'layer_attribute_set-TOTAL_FORMS': 0,
+            'layer_attribute_set-INITIAL_FORMS': 0,
+        }
+        self.url = reverse('layer_metadata', args=(self.resource.alternate,))
 
         # Assign manage perms to user member_with_perms
         for perm in self.layer_perms:
@@ -2298,50 +2309,47 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
 
     def test_permissions_on_approve_and_publish_changes(self):
         # Group manager approves a resource
-        data = {
-            'resource-title': self.resource.title,
-            'resource-owner': self.author.id,
-            'resource-date': '2021-10-27 05:59 am',
-            'resource-date_type': 'publication',
-            'resource-language': self.resource.language,
-            'resource-is_approved': 'on',
-            'layer_attribute_set-TOTAL_FORMS': 0,
-            'layer_attribute_set-INITIAL_FORMS': 0,
-        }
-        url = reverse('layer_metadata', args=(self.resource.alternate,))
-
         self.group_manager.set_password('group_manager')
         self.group_manager.save()
         self.assertTrue(self.client.login(username="group_manager", password='group_manager'))
-        response = self.client.post(url, data=data)
+        response = self.client.post(self.url, data=self.data)
         self.resource.refresh_from_db()
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.safe_perms))
-        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
-        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
-        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
-        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+        self.assertions_for_approved_or_published_is_true()
 
         # Un approve resource
-        data.pop('resource-is_approved')
-        response = self.client.post(url, data=data)
+        self.data.pop('resource-is_approved')
+        response = self.client.post(self.url, data=self.data)
         self.resource.refresh_from_db()
         self.assertEqual(response.status_code, 200)
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+        # self.assertions_for_approved_and_published_is_false()
 
         # Admin publishes and approves resource
-        self.assertTrue(self.client.login(username="admin", password='admin'))
-        data['resource-is_approved'] = 'on'
-        data['resource-is_published'] = 'on'
-        response = self.client.post(url, data=data)
-        self.resource.refresh_from_db()
+        response = response = self.admin_approve_and_publish_resource()
         self.assertEqual(response.status_code, 200)
+        self.assertions_for_approved_or_published_is_true()
+
+        # Admin Un approves and un publishes resource
+        response = self.admin_unapprove_and_unpublish_resource()
+        self.assertEqual(response.status_code, 200)
+        self.assertions_for_approved_and_published_is_false()
+
+    def test_owner_is_group_manager(self):
+        try:
+            GroupMember.objects.get(group=self.owner_group, user=self.author).promote()
+            # Admin publishes and approves resource
+            response = response = self.admin_approve_and_publish_resource()
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms + self.adv_owner_limit))
+
+            # Admin Un approves and un publishes resource
+            response = self.admin_unapprove_and_unpublish_resource()
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms + self.adv_owner_limit))
+        finally:
+            GroupMember.objects.get(group=self.owner_group, user=self.author).demote()
+
+    def assertions_for_approved_or_published_is_true(self):
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
@@ -2349,15 +2357,26 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
 
-        # Admin Un approves and un publishes resource
-        data.pop('resource-is_approved')
-        data.pop('resource-is_published')
-        response = self.client.post(url, data=data)
-        self.resource.refresh_from_db()
-        self.assertEqual(response.status_code, 200)
+    def assertions_for_approved_and_published_is_false(self):
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
         # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+
+    def admin_approve_and_publish_resource(self):
+        self.assertTrue(self.client.login(username="admin", password='admin'))
+        self.data['resource-is_approved'] = 'on'
+        self.data['resource-is_published'] = 'on'
+        response = self.client.post(self.url, data=self.data)
+        self.resource.refresh_from_db()
+        return response
+
+    def admin_unapprove_and_unpublish_resource(self):
+        self.assertTrue(self.client.login(username="admin", password='admin'))
+        self.data.pop('resource-is_approved')
+        self.data.pop('resource-is_published')
+        response = self.client.post(self.url, data=self.data)
+        self.resource.refresh_from_db()
+        return response
