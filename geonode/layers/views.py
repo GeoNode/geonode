@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from asyncore import file_dispatcher
 import re
 import os
 import json
@@ -81,6 +82,7 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
+from geonode.storage.manager import storage_manager, StorageManager
 from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import (
     ogc_server_settings,
@@ -888,7 +890,7 @@ def dataset_append(request, layername, template='datasets/dataset_append.html'):
 
 def dataset_append_replace_view(request, layername, template, action_type):
     try:
-        layer = _resolve_dataset(
+        dataset = _resolve_dataset(
             request,
             layername,
             'base.change_resourcebase',
@@ -897,48 +899,60 @@ def dataset_append_replace_view(request, layername, template, action_type):
         return HttpResponse("Not allowed", status=403)
     except Exception:
         raise Http404("Not found")
-    if not layer:
+    if not dataset:
         raise Http404("Not found")
 
     if request.method == 'GET':
         ctx = {
             'charsets': CHARSETS,
-            'resource': layer,
-            'is_featuretype': layer.is_vector(),
+            'resource': dataset,
+            'is_featuretype': dataset.is_vector(),
             'is_dataset': True,
         }
         return render(request, template, context=ctx)
     elif request.method == 'POST':
-        form = LayerUploadForm(request.POST, request.FILES)
+        from geonode.upload.forms import LayerUploadForm as UploadForm
+        form = UploadForm(request.POST, request.FILES, user=request.user)
         out = {}
         if form.is_valid():
+            storage_manager = form.cleaned_data.get('storage_manager')
             try:
-                tempdir, base_file = form.write_files()
-                files, _tmpdir = get_files(base_file)
-                #  validate input source
+                store_spatial_files = form.cleaned_data.get('store_spatial_files', True)
+
+                file_paths = storage_manager.get_retrieved_paths()
+                base_file = file_paths.get('base_file')
+                files = {_file.split(".")[1]: _file for _file in file_paths.values()}
+
                 resource_is_valid = validate_input_source(
-                    layer=layer, filename=base_file, files=files, action_type=action_type
+                    layer=dataset, filename=base_file, files=files, action_type=action_type
                 )
                 out = {}
                 if resource_is_valid:
-                    getattr(resource_manager, action_type)(
-                        layer,
-                        vals={
-                            'files': list(files.values()),
-                            'user': request.user})
+                    xml_file = file_paths.pop('xml_file', None)
+                    sld_file = file_paths.pop('sld_file', None)
+
+                    call_kwargs = {
+                        "instance": dataset,
+                        "vals": {'files': list(files.values()), 'user': request.user},
+                        "store_spatial_files": store_spatial_files,
+                        "xml_file": xml_file,
+                        "metadata_uploaded": True if xml_file is not None else False,
+                        "sld_file": sld_file,
+                        "sld_uploaded": True if sld_file is not None else False
+                    }
+
+                    getattr(resource_manager, action_type)(**call_kwargs)
+
                     out['success'] = True
-                    out['url'] = layer.get_absolute_url()
+                    out['url'] = dataset.get_absolute_url()
                     #  invalidating resource chache
-                    set_geowebcache_invalidate_cache(layer.typename)
+                    set_geowebcache_invalidate_cache(dataset.typename)
             except Exception as e:
                 logger.exception(e)
-                out['success'] = False
-                out['errors'] = str(e)
+                raise e
             finally:
-                if tempdir is not None:
-                    shutil.rmtree(tempdir, ignore_errors=True)
-                if _tmpdir is not None:
-                    shutil.rmtree(_tmpdir, ignore_errors=True)
+                if not store_spatial_files:
+                    storage_manager.delete_retrieved_paths(force=True)
         else:
             errormsgs = []
             for e in form.errors.values():
@@ -948,7 +962,7 @@ def dataset_append_replace_view(request, layername, template, action_type):
 
         if out['success']:
             status_code = 200
-            register_event(request, 'change', layer)
+            register_event(request, 'change', dataset)
         else:
             status_code = 400
 

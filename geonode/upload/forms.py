@@ -118,6 +118,7 @@ class LayerUploadForm(forms.Form):
         file_manager.clone_remote_files()
         self.data_retriever = file_manager.data_retriever
         cleaned["data_retriever"] = self.data_retriever
+        cleaned["storage_manager"] = file_manager
         # Validate remote file sizes
         self.validate_files_sum_of_sizes(self.data_retriever)
 
