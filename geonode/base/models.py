@@ -1084,6 +1084,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.polymorphic_ctype.model:
             self.resource_type = self.polymorphic_ctype.model.lower()
 
+        # Resource Updated
+        _notification_sent = False
+        _approval_status_changed = False
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
@@ -1093,10 +1096,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
             elif self.pk:
-                # Resource Updated
-                _notification_sent = False
-                _approval_status_changed = False
-
                 # Approval Notifications Here
                 if self.was_approved != self.is_approved:
                     if not _notification_sent and not self.was_approved and self.is_approved:
@@ -1125,11 +1124,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
-                # Update workflow permissions
-                if _approval_status_changed:
-                    self.set_permissions()
-
         super().save(*args, **kwargs)
+
+        # Update workflow permissions
+        if _approval_status_changed:
+            self.set_permissions()
 
     def delete(self, notify=True, *args, **kwargs):
         """
