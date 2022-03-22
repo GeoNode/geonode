@@ -616,6 +616,6 @@ class AdvancedSecurityWorkflowManager:
                     perm_spec['groups'][anonymous_group] = list(set(prev_perms + view_perms))
             else:
                 # default permissions for resource owner
-                perm_spec = AdvancedSecurityWorkflowManager.get_owner_permissions(_resource.uuid, perm_spec=perm_spec)
+                perm_spec = AdvancedSecurityWorkflowManager.get_owner_permissions(_resource.uuid, instance=_resource, perm_spec=perm_spec)
 
         return perm_spec

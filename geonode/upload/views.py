@@ -37,6 +37,7 @@ import re
 import json
 import logging
 import zipfile
+import traceback
 import gsimporter
 
 from http.client import BadStatusLine
@@ -694,7 +695,7 @@ def view(req, step=None):
                 logger.exception(e)
                 if isinstance(e, APIException):
                     raise e
-                raise GeneralUploadException(detail=e)
+                raise GeneralUploadException(detail=traceback.format_exc())
 
         resp = _steps[step](req, upload_session)
         resp_js = None
@@ -708,7 +709,7 @@ def view(req, step=None):
             logger.exception(e)
             if isinstance(e, APIException):
                 raise e
-            raise GeneralUploadException(detail=e)
+            raise GeneralUploadException(detail=traceback.format_exc())
 
         # must be put back to update object in session
         if upload_session:
@@ -751,7 +752,7 @@ def view(req, step=None):
         logger.exception(e)
         if isinstance(e, APIException):
             raise e
-        raise GeneralUploadException(detail=e)
+        raise GeneralUploadException(detail=traceback.format_exc())
 
 
 @login_required
