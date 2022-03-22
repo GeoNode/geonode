@@ -944,8 +944,16 @@ def setup_data(options):
     settings = options.get('settings', '')
     if settings and 'DJANGO_SETTINGS_MODULE' not in settings:
         settings = f'DJANGO_SETTINGS_MODULE={settings}'
+    
+    
 
     from geonode import settings as geonode_settings
+    import os
+
+    if not os.path.exists(geonode_settings.MEDIA_ROOT):
+        info(f'media root not available, creating...')
+        os.makedirs(geonode_settings.MEDIA_ROOT, exist_ok=True)
+
     sh(f"{settings} python -W ignore manage.py importlayers -v2 -hh {geonode_settings.SITEURL} {data_dir}")
 
 
