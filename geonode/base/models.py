@@ -1176,6 +1176,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 self.polymorphic_ctype.model:
             self.resource_type = self.polymorphic_ctype.model.lower()
 
+        # Resource Updated
+        _notification_sent = False
+        _approval_status_changed = False
+
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
@@ -1185,10 +1189,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
             elif self.pk:
-                # Resource Updated
-                _notification_sent = False
-                _approval_status_changed = False
-
                 # Approval Notifications Here
                 if self.was_approved != self.is_approved:
                     if not _notification_sent and not self.was_approved and self.is_approved:
@@ -1217,10 +1217,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
-                # Update workflow permissions
-                if _approval_status_changed:
-                    self.set_permissions()
-
         if self.pk is None:
             _initial_value = ResourceBase.objects.aggregate(Max("pk"))['pk__max']
             if not _initial_value:
@@ -1237,6 +1233,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.pk = self.id = _next_value
 
         super().save(*args, **kwargs)
+
+        # Update workflow permissions
+        if _approval_status_changed:
+            self.set_permissions()
 
     def delete(self, notify=True, *args, **kwargs):
         """
@@ -1898,14 +1898,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except ContactRole.DoesNotExist:
             the_ma = None
         return the_ma
-
-    def handle_moderated_uploads(self):
-        if settings.ADMIN_MODERATE_UPLOADS:
-            self.is_approved = False
-            self.was_approved = False
-        if settings.RESOURCE_PUBLISHING:
-            self.is_published = False
-            self.was_published = False
 
     def add_missing_metadata_author_or_poc(self):
         """

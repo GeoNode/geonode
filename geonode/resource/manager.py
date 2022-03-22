@@ -596,6 +596,9 @@ class ResourceManager(ResourceManagerInterface):
                     _owner = _resource.owner
                     _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
+                    if not created and permissions is None:
+                        permissions = _resource.get_all_level_info()
+
                     """
                     Cleanup the Guardian tables
                     """
@@ -637,12 +640,8 @@ class ResourceManager(ResourceManagerInterface):
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
                                     assign_perm(perm, anonymous_group, _resource.dataset)
-                                    _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
-                                    _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                                 elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
-                                    _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
-                                    _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other users
                         if 'users' in _perm_spec and len(_perm_spec['users']) > 0:
@@ -654,12 +653,8 @@ class ResourceManager(ResourceManagerInterface):
                                                 'change_dataset_data', 'change_dataset_style',
                                                 'add_dataset', 'change_dataset', 'delete_dataset'):
                                             assign_perm(perm, _user, _resource.dataset)
-                                            _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
-                                            _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                                         elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
-                                            _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
-                                            _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # All the other groups
                         if 'groups' in _perm_spec and len(_perm_spec['groups']) > 0:
@@ -670,12 +665,8 @@ class ResourceManager(ResourceManagerInterface):
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
                                         assign_perm(perm, _group, _resource.dataset)
-                                        _prev_perm = _perm_spec["groups"].get(_group, []) if "groups" in _perm_spec else []
-                                        _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
-                                        _prev_perm = _perm_spec["groups"].get(_group, []) if "groups" in _perm_spec else []
-                                        _perm_spec["groups"][_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
 
                         # AnonymousUser
                         if 'users' in _perm_spec and len(_perm_spec['users']) > 0:
@@ -688,12 +679,8 @@ class ResourceManager(ResourceManagerInterface):
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
                                         assign_perm(perm, _user, _resource.dataset)
-                                        _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
-                                        _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
-                                        _prev_perm = _perm_spec["users"].get(_user, []) if "users" in _perm_spec else []
-                                        _perm_spec["users"][_user] = set.union(perms_as_set(_prev_perm), perms_as_set(perm))
                     else:
                         # default permissions for anonymous users
                         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
@@ -741,7 +728,7 @@ class ResourceManager(ResourceManagerInterface):
                             _prev_perm = _perm_spec["users"].get(_owner, []) if "users" in _perm_spec else []
                             _perm_spec["users"][_owner] = set.union(perms_as_set(_prev_perm), perms_as_set(['change_dataset_data', 'change_dataset_style']))
 
-                        _resource.handle_moderated_uploads()
+                        _resource = AdvancedSecurityWorkflowManager.handle_moderated_uploads(_resource.uuid, instance=_resource)
 
                     # Fixup GIS Backend Security Rules Accordingly
                     if not _resource.compare_perms(_prev_perm_spec, _perm_spec):

@@ -468,6 +468,24 @@ class AdvancedSecurityWorkflowManager:
         return _perm_spec
 
     @staticmethod
+    def handle_moderated_uploads(uuid: str, /, instance=None) -> object:
+        _resource = instance or AdvancedSecurityWorkflowManager.get_instance(uuid)
+
+        if _resource:
+            if AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
+                _resource.is_approved = False
+                _resource.was_approved = False
+                _resource.get_real_instance_class().objects.filter(
+                    uuid=_resource.get_real_instance().uuid).update(is_approved=False, was_approved=False)
+            if AdvancedSecurityWorkflowManager.is_manager_publish_mode():
+                _resource.is_published = False
+                _resource.was_published = False
+                _resource.get_real_instance_class().objects.filter(
+                    uuid=_resource.get_real_instance().uuid).update(is_published=False, was_published=False)
+
+        return _resource
+
+    @staticmethod
     def get_permissions(uuid: str, /, instance=None, permissions: dict = {}) -> dict:
         """
         Adapts the provided "perm_spec" accordingly to the following schema:
@@ -550,11 +568,14 @@ class AdvancedSecurityWorkflowManager:
                 if _resource.owner:
                     prev_perms = perm_spec['users'].get(_resource.owner, []) if isinstance(perm_spec['users'], dict) else []
                     if AdvancedSecurityWorkflowManager.is_advanced_workflow():
-                        perm_spec['users'][_resource.owner] = list(
-                                    set(prev_perms + view_perms + admin_restricted_perms))
+                        if not _resource.is_approved and not _resource.is_published:
+                            perm_spec['users'][_resource.owner] = list(
+                                set(view_perms + admin_restricted_perms))
+                        else:
+                            perm_spec['users'][_resource.owner] = list(set(view_perms))
                     else:
                         perm_spec['users'][_resource.owner] = list(
-                                    set(prev_perms + view_perms + admin_perms))
+                            set(prev_perms + view_perms + admin_perms))
 
                 # Handle the Group Managers perms
                 if group_managers:
