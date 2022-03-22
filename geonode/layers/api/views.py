@@ -95,7 +95,7 @@ class DatasetViewSet(DynamicModelViewSet):
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
 
     @extend_schema(
-        methods=["post"],
+        methods=["patch"],
         responses={200},
         description="API endpoint allowing to replace a dataset.",
         examples=[
@@ -118,7 +118,7 @@ class DatasetViewSet(DynamicModelViewSet):
         detail=False,
         url_path="(?P<dataset_id>\d+)/replace",  # noqa
         url_name="replace-dataset",
-        methods=["post"],
+        methods=["patch"],
         serializer_class=DatasetReplaceAppendSerializer,
     )
     def replace(self, request, dataset_id=None):
@@ -128,7 +128,7 @@ class DatasetViewSet(DynamicModelViewSet):
         return self._replace_or_append(request, dataset_id, action="replace")
 
     @extend_schema(
-        methods=["post"],
+        methods=["patch"],
         responses={200, 500},
         description="API endpoint allowing to append data to dataset.",
         examples=[
