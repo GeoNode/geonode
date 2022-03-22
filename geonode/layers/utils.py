@@ -39,7 +39,7 @@ from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from geonode.layers.api.exceptions import InvalidDatasetException
 from geonode.storage.manager import storage_manager
 # Geonode functionality
@@ -624,13 +624,11 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
             f"You are attempting to {action_type} a raster dataset with a vector."))
 
     if layer.is_vector():
-        from geonode.upload.utils import _fixup_base_file
         absolute_base_file = None
         try:
-            if 'shp' in files and os.path.exists(files['shp']):
-                absolute_base_file = storage_manager.path(files['shp'])
-            elif 'zip' in files and os.path.exists(files['zip']):
-                absolute_base_file = _fixup_base_file(files['zip'])  # have to stay for compatibility reasons but will no longer be used in the future
+            absolute_base_file = storage_manager.path(files['shp'])
+        except SuspiciousFileOperation:
+            absolute_base_file = files['shp']
         except InvalidDatasetException:
             absolute_base_file = None
 
@@ -644,7 +642,7 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
                 inDataSource = ogr.Open(absolute_base_file)
                 if inDataSource is None:
                     raise InvalidDatasetException(
-                        _(f"Please endure that the base_file {absolute_base_file} is not empty"))
+                        _(f"Please ensure that the base_file {absolute_base_file} is not empty"))
                 lyr = inDataSource.GetLayer(str(layer.name))
                 if not lyr:
                     raise InvalidDatasetException(

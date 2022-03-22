@@ -946,7 +946,6 @@ def setup_data(options):
         settings = f'DJANGO_SETTINGS_MODULE={settings}'
 
     from geonode import settings as geonode_settings
-    sh(f"{settings} python -W ignore manage.py collectstatic --noinput")
     sh(f"{settings} python -W ignore manage.py importlayers -v2 -hh {geonode_settings.SITEURL} {data_dir}")
 
 
