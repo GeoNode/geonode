@@ -2254,7 +2254,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.member_with_perms, created = get_user_model().objects.get_or_create(username="member_with_perms")
 
         # Defining group profiles and members
-        self.owner_group, created = GroupProfile.objects.get_or_create(slug="custom_group")
+        self.owner_group, created = GroupProfile.objects.get_or_create(slug="owner_group")
         self.resource_group, created = GroupProfile.objects.get_or_create(slug="resource_group")
 
         # defining group members
@@ -2317,12 +2317,12 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertions_for_approved_or_published_is_true()
 
-        # Un approve resource
+        # # Un approve resource
         self.data.pop('resource-is_approved')
         response = self.client.post(self.url, data=self.data)
         self.resource.refresh_from_db()
         self.assertEqual(response.status_code, 200)
-        # self.assertions_for_approved_and_published_is_false()
+        self.assertions_for_approved_and_published_is_false()
 
         # Admin publishes and approves resource
         response = response = self.admin_approve_and_publish_resource()

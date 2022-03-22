@@ -185,22 +185,28 @@ class PermissionLevelMixin:
          - The list of "group managers" of the groups above
         """
         obj_group_managers = []
-        perm_spec = {"groups": {}}
-        if user_groups:
-            for _user_group in user_groups:
-                if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
-                    try:
-                        _group_profile = GroupProfile.objects.get(slug=_user_group)
-                        managers = _group_profile.get_managers()
-                        if managers:
-                            for manager in managers:
-                                if manager not in obj_group_managers and not manager.is_superuser:
-                                    obj_group_managers.append(manager)
-                    except GroupProfile.DoesNotExist:
-                        tb = traceback.format_exc()
-                        logger.debug(tb)
+        obj_user_groups = []
 
-        # assign view permissions to group resources
+        perm_spec = {"groups": {}}
+        if self.group:
+            if GroupProfile.objects.filter(group=self.group).exists():
+                obj_user_groups.append(self.group.name)
+        if user_groups:
+            obj_user_groups.extend(list(user_groups))
+
+        for group in obj_user_groups:
+            if not skip_registered_members_common_group(Group.objects.get(name=group)):
+                try:
+                    _group_profile = GroupProfile.objects.get(slug=group)
+                    managers = _group_profile.get_managers()
+                    if managers:
+                        for manager in managers:
+                            if manager not in obj_group_managers and not manager.is_superuser:
+                                obj_group_managers.append(manager)
+                except GroupProfile.DoesNotExist:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
+
         if self.group and settings.RESOURCE_PUBLISHING:
             perm_spec['groups'][self.group] = VIEW_PERMISSIONS
 
@@ -681,10 +687,8 @@ class PermissionLevelMixin:
                     perm_spec = new_perms
                 else:
                     # restore owner perms
-                    for user, perms in perm_spec["users"].items():
-                        if user == self.owner:
-                            owner_permissions = get_owner_permissions_according_to_workflow(self)
-                            perm_spec["users"][user] = owner_permissions
+                    owner_permissions = get_owner_permissions_according_to_workflow(self)
+                    perm_spec["users"][self.owner] = owner_permissions
         return perm_spec
 
     def get_user_perms(self, user):
