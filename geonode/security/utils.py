@@ -667,27 +667,34 @@ def _get_gf_services(layer, perms):
 
 
 def get_owner_permissions_according_to_workflow(resource):
-    from .permissions import (VIEW_PERMISSIONS, ADMIN_PERMISSIONS, LAYER_ADMIN_PERMISSIONS, SERVICE_PERMISSIONS)
     if resource.polymorphic_ctype:
         # Owner & Manager Admin Perms
-        admin_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
+        owner_perms = VIEW_PERMISSIONS + ADMIN_PERMISSIONS
 
         # get the GeoFence Owner Rule
         if resource.polymorphic_ctype.name == 'layer':
-            admin_perms.extend(LAYER_ADMIN_PERMISSIONS)
+            owner_perms.extend(LAYER_ADMIN_PERMISSIONS)
 
         if resource.polymorphic_ctype.name == 'service':
-            admin_perms.extend(SERVICE_PERMISSIONS)
+            owner_perms.extend(SERVICE_PERMISSIONS)
 
         if settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS:
             # Filter permissions when Advanced workflow is enabled
             admin_manager_perms = ['change_resourcebase_permissions', 'publish_resourcebase']
+
+            # Check if owner is a manager to any group and add admin_manager_perms
+            user_groups = Group.objects.filter(
+                name__in=resource.owner.groupmember_set.all().values_list("group__slug", flat=True))
+            _, group_managers = resource.get_group_managers(user_groups)
+            if resource.owner in group_managers:
+                return owner_perms + admin_manager_perms
+
             if resource.is_approved or resource.is_published:
+                # Return view permissions is approved or published
                 return VIEW_PERMISSIONS
-            # TODO check if owner is a manager to any group and add admin_manager_perms
-            return [perm for perm in admin_perms if perm not in admin_manager_perms]
+            return [perm for perm in owner_perms if perm not in admin_manager_perms]
         else:
-            return admin_perms
+            return owner_perms
     return []
 
 

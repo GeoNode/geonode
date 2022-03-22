@@ -670,6 +670,7 @@ class PermissionLevelMixin:
                     edit_perms = ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
                     new_perms = {"users": {}, "groups": {}}
                     for user, perms in perm_spec["users"].items():
+                        # if owner is a group manager, take the group manager permissions set above
                         if user in group_managers or user.is_superuser:
                             new_perms["users"][user] = perms
                         else:
