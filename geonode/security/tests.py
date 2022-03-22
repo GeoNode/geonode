@@ -2235,3 +2235,129 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
             self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
+
+
+def is_equal(list_1, list_2):
+    """ Check if both lists are equal irespective of the order of elements"""
+    return sorted(list_1) == sorted(list_2)
+
+
+@override_settings(RESOURCE_PUBLISHING=True)
+@override_settings(ADMIN_MODERATE_UPLOADS=True)
+class TestPermissionChanges(GeoNodeBaseTestSupport):
+    def setUp(self):
+        # Creating groups
+        self.author, created = get_user_model().objects.get_or_create(username="author")
+        self.group_manager, created = get_user_model().objects.get_or_create(username="group_manager")
+        self.resource_group_manager, created = get_user_model().objects.get_or_create(username="resource_group_manager")
+        self.group_member, created = get_user_model().objects.get_or_create(username="group_member")
+        self.member_with_perms, created = get_user_model().objects.get_or_create(username="member_with_perms")
+
+        # Defining group profiles and members
+        self.owner_group, created = GroupProfile.objects.get_or_create(slug="custom_group")
+        self.resource_group, created = GroupProfile.objects.get_or_create(slug="resource_group")
+
+        # defining group members
+        GroupMember.objects.get_or_create(group=self.owner_group, user=self.author, role="member")
+        GroupMember.objects.get_or_create(group=self.owner_group, user=self.group_member, role="member")
+        GroupMember.objects.get_or_create(group=self.owner_group, user=self.group_manager, role="manager")
+        GroupMember.objects.get_or_create(group=self.resource_group, user=self.resource_group_manager, role="manager")
+
+        # Creating the default resource
+        self.resource = create_single_layer(
+            name="test_layer_adv",
+            owner=self.author,
+            is_approved=False,
+            is_published=False,
+            group=self.resource_group.group)
+
+        self.owner_perms = [
+            'delete_resourcebase',
+            'view_resourcebase',
+            'change_resourcebase',
+            'download_resourcebase',
+            'change_resourcebase_metadata'
+        ]
+        self.layer_perms = ['change_layer_style', 'change_layer_data']
+        self.adv_owner_limit = ["change_resourcebase_permissions", "publish_resourcebase"]
+        self.safe_perms = ["download_resourcebase", "view_resourcebase"]
+
+        # Assign manage perms to user member_with_perms
+        for perm in self.layer_perms:
+            assign_perm(perm, self.member_with_perms, self.resource)
+        for perm in self.owner_perms:
+            assign_perm(perm, self.member_with_perms, self.resource.get_self_resource())
+
+        # Assert inital assignment of permissions to groups and users
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.owner_perms + self.layer_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+
+    def test_permissions_on_approve_and_publish_changes(self):
+        # Group manager approves a resource
+        data = {
+            'resource-title': self.resource.title,
+            'resource-owner': self.author.id,
+            'resource-date': '2021-10-27 05:59 am',
+            'resource-date_type': 'publication',
+            'resource-language': self.resource.language,
+            'resource-is_approved': 'on',
+            'layer_attribute_set-TOTAL_FORMS': 0,
+            'layer_attribute_set-INITIAL_FORMS': 0,
+        }
+        url = reverse('layer_metadata', args=(self.resource.alternate,))
+
+        self.group_manager.set_password('group_manager')
+        self.group_manager.save()
+        self.assertTrue(self.client.login(username="group_manager", password='group_manager'))
+        response = self.client.post(url, data=data)
+        self.resource.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+
+        # Un approve resource
+        data.pop('resource-is_approved')
+        response = self.client.post(url, data=data)
+        self.resource.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+
+        # Admin publishes and approves resource
+        self.assertTrue(self.client.login(username="admin", password='admin'))
+        data['resource-is_approved'] = 'on'
+        data['resource-is_published'] = 'on'
+        response = self.client.post(url, data=data)
+        self.resource.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
+
+        # Admin Un approves and un publishes resource
+        data.pop('resource-is_approved')
+        data.pop('resource-is_published')
+        response = self.client.post(url, data=data)
+        self.resource.refresh_from_db()
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
+        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
