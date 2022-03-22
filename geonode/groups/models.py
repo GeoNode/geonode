@@ -36,7 +36,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.utils import build_absolute_uri
 from geonode.thumbs.utils import MISSING_THUMB
-from geonode.security.utils import AdvancedSecurityWorkflowManager
 
 from guardian.shortcuts import get_objects_for_group
 
@@ -275,6 +274,8 @@ class GroupMember(models.Model):
         self._handle_perms(self.user, self.group, self.role)
 
     def _handle_perms(self, user, group, role):
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
         AdvancedSecurityWorkflowManager.set_group_member_permissions(user, group, role)
 
 
