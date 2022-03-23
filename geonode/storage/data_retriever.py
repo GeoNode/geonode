@@ -20,6 +20,7 @@
 import io
 import os
 import shutil
+import logging
 import tempfile
 from typing import Mapping
 import zipfile
@@ -29,6 +30,8 @@ from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 
 from geonode.storage.exceptions import DataRetrieverExcepion
+
+logger = logging.getLogger(__name__)
 
 
 class DataItemRetriever(object):
@@ -95,18 +98,21 @@ class DataItemRetriever(object):
                 if not data:
                     break
                 yield data
+        try:
+            self.temporary_folder = temporary_folder or tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+            self.file_path = os.path.join(self.temporary_folder, self.name)
 
-        self.temporary_folder = temporary_folder or tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
-        self.file_path = os.path.join(self.temporary_folder, self.name)
-
-        if self._is_django_form_file:
-            with open(self.file_path, "wb") as tmp_file:
-                for chunk in self._django_form_file.chunks():
-                    tmp_file.write(chunk)
-        else:
-            with open(self.file_path, "wb") as tmp_file, smart_open.open(uri=self._original_file_uri, mode="rb") as original_file:
-                for chunk in file_chunks_iterable(original_file):
-                    tmp_file.write(chunk)
+            if self._is_django_form_file:
+                with open(self.file_path, "wb") as tmp_file:
+                    for chunk in self._django_form_file.chunks():
+                        tmp_file.write(chunk)
+            else:
+                with open(self.file_path, "wb") as tmp_file, smart_open.open(uri=self._original_file_uri, mode="rb") as original_file:
+                    for chunk in file_chunks_iterable(original_file):
+                        tmp_file.write(chunk)
+        except Exception as e:
+            logger.error(e)
+            raise DataRetrieverExcepion(detail=e)
         return self.file_path
 
     @property

@@ -25,7 +25,7 @@ def geonode_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    if response is not None and isinstance(response, APIException):
+    if response is not None and isinstance(exc, APIException):
         # for the upload exception we need a custom response
         response.data = {
             "success": False,

@@ -151,7 +151,7 @@ class DatasetViewSet(DynamicModelViewSet):
         detail=False,
         url_path="(?P<dataset_id>\d+)/append",  # noqa
         url_name="append-dataset",
-        methods=["post"],
+        methods=["patch"],
         serializer_class=DatasetReplaceAppendSerializer,
     )
     def append(self, request, dataset_id=None):

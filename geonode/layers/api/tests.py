@@ -17,9 +17,6 @@
 #
 #########################################################################
 import logging
-import shutil
-import tempfile
-from django.conf import settings
 
 from unittest.mock import patch
 from django.contrib.auth import get_user_model
@@ -194,7 +191,7 @@ class DatasetsApiTests(APITestCase):
             "code": "not_authenticated",
         }
 
-        response = self.client.post(url)
+        response = self.client.patch(url)
         self.assertEqual(403, response.status_code)
         self.assertDictEqual(expected, response.json())
 
@@ -203,13 +200,10 @@ class DatasetsApiTests(APITestCase):
         url = reverse("datasets-replace-dataset", args=(layer.id,))
         self.client.login(username="admin", password="admin")
 
-        response = self.client.put(url)
+        response = self.client.post(url)
         self.assertEqual(405, response.status_code)
 
         response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
-
-        response = self.client.patch(url)
         self.assertEqual(405, response.status_code)
 
     def test_layer_replace_should_raise_error_if_layer_does_not_exists(self):
@@ -219,7 +213,7 @@ class DatasetsApiTests(APITestCase):
 
         self.client.login(username="admin", password="admin")
 
-        response = self.client.post(url)
+        response = self.client.patch(url)
         self.assertEqual(404, response.status_code)
         self.assertDictEqual(expected, response.json())
 
@@ -233,7 +227,7 @@ class DatasetsApiTests(APITestCase):
             "code": "not_authenticated",
         }
 
-        response = self.client.post(url)
+        response = self.client.patch(url)
         self.assertEqual(403, response.status_code)
         self.assertDictEqual(expected, response.json())
 
@@ -242,13 +236,10 @@ class DatasetsApiTests(APITestCase):
         url = reverse("datasets-append-dataset", args=(layer.id,))
         self.client.login(username="admin", password="admin")
 
-        response = self.client.put(url)
+        response = self.client.post(url)
         self.assertEqual(405, response.status_code)
 
         response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
-
-        response = self.client.patch(url)
         self.assertEqual(405, response.status_code)
 
     def test_dataset_append_should_raise_error_if_layer_does_not_exists(self):
@@ -258,8 +249,8 @@ class DatasetsApiTests(APITestCase):
 
         self.client.login(username="admin", password="admin")
 
-        response = self.client.post(url)
-        self.assertEqual(404, response.status_code)
+        response = self.client.patch(url)
+        self.assertEqual(404, response.status_code, response.json())
         self.assertDictEqual(expected, response.json())
 
     @patch("geonode.layers.api.views.validate_input_source")
@@ -276,7 +267,6 @@ class DatasetsApiTests(APITestCase):
             '''
             _dataset = Dataset.objects.get(name='single_point')
             _dataset.name = "single_point_2"
-            old_id = _dataset.id
             _dataset.save()
 
         try:
@@ -298,9 +288,6 @@ class DatasetsApiTests(APITestCase):
         logger.error(layer.alternate)
         # renaming the file in the same way as the lasyer name
         # the filename must be consiste with the layer name
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-        shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/single_point.xml", f"{tempdir}/single_point.xml")
-        shutil.copyfile(f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld", f"{tempdir}/single_point.sld")
 
         github_path = "https://github.com/GeoNode/gisdata/tree/master/gisdata/data/good/vector/"
         payload = {
@@ -309,29 +296,15 @@ class DatasetsApiTests(APITestCase):
             "dbf_file": f"{github_path}/single_point.dbf",
             "shx_file": f"{github_path}/single_point.shx",
             "prj_file": f"{github_path}/single_point.prj",
-            "sld_file": f"{tempdir}/single_point.sld",
         }
 
         url = reverse("datasets-replace-dataset", args=(layer.id,))
 
         self.client.login(username="admin", password="admin")
 
-        response = self.client.post(url, data=payload)
+        response = self.client.patch(url, data=payload)
         self.assertEqual(200, response.status_code, response.json())
 
         layer.refresh_from_db()
         # evaluate that the number of available layer is not changed
         self.assertEqual(Dataset.objects.count(), cnt)
-
-        if tempdir:
-            shutil.rmtree(tempdir)
-
-        # restore the old stuff
-        if Dataset.objects.filter(name='single_point').exists():
-            '''
-            Rollback the previous changes for the test
-            '''
-            Dataset.objects.filter(name='single_point').delete()
-            _dataset = Dataset.objects.get(id=old_id)
-            _dataset.name = "single_point"
-            _dataset.save()
