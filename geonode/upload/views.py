@@ -36,7 +36,6 @@ import os
 import re
 import json
 import logging
-import zipfile
 import gsimporter
 
 from http.client import BadStatusLine
@@ -52,7 +51,6 @@ from geonode.layers.models import Dataset
 from geonode.base.models import Configuration
 from geonode.upload.api.exceptions import GeneralUploadException
 from rest_framework.exceptions import APIException, AuthenticationFailed
-from geonode.utils import fixup_shp_columnnames
 from geonode.decorators import logged_in_or_basicauth
 
 from geonode.base import register_event
@@ -178,13 +176,6 @@ def save_step_view(req, session):
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]
-        if not os.path.isfile(os.path.join(data_retriever.temporary_folder, spatial_files[0].base_file)):
-            tmp_files = [f for f in os.listdir(data_retriever.temporary_folder) if os.path.isfile(os.path.join(data_retriever.temporary_folder, f))]
-            for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
-                    fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
-                                          form.cleaned_data["charset"],
-                                          tempdir=data_retriever.temporary_folder)
 
         _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
