@@ -1042,7 +1042,13 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     def test_will_raise_exception_for_replace_dataset_with_unknown_format(self):
         layer = Dataset.objects.get(name="single_point")
         filename = "/tpm/filename.ccc"
-        files = ["/opt/file1.shp", "/opt/file2.ccc"]
+        file_path = gisdata.VECTOR_DATA
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/san_andres_y_providencia_highway.asd",
+            "prj": f"{file_path}/san_andres_y_providencia_highway.asd",
+            "shx": f"{file_path}/san_andres_y_providencia_highway.asd",
+        }
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
         expected = "You are attempting to append a vector dataset with an unknown format."
