@@ -720,10 +720,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 6)
 
-        rules_objs = get_geofence_rules(entries=6)
-        self.assertEqual(len(rules_objs['rules']), 6)
+        rules_objs = get_geofence_rules()
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
@@ -1325,7 +1323,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 12)
 
         self.assertTrue(self.client.login(username='bobby', password='bob'))
 
@@ -1385,7 +1382,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             # Check GeoFence Rules have been correctly created
             geofence_rules_count = get_geofence_rules_count()
             _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 12)
 
         # 5. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
