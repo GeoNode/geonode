@@ -698,12 +698,9 @@ def get_owner_permissions_according_to_workflow(resource):
     return []
 
 
-def set_owner_permissions(resource, members=None, perms_list=[]):
+def set_owner_permissions(resource, members=None):
     """assign permissions to the owner"""
-    if perms_list:
-        owner_permissions = perms_list
-    else:
-        owner_permissions = get_owner_permissions_according_to_workflow(resource)
+    owner_permissions = get_owner_permissions_according_to_workflow(resource)
     for perm in owner_permissions:
         try:
             assign_perm(perm, resource.owner, resource)

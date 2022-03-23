@@ -1907,7 +1907,7 @@ class TestGetUserGeolimits(TestCase):
 
 class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     def setUp(self):
-        # Creating anonymous group<
+        # Creating anonymous group
         # Creating groups and asign also to the anonymous_group
         self.author, created = get_user_model().objects.get_or_create(username="author")
         self.group_manager, created = get_user_model().objects.get_or_create(username="group_manager")
@@ -2269,6 +2269,8 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             owner=self.author,
             is_approved=False,
             is_published=False,
+            was_approved=False,
+            was_published=False,
             group=self.resource_group.group)
 
         self.owner_perms = [
@@ -2288,6 +2290,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             'resource-date_type': 'publication',
             'resource-language': self.resource.language,
             'resource-is_approved': 'on',
+            'resource-group': self.resource_group.group.id,
             'layer_attribute_set-TOTAL_FORMS': 0,
             'layer_attribute_set-INITIAL_FORMS': 0,
         }
@@ -2313,14 +2316,12 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.group_manager.save()
         self.assertTrue(self.client.login(username="group_manager", password='group_manager'))
         response = self.client.post(self.url, data=self.data)
-        self.resource.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertions_for_approved_or_published_is_true()
 
-        # # Un approve resource
+        # Un approve resource
         self.data.pop('resource-is_approved')
         response = self.client.post(self.url, data=self.data)
-        self.resource.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertions_for_approved_and_published_is_false()
 
@@ -2353,7 +2354,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
 
@@ -2361,7 +2362,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.author], self.owner_perms + self.layer_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.member_with_perms], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.group_manager], self.owner_perms + self.adv_owner_limit))
-        # self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
+        self.assertTrue(is_equal(self.resource.get_all_level_info()['users'][self.resource_group_manager], self.owner_perms + self.adv_owner_limit))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.owner_group.group], self.safe_perms))
         self.assertTrue(is_equal(self.resource.get_all_level_info()['groups'][self.resource_group.group], self.safe_perms))
 
