@@ -27,9 +27,11 @@ def geonode_exception_handler(exc, context):
 
     if response is not None and isinstance(exc, APIException):
         # for the upload exception we need a custom response
+        detail = exc.detail if hasattr(exc, "detail") else exc.default_detail
+        detail = str(detail[0]) if isinstance(detail, list) else str(detail)
         response.data = {
             "success": False,
-            "errors": [str(exc.detail) if hasattr(exc, "detail") else exc.default_detail],
+            "errors": [detail],
             "code": exc.code if hasattr(exc, "code") else exc.default_code
         }
     return response
