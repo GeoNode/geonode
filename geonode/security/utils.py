@@ -702,9 +702,12 @@ def set_owner_permissions(resource, members=None):
     """assign permissions to the owner"""
     owner_permissions = get_owner_permissions_according_to_workflow(resource)
     for perm in owner_permissions:
-        try:
-            assign_perm(perm, resource.owner, resource)
-        except Permission.DoesNotExist:
+        if resource.polymorphic_ctype.name == 'layer' and perm in (
+            'change_layer_data', 'change_layer_style',
+            'add_layer', 'change_layer', 'delete_layer'
+        ):
+            assign_perm(perm, resource.owner, resource.layer)
+        else:
             assign_perm(perm, resource.owner, resource.get_self_resource())
 
 
