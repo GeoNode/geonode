@@ -2090,6 +2090,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     @override_settings(RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
     def test_set_compact_permissions(self):
+        """
+          **AUTO PUBLISHING** - test_set_compact_permissions
+            - `RESOURCE_PUBLISHING = False`
+            - `ADMIN_MODERATE_UPLOADS = False`
+        """
         use_cases = [
             (
                 PermSpec({
@@ -2106,15 +2111,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "publish_resourcebase",
-                        "view_resourcebase",
-                    ],
+                    self.group_manager: [],
                     self.group_member: [],
                     self.not_group_member: [],
                     self.anonymous_user: [],
@@ -2135,15 +2132,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "publish_resourcebase",
-                        "view_resourcebase",
-                    ],
+                    self.group_manager: ["view_resourcebase"],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
                         "download_resourcebase",
@@ -2163,6 +2152,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_are_set_as_expected_resource_publishing_True(self):
+        """
+          **SIMPLE PUBLISHING** - test_permissions_are_set_as_expected_resource_publishing_True
+            - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+            - `ADMIN_MODERATE_UPLOADS = False`
+        """
         use_cases = [
             (
                 {"users": {}, "groups": {}},
@@ -2172,14 +2166,15 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "view_resourcebase"
+                        "view_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase_permissions"
                     ],
                     self.group_manager: [
                         "change_resourcebase",
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "publish_resourcebase",
                         "change_resourcebase_permissions",
                         "view_resourcebase"
                     ],
@@ -2196,7 +2191,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
-                        "view_resourcebase"
+                        "view_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase_permissions"
                     ],
                     self.group_manager: [
                         "change_resourcebase",
@@ -2204,8 +2201,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase"
+                        "change_resourcebase_permissions"
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
                     self.not_group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2223,14 +2219,16 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_permissions_are_set_as_expected_admin_upload_resource_publishing_True(self):
+        """
+          **ADVANCED WORKFLOW** - test_permissions_are_set_as_expected_admin_upload_resource_publishing_True
+            - `RESOURCE_PUBLISHING = True`
+            - `ADMIN_MODERATE_UPLOADS = True`
+        """
         use_cases = [
             (
                 {"users": {}, "groups": {}},
                 {
                     self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2252,9 +2250,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2283,6 +2278,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     @override_settings(RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
     def test_permissions_are_set_as_expected_admin_upload_resource_publishing_False(self):
+        """
+          **AUTO PUBLISHING** - test_permissions_are_set_as_expected_admin_upload_resource_publishing_False
+            - `RESOURCE_PUBLISHING = False`
+            - `ADMIN_MODERATE_UPLOADS = False`
+        """
         use_cases = [
             (
                 {"users": {}, "groups": {}},
@@ -2296,15 +2296,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "publish_resourcebase",
-                        "view_resourcebase",
-                    ],
+                    self.group_manager: [],
                     self.group_member: [],
                     self.not_group_member: [],
                     self.anonymous_user: [],
@@ -2322,15 +2314,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "publish_resourcebase",
-                        "view_resourcebase",
-                    ],
+                    self.group_manager: ["view_resourcebase"],
                     self.group_member: ["view_resourcebase"],
                     self.not_group_member: ["view_resourcebase", "change_resourcebase"],
                     self.anonymous_user: ["view_resourcebase"],
@@ -2347,6 +2331,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_permissions_on_user_role_promotion_to_manager(self):
+        """
+          **ADVANCED WORKFLOW** - test_permissions_on_user_role_promotion_to_manager
+            - `RESOURCE_PUBLISHING = True`
+            - `ADMIN_MODERATE_UPLOADS = True`
+        """
         sut = GroupMember.objects.filter(user=self.group_member)\
             .exclude(group__title='Registered Members')\
             .first()
@@ -2356,11 +2345,26 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "manager")
         expected = {
             self.author: [
+                "download_resourcebase",
+                "view_resourcebase",
+            ],
+            self.group_manager: [
                 "change_resourcebase",
                 "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions"
+            ],
+            self.group_member: [
+                "change_resourcebase",
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "download_resourcebase",
+                "view_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions"
             ]
         }
         try:
@@ -2373,6 +2377,37 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
     @override_settings(RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_permissions_on_user_role_demote_to_member(self):
+        """
+          **ADVANCED WORKFLOW** - test_permissions_on_user_role_demote_to_member
+            - `RESOURCE_PUBLISHING = True`
+            - `ADMIN_MODERATE_UPLOADS = True`
+        """
+        sut = GroupMember.objects.filter(user=self.group_manager)\
+            .exclude(group__title='Registered Members')\
+            .first()
+        self.assertEqual(sut.role, "manager")
+        sut.demote()
+        sut.refresh_from_db()
+        self.assertEqual(sut.role, "member")
+        expected = {
+            self.author: [
+                "download_resourcebase",
+                "view_resourcebase",
+            ],
+            self.group_manager: ["download_resourcebase", "view_resourcebase"],
+            self.group_member: ["download_resourcebase", "view_resourcebase"]
+        }
+        for authorized_subject, expected_perms in expected.items():
+            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
+
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
+        """
+          **SIMPLE PUBLISHING** - test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active
+            - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+            - `ADMIN_MODERATE_UPLOADS = False`
+        """
         sut = GroupMember.objects.filter(user=self.group_manager)\
             .exclude(group__title='Registered Members')\
             .first()
@@ -2387,30 +2422,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-            ],
-            self.group_manager: ["download_resourcebase", "view_resourcebase"],
-            self.group_member: ["download_resourcebase", "view_resourcebase"]
-        }
-        for authorized_subject, expected_perms in expected.items():
-            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-            self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
-
-    @override_settings(RESOURCE_PUBLISHING=True)
-    def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
-        sut = GroupMember.objects.filter(user=self.group_manager)\
-            .exclude(group__title='Registered Members')\
-            .first()
-        self.assertEqual(sut.role, "manager")
-        sut.demote()
-        sut.refresh_from_db()
-        self.assertEqual(sut.role, "member")
-        expected = {
-            self.author: [
-                "change_resourcebase",
-                "change_resourcebase_metadata",
-                "delete_resourcebase",
-                "download_resourcebase",
-                "view_resourcebase"
+                "publish_resourcebase",
+                "change_resourcebase_permissions"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
             self.group_member: ["download_resourcebase", "view_resourcebase"],
@@ -2421,6 +2434,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
 
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active(self):
+        """
+          **SIMPLE PUBLISHING** - test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active
+            - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+            - `ADMIN_MODERATE_UPLOADS = False`
+        """
         sut = GroupMember.objects.filter(user=self.group_member)\
             .exclude(group__title='Registered Members')\
             .first()
@@ -2434,7 +2452,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
-                "view_resourcebase"
+                "view_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions"
             ],
             self.group_manager: [
                 "change_resourcebase",
@@ -2442,8 +2462,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "change_resourcebase_permissions",
-                "publish_resourcebase"
+                "publish_resourcebase",
+                "change_resourcebase_permissions"
             ],
             self.group_member: [
                 "change_resourcebase",
@@ -2451,8 +2471,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "change_resourcebase_permissions",
-                "publish_resourcebase"
+                "change_resourcebase_permissions"
             ],
         }
         for authorized_subject, expected_perms in expected.items():

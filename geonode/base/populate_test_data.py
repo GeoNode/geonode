@@ -327,7 +327,6 @@ def create_single_dataset(name, keywords=None, owner=None, group=None):
         admin.set_password('admin')
         admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
-    user = get_user_model().objects.get(username='AnonymousUser')
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
@@ -340,7 +339,7 @@ def create_single_dataset(name, keywords=None, owner=None, group=None):
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
         uuid=str(uuid4()),
-        owner=owner or user,
+        owner=owner or admin,
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
@@ -368,14 +367,13 @@ def create_single_map(name, owner=None):
         admin.set_password('admin')
         admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
-    user = get_user_model().objects.get(username='AnonymousUser')
     ll = (name, 'lorem ipsum', name, f'{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',))
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = ll
     m = Map(
         title=title,
         abstract=abstract,
-        owner=owner or user,
+        owner=owner or admin,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
@@ -396,7 +394,6 @@ def create_single_doc(name, owner=None):
         admin.set_password('admin')
         admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
-    user = get_user_model().objects.get(username='AnonymousUser')
     dd = (name, 'lorem ipsum', name, f'{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',))
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = dd
@@ -404,7 +401,7 @@ def create_single_doc(name, owner=None):
     m = Document(
         title=title,
         abstract=abstract,
-        owner=owner or user,
+        owner=owner or admin,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',

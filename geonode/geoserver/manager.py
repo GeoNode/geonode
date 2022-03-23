@@ -255,7 +255,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         spatial_files_type = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, files)
 
         if not spatial_files_type:
-            raise Exception("No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
+            raise Exception(f"No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
 
         upload_session, _ = Upload.objects.get_or_create(resource=instance.get_real_instance().resourcebase_ptr, user=user)
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
