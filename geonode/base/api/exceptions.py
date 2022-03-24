@@ -42,6 +42,8 @@ def _extract_detail(exc, loop=False):
             return exc.detail[0]
         elif isinstance(exc.detail, dict):
             return _extract_detail(exc.detail, loop=True)
+        else:
+            return exc.detail
     elif loop:
         try:
             error = exc.get(list(exc)[0])
