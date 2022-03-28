@@ -39,11 +39,9 @@ from geonode.base.models import ResourceBase
 from geonode.thumbs.utils import MISSING_THUMB
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
-from geonode.groups.conf import settings as groups_settings
 from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.security.utils import (
     get_user_groups,
-    get_obj_group_managers,
     skip_registered_members_common_group)
 from geonode.resource.manager import (
     ResourceManager,
@@ -257,7 +255,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         spatial_files_type = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, files)
 
         if not spatial_files_type:
-            raise Exception("No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
+            raise Exception(f"No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
 
         upload_session, _ = Upload.objects.get_or_create(resource=instance.get_real_instance().resourcebase_ptr, user=user)
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
@@ -476,7 +474,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _owner, None, gf_services)
                             _disable_cache.append(_disable_dataset_cache)
 
-                            for _group_manager in get_obj_group_managers(_owner):
+                            _member_group_perm, _group_managers = instance.get_group_managers(get_user_groups(_owner))
+                            for _group_manager in _group_managers:
                                 sync_geofence_with_guardian(instance, perms, user=_group_manager)
                                 _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance, _group_manager, None, gf_services)
                                 _disable_cache.append(_disable_dataset_cache)
@@ -513,55 +512,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
             logger.exception(e)
             return False
         return True
-
-    def get_workflow_permissions(self, uuid: str, /, instance: ResourceBase = None, permissions: dict = {}) -> dict:
-        instance = instance or ResourceManager._get_instance(uuid)
-
-        try:
-            if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                if isinstance(instance.get_real_instance(), Dataset):
-                    _is_remote_instance = hasattr(instance.get_real_instance(), 'subtype') and getattr(instance.get_real_instance(), 'subtype') in ['tileStore', 'remote']
-                    if not _is_remote_instance:
-                        _disable_cache = []
-                        gf_services = _get_gf_services(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                        if instance.is_approved:
-                            # Set the GeoFence Rules (user = None)
-                            _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-                            _members_group_group = Group.objects.get(name=_members_group_name)
-                            sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS, group=_members_group_group)
-                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, _members_group_group, gf_services)
-                            _disable_cache.append(_disable_dataset_cache)
-                        if instance.is_published:
-                            # Set the GeoFence Rules (user = None)
-                            sync_geofence_with_guardian(instance.get_real_instance(), VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
-                            _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(instance.get_real_instance(), None, None, gf_services)
-                            _disable_cache.append(_disable_dataset_cache)
-
-                        if _disable_cache and any(_disable_cache):
-                            filters = None
-                            formats = None
-                        else:
-                            filters = [{
-                                "styleParameterFilter": {
-                                    "STYLES": ""
-                                }
-                            }]
-                            formats = [
-                                'application/json;type=utfgrid',
-                                'image/gif',
-                                'image/jpeg',
-                                'image/png',
-                                'image/png8',
-                                'image/vnd.jpeg-png',
-                                'image/vnd.jpeg-png8'
-                            ]
-                        try:
-                            toggle_dataset_cache(f'{get_dataset_workspace(instance.get_real_instance())}:{instance.get_real_instance().name}', filters=filters, formats=formats)
-                        except Dataset.DoesNotExist:
-                            pass
-        except Exception as e:
-            logger.exception(e)
-        return permissions
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance and (isinstance(instance.get_real_instance(), Dataset) or isinstance(instance.get_real_instance(), Map)):
