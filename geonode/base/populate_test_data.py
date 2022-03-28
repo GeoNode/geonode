@@ -195,6 +195,7 @@ def create_models(type=None, integration=False):
                     title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
                     logger.debug(f"[SetUp] Add map {title}")
                     m = Map(
+                        uuid=str(uuid4()),
                         title=title,
                         abstract=abstract,
                         owner=user,
@@ -218,6 +219,7 @@ def create_models(type=None, integration=False):
                     title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
                     logger.debug(f"[SetUp] Add document {title}")
                     m = Document(
+                        uuid=str(uuid4()),
                         title=title,
                         abstract=abstract,
                         owner=user,
@@ -371,6 +373,7 @@ def create_single_map(name, owner=None):
         0, 22, 0, 22], test_datetime, ('populartag',))
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = ll
     m = Map(
+        uuid=str(uuid4()),
         title=title,
         abstract=abstract,
         owner=owner or admin,
@@ -399,6 +402,7 @@ def create_single_doc(name, owner=None):
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = dd
     logger.debug(f"[SetUp] Add document {title}")
     m = Document(
+        uuid=str(uuid4()),
         title=title,
         abstract=abstract,
         owner=owner or admin,
