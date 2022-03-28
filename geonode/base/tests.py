@@ -20,6 +20,7 @@
 import os
 import requests
 
+from uuid import uuid4
 from urllib.parse import urlparse
 from unittest.mock import patch, Mock
 from django.core.exceptions import ObjectDoesNotExist
@@ -81,7 +82,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        self.rb = ResourceBase.objects.create(owner=get_user_model().objects.get(username='admin'))
+        self.rb = ResourceBase.objects.create(uuid=str(uuid4()), owner=get_user_model().objects.get(username='admin'))
 
     def tearDown(self):
         super().tearDown()
@@ -653,10 +654,10 @@ class TestOwnerRightsRequestUtils(TestCase):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
         self.admin = User.objects.create(username='admin', email='test@test.com', is_superuser=True)
-        self.d = Document.objects.create(owner=self.user, title='test', is_approved=True)
-        self.la = Dataset.objects.create(owner=self.user, title='test', is_approved=True)
-        self.s = Service.objects.create(owner=self.user, title='test', is_approved=True)
-        self.m = Map.objects.create(owner=self.user, title='test', is_approved=True)
+        self.d = Document.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
+        self.la = Dataset.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
+        self.s = Service.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
+        self.m = Map.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
 
     def test_get_concrete_resource(self):
         self.assertTrue(isinstance(
@@ -705,7 +706,7 @@ class TestGetVisibleResource(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='mikel_arteta')
         self.category = TopicCategory.objects.create(identifier='biota')
-        self.rb = ResourceBase.objects.create(category=self.category, owner=self.user)
+        self.rb = ResourceBase.objects.create(uuid=str(uuid4()), category=self.category, owner=self.user)
 
     def test_category_data_not_shown_for_missing_resourcebase_permissions(self):
         """
@@ -903,29 +904,29 @@ class TestFacets(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
         Dataset.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', subtype='vector', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_boxes', abstract='nothing', subtype='vector', is_approved=True
         )
         Dataset.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', subtype='vector', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_1', abstract='contains boxes', subtype='vector', is_approved=True
         )
         Dataset.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', subtype='vector', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_2', purpose='contains boxes', subtype='vector', is_approved=True
         )
         Dataset.objects.create(
-            owner=self.user, title='test_3', subtype='vector', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_3', subtype='vector', is_approved=True
         )
 
         Dataset.objects.create(
-            owner=self.user, title='test_boxes', abstract='nothing', subtype='raster', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_boxes', abstract='nothing', subtype='raster', is_approved=True
         )
         Dataset.objects.create(
-            owner=self.user, title='test_1', abstract='contains boxes', subtype='raster', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_1', abstract='contains boxes', subtype='raster', is_approved=True
         )
         Dataset.objects.create(
-            owner=self.user, title='test_2', purpose='contains boxes', subtype='raster', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_2', purpose='contains boxes', subtype='raster', is_approved=True
         )
         Dataset.objects.create(
-            owner=self.user, title='test_boxes', subtype='raster', is_approved=True
+            uuid=str(uuid4()), owner=self.user, title='test_boxes', subtype='raster', is_approved=True
         )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
