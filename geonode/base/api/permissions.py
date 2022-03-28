@@ -158,6 +158,7 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
     """
     Object-level permission to only allow admin and managers to edit a group.
     """
+
     def has_permission(self, request, view):
         if request.method in ['POST', 'DELETE']:
             user = request.user

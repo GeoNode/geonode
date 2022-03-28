@@ -37,6 +37,7 @@ import re
 import json
 import logging
 import zipfile
+import traceback
 import gsimporter
 
 from http.client import BadStatusLine
@@ -178,8 +179,8 @@ def save_step_view(req, session):
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]
-        if not os.path.isfile(os.path.join(data_retriever.temporary_folder, spatial_files[0].base_file)):
-            tmp_files = [f for f in os.listdir(data_retriever.temporary_folder) if os.path.isfile(os.path.join(data_retriever.temporary_folder, f))]
+        if os.path.exists(data_retriever.temporary_folder):
+            tmp_files = [f for f in data_retriever.get_paths().values() if os.path.exists(f)]
             for f in tmp_files:
                 if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
                     fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
@@ -692,7 +693,9 @@ def view(req, step=None):
                 upload_session.completed_step = _completed_step
             except Exception as e:
                 logger.exception(e)
-                raise GeneralUploadException(detail=e.args[0])
+                if isinstance(e, APIException):
+                    raise e
+                raise GeneralUploadException(detail=traceback.format_exc())
 
         resp = _steps[step](req, upload_session)
         resp_js = None
@@ -704,7 +707,9 @@ def view(req, step=None):
                 resp_js = json.loads(content)
         except Exception as e:
             logger.exception(e)
-            raise GeneralUploadException(detail=e.args[0])
+            if isinstance(e, APIException):
+                raise e
+            raise GeneralUploadException(detail=traceback.format_exc())
 
         # must be put back to update object in session
         if upload_session:
@@ -747,7 +752,7 @@ def view(req, step=None):
         logger.exception(e)
         if isinstance(e, APIException):
             raise e
-        raise GeneralUploadException(detail=e)
+        raise GeneralUploadException(detail=traceback.format_exc())
 
 
 @login_required

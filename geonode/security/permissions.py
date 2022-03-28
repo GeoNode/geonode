@@ -64,9 +64,12 @@ EDIT_PERMISSIONS = [
     'change_resourcebase',
 ]
 
-MANAGE_PERMISSIONS = [
+BASIC_MANAGE_PERMISSIONS = [
     'change_resourcebase_metadata',
     'delete_resourcebase',
+]
+
+MANAGE_PERMISSIONS = BASIC_MANAGE_PERMISSIONS + [
     'change_resourcebase_permissions',
     'publish_resourcebase',
 ]

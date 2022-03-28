@@ -815,13 +815,13 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             self.assertEqual(len(perms_info['groups'].keys()), 1)
 
             # Add the foo group to the dataset object groups
-            dataset.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+            perms_info['groups']['bar'] = ['view_resourcebase']
+            dataset.set_permissions(perms_info)
 
             perms_info = _perms_info_json(dataset)
             # Ensure foo is in the perms_info output
             self.assertCountEqual(
-                json.loads(perms_info)['groups'], {
-                    'bar': ['view_resourcebase']})
+                json.loads(perms_info)['groups']['bar'], ['view_resourcebase'])
 
             dataset.group = self.bar.group
             dataset.save()

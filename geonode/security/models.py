@@ -38,6 +38,7 @@ from guardian.shortcuts import (
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
+from geonode.security.utils import AdvancedSecurityWorkflowManager
 
 from .permissions import (
     VIEW_PERMISSIONS,
@@ -238,8 +239,7 @@ class PermissionLevelMixin:
                 if not skip_registered_members_common_group(user_group):
                     perm_spec["groups"][user_group] = ['view_resourcebase', 'download_resourcebase']
 
-        # Fixup Advanced Workflow permissions
-        perm_spec = resource_manager.get_workflow_permissions(self.uuid, instance=self, permissions=perm_spec)
+        AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
         return resource_manager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec)
 
     def set_permissions(self, perm_spec=None, created=False):
@@ -262,13 +262,7 @@ class PermissionLevelMixin:
         }
         """
         from geonode.resource.manager import resource_manager
-
-        # Fixup Advanced Workflow permissions
-        prev_perm_spec = copy.deepcopy(self.get_all_level_info())
-        perm_spec = resource_manager.get_workflow_permissions(self.uuid, instance=self, permissions=perm_spec)
-        # Avoid setting the permissions if nothing changed
-        if not self.compare_perms(prev_perm_spec, perm_spec):
-            return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created)
+        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created)
 
     def compare_perms(self, prev_perm_spec, perm_spec):
         """

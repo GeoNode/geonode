@@ -147,7 +147,7 @@ class BaseApiTests(APITestCase):
             "description": "test",
             "access": "private",
             "categories": []
-            }
+        }
         try:
             # Anonymous
             url = reverse('group-profiles-list')
@@ -470,6 +470,7 @@ class BaseApiTests(APITestCase):
 
         # Check user permissions
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        self.assertEqual(resource.owner.username, 'bobby')
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
