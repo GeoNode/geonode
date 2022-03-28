@@ -1930,69 +1930,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.resource = create_single_layer(name="test_layer", owner=self.author, group=self.group_profile.group)
         self.anonymous_user = get_anonymous_user()
 
-    @override_settings(RESOURCE_PUBLISHING=False)
-    @override_settings(ADMIN_MODERATE_UPLOADS=False)
-    def test_set_compact_permissions(self):
-        """
-          **AUTO PUBLISHING** - test_set_compact_permissions
-            - `RESOURCE_PUBLISHING = False`
-            - `ADMIN_MODERATE_UPLOADS = False`
-        """
-        use_cases = [
-            (
-                PermSpec({
-                    "users": {},
-                    "groups": {}
-                }, self.resource).compact,
-                {
-                    self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "publish_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.group_manager: [],
-                    self.group_member: [],
-                    self.not_group_member: [],
-                    self.anonymous_user: [],
-                },
-            ),
-            (
-                PermSpec({
-                    "users": {"AnonymousUser": ["view_resourcebase"]},
-                    "groups": {"second_custom_group": ["change_resourcebase"]}
-                }, self.resource).compact,
-                {
-                    self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
-                        "change_resourcebase_permissions",
-                        "delete_resourcebase",
-                        "download_resourcebase",
-                        "publish_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
-                    self.group_member: ["view_resourcebase", "download_resourcebase"],
-                    self.not_group_member: [
-                        "download_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase",
-                    ],
-                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
-                },
-            ),
-        ]
-        for counter, item in enumerate(use_cases):
-            permissions, expected = item
-            self.resource.set_permissions(permissions)
-            for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #{counter} - user: {authorized_subject.username}")
-
     @override_settings(RESOURCE_PUBLISHING=True)
     def test_permissions_are_set_as_expected_resource_publishing_True(self):
         """
