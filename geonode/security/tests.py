@@ -2477,3 +2477,145 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         for authorized_subject, expected_perms in expected.items():
             perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
             self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
+
+
+@override_settings(RESOURCE_PUBLISHING=True)
+@override_settings(ADMIN_MODERATE_UPLOADS=True)
+class TestPermissionChanges(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        # Creating groups
+        self.author, created = get_user_model().objects.get_or_create(username="author")
+        self.group_manager, created = get_user_model().objects.get_or_create(username="group_manager")
+        self.resource_group_manager, created = get_user_model().objects.get_or_create(username="resource_group_manager")
+        self.group_member, created = get_user_model().objects.get_or_create(username="group_member")
+        self.member_with_perms, created = get_user_model().objects.get_or_create(username="member_with_perms")
+
+        # Defining group profiles and members
+        self.owner_group, created = GroupProfile.objects.get_or_create(slug="owner_group")
+        self.resource_group, created = GroupProfile.objects.get_or_create(slug="resource_group")
+
+        # defining group members
+        GroupMember.objects.get_or_create(group=self.owner_group, user=self.author, role="member")
+        GroupMember.objects.get_or_create(group=self.owner_group, user=self.group_member, role="member")
+        GroupMember.objects.get_or_create(group=self.owner_group, user=self.group_manager, role="manager")
+        GroupMember.objects.get_or_create(group=self.resource_group, user=self.resource_group_manager, role="manager")
+
+        # Creating the default resource
+        self.resource = create_single_dataset(
+            name="test_layer_adv",
+            owner=self.author,
+            is_approved=False,
+            is_published=False,
+            was_approved=False,
+            was_published=False,
+            group=self.resource_group.group)
+
+        self.owner_perms = [
+            'delete_resourcebase',
+            'view_resourcebase',
+            'change_resourcebase',
+            'download_resourcebase',
+            'change_resourcebase_metadata'
+        ]
+        self.dataset_perms = ["change_dataset_style", "change_dataset_data"]
+        self.adv_owner_limit = ["change_resourcebase_permissions", "publish_resourcebase"]
+        self.safe_perms = ["download_resourcebase", "view_resourcebase"]
+        self.data = {
+            'resource-title': self.resource.title,
+            'resource-owner': self.author.id,
+            'resource-date': '2021-10-27 05:59 am',
+            'resource-date_type': 'publication',
+            'resource-language': self.resource.language,
+            'resource-is_approved': 'on',
+            'resource-group': self.resource_group.group.id,
+            'dataset_attribute_set-TOTAL_FORMS': 0,
+            'dataset_attribute_set-INITIAL_FORMS': 0,
+        }
+        self.url = reverse('dataset_metadata', args=(self.resource.alternate,))
+
+        # Assign manage perms to user member_with_perms
+        for perm in self.dataset_perms:
+            assign_perm(perm, self.member_with_perms, self.resource)
+        for perm in self.owner_perms:
+            assign_perm(perm, self.member_with_perms, self.resource.get_self_resource())
+
+        # Assert inital assignment of permissions to groups and users
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.member_with_perms]), set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.group_manager]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.resource_group_manager]), set(self.owner_perms + self.adv_owner_limit))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.owner_group.group]), set(self.safe_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.resource_group.group]), set(self.safe_perms))
+
+    def test_permissions_on_approve_and_publish_changes(self):
+        # Group manager approves a resource
+        self.group_manager.set_password('group_manager')
+        self.group_manager.save()
+        self.assertTrue(self.client.login(username="group_manager", password='group_manager'))
+        response = self.client.post(self.url, data=self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertions_for_approved_or_published_is_true()
+
+        # Un approve resource
+        self.data.pop('resource-is_approved')
+        response = self.client.post(self.url, data=self.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertions_for_approved_and_published_is_false()
+
+        # Admin publishes and approves resource
+        response = response = self.admin_approve_and_publish_resource()
+        self.assertEqual(response.status_code, 200)
+        self.assertions_for_approved_or_published_is_true()
+
+        # Admin Un approves and un publishes resource
+        response = self.admin_unapprove_and_unpublish_resource()
+        self.assertEqual(response.status_code, 200)
+        self.assertions_for_approved_and_published_is_false()
+
+    def test_owner_is_group_manager(self):
+        try:
+            GroupMember.objects.get(group=self.owner_group, user=self.author).promote()
+            # Admin publishes and approves resource
+            response = response = self.admin_approve_and_publish_resource()
+            self.assertEqual(response.status_code, 200)
+            self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+
+            # Admin Un approves and un publishes resource
+            response = self.admin_unapprove_and_unpublish_resource()
+            self.assertEqual(response.status_code, 200)
+            self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+        finally:
+            GroupMember.objects.get(group=self.owner_group, user=self.author).demote()
+
+    def assertions_for_approved_or_published_is_true(self):
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.safe_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.member_with_perms]), set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.group_manager]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.resource_group_manager]), set(self.owner_perms + self.adv_owner_limit))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.owner_group.group]), set(self.safe_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.resource_group.group]), set(self.safe_perms))
+
+    def assertions_for_approved_and_published_is_false(self):
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.member_with_perms]), set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.group_manager]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.resource_group_manager]), set(self.owner_perms + self.adv_owner_limit))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.owner_group.group]), set(self.safe_perms))
+        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.resource_group.group]), set(self.safe_perms))
+
+    def admin_approve_and_publish_resource(self):
+        self.assertTrue(self.client.login(username="admin", password='admin'))
+        self.data['resource-is_approved'] = 'on'
+        self.data['resource-is_published'] = 'on'
+        response = self.client.post(self.url, data=self.data)
+        self.resource.refresh_from_db()
+        return response
+
+    def admin_unapprove_and_unpublish_resource(self):
+        self.assertTrue(self.client.login(username="admin", password='admin'))
+        self.data.pop('resource-is_approved')
+        self.data.pop('resource-is_published')
+        response = self.client.post(self.url, data=self.data)
+        self.resource.refresh_from_db()
+        return response

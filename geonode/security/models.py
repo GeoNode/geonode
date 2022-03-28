@@ -198,7 +198,7 @@ class PermissionLevelMixin:
 
         return perm_spec, obj_group_managers
 
-    def set_default_permissions(self, owner=None):
+    def set_default_permissions(self, owner=None, created=False):
         """
         Removes all the permissions except for the owner and assign the
         view permission to the anonymous group.
@@ -206,7 +206,7 @@ class PermissionLevelMixin:
         from geonode.resource.manager import resource_manager
 
         # default permissions for anonymous users
-        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        anonymous_group, _ = Group.objects.get_or_create(name='anonymous')
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
@@ -240,7 +240,7 @@ class PermissionLevelMixin:
                     perm_spec["groups"][user_group] = ['view_resourcebase', 'download_resourcebase']
 
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
-        return resource_manager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec)
+        return resource_manager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created)
 
     def set_permissions(self, perm_spec=None, created=False):
         """

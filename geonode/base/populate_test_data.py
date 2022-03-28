@@ -206,7 +206,7 @@ def create_models(type=None, integration=False):
                         metadata_only=title == 'map metadata true'
                     )
                     m.save()
-                    m.set_default_permissions()
+                    m.set_default_permissions(owner=user)
                     m.clear_dirty_state()
                     m.set_processing_state(enumerations.STATE_PROCESSED)
                     obj_ids.append(m.id)
@@ -231,7 +231,7 @@ def create_models(type=None, integration=False):
                         metadata_only=title == 'doc metadata true'
                     )
                     m.save()
-                    m.set_default_permissions()
+                    m.set_default_permissions(owner=user)
                     m.clear_dirty_state()
                     m.set_processing_state(enumerations.STATE_PROCESSED)
                     obj_ids.append(m.id)
@@ -240,7 +240,7 @@ def create_models(type=None, integration=False):
                         m.save()
 
             if not type or ensure_string(type) == 'dataset':
-                for ld, owner, subtype in zip(dataset_data, cycle(users), cycle(('raster', 'vector'))):
+                for ld, user, subtype in zip(dataset_data, cycle(users), cycle(('raster', 'vector'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add dataset {title}")
@@ -253,7 +253,7 @@ def create_models(type=None, integration=False):
                         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         srid='EPSG:4326',
                         uuid=str(uuid4()),
-                        owner=owner,
+                        owner=user,
                         temporal_extent_start=start,
                         temporal_extent_end=end,
                         date=start,
@@ -262,7 +262,7 @@ def create_models(type=None, integration=False):
                         metadata_only=title == 'dataset metadata true'
                     )
                     dataset.save()
-                    dataset.set_default_permissions()
+                    dataset.set_default_permissions(owner=user)
                     dataset.clear_dirty_state()
                     dataset.set_processing_state(enumerations.STATE_PROCESSED)
                     obj_ids.append(dataset.id)
@@ -321,7 +321,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_dataset(name, keywords=None, owner=None, group=None):
+def create_single_dataset(name, keywords=None, owner=None, group=None, **kwargs):
     admin, created = get_user_model().objects.get_or_create(username='admin')
     if created:
         admin.is_superuser = True
@@ -348,14 +348,15 @@ def create_single_dataset(name, keywords=None, owner=None, group=None):
         subtype="vector",
         resource_type="dataset",
         typename=f"geonode:{title}",
-        group=group
+        group=group,
+        **kwargs
     )
     dataset.save()
 
     if isinstance(keywords, list):
         dataset = add_keywords_to_resource(dataset, keywords)
 
-    dataset.set_default_permissions()
+    dataset.set_default_permissions(owner=owner or admin)
     dataset.clear_dirty_state()
     dataset.set_processing_state(enumerations.STATE_PROCESSED)
     return dataset
@@ -383,7 +384,7 @@ def create_single_map(name, owner=None):
         resource_type="map"
     )
     m.save()
-    m.set_default_permissions()
+    m.set_default_permissions(owner=owner or admin)
     m.clear_dirty_state()
     m.set_processing_state(enumerations.STATE_PROCESSED)
     return m
@@ -413,7 +414,7 @@ def create_single_doc(name, owner=None):
         resource_type="document"
     )
     m.save()
-    m.set_default_permissions()
+    m.set_default_permissions(owner=owner or admin)
     m.clear_dirty_state()
     m.set_processing_state(enumerations.STATE_PROCESSED)
     return m
