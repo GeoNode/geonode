@@ -345,7 +345,6 @@ def create_single_layer(name, keywords=None, owner=None, group=None, **kwargs):
         group=group,
         **kwargs
     )
-
     layer.save()
 
     if isinstance(keywords, list):
