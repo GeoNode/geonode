@@ -42,7 +42,8 @@ from geonode.security.permissions import (
     DATASET_ADMIN_PERMISSIONS,
     DATASET_EDIT_DATA_PERMISSIONS,
     DATASET_EDIT_STYLE_PERMISSIONS,
-    DATA_EDITABLE_RESOURCES_SUBTYPES)
+    DATA_EDITABLE_RESOURCES_SUBTYPES,
+    DATA_STYLABLE_RESOURCES_SUBTYPES)
 
 logger = logging.getLogger(__name__)
 
@@ -536,6 +537,7 @@ class AdvancedSecurityWorkflowManager:
             # Make sure we're dealing with "Profile"s and "Group"s...
             perm_spec = _resource.fixup_perms(perm_spec)
             _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
+            _resource_subtype = _resource.subtype
 
             if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                 # compute advanced workflow permissions
@@ -544,11 +546,13 @@ class AdvancedSecurityWorkflowManager:
                     view_perms += DOWNLOAD_PERMISSIONS
 
                 admin_perms = ADMIN_PERMISSIONS.copy()
+                if _resource_subtype in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                    admin_perms += DATASET_ADMIN_PERMISSIONS
 
-                admin_nopub_perms = ADMIN_PERMISSIONS.copy()
+                admin_nopub_perms = admin_perms.copy()
                 admin_nopub_perms.remove('publish_resourcebase')
 
-                admin_restricted_perms = ADMIN_PERMISSIONS.copy()
+                admin_restricted_perms = admin_perms.copy()
                 admin_restricted_perms.remove('publish_resourcebase')
                 admin_restricted_perms.remove('change_resourcebase_permissions')
 
