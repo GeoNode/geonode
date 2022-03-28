@@ -76,7 +76,7 @@ djangorestframework-gis==0.18
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.21.2
+drf-spectacular==0.22.0
 dynamic-rest==2.1.2
 Markdown==3.3.6
 
