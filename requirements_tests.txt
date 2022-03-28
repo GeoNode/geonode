@@ -1,2 +1,2 @@
 Twisted
-pixelmatch==0.2.4
+pixelmatch==0.3.0
