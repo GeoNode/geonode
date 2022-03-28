@@ -2132,14 +2132,14 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: ["view_resourcebase"],
-                    self.group_member: ["view_resourcebase"],
+                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
+                    self.group_member: ["view_resourcebase", "download_resourcebase"],
                     self.not_group_member: [
                         "download_resourcebase",
                         "change_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.anonymous_user: ["view_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
                 },
             ),
         ]
