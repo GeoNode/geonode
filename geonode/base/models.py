@@ -463,6 +463,7 @@ class _HierarchicalTagManager(_TaggableManager):
             if not isinstance(t, self.through.tag_model())
         ])
         tag_objs = set(tags) - str_tags
+        new_ids = set()
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         '''
@@ -471,14 +472,11 @@ class _HierarchicalTagManager(_TaggableManager):
         we can easily handle the concurrency.
         DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
         '''
-        existing = self.through.tag_model().objects.select_for_update().filter(
-            name__in=str_tags, **tag_kwargs
-        )
-        tag_objs.update(existing)
-        new_ids = set()
         with transaction.atomic():
+            existing = self.through.tag_model().objects.select_for_update().filter(
+                name__in=str_tags, **tag_kwargs
+            )
             tag_objs.update(existing)
-            new_ids = set()
             _new_keyword = str_tags - set(t.name for t in existing)
             for new_tag in list(_new_keyword):
                 new_tag = escape(new_tag)
