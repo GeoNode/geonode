@@ -371,12 +371,7 @@ class AdvancedSecurityWorkflowManager:
     @staticmethod
     def get_instance(uuid: str):
         from geonode.base.models import ResourceBase
-
-        _resources = ResourceBase.objects.filter(uuid=uuid)
-        _exists = _resources.count() == 1
-        if _exists:
-            return _resources.get()
-        return None
+        return ResourceBase.objects.filter(uuid=uuid).first()
 
     @staticmethod
     def set_group_member_permissions(user, group, role):
@@ -445,9 +440,9 @@ class AdvancedSecurityWorkflowManager:
                 # Set the GeoFence Owner Rule
                 if _resource.polymorphic_ctype.name == 'dataset':
                     DATA_EDIT_PERMISSIONS = []
-                    if _resource.get_real_instance().subtype == 'vector':
+                    if _resource.subtype == 'vector':
                         DATA_EDIT_PERMISSIONS = DATASET_ADMIN_PERMISSIONS
-                    elif _resource.get_real_instance().subtype == 'raster':
+                    elif _resource.subtype == 'raster':
                         DATA_EDIT_PERMISSIONS = DATASET_EDIT_STYLE_PERMISSIONS
                     for perm in DATA_EDIT_PERMISSIONS:
                         _prev_perm = _perm_spec["users"].get(_resource.owner, []) if "users" in _perm_spec else []
@@ -544,10 +539,9 @@ class AdvancedSecurityWorkflowManager:
 
             if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                 # compute advanced workflow permissions
-                if _resource_type not in DOWNLOADABLE_RESOURCES:
-                    view_perms = VIEW_PERMISSIONS
-                else:
-                    view_perms = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                view_perms = VIEW_PERMISSIONS
+                if _resource_type in DOWNLOADABLE_RESOURCES:
+                    view_perms += DOWNLOAD_PERMISSIONS
 
                 admin_perms = ADMIN_PERMISSIONS.copy()
 

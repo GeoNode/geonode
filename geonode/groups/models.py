@@ -256,27 +256,27 @@ class GroupMember(models.Model):
         # add django.contrib.auth.group to user
         self.user.groups.add(self.group.group)
         super().save(*args, **kwargs)
-        self._handle_perms(self.user, self.group, self.role)
+        self._handle_perms(self.role)
 
     def delete(self, *args, **kwargs):
         self.user.groups.remove(self.group.group)
         super().delete(*args, **kwargs)
-        self._handle_perms(self.user, self.group, None)
+        self._handle_perms()
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
         super().save(*args, **kwargs)
-        self._handle_perms(self.user, self.group, self.role)
+        self._handle_perms(self.role)
 
     def demote(self, *args, **kwargs):
         self.role = "member"
         super().save(*args, **kwargs)
-        self._handle_perms(self.user, self.group, self.role)
+        self._handle_perms(self.role)
 
-    def _handle_perms(self, user, group, role):
+    def _handle_perms(self, role=None):
         from geonode.security.utils import AdvancedSecurityWorkflowManager
 
-        AdvancedSecurityWorkflowManager.set_group_member_permissions(user, group, role)
+        AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
 
 
 def group_pre_delete(instance, sender, **kwargs):

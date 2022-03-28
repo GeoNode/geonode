@@ -212,11 +212,7 @@ class ResourceManager(ResourceManagerInterface):
 
     @classmethod
     def _get_instance(cls, uuid: str) -> ResourceBase:
-        _resources = ResourceBase.objects.filter(uuid=uuid)
-        _exists = _resources.count() == 1
-        if _exists:
-            return _resources.get()
-        return None
+        return ResourceBase.objects.filter(uuid=uuid).first()
 
     def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
         _class = resource_type or ResourceBase
@@ -596,8 +592,20 @@ class ResourceManager(ResourceManagerInterface):
                     _owner = _resource.owner
                     _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
+                    # Gathering and validating the current permissions (if any has been passed)
                     if not created and permissions is None:
                         permissions = _resource.get_all_level_info()
+
+                    if permissions:
+                        if PermSpecCompact.validate(permissions):
+                            _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
+                        else:
+                            _permissions = copy.deepcopy(permissions)
+                    else:
+                        _permissions = None
+
+                    # Fixup Advanced Workflow permissions
+                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
 
                     """
                     Cleanup the Guardian tables
@@ -623,14 +631,6 @@ class ResourceManager(ResourceManagerInterface):
                             ]
                         }
                         """
-                        if PermSpecCompact.validate(permissions):
-                            _permissions = PermSpecCompact(copy.deepcopy(permissions), _resource).extended
-                        else:
-                            _permissions = copy.deepcopy(permissions)
-
-                        # Fixup Advanced Workflow permissions
-                        _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
-
                         # Anonymous User group
                         if 'users' in _perm_spec and ("AnonymousUser" in _perm_spec['users'] or get_anonymous_user() in _perm_spec['users']):
                             anonymous_user = "AnonymousUser" if "AnonymousUser" in _perm_spec['users'] else get_anonymous_user()
@@ -687,9 +687,6 @@ class ResourceManager(ResourceManagerInterface):
 
                         if not anonymous_group:
                             raise Exception("Could not acquire 'anonymous' Group.")
-
-                        # Fixup Advanced Workflow permissions
-                        _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=None)
 
                         # Anonymous
                         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION

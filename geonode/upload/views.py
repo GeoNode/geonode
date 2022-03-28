@@ -179,15 +179,8 @@ def save_step_view(req, session):
         sld = None
         if spatial_files[0].sld_files:
             sld = spatial_files[0].sld_files[0]
-        _base_file = os.path.join(data_retriever.temporary_folder, spatial_files[0].base_file)
-        if os.path.exists(data_retriever.temporary_folder) and os.path.exists(_base_file) and not os.path.isfile(_base_file):
-            tmp_files = []
-            try:
-                for f in os.listdir(data_retriever.temporary_folder):
-                    if os.path.isfile(os.path.join(data_retriever.temporary_folder, f)):
-                        tmp_files.append(f)
-            except Exception as e:
-                logger.exception(e)
+        if os.path.exists(data_retriever.temporary_folder):
+            tmp_files = [f for f in data_retriever.get_paths().values() if os.path.exists(f)]
             for f in tmp_files:
                 if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
                     fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
