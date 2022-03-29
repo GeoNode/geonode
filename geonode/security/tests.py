@@ -2268,12 +2268,20 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 },
             ),
         ]
-        for counter, item in enumerate(use_cases):
-            permissions, expected = item
-            self.resource.set_permissions(permissions)
-            for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
-                self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #{counter} - user: {authorized_subject.username}")
+        try:
+            self.resource.is_approved = True
+            self.resource.is_published = False
+            self.resource.save()
+            for counter, item in enumerate(use_cases):
+                permissions, expected = item
+                self.resource.set_permissions(permissions)
+                for authorized_subject, expected_perms in expected.items():
+                    perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                    self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #{counter} - user: {authorized_subject.username}")
+        finally:
+            self.resource.is_approved = True
+            self.resource.is_published = True
+            self.resource.save()
 
     @override_settings(RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
@@ -2339,10 +2347,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         sut = GroupMember.objects.filter(user=self.group_member)\
             .exclude(group__title='Registered Members')\
             .first()
-        self.assertEqual(sut.role, "member")
-        sut.promote()
-        sut.refresh_from_db()
-        self.assertEqual(sut.role, "manager")
         expected = {
             self.author: [
                 "download_resourcebase",
@@ -2368,10 +2372,20 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             ]
         }
         try:
+            self.resource.is_approved = True
+            self.resource.is_published = False
+            self.resource.save()
+            self.assertEqual(sut.role, "member")
+            sut.promote()
+            sut.refresh_from_db()
+            self.assertEqual(sut.role, "manager")
             for authorized_subject, expected_perms in expected.items():
                 perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
                 self.assertSetEqual(set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}")
         finally:
+            self.resource.is_approved = True
+            self.resource.is_published = True
+            self.resource.save()
             sut.demote()
 
     @override_settings(RESOURCE_PUBLISHING=True)
@@ -2576,12 +2590,15 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
     def test_owner_is_group_manager(self):
         try:
             GroupMember.objects.get(group=self.owner_group, user=self.author).promote()
-            # Admin publishes and approves resource
+            # Admin publishes and approves the resource
             response = response = self.admin_approve_and_publish_resource()
             self.assertEqual(response.status_code, 200)
-            self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+            # Once a resource has been published, the 'publish_resourcebase' permission should be removed anyway
+            adv_owner_limit_no_pub = self.adv_owner_limit.copy()
+            adv_owner_limit_no_pub.remove('publish_resourcebase')
+            self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + adv_owner_limit_no_pub))
 
-            # Admin Un approves and un publishes resource
+            # Admin un-approves and un-publishes the resource
             response = self.admin_unapprove_and_unpublish_resource()
             self.assertEqual(response.status_code, 200)
             self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
