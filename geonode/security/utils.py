@@ -576,17 +576,10 @@ class AdvancedSecurityWorkflowManager:
                 if group_managers:
                     for group_manager in group_managers:
                         prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
-                        # AF: Should be a manager being able to change the dataset data and style too by default?
-                        #     For the time being let's give to the manager "management" perms only.
-                        # if _resource.polymorphic_ctype.name == 'layer':
-                        #     perm_spec['users'][group_manager] = list(
-                        #         set(prev_perms + view_perms + admin_perms + LAYER_ADMIN_PERMISSIONS))
-                        # else:
                         prev_perms += view_perms + admin_perms.copy()
                         if _resource.is_published or AdvancedSecurityWorkflowManager.is_simple_publishing_workflow():
                             prev_perms.remove('publish_resourcebase')
-                        perm_spec['users'][group_manager] = list(
-                            set(prev_perms))
+                        perm_spec['users'][group_manager] = list(set(prev_perms))
 
                 # Handle the Group Members perms
                 if member_group_perm:
