@@ -46,11 +46,10 @@ from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
 
 from .permissions import (
-    ADMIN_PERMISSIONS,
-    LAYER_ADMIN_PERMISSIONS,
     VIEW_PERMISSIONS,
-    SERVICE_PERMISSIONS
-)
+    ADMIN_PERMISSIONS,
+    SERVICE_PERMISSIONS,
+    LAYER_ADMIN_PERMISSIONS)
 
 from .utils import (
     _get_gf_services,
@@ -633,6 +632,11 @@ class PermissionLevelMixin:
         if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
             # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
             # default permissions for resource owner and group managers
+
+            admin_perms = ADMIN_PERMISSIONS.copy()
+            if self.polymorphic_ctype.name == 'layer':
+                admin_perms += LAYER_ADMIN_PERMISSIONS
+
             anonymous_group = Group.objects.get(name='anonymous')
             registered_members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
             user_groups = Group.objects.filter(
@@ -642,14 +646,10 @@ class PermissionLevelMixin:
             if group_managers:
                 for group_manager in group_managers:
                     prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
-                    # AF: Should be a manager being able to change the dataset data and style too by default?
-                    #     For the time being let's give to the manager "management" perms only.
-                    # if self.polymorphic_ctype.name == 'layer':
-                    #     perm_spec['users'][group_manager] = list(
-                    #         set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
-                    # else:
-                    perm_spec['users'][group_manager] = list(
-                        set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS))
+                    prev_perms += VIEW_PERMISSIONS + admin_perms.copy()
+                    if self.is_published or (settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS):
+                        prev_perms.remove('publish_resourcebase')
+                    perm_spec['users'][group_manager] = list(set(prev_perms))
 
             if member_group_perm:
                 for gr, perm in member_group_perm['groups'].items():
@@ -683,7 +683,6 @@ class PermissionLevelMixin:
                             new_perms["users"][user] = [perm for perm in perms if perm not in edit_perms]
                     for group, perms in perm_spec["groups"].items():
                         new_perms["groups"][group] = [perm for perm in perms if perm not in edit_perms]
-
                     perm_spec = new_perms
                 else:
                     # restore owner perms
