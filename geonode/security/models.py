@@ -46,11 +46,10 @@ from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
 
 from .permissions import (
-    ADMIN_PERMISSIONS,
-    LAYER_ADMIN_PERMISSIONS,
     VIEW_PERMISSIONS,
-    SERVICE_PERMISSIONS
-)
+    ADMIN_PERMISSIONS,
+    SERVICE_PERMISSIONS,
+    LAYER_ADMIN_PERMISSIONS)
 
 from .utils import (
     _get_gf_services,
@@ -59,6 +58,7 @@ from .utils import (
     get_users_with_perms,
     set_owner_permissions,
     get_user_obj_perms_model,
+    get_owner_permissions_according_to_workflow,
     remove_object_permissions,
     purge_geofence_layer_rules,
     sync_geofence_with_guardian,
@@ -184,22 +184,28 @@ class PermissionLevelMixin:
          - The list of "group managers" of the groups above
         """
         obj_group_managers = []
-        perm_spec = {"groups": {}}
-        if user_groups:
-            for _user_group in user_groups:
-                if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
-                    try:
-                        _group_profile = GroupProfile.objects.get(slug=_user_group)
-                        managers = _group_profile.get_managers()
-                        if managers:
-                            for manager in managers:
-                                if manager not in obj_group_managers and not manager.is_superuser:
-                                    obj_group_managers.append(manager)
-                    except GroupProfile.DoesNotExist:
-                        tb = traceback.format_exc()
-                        logger.debug(tb)
+        obj_user_groups = []
 
-        # assign view permissions to group resources
+        perm_spec = {"groups": {}}
+        if self.group:
+            if GroupProfile.objects.filter(group=self.group).exists():
+                obj_user_groups.append(self.group.name)
+        if user_groups:
+            obj_user_groups.extend(list(user_groups))
+
+        for group in obj_user_groups:
+            if not skip_registered_members_common_group(Group.objects.get(name=group)):
+                try:
+                    _group_profile = GroupProfile.objects.get(slug=group)
+                    managers = _group_profile.get_managers()
+                    if managers:
+                        for manager in managers:
+                            if manager not in obj_group_managers and not manager.is_superuser:
+                                obj_group_managers.append(manager)
+                except GroupProfile.DoesNotExist:
+                    tb = traceback.format_exc()
+                    logger.debug(tb)
+
         if self.group and settings.RESOURCE_PUBLISHING:
             perm_spec['groups'][self.group] = VIEW_PERMISSIONS
 
@@ -626,6 +632,11 @@ class PermissionLevelMixin:
         if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
             # permissions = self._resolve_resource_permissions(resource=self, permissions=perm_spec)
             # default permissions for resource owner and group managers
+
+            admin_perms = ADMIN_PERMISSIONS.copy()
+            if self.polymorphic_ctype.name == 'layer':
+                admin_perms += LAYER_ADMIN_PERMISSIONS
+
             anonymous_group = Group.objects.get(name='anonymous')
             registered_members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
             user_groups = Group.objects.filter(
@@ -635,14 +646,10 @@ class PermissionLevelMixin:
             if group_managers:
                 for group_manager in group_managers:
                     prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
-                    # AF: Should be a manager being able to change the dataset data and style too by default?
-                    #     For the time being let's give to the manager "management" perms only.
-                    # if self.polymorphic_ctype.name == 'layer':
-                    #     perm_spec['users'][group_manager] = list(
-                    #         set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS))
-                    # else:
-                    perm_spec['users'][group_manager] = list(
-                        set(prev_perms + VIEW_PERMISSIONS + ADMIN_PERMISSIONS))
+                    prev_perms += VIEW_PERMISSIONS + admin_perms.copy()
+                    if self.is_published or (settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS):
+                        prev_perms.remove('publish_resourcebase')
+                    perm_spec['users'][group_manager] = list(set(prev_perms))
 
             if member_group_perm:
                 for gr, perm in member_group_perm['groups'].items():
@@ -663,6 +670,24 @@ class PermissionLevelMixin:
                 prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
                 perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
 
+            if settings.ADMIN_MODERATE_UPLOADS and settings.RESOURCE_PUBLISHING:
+                if self.is_approved or self.is_published:
+                    # Assign view and download permissions to owner and other users with edit permissions
+                    edit_perms = ADMIN_PERMISSIONS + LAYER_ADMIN_PERMISSIONS
+                    new_perms = {"users": {}, "groups": {}}
+                    for user, perms in perm_spec["users"].items():
+                        # if owner is a group manager, take the group manager permissions set above
+                        if user in group_managers or user.is_superuser:
+                            new_perms["users"][user] = perms
+                        else:
+                            new_perms["users"][user] = [perm for perm in perms if perm not in edit_perms]
+                    for group, perms in perm_spec["groups"].items():
+                        new_perms["groups"][group] = [perm for perm in perms if perm not in edit_perms]
+                    perm_spec = new_perms
+                else:
+                    # restore owner perms
+                    owner_permissions = get_owner_permissions_according_to_workflow(self)
+                    perm_spec["users"][self.owner] = owner_permissions
         return perm_spec
 
     def get_user_perms(self, user):

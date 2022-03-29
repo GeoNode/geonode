@@ -33,9 +33,8 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-# Geonode functionality
-from guardian.shortcuts import get_perms, remove_perm, assign_perm
 
+# Geonode functionality
 from geonode.layers.models import Layer
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.thumbs.utils import (
@@ -168,47 +167,6 @@ class OwnerRightsRequestViewUtils:
     @staticmethod
     def is_admin_publish_mode():
         return settings.ADMIN_MODERATE_UPLOADS
-
-
-class ManageResourceOwnerPermissions:
-    def __init__(self, resource):
-        self.resource = resource
-
-    def set_owner_permissions_according_to_workflow(self):
-        if self.resource.is_approved and OwnerRightsRequestViewUtils.is_admin_publish_mode():
-            self._disable_owner_write_permissions()
-        else:
-            self._restore_owner_permissions()
-
-    def _disable_owner_write_permissions(self):
-
-        for perm in get_perms(self.resource.owner, self.resource.get_self_resource()):
-            remove_perm(perm, self.resource.owner, self.resource.get_self_resource())
-
-        for perm in get_perms(self.resource.owner, self.resource):
-            remove_perm(perm, self.resource.owner, self.resource)
-
-        for perm in self.resource.BASE_PERMISSIONS.get('read') + self.resource.BASE_PERMISSIONS.get('download'):
-            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-            elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-
-    def _restore_owner_permissions(self):
-
-        for perm_list in self.resource.BASE_PERMISSIONS.values():
-            for perm in perm_list:
-                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-                elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-
-        for perm_list in self.resource.PERMISSIONS.values():
-            for perm in perm_list:
-                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                    assign_perm(perm, self.resource.owner, self.resource)
-                elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                    assign_perm(perm, self.resource.owner, self.resource)
 
 
 def validate_extra_metadata(data, instance):
