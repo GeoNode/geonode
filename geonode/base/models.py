@@ -709,7 +709,25 @@ class ResourceBaseManager(PolymorphicManager):
                         try:
                             if upload.upload_dir:
                                 if storage_manager.exists(upload.upload_dir):
-                                    storage_manager.delete(upload.upload_dir)
+                                    _uploaded_dirs, _uploaded_files = storage_manager.listdir(upload.upload_dir)
+                                    for _entry in _uploaded_files:
+                                        _entry_path = os.path.join(upload.upload_dir, _entry)
+                                        if storage_manager.exists(_entry_path):
+                                            try:
+                                                storage_manager.delete(_entry_path)
+                                            except Exception as e:
+                                                logger.exception(e)
+                                    for _entry in _uploaded_dirs:
+                                        _entry_path = os.path.join(upload.upload_dir, _entry)
+                                        if storage_manager.exists(_entry_path):
+                                            try:
+                                                storage_manager.delete(_entry_path)
+                                            except Exception as e:
+                                                logger.exception(e)
+                                    try:
+                                        storage_manager.delete(upload.upload_dir)
+                                    except Exception as e:
+                                        logger.exception(e)
                                 elif os.path.exists(upload.upload_dir):
                                     shutil.rmtree(upload.upload_dir, ignore_errors=True)
                         finally:

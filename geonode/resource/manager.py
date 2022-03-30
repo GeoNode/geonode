@@ -372,6 +372,7 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.save(notify=notify)
                 resourcebase_post_save(_resource.get_real_instance())
+                _resource.set_permissions()
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -605,7 +606,7 @@ class ResourceManager(ResourceManagerInterface):
                         _permissions = None
 
                     # Fixup Advanced Workflow permissions
-                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
+                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions, created=created)
 
                     """
                     Cleanup the Guardian tables
