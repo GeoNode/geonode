@@ -32,7 +32,6 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
 from guardian.shortcuts import (
-    assign_perm,
     get_perms,
     get_groups_with_perms)
 

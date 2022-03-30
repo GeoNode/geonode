@@ -21,8 +21,6 @@ import json
 import logging
 import collections
 from itertools import chain
-from math import perm
-from multiprocessing import managers
 
 from django.apps import apps
 from django.db.models import Q
@@ -39,11 +37,9 @@ from geonode.security.permissions import (
     PermSpecCompact,
     VIEW_PERMISSIONS,
     ADMIN_PERMISSIONS,
-    MANAGE_PERMISSIONS,
     SERVICE_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     DOWNLOADABLE_RESOURCES,
-    BASIC_MANAGE_PERMISSIONS,
     DATASET_ADMIN_PERMISSIONS,
     DATASET_EDIT_DATA_PERMISSIONS,
     DATASET_EDIT_STYLE_PERMISSIONS,
