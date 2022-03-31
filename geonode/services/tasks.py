@@ -68,6 +68,8 @@ def harvest_resource(self, harvest_job_id):
                 if Layer.objects.filter(alternate=f"{harvest_job.resource_id}").count():
                     layer = Layer.objects.get(
                         alternate=f"{harvest_job.resource_id}")
+                elif Layer.objects.filter(alternate=f"{workspace.name}:{slugify(harvest_job.resource_id)}").exists():
+                    layer = Layer.objects.get(alternate=f"{workspace.name}:{slugify(harvest_job.resource_id)}")
                 else:
                     layer = Layer.objects.get(
                         alternate=f"{workspace.name}:{harvest_job.resource_id}")
