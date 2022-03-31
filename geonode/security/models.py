@@ -238,7 +238,7 @@ class PermissionLevelMixin:
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
         return resource_manager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created)
 
-    def set_permissions(self, perm_spec=None, created=False):
+    def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
 
@@ -258,7 +258,7 @@ class PermissionLevelMixin:
         }
         """
         from geonode.resource.manager import resource_manager
-        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created)
+        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created, approval_status_changed=approval_status_changed)
 
     def compare_perms(self, prev_perm_spec, perm_spec):
         """

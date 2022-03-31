@@ -439,7 +439,7 @@ class AdvancedSecurityWorkflowManager:
         return ResourceGroupsAndMembersSet(anonymous_group, registered_members_group, user_groups, resource_groups, group_managers)
 
     @staticmethod
-    def get_workflow_permissions(uuid: str, /, instance=None, perm_spec: dict = {"users": {}, "groups": {}}, created: bool = False) -> dict:
+    def get_workflow_permissions(uuid: str, /, instance=None, perm_spec: dict = {"users": {}, "groups": {}}, created: bool = False, approval_status_changed: bool = False) -> dict:
         """
         Adapts the provided "perm_spec" accordingly to the following schema:
                                 | RESOURCE_PUBLISHING | ADMIN_MODERATE_UPLOADS
@@ -519,7 +519,8 @@ class AdvancedSecurityWorkflowManager:
             # Computing the 'All Others' Permissions
             if ResourceGroupsAndMembersSet.anonymous_group:
                 prev_perms = _perm_spec['groups'].get(ResourceGroupsAndMembersSet.anonymous_group, []) if isinstance(_perm_spec['groups'], dict) else []
-                prev_perms += AdminViewPermissionsSet.view_perms.copy()
+                if approval_status_changed and (_resource.is_approved or _resource.is_published):
+                    prev_perms += AdminViewPermissionsSet.view_perms.copy()
                 if created:
                     if not AdvancedSecurityWorkflowManager.is_anonymous_can_view():
                         prev_perms.remove('view_resourcebase')
@@ -534,7 +535,8 @@ class AdvancedSecurityWorkflowManager:
 
             if ResourceGroupsAndMembersSet.registered_members_group and getattr(groups_settings, 'AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME', False):
                 prev_perms = _perm_spec['groups'].get(ResourceGroupsAndMembersSet.registered_members_group, []) if isinstance(_perm_spec['groups'], dict) else []
-                prev_perms += AdminViewPermissionsSet.view_perms.copy()
+                if approval_status_changed and (_resource.is_approved or _resource.is_published):
+                    prev_perms += AdminViewPermissionsSet.view_perms.copy()
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow() and not _resource.is_approved:
                     prev_perms.remove('view_resourcebase')
                     prev_perms.remove('download_resourcebase')
@@ -543,7 +545,7 @@ class AdvancedSecurityWorkflowManager:
         return _perm_spec
 
     @staticmethod
-    def get_permissions(uuid: str, /, instance=None, permissions: dict = {}, created: bool = False) -> dict:
+    def get_permissions(uuid: str, /, instance=None, permissions: dict = {}, created: bool = False, approval_status_changed: bool = False) -> dict:
         """
           Fix-ups the perm_spec accordingly to the enabled workflow (if any).
           For more details check the "get_workflow_permissions" method
@@ -582,7 +584,8 @@ class AdvancedSecurityWorkflowManager:
 
             # Make sure we're dealing with "Profile"s and "Group"s...
             perm_spec = _resource.fixup_perms(perm_spec)
-            perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(_resource.uuid, instance=_resource, perm_spec=perm_spec, created=created)
+            perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(
+                _resource.uuid, instance=_resource, perm_spec=perm_spec, created=created, approval_status_changed=approval_status_changed)
 
         return perm_spec
 

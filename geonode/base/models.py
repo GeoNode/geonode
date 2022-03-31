@@ -1254,7 +1254,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # Update workflow permissions
         if _approval_status_changed:
-            self.set_permissions()
+            self.set_permissions(approval_status_changed=True)
 
     def delete(self, notify=True, *args, **kwargs):
         """

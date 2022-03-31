@@ -185,7 +185,8 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None,
+                        permissions: dict = {}, created: bool = False, approval_status_changed: bool = False) -> bool:
         """Sets the permissions of a resource.
 
          - It optionally gets a JSON 'perm_spec' through the 'permissions' parameter
@@ -575,7 +576,8 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_dirty_state()
         return False
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None,
+                        permissions: dict = {}, created: bool = False, approval_status_changed: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource = _resource.get_real_instance()
@@ -605,7 +607,8 @@ class ResourceManager(ResourceManagerInterface):
                         _permissions = None
 
                     # Fixup Advanced Workflow permissions
-                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions, created=created)
+                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions,
+                                                                                 created=created, approval_status_changed=approval_status_changed)
 
                     """
                     Cleanup the Guardian tables

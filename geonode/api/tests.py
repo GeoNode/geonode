@@ -94,7 +94,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
     def test_datasets_get_list_auth_some_public(self):
         """
@@ -130,11 +130,11 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Dataset.objects.first()
         layer.set_permissions(perm_spec)
         resp = self.api_client.get(list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(list_url)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 8)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 7)
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(list_url)
@@ -146,15 +146,15 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # with resource publishing
         with self.settings(RESOURCE_PUBLISHING=True):
             resp = self.api_client.get(list_url)
-            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             self.api_client.client.login(username='bobby', password='bob')
             resp = self.api_client.get(list_url)
-            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             self.api_client.client.login(username=self.user, password=self.passwd)
             resp = self.api_client.get(list_url)
-            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 8)
+            self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
     def test_dataset_get_detail_unauth_dataset_not_public(self):
         """
@@ -169,6 +169,8 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Dataset.objects.first()
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
+        self.assertHttpNotFound(self.api_client.get(
+            f"{list_url + str(layer.id)}/"))
 
         self.api_client.client.login(username=self.user, password=self.passwd)
         resp = self.api_client.get(f"{list_url + str(layer.id)}/")

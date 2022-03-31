@@ -1172,6 +1172,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the Permissions
         layer.set_permissions(self.perm_spec)
 
+        # Test that the Permissions for anonymous user is are set
+        self.assertFalse(
+            self.anonymous_user.has_perm(
+                'view_resourcebase',
+                layer.get_self_resource()))
+
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
         current_perms = layer.get_all_level_info()
