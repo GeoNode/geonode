@@ -481,7 +481,7 @@ class AdvancedSecurityWorkflowManager:
                 # Check if owner is a manager of any group and add admin_manager_perms accordingly
                 if _resource.owner not in ResourceGroupsAndMembersSet.managers:
                     prev_perms.remove('publish_resourcebase')
-                    if not AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() and not (_resource.is_approved or _resource.is_published):
+                    if not AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() and (_resource.is_approved or _resource.is_published):
                         prev_perms.remove('change_resourcebase')
                         prev_perms.remove('change_resourcebase_metadata')
                     if AdvancedSecurityWorkflowManager.is_advanced_workflow():

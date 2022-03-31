@@ -2539,8 +2539,10 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.owner_perms = [
             'delete_resourcebase',
             'view_resourcebase',
+            'download_resourcebase'
+        ]
+        self.edit_perms = [
             'change_resourcebase',
-            'download_resourcebase',
             'change_resourcebase_metadata'
         ]
         self.dataset_perms = ["change_dataset_style", "change_dataset_data"]
@@ -2566,12 +2568,25 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             assign_perm(perm, self.member_with_perms, self.resource.get_self_resource())
 
         # Assert inital assignment of permissions to groups and users
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.member_with_perms]), set(self.owner_perms + self.dataset_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.group_manager]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.resource_group_manager]), set(self.owner_perms + self.adv_owner_limit))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.owner_group.group]), set(self.safe_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.resource_group.group]), set(self.safe_perms))
+        resource_perm_specs = self.resource.get_all_level_info()
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.author]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.member_with_perms]),
+            set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.group_manager]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.resource_group_manager]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(
+            set(resource_perm_specs['groups'][self.owner_group.group]),
+            set(self.safe_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['groups'][self.resource_group.group]),
+            set(self.safe_perms))
 
     def test_permissions_on_approve_and_publish_changes(self):
         # Group manager approves a resource
@@ -2604,33 +2619,65 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             # Admin publishes and approves the resource
             response = response = self.admin_approve_and_publish_resource()
             self.assertEqual(response.status_code, 200)
+            resource_perm_specs = self.resource.get_all_level_info()
+
             # Once a resource has been published, the 'publish_resourcebase' permission should be removed anyway
-            adv_owner_limit_no_pub = self.adv_owner_limit.copy()
-            adv_owner_limit_no_pub.remove('publish_resourcebase')
-            self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + adv_owner_limit_no_pub))
+            self.assertSetEqual(
+                set(resource_perm_specs['users'][self.author]),
+                set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
 
             # Admin un-approves and un-publishes the resource
             response = self.admin_unapprove_and_unpublish_resource()
             self.assertEqual(response.status_code, 200)
-            self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
+            resource_perm_specs = self.resource.get_all_level_info()
+
+            self.assertSetEqual(
+                set(resource_perm_specs['users'][self.author]),
+                set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
         finally:
             GroupMember.objects.get(group=self.owner_group, user=self.author).demote()
 
     def assertions_for_approved_or_published_is_true(self):
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.safe_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.member_with_perms]), set(self.owner_perms + self.dataset_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.group_manager]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.resource_group_manager]), set(self.owner_perms + self.adv_owner_limit))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.owner_group.group]), set(self.safe_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.resource_group.group]), set(self.safe_perms))
+        resource_perm_specs = self.resource.get_all_level_info()
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.author]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.member_with_perms]),
+            set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.group_manager]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.resource_group_manager]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(
+            set(resource_perm_specs['groups'][self.owner_group.group]),
+            set(self.safe_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['groups'][self.resource_group.group]),
+            set(self.safe_perms))
 
     def assertions_for_approved_and_published_is_false(self):
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.author]), set(self.owner_perms + self.dataset_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.member_with_perms]), set(self.owner_perms + self.dataset_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.group_manager]), set(self.owner_perms + self.dataset_perms + self.adv_owner_limit))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['users'][self.resource_group_manager]), set(self.owner_perms + self.adv_owner_limit))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.owner_group.group]), set(self.safe_perms))
-        self.assertSetEqual(set(self.resource.get_all_level_info()['groups'][self.resource_group.group]), set(self.safe_perms))
+        resource_perm_specs = self.resource.get_all_level_info()
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.author]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.member_with_perms]),
+            set(self.owner_perms + self.dataset_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.group_manager]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(
+            set(resource_perm_specs['users'][self.resource_group_manager]),
+            set(self.owner_perms + self.edit_perms + self.dataset_perms + self.adv_owner_limit))
+        self.assertSetEqual(
+            set(resource_perm_specs['groups'][self.owner_group.group]),
+            set(self.safe_perms))
+        self.assertSetEqual(
+            set(resource_perm_specs['groups'][self.resource_group.group]),
+            set(self.safe_perms))
 
     def admin_approve_and_publish_resource(self):
         self.assertTrue(self.client.login(username="admin", password='admin'))
