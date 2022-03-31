@@ -468,6 +468,8 @@ class AdvancedSecurityWorkflowManager:
         _resource = instance or AdvancedSecurityWorkflowManager.get_instance(uuid)
         _perm_spec = copy.deepcopy(perm_spec)
 
+        def safe_remove(perms, perm): perms.remove(perm) if perm in perms else None
+
         if _resource:
             _resource = _resource.get_real_instance()
 
@@ -480,12 +482,12 @@ class AdvancedSecurityWorkflowManager:
             if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                 # Check if owner is a manager of any group and add admin_manager_perms accordingly
                 if _resource.owner not in ResourceGroupsAndMembersSet.managers:
-                    prev_perms.remove('publish_resourcebase')
+                    safe_remove(prev_perms, 'publish_resourcebase')
                     if not AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() and (_resource.is_approved or _resource.is_published):
-                        prev_perms.remove('change_resourcebase')
-                        prev_perms.remove('change_resourcebase_metadata')
+                        safe_remove(prev_perms, 'change_resourcebase')
+                        safe_remove(prev_perms, 'change_resourcebase_metadata')
                     if AdvancedSecurityWorkflowManager.is_advanced_workflow():
-                        prev_perms.remove('change_resourcebase_permissions')
+                        safe_remove(prev_perms, 'change_resourcebase_permissions')
             _perm_spec['users'][_resource.owner] = list(set(prev_perms))
 
             # Computing the MANAGERs and MEMBERs Permissions
@@ -523,14 +525,14 @@ class AdvancedSecurityWorkflowManager:
                     prev_perms += AdminViewPermissionsSet.view_perms.copy()
                 if created:
                     if not AdvancedSecurityWorkflowManager.is_anonymous_can_view():
-                        prev_perms.remove('view_resourcebase')
+                        safe_remove(prev_perms, 'view_resourcebase')
                     if not AdvancedSecurityWorkflowManager.is_anonymous_can_download():
-                        prev_perms.remove('download_resourcebase')
+                        safe_remove(prev_perms, 'download_resourcebase')
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                     if (AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() or AdvancedSecurityWorkflowManager.is_advanced_workflow() and not _resource.is_published) or (
                             AdvancedSecurityWorkflowManager.is_simplified_workflow() and not (_resource.is_approved or _resource.is_published)):
-                        prev_perms.remove('view_resourcebase')
-                        prev_perms.remove('download_resourcebase')
+                        safe_remove(prev_perms, 'view_resourcebase')
+                        safe_remove(prev_perms, 'download_resourcebase')
             _perm_spec['groups'][ResourceGroupsAndMembersSet.anonymous_group] = list(set(prev_perms))
 
             if ResourceGroupsAndMembersSet.registered_members_group and getattr(groups_settings, 'AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME', False):
@@ -538,8 +540,8 @@ class AdvancedSecurityWorkflowManager:
                 if approval_status_changed and (_resource.is_approved or _resource.is_published):
                     prev_perms += AdminViewPermissionsSet.view_perms.copy()
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow() and not _resource.is_approved:
-                    prev_perms.remove('view_resourcebase')
-                    prev_perms.remove('download_resourcebase')
+                    safe_remove(prev_perms, 'view_resourcebase')
+                    safe_remove(prev_perms, 'download_resourcebase')
                 _perm_spec['groups'][ResourceGroupsAndMembersSet.registered_members_group] = list(set(prev_perms))
 
         return _perm_spec

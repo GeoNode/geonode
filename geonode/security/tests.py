@@ -2111,10 +2111,10 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
-                    self.group_member: ["view_resourcebase", "download_resourcebase"],
-                    self.not_group_member: ["view_resourcebase", "download_resourcebase"],
-                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
+                    self.group_manager: [],
+                    self.group_member: [],
+                    self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
@@ -2132,14 +2132,14 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
-                    self.group_member: ["view_resourcebase", "download_resourcebase"],
+                    self.group_manager: ["view_resourcebase"],
+                    self.group_member: ["view_resourcebase"],
                     self.not_group_member: [
-                        "download_resourcebase",
                         "change_resourcebase",
                         "view_resourcebase",
+                        "download_resourcebase"
                     ],
-                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase"],
                 },
             ),
         ]
@@ -2306,10 +2306,10 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
-                    self.group_member: ["view_resourcebase", "download_resourcebase"],
-                    self.not_group_member: ["view_resourcebase", "download_resourcebase"],
-                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
+                    self.group_manager: [],
+                    self.group_member: [],
+                    self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
@@ -2324,10 +2324,10 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
-                    self.group_member: ["view_resourcebase", "download_resourcebase"],
-                    self.not_group_member: ["view_resourcebase", "download_resourcebase", "change_resourcebase"],
-                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
+                    self.group_manager: ["view_resourcebase"],
+                    self.group_member: ["view_resourcebase"],
+                    self.not_group_member: ["view_resourcebase", "change_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase"],
                 },
             ),
         ]
@@ -2512,15 +2512,15 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
 
     def setUp(self):
         # Creating groups
-        self.author, created = get_user_model().objects.get_or_create(username="author")
-        self.group_manager, created = get_user_model().objects.get_or_create(username="group_manager")
-        self.resource_group_manager, created = get_user_model().objects.get_or_create(username="resource_group_manager")
-        self.group_member, created = get_user_model().objects.get_or_create(username="group_member")
-        self.member_with_perms, created = get_user_model().objects.get_or_create(username="member_with_perms")
+        self.author, _ = get_user_model().objects.get_or_create(username="author")
+        self.group_manager, _ = get_user_model().objects.get_or_create(username="group_manager")
+        self.resource_group_manager, _ = get_user_model().objects.get_or_create(username="resource_group_manager")
+        self.group_member, _ = get_user_model().objects.get_or_create(username="group_member")
+        self.member_with_perms, _ = get_user_model().objects.get_or_create(username="member_with_perms")
 
         # Defining group profiles and members
-        self.owner_group, created = GroupProfile.objects.get_or_create(slug="owner_group")
-        self.resource_group, created = GroupProfile.objects.get_or_create(slug="resource_group")
+        self.owner_group, _ = GroupProfile.objects.get_or_create(slug="owner_group")
+        self.resource_group, _ = GroupProfile.objects.get_or_create(slug="resource_group")
 
         # defining group members
         GroupMember.objects.get_or_create(group=self.owner_group, user=self.author, role="member")
