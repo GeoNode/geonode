@@ -2223,8 +2223,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {}},
                 {
                     self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
@@ -2247,8 +2245,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
