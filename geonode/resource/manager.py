@@ -580,7 +580,6 @@ class ResourceManager(ResourceManagerInterface):
         if _resource:
             _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
-            _prev_perm_spec = copy.deepcopy(_resource.get_all_level_info())
             logger.debug(f'Finalizing (permissions and notifications) on resource {instance}')
             try:
                 with transaction.atomic():
@@ -729,12 +728,10 @@ class ResourceManager(ResourceManagerInterface):
                         _resource = AdvancedSecurityWorkflowManager.handle_moderated_uploads(_resource.uuid, instance=_resource)
 
                     # Fixup GIS Backend Security Rules Accordingly
-                    if not _resource.compare_perms(_prev_perm_spec, _perm_spec):
-                        # Avoid setting the permissions if nothing changed
-                        if not self._concrete_resource_manager.set_permissions(
-                                uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
-                            # This might not be a severe error. E.g. for datasets outside of local GeoServer
-                            logger.error(Exception("Could not complete concrete manager operation successfully!"))
+                    if not self._concrete_resource_manager.set_permissions(
+                            uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
+                        # This might not be a severe error. E.g. for datasets outside of local GeoServer
+                        logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
