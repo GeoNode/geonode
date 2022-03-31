@@ -493,20 +493,20 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 5)
+        self.assertGreaterEqual(geofence_rules_count, 13)
 
         perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 7)
+        self.assertGreaterEqual(geofence_rules_count, 15)
 
         perm_spec = {'users': {"admin": ['change_dataset_data']}, 'groups': []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 7)
+        self.assertGreaterEqual(geofence_rules_count, 15)
 
         # FULL WFS-T
         perm_spec = {
@@ -522,7 +522,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 10)
+        self.assertEqual(geofence_rules_count, 18)
 
         rules_objs = get_geofence_rules(entries=10)
         _deny_wfst_rule_exists = False
@@ -547,7 +547,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 13)
+        self.assertEqual(geofence_rules_count, 21)
 
         rules_objs = get_geofence_rules(entries=13)
         _deny_wfst_rule_exists = False
@@ -577,9 +577,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 7)
+        self.assertEqual(geofence_rules_count, 15)
 
-        rules_objs = get_geofence_rules(entries=7)
+        rules_objs = get_geofence_rules(entries=15)
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
@@ -593,13 +593,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"4. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 7)
+        self.assertGreaterEqual(geofence_rules_count, 15)
 
         perm_spec = {'users': {}, 'groups': {'bar': ['change_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"5. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 5)
+        self.assertGreaterEqual(geofence_rules_count, 13)
 
         # Testing GeoLimits
         # Reset GeoFence Rules
@@ -647,10 +647,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             "users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 8)
+        self.assertEqual(geofence_rules_count, 13)
 
-        rules_objs = get_geofence_rules(entries=8)
-        self.assertEqual(len(rules_objs['rules']), 8)
+        rules_objs = get_geofence_rules(entries=13)
+        self.assertEqual(len(rules_objs['rules']), 13)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
@@ -686,10 +686,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'users': {}, 'groups': {'bar': ['change_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 6)
+        self.assertEqual(geofence_rules_count, 11)
 
-        rules_objs = get_geofence_rules(entries=6)
-        self.assertEqual(len(rules_objs['rules']), 6)
+        rules_objs = get_geofence_rules(entries=11)
+        self.assertEqual(len(rules_objs['rules']), 11)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
@@ -1171,12 +1171,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # Set the Permissions
         layer.set_permissions(self.perm_spec)
-
-        # Test that the Permissions for anonymous user is are set
-        self.assertFalse(
-            self.anonymous_user.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
@@ -2111,10 +2105,10 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [],
-                    self.group_member: [],
-                    self.not_group_member: [],
-                    self.anonymous_user: [],
+                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
+                    self.group_member: ["view_resourcebase", "download_resourcebase"],
+                    self.not_group_member: ["view_resourcebase", "download_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
                 },
             ),
             (
@@ -2167,7 +2161,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
-                        "publish_resourcebase",
                         "change_resourcebase_permissions"
                     ],
                     self.group_manager: [
@@ -2176,11 +2169,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "change_resourcebase_permissions",
-                        "view_resourcebase"
+                        "view_resourcebase",
+                        "publish_resourcebase"
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
@@ -2192,7 +2186,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
-                        "publish_resourcebase",
                         "change_resourcebase_permissions"
                     ],
                     self.group_manager: [
@@ -2201,11 +2194,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
-                        "change_resourcebase_permissions"
+                        "change_resourcebase_permissions",
+                        "publish_resourcebase"
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: ["view_resourcebase"],
+                    self.anonymous_user: [],
                 },
             ),
         ]
@@ -2229,6 +2223,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {}},
                 {
                     self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2242,14 +2239,17 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "view_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: [],
+                    self.anonymous_user: [],
                 },
             ),
             (
                 {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2263,8 +2263,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "view_resourcebase",
                     ],
                     self.group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.not_group_member: ["download_resourcebase", "view_resourcebase"],
-                    self.anonymous_user: ["download_resourcebase", "view_resourcebase"],
+                    self.not_group_member: ["view_resourcebase"],
+                    self.anonymous_user: [],
                 },
             ),
         ]
@@ -2304,10 +2304,10 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: [],
-                    self.group_member: [],
-                    self.not_group_member: [],
-                    self.anonymous_user: [],
+                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
+                    self.group_member: ["view_resourcebase", "download_resourcebase"],
+                    self.not_group_member: ["view_resourcebase", "download_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
                 },
             ),
             (
@@ -2322,10 +2322,10 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "publish_resourcebase",
                         "view_resourcebase",
                     ],
-                    self.group_manager: ["view_resourcebase"],
-                    self.group_member: ["view_resourcebase"],
-                    self.not_group_member: ["view_resourcebase", "change_resourcebase"],
-                    self.anonymous_user: ["view_resourcebase"],
+                    self.group_manager: ["view_resourcebase", "download_resourcebase"],
+                    self.group_member: ["view_resourcebase", "download_resourcebase"],
+                    self.not_group_member: ["view_resourcebase", "download_resourcebase", "change_resourcebase"],
+                    self.anonymous_user: ["view_resourcebase", "download_resourcebase"],
                 },
             ),
         ]
@@ -2349,6 +2349,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             .first()
         expected = {
             self.author: [
+                "change_resourcebase_metadata",
+                "delete_resourcebase",
+                "publish_resourcebase",
+                "change_resourcebase_permissions",
+                "change_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2405,6 +2410,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "member")
         expected = {
             self.author: [
+                "change_resourcebase_metadata",
+                "change_resourcebase",
+                "delete_resourcebase",
+                "change_resourcebase_permissions",
+                "publish_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2485,6 +2495,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "publish_resourcebase",
                 "change_resourcebase_permissions"
             ],
         }

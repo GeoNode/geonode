@@ -1029,7 +1029,7 @@ class BaseApiTests(APITestCase):
                         'id': anonymous_group.id,
                         'title': 'anonymous',
                         'name': 'anonymous',
-                        'permissions': 'view'
+                        'permissions': 'download'
                     },
                     {
                         'id': contributors_group.id,
