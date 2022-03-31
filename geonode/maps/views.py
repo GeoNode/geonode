@@ -277,11 +277,14 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
             can_change_metadata = request.user.has_perm(
                 'change_resourcebase_metadata',
                 map_obj.get_self_resource())
+            can_publish = request.user.has_perm(
+                'publish_resourcebase',
+                map_obj.get_self_resource())
             try:
                 is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
             except Exception:
                 is_manager = False
-            if not is_manager or not can_change_metadata:
+            if not is_manager or not can_change_metadata or not can_publish:
                 if settings.RESOURCE_PUBLISHING:
                     map_form.fields['is_published'].widget.attrs.update(
                         {'disabled': 'true'})
