@@ -162,7 +162,7 @@ class GroupProfile(models.Model):
 
     def get_members(self):
         """
-        Returns a queryset of the group's managers.
+        Returns a queryset of the group's members.
         """
         return get_user_model().objects.filter(
             Q(id__in=self.member_queryset().filter(

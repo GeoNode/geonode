@@ -493,20 +493,20 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-        self.assertGreaterEqual(geofence_rules_count, 13)
+        self.assertEqual(geofence_rules_count, 5)
 
         perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-        self.assertGreaterEqual(geofence_rules_count, 15)
+        self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'users': {"admin": ['change_dataset_data']}, 'groups': []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-        self.assertGreaterEqual(geofence_rules_count, 15)
+        self.assertEqual(geofence_rules_count, 7)
 
         # FULL WFS-T
         perm_spec = {
@@ -522,7 +522,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 18)
+        self.assertEqual(geofence_rules_count, 10)
 
         rules_objs = get_geofence_rules(entries=10)
         _deny_wfst_rule_exists = False
@@ -547,7 +547,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 21)
+        self.assertEqual(geofence_rules_count, 13)
 
         rules_objs = get_geofence_rules(entries=13)
         _deny_wfst_rule_exists = False
@@ -577,9 +577,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 15)
+        self.assertEqual(geofence_rules_count, 7)
 
-        rules_objs = get_geofence_rules(entries=15)
+        rules_objs = get_geofence_rules(entries=7)
         _deny_wfst_rule_exists = False
         for rule in rules_objs['rules']:
             if rule['service'] == "WFS" and \
@@ -593,13 +593,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"4. geofence_rules_count: {geofence_rules_count} ")
-        self.assertGreaterEqual(geofence_rules_count, 15)
+        self.assertEqual(geofence_rules_count, 7)
 
         perm_spec = {'users': {}, 'groups': {'bar': ['change_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
         _log(f"5. geofence_rules_count: {geofence_rules_count} ")
-        self.assertGreaterEqual(geofence_rules_count, 13)
+        self.assertEqual(geofence_rules_count, 5)
 
         # Testing GeoLimits
         # Reset GeoFence Rules
@@ -647,10 +647,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             "users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 13)
+        self.assertEqual(geofence_rules_count, 8)
 
-        rules_objs = get_geofence_rules(entries=13)
-        self.assertEqual(len(rules_objs['rules']), 13)
+        rules_objs = get_geofence_rules(entries=8)
+        self.assertEqual(len(rules_objs['rules']), 8)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
@@ -686,10 +686,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'users': {}, 'groups': {'bar': ['change_resourcebase']}}
         layer.set_permissions(perm_spec)
         geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 11)
+        self.assertEqual(geofence_rules_count, 6)
 
-        rules_objs = get_geofence_rules(entries=11)
-        self.assertEqual(len(rules_objs['rules']), 11)
+        rules_objs = get_geofence_rules(entries=6)
+        self.assertEqual(len(rules_objs['rules']), 6)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs['rules']):
