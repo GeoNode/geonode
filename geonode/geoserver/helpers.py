@@ -689,7 +689,7 @@ def gs_slurp(
                 raise
 
     # filter out layers already registered in geonode
-    dataset_names = Dataset.objects.all().values_list('alternate', flat=True)
+    dataset_names = Dataset.objects.values_list('alternate', flat=True)
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
@@ -962,7 +962,7 @@ def set_attributes(
                 if _gs_attrs.count() == 1:
                     la = _gs_attrs.get()
                 else:
-                    if _gs_attrs.count() > 0:
+                    if _gs_attrs.exists():
                         _gs_attrs.delete()
                     la = Attribute.objects.create(dataset=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0

@@ -32,13 +32,14 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
 from guardian.shortcuts import (
-    assign_perm,
     get_perms,
     get_groups_with_perms)
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
-from geonode.security.utils import AdvancedSecurityWorkflowManager
+from geonode.security.utils import (
+    get_user_groups,
+    AdvancedSecurityWorkflowManager)
 
 from .permissions import (
     VIEW_PERMISSIONS,
@@ -90,9 +91,7 @@ class PermissionLevelMixin:
         """
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
-        groups = get_groups_with_perms(
-            resource,
-            attach_perms=True)
+        groups = get_groups_with_perms(resource, attach_perms=True)
         if groups:
             for group in groups:
                 try:
@@ -102,8 +101,6 @@ class PermissionLevelMixin:
                         for manager in managers:
                             if manager not in users and not manager.is_superuser and \
                                     manager != resource.owner:
-                                for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                    assign_perm(perm, manager, resource)
                                 users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
                 except GroupProfile.DoesNotExist:
                     tb = traceback.format_exc()
@@ -116,15 +113,15 @@ class PermissionLevelMixin:
                     for manager in managers:
                         if manager not in users and not manager.is_superuser and \
                                 manager != resource.owner:
-                            for perm in ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
-                                assign_perm(perm, manager, resource)
                             users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
             except GroupProfile.DoesNotExist:
                 tb = traceback.format_exc()
                 logger.debug(tb)
+
         info = {
             'users': users,
-            'groups': groups}
+            'groups': groups
+        }
 
         try:
             if hasattr(self, "dataset"):
@@ -166,14 +163,15 @@ class PermissionLevelMixin:
             pass
         return self
 
-    def get_group_managers(self, user_groups):
+    def get_group_managers(self, group=None):
         """
         Given the groups belonging to a "user", this method returns a tuple containing:
          - The "groups" perms spec with resource access permissions (at least VIEW ones)
          - The list of "group managers" of the groups above
         """
+        obj_groups = []
         obj_group_managers = []
-        perm_spec = {"groups": {}}
+        user_groups = get_user_groups(self.owner, group=group)
         if user_groups:
             for _user_group in user_groups:
                 if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
@@ -188,15 +186,13 @@ class PermissionLevelMixin:
                         tb = traceback.format_exc()
                         logger.debug(tb)
 
-        # assign view permissions to group resources
-        if self.group and settings.RESOURCE_PUBLISHING:
-            perm_spec['groups'][self.group] = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
-
+        if self.group:
+            obj_groups.append(self.group)
         for x in self.owner.groupmember_set.all():
-            if settings.RESOURCE_PUBLISHING and x.group.slug != groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
-                perm_spec['groups'][x.group.group] = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+            if x.group.slug != groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
+                obj_groups.append(x.group.group)
 
-        return perm_spec, obj_group_managers
+        return obj_groups, obj_group_managers
 
     def set_default_permissions(self, owner=None, created=False):
         """
@@ -220,7 +216,7 @@ class PermissionLevelMixin:
         # default permissions for owner and owner's groups
         _owner = owner or self.owner
         user_groups = Group.objects.filter(
-            name__in=_owner.groupmember_set.all().values_list("group__slug", flat=True))
+            name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
 
         # Anonymous
         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -242,7 +238,7 @@ class PermissionLevelMixin:
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
         return resource_manager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created)
 
-    def set_permissions(self, perm_spec=None, created=False):
+    def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
 
@@ -262,7 +258,7 @@ class PermissionLevelMixin:
         }
         """
         from geonode.resource.manager import resource_manager
-        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created)
+        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created, approval_status_changed=approval_status_changed)
 
     def compare_perms(self, prev_perm_spec, perm_spec):
         """

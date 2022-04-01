@@ -23,6 +23,7 @@ from unittest.mock import patch
 
 from django.test.testcases import SimpleTestCase, TestCase
 
+from geonode.utils import mkdtemp
 from geonode.storage.aws import AwsStorageManager
 from geonode.storage.manager import StorageManager
 from geonode.storage.gcs import GoogleStorageManager
@@ -395,3 +396,35 @@ class TestStorageManager(TestCase):
         with open('geonode/base/fixtures/test_sld.sld') as new_file:
             output = self.sut().replace(dataset, new_file)
         self.assertListEqual([expected], output['files'])
+
+    def test_storage_manager_rmtree(self):
+        '''
+        Will test that the rmtree function works as expected
+        '''
+        _dirs = [
+            'subdir1',
+            'subdir2',
+            'subdir1/subsubdir1'
+        ]
+        _files = [
+            'subdir1/tmp_file1',
+            'subdir1/tmp_file2',
+            'subdir2/tmp_file2',
+            'subdir1/subsubdir1/tmp_file11'
+        ]
+        _tmpdir = mkdtemp()
+
+        for _dir in _dirs:
+            if not os.path.exists(os.path.join(_tmpdir, _dir)):
+                os.makedirs(os.path.join(_tmpdir, _dir))
+            self.assertTrue(os.path.exists(os.path.join(_tmpdir, _dir)))
+            self.assertTrue(os.path.isdir(os.path.join(_tmpdir, _dir)))
+
+        for _file in _files:
+            with open(os.path.join(_tmpdir, _file), 'wb+'):
+                pass
+            self.assertTrue(os.path.exists(os.path.join(_tmpdir, _file)))
+            self.assertTrue(os.path.isfile(os.path.join(_tmpdir, _file)))
+
+        self.sut().rmtree(_tmpdir)
+        self.assertFalse(os.path.exists(_tmpdir))

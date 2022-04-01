@@ -38,7 +38,9 @@ from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_user_visible_groups
+from geonode.security.utils import (
+    get_user_visible_groups,
+    AdvancedSecurityWorkflowManager)
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
@@ -411,21 +413,10 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                geoapp_obj.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    geoapp_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                geoapp_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, geoapp_obj):
+        geoapp_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, geoapp_obj):
+        geoapp_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
     return render(request, template, context={

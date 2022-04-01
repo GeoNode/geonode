@@ -17,6 +17,7 @@
 #
 #########################################################################
 import os
+import json
 import argparse
 import datetime
 import requests
@@ -154,14 +155,14 @@ class GeoNodeUploader:
                     data = response.json()
                     if not data.get('status', None):
                         raise Exception(data)
-                    if data['status'] == 'finished':
+                    if data.get('status', '') == 'finished':
                         if data['success']:
                             success.append(file)
                         else:
                             errors.append(file)
                     else:
                         errors.append(file)
-                except requests.exceptions.JSONDecodeError:
+                except json.JSONDecodeError:
                     traceback.print_exc()
                     errors.append(file)
         return success, errors
