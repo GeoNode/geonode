@@ -516,6 +516,7 @@ class AdvancedSecurityWorkflowManager:
             # Computing the OWNER Permissions
             prev_perms = _perm_spec['users'].get(_resource.owner, []) if isinstance(_perm_spec['users'], dict) else []
             prev_perms += AdminViewPermissionsSet.view_perms.copy() + AdminViewPermissionsSet.admin_perms.copy()
+            prev_perms = list(set(prev_perms))
             if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                 # Check if owner is a manager of any group and add admin_manager_perms accordingly
                 if _resource.owner not in ResourceGroupsAndMembersSet.managers:
@@ -533,12 +534,14 @@ class AdvancedSecurityWorkflowManager:
                     for user in ResourceGroupsAndMembersSet.managers:
                         prev_perms = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
                         prev_perms += AdminViewPermissionsSet.view_perms.copy() + AdminViewPermissionsSet.admin_perms.copy()
+                        prev_perms = list(set(prev_perms))
                         _perm_spec["users"][user] = list(set(prev_perms))
 
                 if ResourceGroupsAndMembersSet.resource_groups:
                     for group in ResourceGroupsAndMembersSet.resource_groups:
                         prev_perms = _perm_spec["groups"].get(group, []) if "groups" in _perm_spec else []
                         prev_perms += AdminViewPermissionsSet.view_perms.copy()
+                        prev_perms = list(set(prev_perms))
                         _perm_spec["groups"][group] = list(set(prev_perms))
                 elif len(_perm_spec["groups"]):
                     groups = copy.deepcopy(_perm_spec["groups"])
@@ -560,6 +563,7 @@ class AdvancedSecurityWorkflowManager:
                 prev_perms = _perm_spec['groups'].get(ResourceGroupsAndMembersSet.anonymous_group, []) if isinstance(_perm_spec['groups'], dict) else []
                 if approval_status_changed and (_resource.is_approved or _resource.is_published):
                     prev_perms += AdminViewPermissionsSet.view_perms.copy()
+                    prev_perms = list(set(prev_perms))
                 if created:
                     if not AdvancedSecurityWorkflowManager.is_anonymous_can_view():
                         safe_remove(prev_perms, 'view_resourcebase')
@@ -576,6 +580,7 @@ class AdvancedSecurityWorkflowManager:
                 prev_perms = _perm_spec['groups'].get(ResourceGroupsAndMembersSet.registered_members_group, []) if isinstance(_perm_spec['groups'], dict) else []
                 if approval_status_changed and (_resource.is_approved or _resource.is_published):
                     prev_perms += AdminViewPermissionsSet.view_perms.copy()
+                    prev_perms = list(set(prev_perms))
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow() and not _resource.is_approved:
                     safe_remove(prev_perms, 'view_resourcebase')
                     safe_remove(prev_perms, 'download_resourcebase')
@@ -701,6 +706,7 @@ class AdvancedSecurityWorkflowManager:
                             perm_spec["groups"].pop(_group.group)
                 elif role == "manager":
                     prev_perms += AdminViewPermissionsSet.admin_perms.copy()
+                    prev_perms = list(set(prev_perms))
                 perm_spec["users"][user] = list(set(prev_perms))
 
                 # Let's the ResourceManager finally decide which are the correct security settings to apply
