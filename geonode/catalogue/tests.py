@@ -29,7 +29,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
 from geonode.catalogue.views import csw_global_dispatch
-from geonode.layers.populate_datasets_data import create_dataset_data
+from geonode.layers.populate_layers_data import create_layer_data
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -55,7 +55,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         self.request = self.__request_factory_single(123)
-        create_dataset_data()
+        create_layer_data()
         self.user = "admin"
         self.passwd = "admin"
 
