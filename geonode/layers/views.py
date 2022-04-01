@@ -688,7 +688,7 @@ def dataset_metadata(
         from geonode.upload.models import Upload
 
         up_sessions = Upload.objects.filter(resource_id=layer.resourcebase_ptr_id)
-        if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
+        if up_sessions.exists() and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)

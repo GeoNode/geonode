@@ -216,7 +216,7 @@ class PermissionLevelMixin:
         # default permissions for owner and owner's groups
         _owner = owner or self.owner
         user_groups = Group.objects.filter(
-            name__in=_owner.groupmember_set.all().values_list("group__slug", flat=True))
+            name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
 
         # Anonymous
         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION

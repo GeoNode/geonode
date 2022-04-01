@@ -103,7 +103,7 @@ def ajax_lookup(request):
             Q(title__icontains=keyword) |
             Q(slug__icontains=keyword)).exclude(
                 Q(access='private') & ~Q(
-                    slug__in=request.user.groupmember_set.all().values_list("group__slug", flat=True))
+                    slug__in=request.user.groupmember_set.values_list("group__slug", flat=True))
         )
     json_dict = {
         'users': [({'username': u.username}) for u in users],

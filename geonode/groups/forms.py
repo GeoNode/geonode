@@ -36,14 +36,14 @@ class GroupForm(TranslationModelForm):
 
     def clean_slug(self):
         if GroupProfile.objects.filter(
-                slug__iexact=self.cleaned_data["slug"]).count() > 0:
+                slug__iexact=self.cleaned_data["slug"]).exists():
             raise forms.ValidationError(
                 _("A group already exists with that slug."))
         return self.cleaned_data["slug"].lower()
 
     def clean_title(self):
         if GroupProfile.objects.filter(
-                title__iexact=self.cleaned_data["title"]).count() > 0:
+                title__iexact=self.cleaned_data["title"]).exists():
             raise forms.ValidationError(
                 _("A group already exists with that name."))
         return self.cleaned_data["title"]
@@ -52,11 +52,11 @@ class GroupForm(TranslationModelForm):
         cleaned_data = self.cleaned_data
 
         name = cleaned_data.get("title")
-        if not name or GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).count() > 0:
+        if not name or GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).exists():
             raise forms.ValidationError(
                 _("A group already exists with that name."))
         slug = slugify(name)
-        if not slug or GroupProfile.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
+        if not slug or GroupProfile.objects.filter(slug__iexact=self.cleaned_data["slug"]).exists():
             raise forms.ValidationError(
                 _("A group already exists with that slug."))
         cleaned_data["slug"] = slug
@@ -72,7 +72,7 @@ class GroupUpdateForm(forms.ModelForm):
 
     def clean_name(self):
         if GroupProfile.objects.filter(
-                name__iexact=self.cleaned_data["title"]).count() > 0:
+                name__iexact=self.cleaned_data["title"]).exists():
             if self.cleaned_data["title"] == self.instance.name:
                 pass  # same instance
             else:

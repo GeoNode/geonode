@@ -109,7 +109,7 @@ def create_thumbnail(
     is_map_with_datasets = False
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).exists()
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
@@ -294,11 +294,11 @@ def _datasets_locations(
             workspace = get_dataset_workspace(map_dataset)
             map_dataset_style = map_dataset.current_style
 
-            if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
+            if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).exists():
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
-            elif workspace and Dataset.objects.filter(workspace=workspace, name=name).count() > 0:
+            elif workspace and Dataset.objects.filter(workspace=workspace, name=name).exists():
                 dataset = Dataset.objects.filter(workspace=workspace, name=name).first()
-            elif Dataset.objects.filter(alternate=map_dataset.name).count() > 0:
+            elif Dataset.objects.filter(alternate=map_dataset.name).exists():
                 dataset = Dataset.objects.filter(alternate=map_dataset.name).first()
             else:
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")

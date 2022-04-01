@@ -183,7 +183,7 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
     if filter_options:
-        if resources_with_perms and resources_with_perms.count() > 0:
+        if resources_with_perms and resources_with_perms.exists():
             if filter_options.get('title_filter'):
                 resources_with_perms = resources_with_perms.filter(
                     title__icontains=filter_options.get('title_filter')
@@ -235,10 +235,9 @@ def get_user_groups(owner, group=None):
     """
     Returns all the groups belonging to the "owner"
     """
-    user_groups = Group.objects.filter(
-        name__in=owner.groupmember_set.all().values_list("group__slug", flat=True))
+    user_groups = Group.objects.filter(name__in=owner.groupmember_set.values_list("group__slug", flat=True))
     if group:
-        user_groups = set([_g for _g in user_groups.iterator()] + [group.group if hasattr(group, 'group') else group])
+        user_groups = chain(user_groups, [group.group if hasattr(group, 'group') else group])
     return list(set(user_groups))
 
 

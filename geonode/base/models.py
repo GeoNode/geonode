@@ -16,12 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 import re
 import html
 import math
-import shutil
 import logging
 import traceback
 from sequences.models import Sequence
@@ -708,28 +706,7 @@ class ResourceBaseManager(PolymorphicManager):
                     for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
                         try:
                             if upload.upload_dir:
-                                if storage_manager.exists(upload.upload_dir):
-                                    _uploaded_dirs, _uploaded_files = storage_manager.listdir(upload.upload_dir)
-                                    for _entry in _uploaded_files:
-                                        _entry_path = os.path.join(upload.upload_dir, _entry)
-                                        if storage_manager.exists(_entry_path):
-                                            try:
-                                                storage_manager.delete(_entry_path)
-                                            except Exception as e:
-                                                logger.exception(e)
-                                    for _entry in _uploaded_dirs:
-                                        _entry_path = os.path.join(upload.upload_dir, _entry)
-                                        if storage_manager.exists(_entry_path):
-                                            try:
-                                                storage_manager.delete(_entry_path)
-                                            except Exception as e:
-                                                logger.exception(e)
-                                    try:
-                                        storage_manager.delete(upload.upload_dir)
-                                    except Exception as e:
-                                        logger.exception(e)
-                                elif os.path.exists(upload.upload_dir):
-                                    shutil.rmtree(upload.upload_dir, ignore_errors=True)
+                                storage_manager.rmtree(upload.upload_dir, ignore_errors=True)
                         finally:
                             upload.delete()
             except Exception as e:
@@ -1695,7 +1672,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if legend is None:
             return None
 
-        if legend.count() > 0:
+        if legend.exists():
             if not style_name:
                 return legend.first().url
             else:
