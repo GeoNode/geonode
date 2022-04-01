@@ -2162,8 +2162,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {}},
                 {
                     self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
@@ -2187,8 +2185,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": [], "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
-                        "change_resourcebase",
-                        "change_resourcebase_metadata",
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
@@ -2351,11 +2347,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             .first()
         expected = {
             self.author: [
-                "change_resourcebase_metadata",
                 "delete_resourcebase",
-                "publish_resourcebase",
-                "change_resourcebase_permissions",
-                "change_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2412,11 +2404,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "member")
         expected = {
             self.author: [
-                "change_resourcebase_metadata",
-                "change_resourcebase",
                 "delete_resourcebase",
-                "change_resourcebase_permissions",
-                "publish_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2443,12 +2431,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "member")
         expected = {
             self.author: [
-                "change_resourcebase",
-                "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "publish_resourcebase",
                 "change_resourcebase_permissions"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
@@ -2474,12 +2459,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "manager")
         expected = {
             self.author: [
-                "change_resourcebase",
-                "change_resourcebase_metadata",
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
-                "publish_resourcebase",
                 "change_resourcebase_permissions"
             ],
             self.group_manager: [
@@ -2643,7 +2625,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         resource_perm_specs = self.resource.get_all_level_info()
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.author]),
-            set(self.owner_perms + self.edit_perms + self.dataset_perms))
+            set(self.owner_perms + self.dataset_perms))
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.member_with_perms]),
             set(self.owner_perms + self.dataset_perms))

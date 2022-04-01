@@ -334,7 +334,7 @@ class AdvancedSecurityWorkflowManager:
               - Group MANAGERS of the *resource's group* will get the owner permissions (`publish_resource` EXCLUDED)
               - Group MEMBERS of the *resource's group* will get the `view_resourcebase`, `download_resourcebase` permission
         """
-        return settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
+        return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_advanced_workflow():
@@ -372,7 +372,7 @@ class AdvancedSecurityWorkflowManager:
               - Group MEMBERS of the user's group will get the `view_resourcebase`, `download_resourcebase` permission
               - ANONYMOUS can view and download
         """
-        return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
+        return settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_allowed_to_approve(user, resource):
@@ -638,16 +638,16 @@ class AdvancedSecurityWorkflowManager:
         _resource = instance or AdvancedSecurityWorkflowManager.get_instance(uuid)
 
         if _resource:
-            if AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
+            if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                 _resource.is_approved = False
                 _resource.was_approved = False
-                _resource.get_real_instance_class().objects.filter(
-                    uuid=_resource.get_real_instance().uuid).update(is_approved=False, was_approved=False)
-            if AdvancedSecurityWorkflowManager.is_manager_publish_mode():
                 _resource.is_published = False
                 _resource.was_published = False
+
                 _resource.get_real_instance_class().objects.filter(
-                    uuid=_resource.get_real_instance().uuid).update(is_published=False, was_published=False)
+                    uuid=_resource.uuid).update(
+                        is_approved=False, was_approved=False,
+                        is_published=False, was_published=False)
 
         return _resource
 
