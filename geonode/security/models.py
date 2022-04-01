@@ -646,6 +646,7 @@ class PermissionLevelMixin:
                 for group_manager in group_managers:
                     prev_perms = perm_spec['users'].get(group_manager, []) if isinstance(perm_spec['users'], dict) else []
                     prev_perms += VIEW_PERMISSIONS + admin_perms.copy()
+                    prev_perms = list(set(prev_perms))
                     if self.is_published or (settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS):
                         prev_perms.remove('publish_resourcebase')
                     perm_spec['users'][group_manager] = list(set(prev_perms))
@@ -654,19 +655,23 @@ class PermissionLevelMixin:
                 for gr, perm in member_group_perm['groups'].items():
                     if gr != anonymous_group and gr.name != registered_members_group_name:
                         prev_perms = perm_spec['groups'].get(gr, []) if isinstance(perm_spec['groups'], dict) else []
+                        prev_perms = list(set(prev_perms))
                         perm_spec['groups'][gr] = list(set(prev_perms + perm))
 
             if self.is_approved:
                 if groups_settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME:
                     registered_members_group = Group.objects.get(name=registered_members_group_name)
                     prev_perms = perm_spec['groups'].get(registered_members_group, []) if isinstance(perm_spec['groups'], dict) else []
+                    prev_perms = list(set(prev_perms))
                     perm_spec['groups'][registered_members_group] = list(set(prev_perms + VIEW_PERMISSIONS))
                 else:
                     prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
+                    prev_perms = list(set(prev_perms))
                     perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
 
             if self.is_published:
                 prev_perms = perm_spec['groups'].get(anonymous_group, []) if isinstance(perm_spec['groups'], dict) else []
+                prev_perms = list(set(prev_perms))
                 perm_spec['groups'][anonymous_group] = list(set(prev_perms + VIEW_PERMISSIONS))
 
             if settings.ADMIN_MODERATE_UPLOADS and settings.RESOURCE_PUBLISHING:
