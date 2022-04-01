@@ -304,7 +304,14 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    def rest_upload_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
+    @as_superuser
+    def test_live_login(self):
+        """
+        Try to login to Live Server using the integrated "selenium" framework
+        """
+        pass
+
+    def rest_upload_file_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         assert authenticate(username=username, password=password)
@@ -716,7 +723,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)
-
             mocked_validation_error.assert_called_once_with(expected_error)
             mocked_uploaded_file.assert_not_called()
 
@@ -860,13 +866,8 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_size": 5242880})
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
-        # Response Content
-        size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some-size-limit')
-        self.assertEqual(size_limit['max_size'], 5242880)
-        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_patch_size_limit_anonymous_user(self):
         url = reverse('upload-size-limits-detail', args=('some-size-limit',))
@@ -887,13 +888,8 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 5242880})
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
-        # Response Content
-        size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some-size-limit')
-        self.assertEqual(size_limit['max_size'], 5242880)
-        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_put_size_limit_anonymous_user(self):
         url = reverse('upload-size-limits-detail', args=('some-size-limit',))
@@ -941,7 +937,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
 
     def test_delete_size_limit_anonymous_user(self):
