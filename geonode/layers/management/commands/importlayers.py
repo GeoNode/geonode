@@ -151,7 +151,7 @@ class GeoNodeUploader:
 
                 try:
                     data = response.json()
-                    if data['status'] == 'finished':
+                    if data.get('status', '') == 'finished':
                         if data['success']:
                             success.append(file)
                         else:
