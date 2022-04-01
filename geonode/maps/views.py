@@ -53,12 +53,13 @@ from geonode.maps.forms import MapForm
 from geonode.maps.models import Map, MapLayer
 from geonode.monitoring.models import EventType
 from geonode.people.forms import ProfileForm
-from geonode.security.utils import get_user_visible_groups
+from geonode.security.utils import (
+    get_user_visible_groups,
+    AdvancedSecurityWorkflowManager)
 from geonode.utils import (
     check_ogc_backend,
     http_client,
-    resolve_object,
-)
+    resolve_object)
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -272,24 +273,10 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                map_obj.get_self_resource())
-            can_publish = request.user.has_perm(
-                'publish_resourcebase',
-                map_obj.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-            if not is_manager or not can_change_metadata or not can_publish:
-                if settings.RESOURCE_PUBLISHING:
-                    map_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                map_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, map_obj):
+        map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, map_obj):
+        map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
     return render(request, template, context={

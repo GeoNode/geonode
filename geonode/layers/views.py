@@ -79,7 +79,9 @@ from geonode.services.models import Service
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
-from geonode.security.utils import get_user_visible_groups
+from geonode.security.utils import (
+    get_user_visible_groups,
+    AdvancedSecurityWorkflowManager)
 from geonode.people.forms import ProfileForm
 from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import (
@@ -722,25 +724,10 @@ def dataset_metadata(
         )
         return HttpResponse(json.dumps({'message': message}))
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                layer.get_self_resource())
-            can_publish = request.user.has_perm(
-                'publish_resourcebase',
-                layer.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-
-            if not is_manager or not can_change_metadata or not can_publish:
-                if settings.RESOURCE_PUBLISHING:
-                    dataset_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                dataset_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, layer):
+        dataset_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, layer):
+        dataset_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     if poc is not None:
         dataset_form.fields['poc'].initial = poc.id
