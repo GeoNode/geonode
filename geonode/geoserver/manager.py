@@ -44,7 +44,8 @@ from geonode.security.utils import skip_registered_members_common_group
 from geonode.security.permissions import (
     VIEW_PERMISSIONS,
     OWNER_PERMISSIONS,
-    DOWNLOAD_PERMISSIONS)
+    DOWNLOAD_PERMISSIONS,
+    DATASET_ADMIN_PERMISSIONS)
 from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
@@ -423,7 +424,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         purge_geofence_dataset_rules(_resource)
 
                                     # Owner
-                                    perms = OWNER_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
+                                    perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
                                     _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
 
                                     # All the other users
@@ -456,7 +457,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         purge_geofence_dataset_rules(_resource.get_self_resource())
 
                                     # Owner & Managers
-                                    perms = OWNER_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
+                                    perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
                                     _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
 
                                     _resource_groups, _group_managers = _resource.get_group_managers(group=_resource.group)

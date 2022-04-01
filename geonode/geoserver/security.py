@@ -679,8 +679,11 @@ def _get_gwc_filters_and_formats(disable_cache: list = []) -> typing.Tuple[list,
 
 
 def sync_permissions_and_disable_cache(cache_rules, resource, perms, user, group, group_perms):
-    sync_geofence_with_guardian(dataset=resource, perms=perms, user=user, group=group, group_perms=group_perms)
+    if group_perms:
+        sync_geofence_with_guardian(dataset=resource, perms=perms, user=user, group_perms=group_perms)
+    else:
+        sync_geofence_with_guardian(dataset=resource, perms=perms, user=user, group=group)
     gf_services = _get_gf_services(layer=resource, perms=perms)
     _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(layer=resource, user=user, group=group, gf_services=gf_services)
     cache_rules.append(_disable_dataset_cache)
-    return cache_rules
+    return list(set(cache_rules))
