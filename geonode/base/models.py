@@ -16,12 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 import re
 import html
 import math
-import shutil
 import logging
 import traceback
 from sequences.models import Sequence
@@ -708,10 +706,7 @@ class ResourceBaseManager(PolymorphicManager):
                     for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
                         try:
                             if upload.upload_dir:
-                                if storage_manager.exists(upload.upload_dir):
-                                    storage_manager.delete(upload.upload_dir)
-                                elif os.path.exists(upload.upload_dir):
-                                    shutil.rmtree(upload.upload_dir, ignore_errors=True)
+                                storage_manager.rmtree(upload.upload_dir, ignore_errors=True)
                         finally:
                             upload.delete()
             except Exception as e:
@@ -1236,7 +1231,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # Update workflow permissions
         if _approval_status_changed:
-            self.set_permissions()
+            self.set_permissions(approval_status_changed=True)
 
     def delete(self, notify=True, *args, **kwargs):
         """
@@ -1677,7 +1672,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if legend is None:
             return None
 
-        if legend.count() > 0:
+        if legend.exists():
             if not style_name:
                 return legend.first().url
             else:

@@ -611,7 +611,7 @@ community."
             )
             resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
             self.assertFalse(map_created.is_approved)
-            self.assertTrue(map_created.is_published)
+            self.assertFalse(map_created.is_published)
 
     def testMapsNotifications(self):
         with self.settings(
