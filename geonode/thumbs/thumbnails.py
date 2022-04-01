@@ -109,7 +109,7 @@ def create_thumbnail(
     is_map_with_datasets = False
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, visibility=True, local=True).exclude(ows_url__isnull=True).exclude(ows_url__exact='').exists()
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
@@ -305,13 +305,13 @@ def _layers_locations(
             except json.decoder.JSONDecodeError:
                 map_layer_style = None
 
-            if store and Layer.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
+            if store and Layer.objects.filter(store=store, workspace=workspace, name=name).exists():
                 layer = Layer.objects.filter(store=store, workspace=workspace, name=name).first()
 
-            elif workspace and Layer.objects.filter(workspace=workspace, name=name).count() > 0:
+            elif workspace and Layer.objects.filter(workspace=workspace, name=name).exists():
                 layer = Layer.objects.filter(workspace=workspace, name=name).first()
 
-            elif Layer.objects.filter(alternate=map_layer.name).count() > 0:
+            elif Layer.objects.filter(alternate=map_layer.name).exists():
                 layer = Layer.objects.filter(alternate=map_layer.name).first()
             else:
                 logger.warning(f"Layer for MapLayer {name} was not found. Skipping it in the thumbnail.")

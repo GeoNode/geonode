@@ -25,6 +25,7 @@ from rest_framework.filters import BaseFilterBackend
 from geonode.security.utils import (
     get_users_with_perms,
     get_resources_with_perms)
+from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,6 @@ class IsSelfOrReadOnly(IsSelf):
     """
 
     def has_object_permission(self, request, view, obj):
-
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -76,7 +76,6 @@ class IsSelfOrAdmin(IsSelf):
         return IsSelf.has_permission(self, request, view)
 
     def has_object_permission(self, request, view, obj):
-
         user = request.user
         if user and (user.is_superuser or user.is_staff):
             return True
@@ -95,7 +94,6 @@ class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
         return IsSelfOrAdmin.has_permission(self, request, view)
 
     def has_object_permission(self, request, view, obj):
-
         if request.method in permissions.SAFE_METHODS:
             return True
 
@@ -107,9 +105,7 @@ class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
     """ Grant R/W to self and superusers/staff members, R/O to auth. """
 
     def has_object_permission(self, request, view, obj):
-
         user = request.user
-
         if request.method in permissions.SAFE_METHODS:
             if user.is_authenticated():
                 return True
@@ -156,6 +152,35 @@ class IsOwnerOrReadOnly(IsOwnerOrAdmin):
             return True
 
         return IsOwnerOrAdmin.has_object_permission(self, request, view, obj)
+
+
+class IsManagerEditOrAdmin(permissions.BasePermission):
+    """
+    Object-level permission to only allow admin and managers to edit a group.
+    """
+
+    def has_permission(self, request, view):
+        if request.method in ['POST', 'DELETE']:
+            user = request.user
+            return user and (user.is_superuser or user.is_staff)
+
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        user = request.user
+        if user and user.is_superuser or user.is_staff:
+            return True
+
+        is_group_manager = user and isinstance(obj, GroupProfile) and obj.user_is_role(user, "manager")
+        if is_group_manager and request.method == 'PATCH':
+            return True
+
+        return False
 
 
 class ResourceBasePermissionsFilter(BaseFilterBackend):

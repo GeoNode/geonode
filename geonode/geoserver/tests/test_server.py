@@ -22,7 +22,6 @@ import os
 import json
 import base64
 import shutil
-import tempfile
 
 from os.path import basename, splitext
 from urllib.parse import urljoin, urlencode, urlsplit
@@ -44,6 +43,7 @@ from geonode import geoserver
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
+from geonode.utils import mkdtemp
 from geonode.layers.models import Layer, Style
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.geoserver.helpers import (
@@ -588,7 +588,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         # getting picked up
         d = None
         try:
-            d = tempfile.mkdtemp()
+            d = mkdtemp()
             files = (
                 "san_andres_y_providencia.sld",
                 "lac.sld",
@@ -1178,7 +1178,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
 
             # Delete all 'original' and 'metadata' links
             _links.delete()
-            self.assertFalse(_links.count() > 0, "No links have been deleted")
+            self.assertFalse(_links.exists(), "No links have been deleted")
             # Delete resources metadata
             _layers = Layer.objects.exclude(
                 Q(metadata_xml__isnull=True) |
@@ -1206,7 +1206,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
             # Check links
             _post_migrate_links = Link.objects.filter(link_type__in=_def_link_types)
             self.assertTrue(
-                _post_migrate_links.count() > 0,
+                _post_migrate_links.exists(),
                 "No links have been restored"
             )
             # Check layers
@@ -1225,7 +1225,7 @@ class SignalsTests(GeoNodeBaseTestSupport):
                     link_type='original'
                 )
                 self.assertTrue(
-                    _post_migrate_links_orig.count() > 0,
+                    _post_migrate_links_orig.exists(),
                     f"No 'original' links has been found for the layer '{_lyr.alternate}'"
                 )
                 for _link_orig in _post_migrate_links_orig:

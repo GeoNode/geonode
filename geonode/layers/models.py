@@ -342,7 +342,7 @@ class Layer(ResourceBase):
         # Get custom attribute sort order and labels if any
         cfg = {}
         visible_attributes = self.attribute_set.visible()
-        if (visible_attributes.count() > 0):
+        if (visible_attributes.exists()):
             cfg["getFeatureInfo"] = {
                 "fields": [lyr.attribute for lyr in visible_attributes],
                 "propertyNames": {lyr.attribute: lyr.attribute_label for lyr in visible_attributes},

@@ -126,15 +126,31 @@ id_none = id(None)
 logger = logging.getLogger("geonode.utils")
 
 
+def mkdtemp(dir=settings.MEDIA_ROOT):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    tempdir = None
+    while not tempdir:
+        try:
+            tempdir = tempfile.mkdtemp(dir=dir)
+            if os.path.exists(tempdir) and os.path.isdir(tempdir):
+                if os.listdir(tempdir):
+                    raise Exception("Directory is not empty")
+            else:
+                raise Exception("Directory does not exist or is not accessible")
+        except Exception as e:
+            logger.exception(e)
+            tempdir = None
+    return tempdir
+
+
 def unzip_file(upload_file, extension='.shp', tempdir=None):
     """
     Unzips a zipfile into a temporary directory and returns the full path of the .shp file inside (if any)
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-    if not os.path.isdir(tempdir):
-        os.makedirs(tempdir)
+        tempdir = mkdtemp()
 
     the_zip = ZipFile(upload_file, allowZip64=True)
     the_zip.extractall(tempdir)
@@ -151,7 +167,7 @@ def extract_tarfile(upload_file, extension='.shp', tempdir=None):
     """
     absolute_base_file = None
     if tempdir is None:
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        tempdir = mkdtemp()
 
     the_tar = tarfile.open(upload_file)
     the_tar.extractall(tempdir)
@@ -201,7 +217,7 @@ def get_layer_workspace(layer):
                     settings, "CASCADE_WORKSPACE", default_workspace)
             else:
                 raise RuntimeError("Layer is not cascaded")
-        except AttributeError:  # layer does not have a service
+        except Exception:  # layer does not have a service
             workspace = default_workspace
     return workspace
 
@@ -1117,10 +1133,11 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
     """ Try to fix column names and warn the user
     """
     charset = charset if charset and 'undefined' not in charset else 'UTF-8'
-
+    tempdir_was_created = False
     try:
         if not tempdir:
-            tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+            tempdir = mkdtemp()
+            tempdir_was_created = True
 
         if is_zipfile(inShapefile):
             inShapefile = unzip_file(inShapefile, '.shp', tempdir=tempdir)
@@ -1197,7 +1214,9 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
                     f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
         return True, None, list_col
     finally:
-        if tempdir is not None:
+        if tempdir_was_created and tempdir:
+            # Get rid if temporary files that have been uploaded via Upload form
+            logger.debug(f"... Cleaning up the temporary folders {tempdir}")
             shutil.rmtree(tempdir, ignore_errors=True)
 
 
@@ -1587,7 +1606,7 @@ def slugify_zh(text, separator='_'):
 
 
 def get_legend_url(
-        instance, style_name,
+        instance, style_name, /,
         service_url=None,
         layer_name=None,
         version='1.3.0',
@@ -1796,7 +1815,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=html_link_url,
-                name=instance.alternate,
+                name=instance.alternate or instance.name,
                 link_type='html',
                 defaults=dict(
                     extension='html',

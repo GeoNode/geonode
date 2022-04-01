@@ -66,16 +66,19 @@ class UploadViewSet(DynamicModelViewSet):
     queryset = Upload.objects.all()
     serializer_class = UploadSerializer
     pagination_class = GeoNodeApiPagination
+    http_method_names = ['get', 'post']
 
     def _emulate_client_upload_step(self, request, _step):
         """Emulates the calls of a client to the upload flow.
         It alters the content of the request object, so the same request should
         be reused in the next call of this method.
+
         Args:
             request (Request): A request object with the query params given by the lasted step call.
                                No params for the first call.
             _step (string): The current step, used as an argument in the upload_view call.
                             None for the first call.
+
         Returns:
             Response: response, upload_view response or a final response.
             string: next_step, the next step to be performed.
@@ -118,7 +121,7 @@ class UploadViewSet(DynamicModelViewSet):
         else:
             return response, None, True
 
-    @extend_schema(methods=['put'],
+    @extend_schema(methods=['post'],
                    responses={201: None},
                    description="""
         Starts an upload session based on the Layer Upload Form.
@@ -136,7 +139,7 @@ class UploadViewSet(DynamicModelViewSet):
             'tif_file': tif_file
         ```
         """)
-    @action(detail=False, methods=['put'])
+    @action(detail=False, methods=['post'])
     def upload(self, request, format=None):
         user = request.user
         if not user or not user.is_authenticated:
@@ -171,6 +174,7 @@ class UploadViewSet(DynamicModelViewSet):
 
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
+    http_method_names = ['get', 'post']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadSizeLimit.objects.all()

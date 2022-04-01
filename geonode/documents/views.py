@@ -249,7 +249,7 @@ class DocumentUploadView(CreateView):
                     bbox = exif_metadata.get('bbox', None)
                     abstract = exif_metadata.get('abstract', None)
             except Exception:
-                logger.error("Exif extraction failed.")
+                logger.debug("Exif extraction failed.")
 
         if abstract:
             self.object.abstract = abstract

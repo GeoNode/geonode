@@ -18,6 +18,7 @@
 #########################################################################
 import os
 import time
+import shutil
 import logging
 import tempfile
 from unittest import mock
@@ -101,7 +102,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         try:
             cls.selenium.quit()
         except Exception as e:
-            logger.exception(e)
+            logger.debug(e)
         super().tearDownClass()
 
     def setUp(self):
@@ -109,6 +110,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.temp_folder = tempfile.mkdtemp(dir=CURRENT_LOCATION)
         self.session_id = None
         self.csrf_token = None
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_folder, ignore_errors=True)
+        return super().tearDown()
 
     def set_session_cookies(self, url=None):
         # selenium will set cookie domain based on current page domain
@@ -283,7 +288,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             if non_interactive:
                 params["non_interactive"] = 'true'
             logger.error(f" ---- UPLOAD URL: {url}")
-            response = self.client.put(url, data=params)
+            response = self.client.post(url, data=params)
 
         # Closes the files
         for spatial_file in spatial_files:
@@ -299,14 +304,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    @as_superuser
-    def test_live_login(self):
-        """
-        Try to login to Live Server using the integrated "selenium" framework
-        """
-        pass
-
-    def rest_upload_file_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
+    def rest_upload_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         assert authenticate(username=username, password=password)
@@ -336,7 +334,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             f"{reverse('uploads-list')}/",
             'upload/')
         logger.error(f" ---- UPLOAD URL: {url}")
-        response = self.client.put(url, data=params)
+        response = self.client.post(url, data=params)
 
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")

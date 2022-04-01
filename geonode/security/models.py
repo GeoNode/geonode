@@ -101,9 +101,7 @@ class PermissionLevelMixin:
         """
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
-        groups = get_groups_with_perms(
-            resource,
-            attach_perms=True)
+        groups = get_groups_with_perms(resource, attach_perms=True)
         if groups:
             for group in groups:
                 try:
@@ -133,6 +131,7 @@ class PermissionLevelMixin:
             except GroupProfile.DoesNotExist:
                 tb = traceback.format_exc()
                 logger.debug(tb)
+
         info = {
             'users': users,
             'groups': groups}
@@ -390,7 +389,7 @@ class PermissionLevelMixin:
         # default permissions for owner and owner's groups
         _owner = owner or self.owner
         user_groups = Group.objects.filter(
-            name__in=_owner.groupmember_set.all().values_list("group__slug", flat=True))
+            name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
 
         # Anonymous
         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
@@ -640,7 +639,7 @@ class PermissionLevelMixin:
             anonymous_group = Group.objects.get(name='anonymous')
             registered_members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
             user_groups = Group.objects.filter(
-                name__in=self.owner.groupmember_set.all().values_list("group__slug", flat=True))
+                name__in=self.owner.groupmember_set.values_list("group__slug", flat=True))
             member_group_perm, group_managers = self.get_group_managers(user_groups)
 
             if group_managers:

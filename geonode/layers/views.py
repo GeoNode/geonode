@@ -22,7 +22,6 @@ import json
 import shutil
 import decimal
 import logging
-import tempfile
 import warnings
 import traceback
 
@@ -97,7 +96,8 @@ from geonode.utils import (
     bbox_to_projection,
     build_social_links,
     GXPLayer,
-    GXPMap)
+    GXPMap,
+    mkdtemp)
 from geonode.geoserver.helpers import (
     ogc_server_settings,
     set_layer_style)
@@ -217,9 +217,7 @@ def layer_upload_metadata(request):
     form = NewLayerUploadForm(request.POST, request.FILES)
 
     if form.is_valid():
-
-        tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
-
+        tempdir = mkdtemp()
         relevant_files = _select_relevant_files(
             ['xml'],
             iter(request.FILES.values())
@@ -1003,7 +1001,6 @@ def layer_metadata(
             la.visible = form["visible"]
             la.display_order = form["display_order"]
             la.featureinfo_type = form["featureinfo_type"]
-
             la.save()
 
         if new_poc is not None or new_author is not None:
@@ -1034,7 +1031,7 @@ def layer_metadata(
             layer.metadata.add(new_m)
 
         up_sessions = UploadSession.objects.filter(layer=layer)
-        if up_sessions.count() > 0 and up_sessions[0].user != layer.owner:
+        if up_sessions.exists() and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)

@@ -160,13 +160,23 @@ class GroupProfile(models.Model):
     def member_queryset(self):
         return self.groupmember_set.all()
 
+    def get_members(self):
+        """
+        Returns a queryset of the group's members.
+        """
+        return get_user_model().objects.filter(
+            Q(id__in=self.member_queryset().filter(
+                role=GroupMember.MEMBER).values_list(
+                "user",
+                flat=True)))
+
     def get_managers(self):
         """
         Returns a queryset of the group's managers.
         """
         return get_user_model().objects.filter(
             Q(id__in=self.member_queryset().filter(
-                role='manager').values_list(
+                role=GroupMember.MANAGER).values_list(
                 "user",
                 flat=True)))
 
@@ -206,10 +216,9 @@ class GroupProfile(models.Model):
             raise ValueError("The invited user cannot be anonymous")
         _members = GroupMember.objects.filter(group=self, user=user)
         if _members.count():
-            for member in _members:
-                member.demote()
+            for _member in _members:
+                _member.delete()
                 user.groups.remove(self.group)
-                member.delete()
         else:
             logger.warning(f"The invited user \"{user.username}\" is not a member")
 

@@ -554,7 +554,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(
             GroupProfile.objects.filter(
-                id=self.bar.id).count() > 0)
+                id=self.bar.id).exists())
 
     def test_delete_group_view_no_perms(self):
         """

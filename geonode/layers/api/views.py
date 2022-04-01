@@ -39,12 +39,13 @@ class LayerViewSet(DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
+    http_method_names = ['get', 'patch', 'put']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, LayerPermissionsFilter
     ]
-    queryset = Layer.objects.all()
+    queryset = Layer.objects.all().order_by('-last_updated')
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination

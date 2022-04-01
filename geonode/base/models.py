@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import re
 import html
@@ -463,7 +464,6 @@ class _HierarchicalTagManager(_TaggableManager):
             if not isinstance(t, self.through.tag_model())
         ])
         tag_objs = set(tags) - str_tags
-        new_ids = set()
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         '''
@@ -472,11 +472,12 @@ class _HierarchicalTagManager(_TaggableManager):
         we can easily handle the concurrency.
         DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
         '''
+        existing = self.through.tag_model().objects.select_for_update().filter(
+            name__in=str_tags, **tag_kwargs
+        )
         with transaction.atomic():
-            existing = self.through.tag_model().objects.select_for_update().filter(
-                name__in=str_tags, **tag_kwargs
-            )
             tag_objs.update(existing)
+            new_ids = set()
             _new_keyword = str_tags - set(t.name for t in existing)
             for new_tag in list(_new_keyword):
                 new_tag = escape(new_tag)
@@ -556,7 +557,7 @@ class ThesaurusKeywordLabel(models.Model):
     """
 
     # read from the RDF file
-    lang = models.CharField(max_length=3)
+    lang = models.CharField(max_length=10)
     # read from the RDF file
     label = models.CharField(max_length=255)
     # note  = models.CharField(max_length=511)
@@ -620,7 +621,7 @@ class ThesaurusLabel(models.Model):
     Contains localized version of the thesaurus title
     """
     # read from the RDF file
-    lang = models.CharField(max_length=3)
+    lang = models.CharField(max_length=10)
     # read from the RDF file
     label = models.CharField(max_length=255)
 
@@ -1085,6 +1086,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         # Resource Updated
         _notification_sent = False
         _approval_status_changed = False
+
         if hasattr(self, 'class_name') and (self.pk is None or notify):
             if self.pk is None and (self.title or getattr(self, 'name', None)):
                 # Resource Created
@@ -1516,17 +1518,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Sets the center coordinates and zoom level in EPSG:4326
         """
-        bbox = self.ll_bbox_polygon
-        center_x, center_y = self.ll_bbox_polygon.centroid.coords
-        center = Point(center_x, center_y, srid=4326)
-        self.center_x, self.center_y = center.coords
-        try:
-            ext = bbox.extent
-            width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
-            height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
-            self.zoom = math.ceil(min(width_zoom, height_zoom))
-        except ZeroDivisionError:
-            pass
+        if self.ll_bbox_polygon and len(self.ll_bbox_polygon.centroid.coords) > 0:
+            bbox = self.ll_bbox_polygon.clone()
+            center_x, center_y = bbox.centroid.coords
+            center = Point(center_x, center_y, srid=4326)
+            self.center_x, self.center_y = center.coords
+            try:
+                ext = bbox.extent
+                width_zoom = math.log(360 / (ext[2] - ext[0]), 2)
+                height_zoom = math.log(360 / (ext[3] - ext[1]), 2)
+                self.zoom = math.ceil(min(width_zoom, height_zoom))
+            except ZeroDivisionError:
+                pass
 
     def download_links(self):
         """assemble download links for pycsw"""
@@ -1601,7 +1604,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if legend is None:
             return None
 
-        if legend.count() > 0:
+        if legend.exists():
             if not style_name:
                 return legend.first().url
             else:
@@ -1629,10 +1632,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _thumbnail_url = self.thumbnail_url or staticfiles.static(settings.MISSING_THUMBNAIL)
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
-        if local_thumbnails.count() > 0:
+        if local_thumbnails.exists():
             _thumbnail_url = add_url_params(
                 local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
-        elif remote_thumbnails.count() > 0:
+        elif remote_thumbnails.exists():
             _thumbnail_url = add_url_params(
                 remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
         return _thumbnail_url
@@ -1718,7 +1721,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             logger.error(
                 f'Error when generating the thumbnail for resource {self.id}. ({e})'
             )
-            logger.error(f'Check permissions for file {upload_path}.')
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
                 _thumbnail_url = staticfiles.static(settings.MISSING_THUMBNAIL)
