@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==8.2.0
-lxml==4.6.3
+lxml==4.8.0
 defusedxml==0.7.1
 psycopg2==2.8.6
 Django==2.2.24
@@ -53,18 +53,18 @@ django-tinymce==3.3.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
-oauthlib==3.1.1
-pyopenssl==20.0.1
+oauthlib==3.2.0
+pyopenssl==22.0.0
 
 # geopython dependencies
-pyproj==3.1.0
-OWSLib==0.24.1
+pyproj==3.3.0
+OWSLib==0.25.0
 pycsw==2.6.0
-SQLAlchemy==1.4.18 # required by PyCSW
-Shapely==1.7.1
+SQLAlchemy==1.4.32 # required by PyCSW
+Shapely==1.8.1.post1
 mercantile==1.2.1
-geoip2==4.2.0
-numpy==1.19.*
+geoip2==4.5.0
+numpy==1.22.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 

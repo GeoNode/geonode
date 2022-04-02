@@ -75,6 +75,7 @@ from geonode.settings import (
     OGC_SERVER,
     ASYNC_SIGNALS,
     MONITORING_ENABLED,
+    CELERY_BEAT_SCHEDULER
 )
 
 try:
@@ -217,27 +218,6 @@ def setup_geoserver(options):
             z.extractall(geoserver_dir)
 
         _configure_data_dir()
-
-
-def _robust_rmtree(path, logger=None, max_retries=5):
-    """Try to delete paths robustly .
-    Retries several times (with increasing delays) if an OSError
-    occurs.  If the final attempt fails, the Exception is propagated
-    to the caller. Taken from https://github.com/hashdist/hashdist/pull/116
-    """
-
-    for i in range(max_retries):
-        try:
-            shutil.rmtree(path)
-            return
-        except OSError:
-            if logger:
-                info(f'Unable to remove path: {path}')
-                info('Retrying after %d seconds' % i)
-            time.sleep(i)
-
-    # Final attempt, pass any Exceptions up to caller.
-    shutil.rmtree(path)
 
 
 def _configure_data_dir():
@@ -566,11 +546,8 @@ def start_django(options):
     sh(f'{settings} python -W ignore manage.py runserver {bind} {foreground}')
 
     if ASYNC_SIGNALS:
-        scheduler = '--statedb=worker.state -s celerybeat-schedule'
-        if 'django_celery_beat' in INSTALLED_APPS:
-            scheduler = '-s django_celery_beat.schedulers:DatabaseScheduler'
         sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
-            {scheduler} --loglevel=DEBUG \
+            --statedb=worker.state --scheduler={CELERY_BEAT_SCHEDULER} --loglevel=DEBUG \
             --concurrency=2 -n worker1@%h -f celery.log {foreground}")
         sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 

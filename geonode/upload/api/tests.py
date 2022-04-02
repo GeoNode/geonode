@@ -17,7 +17,7 @@
 #
 #########################################################################
 import os
-import time
+import shutil
 import logging
 import tempfile
 from unittest import mock
@@ -101,7 +101,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         try:
             cls.selenium.quit()
         except Exception as e:
-            logger.exception(e)
+            logger.debug(e)
         super().tearDownClass()
 
     def setUp(self):
@@ -109,6 +109,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.temp_folder = tempfile.mkdtemp(dir=CURRENT_LOCATION)
         self.session_id = None
         self.csrf_token = None
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_folder, ignore_errors=True)
+        return super().tearDown()
 
     def set_session_cookies(self, url=None):
         # selenium will set cookie domain based on current page domain
@@ -283,7 +287,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             if non_interactive:
                 params["non_interactive"] = 'true'
             logger.error(f" ---- UPLOAD URL: {url}")
-            response = self.client.put(url, data=params)
+            response = self.client.post(url, data=params)
 
         # Closes the files
         for spatial_file in spatial_files:
@@ -336,7 +340,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             f"{reverse('uploads-list')}/",
             'upload/')
         logger.error(f" ---- UPLOAD URL: {url}")
-        response = self.client.put(url, data=params)
+        response = self.client.post(url, data=params)
 
         try:
             logger.error(f" -- response: {response.status_code} / {response.json()}")
@@ -355,113 +359,113 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     """
     #     pass
 
-    @as_superuser
-    def test_live_uploads(self):
-        """
-        Ensure we can access the Live Server Uploads list.
-        """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.live_upload_file(fname)
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(data['success'])
+    # @as_superuser
+    # def test_live_uploads(self):
+    #     """
+    #     Ensure we can access the Live Server Uploads list.
+    #     """
+    #     # Try to upload a good raster file and check the session IDs
+    #     fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+    #     resp, data = self.live_upload_file(fname)
+    #     self.assertEqual(resp.status_code, 200)
+    #     self.assertTrue(data['success'])
 
-        headers = {
-            'X-CSRFToken': self.csrf_token,
-            'X-Requested-With': 'XMLHttpRequest',
-            'Cookie': f'csrftoken={self.csrf_token}; sessionid={self.session_id}'
-        }
+    #     headers = {
+    #         'X-CSRFToken': self.csrf_token,
+    #         'X-Requested-With': 'XMLHttpRequest',
+    #         'Cookie': f'csrftoken={self.csrf_token}; sessionid={self.session_id}'
+    #     }
 
-        url = urljoin(
-            settings.SITEURL,
-            f"{reverse('uploads-list')}.json")
-        response = self.selenium.request('GET', url, headers=headers)
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json()
-        self.assertEqual(len(response_data), 5)
-        total_uploads = response_data['total']
-        self.assertGreaterEqual(total_uploads, 1)
-        # Pagination
-        self.assertEqual(len(response_data['uploads']), 10)
-        logger.debug(response_data)
+    #     url = urljoin(
+    #         settings.SITEURL,
+    #         f"{reverse('uploads-list')}.json")
+    #     response = self.selenium.request('GET', url, headers=headers)
+    #     self.assertEqual(response.status_code, 200)
+    #     response_data = response.json()
+    #     self.assertEqual(len(response_data), 5)
+    #     total_uploads = response_data['total']
+    #     self.assertGreaterEqual(total_uploads, 1)
+    #     # Pagination
+    #     self.assertEqual(len(response_data['uploads']), 1)
+    #     logger.debug(response_data)
 
-        url = urljoin(
-            settings.SITEURL,
-            f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
-        response = self.selenium.request('GET', url, headers=headers)
-        self.assertEqual(response.status_code, 200)
-        upload_data = response.json()['upload']
-        self.assertIsNotNone(upload_data)
-        self.assertIn('relief_san_andres', upload_data['name'])
+    #     url = urljoin(
+    #         settings.SITEURL,
+    #         f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
+    #     response = self.selenium.request('GET', url, headers=headers)
+    #     self.assertEqual(response.status_code, 200)
+    #     upload_data = response.json()['upload']
+    #     self.assertIsNotNone(upload_data)
+    #     self.assertIn('relief_san_andres', upload_data['name'])
 
-        self.assertEqual(upload_data['state'], Upload.STATE_PENDING)
-        self.assertEqual(upload_data['progress'], 33.0)
+    #     self.assertEqual(upload_data['state'], Upload.STATE_PENDING)
+    #     self.assertEqual(upload_data['progress'], 33.0)
 
-        self.assertIsNone(upload_data['detail_url'])
-        self.assertIsNone(upload_data['resume_url'])
-        self.assertIsNotNone(upload_data['delete_url'])
+    #     self.assertIsNone(upload_data['detail_url'])
+    #     self.assertIsNone(upload_data['resume_url'])
+    #     self.assertIsNotNone(upload_data['delete_url'])
 
-        delete_url = urljoin(
-            settings.SITEURL,
-            f"{upload_data['delete_url']}"
-        )
+    #     delete_url = urljoin(
+    #         settings.SITEURL,
+    #         f"{upload_data['delete_url']}"
+    #     )
 
-        url = urljoin(
-            settings.SITEURL,
-            f"{reverse('data_upload')}?id={upload_data['import_id']}"
-        )
-        response = self.selenium.request('GET', url, headers=headers)
-        self.assertEqual(response.status_code, 200)
+    #     url = urljoin(
+    #         settings.SITEURL,
+    #         f"{reverse('data_upload')}?id={upload_data['import_id']}"
+    #     )
+    #     response = self.selenium.request('GET', url, headers=headers)
+    #     self.assertEqual(response.status_code, 200)
 
-        url = urljoin(
-            settings.SITEURL,
-            f"{self.do_upload_step('final')}?id={response_data['uploads'][0]['import_id']}")
-        response = self.selenium.request('GET', url, headers=headers)
-        self.assertEqual(response.status_code, 200)
+    #     url = urljoin(
+    #         settings.SITEURL,
+    #         f"{self.do_upload_step('final')}?id={response_data['uploads'][0]['import_id']}")
+    #     response = self.selenium.request('GET', url, headers=headers)
+    #     self.assertEqual(response.status_code, 200)
 
-        url = urljoin(
-            settings.SITEURL,
-            f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
-        for _cnt in range(10):
-            time.sleep(5.0)
-            response = self.selenium.request('GET', url, headers=headers)
-            self.assertEqual(response.status_code, 200)
-            upload_data = response.json()['upload']
-            if upload_data['state'] == Upload.STATE_PROCESSED and upload_data['detail_url']:
-                break
+    #     url = urljoin(
+    #         settings.SITEURL,
+    #         f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
+    #     for _cnt in range(10):
+    #         time.sleep(5.0)
+    #         response = self.selenium.request('GET', url, headers=headers)
+    #         self.assertEqual(response.status_code, 200)
+    #         upload_data = response.json()['upload']
+    #         if upload_data['state'] == Upload.STATE_PROCESSED and upload_data['detail_url']:
+    #             break
 
-        for _cnt in range(1, 10):
-            logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Layer configuration...")
-            if upload_data['state'] == Upload.STATE_PROCESSED:
-                break
-            time.sleep(10.0)
+    #     for _cnt in range(1, 10):
+    #         logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Layer configuration...")
+    #         if upload_data['state'] == Upload.STATE_PROCESSED:
+    #             break
+    #         time.sleep(10.0)
 
-        if upload_data['state'] == Upload.STATE_PROCESSED:
-            self.assertGreaterEqual(upload_data['progress'], 80.0)
-            self.assertIsNotNone(upload_data['detail_url'])
-            self.assertIsNone(upload_data['resume_url'])
-            self.assertIsNone(upload_data['delete_url'])
-        elif upload_data['state'] == Upload.STATE_PENDING:
-            self.assertGreaterEqual(upload_data['progress'], 33.0)
-            self.assertIsNone(upload_data['detail_url'])
-            self.assertIsNone(upload_data['resume_url'])
-            self.assertIsNotNone(upload_data['delete_url'])
+    #     if upload_data['state'] == Upload.STATE_PROCESSED:
+    #         self.assertGreaterEqual(upload_data['progress'], 80.0)
+    #         self.assertIsNotNone(upload_data['detail_url'])
+    #         self.assertIsNone(upload_data['resume_url'])
+    #         self.assertIsNone(upload_data['delete_url'])
+    #     elif upload_data['state'] == Upload.STATE_PENDING:
+    #         self.assertGreaterEqual(upload_data['progress'], 33.0)
+    #         self.assertIsNone(upload_data['detail_url'])
+    #         self.assertIsNone(upload_data['resume_url'])
+    #         self.assertIsNotNone(upload_data['delete_url'])
 
-        response = self.selenium.request('GET', delete_url, headers=headers)
-        self.assertEqual(response.status_code, 200)
+    #     response = self.selenium.request('GET', delete_url, headers=headers)
+    #     self.assertEqual(response.status_code, 200)
 
-        url = urljoin(
-            settings.SITEURL,
-            f"{reverse('uploads-list')}.json"
-        )
-        response = self.selenium.request('GET', url, headers=headers)
-        self.assertEqual(response.status_code, 200)
-        response_data = response.json()
-        self.assertEqual(len(response_data), 5)
-        self.assertEqual(response_data['total'], total_uploads - 1)
-        # Pagination
-        self.assertEqual(len(response_data['uploads']), 10)
-        logger.debug(response_data)
+    #     url = urljoin(
+    #         settings.SITEURL,
+    #         f"{reverse('uploads-list')}.json"
+    #     )
+    #     response = self.selenium.request('GET', url, headers=headers)
+    #     self.assertEqual(response.status_code, 200)
+    #     response_data = response.json()
+    #     self.assertEqual(len(response_data), 5)
+    #     self.assertEqual(response_data['total'], total_uploads - 1)
+    #     # Pagination
+    #     self.assertEqual(len(response_data['uploads']), 10)
+    #     logger.debug(response_data)
 
     def test_rest_uploads(self):
         """
@@ -718,7 +722,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)
-
             mocked_validation_error.assert_called_once_with(expected_error)
             mocked_uploaded_file.assert_not_called()
 
@@ -862,13 +865,8 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.patch(url, data={"max_size": 5242880})
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
-        # Response Content
-        size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some-size-limit')
-        self.assertEqual(size_limit['max_size'], 5242880)
-        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_patch_size_limit_anonymous_user(self):
         url = reverse('upload-size-limits-detail', args=('some-size-limit',))
@@ -889,13 +887,8 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.put(url, data={"slug": "some-size-limit", "max_size": 5242880})
 
         # Assertions
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
-        # Response Content
-        size_limit = response.json()['upload-size-limit']
-        self.assertEqual(size_limit['slug'], 'some-size-limit')
-        self.assertEqual(size_limit['max_size'], 5242880)
-        self.assertEqual(size_limit['max_size_label'], '5.0\xa0MB')
 
     def test_put_size_limit_anonymous_user(self):
         url = reverse('upload-size-limits-detail', args=('some-size-limit',))
@@ -943,7 +936,7 @@ class UploadSizeLimitTests(APITestCase):
         response = self.client.delete(url)
 
         # Assertions
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.wsgi_request.user, self.admin)
 
     def test_delete_size_limit_anonymous_user(self):

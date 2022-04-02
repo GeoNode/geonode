@@ -388,7 +388,7 @@ if has_notifications:
             """
             # with queued notifications we can detect notification types easier
             if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
-                self.assertTrue(NoticeQueueBatch.objects.all().count() > 0)
+                self.assertTrue(NoticeQueueBatch.objects.all().exists())
 
                 user.noticesetting_set.get(notice_type__label=notification_name)
                 # we're looking for specific notification type/user combination, which is probably

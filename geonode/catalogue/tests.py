@@ -16,30 +16,51 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
-from geonode.layers.populate_layers_data import create_layer_data
-from geonode.catalogue.views import csw_global_dispatch
 import logging
-from django.contrib.auth.models import AnonymousUser
 import xml.etree.ElementTree as ET
 
-from geonode.layers.models import Layer
-from geonode.tests.base import GeoNodeBaseTestSupport
-from django.test import RequestFactory
-from geonode.catalogue import get_catalogue
-from geonode.catalogue.models import catalogue_post_save
 from django.db.models import Q
+from django.test import RequestFactory
+from geonode.layers.models import Layer
+from geonode.catalogue import get_catalogue
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.catalogue.models import catalogue_post_save
+
+from geonode.catalogue.views import csw_global_dispatch
+from geonode.layers.populate_layers_data import create_layer_data
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
 
 logger = logging.getLogger(__name__)
 
 
 class CatalogueTest(GeoNodeBaseTestSupport):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
     def setUp(self):
         super().setUp()
+        self.request = self.__request_factory_single(123)
+        create_layer_data()
+        self.user = "admin"
+        self.passwd = "admin"
 
     def test_get_catalog(self):
         """Tests the get_catalogue function works."""
-
         c = get_catalogue()
         self.assertIsNotNone(c)
 
@@ -61,15 +82,6 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         if len(record.identification.otherconstraints) > 0:
             self.assertEqual(record.identification.otherconstraints[0], layer.raw_constraints_other)
 
-
-class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
-    def setUp(self):
-        super().setUp()
-        self.request = self.__request_factory_single(123)
-        create_layer_data()
-        self.user = "admin"
-        self.passwd = "admin"
-
     def test_given_a_simple_request_should_return_200(self):
         actual = csw_global_dispatch(self.request)
         self.assertEqual(200, actual.status_code)
@@ -80,7 +92,7 @@ class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
         response = csw_global_dispatch(request)
         root = ET.fromstring(response.content)
         actual = len(list(root))
-        self.assertEqual(1, actual)
+        self.assertEqual(int(actual), 1)
 
     def test_given_a_request_for_a_single_layer_should_return_empty_value_in_xml_with_layer_filter(self):
         layer = Layer.objects.first()
@@ -88,21 +100,21 @@ class TestCswGlobalDispatch(GeoNodeBaseTestSupport):
         response = csw_global_dispatch(request, self.layer_filter)
         root = ET.fromstring(response.content)
         actual = len(list(root))
-        self.assertEqual(0, actual)
+        self.assertEqual(int(actual), 0)
 
     def test_given_a_request_for_multiple_layer_should_return_empty_value_in_xml_with_layer_filter(self):
         request = self.__request_factory_multiple()
         response = csw_global_dispatch(request, self.layer_filter)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
-        self.assertEqual(0, int(actual))
+        self.assertEqual(int(actual), 0)
 
     def test_given_a_request_for_multiple_layer_should_return_multiple_value_in_xml_with_layer_filter(self):
         request = self.__request_factory_multiple()
         response = csw_global_dispatch(request, self.layer_filter_multiple)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
-        self.assertEqual(2, int(actual))
+        self.assertGreaterEqual(int(actual), 2)
 
     @staticmethod
     def layer_filter(layer):

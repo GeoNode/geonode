@@ -665,7 +665,7 @@ def gs_slurp(
                 raise
 
     # filter out layers already registered in geonode
-    layer_names = Layer.objects.all().values_list('alternate', flat=True)
+    layer_names = Layer.objects.values_list('alternate', flat=True)
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
@@ -740,7 +740,7 @@ def gs_slurp(
                 layer.save(notify=True)
 
             # Fix metadata links if the ip has changed
-            if layer.link_set.metadata().count() > 0:
+            if layer.link_set.metadata().exists():
                 if not created and settings.SITEURL not in layer.link_set.metadata()[0].url:
                     layer.link_set.metadata().delete()
                     layer.save()
@@ -950,7 +950,7 @@ def set_attributes(
                 if _gs_attrs.count() == 1:
                     la = _gs_attrs.get()
                 else:
-                    if _gs_attrs.count() > 0:
+                    if _gs_attrs.exists():
                         _gs_attrs.delete()
                     la = Attribute.objects.create(layer=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0

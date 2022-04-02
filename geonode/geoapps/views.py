@@ -70,7 +70,7 @@ def _resolve_geoapp(request, id, permission='base.change_resourcebase',
     '''
     Resolve the GeoApp by the provided typename and check the optional permission.
     '''
-    if GeoApp.objects.filter(urlsuffix=id).count() > 0:
+    if GeoApp.objects.filter(urlsuffix=id).exists():
         key = 'urlsuffix'
     else:
         key = 'pk'

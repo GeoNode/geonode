@@ -51,9 +51,10 @@ from geonode.security.utils import (
 from guardian.shortcuts import get_objects_for_user
 
 from .permissions import (
+    IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
-    IsSelfOrAdminOrReadOnly,
+    IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter
 )
 from .serializers import (
@@ -84,19 +85,18 @@ class UserViewSet(DynamicModelViewSet):
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
 
     def get_queryset(self):
         """
-        Filter objects so a user only sees his own stuff.
-        If user is admin, let him see all.
+        Filters and sorts users.
         """
-        if self.request.user.is_superuser or self.request.user.is_staff:
-            queryset = get_user_model().objects.all()
-        else:
-            queryset = get_user_model().objects.filter(id=self.request.user.id)
+        queryset = get_user_model().objects.all()
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
@@ -132,10 +132,13 @@ class GroupViewSet(DynamicModelViewSet):
     API endpoint that allows gropus to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticated, ]
-    queryset = GroupProfile.objects.all()
+    permission_classes = [IsAuthenticatedOrReadOnly, IsManagerEditOrAdmin, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
+    queryset = GroupProfile.objects.all()
 
     @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Group members.")
@@ -167,6 +170,9 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin,
     API endpoint that lists regions.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
     pagination_class = GeoNodeApiPagination
@@ -177,6 +183,9 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     API endpoint that lists hierarchical keywords.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -187,6 +196,9 @@ class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     API endpoint that lists Thesaurus keywords.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = ThesaurusKeyword.objects.all()
     serializer_class = ThesaurusKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -197,6 +209,9 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveMode
     API endpoint that lists categories.
     """
     permission_classes = [AllowAny, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     queryset = TopicCategory.objects.all()
     serializer_class = TopicCategorySerializer
     pagination_class = GeoNodeApiPagination
@@ -208,14 +223,16 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [AllowAny, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
     serializer_class = OwnerSerializer
     pagination_class = GeoNodeApiPagination
 
     def get_queryset(self):
         """
-        Filter users with atleast a resource
+        Filter users with at least one resource
         """
-
         queryset = get_user_model().objects.exclude(pk=-1)
         filter_options = {}
         if self.request.query_params:
@@ -239,7 +256,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, ResourceBasePermissionsFilter, FavoriteFilter
     ]
-    queryset = ResourceBase.objects.all()
+    queryset = ResourceBase.objects.all().order_by('-last_updated')
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 

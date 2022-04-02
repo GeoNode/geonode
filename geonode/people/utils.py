@@ -28,7 +28,7 @@ def get_default_user():
     """
     superusers = get_user_model().objects.filter(
         is_superuser=True).order_by('id')
-    if superusers.count() > 0:
+    if superusers.exists():
         # Return the first created superuser
         return superusers[0]
     else:

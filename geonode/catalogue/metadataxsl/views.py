@@ -21,7 +21,7 @@ import traceback
 import logging
 
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 
 from django.conf import settings
 from django.http import HttpResponse
