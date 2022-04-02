@@ -92,7 +92,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         response = csw_global_dispatch(request)
         root = ET.fromstring(response.content)
         actual = len(list(root))
-        self.assertEqual(1, actual)
+        self.assertEqual(int(actual), 1)
 
     def test_given_a_request_for_a_single_layer_should_return_empty_value_in_xml_with_layer_filter(self):
         layer = Layer.objects.first()
@@ -100,21 +100,21 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         response = csw_global_dispatch(request, self.layer_filter)
         root = ET.fromstring(response.content)
         actual = len(list(root))
-        self.assertEqual(0, actual)
+        self.assertEqual(int(actual), 0)
 
     def test_given_a_request_for_multiple_layer_should_return_empty_value_in_xml_with_layer_filter(self):
         request = self.__request_factory_multiple()
         response = csw_global_dispatch(request, self.layer_filter)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
-        self.assertEqual(0, int(actual))
+        self.assertEqual(int(actual), 0)
 
     def test_given_a_request_for_multiple_layer_should_return_multiple_value_in_xml_with_layer_filter(self):
         request = self.__request_factory_multiple()
         response = csw_global_dispatch(request, self.layer_filter_multiple)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
-        self.assertGreaterEqual(2, int(actual))
+        self.assertGreaterEqual(int(actual), 2)
 
     @staticmethod
     def layer_filter(layer):
