@@ -184,4 +184,4 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.delete(url, format='json')
         response = self.client.get(
             f"{url}?include[]=data", format='json')
-        self.assertEqual(response.status_code, 404)  # 404 - Not Found
+        self.assertEqual(response.status_code, 200)  # 200 - OK
