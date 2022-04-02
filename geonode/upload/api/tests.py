@@ -17,7 +17,6 @@
 #
 #########################################################################
 import os
-import time
 import shutil
 import logging
 import tempfile
