@@ -388,9 +388,9 @@ class PermissionLevelMixin:
             implicit_perms = get_perms(user, self)
             if hasattr(self.get_real_instance(), 'storeType'):
                 # filter out implicit permissions unappliable to "subtype != 'vector'"
-                if self.storeType == 'coverageStore':
+                if self.get_real_instance().storeType == 'coverageStore':
                     implicit_perms = list(set(implicit_perms) - set(LAYER_EDIT_DATA_PERMISSIONS))
-                elif self.storeType == 'dataStore':
+                elif self.get_real_instance().storeType == 'dataStore':
                     implicit_perms = list(set(implicit_perms) - set(LAYER_ADMIN_PERMISSIONS))
 
             resource_perms = user_resource_perms.union(
