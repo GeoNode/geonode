@@ -1075,7 +1075,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
-    elif layer.subtype in ["coverageStore"]:
+    elif layer.subtype in ["raster"]:
         typename = layer.alternate if layer.alternate else layer.typename
         dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:
