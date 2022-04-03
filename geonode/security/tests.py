@@ -62,11 +62,9 @@ from geonode.geoserver.helpers import gs_slurp
 from geonode.geoserver.upload import geoserver_upload
 from geonode.layers.populate_layers_data import create_layer_data
 
-from .utils import (
+from geonode.geoserver.security import (
     _get_gf_services,
     get_user_geolimits,
-    get_visible_resources,
-    get_users_with_perms,
     get_geofence_rules,
     get_geofence_rules_count,
     get_highest_priority,
@@ -76,6 +74,12 @@ from .utils import (
     sync_resources_with_guardian
 )
 
+from .utils import (
+    get_users_with_perms,
+    get_visible_resources,
+)
+
+from .permissions import PermSpec
 
 logger = logging.getLogger(__name__)
 
