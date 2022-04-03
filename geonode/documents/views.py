@@ -19,12 +19,12 @@
 import json
 import logging
 import traceback
-from itertools import chain
 import warnings
 
 from guardian.shortcuts import get_objects_for_user
 
 from django.shortcuts import render
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
@@ -56,6 +56,10 @@ from geonode.base.views import batch_modify
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.security.utils import get_visible_resources
+
+from geonode.security.utils import (
+    get_user_visible_groups,
+    AdvancedSecurityWorkflowManager)
 
 from dal import autocomplete
 
@@ -198,9 +202,13 @@ class DocumentUploadView(CreateView):
         return context
 
     def form_invalid(self, form):
+        messages.error(self.request, f"{form.errors}")
         if self.request.GET.get('no__redirect', False):
+            plaintext_errors = []
+            for field in form.errors.values():
+                plaintext_errors.append(field.data[0].message)
             out = {'success': False}
-            out['message'] = ""
+            out['message'] = '.'.join(plaintext_errors)
             status_code = 400
             return HttpResponse(
                 json.dumps(out),
@@ -211,7 +219,8 @@ class DocumentUploadView(CreateView):
             form.title = None
             form.doc_file = None
             form.doc_url = None
-            return self.render_to_response(self.get_context_data(form=form))
+            return self.render_to_response(
+                self.get_context_data(request=self.request, form=form))
 
     def form_valid(self, form):
         """
@@ -229,7 +238,7 @@ class DocumentUploadView(CreateView):
 
         self.object.save()
         form.save_many2many()
-        self.object.set_permissions(form.cleaned_data['permissions'])
+        self.object.set_permissions(form.cleaned_data['permissions'], created=True)
 
         abstract = None
         date = None
@@ -531,35 +540,12 @@ def document_metadata(
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                document.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    document_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                document_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, document):
+        document_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, document):
+        document_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, document)
     return render(request, template, context={

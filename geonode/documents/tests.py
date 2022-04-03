@@ -22,12 +22,9 @@ This file demonstrates writing tests using the unittest module. These will pass
 when you run "manage.py test".
 
 """
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 import os
 import io
 import json
-
 import gisdata
 from django.urls import reverse
 from django.conf import settings
@@ -40,8 +37,6 @@ from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_perms, get_anonymous_user
 
-from .forms import DocumentCreateForm
-
 from geonode.groups.models import (
     GroupProfile,
     GroupMember)
@@ -52,15 +47,29 @@ from geonode.thumbs.utils import get_thumbs
 from geonode.base.models import License, Region
 from geonode.documents import DocumentsAppConfig
 from geonode.documents.forms import DocumentFormMixin
+from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
-from geonode.base.populate_test_data import create_models
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document, DocumentResourceLink
+
+from geonode.base.populate_test_data import (
+    all_public,
+    create_models,
+    remove_models)
+
+from .forms import DocumentCreateForm
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
 
     type = 'document'
+
+    fixtures = [
+        'initial_data.json',
+        'group_test_data.json',
+        'default_oauth_apps.json'
+    ]
+
     perm_spec = {
         "users": {
             "admin": [
@@ -68,6 +77,17 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 "change_resourcebase_permissions",
                 "view_resourcebase"]},
         "groups": {}}
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -286,7 +306,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
         response = self.client.get(reverse('document_upload'))
-        self.assertTrue('Upload Documents' in ensure_string(response.content))
+        self.assertEqual(response.status_code, 405)
 
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
@@ -299,14 +319,14 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         self.client.login(username='admin', password='admin')
         response = self.client.post(
-            reverse('document_upload'),
+            f"{reverse('document_upload')}?no__redirect=true",
             data={
                 'file': f,
                 'title': 'uploaded_document',
                 'q': m.id,
-                'type': 'map',
+                'type': 'document',
                 'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
-            follow=True)
+        )
         self.assertEqual(response.status_code, 200)
 
     # Permissions Tests
@@ -315,7 +335,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Verify that the set_document_permissions view is behaving as expected
         """
         # Get a document to work with
-        document = Document.objects.all()[0]
+        document = Document.objects.first()
 
         # Set the Permissions
         document.set_permissions(self.perm_spec)
@@ -751,6 +771,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
+
     fixtures = [
         'initial_data.json',
         'group_test_data.json',
@@ -770,7 +791,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             'image/gif')
         self.test_doc = Document.objects.create(doc_file=f, owner=self.not_admin, title='test', is_approved=True)
         self.perm_spec = {"users": {"AnonymousUser": []}}
-        self.dock_link_url = reverse('document_link', args=(self.test_doc.pk,))
+        self.doc_link_url = reverse('document_link', args=(self.test_doc.pk,))
 
     def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
         """
@@ -867,9 +888,9 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)
         # Get link as Anonymous user
-        response = self.client.get(self.dock_link_url)
+        response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 401)
         # Access resource with user logged-in
         self.client.login(username=self.not_admin.username, password='very-secret')
-        response = self.client.get(self.dock_link_url)
+        response = self.client.get(self.doc_link_url)
         self.assertEqual(response.status_code, 200)

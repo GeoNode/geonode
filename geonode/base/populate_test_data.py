@@ -29,17 +29,17 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.gis.geos import Polygon
-from django.contrib.auth.models import Permission, Group
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from geonode import geoserver  # noqa
 from geonode.maps.models import Map
 from geonode.layers.models import Layer
 from geonode.compat import ensure_string
-from geonode.base.models import ResourceBase, TopicCategory
 from geonode.documents.models import Document
+from geonode.base.models import ResourceBase, TopicCategory
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
@@ -152,6 +152,7 @@ def create_models(type=None, integration=False):
     obj_ids = []
     with transaction.atomic():
         map_data, user_data, people_data, layer_data, document_data = create_fixtures()
+        registeredmembers_group, created = Group.objects.get_or_create(name='registered-members')
         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
         cont_group, created = Group.objects.get_or_create(name='contributors')
         perm = Permission.objects.get(codename='add_resourcebase')
@@ -189,6 +190,7 @@ def create_models(type=None, integration=False):
                     title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = md
                     logger.debug(f"[SetUp] Add map {title}")
                     m = Map(
+                        uuid=str(uuid4()),
                         title=title,
                         abstract=abstract,
                         zoom=4,
@@ -203,7 +205,7 @@ def create_models(type=None, integration=False):
                         metadata_only=title == 'map metadata true'
                     )
                     m.save()
-                    m.set_default_permissions()
+                    m.set_default_permissions(owner=user)
                     m.clear_dirty_state()
                     obj_ids.append(m.id)
                     for kw in kws:
@@ -215,6 +217,7 @@ def create_models(type=None, integration=False):
                     title, abstract, kws, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), category = dd
                     logger.debug(f"[SetUp] Add document {title}")
                     m = Document(
+                        uuid=str(uuid4()),
                         title=title,
                         abstract=abstract,
                         owner=user,
@@ -226,7 +229,7 @@ def create_models(type=None, integration=False):
                         metadata_only=title == 'doc metadata true'
                     )
                     m.save()
-                    m.set_default_permissions()
+                    m.set_default_permissions(owner=user)
                     m.clear_dirty_state()
                     obj_ids.append(m.id)
                     for kw in kws:
@@ -247,7 +250,7 @@ def create_models(type=None, integration=False):
                         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                         srid='EPSG:4326',
                         uuid=str(uuid4()),
-                        owner=owner,
+                        owner=user,
                         temporal_extent_start=start,
                         temporal_extent_end=end,
                         date=start,
@@ -322,7 +325,6 @@ def create_single_layer(name, keywords=None, owner=None, group=None, **kwargs):
         admin.set_password('admin')
         admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
-    user = get_user_model().objects.get(username='AnonymousUser')
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
@@ -335,7 +337,7 @@ def create_single_layer(name, keywords=None, owner=None, group=None, **kwargs):
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
         uuid=str(uuid4()),
-        owner=owner or user,
+        owner=owner or admin,
         temporal_extent_start=test_datetime,
         temporal_extent_end=test_datetime,
         date=start,
@@ -363,18 +365,18 @@ def create_single_map(name, keywords=None, owner=None):
         admin.set_password('admin')
         admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
-    user = get_user_model().objects.get(username='AnonymousUser')
     ll = (name, 'lorem ipsum', name, f'{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',))
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = ll
     m = Map(
+        uuid=str(uuid4()),
         title=title,
         abstract=abstract,
         zoom=4,
         projection='EPSG:4326',
         center_x=42,
         center_y=-73,
-        owner=owner or user,
+        owner=owner or admin,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
@@ -385,7 +387,7 @@ def create_single_map(name, keywords=None, owner=None):
     if isinstance(keywords, list):
         m = add_keywords_to_resource(m, keywords)
 
-    m.set_default_permissions()
+    m.set_default_permissions(owner=owner or admin)
     m.clear_dirty_state()
     return m
 
@@ -398,15 +400,15 @@ def create_single_doc(name, keywords=None, owner=None):
         admin.set_password('admin')
         admin.save()
     test_datetime = datetime.strptime('2020-01-01', '%Y-%m-%d')
-    user = get_user_model().objects.get(username='AnonymousUser')
     dd = (name, 'lorem ipsum', name, f'{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',))
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = dd
     logger.debug(f"[SetUp] Add document {title}")
     m = Document(
+        uuid=str(uuid4()),
         title=title,
         abstract=abstract,
-        owner=owner or user,
+        owner=owner or admin,
         bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
         srid='EPSG:4326',
@@ -418,7 +420,7 @@ def create_single_doc(name, keywords=None, owner=None):
     if isinstance(keywords, list):
         m = add_keywords_to_resource(m, keywords)
 
-    m.set_default_permissions()
+    m.set_default_permissions(owner=owner or admin)
     m.clear_dirty_state()
     return m
 

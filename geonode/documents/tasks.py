@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import os
 
 from django.core.files.storage import default_storage as storage
@@ -39,7 +38,7 @@ logger = get_task_logger(__name__)
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -73,6 +72,7 @@ def create_document_thumbnail(self, object_id):
             document_location = storage.path(document.doc_file.name)
         except NotImplementedError as e:
             logger.debug(e)
+
             document_location = storage.url(document.doc_file.name)
 
         try:
@@ -94,7 +94,7 @@ def create_document_thumbnail(self, object_id):
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
         except Exception as e:
-            logger.error(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
+            logger.debug(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
             thumbnail_content = generate_thumbnail_content(document.find_placeholder())
     except Exception as e:
         logger.error(f"Could not generate thumbnail: {e}")
@@ -120,7 +120,7 @@ def create_document_thumbnail(self, object_id):
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -136,7 +136,7 @@ def delete_orphaned_document_files(self):
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 2, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)

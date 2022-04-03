@@ -745,7 +745,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     extra_metadata_help_text = _(
         'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
-    uuid = models.CharField(max_length=36)
+    uuid = models.CharField(max_length=36, unique=True)
     title = models.CharField(_('title'), max_length=255, help_text=_(
         'name by which the cited resource is known'))
     abstract = models.TextField(
@@ -1128,12 +1128,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # Update workflow permissions
         if _approval_status_changed:
-            self.set_permissions()
+            self.set_permissions(approval_status_changed=True)
 
     def delete(self, notify=True, *args, **kwargs):
         """
         Send a notification when a layer, map or document is deleted
         """
+        from geonode.security.utils import ResourceManager
+        ResourceManager.remove_permissions(instance=self.get_real_instance())
+
         if hasattr(self, 'class_name') and notify:
             notice_type_label = f'{self.class_name.lower()}_deleted'
             recipients = get_notification_recipients(notice_type_label, resource=self)
@@ -1372,14 +1375,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.dirty_state = True
             ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
-    def set_processing_state(self, state):
-        if state == "PROCESSED":
-            self.clear_dirty_state()
-
     def clear_dirty_state(self):
         if self.dirty_state:
             self.dirty_state = False
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+
+    def set_processing_state(self, state):
+        if state == "PROCESSED":
+            self.clear_dirty_state()
 
     @property
     def processed(self):
@@ -1395,6 +1398,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return ''
         except Exception:
             return ''
+
+    def get_absolute_url(self):
+        try:
+            return self.get_real_instance().get_absolute_url()
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     def set_bbox_polygon(self, bbox, srid):
         """
@@ -1648,7 +1658,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = get_unique_upload_path(self, filename)
-
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1696,7 +1705,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
-                if thumb_size(_upload_path) == 0:
+                if thumb_size(upload_path) == 0:
                     raise Exception("Generated thumbnail image is zero size")
 
                 # should only have one 'Thumbnail' link
@@ -1711,6 +1720,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         link_type='image',
                     )
                 )
+                # Store the new url and path
                 self.thumbnail_url = url
                 obj.url = url
                 obj.save()
@@ -1822,14 +1832,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except ContactRole.DoesNotExist:
             the_ma = None
         return the_ma
-
-    def handle_moderated_uploads(self):
-        if settings.ADMIN_MODERATE_UPLOADS:
-            self.is_approved = False
-            self.was_approved = False
-        if settings.RESOURCE_PUBLISHING:
-            self.is_published = False
-            self.was_published = False
 
     def add_missing_metadata_author_or_poc(self):
         """

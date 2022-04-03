@@ -46,6 +46,7 @@ from geonode.maps.models import Map
 from geonode.security.utils import (
     get_geoapp_subtypes,
     get_visible_resources,
+    get_user_visible_groups,
     get_resources_with_perms)
 
 from guardian.shortcuts import get_objects_for_user
@@ -138,7 +139,17 @@ class GroupViewSet(DynamicModelViewSet):
     ]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
-    queryset = GroupProfile.objects.all()
+
+    def get_queryset(self):
+        """
+        Filters the public groups and private ones the current user is member of.
+        """
+        metadata_author_groups = get_user_visible_groups(
+            self.request.user, include_public_invite=True)
+        if not isinstance(metadata_author_groups, list):
+            metadata_author_groups = list(metadata_author_groups.all())
+        queryset = GroupProfile.objects.filter(id__in=[_g.id for _g in metadata_author_groups])
+        return queryset.order_by("title")
 
     @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
                    description="API endpoint allowing to retrieve the Group members.")
@@ -367,24 +378,26 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             })
         return Response({"resource_types": resource_types})
 
-    @extend_schema(methods=['get'], responses={200: PermSpecSerialiazer()},
+    @extend_schema(methods=['get', 'put', 'patch', 'delete'],
+                   request=PermSpecSerialiazer(),
+                   responses={200: None},
                    description="""
-        Gets an object's the permission levels based on the perm_spec JSON.
+        Sets an object's the permission levels based on the perm_spec JSON.
 
         the mapping looks like:
         ```
         {
-            'users': [
+            'users': {
                 'AnonymousUser': ['view'],
                 <username>: ['perm1','perm2','perm3'],
                 <username2>: ['perm1','perm2','perm3']
                 ...
-            ],
-            'groups': [
+            },
+            'groups': {
                 <groupname>: ['perm1','perm2','perm3'],
                 <groupname2>: ['perm1','perm2','perm3'],
                 ...
-            ]
+            }
         }
         ```
         """)
@@ -444,8 +457,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["post"],
         permission_classes=[
             IsAuthenticated,
-        ],
-    )
+        ])
     def set_thumbnail_from_bbox(self, request, resource_id):
         import traceback
         from django.utils.datastructures import MultiValueDictKeyError

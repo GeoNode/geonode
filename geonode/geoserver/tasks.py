@@ -32,6 +32,7 @@ from geonode.upload import signals
 from geonode.layers.models import (
     Layer, UploadSession)
 from geonode.base.models import (
+    Link,
     ResourceBase)
 
 from .helpers import (
@@ -140,8 +141,8 @@ def geoserver_create_style(
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True and instance:
+            f = None
             if sld_file and os.path.exists(sld_file) and os.access(sld_file, os.R_OK):
-                f = None
                 if os.path.isfile(sld_file):
                     try:
                         f = open(sld_file)
@@ -169,6 +170,10 @@ def geoserver_create_style(
                         set_styles(instance, gs_catalog)
                         try:
                             gs_catalog.delete(_default_style)
+                            Link.objects.filter(
+                                resource=instance.resourcebase_ptr,
+                                name='Legend',
+                                url__contains=f'STYLE={_default_style.name}').delete()
                         except Exception as e:
                             logger.exception(e)
                 else:
@@ -315,7 +320,7 @@ def geoserver_finalize_upload(
     expires=3600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 0, 'countdown': 10},
+    retry_kwargs={'max_retries': 3, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -344,7 +349,7 @@ def geoserver_post_save_layers(
     expires=30,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 0, 'countdown': 10},
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)
@@ -377,7 +382,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     expires=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
+    retry_kwargs={'max_retries': 1, 'countdown': 10},
     retry_backoff=True,
     retry_backoff_max=700,
     retry_jitter=True)

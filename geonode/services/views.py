@@ -47,7 +47,7 @@ from .models import HarvestJob
 from .models import Service
 from . import tasks
 
-logger = logging.getLogger("geonode.core.layers.views")
+logger = logging.getLogger(__name__)
 
 
 @requires_csrf_token

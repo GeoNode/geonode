@@ -39,7 +39,7 @@ from geonode.base.models import ResourceBase, resourcebase_post_save, Link
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.maps.signals import map_changed_signal
 from geonode.maps.models import Map
-from geonode.security.utils import remove_object_permissions
+from geonode.security.utils import ResourceManager
 
 logger = logging.getLogger(__name__)
 
@@ -265,7 +265,7 @@ def update_documents_extent(sender, **kwargs):
 
 
 def pre_delete_document(instance, sender, **kwargs):
-    remove_object_permissions(instance.get_self_resource())
+    ResourceManager.remove_permissions(instance.uuid, instance=instance.get_self_resource())
 
 
 signals.pre_save.connect(pre_save_document, sender=Document)

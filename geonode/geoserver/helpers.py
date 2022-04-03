@@ -23,37 +23,37 @@ import time
 import uuid
 import json
 import errno
+import typing
 import logging
 import zipfile
 import datetime
 import tempfile
 import traceback
+import dataclasses
 
 from shutil import copyfile
-
 from itertools import cycle
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 from os.path import basename, splitext, isfile
-from threading import local
 from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
+import xml.etree.ElementTree as ET
 from dialogos.models import Comment
 
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ImproperlyConfigured
+from django.utils import timezone
 from django.db import transaction
 from django.contrib.staticfiles.templatetags import staticfiles
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.db.models.signals import pre_delete
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
-from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 from geoserver.catalog import Catalog, FailedRequestError, ConflictingDataError
-from geonode.catalogue.models import catalogue_post_save
 from geoserver.resource import FeatureType, Coverage
 from geoserver.store import CoverageStore, DataStore, datastore_from_index, \
     coveragestore_from_index, wmsstore_from_index
@@ -61,23 +61,50 @@ from geoserver.support import DimensionInfo
 from geoserver.workspace import Workspace
 from gsimporter import Client
 from lxml import etree, objectify
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from owslib.wcs import WebCoverageService
 from owslib.wms import WebMapService
+
 from geonode import GeoNodeException
-from geonode.utils import http_client
+from geonode.base.models import Link
+from geonode.base.models import ResourceBase
+from geonode.security.views import _perms_info_json
+from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Layer, Attribute, Style
 from geonode.layers.enumerations import LAYER_ATTRIBUTE_NUMERIC_DATA_TYPES
-from geonode.security.views import _perms_info_json
-from geonode.security.utils import set_geowebcache_invalidate_cache
-from geonode.base.models import ResourceBase
 
-import xml.etree.ElementTree as ET
+from geonode.utils import (
+    OGC_Servers_Handler,
+    http_client,
+    get_legend_url,
+    is_monochromatic_image,
+    set_resource_default_links)
 
+from .security import set_geowebcache_invalidate_cache
 
 logger = logging.getLogger(__name__)
 
 temp_style_name_regex = r'[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}_ms_.*'
+
+LAYER_SUBTYPES = {
+    "dataStore": "vector",
+    "coverageStore": "raster",
+    "remoteStore": "remote",
+    "vectorTimeSeries": "vector_time"
+}
+
+WPS_ACCEPTABLE_FORMATS = [
+    ('application/json', 'vector'),
+    ('application/arcgrid', 'raster'),
+    ('image/tiff', 'raster'),
+    ('image/png', 'raster'),
+    ('image/jpeg', 'raster'),
+    ('application/wfs-collection-1.0', 'vector'),
+    ('application/wfs-collection-1.1', 'vector'),
+    ('application/zip', 'vector'),
+    ('text/csv', 'vector')
+]
+
 
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
@@ -184,13 +211,6 @@ _style_templates = dict(
     point=_add_sld_boilerplate(_point_template)
 )
 
-LAYER_SUBTYPES = {
-    "dataStore": "vector",
-    "coverageStore": "raster",
-    "remoteStore": "remote",
-    "vectorTimeSeries": "vector_time"
-}
-
 STYLES_VERSION = {
     "1.0.0": "sld10",
     "1.1.0": "sld11"
@@ -284,9 +304,7 @@ def get_sld_for(gs_catalog, layer):
         gs_layer = gs_catalog.get_layer(layer.name)
         if gs_layer.default_style:
             gs_style = gs_layer.default_style.sld_body
-            set_layer_style(layer,
-                            layer.alternate,
-                            gs_style)
+            set_layer_style(layer, layer.alternate, gs_style)
         name = gs_layer.default_style.name
         _default_style = gs_layer.default_style
     except Exception as e:
@@ -299,9 +317,7 @@ def get_sld_for(gs_catalog, layer):
             if gs_layer:
                 if gs_layer.default_style:
                     gs_style = gs_layer.default_style.sld_body
-                    set_layer_style(layer,
-                                    layer.alternate,
-                                    gs_style)
+                    set_layer_style(layer, layer.alternate, gs_style)
                 name = gs_layer.default_style.name
                 if name:
                     break
@@ -329,7 +345,7 @@ def get_sld_for(gs_catalog, layer):
         res.fetch()
         ft = res.store.get_resources(name=res.name)
         ft.fetch()
-        for attr in ft.dom.find("attributes").getchildren():
+        for attr in ft.dom.find("attributes"):
             attr_binding = attr.find("binding")
             if "jts.geom" in attr_binding.text:
                 if "Polygon" in attr_binding.text:
@@ -423,6 +439,10 @@ def set_layer_style(saved_layer, title, sld, base_file=None):
         for _s in _old_styles:
             try:
                 gs_catalog.delete(_s)
+                Link.objects.filter(
+                    resource=saved_layer.resourcebase_ptr,
+                    name='Legend',
+                    url__contains=f'STYLE={_s.name}').delete()
             except Exception as e:
                 logger.debug(e)
         set_styles(saved_layer, gs_catalog)
@@ -467,6 +487,11 @@ def cascading_delete(layer_name=None, catalog=None):
             return None
         else:
             raise e
+    finally:
+        # Let's reset the connections first
+        cat._cache.clear()
+        cat.reset()
+        cat.reload()
 
     if resource is None:
         # If there is no associated resource,
@@ -511,8 +536,7 @@ def cascading_delete(layer_name=None, catalog=None):
         try:
             cat.delete(resource, recurse=True)  # This may fail
         except Exception:
-            cat._cache.clear()
-            cat.reset()
+            pass
 
         if store.resource_type == 'dataStore' and 'dbtype' in store.connection_parameters and \
                 store.connection_parameters['dbtype'] == 'postgis':
@@ -588,10 +612,10 @@ def gs_slurp(
         permissions=None,
         execute_signals=False):
     """Configure the layers available in GeoServer in GeoNode.
-
        It returns a list of dictionaries with the name of the layer,
        the result of the operation and the errors and traceback if it failed.
     """
+
     if console is None:
         console = open(os.devnull, 'w')
 
@@ -715,17 +739,6 @@ def gs_slurp(
                     uuid=str(uuid.uuid4())
                 )
                 created = True
-            bbox = resource.native_bbox
-            ll_bbox = resource.latlon_bbox
-            try:
-                layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
-            except GeoNodeException as e:
-                if not ll_bbox:
-                    raise
-                else:
-                    logger.exception(e)
-                    layer.srid = 'EPSG:4326'
-            layer.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
@@ -1152,17 +1165,13 @@ def set_styles(layer, gs_catalog):
     logger.debug(" -- Resource Links[Legend link]...")
     try:
         from geonode.base.models import Link
-        from geonode.utils import get_legend_url
-
         layer_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
         for style in set(list(layer.styles.all()) + [layer.default_style, ]):
             if style:
                 style_name = os.path.basename(
                     urlparse(style.sld_url).path).split('.')[0]
                 legend_url = get_legend_url(layer, style_name)
-                if layer_legends.filter(resource=layer.resourcebase_ptr,
-                                        name='Legend',
-                                        url=legend_url).count() < 2:
+                if layer_legends.filter(resource=layer.resourcebase_ptr, name='Legend', url=legend_url).count() < 2:
                     Link.objects.update_or_create(
                         resource=layer.resourcebase_ptr,
                         name='Legend',
@@ -1284,7 +1293,6 @@ GEOSERVER_LAYER_TYPES = {
 
 def cleanup(name, uuid):
     """Deletes GeoServer and Catalogue records for a given name.
-
        Useful to clean the mess when something goes terribly wrong.
        It also verifies if the Django record existed, in which case
        it performs no action.
@@ -1490,151 +1498,6 @@ def get_store(cat, name, workspace=None):
         raise FailedRequestError(f"No store found named: {name}")
 
 
-class ServerDoesNotExist(Exception):
-    pass
-
-
-class OGC_Server(object):
-
-    """
-    OGC Server object.
-    """
-
-    def __init__(self, ogc_server, alias):
-        self.alias = alias
-        self.server = ogc_server
-
-    def __getattr__(self, item):
-        return self.server.get(item)
-
-    @property
-    def credentials(self):
-        """
-        Returns a tuple of the server's credentials.
-        """
-        creds = namedtuple('OGC_SERVER_CREDENTIALS', ['username', 'password'])
-        return creds(username=self.USER, password=self.PASSWORD)
-
-    @property
-    def datastore_db(self):
-        """
-        Returns the server's datastore dict or None.
-        """
-        if self.DATASTORE and settings.DATABASES.get(self.DATASTORE, None):
-            datastore_dict = settings.DATABASES.get(self.DATASTORE, dict())
-            return datastore_dict
-        else:
-            return dict()
-
-    @property
-    def ows(self):
-        """
-        The Open Web Service url for the server.
-        """
-        location = self.PUBLIC_LOCATION if self.PUBLIC_LOCATION else self.LOCATION
-        return self.OWS_LOCATION if self.OWS_LOCATION else urljoin(location, 'ows')
-
-    @property
-    def rest(self):
-        """
-        The REST endpoint for the server.
-        """
-        return urljoin(self.LOCATION, 'rest') if not self.REST_LOCATION else self.REST_LOCATION
-
-    @property
-    def public_url(self):
-        """
-        The global public endpoint for the server.
-        """
-        return self.LOCATION if not self.PUBLIC_LOCATION else self.PUBLIC_LOCATION
-
-    @property
-    def internal_ows(self):
-        """
-        The Open Web Service url for the server used by GeoNode internally.
-        """
-        location = self.LOCATION
-        return urljoin(location, 'ows')
-
-    @property
-    def hostname(self):
-        return urlsplit(self.LOCATION).hostname
-
-    @property
-    def netloc(self):
-        return urlsplit(self.LOCATION).netloc
-
-    def __str__(self):
-        return str(self.alias)
-
-
-class OGC_Servers_Handler:
-
-    """
-    OGC Server Settings Convenience dict.
-    """
-
-    def __init__(self, ogc_server_dict):
-        self.servers = ogc_server_dict
-        # FIXME(Ariel): Are there better ways to do this without involving
-        # local?
-        self._servers = local()
-
-    def ensure_valid_configuration(self, alias):
-        """
-        Ensures the settings are valid.
-        """
-        try:
-            server = self.servers[alias]
-        except KeyError:
-            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
-
-        if 'PRINTNG_ENABLED' in server:
-            raise ImproperlyConfigured("The PRINTNG_ENABLED setting has been removed, use 'PRINT_NG_ENABLED' instead.")
-
-    def ensure_defaults(self, alias):
-        """
-        Puts the defaults into the settings dictionary for a given connection where no settings is provided.
-        """
-        try:
-            server = self.servers[alias]
-        except KeyError:
-            raise ServerDoesNotExist(f"The server {alias} doesn't exist")
-
-        server.setdefault('BACKEND', 'geonode.geoserver')
-        server.setdefault('LOCATION', 'http://localhost:8080/geoserver/')
-        server.setdefault('USER', 'admin')
-        server.setdefault('PASSWORD', 'geoserver')
-        server.setdefault('DATASTORE', '')
-
-        for option in ['MAPFISH_PRINT_ENABLED', 'PRINT_NG_ENABLED', 'GEONODE_SECURITY_ENABLED',
-                       'GEOFENCE_SECURITY_ENABLED', 'BACKEND_WRITE_ENABLED']:
-            server.setdefault(option, True)
-
-        for option in ['WMST_ENABLED', 'WPS_ENABLED']:
-            server.setdefault(option, False)
-
-    def __getitem__(self, alias):
-        if hasattr(self._servers, alias):
-            return getattr(self._servers, alias)
-
-        self.ensure_defaults(alias)
-        self.ensure_valid_configuration(alias)
-        server = self.servers[alias]
-        server = OGC_Server(alias=alias, ogc_server=server)
-        setattr(self._servers, alias, server)
-        return server
-
-    def __setitem__(self, key, value):
-        setattr(self._servers, key, value)
-
-    def __iter__(self):
-        return iter(self.servers)
-
-    def all(self):
-        return [self[alias] for alias in self]
-
-
 def fetch_gs_resource(instance, values, tries):
     _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
     try:
@@ -1668,11 +1531,11 @@ def fetch_gs_resource(instance, values, tries):
                            owner=instance.owner))
     else:
         msg = f"There isn't a geoserver resource for this layer: {instance.name}"
-        logger.exception(msg)
+        logger.debug(msg)
         if tries >= _max_tries:
+            # raise GeoNodeException(msg)
             return (values, None)
         gs_resource = None
-        time.sleep(5)
     return (values, gs_resource)
 
 
@@ -1685,6 +1548,7 @@ def get_wms():
 
 def wps_execute_layer_attribute_statistics(layer_name, field):
     """Derive aggregate statistics from WPS endpoint"""
+
     # generate statistics using WPS
     url = urljoin(ogc_server_settings.LOCATION, 'ows')
 
@@ -2046,14 +1910,6 @@ def _dump_image_spec(request_body, image_spec):
         return f"Unable to dump image_spec for request: {request_body}"
 
 
-def _fixup_ows_url(thumb_spec):
-    # @HACK - for whatever reason, a map's maplayers ows_url contains only /geoserver/wms
-    # so rendering of thumbnails fails - replace those uri's with full geoserver URL
-    gspath = f"\"{ogc_server_settings.public_url}"  # this should be in img src attributes
-    repl = f"\"{ogc_server_settings.LOCATION}"
-    return re.sub(gspath, repl, thumb_spec)
-
-
 def mosaic_delete_first_granule(cat, layer):
     # - since GeoNode will uploade the first granule again through the Importer, we need to /
     #   delete the one created by the gs_config
@@ -2113,7 +1969,6 @@ def sync_instance_with_geoserver(
     Synchronizes the Django Instance with GeoServer layers.
     """
     from geonode.geoserver.signals import geoserver_post_save_complete
-    from geonode.utils import is_monochromatic_image, set_resource_default_links
 
     updatebbox = kwargs.get('updatebbox', True)
     updatemetadata = kwargs.get('updatemetadata', True)
@@ -2143,37 +1998,41 @@ def sync_instance_with_geoserver(
     #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
     _is_remote_instance = hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']
 
+    # Let's reset the connections first
+    gs_catalog._cache.clear()
+    gs_catalog.reset()
+
     gs_resource = None
     if not _is_remote_instance:
         values = None
         _tries = 0
-        _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
+        _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
 
         try:
             # If the store in None then it's a new instance from an upload,
             # only in this case run the geoserver_upload method
-            if kwargs.get('overwrite', False) or len(getattr(instance, 'store', '')) == 0:
+            if getattr(instance, 'overwrite', False):
                 base_file, info = instance.get_base_file()
 
                 # There is no need to process it if there is no file.
-                if base_file is None:
-                    return
-                from geonode.geoserver.upload import geoserver_upload
-                gs_name, workspace, values, gs_resource = geoserver_upload(
-                    instance,
-                    base_file.file.path,
-                    instance.owner,
-                    instance.name,
-                    overwrite=True,
-                    title=instance.title,
-                    abstract=instance.abstract,
-                    charset=instance.charset
-                )
+                if base_file:
+                    from geonode.geoserver.upload import geoserver_upload
+                    gs_name, workspace, values, gs_resource = geoserver_upload(
+                        instance,
+                        base_file.file.path,
+                        instance.owner,
+                        instance.name,
+                        overwrite=True,
+                        title=instance.title,
+                        abstract=instance.abstract,
+                        charset=instance.charset
+                    )
 
             values, gs_resource = fetch_gs_resource(instance, values, _tries)
             while not gs_resource and _tries < _max_tries:
                 values, gs_resource = fetch_gs_resource(instance, values, _tries)
                 _tries += 1
+                time.sleep(5)
 
             # Get metadata links
             metadata_links = []
@@ -2300,18 +2159,15 @@ def sync_instance_with_geoserver(
                     _invalidate_geowebcache_layer(instance.alternate)
                 except Exception:
                     pass
-            else:
-                return None
         except Exception as e:
             raise GeoNodeException(e)
 
-        # Refreshing layer links
-        logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
-        try:
-            _prune = (_is_remote_instance or gs_resource is not None)
-            set_resource_default_links(instance, instance, prune=_prune)
-        except Exception as e:
-            logger.exception(e)
+    # Refreshing layer links
+    logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
+    try:
+        set_resource_default_links(instance, instance, prune=_is_remote_instance)
+    except Exception as e:
+        logger.exception(e)
 
     # Refreshing CSW records
     logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
@@ -2324,6 +2180,89 @@ def sync_instance_with_geoserver(
     geoserver_post_save_complete.send(
         sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
     return instance
+
+
+def write_uploaded_files_to_disk(target_dir, files):
+    result = []
+    for django_file in files:
+        path = os.path.join(target_dir, django_file.name)
+        with open(path, 'wb') as fh:
+            for chunk in django_file.chunks():
+                fh.write(chunk)
+        result = path
+    return result
+
+
+def select_relevant_files(allowed_extensions, files):
+    """Filter the input files list for relevant files only
+
+    Relevant files are those whose extension is in the ``allowed_extensions``
+    iterable.
+
+    :param allowed_extensions: list of strings with the extensions to keep
+    :param files: list of django files with the files to be filtered
+    """
+    from geonode.upload.files import get_scan_hint
+
+    result = []
+    if files:
+        for django_file in files:
+            _django_file_name = django_file if isinstance(django_file, str) else django_file.name
+            extension = os.path.splitext(_django_file_name)[-1].lower()[1:]
+            if extension in allowed_extensions or get_scan_hint(allowed_extensions):
+                already_selected = _django_file_name in (f if isinstance(f, str) else f.name for f in result)
+                if not already_selected:
+                    result.append(django_file)
+    return result
+
+
+@dataclasses.dataclass()
+class SpatialFilesLayerType:
+    base_file: str
+    scan_hint: str
+    spatial_files: typing.List
+    dataset_type: typing.Optional[str] = None
+
+
+def get_spatial_files_dataset_type(allowed_extensions, files, charset='UTF-8') -> SpatialFilesLayerType:
+    """Reutnrs 'vector' or 'raster' whether a file from the allowed extensins has been identified.
+    """
+    from geonode.upload.files import get_scan_hint, scan_file
+
+    allowed_file = select_relevant_files(allowed_extensions, files)
+    if not allowed_file or len(allowed_file) != 1:
+        return None
+    base_file = allowed_file[0]
+    scan_hint = get_scan_hint(allowed_extensions)
+    spatial_files = scan_file(
+        base_file,
+        scan_hint=scan_hint,
+        charset=charset
+    )
+    the_dataset_type = get_dataset_type(spatial_files)
+    if the_dataset_type not in (FeatureType.resource_type, Coverage.resource_type):
+        return None
+    spatial_files_type = SpatialFilesLayerType(
+        base_file=base_file,
+        scan_hint=scan_hint,
+        spatial_files=spatial_files,
+        dataset_type='vector' if the_dataset_type == FeatureType.resource_type else 'raster')
+
+    return spatial_files_type
+
+
+def get_dataset_type(spatial_files):
+    """Returns 'FeatureType.resource_type' or 'Coverage.resource_type' accordingly to the provided SpatialFiles
+    """
+    if spatial_files.archive is not None:
+        the_dataset_type = FeatureType.resource_type
+    else:
+        the_dataset_type = spatial_files[0].file_type.dataset_type
+    return the_dataset_type
+
+
+def wps_format_is_supported(_format, dataset_type):
+    return (_format, dataset_type) in WPS_ACCEPTABLE_FORMATS
 
 
 def _get_time_regex(spatial_files, base_file_name):

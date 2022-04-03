@@ -23,7 +23,7 @@ import json
 import logging
 import traceback
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from os.path import isfile
 
 from urllib.parse import (
@@ -776,9 +776,7 @@ def get_capabilities(request, layerid=None, user=None,
                 access_token = None
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-                layercap = get_layer_capabilities(layer,
-                                                  access_token=access_token,
-                                                  tolerant=tolerant)
+                layercap = get_layer_capabilities(layer, access_token=access_token, tolerant=tolerant)
                 if layercap is not None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         namespaces = {'wms': 'http://www.opengis.net/wms',
