@@ -508,7 +508,7 @@ def file_upload(filename,
                     f, name=f'{assigned_name or valid_name}.{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
-                the_file = upload_session.layerfile_set.all()[0].file.name
+                the_file = upload_session.layerfile_set.first().file.name
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Getting a bounding box

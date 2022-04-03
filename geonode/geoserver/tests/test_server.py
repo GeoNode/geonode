@@ -563,7 +563,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
         Ensures the layer_style_manage route returns a 200.
         """
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
 
         bob = get_user_model().objects.get(username='bobby')
         assign_perm('change_layer_style', bob, layer)
@@ -1053,7 +1053,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-        instance = Layer.objects.all()[0]
+        instance = Layer.objects.first()
         bbox = instance.bbox
         srid = instance.srid
         height = 512

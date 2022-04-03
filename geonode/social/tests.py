@@ -63,7 +63,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         # A new activity should be created for each Layer.
         self.assertNotEqual(Action.objects.all().count(), Layer.objects.all().count())
 
-        action = Action.objects.all()[0]
+        action = Action.objects.first()
         layer = action.action_object
 
         # The activity should read:
@@ -78,7 +78,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         self.assertIsNone(action.target)
 
         # Test the  activity_item template tag
-        template_tag = activity_item(Action.objects.all()[0])
+        template_tag = activity_item(Action.objects.first())
 
         self.assertEqual(template_tag.get('username'), action.actor.username)
         self.assertEqual(template_tag.get('object_name'), layer.name)
@@ -91,7 +91,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         layer.delete()
 
         # <user> deleted <object_name>
-        action = Action.objects.all()[0]
+        action = Action.objects.first()
         data = action.data
         if isinstance(data, (str, bytes)):
             data = json.loads(data)
@@ -103,7 +103,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         self.assertIsNone(action.target)
 
         # Test the activity_item template tag
-        action = Action.objects.all()[0]
+        action = Action.objects.first()
         template_tag = activity_item(action)
 
         # Make sure the 'delete' class is returned
@@ -114,7 +114,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('verb'), _('deleted'))
 
         content_type = ContentType.objects.get_for_model(Layer)
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         comment = Comment(
             author=self.user,
             content_type=content_type,
@@ -122,7 +122,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
             comment="This is a cool layer.")
         comment.save()
 
-        action = Action.objects.all()[0]
+        action = Action.objects.first()
         data = action.data
         if isinstance(data, (str, bytes)):
             data = json.loads(data)

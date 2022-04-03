@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import sys
 import logging
 
@@ -28,9 +27,8 @@ from urllib.parse import urljoin
 
 from django.urls import reverse
 from django.core.files import File
-from django.conf.urls import url
 from django.contrib.auth import get_user_model
-from rest_framework.test import APITestCase, URLPatternsTestCase
+from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -61,7 +59,7 @@ logger = logging.getLogger(__name__)
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
 
-class BaseApiTests(APITestCase, URLPatternsTestCase):
+class BaseApiTests(APITestCase):
 
     fixtures = [
         'initial_data.json',
@@ -70,18 +68,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         "test_thesaurus.json"
     ]
 
-    from geonode.urls import urlpatterns
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import layer_acls, resolve_user
-        urlpatterns += [
-            url(r'^acls/?$', layer_acls, name='layer_acls'),
-            url(r'^acls_dep/?$', layer_acls, name='layer_acls_dep'),
-            url(r'^resolve_user/?$', resolve_user, name='layer_resolve_user'),
-            url(r'^resolve_user_dep/?$', resolve_user, name='layer_resolve_user_dep'),
-        ]
-
     def setUp(self):
+        self.maxDiff = None
         create_models(b'document')
         create_models(b'map')
         create_models(b'layer')
@@ -102,8 +90,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 7)
-            self.assertEqual(len(response.data['group_profiles']), 7)
+            self.assertEqual(response.data['total'], 4)
+            self.assertEqual(len(response.data['group_profiles']), 4)
+            self.assertTrue(all([_g['access'] != 'private' for _g in response.data['group_profiles']]))
 
             # Admin can access all groups
             self.assertTrue(self.client.login(username='admin', password='admin'))
@@ -112,8 +101,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 7)
-            self.assertEqual(len(response.data['group_profiles']), 7)
+            self.assertEqual(response.data['total'], 6)
+            self.assertEqual(len(response.data['group_profiles']), 6)
 
             # Bobby can access public groups and the ones he is member of
             self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -123,8 +112,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 7)
-            self.assertEqual(len(response.data['group_profiles']), 7)
+            self.assertEqual(response.data['total'], 5)
+            self.assertEqual(len(response.data['group_profiles']), 5)
             self.assertTrue(any([_g['slug'] == 'priv_1' for _g in response.data['group_profiles']]))
 
             url = reverse('group-profiles-detail', kwargs={'pk': priv_1.pk})
@@ -671,9 +660,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             f"{url}?filter{{category.identifier}}=elevation", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(response.data['total'], 6)
         # Pagination
-        self.assertEqual(len(response.data['resources']), 9)
+        self.assertEqual(len(response.data['resources']), 6)
 
         # Extent Filter
         response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90", format='json')
@@ -838,7 +827,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         """
         url = urljoin(f"{reverse('base-resources-list')}/", 'resource_types/')
         response = self.client.get(url, format='json')
-        r_type_names = [item['name'] for item in response.data['resource_types']]
+        r_types = [item for item in response.data['resource_types']]
+        r_type_names = [r_type['name'] for r_type in r_types]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
         self.assertTrue('layer' in r_type_names)
@@ -1011,6 +1001,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 8)
 
+        # Owners Filtering
+        response = self.client.get(f"{url}?filter{{username.icontains}}=bobby", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
+
     def test_categories_list(self):
         """
         Ensure we can access the list of categories.
@@ -1034,6 +1029,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Categories Filtering
+        response = self.client.get(f"{url}?filter{{identifier.icontains}}=biota", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
 
     def test_regions_list(self):
         """
@@ -1059,6 +1059,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], Region.objects.count())
 
+        # Regions Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+
     def test_keywords_list(self):
         """
         Ensure we can access the list of keywords.
@@ -1082,6 +1087,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Keywords Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
 
     def test_tkeywords_list(self):
         """
@@ -1203,7 +1213,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         Given a logged User and an existing dataset, should raise a ThumbnailException.
         """
         # Admin
-        self.client.login(username="admin", password="admin")
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         dataset_id = Layer.objects.first().resourcebase_ptr_id
         url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
         payload = {

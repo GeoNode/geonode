@@ -1948,7 +1948,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     defaults=dict(
                         extension=ext,
                         mime=mime,
-                   )
+                    )
                 )
 
         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL

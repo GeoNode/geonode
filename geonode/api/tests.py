@@ -72,7 +72,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         client is not logged in
         """
 
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         layer.set_permissions(self.perm_spec)
 
         resp = self.api_client.get(self.list_url)
@@ -245,7 +245,7 @@ class OAuthApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)
 
             perm_spec = {"users": {"admin": ['view_resourcebase']}, "groups": {}}
-            layer = Layer.objects.all()[0]
+            layer = Layer.objects.first()
             layer.set_permissions(perm_spec)
             resp = self.api_client.get(self.list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)['objects']), 7)

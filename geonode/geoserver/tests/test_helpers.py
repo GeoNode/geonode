@@ -74,7 +74,7 @@ class HelperTest(GeoNodeBaseTestSupport):
         Ensures the layer_style_manage route returns a 200.
         """
         admin = get_user_model().objects.get(username="admin")
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         logger.debug(Layer.objects.all())
         self.assertIsNotNone(layer)
 
