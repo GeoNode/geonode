@@ -130,12 +130,12 @@ def get_users_with_perms(obj):
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
-    # include explicit permissions appliable to "subtype == 'vector'"
-    if obj.subtype == 'vector':
+    # include explicit permissions appliable to "store_type == 'dataStore'"
+    if obj.store_type == 'dataStore':
         PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
         for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
             permissions[perm.id] = perm.codename
-    elif obj.subtype == 'raster':
+    elif obj.store_type == 'coverageStore':
         PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
         for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
             permissions[perm.id] = perm.codename
@@ -445,13 +445,13 @@ class AdvancedSecurityWorkflowManager:
         admin_perms = []
         if _resource.polymorphic_ctype:
             _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
-            _resource_subtype = _resource.subtype
+            _resource_subtype = _resource.store_type
             view_perms = VIEW_PERMISSIONS.copy()
             if _resource_type in DOWNLOADABLE_RESOURCES:
                 view_perms += DOWNLOAD_PERMISSIONS.copy()
 
             admin_perms = ADMIN_PERMISSIONS.copy()
-            if _resource.polymorphic_ctype.name == 'dataset':
+            if _resource.polymorphic_ctype.name == 'layer':
                 if _resource_subtype in DATA_EDITABLE_RESOURCES_SUBTYPES:
                     admin_perms += LAYER_EDIT_DATA_PERMISSIONS.copy()
                 if _resource_subtype in DATA_STYLABLE_RESOURCES_SUBTYPES:
@@ -738,7 +738,7 @@ class ResourceManager:
                     _dataset = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
                     if not _dataset:
                         try:
-                            _dataset = _resource.dataset if hasattr(_resource, "dataset") else None
+                            _dataset = _resource.layer if hasattr(_resource, "layer") else None
                         except Exception:
                             _dataset = None
                     if _dataset:
@@ -829,10 +829,10 @@ class ResourceManager:
                             anonymous_user = "AnonymousUser" if "AnonymousUser" in _perm_spec['users'] else get_anonymous_user()
                             anonymous_group = Group.objects.get(name='anonymous')
                             for perm in _perm_spec['users'][anonymous_user]:
-                                if _resource_type == 'dataset' and perm in (
+                                if _resource_type == 'layer' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
-                                    assign_perm(perm, anonymous_group, _resource.dataset)
+                                    assign_perm(perm, anonymous_group, _resource.layer)
                                 elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
@@ -842,10 +842,10 @@ class ResourceManager:
                                 _user = get_user_model().objects.get(username=user)
                                 if user != "AnonymousUser" and user != get_anonymous_user():
                                     for perm in perms:
-                                        if _resource_type == 'dataset' and perm in (
+                                        if _resource_type == 'layer' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
                                                 'add_dataset', 'change_dataset', 'delete_dataset'):
-                                            assign_perm(perm, _user, _resource.dataset)
+                                            assign_perm(perm, _user, _resource.layer)
                                         elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
 
@@ -854,10 +854,10 @@ class ResourceManager:
                             for group, perms in _perm_spec['groups'].items():
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
-                                    if _resource_type == 'dataset' and perm in (
+                                    if _resource_type == 'layer' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _group, _resource.dataset)
+                                        assign_perm(perm, _group, _resource.layer)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
 
@@ -868,10 +868,10 @@ class ResourceManager:
                                 anonymous_user = "AnonymousUser" if "AnonymousUser" in _perm_spec['users'] else get_anonymous_user()
                                 perms = _perm_spec['users'][anonymous_user]
                                 for perm in perms:
-                                    if _resource_type == 'dataset' and perm in (
+                                    if _resource_type == 'layer' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _user, _resource.dataset)
+                                        assign_perm(perm, _user, _resource.layer)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
                     else:
