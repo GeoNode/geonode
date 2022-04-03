@@ -644,7 +644,8 @@ class AdvancedSecurityWorkflowManager:
                 _resource.is_published = False
                 _resource.was_published = False
 
-                _resource.get_real_instance_class().objects.filter(
+                from geonode.base.models import ResourceBase
+                ResourceBase.objects.filter(
                     uuid=_resource.uuid).update(
                         is_approved=False, was_approved=False,
                         is_published=False, was_published=False)
