@@ -35,7 +35,6 @@ from django.test.utils import override_settings
 
 from guardian.shortcuts import (
     assign_perm,
-    remove_perm,
     get_anonymous_user)
 
 from geonode import geoserver
@@ -993,6 +992,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(geofence_rules_count, 0)
 
         layer = Dataset.objects.get(name='san_andres_y_providencia_poi')
+        # removing duplicates
+        while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
+            Dataset.objects.filter(alternate=layer.alternate).last().delete()
+        layer = Dataset.objects.get(alternate=layer.alternate)
         layer.set_default_permissions(owner=bobby)
         check_dataset(layer)
         geofence_rules_count = get_geofence_rules_count()
@@ -1019,7 +1022,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             'application/vnd.ogc.se_xml;charset=UTF-8'
         )
 
-        # test WMS with authenticated user that has access to the Layer
+        # test WMS with authenticated user that has access to the Dataset
         response = requests.get(url, auth=HTTPBasicAuth(username=settings.OGC_SERVER['default']['USER'], password=settings.OGC_SERVER['default']['PASSWORD']))
         self.assertTrue(response.status_code, 200)
         self.assertEqual(
@@ -1101,6 +1104,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # Get a Dataset object to work with
         layer = Dataset.objects.first()
+        # removing duplicates
+        while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
+            Dataset.objects.filter(alternate=layer.alternate).last().delete()
+        layer = Dataset.objects.get(alternate=layer.alternate)
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -1165,6 +1172,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # Get a layer to work with
         layer = Dataset.objects.first()
+        # removing duplicates
+        while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
+            Dataset.objects.filter(alternate=layer.alternate).last().delete()
+        layer = Dataset.objects.get(alternate=layer.alternate)
 
         # FIXME Test a comprehensive set of permissions specifications
 
@@ -1180,7 +1191,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the Permissions
         layer.set_permissions(self.perm_spec)
 
-        # Test that the Permissions for anonymous user is are set
+        # Test that the Permissions for anonymous user are un-set
         self.assertFalse(
             self.anonymous_user.has_perm(
                 'view_resourcebase',
@@ -1276,6 +1287,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # Test with a Dataset object
         layer = Dataset.objects.first()
+        # removing duplicates
+        while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
+            Dataset.objects.filter(alternate=layer.alternate).last().delete()
+        layer = Dataset.objects.get(alternate=layer.alternate)
         layer.set_default_permissions()
         # Test that the anonymous user can read
         self.assertTrue(
@@ -1323,8 +1338,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # removing duplicates
         while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
             Dataset.objects.filter(alternate=layer.alternate).last().delete()
+        layer = Dataset.objects.get(alternate=layer.alternate)
         layer.set_default_permissions()
-        # verify bobby has view/change permissions on it but not manage
+        # verify bobby has view/change and manage permissions on it
         self.assertTrue(
             bob.has_perm(
                 'change_resourcebase_permissions',
@@ -1346,19 +1362,19 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 layer.get_self_resource()))
 
         response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         layer.set_permissions({'users': {'AnonymousUser': []}, 'groups': []})
         anonymous_group = Group.objects.get(name='anonymous')
         response = self.client.get(reverse('dataset_embed', args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (401, 403))
+        self.assertTrue(response.status_code in (401, 403), response.status_code)
 
         # 2. change_resourcebase
         # 2.1 has not change_resourcebase: verify that bobby cannot access the
         # layer replace page
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
         # 2.2 has change_resourcebase: verify that bobby can access the layer
         # replace page
         layer.set_permissions({'users': {'bob': ['change_resourcebase']}, 'groups': []})
@@ -1367,13 +1383,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'change_resourcebase',
                 layer.get_self_resource()))
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
 
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that bobby cannot access the
         # layer delete page
         response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         layer.set_permissions({'users': {'bob': ['change_resourcebase', 'delete_resourcebase']}, 'groups': []})
@@ -1382,13 +1398,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'delete_resourcebase',
                 layer.get_self_resource()))
         response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
 
         # 4. change_resourcebase_metadata
         # 4.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
         response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
         # 4.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         layer.set_permissions({'users': {'bob': ['change_resourcebase', 'change_resourcebase_metadata', 'delete_resourcebase']}, 'groups': []})
@@ -1397,7 +1413,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 'change_resourcebase_metadata',
                 layer.get_self_resource()))
         response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.status_code)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             perms = get_users_with_perms(layer)
@@ -1422,7 +1438,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend
             response = self.client.get(reverse('dataset_style_manage', args=(layer.alternate,)))
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200, response.status_code)
         # 7.2 has change_dataset_style: verify that bobby can access the
         # change layer style page
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1433,18 +1449,22 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                     'change_dataset_style',
                     layer))
             response = self.client.get(reverse('dataset_style_manage', args=(layer.alternate,)))
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200, response.status_code)
 
         geofence_rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             purge_geofence_all()
             # Reset GeoFence Rules
             geofence_rules_count = get_geofence_rules_count()
-            self.assertEqual(geofence_rules_count, 0)
+            self.assertEqual(geofence_rules_count, 0, geofence_rules_count)
 
     def test_anonymus_permissions(self):
         # grab a layer
         layer = Dataset.objects.first()
+        # removing duplicates
+        while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
+            Dataset.objects.filter(alternate=layer.alternate).last().delete()
+        layer = Dataset.objects.get(alternate=layer.alternate)
         layer.set_default_permissions()
         # 1. view_resourcebase
         # 1.1 has view_resourcebase: verify that anonymous user can access
@@ -1602,9 +1622,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # this should not return the layer since it will not be in user's allowed resources
         _title = 'common bar'
         for x in Dataset.objects.filter(title=_title):
-            remove_perm('view_resourcebase', standard_user, x.get_self_resource())
-            anonymous_group = Group.objects.get(name='anonymous')
-            remove_perm('view_resourcebase', anonymous_group, x.get_self_resource())
+            x.set_permissions({"users": {"bobby": []}, "groups": []})
         actual = get_visible_resources(
             queryset=layers,
             user=standard_user,
