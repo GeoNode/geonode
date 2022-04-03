@@ -364,7 +364,7 @@ class PermissionLevelMixin:
         ctype = ContentType.objects.get_for_model(self)
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
         if hasattr(self.get_real_instance(), 'storeType'):
-            # include explicit permissions appliable to "subtype == 'vector'"
+            # include explicit permissions appliable to "storeType == 'dataStore'"
             if self.get_real_instance().storeType == 'dataStore':
                 PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
             elif self.get_real_instance().storeType == 'coverageStore':
@@ -387,7 +387,7 @@ class PermissionLevelMixin:
             # get user's implicit perms for anyone flag
             implicit_perms = get_perms(user, self)
             if hasattr(self.get_real_instance(), 'storeType'):
-                # filter out implicit permissions unappliable to "subtype != 'vector'"
+                # filter out implicit permissions unappliable to "storeType != 'dataStore'"
                 if self.get_real_instance().storeType == 'coverageStore':
                     implicit_perms = list(set(implicit_perms) - set(LAYER_EDIT_DATA_PERMISSIONS))
                 elif self.get_real_instance().storeType == 'dataStore':

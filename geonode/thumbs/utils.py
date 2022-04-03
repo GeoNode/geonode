@@ -238,12 +238,10 @@ def get_map(
                 raise ThumbnailError(
                     f"Fetching partial thumbnail from {thumbnail_url} failed with response: {str(image)}"
                 )
-
         except Exception as e:
             if retry + 1 >= max_retries:
-                logger.exception(e)
+                logger.debug(e)
                 return
-
             time.sleep(retry_delay)
             continue
         else:
