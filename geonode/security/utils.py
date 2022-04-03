@@ -39,7 +39,6 @@ from guardian.shortcuts import (
     get_objects_for_user)
 
 from geonode.groups.conf import settings as groups_settings
-from geonode.layers.models import Layer
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import (
     PermSpecCompact,
@@ -742,6 +741,7 @@ class ResourceManager:
             try:
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
+                    from geonode.layers.models import Layer
                     _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
                     if not _layer:
                         try:
