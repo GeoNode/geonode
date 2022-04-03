@@ -740,6 +740,18 @@ def gs_slurp(
                 )
                 created = True
 
+            bbox = resource.native_bbox
+            ll_bbox = resource.latlon_bbox
+            try:
+                layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
+            except GeoNodeException as e:
+                if not ll_bbox:
+                    raise
+                else:
+                    logger.exception(e)
+                    layer.srid = 'EPSG:4326'
+            layer.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
             layer.set_permissions(perm_spec)
@@ -2167,7 +2179,7 @@ def sync_instance_with_geoserver(
     try:
         set_resource_default_links(instance, instance, prune=_is_remote_instance)
     except Exception as e:
-        logger.exception(e)
+        logger.warning(e)
 
     # Refreshing CSW records
     logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")

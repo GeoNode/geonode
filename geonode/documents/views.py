@@ -228,14 +228,7 @@ class DocumentUploadView(CreateView):
         """
         self.object = form.save(commit=False)
         self.object.owner = self.request.user
-
-        if settings.ADMIN_MODERATE_UPLOADS:
-            self.object.is_approved = False
-            self.object.was_approved = False
-        if settings.RESOURCE_PUBLISHING:
-            self.object.is_published = False
-            self.object.was_published = False
-
+        self.object.handle_moderated_uploads()
         self.object.save()
         form.save_many2many()
         self.object.set_permissions(form.cleaned_data['permissions'], created=True)

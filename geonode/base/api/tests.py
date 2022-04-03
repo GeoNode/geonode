@@ -41,7 +41,7 @@ from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
-from geonode.base.utils import build_absolute_uri
+from geonode.utils import build_absolute_uri
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.populate_test_data import create_models, create_single_layer
 from geonode.security.utils import get_resources_with_perms

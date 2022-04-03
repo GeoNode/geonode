@@ -176,8 +176,7 @@ def get_map(
     :param retry_delay: number of seconds waited between retries
     :returns: retrieved image
     """
-    from geonode.geoserver.helpers import OGC_Servers_Handler
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
+    from geonode.geoserver.helpers import ogc_server_settings
 
     if ogc_server_location is not None:
         thumbnail_url = ogc_server_location

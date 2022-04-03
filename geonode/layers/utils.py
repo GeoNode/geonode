@@ -538,11 +538,10 @@ def file_upload(filename,
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
     if not overwrite:
-        if settings.ADMIN_MODERATE_UPLOADS:
+        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
             is_approved = False
-            defaults['is_approved'] = defaults['was_approved'] = is_approved
-        if settings.RESOURCE_PUBLISHING:
             is_published = False
+            defaults['is_approved'] = defaults['was_approved'] = is_approved
             defaults['is_published'] = defaults['was_published'] = is_published
 
     # set metadata

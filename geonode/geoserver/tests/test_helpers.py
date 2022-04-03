@@ -33,7 +33,9 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.models import Layer
 from geonode.layers.utils import file_upload
 from geonode.geoserver.views import _response_callback
-from geonode.geoserver.helpers import sync_instance_with_geoserver
+from geonode.geoserver.helpers import (
+    fetch_gs_resource,
+    sync_instance_with_geoserver)
 
 from geonode.layers.populate_layers_data import create_layer_data
 from geonode.base.populate_test_data import (
@@ -251,14 +253,22 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
                 # With update gs resource disabled
                 try:
                     _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
-                    self.assertEqual(_layer.bbox, original_gs_bbox)
+                    _, gs_resource = fetch_gs_resource(layer, {}, 1)
+                    if gs_resource:
+                        self.assertEqual(_layer.bbox, original_gs_bbox)
+                    else:
+                        self.assertNotEqual(_layer.bbox, original_gs_bbox)
                 except GeoNodeException:
                     pass
             # With update gs resource enabled
             self.change_bbox(layer)
             try:
                 _layer = sync_instance_with_geoserver(layer.id, updatebbox=True, updatemetadata=False)
-                self.assertEqual(_layer.bbox, original_gs_bbox)
+                _, gs_resource = fetch_gs_resource(layer, {}, 1)
+                if gs_resource:
+                    self.assertEqual(_layer.bbox, original_gs_bbox)
+                else:
+                    self.assertNotEqual(_layer.bbox, original_gs_bbox)
             except GeoNodeException:
                 pass
         finally:
