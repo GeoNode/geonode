@@ -470,9 +470,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         })
     elif request.method == 'POST':
         delete_map.apply_async((map_obj.id, ))
-
         register_event(request, EventType.EVENT_REMOVE, map_obj)
-
         return HttpResponseRedirect(reverse("maps_browse"))
 
 

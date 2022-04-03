@@ -1135,7 +1135,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Send a notification when a layer, map or document is deleted
         """
         from geonode.security.utils import ResourceManager
-        ResourceManager.remove_permissions(instance=self.get_real_instance())
+        ResourceManager.remove_permissions(self.uuid, instance=self.get_real_instance())
 
         if hasattr(self, 'class_name') and notify:
             notice_type_label = f'{self.class_name.lower()}_deleted'

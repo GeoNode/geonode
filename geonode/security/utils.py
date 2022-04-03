@@ -130,19 +130,20 @@ def get_users_with_perms(obj):
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
-    # include explicit permissions appliable to "storeType == 'dataStore'"
-    if obj.get_real_instance().storeType == 'dataStore':
-        PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
-        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-            permissions[perm.id] = perm.codename
-    elif obj.get_real_instance().storeType == 'coverageStore':
-        PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
-        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-            permissions[perm.id] = perm.codename
-    else:
-        PERMISSIONS_TO_FETCH += LAYER_EDIT_DATA_PERMISSIONS
-        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
-            permissions[perm.id] = perm.codename
+    if hasattr(obj.get_real_instance(), 'storeType'):
+        # include explicit permissions appliable to "storeType == 'dataStore'"
+        if obj.get_real_instance().storeType == 'dataStore':
+            PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+                permissions[perm.id] = perm.codename
+        elif obj.get_real_instance().storeType == 'coverageStore':
+            PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+                permissions[perm.id] = perm.codename
+        else:
+            PERMISSIONS_TO_FETCH += LAYER_EDIT_DATA_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+                permissions[perm.id] = perm.codename
 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
@@ -445,13 +446,13 @@ class AdvancedSecurityWorkflowManager:
         admin_perms = []
         if _resource.polymorphic_ctype:
             _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
-            _resource_subtype = _resource.storeType
             view_perms = VIEW_PERMISSIONS.copy()
             if _resource_type in DOWNLOADABLE_RESOURCES:
                 view_perms += DOWNLOAD_PERMISSIONS.copy()
 
             admin_perms = ADMIN_PERMISSIONS.copy()
             if _resource.polymorphic_ctype.name == 'layer':
+                _resource_subtype = _resource.storeType
                 if _resource_subtype in DATA_EDITABLE_RESOURCES_SUBTYPES:
                     admin_perms += LAYER_EDIT_DATA_PERMISSIONS.copy()
                 if _resource_subtype in DATA_STYLABLE_RESOURCES_SUBTYPES:
