@@ -130,12 +130,12 @@ def get_users_with_perms(obj):
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
-    # include explicit permissions appliable to "store_type == 'dataStore'"
-    if obj.store_type == 'dataStore':
+    # include explicit permissions appliable to "storeType == 'dataStore'"
+    if obj.get_real_instance().storeType == 'dataStore':
         PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
         for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
             permissions[perm.id] = perm.codename
-    elif obj.store_type == 'coverageStore':
+    elif obj.get_real_instance().storeType == 'coverageStore':
         PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
         for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
             permissions[perm.id] = perm.codename
@@ -445,7 +445,7 @@ class AdvancedSecurityWorkflowManager:
         admin_perms = []
         if _resource.polymorphic_ctype:
             _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
-            _resource_subtype = _resource.store_type
+            _resource_subtype = _resource.storeType
             view_perms = VIEW_PERMISSIONS.copy()
             if _resource_type in DOWNLOADABLE_RESOURCES:
                 view_perms += DOWNLOAD_PERMISSIONS.copy()
@@ -734,20 +734,20 @@ class ResourceManager:
             try:
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
-                    from geonode.layers.models import Dataset
-                    _dataset = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Dataset) else None
-                    if not _dataset:
+                    from geonode.layers.models import Layer
+                    _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
+                    if not _layer:
                         try:
-                            _dataset = _resource.layer if hasattr(_resource, "layer") else None
+                            _layer = _resource.layer if hasattr(_resource, "layer") else None
                         except Exception:
-                            _dataset = None
-                    if _dataset:
+                            _layer = None
+                    if _layer:
                         UserObjectPermission.objects.filter(
-                            content_type=ContentType.objects.get_for_model(_dataset),
+                            content_type=ContentType.objects.get_for_model(_layer),
                             object_pk=_resource.id
                         ).delete()
                         GroupObjectPermission.objects.filter(
-                            content_type=ContentType.objects.get_for_model(_dataset),
+                            content_type=ContentType.objects.get_for_model(_layer),
                             object_pk=_resource.id
                         ).delete()
                     UserObjectPermission.objects.filter(
@@ -830,11 +830,19 @@ class ResourceManager:
                             anonymous_group = Group.objects.get(name='anonymous')
                             for perm in _perm_spec['users'][anonymous_user]:
                                 if _resource_type == 'layer' and perm in (
-                                        'change_dataset_data', 'change_dataset_style',
-                                        'add_dataset', 'change_dataset', 'delete_dataset'):
-                                    assign_perm(perm, anonymous_group, _resource.layer)
+                                        'change_layer_data', 'change_layer_style',
+                                        'add_layer', 'change_layer', 'delete_layer'):
+                                    try:
+                                        assign_perm(perm, anonymous_group, _resource.layer)
+                                    except Permission.DoesNotExist as e:
+                                        logger.exception(e)
+                                        logger.exception(f"Permissions {perm} does not exists for resource {_resource.layer}")
                                 elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                    assign_perm(perm, anonymous_group, _resource.get_self_resource())
+                                    try:
+                                        assign_perm(perm, anonymous_group, _resource.get_self_resource())
+                                    except Permission.DoesNotExist as e:
+                                        logger.exception(e)
+                                        logger.exception(f"Permissions {perm} does not exists for resource {_resource.get_self_resource()}")
 
                         # All the other users
                         if 'users' in _perm_spec and len(_perm_spec['users']) > 0:
@@ -843,11 +851,19 @@ class ResourceManager:
                                 if user != "AnonymousUser" and user != get_anonymous_user():
                                     for perm in perms:
                                         if _resource_type == 'layer' and perm in (
-                                                'change_dataset_data', 'change_dataset_style',
-                                                'add_dataset', 'change_dataset', 'delete_dataset'):
-                                            assign_perm(perm, _user, _resource.layer)
+                                                'change_layer_data', 'change_layer_style',
+                                                'add_layer', 'change_layer', 'delete_layer'):
+                                            try:
+                                                assign_perm(perm, _user, _resource.layer)
+                                            except Permission.DoesNotExist as e:
+                                                logger.exception(e)
+                                                logger.exception(f"Permissions {perm} does not exists for resource {_resource.layer}")
                                         elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                            assign_perm(perm, _user, _resource.get_self_resource())
+                                            try:
+                                                assign_perm(perm, _user, _resource.get_self_resource())
+                                            except Permission.DoesNotExist as e:
+                                                logger.exception(e)
+                                                logger.exception(f"Permissions {perm} does not exists for resource {_resource}")
 
                         # All the other groups
                         if 'groups' in _perm_spec and len(_perm_spec['groups']) > 0:
@@ -855,11 +871,19 @@ class ResourceManager:
                                 _group = Group.objects.get(name=group)
                                 for perm in perms:
                                     if _resource_type == 'layer' and perm in (
-                                            'change_dataset_data', 'change_dataset_style',
-                                            'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _group, _resource.layer)
+                                            'change_layer_data', 'change_layer_style',
+                                            'add_layer', 'change_layer', 'delete_layer'):
+                                        try:
+                                            assign_perm(perm, _group, _resource.layer)
+                                        except Permission.DoesNotExist as e:
+                                            logger.exception(e)
+                                            logger.exception(f"Permissions {perm} does not exists for resource {_resource.layer}")
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                        assign_perm(perm, _group, _resource.get_self_resource())
+                                        try:
+                                            assign_perm(perm, _group, _resource.get_self_resource())
+                                        except Permission.DoesNotExist as e:
+                                            logger.exception(e)
+                                            logger.exception(f"Permissions {perm} does not exists for resource {_resource.get_self_resource()}")
 
                         # AnonymousUser
                         if 'users' in _perm_spec and len(_perm_spec['users']) > 0:
@@ -869,11 +893,19 @@ class ResourceManager:
                                 perms = _perm_spec['users'][anonymous_user]
                                 for perm in perms:
                                     if _resource_type == 'layer' and perm in (
-                                            'change_dataset_data', 'change_dataset_style',
-                                            'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _user, _resource.layer)
+                                            'change_layer_data', 'change_layer_style',
+                                            'add_layer', 'change_layer', 'delete_layer'):
+                                        try:
+                                            assign_perm(perm, _user, _resource.layer)
+                                        except Permission.DoesNotExist as e:
+                                            logger.exception(e)
+                                            logger.exception(f"Permissions {perm} does not exists for resource {_resource.layer}")
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                        assign_perm(perm, _user, _resource.get_self_resource())
+                                        try:
+                                            assign_perm(perm, _user, _resource.get_self_resource())
+                                        except Permission.DoesNotExist as e:
+                                            logger.exception(e)
+                                            logger.exception(f"Permissions {perm} does not exists for resource {_resource.get_self_resource()}")
                     else:
                         # default permissions for anonymous users
                         anonymous_group, created = Group.objects.get_or_create(name='anonymous')
@@ -909,19 +941,19 @@ class ResourceManager:
                                         _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
 
-                        if _resource.__class__.__name__ == 'Dataset':
+                        if _resource.__class__.__name__ == 'Layer':
                             # only for layer owner
-                            assign_perm('change_dataset_data', _owner, _resource)
-                            assign_perm('change_dataset_style', _owner, _resource)
+                            assign_perm('change_layer_data', _owner, _resource)
+                            assign_perm('change_layer_style', _owner, _resource)
                             _prev_perm = _perm_spec["users"].get(_owner, []) if "users" in _perm_spec else []
-                            _perm_spec["users"][_owner] = set.union(perms_as_set(_prev_perm), perms_as_set(['change_dataset_data', 'change_dataset_style']))
+                            _perm_spec["users"][_owner] = set.union(perms_as_set(_prev_perm), perms_as_set(['change_layer_data', 'change_layer_style']))
 
                         _resource = AdvancedSecurityWorkflowManager.handle_moderated_uploads(_resource.uuid, instance=_resource)
 
                     # Fixup GIS Backend Security Rules Accordingly
                     if not gs_security.set_permissions(
                             instance=_resource, owner=owner, permissions=_perm_spec, created=created):
-                        # This might not be a severe error. E.g. for datasets outside of local GeoServer
+                        # This might not be a severe error. E.g. for layers outside of local GeoServer
                         logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 return True
             except Exception as e:

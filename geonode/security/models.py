@@ -255,8 +255,10 @@ class PermissionLevelMixin:
             ]
         }
         """
-        from geonode.resource.manager import resource_manager
-        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created, approval_status_changed=approval_status_changed)
+        return ResourceManager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created, approval_status_changed=approval_status_changed)
+
+    def handle_moderated_uploads(self):
+        AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
 
     def compare_perms(self, prev_perm_spec, perm_spec):
         """
@@ -362,9 +364,9 @@ class PermissionLevelMixin:
         ctype = ContentType.objects.get_for_model(self)
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
         # include explicit permissions appliable to "subtype == 'vector'"
-        if self.storeType == 'dataStore':
+        if self.get_real_instance().storeType == 'dataStore':
             PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
-        elif self.storeType == 'coverageStore':
+        elif self.get_real_instance().storeType == 'coverageStore':
             PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
