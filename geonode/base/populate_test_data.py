@@ -237,7 +237,7 @@ def create_models(type=None, integration=False):
                         m.save()
 
             if not type or ensure_string(type) == 'layer':
-                for ld, owner, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
+                for ld, user, storeType in zip(layer_data, cycle(users), cycle(('coverageStore', 'dataStore'))):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add layer {title}")
