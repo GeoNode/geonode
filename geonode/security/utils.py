@@ -452,7 +452,7 @@ class AdvancedSecurityWorkflowManager:
 
             admin_perms = ADMIN_PERMISSIONS.copy()
             if _resource.polymorphic_ctype.name == 'layer':
-                _resource_subtype = _resource.storeType
+                _resource_subtype = _resource.get_real_instance().storeType
                 if _resource_subtype in DATA_EDITABLE_RESOURCES_SUBTYPES:
                     admin_perms += LAYER_EDIT_DATA_PERMISSIONS.copy()
                 if _resource_subtype in DATA_STYLABLE_RESOURCES_SUBTYPES:

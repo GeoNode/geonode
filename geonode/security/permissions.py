@@ -548,7 +548,7 @@ class PermSpec(PermSpecConverterBase):
                     'permissions': _to_compact_perms(
                         get_group_perms(anonymous_group, self._resource),
                         self._resource.resource_type,
-                        self._resource.subtype)
+                        self._resource.storeType)
                 }
             )
         if contributors_perms:
