@@ -39,6 +39,7 @@ from guardian.shortcuts import (
     get_objects_for_user)
 
 from geonode.groups.conf import settings as groups_settings
+from geonode.layers.models import Layer
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import (
     PermSpecCompact,
@@ -130,20 +131,23 @@ def get_users_with_perms(obj):
     ctype = ContentType.objects.get_for_model(obj)
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
-    if hasattr(obj.get_real_instance(), 'storeType'):
-        # include explicit permissions appliable to "storeType == 'dataStore'"
-        if obj.get_real_instance().storeType == 'dataStore':
-            PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
-            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-                permissions[perm.id] = perm.codename
-        elif obj.get_real_instance().storeType == 'coverageStore':
-            PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
-            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-                permissions[perm.id] = perm.codename
-        else:
-            PERMISSIONS_TO_FETCH += LAYER_EDIT_DATA_PERMISSIONS
-            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
-                permissions[perm.id] = perm.codename
+    try:
+        if hasattr(obj.get_real_instance(), 'storeType'):
+            # include explicit permissions appliable to "storeType == 'dataStore'"
+            if obj.get_real_instance().storeType == 'dataStore':
+                PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
+                for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+                    permissions[perm.id] = perm.codename
+            elif obj.get_real_instance().storeType == 'coverageStore':
+                PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
+                for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+                    permissions[perm.id] = perm.codename
+            else:
+                PERMISSIONS_TO_FETCH += LAYER_EDIT_DATA_PERMISSIONS
+                for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+                    permissions[perm.id] = perm.codename
+    except Exception as e:
+        logger.debug(e)
 
     user_model = get_user_obj_perms_model(obj)
     users_with_perms = user_model.objects.filter(object_pk=obj.pk,
@@ -452,11 +456,14 @@ class AdvancedSecurityWorkflowManager:
 
             admin_perms = ADMIN_PERMISSIONS.copy()
             if _resource.polymorphic_ctype.name == 'layer':
-                _resource_subtype = _resource.get_real_instance().storeType
-                if _resource_subtype in DATA_EDITABLE_RESOURCES_SUBTYPES:
-                    admin_perms += LAYER_EDIT_DATA_PERMISSIONS.copy()
-                if _resource_subtype in DATA_STYLABLE_RESOURCES_SUBTYPES:
-                    admin_perms += LAYER_EDIT_STYLE_PERMISSIONS.copy()
+                try:
+                    _resource_subtype = _resource.get_real_instance().storeType
+                    if _resource_subtype in DATA_EDITABLE_RESOURCES_SUBTYPES:
+                        admin_perms += LAYER_EDIT_DATA_PERMISSIONS.copy()
+                    if _resource_subtype in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                        admin_perms += LAYER_EDIT_STYLE_PERMISSIONS.copy()
+                except Exception as e:
+                    logger.debug(e)
 
             if _resource.polymorphic_ctype.name == 'service':
                 admin_perms += SERVICE_PERMISSIONS.copy()
@@ -735,7 +742,6 @@ class ResourceManager:
             try:
                 with transaction.atomic():
                     logger.debug(f'Removing all permissions on {_resource}')
-                    from geonode.layers.models import Layer
                     _layer = _resource.get_real_instance() if isinstance(_resource.get_real_instance(), Layer) else None
                     if not _layer:
                         try:
