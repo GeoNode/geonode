@@ -1387,7 +1387,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that bobby cannot access the
         # layer delete page
-        response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
@@ -1396,7 +1396,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             bob.has_perm(
                 'delete_resourcebase',
                 layer.get_self_resource()))
-        response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200, response.status_code)
 
         # 4. change_resourcebase_metadata
@@ -1489,7 +1489,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3. delete_resourcebase
         # 3.1 has not delete_resourcebase: verify that anonymous user cannot
         # access the layer delete page but redirected to login
-        response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
+        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403), response.status_code)
 
         # 4. change_resourcebase_metadata
