@@ -2165,6 +2165,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
                         "change_resourcebase_permissions"
                     ],
                     self.group_manager: [
@@ -2188,6 +2190,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
                         "change_resourcebase_permissions"
                     ],
                     self.group_manager: [
@@ -2434,6 +2438,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "change_resourcebase",
+                "change_resourcebase_metadata",
                 "change_resourcebase_permissions"
             ],
             self.group_manager: ["download_resourcebase", "view_resourcebase"],
@@ -2462,6 +2468,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
+                "change_resourcebase",
+                "change_resourcebase_metadata",
                 "change_resourcebase_permissions"
             ],
             self.group_manager: [
