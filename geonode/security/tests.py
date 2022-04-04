@@ -1384,27 +1384,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
         self.assertEqual(response.status_code, 200, response.status_code)
 
-        # 3. delete_resourcebase
-        # 3.1 has not delete_resourcebase: verify that bobby cannot access the
-        # layer delete page
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (401, 403), response.status_code)
-        # 3.2 has delete_resourcebase: verify that bobby can access the layer
-        # delete page
-        layer.set_permissions({'users': {'bobby': ['change_resourcebase', 'delete_resourcebase']}, 'groups': []})
-        self.assertTrue(
-            bob.has_perm(
-                'delete_resourcebase',
-                layer.get_self_resource()))
-        response = self.client.get(reverse('dataset_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200, response.status_code)
-
-        # 4. change_resourcebase_metadata
-        # 4.1 has not change_resourcebase_metadata: verify that bobby cannot
+        # 3. change_resourcebase_metadata
+        # 3.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
         response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
-        # 4.2 has delete_resourcebase: verify that bobby can access the layer
+        # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         layer.set_permissions({'users': {'bobby': ['change_resourcebase', 'change_resourcebase_metadata', 'delete_resourcebase']}, 'groups': []})
         self.assertTrue(
@@ -1423,16 +1408,16 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             geofence_rules_count = get_geofence_rules_count()
             _log(f"3. geofence_rules_count: {geofence_rules_count} ")
 
-        # 5. change_resourcebase_permissions
+        # 4. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
         # to change permissions as the permission form is not available in the
         # layer detail page?
 
-        # 6. change_dataset_data
+        # 5. change_dataset_data
         # must be done in integration test sending a WFS-T request with CURL
 
-        # 7. change_dataset_style
-        # 7.1 has not change_dataset_style: verify that bobby cannot access
+        # 6. change_dataset_style
+        # 6.1 has not change_dataset_style: verify that bobby cannot access
         # the layer style page
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend

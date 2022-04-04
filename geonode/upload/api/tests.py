@@ -65,11 +65,12 @@ logger = logging.getLogger(__name__)
 @override_settings(
     DEBUG=True,
     ALLOWED_HOSTS=['*'],
+    SITEURL=LIVE_SERVER_URL,
     CSRF_COOKIE_SECURE=False,
     CSRF_COOKIE_HTTPONLY=False,
     CORS_ORIGIN_ALLOW_ALL=True,
     SESSION_COOKIE_SECURE=False,
-    SITEURL=LIVE_SERVER_URL,
+    DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER=5
 )
 class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
@@ -467,7 +468,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -475,7 +476,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
         else:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -546,7 +547,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -554,7 +555,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
         else:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -648,7 +649,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -656,7 +657,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
         else:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
