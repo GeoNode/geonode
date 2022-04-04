@@ -1284,7 +1284,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_perms_info(self):
         """ Verify that the perms_info view is behaving as expected
         """
-
         # Test with a Dataset object
         layer = Dataset.objects.first()
         # removing duplicates
@@ -1334,16 +1333,16 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         bob = get_user_model().objects.get(username='bobby')
 
         # grab a layer
-        layer = Dataset.objects.filter(owner=bob).first()
+        layer = Dataset.objects.exclude(owner=bob).first()
         # removing duplicates
         while Dataset.objects.filter(alternate=layer.alternate).count() > 1:
             Dataset.objects.filter(alternate=layer.alternate).last().delete()
         layer = Dataset.objects.get(alternate=layer.alternate)
         layer.set_default_permissions()
-        # verify bobby has view/change and manage permissions on it
+        # verify bobby has view permissions on it
         self.assertTrue(
             bob.has_perm(
-                'change_resourcebase_permissions',
+                'view_resourcebase',
                 layer.get_self_resource()))
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1374,10 +1373,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 2.1 has not change_resourcebase: verify that bobby cannot access the
         # layer replace page
         response = self.client.get(reverse('dataset_replace', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200, response.status_code)
+        self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 2.2 has change_resourcebase: verify that bobby can access the layer
         # replace page
-        layer.set_permissions({'users': {'bob': ['change_resourcebase']}, 'groups': []})
+        layer.set_permissions({'users': {'bobby': ['change_resourcebase']}, 'groups': []})
         self.assertTrue(
             bob.has_perm(
                 'change_resourcebase',
@@ -1389,10 +1388,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3.1 has not delete_resourcebase: verify that bobby cannot access the
         # layer delete page
         response = self.client.get(reverse('layer_remove', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200, response.status_code)
+        self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
-        layer.set_permissions({'users': {'bob': ['change_resourcebase', 'delete_resourcebase']}, 'groups': []})
+        layer.set_permissions({'users': {'bobby': ['change_resourcebase', 'delete_resourcebase']}, 'groups': []})
         self.assertTrue(
             bob.has_perm(
                 'delete_resourcebase',
@@ -1404,10 +1403,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 4.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
         response = self.client.get(reverse('dataset_metadata', args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200, response.status_code)
+        self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 4.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
-        layer.set_permissions({'users': {'bob': ['change_resourcebase', 'change_resourcebase_metadata', 'delete_resourcebase']}, 'groups': []})
+        layer.set_permissions({'users': {'bobby': ['change_resourcebase', 'change_resourcebase_metadata', 'delete_resourcebase']}, 'groups': []})
         self.assertTrue(
             bob.has_perm(
                 'change_resourcebase_metadata',
@@ -1438,12 +1437,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend
             response = self.client.get(reverse('dataset_style_manage', args=(layer.alternate,)))
-            self.assertEqual(response.status_code, 200, response.status_code)
+            self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 7.2 has change_dataset_style: verify that bobby can access the
         # change layer style page
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Only for geoserver backend
-            layer.set_permissions({'users': {'bob': ['change_resourcebase', 'change_resourcebase_metadata', 'delete_resourcebase', 'change_dataset_style']}, 'groups': []})
+            layer.set_permissions({'users': {'bobby': ['change_resourcebase', 'change_resourcebase_metadata', 'delete_resourcebase', 'change_dataset_style']}, 'groups': []})
             self.assertTrue(
                 bob.has_perm(
                     'change_dataset_style',

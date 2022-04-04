@@ -30,9 +30,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from geonode.utils import (
-    bbox_to_projection,
-    ogc_server_settings)
+from geonode.utils import bbox_to_projection
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.storage.manager import storage_manager
@@ -179,6 +177,7 @@ def get_map(
     :param retry_delay: number of seconds waited between retries
     :returns: retrieved image
     """
+    from geonode.geoserver.helpers import ogc_server_settings
     if ogc_server_location is not None:
         thumbnail_url = ogc_server_location
     else:
