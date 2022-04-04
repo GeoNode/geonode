@@ -37,6 +37,8 @@ from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 
 logger = logging.getLogger(__name__)
+
+MISSING_THUMB = settings.MISSING_THUMBNAIL
 BASE64_PATTERN = 'data:image/(jpeg|png|jpg);base64'
 
 
@@ -177,7 +179,6 @@ def get_map(
     :returns: retrieved image
     """
     from geonode.geoserver.helpers import ogc_server_settings
-
     if ogc_server_location is not None:
         thumbnail_url = ogc_server_location
     else:
@@ -237,10 +238,12 @@ def get_map(
                 raise ThumbnailError(
                     f"Fetching partial thumbnail from {thumbnail_url} failed with response: {str(image)}"
                 )
+
         except Exception as e:
             if retry + 1 >= max_retries:
-                logger.debug(e)
+                logger.exception(e)
                 return
+
             time.sleep(retry_delay)
             continue
         else:
@@ -363,7 +366,9 @@ def get_thumbs():
 
 def remove_thumb(filename):
     """Delete a thumbnail from storage"""
-    storage.delete(thumb_path(filename))
+    path = thumb_path(filename)
+    if storage.exists(path):
+        storage.delete(path)
 
 
 def remove_thumbs(name):
@@ -377,7 +382,7 @@ def remove_thumbs(name):
 def get_unique_upload_path(resource, filename):
     """ Generates a unique name from the given filename and
     creates a unique file upload path"""
-    mising_thumb = staticfiles.static(settings.MISSING_THUMBNAIL)
+    mising_thumb = staticfiles.static(MISSING_THUMB)
     if resource.thumbnail_url and not resource.thumbnail_url == mising_thumb:
         # remove thumbnail from storage
         thumb_name = os.path.basename(resource.thumbnail_url)

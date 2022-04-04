@@ -306,7 +306,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         log = self.client.login(username='bobby', password='bob')
         self.assertTrue(log)
         response = self.client.get(reverse('document_upload'))
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, 200)
 
     def test_document_isuploaded(self):
         """/documents/upload -> Test uploading a document"""
@@ -327,7 +327,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 'type': 'document',
                 'permissions': '{"users":{"AnonymousUser": ["view_resourcebase"]}}'},
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
 
     # Permissions Tests
 
@@ -345,11 +345,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
             self.anonymous_user.has_perm(
                 'view_resourcebase',
                 document.get_self_resource()))
-
-        # Test that previous permissions for users other than ones specified in
-        # the perm_spec (and the document owner) were removed
-        current_perms = document.get_all_level_info()
-        self.assertEqual(len(current_perms['users']), 1)
 
         # Test that the User permissions specified in the perm_spec were
         # applied properly
@@ -598,7 +593,7 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             dname = 'document title'
             _d = Document.objects.get(title=dname)
             self.assertFalse(_d.is_approved)
-            self.assertTrue(_d.is_published)
+            self.assertFalse(_d.is_published)
 
             group.join(norman)
             self.assertFalse(group.user_is_role(norman, "manager"))
@@ -615,13 +610,13 @@ class DocumentModerationTestCase(GeoNodeBaseTestSupport):
             # Allowed - edit permissions
             self.assertEqual(resp.status_code, 200)
             perms_list = get_perms(norman, _d.get_self_resource()) + get_perms(norman, _d)
-            self.assertTrue('change_resourcebase_metadata' in perms_list)
+            self.assertFalse('change_resourcebase_metadata' in perms_list)
             GroupMember.objects.get(group=group, user=norman).demote()
             self.assertFalse(group.user_is_role(norman, "manager"))
             resp = self.client.get(
                 reverse('document_detail', args=(_d.id,)))
             # Allowed - no edit
-            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.status_code, 403)
             perms_list = get_perms(norman, _d.get_self_resource()) + get_perms(norman, _d)
             self.assertFalse('change_resourcebase_metadata' in perms_list)
             group.leave(norman)
