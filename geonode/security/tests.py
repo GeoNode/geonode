@@ -831,7 +831,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             rest_path = f'rest/workspaces/{workspace}/datastores/{saved_layer.store}/featuretypes/boxes_with_date.xml'
             r = requests.get(url + rest_path,
-                            auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 200)
             _log(r.text)
 
@@ -859,15 +859,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             </metadata></featureType>"""
 
             r = requests.put(url + rest_path,
-                            data=payload,
-                            headers={
-                                'Content-type': 'application/xml'
-                            },
-                            auth=HTTPBasicAuth(user, passwd))
+                             data=payload,
+                             headers={
+                                 'Content-type': 'application/xml'
+                             },
+                             auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 200)
 
             r = requests.get(url + rest_path,
-                            auth=HTTPBasicAuth(user, passwd))
+                             auth=HTTPBasicAuth(user, passwd))
             self.assertEqual(r.status_code, 200)
             _log(r.text)
 
@@ -887,8 +887,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 wms_capabilities = wms_capabilities_resp.getvalue()
                 if wms_capabilities:
                     namespaces = {'wms': 'http://www.opengis.net/wms',
-                                'xlink': 'http://www.w3.org/1999/xlink',
-                                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+                                  'xlink': 'http://www.w3.org/1999/xlink',
+                                  'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
 
                     e = dlxml.fromstring(wms_capabilities)
                     for atype in e.findall(
