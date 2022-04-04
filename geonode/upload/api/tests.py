@@ -694,6 +694,32 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
 
+    def test_rest_uploads_no_crs(self):
+        """
+        Ensure the upload process turns to `WAITING` status whenever a `CRS` info is missing from the GIS backend.
+        """
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'incomplete')
+        self.assertTrue(data['success'])
+
+        url = reverse('uploads-list')
+        # Admin
+        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5, response.data)
+        self.assertEqual(response.data['total'], 1, response.data['total'])
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 1)
+        logger.debug(response.data)
+        upload_data = response.data['uploads'][0]
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+        self.assertEqual(upload_data['state'], enumerations.STATE_WAITING, upload_data['state'])
+
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
         """
@@ -779,7 +805,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         _get_parallel_uploads_count_path = "geonode.upload.forms.LayerUploadForm._get_parallel_uploads_count"
         with mock.patch(_get_parallel_uploads_count_path, new_callable=mock.PropertyMock) as mocked_get_parallel_uploads_count:
-            mocked_get_parallel_uploads_count.return_value = lambda: 20
+            mocked_get_parallel_uploads_count.return_value = lambda: 200
 
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)
