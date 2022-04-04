@@ -814,151 +814,154 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         ws = gs_catalog.get_workspace(workspace)
         self.assertIsNotNone(ws)
         _gs_layer_store = saved_layer.store
+        _gs_layer = None
         if not _gs_layer_store:
             saved_layer.alternate = f"{workspace}:boxes_with_date"
             _gs_layer = gs_catalog.get_layer(f"{workspace}:boxes_with_date") or gs_catalog.get_layer(f"{workspace}:boxes_with_date.shp")
+            if _gs_layer:
+                _gs_layer_store = saved_layer.store = _gs_layer.resource.store.name
+                saved_layer.save()
+        if _gs_layer:
+            store = get_store(gs_catalog, saved_layer.store, workspace=ws)
+            self.assertIsNotNone(store)
+
+            url = settings.OGC_SERVER['default']['LOCATION']
+            user = settings.OGC_SERVER['default']['USER']
+            passwd = settings.OGC_SERVER['default']['PASSWORD']
+
+            rest_path = f'rest/workspaces/{workspace}/datastores/{saved_layer.store}/featuretypes/boxes_with_date.xml'
+            r = requests.get(url + rest_path,
+                            auth=HTTPBasicAuth(user, passwd))
+            self.assertEqual(r.status_code, 200)
+            _log(r.text)
+
+            featureType = etree.ElementTree(dlxml.fromstring(r.text))
+            metadata = featureType.findall('./[metadata]')
+            self.assertEqual(len(metadata), 1)
+
+            payload = """<featureType>
+            <metadata>
+                <entry key="elevation">
+                    <dimensionInfo>
+                        <enabled>false</enabled>
+                    </dimensionInfo>
+                </entry>
+                <entry key="time">
+                    <dimensionInfo>
+                        <enabled>true</enabled>
+                        <attribute>date</attribute>
+                        <presentation>LIST</presentation>
+                        <units>ISO8601</units>
+                        <defaultValue/>
+                        <nearestMatchEnabled>false</nearestMatchEnabled>
+                    </dimensionInfo>
+                </entry>
+            </metadata></featureType>"""
+
+            r = requests.put(url + rest_path,
+                            data=payload,
+                            headers={
+                                'Content-type': 'application/xml'
+                            },
+                            auth=HTTPBasicAuth(user, passwd))
+            self.assertEqual(r.status_code, 200)
+
+            r = requests.get(url + rest_path,
+                            auth=HTTPBasicAuth(user, passwd))
+            self.assertEqual(r.status_code, 200)
+            _log(r.text)
+
+            featureType = etree.ElementTree(dlxml.fromstring(r.text))
+            metadata = featureType.findall('./[metadata]')
+            _log(etree.tostring(metadata[0], encoding='utf8', method='xml'))
+            self.assertEqual(len(metadata), 1)
+
+            saved_layer.set_permissions(permissions)
+            wms_capabilities_url = reverse('capabilities_layer', args=[saved_layer.id])
+            wms_capabilities_resp = self.client.get(wms_capabilities_url)
+            self.assertTrue(wms_capabilities_resp.status_code, 200)
+
+            all_times = None
+
+            if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
+                wms_capabilities = wms_capabilities_resp.getvalue()
+                if wms_capabilities:
+                    namespaces = {'wms': 'http://www.opengis.net/wms',
+                                'xlink': 'http://www.w3.org/1999/xlink',
+                                'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+
+                    e = dlxml.fromstring(wms_capabilities)
+                    for atype in e.findall(
+                            f"./[wms:Name='{saved_layer.alternate}']/wms:Dimension[@name='time']", namespaces):
+                        dim_name = atype.get('name')
+                        if dim_name:
+                            dim_name = str(dim_name).lower()
+                            if dim_name == 'time':
+                                dim_values = atype.text
+                                if dim_values:
+                                    all_times = dim_values.split(",")
+                                    break
+
+            if all_times:
+                self.assertEqual(all_times, [
+                    '2000-03-01T00:00:00.000Z', '2000-03-02T00:00:00.000Z',
+                    '2000-03-03T00:00:00.000Z', '2000-03-04T00:00:00.000Z',
+                    '2000-03-05T00:00:00.000Z', '2000-03-06T00:00:00.000Z',
+                    '2000-03-07T00:00:00.000Z', '2000-03-08T00:00:00.000Z',
+                    '2000-03-09T00:00:00.000Z', '2000-03-10T00:00:00.000Z',
+                    '2000-03-11T00:00:00.000Z', '2000-03-12T00:00:00.000Z',
+                    '2000-03-13T00:00:00.000Z', '2000-03-14T00:00:00.000Z',
+                    '2000-03-15T00:00:00.000Z', '2000-03-16T00:00:00.000Z',
+                    '2000-03-17T00:00:00.000Z', '2000-03-18T00:00:00.000Z',
+                    '2000-03-19T00:00:00.000Z', '2000-03-20T00:00:00.000Z',
+                    '2000-03-21T00:00:00.000Z', '2000-03-22T00:00:00.000Z',
+                    '2000-03-23T00:00:00.000Z', '2000-03-24T00:00:00.000Z',
+                    '2000-03-25T00:00:00.000Z', '2000-03-26T00:00:00.000Z',
+                    '2000-03-27T00:00:00.000Z', '2000-03-28T00:00:00.000Z',
+                    '2000-03-29T00:00:00.000Z', '2000-03-30T00:00:00.000Z',
+                    '2000-03-31T00:00:00.000Z', '2000-04-01T00:00:00.000Z',
+                    '2000-04-02T00:00:00.000Z', '2000-04-03T00:00:00.000Z',
+                    '2000-04-04T00:00:00.000Z', '2000-04-05T00:00:00.000Z',
+                    '2000-04-06T00:00:00.000Z', '2000-04-07T00:00:00.000Z',
+                    '2000-04-08T00:00:00.000Z', '2000-04-09T00:00:00.000Z',
+                    '2000-04-10T00:00:00.000Z', '2000-04-11T00:00:00.000Z',
+                    '2000-04-12T00:00:00.000Z', '2000-04-13T00:00:00.000Z',
+                    '2000-04-14T00:00:00.000Z', '2000-04-15T00:00:00.000Z',
+                    '2000-04-16T00:00:00.000Z', '2000-04-17T00:00:00.000Z',
+                    '2000-04-18T00:00:00.000Z', '2000-04-19T00:00:00.000Z',
+                    '2000-04-20T00:00:00.000Z', '2000-04-21T00:00:00.000Z',
+                    '2000-04-22T00:00:00.000Z', '2000-04-23T00:00:00.000Z',
+                    '2000-04-24T00:00:00.000Z', '2000-04-25T00:00:00.000Z',
+                    '2000-04-26T00:00:00.000Z', '2000-04-27T00:00:00.000Z',
+                    '2000-04-28T00:00:00.000Z', '2000-04-29T00:00:00.000Z',
+                    '2000-04-30T00:00:00.000Z', '2000-05-01T00:00:00.000Z',
+                    '2000-05-02T00:00:00.000Z', '2000-05-03T00:00:00.000Z',
+                    '2000-05-04T00:00:00.000Z', '2000-05-05T00:00:00.000Z',
+                    '2000-05-06T00:00:00.000Z', '2000-05-07T00:00:00.000Z',
+                    '2000-05-08T00:00:00.000Z', '2000-05-09T00:00:00.000Z',
+                    '2000-05-10T00:00:00.000Z', '2000-05-11T00:00:00.000Z',
+                    '2000-05-12T00:00:00.000Z', '2000-05-13T00:00:00.000Z',
+                    '2000-05-14T00:00:00.000Z', '2000-05-15T00:00:00.000Z',
+                    '2000-05-16T00:00:00.000Z', '2000-05-17T00:00:00.000Z',
+                    '2000-05-18T00:00:00.000Z', '2000-05-19T00:00:00.000Z',
+                    '2000-05-20T00:00:00.000Z', '2000-05-21T00:00:00.000Z',
+                    '2000-05-22T00:00:00.000Z', '2000-05-23T00:00:00.000Z',
+                    '2000-05-24T00:00:00.000Z', '2000-05-25T00:00:00.000Z',
+                    '2000-05-26T00:00:00.000Z', '2000-05-27T00:00:00.000Z',
+                    '2000-05-28T00:00:00.000Z', '2000-05-29T00:00:00.000Z',
+                    '2000-05-30T00:00:00.000Z', '2000-05-31T00:00:00.000Z',
+                    '2000-06-01T00:00:00.000Z', '2000-06-02T00:00:00.000Z',
+                    '2000-06-03T00:00:00.000Z', '2000-06-04T00:00:00.000Z',
+                    '2000-06-05T00:00:00.000Z', '2000-06-06T00:00:00.000Z',
+                    '2000-06-07T00:00:00.000Z', '2000-06-08T00:00:00.000Z',
+                ])
+
+            saved_layer.set_default_permissions()
+            url = reverse('layer_metadata', args=[saved_layer.service_typename])
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200)
+        else:
             logger.error(f" ----> fetching layer {saved_layer.alternate} from GeoServer...: '{_gs_layer}'")
-            self.assertIsNotNone(_gs_layer)
-            _gs_layer_store = saved_layer.store = _gs_layer.resource.store.name
-            saved_layer.save()
-        store = get_store(gs_catalog, saved_layer.store, workspace=ws)
-        self.assertIsNotNone(store)
-
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-
-        rest_path = f'rest/workspaces/{workspace}/datastores/{saved_layer.store}/featuretypes/boxes_with_date.xml'
-        r = requests.get(url + rest_path,
-                         auth=HTTPBasicAuth(user, passwd))
-        self.assertEqual(r.status_code, 200)
-        _log(r.text)
-
-        featureType = etree.ElementTree(dlxml.fromstring(r.text))
-        metadata = featureType.findall('./[metadata]')
-        self.assertEqual(len(metadata), 1)
-
-        payload = """<featureType>
-        <metadata>
-            <entry key="elevation">
-                <dimensionInfo>
-                    <enabled>false</enabled>
-                </dimensionInfo>
-            </entry>
-            <entry key="time">
-                <dimensionInfo>
-                    <enabled>true</enabled>
-                    <attribute>date</attribute>
-                    <presentation>LIST</presentation>
-                    <units>ISO8601</units>
-                    <defaultValue/>
-                    <nearestMatchEnabled>false</nearestMatchEnabled>
-                </dimensionInfo>
-            </entry>
-        </metadata></featureType>"""
-
-        r = requests.put(url + rest_path,
-                         data=payload,
-                         headers={
-                             'Content-type': 'application/xml'
-                         },
-                         auth=HTTPBasicAuth(user, passwd))
-        self.assertEqual(r.status_code, 200)
-
-        r = requests.get(url + rest_path,
-                         auth=HTTPBasicAuth(user, passwd))
-        self.assertEqual(r.status_code, 200)
-        _log(r.text)
-
-        featureType = etree.ElementTree(dlxml.fromstring(r.text))
-        metadata = featureType.findall('./[metadata]')
-        _log(etree.tostring(metadata[0], encoding='utf8', method='xml'))
-        self.assertEqual(len(metadata), 1)
-
-        saved_layer.set_permissions(permissions)
-        wms_capabilities_url = reverse('capabilities_layer', args=[saved_layer.id])
-        wms_capabilities_resp = self.client.get(wms_capabilities_url)
-        self.assertTrue(wms_capabilities_resp.status_code, 200)
-
-        all_times = None
-
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                        f"./[wms:Name='{saved_layer.alternate}']/wms:Dimension[@name='time']", namespaces):
-                    dim_name = atype.get('name')
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == 'time':
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-
-        if all_times:
-            self.assertEqual(all_times, [
-                '2000-03-01T00:00:00.000Z', '2000-03-02T00:00:00.000Z',
-                '2000-03-03T00:00:00.000Z', '2000-03-04T00:00:00.000Z',
-                '2000-03-05T00:00:00.000Z', '2000-03-06T00:00:00.000Z',
-                '2000-03-07T00:00:00.000Z', '2000-03-08T00:00:00.000Z',
-                '2000-03-09T00:00:00.000Z', '2000-03-10T00:00:00.000Z',
-                '2000-03-11T00:00:00.000Z', '2000-03-12T00:00:00.000Z',
-                '2000-03-13T00:00:00.000Z', '2000-03-14T00:00:00.000Z',
-                '2000-03-15T00:00:00.000Z', '2000-03-16T00:00:00.000Z',
-                '2000-03-17T00:00:00.000Z', '2000-03-18T00:00:00.000Z',
-                '2000-03-19T00:00:00.000Z', '2000-03-20T00:00:00.000Z',
-                '2000-03-21T00:00:00.000Z', '2000-03-22T00:00:00.000Z',
-                '2000-03-23T00:00:00.000Z', '2000-03-24T00:00:00.000Z',
-                '2000-03-25T00:00:00.000Z', '2000-03-26T00:00:00.000Z',
-                '2000-03-27T00:00:00.000Z', '2000-03-28T00:00:00.000Z',
-                '2000-03-29T00:00:00.000Z', '2000-03-30T00:00:00.000Z',
-                '2000-03-31T00:00:00.000Z', '2000-04-01T00:00:00.000Z',
-                '2000-04-02T00:00:00.000Z', '2000-04-03T00:00:00.000Z',
-                '2000-04-04T00:00:00.000Z', '2000-04-05T00:00:00.000Z',
-                '2000-04-06T00:00:00.000Z', '2000-04-07T00:00:00.000Z',
-                '2000-04-08T00:00:00.000Z', '2000-04-09T00:00:00.000Z',
-                '2000-04-10T00:00:00.000Z', '2000-04-11T00:00:00.000Z',
-                '2000-04-12T00:00:00.000Z', '2000-04-13T00:00:00.000Z',
-                '2000-04-14T00:00:00.000Z', '2000-04-15T00:00:00.000Z',
-                '2000-04-16T00:00:00.000Z', '2000-04-17T00:00:00.000Z',
-                '2000-04-18T00:00:00.000Z', '2000-04-19T00:00:00.000Z',
-                '2000-04-20T00:00:00.000Z', '2000-04-21T00:00:00.000Z',
-                '2000-04-22T00:00:00.000Z', '2000-04-23T00:00:00.000Z',
-                '2000-04-24T00:00:00.000Z', '2000-04-25T00:00:00.000Z',
-                '2000-04-26T00:00:00.000Z', '2000-04-27T00:00:00.000Z',
-                '2000-04-28T00:00:00.000Z', '2000-04-29T00:00:00.000Z',
-                '2000-04-30T00:00:00.000Z', '2000-05-01T00:00:00.000Z',
-                '2000-05-02T00:00:00.000Z', '2000-05-03T00:00:00.000Z',
-                '2000-05-04T00:00:00.000Z', '2000-05-05T00:00:00.000Z',
-                '2000-05-06T00:00:00.000Z', '2000-05-07T00:00:00.000Z',
-                '2000-05-08T00:00:00.000Z', '2000-05-09T00:00:00.000Z',
-                '2000-05-10T00:00:00.000Z', '2000-05-11T00:00:00.000Z',
-                '2000-05-12T00:00:00.000Z', '2000-05-13T00:00:00.000Z',
-                '2000-05-14T00:00:00.000Z', '2000-05-15T00:00:00.000Z',
-                '2000-05-16T00:00:00.000Z', '2000-05-17T00:00:00.000Z',
-                '2000-05-18T00:00:00.000Z', '2000-05-19T00:00:00.000Z',
-                '2000-05-20T00:00:00.000Z', '2000-05-21T00:00:00.000Z',
-                '2000-05-22T00:00:00.000Z', '2000-05-23T00:00:00.000Z',
-                '2000-05-24T00:00:00.000Z', '2000-05-25T00:00:00.000Z',
-                '2000-05-26T00:00:00.000Z', '2000-05-27T00:00:00.000Z',
-                '2000-05-28T00:00:00.000Z', '2000-05-29T00:00:00.000Z',
-                '2000-05-30T00:00:00.000Z', '2000-05-31T00:00:00.000Z',
-                '2000-06-01T00:00:00.000Z', '2000-06-02T00:00:00.000Z',
-                '2000-06-03T00:00:00.000Z', '2000-06-04T00:00:00.000Z',
-                '2000-06-05T00:00:00.000Z', '2000-06-06T00:00:00.000Z',
-                '2000-06-07T00:00:00.000Z', '2000-06-08T00:00:00.000Z',
-            ])
-
-        saved_layer.set_default_permissions()
-        url = reverse('layer_metadata', args=[saved_layer.service_typename])
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_permissions(self):
@@ -1015,7 +1018,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertTrue(response.status_code, 200)
         self.assertEqual(
             response.headers.get('Content-Type'),
-            'image/png'
+            'application/vnd.ogc.se_xml;charset=UTF-8'
         )
 
         # test WMS with authenticated user that has no view_resourcebase:
