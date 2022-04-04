@@ -245,7 +245,7 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_storeType:
     """
     if is_owner:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_storeType and resource_storeType.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
+            if resource_storeType and resource_storeType in DATA_EDITABLE_RESOURCES_SUBTYPES:
                 return LAYER_ADMIN_PERMISSIONS + OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
             else:
                 return OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
@@ -262,7 +262,7 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_storeType:
             return VIEW_PERMISSIONS
     elif perm == EDIT_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_storeType and resource_storeType.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
+            if resource_storeType and resource_storeType in DATA_EDITABLE_RESOURCES_SUBTYPES:
                 return LAYER_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS
             else:
                 return VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS
@@ -270,7 +270,7 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_storeType:
             return VIEW_PERMISSIONS + EDIT_PERMISSIONS
     elif perm == MANAGE_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_storeType and resource_storeType.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
+            if resource_storeType and resource_storeType in DATA_EDITABLE_RESOURCES_SUBTYPES:
                 return LAYER_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
             else:
                 return VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
@@ -464,7 +464,7 @@ class PermSpec(PermSpecConverterBase):
                         'first_name': user.first_name,
                         'last_name': user.last_name,
                         'avatar': user.avatar,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.storeType, is_owner),
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, getattr(self._resource, 'storeType', None), is_owner),
                         'is_superuser': user.is_superuser,
                         'is_staff': user.is_staff
                     }
@@ -474,7 +474,7 @@ class PermSpec(PermSpecConverterBase):
                     'id': Group.objects.get(name='anonymous').id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.storeType)
+                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, getattr(self._resource, 'storeType', None))
                 }
         # Let's make sure we don't lose control over the resource
         if not any([_u.get('id', None) == self._resource.owner.id for _u in user_perms]):
@@ -514,7 +514,7 @@ class PermSpec(PermSpecConverterBase):
                     'id': _k.id,
                     'title': 'anonymous',
                     'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.storeType)
+                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, getattr(self._resource, 'storeType', None))
                 }
             elif hasattr(_k, 'groupprofile'):
                 group = _Group(_k.id, _k.groupprofile.title, _k.name, _k.groupprofile.logo_url)
@@ -523,7 +523,7 @@ class PermSpec(PermSpecConverterBase):
                         'id': group.id,
                         'title': group.title,
                         'name': group.name,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.storeType)
+                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, getattr(self._resource, 'storeType', None))
                     }
                 else:
                     organization_perms.append(
@@ -532,7 +532,7 @@ class PermSpec(PermSpecConverterBase):
                             'title': group.title,
                             'name': group.name,
                             'logo': group.logo,
-                            'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.storeType)
+                            'permissions': _to_compact_perms(_perms, self._resource.resource_type, getattr(self._resource, 'storeType', None))
                         }
                     )
 
@@ -548,7 +548,7 @@ class PermSpec(PermSpecConverterBase):
                     'permissions': _to_compact_perms(
                         get_group_perms(anonymous_group, self._resource),
                         self._resource.resource_type,
-                        self._resource.storeType)
+                        getattr(self._resource, 'storeType', None))
                 }
             )
         if contributors_perms:
@@ -562,7 +562,7 @@ class PermSpec(PermSpecConverterBase):
                     'name': contributors_group.name,
                     'permissions': _to_compact_perms(
                         get_group_perms(contributors_group, self._resource),
-                        self._resource.resource_type, self._resource.storeType)
+                        self._resource.resource_type, getattr(self._resource, 'storeType', None))
                 }
             )
 
@@ -651,16 +651,16 @@ class PermSpecCompact(PermSpecConverterBase):
             _user_profile = get_user_model().objects.get(id=_u.id)
             _is_owner = _user_profile == self._resource.owner
             _perms = OWNER_RIGHTS if _is_owner else MANAGE_RIGHTS if _user_profile.is_superuser else _u.permissions
-            json['users'][_user_profile.username] = _to_extended_perms(_perms, self._resource.resource_type, self._resource.storeType, _is_owner)
+            json['users'][_user_profile.username] = _to_extended_perms(_perms, self._resource.resource_type, getattr(self._resource, 'storeType', None), _is_owner)
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.storeType)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, getattr(self._resource, 'storeType', None))
         for _go in self.groups:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.storeType)
+            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, getattr(self._resource, 'storeType', None))
             if _go.name == 'anonymous':
                 _user_profile = get_anonymous_user()
-                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.storeType)
+                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource.resource_type, getattr(self._resource, 'storeType', None))
         return json.copy()
 
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):

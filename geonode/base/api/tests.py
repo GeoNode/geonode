@@ -28,6 +28,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 from django.core.files import File
 from django.contrib.auth import get_user_model
+
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
@@ -101,8 +102,8 @@ class BaseApiTests(APITestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 6)
-            self.assertEqual(len(response.data['group_profiles']), 6)
+            self.assertEqual(response.data['total'], 7)
+            self.assertEqual(len(response.data['group_profiles']), 7)
 
             # Bobby can access public groups and the ones he is member of
             self.assertTrue(self.client.login(username='bobby', password='bob'))
@@ -112,8 +113,8 @@ class BaseApiTests(APITestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 5)
-            self.assertEqual(len(response.data['group_profiles']), 5)
+            self.assertEqual(response.data['total'], 6)
+            self.assertEqual(len(response.data['group_profiles']), 6)
             self.assertTrue(any([_g['slug'] == 'priv_1' for _g in response.data['group_profiles']]))
 
             url = reverse('group-profiles-detail', kwargs={'pk': priv_1.pk})
@@ -458,6 +459,7 @@ class BaseApiTests(APITestCase):
 
         # Check user permissions
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        self.assertEqual(resource.owner.username, 'bobby')
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
@@ -660,9 +662,9 @@ class BaseApiTests(APITestCase):
             f"{url}?filter{{category.identifier}}=elevation", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 6)
+        self.assertEqual(response.data['total'], 9)
         # Pagination
-        self.assertEqual(len(response.data['resources']), 6)
+        self.assertEqual(len(response.data['resources']), 9)
 
         # Extent Filter
         response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90", format='json')
@@ -741,7 +743,7 @@ class BaseApiTests(APITestCase):
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        resource = ResourceBase.objects.filter(owner__username='bobby', resource_type='layer').first()
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
         get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
 
@@ -753,8 +755,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertTrue('bobby' in resource_perm_spec['users'])
-        self.assertFalse('norman' in resource_perm_spec['users'])
+        self.assertTrue('bobby' in resource_perm_spec['users'], resource_perm_spec)
+        self.assertFalse('norman' in resource_perm_spec['users'], resource_perm_spec)
 
         # Add perms to Norman
         resource_perm_spec['users']['norman'] = resource_perm_spec['users']['bobby']
