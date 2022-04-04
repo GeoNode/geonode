@@ -913,11 +913,11 @@ class LayersTest(GeoNodeBaseTestSupport):
         """
         Ensure set_permissions supports the change_layer_data permission.
         """
-        layer = Layer.objects.first()
-        user = get_anonymous_user()
-        layer.set_permissions({'users': {user.username: ['change_layer_data']}})
+        layer = Layer.objects.filter(storeType='dataStore').first()
+        user = get_user_model().objects.get(username='norman')
+        layer.set_permissions({'users': {user: ['change_layer_data']}})
         perms = layer.get_all_level_info()
-        self.assertIn('change_layer_data', perms['users'][user])
+        self.assertIn('change_layer_data', perms['users'][user], perms['users'])
 
     def test_batch_edit(self):
         """
@@ -1236,8 +1236,8 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
-        # Assing
-        layer = Layer.objects.all().first()
+        # Assign
+        layer = Layer.objects.filter(storeType='dataStore').first()
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(self.user, perm_spec["users"])
         utils.set_layers_permissions("write", None, [self.user], None, None)

@@ -263,13 +263,15 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         for zoom, expected_image_path in zip(zooms, expected_image_paths):
             try:
                 image = background.fetch(bbox_3857, zoom)
-                logger.error(image)
+                # image.save(expected_image_path)
                 expected_image = Image.open(expected_image_path)
                 diff = Image.new("RGB", image.size)
 
                 mismatch = pixelmatch(image, expected_image, diff)
+                "Expected test and pre-generated backgrounds to differ up to 5%"
                 self.assertTrue(
-                    mismatch <= width * height * 0.05, "Expected test and pre-generated backgrounds to differ up to 5%"
+                    mismatch <= width * height * 0.05,
+                    mismatch
                 )
             except UnidentifiedImageError as e:
                 logger.error(f"It was not possible to fetch the background: {e}")
