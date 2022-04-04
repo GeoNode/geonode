@@ -797,7 +797,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         expected_error = {
             "success": False,
-            "errors": [f"The number of active parallel uploads exceeds 100. Wait for the pending ones to finish."],
+            "errors": ["The number of active parallel uploads exceeds 100. Wait for the pending ones to finish."],
             "code": "upload_parallelism_limit_exceeded"
         }
         # Try to upload and verify if it passed only by the form size validation
