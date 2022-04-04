@@ -714,8 +714,8 @@ def remove_permissions(instance=None) -> bool:
     return True
 
 
-def set_permissions(instance=None, owner: settings.AUTH_USER_MODEL = None,
-                    permissions: dict = {}, created: bool = False, approval_status_changed: bool = False) -> bool:
+def set_permissions(instance=None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
+                    approval_status_changed: bool = False, group_status_changed: bool = False) -> bool:
     from geonode.layers.models import Layer
 
     try:

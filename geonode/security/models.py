@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import copy
 import logging
 import operator
@@ -53,8 +54,7 @@ from .permissions import (
 from .utils import (
     get_users_with_perms,
     get_user_obj_perms_model,
-    skip_registered_members_common_group
-)
+    skip_registered_members_common_group)
 
 logger = logging.getLogger(__name__)
 
@@ -200,7 +200,7 @@ class PermissionLevelMixin:
         view permission to the anonymous group.
         """
         # default permissions for anonymous users
-        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
+        anonymous_group, _ = Group.objects.get_or_create(name='anonymous')
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
@@ -236,7 +236,7 @@ class PermissionLevelMixin:
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
         return ResourceManager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created)
 
-    def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False):
+    def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False, group_status_changed=False):
         """
         Sets an object's the permission levels based on the perm_spec JSON.
 
@@ -255,7 +255,8 @@ class PermissionLevelMixin:
             ]
         }
         """
-        return ResourceManager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created, approval_status_changed=approval_status_changed)
+        return ResourceManager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created,
+                                               approval_status_changed=approval_status_changed, group_status_changed=group_status_changed)
 
     def handle_moderated_uploads(self):
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)

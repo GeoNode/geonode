@@ -96,7 +96,7 @@ def get_visible_resources(queryset,
                 any_perm=True)
             filter_set = filter_set.filter(id__in=_allowed_resources.values('id'))
 
-        if admin_approval_required:
+        if admin_approval_required and not AdvancedSecurityWorkflowManager.is_simplified_workflow():
             if not user or not user.is_authenticated or user.is_anonymous:
                 filter_set = filter_set.filter(
                     Q(is_published=True) |
@@ -346,7 +346,7 @@ class AdvancedSecurityWorkflowManager:
               - Group MANAGERS of the *resource's group* will get the owner permissions (`publish_resource` EXCLUDED)
               - Group MEMBERS of the *resource's group* will get the `view_resourcebase`, `download_resourcebase` permission
         """
-        return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
+        return settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_advanced_workflow():
@@ -384,7 +384,7 @@ class AdvancedSecurityWorkflowManager:
               - Group MEMBERS of the user's group will get the `view_resourcebase`, `download_resourcebase` permission
               - ANONYMOUS can view and download
         """
-        return settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
+        return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_allowed_to_approve(user, resource):
@@ -491,7 +491,8 @@ class AdvancedSecurityWorkflowManager:
         return ResourceGroupsAndMembersSet(anonymous_group, registered_members_group, user_groups, resource_groups, group_managers)
 
     @staticmethod
-    def get_workflow_permissions(uuid: str, /, instance=None, perm_spec: dict = {"users": {}, "groups": {}}, created: bool = False, approval_status_changed: bool = False) -> dict:
+    def get_workflow_permissions(uuid: str, /, instance=None, perm_spec: dict = {"users": {}, "groups": {}}, created: bool = False,
+                                 approval_status_changed: bool = False, group_status_changed: bool = False) -> dict:
         """
         Adapts the provided "perm_spec" accordingly to the following schema:
                                 | RESOURCE_PUBLISHING | ADMIN_MODERATE_UPLOADS
@@ -545,6 +546,12 @@ class AdvancedSecurityWorkflowManager:
 
             # Computing the MANAGERs and MEMBERs Permissions
             if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
+                if group_status_changed:
+                    # Reset Groups/Manager Perms
+                    _owner_perms = copy.deepcopy(_perm_spec['users'].get(_resource.owner, []))
+                    _perm_spec['users'] = {_resource.owner: _owner_perms}
+                    _perm_spec['groups'] = {}
+
                 if ResourceGroupsAndMembersSet.managers:
                     for user in ResourceGroupsAndMembersSet.managers:
                         prev_perms = _perm_spec["users"].get(user, []) if "users" in _perm_spec else []
@@ -585,7 +592,7 @@ class AdvancedSecurityWorkflowManager:
                     if not AdvancedSecurityWorkflowManager.is_anonymous_can_download():
                         safe_remove(prev_perms, 'download_resourcebase')
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
-                    if (AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() or AdvancedSecurityWorkflowManager.is_advanced_workflow() and not _resource.is_published) or (
+                    if ((AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() or AdvancedSecurityWorkflowManager.is_advanced_workflow()) and not _resource.is_published) or (
                             AdvancedSecurityWorkflowManager.is_simplified_workflow() and not (_resource.is_approved or _resource.is_published)):
                         safe_remove(prev_perms, 'view_resourcebase')
                         safe_remove(prev_perms, 'download_resourcebase')
@@ -604,7 +611,8 @@ class AdvancedSecurityWorkflowManager:
         return _perm_spec
 
     @staticmethod
-    def get_permissions(uuid: str, /, instance=None, permissions: dict = {}, created: bool = False, approval_status_changed: bool = False) -> dict:
+    def get_permissions(uuid: str, /, instance=None, permissions: dict = {}, created: bool = False,
+                        approval_status_changed: bool = False, group_status_changed: bool = False) -> dict:
         """
           Fix-ups the perm_spec accordingly to the enabled workflow (if any).
           For more details check the "get_workflow_permissions" method
@@ -644,7 +652,8 @@ class AdvancedSecurityWorkflowManager:
             # Make sure we're dealing with "Profile"s and "Group"s...
             perm_spec = _resource.fixup_perms(perm_spec)
             perm_spec = AdvancedSecurityWorkflowManager.get_workflow_permissions(
-                _resource.uuid, instance=_resource, perm_spec=perm_spec, created=created, approval_status_changed=approval_status_changed)
+                _resource.uuid, instance=_resource, perm_spec=perm_spec, created=created,
+                approval_status_changed=approval_status_changed, group_status_changed=group_status_changed)
 
         return perm_spec
 
@@ -773,8 +782,8 @@ class ResourceManager:
         return False
 
     @staticmethod
-    def set_permissions(uuid: str, /, instance=None, owner: settings.AUTH_USER_MODEL = None,
-                        permissions: dict = {}, created: bool = False, approval_status_changed: bool = False) -> bool:
+    def set_permissions(uuid: str, /, instance=None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
+                        approval_status_changed: bool = False, group_status_changed: bool = False) -> bool:
         from geonode.base.models import ResourceBase
 
         _resource = instance or AdvancedSecurityWorkflowManager.get_instance(uuid)
@@ -805,8 +814,9 @@ class ResourceManager:
                         _permissions = None
 
                     # Fixup Advanced Workflow permissions
-                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions,
-                                                                                 created=created, approval_status_changed=approval_status_changed)
+                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(
+                        _resource.uuid, instance=_resource, permissions=_permissions, created=created,
+                        approval_status_changed=approval_status_changed, group_status_changed=group_status_changed)
 
                     """
                     Cleanup the Guardian tables
