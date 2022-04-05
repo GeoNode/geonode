@@ -1598,21 +1598,24 @@ class BaseApiTests(APITestCase):
         # Anonymous
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        self.assertEqual(response.data['total'], len(HierarchicalKeyword.resource_keywords_tree(None)))
 
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
+        admin = get_user_model().objects.get(username='admin')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        self.assertEqual(response.data['total'], len(HierarchicalKeyword.resource_keywords_tree(admin)))
         # response has link to the response
-        self.assertTrue('link' in response.data['keywords'][0].keys())
+        if response.data['total'] > 0:
+            self.assertTrue('link' in response.data['keywords'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
+        bobby = get_user_model().objects.get(username='bobby')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        self.assertEqual(response.data['total'], len(HierarchicalKeyword.resource_keywords_tree(bobby)))
 
         # Keywords Filtering
         response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
