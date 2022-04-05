@@ -88,7 +88,7 @@ class CountJSONSerializer(Serializer):
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
         subtypes = []
-        if resources and resources.count() > 0:
+        if resources and resources.exists():
             if options['title_filter']:
                 resources = resources.filter(title__icontains=options['title_filter'])
             if options['type_filter']:

@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 """
 Provide views for doing an upload.
 
@@ -41,7 +40,6 @@ import gsimporter
 
 from http.client import BadStatusLine
 
-from django.contrib import auth
 from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render
@@ -67,16 +65,13 @@ from .forms import (
     LayerUploadForm,
     SRSForm,
     TimeForm,
-    UploadFileForm,
-)
+    UploadFileForm)
 from .models import (
     Upload,
-    UploadFile,
-)
+    UploadFile)
 from .files import (
     get_scan_hint,
-    scan_file
-)
+    scan_file)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -92,10 +87,15 @@ from .utils import (
     json_response,
     get_previous_step,
     layer_eligible_for_time_dimension,
-    next_step_response,
-)
-from .upload import (save_step, srs_step, time_step, csv_step, final_step,
-                     LayerNotReady, UploaderSession)
+    next_step_response)
+from .upload import (
+    save_step,
+    srs_step,
+    time_step,
+    csv_step,
+    final_step,
+    LayerNotReady,
+    UploaderSession)
 
 logger = logging.getLogger(__name__)
 
@@ -688,8 +688,6 @@ _steps = {
 @logged_in_or_basicauth(realm="GeoNode")
 def view(req, step=None):
     """Main uploader view"""
-    if not auth.get_user(req).is_authenticated:
-        return error_response(req, errors=["Not Authorized"])
 
     config = Configuration.load()
     if config.read_only or config.maintenance:
@@ -748,13 +746,15 @@ def view(req, step=None):
 
         resp = _steps[step](req, upload_session)
         resp_js = None
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
         try:
-            content = resp.content
-            if isinstance(content, bytes):
-                content = content.decode('UTF-8')
             resp_js = json.loads(content)
+        except json.decoder.JSONDecodeError:
+            resp_js = content
         except Exception as e:
-            logger.warning(e)
+            return error_response(req, exception=e)
 
         # must be put back to update object in session
         if upload_session:
@@ -772,7 +772,7 @@ def view(req, step=None):
             upload_session = _get_upload_session(req)
         if upload_session:
             Upload.objects.update_from_session(upload_session)
-        if resp_js:
+        if resp_js and isinstance(resp_js, dict):
             _success = resp_js.get('success', False)
             _redirect_to = resp_js.get('redirect_to', '')
             _required_input = resp_js.get('required_input', False)

@@ -21,10 +21,11 @@ import io
 import os
 import shutil
 import smart_open
-import tempfile
 
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
+
+from geonode.utils import mkdtemp
 
 
 class DataItemRetriever(object):
@@ -55,7 +56,7 @@ class DataItemRetriever(object):
             os.remove(self.file_path)
             # Verify and remove temp folder
             folder_is_empty = len(os.listdir(self.temporary_folder)) == 0
-            folder_is_not_static_root = settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))
+            folder_is_not_static_root = settings.MEDIA_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))
             if folder_is_empty and folder_is_not_static_root:
                 shutil.rmtree(self.temporary_folder, ignore_errors=True)
 
@@ -89,7 +90,7 @@ class DataItemRetriever(object):
                     break
                 yield data
 
-        self.temporary_folder = temporary_folder or tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        self.temporary_folder = temporary_folder or mkdtemp()
         self.file_path = os.path.join(self.temporary_folder, self.name)
 
         if self._is_django_form_file:
@@ -117,7 +118,7 @@ class DataItemRetriever(object):
         return os.path.basename(self._smart_open_uri.uri_path)
 
 
-class DataRetriever:
+class DataRetriever(object):
 
     def __init__(self, files, tranfer_at_creation=False):
         self.temporary_folder = None
@@ -130,7 +131,7 @@ class DataRetriever:
             self.transfer_remote_files()
 
     def transfer_remote_files(self):
-        self.temporary_folder = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
+        self.temporary_folder = mkdtemp()
         for name, data_item_retriever in self.data_items.items():
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = file_path
@@ -144,7 +145,7 @@ class DataRetriever:
         return self.file_paths.copy()
 
     def delete_files(self):
-        if (self.temporary_folder and os.path.exists(self.temporary_folder) and settings.STATIC_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))):
+        if (self.temporary_folder and os.path.exists(self.temporary_folder) and settings.MEDIA_ROOT != os.path.dirname(os.path.abspath(self.temporary_folder))):
             shutil.rmtree(self.temporary_folder, ignore_errors=True)
         self.temporary_folder = None
         self.file_paths = {}

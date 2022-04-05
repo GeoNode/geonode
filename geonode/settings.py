@@ -24,7 +24,7 @@ import ast
 import sys
 import subprocess
 import dj_database_url
-
+from schema import Optional
 from datetime import timedelta
 from distutils.util import strtobool  # noqa
 from urllib.parse import urlparse, urljoin
@@ -37,14 +37,15 @@ from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
 
-from schema import Optional
 from . import serializer
 
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
     'fields.W340',
     'auth.W004',
-    'urls.W002'
+    'urls.W002',
+    'drf_spectacular.W001',
+    'drf_spectacular.W002'
 ]
 
 # GeoNode Version
@@ -220,6 +221,7 @@ _DEFAULT_LANGUAGES = """(
     ('zh-cn', '中文'),
     ('ja', '日本語'),
     ('ko', '한국어'),
+    ('sk', 'Slovensky'),
 )"""
 
 LANGUAGES = ast.literal_eval(os.getenv('LANGUAGES', _DEFAULT_LANGUAGES))
@@ -619,7 +621,7 @@ except ValueError:
         'bm', 'bmp', 'dwg', 'dxf', 'fif', 'gif', 'jpg', 'jpe', 'jpeg', 'png', 'tif',
         'tiff', 'pbm', 'odp', 'ppt', 'pptx', 'pdf', 'tar', 'tgz', 'rar', 'gz', '7z',
         'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
-        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo'
+        'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo', 'glb', 'pcd', 'gltf'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
         else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
@@ -1048,7 +1050,7 @@ USE_GEOSERVER = 'geonode.geoserver' in INSTALLED_APPS and OGC_SERVER['default'][
 # Uploader Settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 """
-    DEFAULT_BACKEND_UPLOADER = {'geonode.rest', 'geonode.importer'}
+    DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
 """
 UPLOADER = {
     'BACKEND': os.getenv('DEFAULT_BACKEND_UPLOADER', 'geonode.importer'),
@@ -1696,10 +1698,11 @@ SEARCH_FILTERS = {
 TINYMCE_DEFAULT_CONFIG = {
     "theme": "silver",
     "height": 200,
-    "plugins": 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',  # noqa
+    "plugins": 'preview paste searchreplace autolink directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars',  # noqa
     "imagetools_cors_hosts": ['picsum.photos'],
-    "menubar": 'file edit view insert format tools table help',
-    "toolbar": 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save | insertfile image media template link anchor codesample | ltr rtl',  # noqa
+    "menubar": False,
+    "statusbar": False,
+    "toolbar": 'bold italic underline | formatselect removeformat | outdent indent |  numlist bullist | insertfile image media link codesample | preview',  # noqa
     "toolbar_sticky": "true",
     "autosave_ask_before_unload": "true",
     "autosave_interval": "30s",
@@ -1857,7 +1860,9 @@ if USE_GEOSERVER:
 #          'task': 'my_app.tasks.send_notification',
 #          'schedule': crontab(hour=16, day_of_week=5),
 #     },
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+CELERY_BEAT_SCHEDULER = os.environ.get(
+    'CELERY_BEAT_SCHEDULER', "django_celery_beat.schedulers:DatabaseScheduler")
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
@@ -1954,29 +1959,6 @@ if os.name == 'nt':
 # ######################################################## #
 # Advanced Resource Publishing Worklow Settings - START    #
 # ######################################################## #
-"""
-    - if [ RESOURCE_PUBLISHING == True ]
-      1. "unpublished" won't be visibile to Anonymous users
-      2. "unpublished" will be visible to registered users **IF** they have view permissions
-      3. "unpublished" will be always visible to the owner and Group Managers
-      By default the uploaded resources will be "unpublished".
-      The owner will be able to change them to "published" **UNLESS** the ADMIN_MODERATE_UPLOADS is activated.
-      If the owner assigns unpublished resources to a Group, both from Metadata and Permissions, in any case
-       the Group "Managers" will be able to edit the Resource.
-
-    - if [ ADMIN_MODERATE_UPLOADS == True ]
-      1. The owner won't be able to change to neither "approved" nor "published" state (unless he is a superuser)
-      2. If the Resource belongs to a Group somehow, the Managers will be able to change the state to "approved"
-         but **NOT** to "published". Only a superuser can publish a resource.
-      3. Superusers can do enything.
-
-    - if [ GROUP_PRIVATE_RESOURCES == True ]
-      The "unapproved" and "unpublished" Resources will be accessible **ONLY** by owners, superusers and member of
-       the belonging groups.
-
-    - if [ GROUP_MANDATORY_RESOURCES == True ]
-      Editor will be **FORCED** to select a Group when editing the resource metadata.
-"""
 
 # option to enable/disable resource unpublishing for administrators and members
 RESOURCE_PUBLISHING = ast.literal_eval(os.getenv('RESOURCE_PUBLISHING', 'False'))
@@ -1991,6 +1973,7 @@ GROUP_PRIVATE_RESOURCES = ast.literal_eval(os.environ.get('GROUP_PRIVATE_RESOURC
 # If this option is enabled, Groups will become strictly Mandatory on
 # Metadata Wizard
 GROUP_MANDATORY_RESOURCES = ast.literal_eval(os.environ.get('GROUP_MANDATORY_RESOURCES', 'False'))
+
 # ######################################################## #
 # Advanced Resource Publishing Worklow Settings - END      #
 # ######################################################## #

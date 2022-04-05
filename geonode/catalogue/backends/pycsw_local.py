@@ -18,7 +18,7 @@
 #########################################################################
 
 import os
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from django.conf import settings
 from owslib.iso import MD_Metadata
 from pycsw import server
@@ -57,6 +57,7 @@ CONFIGURATION = {
 
 
 class CatalogueBackend(GenericCatalogueBackend):
+
     def __init__(self, *args, **kwargs):
         GenericCatalogueBackend.__init__(CatalogueBackend, self, *args, **kwargs)
         self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']
@@ -147,7 +148,7 @@ class CatalogueBackend(GenericCatalogueBackend):
                 'startposition': start,
                 'maxrecords': limit
             }
-            response = csw.getrecords()
+            response = csw.getrecords2()
         else:  # it's a GetRecordById request
             csw.kvp = {
                 'service': 'CSW',

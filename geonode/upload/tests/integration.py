@@ -454,7 +454,7 @@ class TestUpload(UploaderBase):
                 "No 'original' and 'metadata' links have been found"
             )
             self.assertTrue(
-                _links.count() > 0,
+                _links.exists(),
                 "No 'original' and 'metadata' links have been found"
             )
             # Check original links in csw_anytext

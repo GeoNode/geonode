@@ -46,13 +46,14 @@ class DocumentViewSet(DynamicModelViewSet):
     """
     API endpoint that allows documents to be viewed or edited.
     """
+    http_method_names = ['get', 'patch', 'put']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, DocumentPermissionsFilter
     ]
-    queryset = Document.objects.all()
+    queryset = Document.objects.all().order_by('-last_updated')
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 

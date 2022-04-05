@@ -156,6 +156,7 @@ class GeoNodeRepository(Repository):
         # we want to exclude layers which are not valid, as it is done in the
         # search engine
         pycsw_filters = settings.PYCSW.get('FILTER', {'resource_type__in': ['layer']})
+
         if 'where' in constraint:  # GetRecords with constraint
             query = self._get_repo_filter(
                 ResourceBase.objects.filter(**pycsw_filters)).extra(

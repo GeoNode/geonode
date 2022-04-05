@@ -21,17 +21,17 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
 import zipfile
-import tempfile
 import contextlib
 
 import geonode.upload.files as files
+from geonode.utils import mkdtemp
 from geonode.upload.files import SpatialFiles, scan_file
 from geonode.upload.files import _rename_files, _contains_bad_names
 
 
 @contextlib.contextmanager
 def create_files(names, zipped=False):
-    tmpdir = tempfile.mkdtemp()
+    tmpdir = mkdtemp()
     names = [os.path.join(tmpdir, f) for f in names]
     for f in names:
         # required for windows to read the shapefile in binary mode and the zip

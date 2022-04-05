@@ -552,7 +552,7 @@ def sync_geofence_with_guardian(layer, perms, user=None, group=None, group_perms
         if user and group_perms:
             if isinstance(user, str):
                 user = get_user_model().objects.get(username=user)
-            user_groups = list(user.groups.all().values_list('name', flat=True))
+            user_groups = list(user.groups.values_list('name', flat=True))
             for _group, _perm in group_perms.items():
                 if 'change_layer_data' in _perm and _group in user_groups:
                     _skip_perm = True
@@ -634,20 +634,20 @@ def get_user_geolimits(layer, user, group, gf_services):
     if user:
         _user = user if isinstance(user, str) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
-        gf_services["*"] = users_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = users_geolimits.count() > 0
+        gf_services["*"] = users_geolimits.exists() if not gf_services["*"] else gf_services["*"]
+        _disable_layer_cache = users_geolimits.exists()
 
     if group:
         _group = group if isinstance(group, str) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
-            gf_services["*"] = groups_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-            _disable_layer_cache = groups_geolimits.count() > 0
+            gf_services["*"] = groups_geolimits.exists() if not gf_services["*"] else gf_services["*"]
+            _disable_layer_cache = groups_geolimits.exists()
 
     if not user and not group:
         anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
-        gf_services["*"] = anonymous_geolimits.count() > 0 if not gf_services["*"] else gf_services["*"]
-        _disable_layer_cache = anonymous_geolimits.count() > 0
+        gf_services["*"] = anonymous_geolimits.exists() if not gf_services["*"] else gf_services["*"]
+        _disable_layer_cache = anonymous_geolimits.exists()
     return _group, _user, _disable_layer_cache, users_geolimits, groups_geolimits, anonymous_geolimits
 
 
@@ -684,7 +684,7 @@ def get_owner_permissions_according_to_workflow(resource):
 
             # Check if owner is a manager to any group and add admin_manager_perms
             user_groups = Group.objects.filter(
-                name__in=resource.owner.groupmember_set.all().values_list("group__slug", flat=True))
+                name__in=resource.owner.groupmember_set.values_list("group__slug", flat=True))
             _, group_managers = resource.get_group_managers(user_groups)
             if resource.owner in group_managers:
                 return owner_perms + admin_manager_perms
@@ -837,7 +837,7 @@ def sync_resources_with_guardian(resource=None):
         dirty_resources = ResourceBase.objects.filter(id=resource.id)
     else:
         dirty_resources = ResourceBase.objects.filter(dirty_state=True)
-    if dirty_resources and dirty_resources.count() > 0:
+    if dirty_resources and dirty_resources.exists():
         logger.debug(" --------------------------- synching with guardian!")
         for r in dirty_resources:
             if r.polymorphic_ctype.name == 'layer':
@@ -891,7 +891,7 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
 
     if filter_options:
-        if resources_with_perms and resources_with_perms.count() > 0:
+        if resources_with_perms and resources_with_perms.exists():
             if filter_options.get('title_filter'):
                 resources_with_perms = resources_with_perms.filter(
                     title__icontains=filter_options.get('title_filter')
