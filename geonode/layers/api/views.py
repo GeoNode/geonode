@@ -56,7 +56,7 @@ class LayerViewSet(DynamicModelViewSet):
     pagination_class = GeoNodeApiPagination
 
     @extend_schema(
-        methods=["post"],
+        methods=["put"],
         responses={200},
         description="API endpoint allowing to replace a layer."
     )
@@ -64,7 +64,7 @@ class LayerViewSet(DynamicModelViewSet):
         detail=False,
         url_path="(?P<layer_id>\d+)/replace",  # noqa
         url_name="replace-layer",
-        methods=["post"]
+        methods=["put"]
     )
     def replace(self, request, layer_id=None):
         user = request.user

@@ -1179,7 +1179,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             'is_layer': True,
         }
         return render(request, template, context=ctx)
-    elif request.method == 'POST':
+    elif request.method in ['POST', 'PUT']:
         form = UploadViewsetForm(request.POST, request.FILES)
 
         _tmpdir = None
