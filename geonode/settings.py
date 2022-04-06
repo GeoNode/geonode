@@ -1675,6 +1675,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     # ]
     MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = []
 
+    # Extensions path to use in importing custom extensions into geonode
+    MAPSTORE_EXTENSIONS_FOLDER_PATH = '/static/mapstore/extensions/'
+
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
