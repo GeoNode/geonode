@@ -81,7 +81,7 @@ from .helpers import (
     _invalidate_geowebcache_dataset)
 
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import never_cache
 
 logger = logging.getLogger(__name__)
 
@@ -464,7 +464,7 @@ def check_geoserver_access(request,
 
 
 @csrf_exempt
-@cache_control(public=True, must_revalidate=True, max_age=30)
+@never_cache
 def geoserver_proxy(request,
                     proxy_path,
                     downstream_path,
