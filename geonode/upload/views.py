@@ -699,12 +699,13 @@ def view(req, step=None):
 
         resp = _steps[step](req, upload_session)
         resp_js = None
+        content = resp.content
+        if isinstance(content, bytes):
+            content = content.decode('UTF-8')
         try:
-            if 'json' in resp.headers.get('Content-Type', ''):
-                content = resp.content
-                if isinstance(content, bytes):
-                    content = content.decode('UTF-8')
-                resp_js = json.loads(content)
+            resp_js = json.loads(content)
+        except json.decoder.JSONDecodeError:
+            resp_js = content
         except Exception as e:
             logger.exception(e)
             if isinstance(e, APIException):
@@ -727,7 +728,7 @@ def view(req, step=None):
             upload_session = _get_upload_session(req)
         if upload_session:
             Upload.objects.update_from_session(upload_session)
-        if resp_js:
+        if resp_js and isinstance(resp_js, dict):
             _success = resp_js.get('success', False)
             _redirect_to = resp_js.get('redirect_to', '')
             _required_input = resp_js.get('required_input', False)

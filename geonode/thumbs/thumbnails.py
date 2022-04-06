@@ -30,7 +30,7 @@ from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Dataset
-from geonode.utils import OGC_Servers_Handler
+from geonode.geoserver.helpers import ogc_server_settings
 from geonode.utils import get_dataset_name, get_dataset_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
@@ -43,7 +43,6 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     Create a thumbnail with a GeoServer request.
     """
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
     wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.1"
 
     create_thumbnail(
@@ -256,7 +255,6 @@ def _datasets_locations(
              and a list optionally consisting of 5 elements containing west, east, south, north
              instance's boundaries and CRS
     """
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
     locations = []
     bbox = []
     if isinstance(instance, Dataset):

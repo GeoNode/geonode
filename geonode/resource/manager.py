@@ -692,8 +692,7 @@ class ResourceManager(ResourceManagerInterface):
                             raise Exception("Could not acquire 'anonymous' Group.")
 
                         # Anonymous
-                        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                        if anonymous_can_view:
+                        if AdvancedSecurityWorkflowManager.is_anonymous_can_view():
                             assign_perm('view_resourcebase',
                                         anonymous_group, _resource.get_self_resource())
                             _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
@@ -707,8 +706,7 @@ class ResourceManager(ResourceManagerInterface):
                                     _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
 
                         if AdvancedSecurityWorkflowManager.assignable_perm_condition('download_resourcebase', _resource_type):
-                            anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-                            if anonymous_can_download:
+                            if AdvancedSecurityWorkflowManager.is_anonymous_can_download():
                                 assign_perm('download_resourcebase',
                                             anonymous_group, _resource.get_self_resource())
                                 _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []

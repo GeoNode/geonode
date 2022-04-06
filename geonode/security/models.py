@@ -260,6 +260,9 @@ class PermissionLevelMixin:
         from geonode.resource.manager import resource_manager
         return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created, approval_status_changed=approval_status_changed)
 
+    def handle_moderated_uploads(self):
+        AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
+
     def compare_perms(self, prev_perm_spec, perm_spec):
         """
         Compare two perm_specs in the form
