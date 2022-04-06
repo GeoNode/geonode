@@ -594,6 +594,12 @@ class ResourceManager(ResourceManagerInterface):
                     _owner = _resource.owner
                     _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
 
+                    # default permissions for anonymous users
+                    anonymous_group, _ = Group.objects.get_or_create(name='anonymous')
+
+                    if not anonymous_group:
+                        raise Exception("Could not acquire 'anonymous' Group.")
+
                     # Gathering and validating the current permissions (if any has been passed)
                     if not created and permissions is None:
                         permissions = _resource.get_all_level_info()
@@ -638,8 +644,11 @@ class ResourceManager(ResourceManagerInterface):
                         # Anonymous User group
                         if 'users' in _perm_spec and ("AnonymousUser" in _perm_spec['users'] or get_anonymous_user() in _perm_spec['users']):
                             anonymous_user = "AnonymousUser" if "AnonymousUser" in _perm_spec['users'] else get_anonymous_user()
-                            anonymous_group = Group.objects.get(name='anonymous')
-                            for perm in _perm_spec['users'][anonymous_user]:
+                            perms = copy.deepcopy(_perm_spec['users'][anonymous_user])
+                            _perm_spec['users'].pop(anonymous_user)
+                            _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
+                            _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set(perms))
+                            for perm in _perm_spec["groups"][anonymous_group]:
                                 if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
@@ -686,37 +695,27 @@ class ResourceManager(ResourceManagerInterface):
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
                     else:
-                        # default permissions for anonymous users
-                        anonymous_group, created = Group.objects.get_or_create(name='anonymous')
-
-                        if not anonymous_group:
-                            raise Exception("Could not acquire 'anonymous' Group.")
-
                         # Anonymous
                         if AdvancedSecurityWorkflowManager.is_anonymous_can_view():
-                            assign_perm('view_resourcebase',
-                                        anonymous_group, _resource.get_self_resource())
+                            assign_perm('view_resourcebase', anonymous_group, _resource.get_self_resource())
                             _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
                             _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
                         else:
                             for user_group in get_user_groups(_owner):
                                 if not skip_registered_members_common_group(user_group):
-                                    assign_perm('view_resourcebase',
-                                                user_group, _resource.get_self_resource())
+                                    assign_perm('view_resourcebase', user_group, _resource.get_self_resource())
                                     _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                     _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
 
                         if AdvancedSecurityWorkflowManager.assignable_perm_condition('download_resourcebase', _resource_type):
                             if AdvancedSecurityWorkflowManager.is_anonymous_can_download():
-                                assign_perm('download_resourcebase',
-                                            anonymous_group, _resource.get_self_resource())
+                                assign_perm('download_resourcebase', anonymous_group, _resource.get_self_resource())
                                 _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
                                 _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
                             else:
                                 for user_group in get_user_groups(_owner):
                                     if not skip_registered_members_common_group(user_group):
-                                        assign_perm('download_resourcebase',
-                                                    user_group, _resource.get_self_resource())
+                                        assign_perm('download_resourcebase', user_group, _resource.get_self_resource())
                                         _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
 

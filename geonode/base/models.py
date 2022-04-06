@@ -1233,6 +1233,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
             self.pk = self.id = _next_value
 
+        if not self.uuid or len(self.uuid) == 0 or callable(self.uuid):
+            self.uuid = str(uuid.uuid4())
         super().save(*args, **kwargs)
 
         # Update workflow permissions
