@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 """
 Provide views for doing an upload.
 
@@ -69,8 +68,7 @@ from .models import (
     Upload)
 from .files import (
     get_scan_hint,
-    scan_file
-)
+    scan_file)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
