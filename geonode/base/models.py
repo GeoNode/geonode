@@ -745,7 +745,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     extra_metadata_help_text = _(
         'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
-    uuid = models.CharField(max_length=36, unique=True)
+    uuid = models.CharField(max_length=36, unique=True, default=str(uuid.uuid4))
     title = models.CharField(_('title'), max_length=255, help_text=_(
         'name by which the cited resource is known'))
     abstract = models.TextField(
@@ -2092,7 +2092,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
                 instance.license = license[0]
 
         if instance.uuid is None or instance.uuid == '':
-            instance.uuid = str(uuid.uuid1())
+            instance.uuid = str(uuid.uuid4)
 
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),

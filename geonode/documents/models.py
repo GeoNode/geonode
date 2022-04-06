@@ -207,7 +207,7 @@ def pre_save_document(instance, sender, **kwargs):
             instance.extension = urlparse(instance.doc_url).path.rsplit('.')[-1]
 
     if not instance.uuid:
-        instance.uuid = str(uuid.uuid1())
+        instance.uuid = str(uuid.uuid4())
     instance.csw_type = 'document'
 
     if instance.abstract == '' or instance.abstract is None:
