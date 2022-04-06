@@ -225,11 +225,15 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     """
     API endpoint that lists hierarchical keywords.
     """
+    def get_queryset(self):
+        resource_keywords = HierarchicalKeyword.resource_keywords_tree(self.request.user)
+        slugs = [obj.get('href') for obj in resource_keywords]
+        return HierarchicalKeyword.objects.filter(slug__in=slugs)
+
     permission_classes = [AllowAny, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
 
