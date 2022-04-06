@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='resourcebase',
             name='uuid',
-            field=models.CharField(max_length=36, unique=True, default=uuid.uuid4),
+            field=models.CharField(max_length=36, unique=True, default=str(uuid.uuid4)),
         ),
     ]
