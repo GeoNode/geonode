@@ -16,6 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from uuid import uuid4
+
 from django.test import override_settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -30,20 +33,20 @@ class TestGeoAppViews(GeoNodeBaseTestSupport):
     def setUp(self) -> None:
         self.user = get_user_model().objects.get(username='admin')
         self.geoapp = GeoApp.objects.create(
+            uuid=str(uuid4()),
             name="name",
             title="geoapp_titlte",
             thumbnail_url='initial',
-            owner=self.user
-        )
+            owner=self.user)
         self.sut = GeoAppForm
 
     def test_update_geoapp_metadata(self):
         bobby = get_user_model().objects.get(username='admin')
         gep_app = GeoApp.objects.create(
+            uuid=str(uuid4()),
             title="App",
             thumbnail_url='initial',
-            owner=bobby
-        )
+            owner=bobby)
         gep_app.set_default_permissions()
         url = reverse('geoapp_metadata', args=(gep_app.id,))
         data = {

@@ -16,12 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import copy
 import shutil
 import zipfile
 import tempfile
-
+from uuid import uuid4
 from osgeo import ogr
 from unittest.mock import patch
 from datetime import datetime, timedelta
@@ -162,6 +163,7 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
         # Create dummy layer to attach attributes to
         _l = Layer.objects.create(
+            uuid=str(uuid4()),
             owner=self.user,
             name='dummy_layer',
             bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),

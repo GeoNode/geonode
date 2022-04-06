@@ -21,7 +21,7 @@ from geonode.base.models import ResourceBase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import json
-
+from uuid import uuid4
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
@@ -62,10 +62,10 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.adm_pw = "admin"
         self.admin = get_user_model().objects.get(username="admin")
         self.geoapp = GeoApp.objects.create(
+            uuid=str(uuid4()),
             resource_type='geoapp',
             name="test geoapp1",
-            owner=self.admin
-        )
+            owner=self.admin)
 
     # tests of Favorite and FavoriteManager methods.
     def test_favorite(self):

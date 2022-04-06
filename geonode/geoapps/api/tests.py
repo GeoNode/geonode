@@ -16,9 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import json
 import logging
-
+from uuid import uuid4
 from django.urls import reverse
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
@@ -60,9 +61,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.bobby = get_user_model().objects.get(username='bobby')
         self.norman = get_user_model().objects.get(username='norman')
         self.gep_app = GeoApp.objects.create(
+            uuid=str(uuid4()),
             title="Test GeoApp",
-            owner=self.bobby
-        )
+            owner=self.bobby)
         self.gep_app_data = GeoAppData.objects.create(
             blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}',
             resource=self.gep_app

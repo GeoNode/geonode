@@ -21,11 +21,10 @@ import os
 import re
 import html
 import math
-import uuid
 import shutil
 import logging
 import traceback
-
+from uuid import uuid4
 from django.db import models, transaction
 from django.conf import settings
 from django.utils.functional import cached_property
@@ -745,7 +744,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     extra_metadata_help_text = _(
         'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
-    uuid = models.CharField(max_length=36, unique=True, default=str(uuid.uuid4))
+
+    def gen_uuid():
+        return str(uuid4())
+
+    uuid = models.CharField(max_length=36, unique=True, default=gen_uuid)
     title = models.CharField(_('title'), max_length=255, help_text=_(
         'name by which the cited resource is known'))
     abstract = models.TextField(
@@ -1128,6 +1131,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
+        # if not self.uuid or len(self.uuid) == 0 or callable(self.uuid):
+        #     self.uuid = str(uuid4())
         super().save(*args, **kwargs)
 
         # Update workflow permissions
@@ -1648,10 +1653,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.exists():
             _thumbnail_url = add_url_params(
-                local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+                local_thumbnails[0].url, {'v': str(uuid4())[:8]})
         elif remote_thumbnails.exists():
             _thumbnail_url = add_url_params(
-                remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+                remote_thumbnails[0].url, {'v': str(uuid4())[:8]})
         return _thumbnail_url
 
     def has_thumbnail(self):
@@ -2090,9 +2095,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
             if license and len(license) > 0:
                 instance.license = license[0]
-
-        if instance.uuid is None or instance.uuid == '':
-            instance.uuid = str(uuid.uuid4)
 
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),
