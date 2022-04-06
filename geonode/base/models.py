@@ -1131,8 +1131,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
-        # if not self.uuid or len(self.uuid) == 0 or callable(self.uuid):
-        #     self.uuid = str(uuid4())
+        if not self.uuid or len(self.uuid) == 0 or callable(self.uuid):
+            self.uuid = str(uuid4())
         super().save(*args, **kwargs)
 
         # Update workflow permissions
