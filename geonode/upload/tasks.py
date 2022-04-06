@@ -114,7 +114,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                             )
                         )
                     else:
-                        if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                        if _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
                             _upload.set_processing_state(enumerations.STATE_INVALID)
                             _upload_ids.append(_upload.id)
                             _upload_tasks.append(
@@ -188,34 +188,40 @@ def _update_upload_session_state(self, upload_session_id: int):
             _response_json = json.loads(_content)
             _success = _response_json.get('success', False)
             _redirect_to = _response_json.get('redirect_to', '')
+
+            _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
+            _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
+
             if _success:
-                if 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to:
+                if _tasks_failed:
+                    # GeoNode Layer creation errored!
+                    _upload.set_processing_state(enumerations.STATE_INVALID)
+                elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
                     _upload.set_resume_url(_redirect_to)
                     _upload.set_processing_state(enumerations.STATE_WAITING)
-                else:
-                    if session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
-                        if not _upload.resource or not _upload.resource.processed:
-                            _response = final_step_view(None, _upload.get_session)
-                            _upload.refresh_from_db()
-                            _content = _response.content
-                            if isinstance(_content, bytes):
-                                _content = _content.decode('UTF-8')
-                            _response_json = json.loads(_content)
-                            _success = _response_json.get('success', False)
-                            _status = _response_json.get('status', 'error')
-                            if _status == 'error':
-                                # GeoNode Layer creation errored!
-                                _upload.set_processing_state(enumerations.STATE_INVALID)
-                            elif _status == 'pending':
-                                # GeoNode Layer not ready yet...
-                                _upload.set_processing_state(enumerations.STATE_PENDING)
-                            elif _upload.state != enumerations.STATE_PROCESSED:
-                                if _upload.resource and _upload.resource.processed:
-                                    # GeoNode Layer successfully processed...
-                                    _upload.set_processing_state(enumerations.STATE_PROCESSED)
-                                else:
-                                    # GeoNode Layer updating...
-                                    _upload.set_processing_state(enumerations.STATE_RUNNING)
+                elif session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
+                    if not _upload.resource or not _upload.resource.processed:
+                        _response = final_step_view(None, _upload.get_session)
+                        _upload.refresh_from_db()
+                        _content = _response.content
+                        if isinstance(_content, bytes):
+                            _content = _content.decode('UTF-8')
+                        _response_json = json.loads(_content)
+                        _success = _response_json.get('success', False)
+                        _status = _response_json.get('status', 'error')
+                        if _status == 'error':
+                            # GeoNode Layer creation errored!
+                            _upload.set_processing_state(enumerations.STATE_INVALID)
+                        elif _status == 'pending':
+                            # GeoNode Layer not ready yet...
+                            _upload.set_processing_state(enumerations.STATE_PENDING)
+                        elif _upload.state != enumerations.STATE_PROCESSED:
+                            if _upload.resource and _upload.resource.processed:
+                                # GeoNode Layer successfully processed...
+                                _upload.set_processing_state(enumerations.STATE_PROCESSED)
+                            else:
+                                # GeoNode Layer updating...
+                                _upload.set_processing_state(enumerations.STATE_RUNNING)
                 logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
         except (NotFound, Exception) as e:
             logger.exception(e)

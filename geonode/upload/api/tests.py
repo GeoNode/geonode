@@ -16,13 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
+import json
 import shutil
 import logging
 import tempfile
-from unittest import mock
-
 from io import IOBase
+from time import sleep
+from unittest import mock
 from gisdata import GOOD_DATA
 from urllib.request import urljoin
 
@@ -49,6 +51,8 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.upload.tasks import _update_upload_session_state
+from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
 
 GEONODE_USER = 'admin'
@@ -611,7 +615,24 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         response = self.client.delete(f"{delete_resource_url}/delete")
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(os.path.exists(upload.upload_dir))
+        resp_js = json.loads(response.content.decode('utf-8'))
+        if resp_js.get("status", "") != "success":
+            status_url = resp_js.get("status_url", None)
+            execution_id = resp_js.get("execution_id", "")
+            self.assertIsNotNone(status_url)
+            self.assertIsNotNone(execution_id)
+            for _cnt in range(0, 10):
+                response = self.client.get(f"{status_url}")
+                self.assertEqual(response.status_code, 200)
+                resp_js = json.loads(response.content.decode('utf-8'))
+                logger.error(f"[{_cnt + 1}] ... {resp_js}")
+                if resp_js.get("status", "") == "finished":
+                    break
+                else:
+                    resouce_service_dispatcher.apply((execution_id,))
+                    sleep(3.0)
+        self.assertEqual(resp_js.get("status", ""), "finished", resp_js)
+        self.assertFalse(os.path.exists(upload.upload_dir), resp_js)
 
     def test_rest_uploads_by_path(self):
         """
@@ -714,10 +735,24 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(response.data['total'], 1, response.data['total'])
         # Pagination
         self.assertEqual(len(response.data['uploads']), 1)
-        logger.debug(response.data)
+        self.assertEqual(response.status_code, 200)
         upload_data = response.data['uploads'][0]
         self.assertIsNotNone(upload_data)
         self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+        if upload_data['state'] != enumerations.STATE_WAITING:
+            for _cnt in range(0, 10):
+                response = self.client.get(url, format='json')
+                self.assertEqual(response.status_code, 200)
+                logger.error(f"[{_cnt + 1}] ... {response.data}")
+                upload_data = response.data['uploads'][0]
+                self.assertIsNotNone(upload_data)
+                self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+                if upload_data['state'] == enumerations.STATE_WAITING:
+                    break
+                else:
+                    for _upload in Upload.objects.filter(state=upload_data['state']):
+                        _update_upload_session_state.apply((_upload.id,))
+                    sleep(3.0)
         self.assertEqual(upload_data['state'], enumerations.STATE_WAITING, upload_data['state'])
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
