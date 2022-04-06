@@ -106,8 +106,9 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
                     verbose=True
                 )
         for layer in self.layers:
+            user = get_user_model().objects.first()
             perm_spec = layer.get_all_level_info()
-            self.assertTrue(get_user_model().objects.first() in perm_spec["users"])
+            self.assertFalse(user in perm_spec["users"], f"{layer} - {user}")
 
     @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_group_dataset_permissions(self):
