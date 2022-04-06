@@ -65,11 +65,12 @@ logger = logging.getLogger(__name__)
 @override_settings(
     DEBUG=True,
     ALLOWED_HOSTS=['*'],
+    SITEURL=LIVE_SERVER_URL,
     CSRF_COOKIE_SECURE=False,
     CSRF_COOKIE_HTTPONLY=False,
     CORS_ORIGIN_ALLOW_ALL=True,
     SESSION_COOKIE_SECURE=False,
-    SITEURL=LIVE_SERVER_URL,
+    DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER=5
 )
 class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
@@ -467,7 +468,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -475,7 +476,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
         else:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -546,7 +547,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -554,7 +555,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
         else:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -648,7 +649,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(upload_data['name'], 'relief_san_andres')
 
         if upload_data['state'] != enumerations.STATE_PROCESSED:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -656,7 +657,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
             self.assertEqual(len(upload_data['uploadfile_set']), 2)
         else:
-            self.assertEqual(upload_data['progress'], 100.0)
+            self.assertGreaterEqual(upload_data['progress'], 90.0)
             self.assertIsNone(upload_data['resume_url'])
             self.assertIsNone(upload_data['delete_url'])
             self.assertIsNotNone(upload_data['detail_url'])
@@ -692,6 +693,32 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             # Pagination
             self.assertEqual(len(response.data['uploads']), 0)
             logger.debug(response.data)
+
+    def test_rest_uploads_no_crs(self):
+        """
+        Ensure the upload process turns to `WAITING` status whenever a `CRS` info is missing from the GIS backend.
+        """
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'incomplete')
+        self.assertTrue(data['success'])
+
+        url = reverse('uploads-list')
+        # Admin
+        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5, response.data)
+        self.assertEqual(response.data['total'], 1, response.data['total'])
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 1)
+        logger.debug(response.data)
+        upload_data = response.data['uploads'][0]
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+        self.assertEqual(upload_data['state'], enumerations.STATE_WAITING, upload_data['state'])
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
@@ -770,7 +797,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         expected_error = {
             "success": False,
-            "errors": [f"The number of active parallel uploads exceeds {settings.DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER}. Wait for the pending ones to finish."],
+            "errors": ["The number of active parallel uploads exceeds 100. Wait for the pending ones to finish."],
             "code": "upload_parallelism_limit_exceeded"
         }
         # Try to upload and verify if it passed only by the form size validation
@@ -778,7 +805,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         _get_parallel_uploads_count_path = "geonode.upload.forms.LayerUploadForm._get_parallel_uploads_count"
         with mock.patch(_get_parallel_uploads_count_path, new_callable=mock.PropertyMock) as mocked_get_parallel_uploads_count:
-            mocked_get_parallel_uploads_count.return_value = lambda: 20
+            mocked_get_parallel_uploads_count.return_value = lambda: 200
 
             resp, data = self.rest_upload_file(fname)
             self.assertEqual(resp.status_code, 400)

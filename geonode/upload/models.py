@@ -66,8 +66,8 @@ class UploadManager(models.Manager):
             state=import_session.state)
 
     def get_incomplete_uploads(self, user):
-        return self.filter(user=user).exclude(
-            state=enumerations.STATE_PROCESSED)
+        return self.filter(user=user).exclude(state=enumerations.STATE_PROCESSED).exclude(
+            state=enumerations.STATE_WAITING)
 
 
 class UploadSizeLimitManager(models.Manager):

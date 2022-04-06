@@ -793,9 +793,6 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
-        if not resource.uuid:
-            resource.uuid = str(uuid1())
-            resource.save()
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
         get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
 

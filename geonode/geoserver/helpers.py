@@ -743,6 +743,18 @@ def gs_slurp(
                 )
                 created = True
 
+            bbox = resource.native_bbox
+            ll_bbox = resource.latlon_bbox
+            try:
+                layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
+            except GeoNodeException as e:
+                if not ll_bbox:
+                    raise
+                else:
+                    logger.exception(e)
+                    layer.srid = 'EPSG:4326'
+            layer.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
+
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
             resource_manager.set_permissions(
@@ -1075,7 +1087,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
-    elif layer.subtype in ["coverageStore"]:
+    elif layer.subtype in ["raster"]:
         typename = layer.alternate if layer.alternate else layer.typename
         dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:
