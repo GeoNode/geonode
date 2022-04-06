@@ -112,7 +112,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                             )
                         )
                     else:
-                        if _upload.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+                        if _upload.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED, Upload.STATE_READY):
                             _upload.set_processing_state(Upload.STATE_INVALID)
                             _upload_ids.append(_upload.id)
                             _upload_tasks.append(

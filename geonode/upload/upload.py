@@ -368,7 +368,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
             # moving forward with a regular Importer session
             if overwrite:
                 gs_layer = gs_catalog.get_layer(name)
-                _target_store = gs_layer.resource.store.name if is_vector(layer) else None
+                _target_store = gs_layer.resource.store.name
                 #  opening Import session for the selected layer
                 # Let's reset the connections first
                 gs_catalog._cache.clear()

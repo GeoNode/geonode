@@ -1206,6 +1206,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 resource_is_valid = validate_input_source(
                     layer=layer, filename=base_file, files=files, action_type="replace"
                 )
+                data_retriever.delete_files()
                 if resource_is_valid:
                     # Create a new upload session
                     request.GET = {"layer_id": layer.id}
@@ -1218,7 +1219,20 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         if response.status_code != 200:
                             raise Exception(response.content)
 
+                    from geonode.upload.models import Upload
+
+                    upload_session_to_complete = [
+                        z for z in Upload.objects.filter(layer=layer, state=Upload.STATE_COMPLETE)
+                        if z.get_session.import_session.state == Upload.STATE_COMPLETE and z.get_session.update_mode == 'REPLACE'
+                    ]
+                    for _upload in upload_session_to_complete:
+                        Upload.objects.filter(id=_upload.id).update(state=Upload.STATE_PROCESSED)
+
+                    for x in upload_session_to_complete:
+                        x.set_processing_state(Upload.STATE_PROCESSED)
+
                     set_geowebcache_invalidate_cache(layer.typename)
+                    layer.processed
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
