@@ -274,7 +274,7 @@ class RequestsTestCase(MonitoringTestBase):
             rq = RequestEvent.objects.all().last()
             self.assertTrue(rq.response_time > 0)
             self.assertEqual(
-                list(rq.resources.all().values_list('name', 'type')), [(_l.alternate, 'dataset',)])
+                list(rq.resources.values_list('name', 'type')), [(_l.alternate, 'dataset',)])
             self.assertEqual(rq.request_method, 'GET')
 
     def test_gn_error(self):
@@ -678,7 +678,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
             notifications = NotificationCheck.objects.all()
             for n in notifications:
                 if n.is_error:
-                    self.assertTrue(MetricNotificationCheck.objects.all().count() > 0)
+                    self.assertTrue(MetricNotificationCheck.objects.all().exists())
                     for nrow in jout['data']:
                         nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
                         for nkey, nval in nrow.items():
@@ -699,7 +699,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
             notifications = NotificationCheck.objects.all()
             for n in notifications:
                 if n.is_error:
-                    self.assertTrue(MetricNotificationCheck.objects.all().count() > 0)
+                    self.assertTrue(MetricNotificationCheck.objects.all().exists())
                     for nrow in jout['data']:
                         nitem = MetricNotificationCheck.objects.get(id=nrow['id'])
                         for nkey, nval in nrow.items():
@@ -816,7 +816,7 @@ class MonitoringChecksTestCase(MonitoringTestBase):
         self.assertEqual(nresp.status_code, 200)
         ndata = json.loads(ensure_string(nresp.content))
         self.assertEqual({n['id'] for n in ndata['data']},
-                         set(NotificationCheck.objects.all().values_list('id', flat=True)))
+                         set(NotificationCheck.objects.values_list('id', flat=True)))
         mail.outbox = []
         self.assertEqual(len(mail.outbox), 0)
         capi.emit_notifications(start)

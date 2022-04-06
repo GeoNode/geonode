@@ -689,7 +689,7 @@ def gs_slurp(
                 raise
 
     # filter out layers already registered in geonode
-    dataset_names = Dataset.objects.all().values_list('alternate', flat=True)
+    dataset_names = Dataset.objects.values_list('alternate', flat=True)
     if skip_geonode_registered:
         try:
             resources = [k for k in resources
@@ -742,6 +742,18 @@ def gs_slurp(
                     )
                 )
                 created = True
+
+            bbox = resource.native_bbox
+            ll_bbox = resource.latlon_bbox
+            try:
+                layer.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], resource.projection)
+            except GeoNodeException as e:
+                if not ll_bbox:
+                    raise
+                else:
+                    logger.exception(e)
+                    layer.srid = 'EPSG:4326'
+            layer.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
 
             # sync permissions in GeoFence
             perm_spec = json.loads(_perms_info_json(layer))
@@ -962,7 +974,7 @@ def set_attributes(
                 if _gs_attrs.count() == 1:
                     la = _gs_attrs.get()
                 else:
-                    if _gs_attrs.count() > 0:
+                    if _gs_attrs.exists():
                         _gs_attrs.delete()
                     la = Attribute.objects.create(dataset=layer, attribute=field)
                     la.visible = ftype.find("gml:") != 0
@@ -1075,7 +1087,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 tb = traceback.format_exc()
                 logger.debug(tb)
                 attribute_map = []
-    elif layer.subtype in ["coverageStore"]:
+    elif layer.subtype in ["raster"]:
         typename = layer.alternate if layer.alternate else layer.typename
         dc_url = f"{server_url}wcs?{urlencode({'service': 'wcs', 'version': '1.1.0', 'request': 'DescribeCoverage', 'identifiers': typename})}"
         try:

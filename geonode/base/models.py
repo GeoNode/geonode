@@ -21,7 +21,6 @@ import os
 import re
 import html
 import math
-import shutil
 import logging
 import traceback
 from sequences.models import Sequence
@@ -708,10 +707,7 @@ class ResourceBaseManager(PolymorphicManager):
                     for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
                         try:
                             if upload.upload_dir:
-                                if storage_manager.exists(upload.upload_dir):
-                                    storage_manager.delete(upload.upload_dir)
-                                elif os.path.exists(upload.upload_dir):
-                                    shutil.rmtree(upload.upload_dir, ignore_errors=True)
+                                storage_manager.rmtree(upload.upload_dir, ignore_errors=True)
                         finally:
                             upload.delete()
             except Exception as e:
@@ -1178,6 +1174,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # Resource Updated
         _notification_sent = False
+        _group_status_changed = False
         _approval_status_changed = False
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
@@ -1189,6 +1186,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
             elif self.pk:
+                # Group has changed
+                _group_status_changed = self.group != ResourceBase.objects.get(pk=self.get_self_resource().pk).group
+
                 # Approval Notifications Here
                 if self.was_approved != self.is_approved:
                     if not _notification_sent and not self.was_approved and self.is_approved:
@@ -1235,8 +1235,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         super().save(*args, **kwargs)
 
         # Update workflow permissions
-        if _approval_status_changed:
-            self.set_permissions()
+        if _approval_status_changed or _group_status_changed:
+            self.set_permissions(approval_status_changed=_approval_status_changed, group_status_changed=_group_status_changed)
 
     def delete(self, notify=True, *args, **kwargs):
         """
@@ -1677,7 +1677,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if legend is None:
             return None
 
-        if legend.count() > 0:
+        if legend.exists():
             if not style_name:
                 return legend.first().url
             else:

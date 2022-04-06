@@ -185,7 +185,8 @@ class ResourceManagerInterface(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
+                        approval_status_changed: bool = False, group_status_changed: bool = False) -> bool:
         """Sets the permissions of a resource.
 
          - It optionally gets a JSON 'perm_spec' through the 'permissions' parameter
@@ -372,6 +373,7 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 _resource.save(notify=notify)
                 resourcebase_post_save(_resource.get_real_instance())
+                _resource.set_permissions()
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -574,12 +576,12 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_dirty_state()
         return False
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
+                        approval_status_changed: bool = False, group_status_changed: bool = False) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
             _resource = _resource.get_real_instance()
             _resource.set_processing_state(enumerations.STATE_RUNNING)
-            _prev_perm_spec = copy.deepcopy(_resource.get_all_level_info())
             logger.debug(f'Finalizing (permissions and notifications) on resource {instance}')
             try:
                 with transaction.atomic():
@@ -605,7 +607,9 @@ class ResourceManager(ResourceManagerInterface):
                         _permissions = None
 
                     # Fixup Advanced Workflow permissions
-                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(_resource.uuid, instance=_resource, permissions=_permissions)
+                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(
+                        _resource.uuid, instance=_resource, permissions=_permissions, created=created,
+                        approval_status_changed=approval_status_changed, group_status_changed=group_status_changed)
 
                     """
                     Cleanup the Guardian tables
@@ -689,8 +693,7 @@ class ResourceManager(ResourceManagerInterface):
                             raise Exception("Could not acquire 'anonymous' Group.")
 
                         # Anonymous
-                        anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                        if anonymous_can_view:
+                        if AdvancedSecurityWorkflowManager.is_anonymous_can_view():
                             assign_perm('view_resourcebase',
                                         anonymous_group, _resource.get_self_resource())
                             _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
@@ -704,8 +707,7 @@ class ResourceManager(ResourceManagerInterface):
                                     _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
 
                         if AdvancedSecurityWorkflowManager.assignable_perm_condition('download_resourcebase', _resource_type):
-                            anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-                            if anonymous_can_download:
+                            if AdvancedSecurityWorkflowManager.is_anonymous_can_download():
                                 assign_perm('download_resourcebase',
                                             anonymous_group, _resource.get_self_resource())
                                 _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
@@ -728,12 +730,10 @@ class ResourceManager(ResourceManagerInterface):
                         _resource = AdvancedSecurityWorkflowManager.handle_moderated_uploads(_resource.uuid, instance=_resource)
 
                     # Fixup GIS Backend Security Rules Accordingly
-                    if not _resource.compare_perms(_prev_perm_spec, _perm_spec):
-                        # Avoid setting the permissions if nothing changed
-                        if not self._concrete_resource_manager.set_permissions(
-                                uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
-                            # This might not be a severe error. E.g. for datasets outside of local GeoServer
-                            logger.error(Exception("Could not complete concrete manager operation successfully!"))
+                    if not self._concrete_resource_manager.set_permissions(
+                            uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
+                        # This might not be a severe error. E.g. for datasets outside of local GeoServer
+                        logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:

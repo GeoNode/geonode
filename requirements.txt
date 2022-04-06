@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==9.0.1
+Pillow==9.1.0
 lxml==4.8.0
 psycopg2==2.9.3
 Django==3.2.12
@@ -53,7 +53,7 @@ pyopenssl==22.0.0
 pyproj==3.3.0
 OWSLib==0.25.0
 pycsw==2.6.1
-SQLAlchemy==1.4.32 # required by PyCSW
+SQLAlchemy==1.4.34 # required by PyCSW
 Shapely==1.8.1.post1
 mercantile==1.2.1
 geoip2==4.5.0
@@ -106,10 +106,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.12.3
-dropbox==11.28.0
+dropbox==11.29.0
 google-cloud-storage==2.2.1
 google-cloud-core==2.2.3
-boto3==1.21.27
+boto3==1.21.32
 
 # Django Caches
 python-memcached<=1.59
@@ -154,7 +154,7 @@ pytest-bdd==5.0.0
 splinter==0.17.0
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<61.3.0
+setuptools>=59.1.1,<61.4.0
 pip==22.0.4
 Twisted==22.2.0
 pixelmatch==0.3.0
