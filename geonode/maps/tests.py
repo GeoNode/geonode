@@ -1054,7 +1054,7 @@ class MapModerationTestCase(GeoNodeBaseTestSupport):
             map_id = int(json.loads(content)['id'])
             _l = Map.objects.get(id=map_id)
             self.assertFalse(_l.is_approved)
-            self.assertTrue(_l.is_published)
+            self.assertFalse(_l.is_published)
 
 
 class MapsNotificationsTestCase(NotificationsTestsHelper):

@@ -20,7 +20,6 @@ import math
 import logging
 import traceback
 from urllib.parse import quote, urlsplit, urljoin
-from itertools import chain
 import warnings
 
 from django.contrib.auth.decorators import login_required
@@ -72,6 +71,9 @@ from .tasks import delete_map
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from deprecated import deprecated
+from geonode.security.utils import (
+    get_user_visible_groups,
+    AdvancedSecurityWorkflowManager)
 
 from dal import autocomplete
 
@@ -407,41 +409,18 @@ def map_metadata(
     config = map_obj.viewer_json(request)
     layers = MapLayer.objects.filter(map=map_obj.id)
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(access="private"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                map_obj.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    map_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                map_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, map_obj):
+        map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, map_obj):
+        map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
     return render(request, template, context={
-        "config": json.dumps(config),
         "resource": map_obj,
         "map": map_obj,
+        "config": json.dumps(config),
         "map_form": map_form,
         "poc_form": poc_form,
         "author_form": author_form,
@@ -491,9 +470,7 @@ def map_remove(request, mapid, template='maps/map_remove.html'):
         })
     elif request.method == 'POST':
         delete_map.apply_async((map_obj.id, ))
-
         register_event(request, EventType.EVENT_REMOVE, map_obj)
-
         return HttpResponseRedirect(reverse("maps_browse"))
 
 
@@ -687,7 +664,8 @@ def clean_config(conf):
             "localCSWBaseUrl",
             "csrfToken",
             "db_datastore",
-            "authorizedRoles"]
+            "authorizedRoles",
+        ]
         for config_item in config_extras:
             if config_item in config:
                 del config[config_item]
@@ -1092,6 +1070,7 @@ def add_layers_to_map_config(
 
 
 # MAPS DOWNLOAD #
+
 
 def map_download(request, mapid, template='maps/map_download.html'):
     """

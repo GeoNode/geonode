@@ -21,7 +21,6 @@ import uuid
 import logging
 import requests
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Polygon
 from django.template.defaultfilters import slugify
@@ -77,13 +76,7 @@ def create_gn_layer(workspace, datastore, name, title, owner_name):
         data_quality_statement=DATA_QUALITY_MESSAGE,
     )
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        layer.is_approved = False
-        layer.was_approved = False
-    if settings.RESOURCE_PUBLISHING:
-        layer.is_published = False
-        layer.was_published = False
-
+    layer.handle_moderated_uploads()
     layer.save()
     return layer
 

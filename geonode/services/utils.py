@@ -22,7 +22,6 @@ import math
 import logging
 from django.conf import settings as django_settings
 
-
 logger = logging.getLogger(__name__)
 
 

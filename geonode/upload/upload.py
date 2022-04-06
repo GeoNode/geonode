@@ -811,7 +811,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         f, name=f'{assigned_name or saved_layer.name}{type_name}'))
                 # save the system assigned name for the remaining files
                 if not assigned_name:
-                    the_file = geonode_upload_session.layerfile_set.all()[0].file.name
+                    the_file = geonode_upload_session.layerfile_set.first().file.name
                     assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
             return assigned_name

@@ -21,36 +21,21 @@ import logging
 from urllib.parse import urljoin
 
 from django.urls import reverse
-from django.conf.urls import url
-from rest_framework.test import APITestCase, URLPatternsTestCase
+from rest_framework.test import APITestCase
 
 from geonode.documents.models import Document
-
-from geonode import geoserver
-from geonode.utils import check_ogc_backend
 from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentsApiTests(APITestCase, URLPatternsTestCase):
+class DocumentsApiTests(APITestCase):
 
     fixtures = [
         'initial_data.json',
         'group_test_data.json',
         'default_oauth_apps.json'
     ]
-
-    from geonode.urls import urlpatterns
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import layer_acls, resolve_user
-        urlpatterns += [
-            url(r'^acls/?$', layer_acls, name='layer_acls'),
-            url(r'^acls_dep/?$', layer_acls, name='layer_acls_dep'),
-            url(r'^resolve_user/?$', resolve_user, name='layer_resolve_user'),
-            url(r'^resolve_user_dep/?$', resolve_user, name='layer_resolve_user_dep'),
-        ]
 
     def setUp(self):
         create_models(b'document')

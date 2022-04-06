@@ -27,10 +27,10 @@ from django.utils.translation import ugettext as _
 
 from lxml import etree
 from urllib.parse import urlencode, urljoin
-from .helpers import OGC_Servers_Handler
 from geonode.utils import (
     XML_PARSER,
-    http_client)
+    http_client,
+    OGC_Servers_Handler)
 
 logger = logging.getLogger(__name__)
 

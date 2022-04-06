@@ -107,7 +107,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_get_unique_upload_path(self):
-
         layer = Layer.objects.first()
         thumbnail_name = thumbnails._generate_thumbnail_name(layer)
         upload_path = utils.thumb_path(thumbnail_name)

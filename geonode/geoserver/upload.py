@@ -27,14 +27,15 @@ from django.conf import settings
 
 from geonode import GeoNodeException
 from geonode.layers.utils import layer_type, get_files
-from .helpers import (GEOSERVER_LAYER_TYPES,
-                      gs_catalog,
-                      get_store,
-                      get_sld_for,
-                      ogc_server_settings,
-                      _create_db_featurestore,
-                      _create_featurestore,
-                      _create_coveragestore)
+from .helpers import (
+    GEOSERVER_LAYER_TYPES,
+    gs_catalog,
+    get_store,
+    get_sld_for,
+    ogc_server_settings,
+    _create_db_featurestore,
+    _create_featurestore,
+    _create_coveragestore)
 
 logger = logging.getLogger(__name__)
 

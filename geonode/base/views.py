@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import logging
 
 # Geonode functionality
 from django.shortcuts import render
@@ -56,6 +57,8 @@ from geonode.base.models import (
     HierarchicalKeyword, ThesaurusKeyword,
     ThesaurusKeywordLabel
 )
+
+logger = logging.getLogger(__name__)
 
 
 def get_url_for_app_model(model, model_class):
