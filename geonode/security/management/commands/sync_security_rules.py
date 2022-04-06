@@ -18,7 +18,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from geonode.security.utils import sync_resources_with_guardian
+from geonode.geoserver.security import sync_resources_with_guardian
 
 
 class Command(BaseCommand):
