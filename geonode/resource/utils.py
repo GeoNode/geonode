@@ -421,7 +421,7 @@ def metadata_post_save(instance, *args, **kwargs):
         instance.owner = get_valid_user()
 
     if not instance.uuid:
-        instance.uuid = str(uuid.uuid1())
+        instance.uuid = str(uuid.uuid4())
 
     # set default License if no specified
     if instance.license is None:

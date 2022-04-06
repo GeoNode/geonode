@@ -21,7 +21,7 @@ import json
 import re
 
 from decimal import Decimal
-from uuid import uuid1
+from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
 
@@ -738,7 +738,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = QueryDict(request.body, mutable=True)
-            uuid = request_params.get('uuid', str(uuid1()))
+            uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
@@ -834,7 +834,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = QueryDict(request.body, mutable=True)
-            uuid = request_params.get('uuid', str(uuid1()))
+            uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
 
             _exec_request = ExecutionRequest.objects.create(
