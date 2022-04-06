@@ -1278,5 +1278,4 @@ attribute of the layer '{_lyr.alternate}'"
     def test_gs_proxy_never_caches(self):
         url = reverse('gs_styles')
         response = self.client.get(url)
-        self.assertTrue(response.has_header('Cache-Control'))
-        self.assertEqual(response.headers.get('Cache-Control'), 'max-age=0, no-cache, no-store, must-revalidate, private')
+        self.assertFalse(response.has_header('Cache-Control'))
