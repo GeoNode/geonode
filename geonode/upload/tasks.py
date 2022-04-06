@@ -184,8 +184,12 @@ def _update_upload_session_state(self, upload_session_id: int):
             _response_json = json.loads(_content)
             _success = _response_json.get('success', False)
             _redirect_to = _response_json.get('redirect_to', '')
+
+            task_issues = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
+
             if _success:
-                if 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to:
+                if 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and session.state == Upload.STATE_PENDING and task_issues:
+                    logger.error(session)
                     _upload.set_resume_url(_redirect_to)
                     _upload.set_processing_state(Upload.STATE_WAITING)
                 else:
