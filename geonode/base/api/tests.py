@@ -27,7 +27,7 @@ import gisdata
 from PIL import Image
 from io import BytesIO
 from time import sleep
-from uuid import uuid1, uuid4
+from uuid import uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -1843,11 +1843,10 @@ class BaseApiTests(APITestCase):
         """
         REST API must not forbid saving maps and apps to non-admin and non-owners.
         """
-        from uuid import uuid1
         from geonode.maps.models import Map
         _map = Map.objects.filter(uuid__isnull=False, owner__username='admin').first()
         if not len(_map.uuid):
-            _map.uuid = str(uuid1)
+            _map.uuid = str(uuid4())
             _map.save()
         resource = ResourceBase.objects.filter(uuid=_map.uuid).first()
         bobby = get_user_model().objects.get(username='bobby')
@@ -1989,7 +1988,7 @@ class BaseApiTests(APITestCase):
             store='geonode_data',
             subtype="vector",
             alternate="geonode:test_copy",
-            uuid=str(uuid1()),
+            uuid=str(uuid4()),
             files=list(files_as_dict.values())
         )
         bobby = get_user_model().objects.get(username='bobby')

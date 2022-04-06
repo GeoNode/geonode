@@ -23,7 +23,7 @@ import typing
 import logging
 import importlib
 
-from uuid import uuid1
+from uuid import uuid4
 from abc import ABCMeta, abstractmethod
 
 from guardian.models import (
@@ -300,7 +300,7 @@ class ResourceManager(ResourceManagerInterface):
     def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
-        uuid = uuid or str(uuid1())
+        uuid = uuid or str(uuid4())
         _resource, _created = resource_type.objects.get_or_create(
             uuid=uuid,
             defaults=defaults)
@@ -429,7 +429,7 @@ class ResourceManager(ResourceManagerInterface):
                 _perms = copy.copy(instance.get_real_instance().get_all_level_info())
                 _resource = copy.copy(instance.get_real_instance())
                 _resource.pk = _resource.id = None
-                _resource.uuid = uuid or str(uuid1())
+                _resource.uuid = uuid or str(uuid4())
                 _resource.save()
                 if isinstance(instance.get_real_instance(), Document):
                     for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
