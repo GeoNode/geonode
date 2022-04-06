@@ -67,11 +67,12 @@ logger = logging.getLogger(__name__)
 @override_settings(
     DEBUG=True,
     ALLOWED_HOSTS=['*'],
+    SITEURL=LIVE_SERVER_URL,
     CSRF_COOKIE_SECURE=False,
     CSRF_COOKIE_HTTPONLY=False,
     CORS_ORIGIN_ALLOW_ALL=True,
     SESSION_COOKIE_SECURE=False,
-    SITEURL=LIVE_SERVER_URL,
+    DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER=5
 )
 class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
@@ -691,6 +692,32 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Pagination
         self.assertEqual(len(response.data['uploads']), 0)
         logger.debug(response.data)
+
+    def test_rest_uploads_no_crs(self):
+        """
+        Ensure the upload process turns to `WAITING` status whenever a `CRS` info is missing from the GIS backend.
+        """
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'incomplete')
+        self.assertTrue(data['success'])
+
+        url = reverse('uploads-list')
+        # Admin
+        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5, response.data)
+        self.assertEqual(response.data['total'], 1, response.data['total'])
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 1)
+        logger.debug(response.data)
+        upload_data = response.data['uploads'][0]
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+        self.assertEqual(upload_data['state'], Upload.STATE_WAITING, upload_data['state'])
 
     @mock.patch("geonode.upload.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
