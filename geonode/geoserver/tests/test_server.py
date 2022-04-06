@@ -1273,3 +1273,10 @@ attribute of the layer '{_lyr.alternate}'"
                         _post_migrate_link_meta,
                         f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_gs_proxy_never_caches(self):
+        url = reverse('gs_styles')
+        response = self.client.get(url)
+        self.assertTrue(response.has_header('Cache-Control'))
+        self.assertEqual(response.headers.get('Cache-Control'), 'max-age=0, no-cache, no-store, must-revalidate, private')
