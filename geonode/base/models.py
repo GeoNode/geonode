@@ -20,6 +20,7 @@ import os
 import re
 import html
 import math
+import uuid
 import logging
 import traceback
 from sequences.models import Sequence
