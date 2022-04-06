@@ -699,7 +699,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
-        resp, data = self.rest_upload_by_path(fname)
+        resp, data = self.rest_upload_file(fname)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data['status'], 'incomplete')
         self.assertTrue(data['success'])
