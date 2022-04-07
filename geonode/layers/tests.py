@@ -1071,7 +1071,7 @@ class LayersTest(GeoNodeBaseTestSupport):
         for resource in resources:
             perm_spec = resource.get_all_level_info()
             logger.debug(f" -- perm_spec[users] --> {perm_spec['users']}")
-            self.assertTrue(user in perm_spec["users"])
+            self.assertFalse(user in perm_spec["users"])
 
     def test_surrogate_escape_string(self):
         surrogate_escape_raw = "Zo\udcc3\udcab"
