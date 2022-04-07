@@ -25,7 +25,7 @@ import tempfile
 from io import IOBase
 from time import sleep
 from unittest import mock
-from gisdata import GOOD_DATA
+from gisdata import GOOD_DATA, BAD_DATA
 from urllib.request import urljoin
 
 from django.conf import settings
@@ -719,7 +719,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         Ensure the upload process turns to `WAITING` status whenever a `CRS` info is missing from the GIS backend.
         """
-        # Try to upload a good raster file and check the session IDs
+        # Try to upload a shapefile without a CRS def.
         fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
         resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
@@ -754,6 +754,71 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                         _update_upload_session_state.apply((_upload.id,))
                     sleep(3.0)
         self.assertEqual(upload_data['state'], enumerations.STATE_WAITING, upload_data['state'])
+
+    def test_emulate_upload_through_rest_apis(self):
+        """
+        Emulating Upload via REST APIs with several datasets.
+        """
+        # Try to upload a bad ESRI shapefile with no CRS available
+        fname = os.path.join(BAD_DATA, 'points_epsg2249_no_prj.shp')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'incomplete')
+        self.assertTrue(data['success'])
+
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'finished')
+        self.assertTrue(data['success'])
+
+        # Try to upload a good ESRI shapefile and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'vector', 'san_andres_y_providencia_coastline.shp')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'finished')
+        self.assertTrue(data['success'])
+
+        def assert_processed_or_failed(total_uploads, upload_index, dataset_name, state):
+            url = reverse('uploads-list')
+            # Admin
+            self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5, response.data)
+            self.assertEqual(response.data['total'], total_uploads, response.data['total'])
+            # Pagination
+            self.assertEqual(len(response.data['uploads']), total_uploads)
+            self.assertEqual(response.status_code, 200)
+
+            upload_data = response.data['uploads'][upload_index]
+            self.assertIsNotNone(upload_data)
+            self.assertEqual(upload_data['name'], dataset_name, upload_data['name'])
+            if upload_data['state'] != state:
+                for _cnt in range(0, 10):
+                    response = self.client.get(url, format='json')
+                    self.assertEqual(response.status_code, 200)
+                    logger.error(f"[{_cnt + 1}] ... {response.data}")
+                    upload_data = response.data['uploads'][upload_index]
+                    self.assertIsNotNone(upload_data)
+                    self.assertEqual(upload_data['name'], dataset_name, upload_data['name'])
+                    if upload_data['state'] == state:
+                        break
+                    else:
+                        for _upload in Upload.objects.filter(state=upload_data['state']):
+                            _update_upload_session_state.apply((_upload.id,))
+                        sleep(3.0)
+            self.assertEqual(upload_data['state'], state, upload_data['state'])
+
+        # Vector
+        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', enumerations.STATE_PROCESSED)
+
+        # Raster
+        assert_processed_or_failed(3, 1, 'relief_san_andres', enumerations.STATE_PROCESSED)
+
+        # Unsupported
+        assert_processed_or_failed(3, 2, 'points_epsg2249_no_prj', enumerations.STATE_WAITING)
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
