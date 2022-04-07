@@ -17,7 +17,7 @@ set +e
 # We run the command
 if [ "$LETSENCRYPT_MODE" == "staging" ]; then
     printf "\nTrying to get STAGING certificate\n"
-    certbot --config-dir "/geonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/geonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --staging --server https://acme-v02.api.letsencrypt.org/directory
+    certbot --config-dir "/geonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/geonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --staging
 elif [ "$LETSENCRYPT_MODE" == "production" ]; then
     printf "\nTrying to get PRODUCTION certificate\n"
     certbot --config-dir "/geonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/geonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --server https://acme-v02.api.letsencrypt.org/directory

@@ -26,6 +26,7 @@ import os
 import io
 import json
 import gisdata
+from uuid import uuid4
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -124,6 +125,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         superuser = get_user_model().objects.get(pk=2)
         c = Document.objects.create(
+            uuid=str(uuid4()),
             doc_file=f,
             owner=superuser,
             title='theimg')
@@ -140,6 +142,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         superuser = get_user_model().objects.get(pk=2)
 
         c = Document.objects.create(
+            uuid=str(uuid4()),
             doc_file=f,
             owner=superuser,
             title='theimg')
@@ -158,10 +161,11 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Tests creating an external document instead of a file."""
 
         superuser = get_user_model().objects.get(pk=2)
-        c = Document.objects.create(doc_url="http://geonode.org/map.pdf",
-                                    owner=superuser,
-                                    title="GeoNode Map",
-                                    )
+        c = Document.objects.create(
+            uuid=str(uuid4()),
+            doc_url="http://geonode.org/map.pdf",
+            owner=superuser,
+            title="GeoNode Map")
         doc = Document.objects.get(pk=c.id)
         self.assertEqual(doc.title, "GeoNode Map")
         self.assertEqual(doc.extension, "pdf")
@@ -364,6 +368,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         superuser = get_user_model().objects.get(pk=2)
         document = Document.objects.create(
+            uuid=str(uuid4()),
             doc_file=f,
             owner=superuser,
             title='theimg')
@@ -650,6 +655,7 @@ class DocumentsNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
             _d = Document.objects.create(
+                uuid=str(uuid4()),
                 title='test notifications',
                 owner=self.norman)
             self.assertTrue(self.check_notification_out('document_created', self.u))
@@ -708,10 +714,10 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         superuser = get_user_model().objects.get(pk=2)
 
         d = Document.objects.create(
+            uuid=str(uuid4()),
             doc_file=f,
             owner=superuser,
-            title='theimg'
-        )
+            title='theimg')
 
         self.assertEqual(Document.objects.get(pk=d.id).title, 'theimg')
 
@@ -784,7 +790,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             'test_img_file.gif',
             self.imgfile.read(),
             'image/gif')
-        self.test_doc = Document.objects.create(doc_file=f, owner=self.not_admin, title='test', is_approved=True)
+        self.test_doc = Document.objects.create(uuid=str(uuid4()), doc_file=f, owner=self.not_admin, title='test', is_approved=True)
         self.perm_spec = {"users": {"AnonymousUser": []}}
         self.doc_link_url = reverse('document_link', args=(self.test_doc.pk,))
 

@@ -30,8 +30,8 @@ import json
 import logging
 import tarfile
 
+from uuid import uuid4
 from datetime import datetime
-
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
 from random import choice
@@ -603,10 +603,10 @@ def file_upload(filename,
                     layer = Layer.objects.filter(name=valid_name, workspace=settings.DEFAULT_WORKSPACE).first()
                     if not layer:
                         layer = Layer.objects.create(
+                            uuid=str(uuid4()),
                             name=valid_name,
                             owner=user,
-                            workspace=settings.DEFAULT_WORKSPACE
-                        )
+                            workspace=settings.DEFAULT_WORKSPACE)
                         created = True
                 elif identifier:
                     layer = Layer.objects.filter(uuid=identifier).first()

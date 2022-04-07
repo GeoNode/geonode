@@ -707,7 +707,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 name=task.layer.name)
             if not saved_dataset_filter.exists():
                 saved_layer = Layer.objects.create(
-                    uuid=layer_uuid or str(uuid.uuid1()),
+                    uuid=layer_uuid or str(uuid.uuid4()),
                     store=target.name,
                     storeType=target.store_type,
                     alternate=alternate,
@@ -754,7 +754,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
             name=task.layer.name)
         if not saved_dataset_filter.exists():
             saved_layer = Layer.objects.create(
-                uuid=layer_uuid or str(uuid.uuid1()),
+                uuid=layer_uuid or str(uuid.uuid4()),
                 store=target.name,
                 storeType=target.store_type,
                 alternate=alternate,

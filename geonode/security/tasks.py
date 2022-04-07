@@ -19,7 +19,7 @@
 from django.conf import settings
 from celery import shared_task
 
-from .utils import sync_resources_with_guardian
+from geonode.geoserver.security import sync_resources_with_guardian
 
 
 @shared_task(

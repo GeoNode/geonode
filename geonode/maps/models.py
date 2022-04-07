@@ -212,7 +212,7 @@ class Map(ResourceBase, GXPMapBase):
             self.projection = projection
 
         if self.uuid is None or self.uuid == '':
-            self.uuid = str(uuid.uuid1())
+            self.uuid = str(uuid.uuid4())
 
         def source_for(layer):
             try:
@@ -285,7 +285,7 @@ class Map(ResourceBase, GXPMapBase):
         self.center_y = 0
 
         if self.uuid is None or self.uuid == '':
-            self.uuid = str(uuid.uuid1())
+            self.uuid = str(uuid.uuid4())
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 

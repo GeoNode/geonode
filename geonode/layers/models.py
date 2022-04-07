@@ -624,7 +624,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.uuid = get_uuid_handler()(instance).create_uuid()
     else:
         if instance.uuid == '':
-            instance.uuid = str(uuid.uuid1())
+            instance.uuid = str(uuid.uuid4())
 
     logger.debug("In pre_save_layer")
     if instance.alternate is None:

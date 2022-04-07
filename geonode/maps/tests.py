@@ -16,9 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import json
 import logging
-
+from uuid import uuid4
 from unittest.mock import patch
 from defusedxml import lxml as dlxml
 from django.test.utils import override_settings
@@ -442,7 +443,7 @@ community."
         Test that keyword multiselect widget is disabled when the user is not an admin
         when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
+        test_map = Map.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -456,7 +457,7 @@ community."
         """
         Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
+        test_map = Map.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -472,7 +473,7 @@ community."
         Test that non admin users can write to maps without creating/editing keywords
         when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
+        test_map = Map.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -495,7 +496,7 @@ community."
         Test that keyword multiselect widget is not disabled when the user is not an admin
         and FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
+        test_map = Map.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
         url = reverse('map_metadata', args=(test_map.pk,))
@@ -509,7 +510,7 @@ community."
         """
         Test that non admin users can edit/create keywords when FREETEXT_KEYWORDS_READONLY=False
         """
-        test_map = Map.objects.create(owner=self.not_admin, title='test', is_approved=True,
+        test_map = Map.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True,
                                       zoom=0, center_x=0.0, center_y=0.0)
         self.client.login(username=self.not_admin.username, password='very-secret')
         url = reverse('map_metadata', args=(test_map.pk,))
