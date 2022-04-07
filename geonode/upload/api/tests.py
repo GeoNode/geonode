@@ -16,15 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import shutil
 import logging
 import tempfile
-from unittest import mock
-
 from io import IOBase
-from django.core.exceptions import ValidationError
-from gisdata import GOOD_DATA
+from time import sleep
+from unittest import mock
+from gisdata import GOOD_DATA, BAD_DATA
 from urllib.request import urljoin
 
 from django.conf import settings
@@ -32,6 +32,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import authenticate, get_user_model
 from django.test.utils import override_settings
+from django.core.exceptions import ValidationError
 
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
@@ -49,6 +50,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.upload.tasks import _update_upload_session_state
 from geonode.upload.models import UploadSizeLimit
 
 from ..models import Upload
@@ -253,7 +255,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    def rest_upload_file(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD, non_interactive=False):
+    def rest_upload_by_path(self, _file, username=GEONODE_USER, password=GEONODE_PASSWD, non_interactive=False):
         """ function that uploads a file, or a collection of files, to
         the GeoNode"""
         assert authenticate(username=username, password=password)
@@ -360,6 +362,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     """
     #     pass
 
+    # AF: Intermittent failures on CircleCI
     # @as_superuser
     # def test_live_uploads(self):
     #     """
@@ -370,13 +373,12 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
     #     resp, data = self.live_upload_file(fname)
     #     self.assertEqual(resp.status_code, 200)
     #     self.assertTrue(data['success'])
-
+    #     self.assertIn('redirect_to', data)
     #     headers = {
     #         'X-CSRFToken': self.csrf_token,
     #         'X-Requested-With': 'XMLHttpRequest',
     #         'Cookie': f'csrftoken={self.csrf_token}; sessionid={self.session_id}'
     #     }
-
     #     url = urljoin(
     #         settings.SITEURL,
     #         f"{reverse('uploads-list')}.json")
@@ -474,7 +476,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.rest_upload_file(fname)
+        resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
 
@@ -549,7 +551,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.rest_upload_file(fname, non_interactive=True)
+        resp, data = self.rest_upload_by_path(fname, non_interactive=True)
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
 
@@ -624,7 +626,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.rest_upload_file_by_path(fname)
+        resp, data = self.rest_upload_by_path_by_path(fname)
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
 
@@ -697,9 +699,9 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         Ensure the upload process turns to `WAITING` status whenever a `CRS` info is missing from the GIS backend.
         """
-        # Try to upload a good raster file and check the session IDs
+        # Try to upload a shapefile without a CRS def.
         fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
-        resp, data = self.rest_upload_file(fname)
+        resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data['status'], 'incomplete')
         self.assertTrue(data['success'])
@@ -713,11 +715,90 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(response.data['total'], 1, response.data['total'])
         # Pagination
         self.assertEqual(len(response.data['uploads']), 1)
-        logger.debug(response.data)
+        self.assertEqual(response.status_code, 200)
         upload_data = response.data['uploads'][0]
         self.assertIsNotNone(upload_data)
         self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+        if upload_data['state'] != Upload.STATE_WAITING:
+            for _cnt in range(0, 10):
+                response = self.client.get(url, format='json')
+                self.assertEqual(response.status_code, 200)
+                logger.error(f"[{_cnt + 1}] ... {response.data}")
+                upload_data = response.data['uploads'][0]
+                self.assertIsNotNone(upload_data)
+                self.assertEqual(upload_data['name'], 'san_andres_y_providencia_coastline_no_prj', upload_data['name'])
+                if upload_data['state'] == Upload.STATE_WAITING:
+                    break
+                else:
+                    for _upload in Upload.objects.filter(state=upload_data['state']):
+                        _update_upload_session_state.apply((_upload.id,))
+                    sleep(3.0)
         self.assertEqual(upload_data['state'], Upload.STATE_WAITING, upload_data['state'])
+
+    def test_emulate_upload_through_rest_apis(self):
+        """
+        Emulating Upload via REST APIs with several datasets.
+        """
+        # Try to upload a bad ESRI shapefile with no CRS available
+        fname = os.path.join(BAD_DATA, 'points_epsg2249_no_prj.shp')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'incomplete')
+        self.assertTrue(data['success'])
+
+        # Try to upload a good raster file and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'finished')
+        self.assertTrue(data['success'])
+
+        # Try to upload a good ESRI shapefile and check the session IDs
+        fname = os.path.join(GOOD_DATA, 'vector', 'san_andres_y_providencia_coastline.shp')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(data['status'], 'finished')
+        self.assertTrue(data['success'])
+
+        def assert_processed_or_failed(total_uploads, upload_index, dataset_name, state):
+            url = reverse('uploads-list')
+            # Admin
+            self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5, response.data)
+            self.assertEqual(response.data['total'], total_uploads, response.data['total'])
+            # Pagination
+            self.assertEqual(len(response.data['uploads']), total_uploads)
+            self.assertEqual(response.status_code, 200)
+
+            upload_data = response.data['uploads'][upload_index]
+            self.assertIsNotNone(upload_data)
+            self.assertEqual(upload_data['name'], dataset_name, upload_data['name'])
+            if upload_data['state'] != state:
+                for _cnt in range(0, 10):
+                    response = self.client.get(url, format='json')
+                    self.assertEqual(response.status_code, 200)
+                    logger.error(f"[{_cnt + 1}] ... {response.data}")
+                    upload_data = response.data['uploads'][upload_index]
+                    self.assertIsNotNone(upload_data)
+                    self.assertEqual(upload_data['name'], dataset_name, upload_data['name'])
+                    if upload_data['state'] == state:
+                        break
+                    else:
+                        for _upload in Upload.objects.filter(state=upload_data['state']):
+                            _update_upload_session_state.apply((_upload.id,))
+                        sleep(3.0)
+            self.assertEqual(upload_data['state'], state, upload_data['state'])
+
+        # Vector
+        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.STATE_PROCESSED)
+
+        # Raster
+        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.STATE_PROCESSED)
+
+        # Unsupported
+        assert_processed_or_failed(3, 2, 'points_epsg2249_no_prj', Upload.STATE_WAITING)
 
     @mock.patch("geonode.upload.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
@@ -747,7 +828,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
             max_size_mock.return_value = lambda x: 209715200
 
-            resp, data = self.rest_upload_file(fname)
+            resp, data = self.rest_upload_by_path(fname)
             self.assertEqual(resp.status_code, 400)
             mocked_validation_error.assert_called_once_with(expected_error)
             mocked_uploaded_file.assert_not_called()
@@ -777,7 +858,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
             max_size_mock.return_value = lambda x: 1
 
-            resp, data = self.rest_upload_file(fname)
+            resp, data = self.rest_upload_by_path(fname)
             # Assertions
             self.assertEqual(resp.status_code, 400)
             mocked_validation_error.assert_called_once_with(expected_error)
