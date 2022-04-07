@@ -101,7 +101,7 @@ class LayerUploadForm(forms.Form):
             store_spatial_files = True
             self.cleaned_data['store_spatial_files'] = True
         elif isinstance(store_spatial_files, str):
-            store_spatial_files = ast.literal_eval(store_spatial_files)
+            store_spatial_files = ast.literal_eval(store_spatial_files.lower().capitalize())
         return store_spatial_files if isinstance(store_spatial_files, bool) else True
 
     def clean(self):
