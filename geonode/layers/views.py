@@ -1218,8 +1218,13 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     for x in upload_session_to_complete:
                         x.set_processing_state(Upload.STATE_PROCESSED)
 
+                    layer.refresh_from_db()
+
+                    if layer.dirty_state:
+                        layer.clear_dirty_state()
+
                     set_geowebcache_invalidate_cache(layer.typename)
-                    layer.processed
+
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[

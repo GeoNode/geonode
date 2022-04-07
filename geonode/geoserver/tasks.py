@@ -308,6 +308,7 @@ def geoserver_finalize_upload(
                 upload.save()
                 # Show the resource finally finished
                 upload.set_processing_state(Upload.STATE_PROCESSED)
+                instance.clear_dirty_state()
 
             signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
 
