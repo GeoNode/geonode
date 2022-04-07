@@ -883,7 +883,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     # look for SLD
     sld_file = upload_session.base_file[0].sld_files
     sld_uploaded = False
-    if sld_file:
+    if sld_file and os.path.exists(sld_file[0]):
         # If it's contained within a zip, need to extract it
         if upload_session.base_file.archive:
             archive = upload_session.base_file.archive
