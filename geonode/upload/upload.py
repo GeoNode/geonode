@@ -60,7 +60,7 @@ from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCa
 
 from ..people.utils import get_default_user
 from ..layers.metadata import convert_keyword, parse_metadata
-from ..layers.utils import get_valid_layer_name, is_vector, resolve_regions
+from ..layers.utils import get_valid_layer_name, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
@@ -924,7 +924,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
          xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 
     saved_layer = utils.metadata_storers(saved_layer, custom)
-    
+
     if overwrite:
         _check_dirty_state(saved_layer)
 
@@ -946,7 +946,6 @@ def _check_dirty_state(layer):
 
     if layer.dirty_state:
         layer.clear_dirty_state()
-
 
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):

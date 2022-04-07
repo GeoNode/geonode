@@ -112,7 +112,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
         expected = {"detail": "Authentication credentials were not provided."}
 
-        response = self.client.post(url)
+        response = self.client.put(url)
         self.assertEqual(403, response.status_code)
         self.assertDictEqual(expected, response.json())
 
@@ -121,7 +121,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         url = reverse("layers-replace-layer", args=(layer.id,))
         self.client.login(username="admin", password="admin")
 
-        response = self.client.put(url)
+        response = self.client.post(url)
         self.assertEqual(405, response.status_code)
 
         response = self.client.get(url)
@@ -137,7 +137,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
         self.client.login(username="admin", password="admin")
 
-        response = self.client.post(url)
+        response = self.client.put(url)
         self.assertEqual(404, response.status_code)
         self.assertDictEqual(expected, response.json())
 
@@ -187,7 +187,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
         self.client.login(username="admin", password="admin")
 
-        response = self.client.post(url, data=payload)
+        response = self.client.put(url, data=payload)
         self.assertEqual(200, response.status_code)
 
         layer.refresh_from_db()
