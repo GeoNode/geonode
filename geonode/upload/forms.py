@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import ast
 import logging
 
 from django import forms
@@ -97,8 +98,19 @@ class LayerUploadForm(forms.Form):
 
     spatial_files = tuple(spatial_files)
 
+    def clean_store_spatial_files(self):
+        store_spatial_files = self.data.get('store_spatial_files')
+        if store_spatial_files is None:
+            store_spatial_files = True
+            self.cleaned_data['store_spatial_files'] = True
+        elif isinstance(store_spatial_files, str):
+            store_spatial_files = ast.literal_eval(store_spatial_files.lower().capitalize())
+        return store_spatial_files if isinstance(store_spatial_files, bool) else True
+
     def clean(self):
         cleaned = super().clean()
+        if cleaned.get('store_spatial_files') is None:
+            cleaned['store_spatial_files'] = True
         uploaded, files = self._get_files_paths_or_objects(cleaned)
         cleaned["uploaded"] = uploaded
         base_file = files.get('base_file')
@@ -152,6 +164,7 @@ class LayerUploadForm(forms.Form):
                 raise ValidationError(_(
                     f"`{field_name}` field cannot have both a file and a path. Please choose one and try again."
                 ))
+
             if path_field_value:
                 uploaded = False
                 files[field_name] = path_field_value
