@@ -800,6 +800,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Unsupported
         assert_processed_or_failed(3, 2, 'points_epsg2249_no_prj', Upload.STATE_WAITING)
 
+    @mock.patch("geonode.upload.forms.ValidationError")
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file, mocked_validation_error):
         """
