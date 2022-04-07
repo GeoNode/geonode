@@ -1,5 +1,6 @@
 {
   "contributors": [
+    "snyk-bot",
     "dependabot[bot]",
     "dependabot-preview[bot]",
     "ingenieroariel",
@@ -60,6 +61,7 @@
     "jcaceres85",
     "luorlandini",
     "minardimarcello",
+    "mikesname",
     "DavidQuartz"
   ]
 }
