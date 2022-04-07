@@ -88,7 +88,9 @@ from geonode.groups.models import GroupProfile
 from geonode.security.views import _perms_info_json
 from geonode.people.forms import ProfileForm
 from geonode.documents.models import get_related_documents
-from geonode.security.utils import get_visible_resources, set_geowebcache_invalidate_cache
+from geonode.security.utils import (
+    get_visible_resources,
+    AdvancedSecurityWorkflowManager)
 from geonode.utils import (
     resolve_object,
     default_map_config,
@@ -100,9 +102,9 @@ from geonode.utils import (
     GXPMap,
     mkdtemp)
 from geonode.geoserver.helpers import (
-    ogc_server_settings,
-    set_layer_style)
-
+    set_layer_style,
+    ogc_server_settings)
+from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.tasks.tasks import set_permissions
 from geonode.upload.forms import LayerUploadForm as UploadViewsetForm
 
@@ -118,8 +120,7 @@ celery_logger = get_logger(__name__)
 
 DEFAULT_SEARCH_BATCH_SIZE = 10
 MAX_SEARCH_BATCH_SIZE = 25
-GENERIC_UPLOAD_ERROR = _(
-    "There was an error while attempting to upload your data. \
+GENERIC_UPLOAD_ERROR = _("There was an error while attempting to upload your data. \
 Please try again, or contact and administrator if the problem continues.")
 
 METADATA_UPLOADED_PRESERVE_ERROR = _("Note: this layer's orginal metadata was \
@@ -129,8 +130,7 @@ populated and preserved by importing a metadata XML file. This metadata cannot b
 _PERMISSION_MSG_DELETE = _("You are not permitted to delete this layer")
 _PERMISSION_MSG_GENERIC = _('You do not have permissions for this layer.')
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this layer")
-_PERMISSION_MSG_METADATA = _(
-    "You are not permitted to modify this layer's metadata")
+_PERMISSION_MSG_METADATA = _("You are not permitted to modify this layer's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this layer")
 
 
@@ -145,8 +145,7 @@ def log_snippet(log_file):
         return f.read()
 
 
-def _resolve_layer(request, alternate, permission='base.view_resourcebase',
-                   msg=_PERMISSION_MSG_GENERIC, **kwargs):
+def _resolve_layer(request, alternate, permission='base.view_resourcebase', msg=_PERMISSION_MSG_GENERIC, **kwargs):
     """
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
@@ -1069,22 +1068,10 @@ def layer_metadata(
         layer.save(notify=True)
         return HttpResponse(json.dumps({'message': message}))
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                layer.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    layer_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                layer_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, layer):
+        layer_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, layer):
+        layer_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     if poc is not None:
         layer_form.fields['poc'].initial = poc.id

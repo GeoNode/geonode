@@ -21,11 +21,10 @@ import os
 import re
 import html
 import math
-import uuid
 import shutil
 import logging
 import traceback
-
+from uuid import uuid4
 from django.db import models, transaction
 from django.conf import settings
 from django.utils.functional import cached_property
@@ -745,7 +744,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     extra_metadata_help_text = _(
         'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
-    uuid = models.CharField(max_length=36)
+
+    def gen_uuid():
+        return str(uuid4())
+
+    uuid = models.CharField(max_length=36, unique=True, default=gen_uuid)
     title = models.CharField(_('title'), max_length=255, help_text=_(
         'name by which the cited resource is known'))
     abstract = models.TextField(
@@ -1085,6 +1088,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         # Resource Updated
         _notification_sent = False
+        _group_status_changed = False
         _approval_status_changed = False
 
         if hasattr(self, 'class_name') and (self.pk is None or notify):
@@ -1096,6 +1100,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 recipients = get_notification_recipients(notice_type_label, resource=self)
                 send_notification(recipients, notice_type_label, {'resource': self})
             elif self.pk:
+                # Group has changed
+                _group_status_changed = self.group != ResourceBase.objects.get(pk=self.get_self_resource().pk).group
+
                 # Approval Notifications Here
                 if self.was_approved != self.is_approved:
                     if not _notification_sent and not self.was_approved and self.is_approved:
@@ -1124,16 +1131,21 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     recipients = get_notification_recipients(notice_type_label, resource=self)
                     send_notification(recipients, notice_type_label, {'resource': self})
 
+        if not self.uuid or len(self.uuid) == 0 or callable(self.uuid):
+            self.uuid = str(uuid4())
         super().save(*args, **kwargs)
 
         # Update workflow permissions
-        if _approval_status_changed:
-            self.set_permissions()
+        if _approval_status_changed or _group_status_changed:
+            self.set_permissions(approval_status_changed=_approval_status_changed, group_status_changed=_group_status_changed)
 
     def delete(self, notify=True, *args, **kwargs):
         """
         Send a notification when a layer, map or document is deleted
         """
+        from geonode.security.utils import ResourceManager
+        ResourceManager.remove_permissions(self.uuid, instance=self.get_real_instance())
+
         if hasattr(self, 'class_name') and notify:
             notice_type_label = f'{self.class_name.lower()}_deleted'
             recipients = get_notification_recipients(notice_type_label, resource=self)
@@ -1372,14 +1384,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             self.dirty_state = True
             ResourceBase.objects.filter(id=self.id).update(dirty_state=True)
 
-    def set_processing_state(self, state):
-        if state == "PROCESSED":
-            self.clear_dirty_state()
-
     def clear_dirty_state(self):
         if self.dirty_state:
             self.dirty_state = False
             ResourceBase.objects.filter(id=self.id).update(dirty_state=False)
+
+    def set_processing_state(self, state):
+        if state == "PROCESSED":
+            self.clear_dirty_state()
 
     @property
     def processed(self):
@@ -1395,6 +1407,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 return ''
         except Exception:
             return ''
+
+    def get_absolute_url(self):
+        try:
+            return self.get_real_instance().get_absolute_url()
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     def set_bbox_polygon(self, bbox, srid):
         """
@@ -1634,10 +1653,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.exists():
             _thumbnail_url = add_url_params(
-                local_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+                local_thumbnails[0].url, {'v': str(uuid4())[:8]})
         elif remote_thumbnails.exists():
             _thumbnail_url = add_url_params(
-                remote_thumbnails[0].url, {'v': str(uuid.uuid4())[:8]})
+                remote_thumbnails[0].url, {'v': str(uuid4())[:8]})
         return _thumbnail_url
 
     def has_thumbnail(self):
@@ -1648,7 +1667,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = get_unique_upload_path(self, filename)
-
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1696,7 +1714,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                     url = urljoin(site_url, url)
 
-                if thumb_size(_upload_path) == 0:
+                if thumb_size(upload_path) == 0:
                     raise Exception("Generated thumbnail image is zero size")
 
                 # should only have one 'Thumbnail' link
@@ -1711,6 +1729,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                         link_type='image',
                     )
                 )
+                # Store the new url and path
                 self.thumbnail_url = url
                 obj.url = url
                 obj.save()
@@ -1822,14 +1841,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         except ContactRole.DoesNotExist:
             the_ma = None
         return the_ma
-
-    def handle_moderated_uploads(self):
-        if settings.ADMIN_MODERATE_UPLOADS:
-            self.is_approved = False
-            self.was_approved = False
-        if settings.RESOURCE_PUBLISHING:
-            self.is_published = False
-            self.was_published = False
 
     def add_missing_metadata_author_or_poc(self):
         """
@@ -2084,9 +2095,6 @@ def resourcebase_post_save(instance, *args, **kwargs):
 
             if license and len(license) > 0:
                 instance.license = license[0]
-
-        if instance.uuid is None or instance.uuid == '':
-            instance.uuid = str(uuid.uuid1())
 
         ResourceBase.objects.filter(id=instance.id).update(
             thumbnail_url=instance.get_thumbnail_url(),

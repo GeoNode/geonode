@@ -16,9 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import json
 import logging
-
+from uuid import uuid4
 from django.contrib.auth import get_user_model
 from dynamic_rest.fields.fields import DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
@@ -105,6 +106,8 @@ class GeoAppSerializer(ResourceBaseSerializer):
                 raise ValidationError(f"The specified '{_key}' does not exist!")
 
     def extra_create_checks(self, validated_data):
+        if 'uuid' not in validated_data:
+            validated_data['uuid'] = str(uuid4())
         if 'name' not in validated_data or \
                 'owner' not in validated_data:
             raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")

@@ -16,9 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import re
 import html
+import json
 import logging
 from django.db.models.query import QuerySet
 from bootstrap3_datetime.widgets import DateTimePicker
@@ -483,16 +483,21 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         widget=forms.Textarea,
         help_text=_('Additional metadata, must be in format [\
-            {"metadata_key": "metadata_value"},\
-            {"metadata_key": "metadata_value"} \
-        ]')
+                {"metadata_key": "metadata_value"},\
+                {"metadata_key": "metadata_value"} \
+            ]')
     )
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+
         if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
+
         for field in self.fields:
+            if field == 'featured' and self.user and not self.user.is_superuser:
+                self.fields[field].disabled = True
             help_text = self.fields[field].help_text
             if help_text != '':
                 self.fields[field].widget.attrs.update(

@@ -563,7 +563,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         """
         Ensures the layer_style_manage route returns a 200.
         """
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
 
         bob = get_user_model().objects.get(username='bobby')
         assign_perm('change_layer_style', bob, layer)
@@ -1053,7 +1053,7 @@ class UtilsTests(GeoNodeBaseTestSupport):
 
         # Test OWS Download Links
         from geonode.geoserver.ows import wcs_links, wfs_links, wms_links
-        instance = Layer.objects.all()[0]
+        instance = Layer.objects.first()
         bbox = instance.bbox
         srid = instance.srid
         height = 512
@@ -1260,3 +1260,9 @@ attribute of the layer '{_lyr.alternate}'"
                         _post_migrate_link_meta,
                         f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_gs_proxy_never_caches(self):
+        url = reverse('gs_styles')
+        response = self.client.get(url)
+        self.assertFalse(response.has_header('Cache-Control'))

@@ -16,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+from uuid import uuid4
 from collections import namedtuple
 
 from django.test.client import RequestFactory
@@ -75,7 +77,7 @@ from geonode.layers.views import _resolve_layer
 from geonode.maps.models import Map, MapLayer
 from geonode.utils import DisableDjangoSignals
 from geonode.maps.tests_populate_maplayers import maplayers as ml
-from geonode.security.utils import remove_object_permissions
+from geonode.security.utils import ResourceManager
 from geonode.base.forms import BatchPermissionsForm
 
 logger = logging.getLogger(__name__)
@@ -153,19 +155,19 @@ class LayersTest(GeoNodeBaseTestSupport):
 
     def test_layer_name_clash(self):
         _ll_1 = Layer.objects.create(
+            uuid=str(uuid4()),
             owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
             storeType="dataStore",
-            alternate="geonode:states"
-        )
+            alternate="geonode:states")
         _ll_2 = Layer.objects.create(
+            uuid=str(uuid4()),
             owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
             storeType="remoteStore",
-            alternate="geonode:states"
-        )
+            alternate="geonode:states")
         _ll_1.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
         _ll_2.set_permissions({'users': {"bobby": ['base.view_resourcebase']}})
         self.client.login(username="bobby", password="bob")
@@ -913,11 +915,11 @@ class LayersTest(GeoNodeBaseTestSupport):
         """
         Ensure set_permissions supports the change_layer_data permission.
         """
-        layer = Layer.objects.first()
-        user = get_anonymous_user()
-        layer.set_permissions({'users': {user.username: ['change_layer_data']}})
+        layer = Layer.objects.filter(storeType='dataStore').first()
+        user = get_user_model().objects.get(username='norman')
+        layer.set_permissions({'users': {user: ['change_layer_data']}})
         perms = layer.get_all_level_info()
-        self.assertIn('change_layer_data', perms['users'][user])
+        self.assertIn('change_layer_data', perms['users'][user], perms['users'])
 
     def test_batch_edit(self):
         """
@@ -1181,6 +1183,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.clear_notifications_queue()
             self.client.login(username=self.user, password=self.passwd)
             _l = Layer.objects.create(
+                uuid=str(uuid4()),
                 name='test notifications',
                 bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
                 srid='EPSG:4326',
@@ -1236,8 +1239,8 @@ class SetLayersPermissions(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_assign_remove_permissions(self):
-        # Assing
-        layer = Layer.objects.all().first()
+        # Assign
+        layer = Layer.objects.filter(storeType='dataStore').first()
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(self.user, perm_spec["users"])
         utils.set_layers_permissions("write", None, [self.user], None, None)
@@ -1306,7 +1309,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
         self.user.set_password('very-secret')
         admin = get_user_model().objects.get(username='admin')
-        self.map = Map.objects.create(owner=admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
+        self.map = Map.objects.create(uuid=str(uuid4()), owner=admin, title='test', is_approved=True, zoom=0, center_x=0.0, center_y=0.0)
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()
@@ -1331,7 +1334,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         Test that an authenticated user without permissions to view a map does not see the map under
         'Maps using this layer' in layer_detail when map is not viewable by 'anyone'
         """
-        remove_object_permissions(self.map.get_self_resource())
+        ResourceManager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
         self.client.login(username='dybala', password='very-secret')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [])
@@ -1340,7 +1343,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test that keyword multiselect widget is disabled when the user is not an admin
         """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        self.test_layer = Layer.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True)
         url = reverse('layer_metadata', args=(self.test_layer.alternate,))
 
         self.client.login(username=self.not_admin.username, password='very-secret')
@@ -1355,7 +1358,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         admin = self.not_admin
         admin.is_superuser = True
         admin.save()
-        self.test_layer = Layer.objects.create(owner=admin, title='test', is_approved=True)
+        self.test_layer = Layer.objects.create(uuid=str(uuid4()), owner=admin, title='test', is_approved=True)
         url = reverse('layer_metadata', args=(self.test_layer.alternate,))
 
         self.client.login(username=admin.username, password='very-secret')
@@ -1367,7 +1370,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
         """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        self.test_layer = Layer.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True)
         url = reverse('layer_metadata', args=(self.test_layer.alternate,))
 
         self.client.login(username=self.not_admin.username, password='very-secret')
@@ -1381,7 +1384,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         Test that keyword multiselect widget is not disabled when the user is not an admin
         and FREETEXT_KEYWORDS_READONLY=False
         """
-        self.test_layer = Layer.objects.create(owner=self.not_admin, title='test', is_approved=True)
+        self.test_layer = Layer.objects.create(uuid=str(uuid4()), owner=self.not_admin, title='test', is_approved=True)
         url = reverse('layer_metadata', args=(self.test_layer.alternate,))
 
         self.client.login(username=self.not_admin.username, password='very-secret')
@@ -1400,7 +1403,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test that anonymous user cannot view map that are not viewable by 'anyone'
         """
-        remove_object_permissions(self.map.get_self_resource())
+        ResourceManager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [])
 
@@ -1408,7 +1411,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         """
         Test only users with view permissions to a map can view them in layer detail view
         """
-        remove_object_permissions(self.map.get_self_resource())
+        ResourceManager.remove_permissions(self.map.uuid, instance=self.map.get_self_resource())
         self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('layer_detail', args=(self.layer.alternate,)))
         self.assertEqual(response.context['map_layers'], [self.map_layer])
@@ -1420,6 +1423,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.test_dataset = None
         try:
             self.test_dataset = Layer.objects.create(
+                uuid=str(uuid4()),
                 name='test',
                 alternate='geonode:test',
                 title='test,comma,2021',
@@ -1469,7 +1473,7 @@ class TestCustomUUidHandler(TestCase):
         User = get_user_model()
         self.user = User.objects.create(username='test', email='test@test.com')
         self.sut = Layer.objects.create(
-            name="testLayer", owner=self.user, title='test', is_approved=True, uuid='abc-1234-abc'
+            uuid='abc-1234-abc', name="testLayer", owner=self.user, title='test', is_approved=True
         )
 
     def test_layer_will_maintain_his_uud_if_no_handler_is_definded(self):

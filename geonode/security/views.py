@@ -285,7 +285,7 @@ def resource_geolimits(request, resource_id):
 
 @require_POST
 def invalidate_permissions_cache(request):
-    from .utils import sync_resources_with_guardian
+    from geonode.geoserver.security import sync_resources_with_guardian
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
     can_change_permissions = request.user.has_perm(
@@ -379,7 +379,7 @@ def attributes_sats_refresh(request):
 
 @require_POST
 def invalidate_tiledlayer_cache(request):
-    from .utils import set_geowebcache_invalidate_cache
+    from geonode.geoserver.security import set_geowebcache_invalidate_cache
     uuid = request.POST['uuid']
     resource = get_object_or_404(ResourceBase, uuid=uuid)
     can_change_data = request.user.has_perm(

@@ -352,7 +352,7 @@ class GenericXYZBackground(BaseThumbBackground):
                 for retries in range(self.max_retries):
                     try:
                         resp, content = http_client.request(imgurl)
-                        if resp.status_code > 400:
+                        if resp and resp.status_code > 400:
                             retries = self.max_retries - 1
                             raise Exception(f"{strip_tags(content)}")
                         im = BytesIO(content)
@@ -361,7 +361,7 @@ class GenericXYZBackground(BaseThumbBackground):
                     except Exception as e:
                         logger.error(f"Thumbnail background fetching from {imgurl} failed {retries} time(s) with: {e}")
                         if retries + 1 == self.max_retries:
-                            raise e
+                            raise UnidentifiedImageError(e)
                         time.sleep(self.retry_delay)
                         continue
 

@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import sys
 import logging
 
@@ -28,9 +27,9 @@ from urllib.parse import urljoin
 
 from django.urls import reverse
 from django.core.files import File
-from django.conf.urls import url
 from django.contrib.auth import get_user_model
-from rest_framework.test import APITestCase, URLPatternsTestCase
+
+from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -41,7 +40,7 @@ from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
-from geonode.base.utils import build_absolute_uri
+from geonode.utils import build_absolute_uri
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.base.populate_test_data import create_models, create_single_layer
 from geonode.security.utils import get_resources_with_perms
@@ -61,7 +60,7 @@ logger = logging.getLogger(__name__)
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
 
 
-class BaseApiTests(APITestCase, URLPatternsTestCase):
+class BaseApiTests(APITestCase):
 
     fixtures = [
         'initial_data.json',
@@ -70,18 +69,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         "test_thesaurus.json"
     ]
 
-    from geonode.urls import urlpatterns
-
-    if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.views import layer_acls, resolve_user
-        urlpatterns += [
-            url(r'^acls/?$', layer_acls, name='layer_acls'),
-            url(r'^acls_dep/?$', layer_acls, name='layer_acls_dep'),
-            url(r'^resolve_user/?$', resolve_user, name='layer_resolve_user'),
-            url(r'^resolve_user_dep/?$', resolve_user, name='layer_resolve_user_dep'),
-        ]
-
     def setUp(self):
+        self.maxDiff = None
         create_models(b'document')
         create_models(b'map')
         create_models(b'layer')
@@ -102,8 +91,9 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 7)
-            self.assertEqual(len(response.data['group_profiles']), 7)
+            self.assertEqual(response.data['total'], 4)
+            self.assertEqual(len(response.data['group_profiles']), 4)
+            self.assertTrue(all([_g['access'] != 'private' for _g in response.data['group_profiles']]))
 
             # Admin can access all groups
             self.assertTrue(self.client.login(username='admin', password='admin'))
@@ -123,8 +113,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
             self.assertEqual(response.status_code, 200)
             logger.debug(response.data)
             self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data['total'], 7)
-            self.assertEqual(len(response.data['group_profiles']), 7)
+            self.assertEqual(response.data['total'], 6)
+            self.assertEqual(len(response.data['group_profiles']), 6)
             self.assertTrue(any([_g['slug'] == 'priv_1' for _g in response.data['group_profiles']]))
 
             url = reverse('group-profiles-detail', kwargs={'pk': priv_1.pk})
@@ -469,6 +459,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
 
         # Check user permissions
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        self.assertEqual(resource.owner.username, 'bobby')
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
@@ -752,7 +743,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        resource = ResourceBase.objects.filter(owner__username='bobby', resource_type='layer').first()
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'set_perms/')
         get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'get_perms/')
 
@@ -764,8 +755,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertTrue('bobby' in resource_perm_spec['users'])
-        self.assertFalse('norman' in resource_perm_spec['users'])
+        self.assertTrue('bobby' in resource_perm_spec['users'], resource_perm_spec)
+        self.assertFalse('norman' in resource_perm_spec['users'], resource_perm_spec)
 
         # Add perms to Norman
         resource_perm_spec['users']['norman'] = resource_perm_spec['users']['bobby']
@@ -838,7 +829,8 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         """
         url = urljoin(f"{reverse('base-resources-list')}/", 'resource_types/')
         response = self.client.get(url, format='json')
-        r_type_names = [item['name'] for item in response.data['resource_types']]
+        r_types = [item for item in response.data['resource_types']]
+        r_type_names = [r_type['name'] for r_type in r_types]
         self.assertEqual(response.status_code, 200)
         self.assertTrue('resource_types' in response.data)
         self.assertTrue('layer' in r_type_names)
@@ -1011,6 +1003,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 8)
 
+        # Owners Filtering
+        response = self.client.get(f"{url}?filter{{username.icontains}}=bobby", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
+
     def test_categories_list(self):
         """
         Ensure we can access the list of categories.
@@ -1034,6 +1031,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], TopicCategory.objects.count())
+
+        # Categories Filtering
+        response = self.client.get(f"{url}?filter{{identifier.icontains}}=biota", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 1)
 
     def test_regions_list(self):
         """
@@ -1059,6 +1061,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], Region.objects.count())
 
+        # Regions Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 8)
+
     def test_keywords_list(self):
         """
         Ensure we can access the list of keywords.
@@ -1082,6 +1089,11 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+
+        # Keywords Filtering
+        response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
 
     def test_tkeywords_list(self):
         """
@@ -1203,7 +1215,7 @@ class BaseApiTests(APITestCase, URLPatternsTestCase):
         Given a logged User and an existing dataset, should raise a ThumbnailException.
         """
         # Admin
-        self.client.login(username="admin", password="admin")
+        self.assertTrue(self.client.login(username='admin', password='admin'))
         dataset_id = Layer.objects.first().resourcebase_ptr_id
         url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
         payload = {

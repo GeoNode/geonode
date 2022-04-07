@@ -35,8 +35,8 @@ from tinymce.models import HTMLField
 from geonode.base.models import ResourceBase, ResourceBaseManager, resourcebase_post_save
 from geonode.people.utils import get_valid_user
 from geonode.utils import check_shp_columnnames
+from geonode.security.utils import ResourceManager
 from geonode.security.models import PermissionLevelMixin
-from geonode.security.utils import remove_object_permissions
 from geonode.notifications_helper import (
     send_notification,
     get_notification_recipients)
@@ -44,13 +44,12 @@ from geonode.notifications_helper import (
 from ..services.enumerations import CASCADED
 from ..services.enumerations import INDEXED
 
-logger = logging.getLogger("geonode.layers.models")
+logger = logging.getLogger(__name__)
 
 shp_exts = ['.shp', ]
 csv_exts = ['.csv']
 kml_exts = ['.kml']
 vec_exts = shp_exts + csv_exts + kml_exts
-
 cov_exts = ['.tif', '.tiff', '.geotiff', '.geotif', '.asc']
 
 TIME_REGEX = (
@@ -186,7 +185,9 @@ class Layer(ResourceBase):
         related_name='layer_default_style',
         null=True,
         blank=True)
+
     styles = models.ManyToManyField(Style, related_name='layer_styles')
+
     remote_service = models.ForeignKey("services.Service", null=True, blank=True, on_delete=models.CASCADE)
 
     charset = models.CharField(max_length=255, default='UTF-8')
@@ -623,7 +624,7 @@ def pre_save_layer(instance, sender, **kwargs):
         instance.uuid = get_uuid_handler()(instance).create_uuid()
     else:
         if instance.uuid == '':
-            instance.uuid = str(uuid.uuid1())
+            instance.uuid = str(uuid.uuid4())
 
     logger.debug("In pre_save_layer")
     if instance.alternate is None:
@@ -692,7 +693,7 @@ def pre_delete_layer(instance, sender, **kwargs):
             upload.delete()
 
     # Delete object permissions
-    remove_object_permissions(instance)
+    ResourceManager.remove_permissions(instance.uuid, instance=instance.get_self_resource())
 
 
 def post_delete_layer(instance, sender, **kwargs):

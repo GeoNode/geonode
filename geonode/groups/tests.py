@@ -289,7 +289,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
         Ensures that when a user is in a group, the group permissions
         extend to the user.
         """
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         # Set the default permissions
         layer.set_default_permissions()
 
@@ -358,8 +358,8 @@ class SmokeTest(GeoNodeBaseTestSupport):
         Tests the resources method on a Group object.
         """
 
-        layer = Layer.objects.all()[0]
-        map = Map.objects.all()[0]
+        layer = Layer.objects.first()
+        map = Map.objects.first()
 
         perm_spec = {'groups': {'bar': ['change_resourcebase']}}
         # Give the self.bar group write perms on the layer
@@ -389,7 +389,7 @@ class SmokeTest(GeoNodeBaseTestSupport):
         Tests the perms_info function (which passes permissions to the response context).
         """
         # Add test to test perms being sent to the front end.
-        layer = Layer.objects.all()[0]
+        layer = Layer.objects.first()
         layer.set_default_permissions()
         perms_info = layer.get_all_level_info()
 
@@ -412,9 +412,9 @@ class SmokeTest(GeoNodeBaseTestSupport):
 
         self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        layer = Layer.objects.all()[0]
-        document = Document.objects.all()[0]
-        map_obj = Map.objects.all()[0]
+        layer = Layer.objects.first()
+        document = Document.objects.first()
+        map_obj = Map.objects.first()
         layer.set_default_permissions()
         document.set_default_permissions()
         map_obj.set_default_permissions()
@@ -710,7 +710,7 @@ class GroupActivityTest(GeoNodeBaseTestSupport):
                             html=False)
         try:
             # Add test to test perms being sent to the front end.
-            layer = Layer.objects.all()[0]
+            layer = Layer.objects.first()
             layer.set_default_permissions()
             perms_info = layer.get_all_level_info()
 

@@ -30,8 +30,8 @@ import json
 import logging
 import tarfile
 
+from uuid import uuid4
 from datetime import datetime
-
 from osgeo import gdal, osr, ogr
 from zipfile import ZipFile, is_zipfile
 from random import choice
@@ -508,7 +508,7 @@ def file_upload(filename,
                     f, name=f'{assigned_name or valid_name}.{type_name}'))
             # save the system assigned name for the remaining files
             if not assigned_name:
-                the_file = upload_session.layerfile_set.all()[0].file.name
+                the_file = upload_session.layerfile_set.first().file.name
                 assigned_name = os.path.splitext(os.path.basename(the_file))[0]
 
     # Getting a bounding box
@@ -538,11 +538,10 @@ def file_upload(filename,
     # by default, if RESOURCE_PUBLISHING=True then layer.is_published
     # must be set to False
     if not overwrite:
-        if settings.ADMIN_MODERATE_UPLOADS:
+        if settings.ADMIN_MODERATE_UPLOADS or settings.RESOURCE_PUBLISHING:
             is_approved = False
-            defaults['is_approved'] = defaults['was_approved'] = is_approved
-        if settings.RESOURCE_PUBLISHING:
             is_published = False
+            defaults['is_approved'] = defaults['was_approved'] = is_approved
             defaults['is_published'] = defaults['was_published'] = is_published
 
     # set metadata
@@ -604,10 +603,10 @@ def file_upload(filename,
                     layer = Layer.objects.filter(name=valid_name, workspace=settings.DEFAULT_WORKSPACE).first()
                     if not layer:
                         layer = Layer.objects.create(
+                            uuid=str(uuid4()),
                             name=valid_name,
                             owner=user,
-                            workspace=settings.DEFAULT_WORKSPACE
-                        )
+                            workspace=settings.DEFAULT_WORKSPACE)
                         created = True
                 elif identifier:
                     layer = Layer.objects.filter(uuid=identifier).first()
@@ -888,9 +887,7 @@ def surrogate_escape_string(input_string, source_character_set):
     return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
-def set_layers_permissions(permissions_name, resources_names=None,
-                           users_usernames=None, groups_names=None,
-                           delete_flag=None, verbose=False):
+def set_layers_permissions(permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=None, verbose=False):
     # Processing information
     if not resources_names:
         # If resources is None we consider all the existing layer

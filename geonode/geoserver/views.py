@@ -23,7 +23,7 @@ import json
 import logging
 import traceback
 from lxml import etree
-from defusedxml import lxml as dlxml
+from owslib.etree import etree as dlxml
 from os.path import isfile
 
 from urllib.parse import (
@@ -81,7 +81,6 @@ from .helpers import (
     _invalidate_geowebcache_layer)
 
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control
 
 logger = logging.getLogger(__name__)
 
@@ -469,7 +468,6 @@ def check_geoserver_access(request,
 
 
 @csrf_exempt
-@cache_control(public=True, must_revalidate=True, max_age=30)
 def geoserver_proxy(request,
                     proxy_path,
                     downstream_path,
@@ -776,9 +774,7 @@ def get_capabilities(request, layerid=None, user=None,
                 access_token = None
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-                layercap = get_layer_capabilities(layer,
-                                                  access_token=access_token,
-                                                  tolerant=tolerant)
+                layercap = get_layer_capabilities(layer, access_token=access_token, tolerant=tolerant)
                 if layercap is not None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         namespaces = {'wms': 'http://www.opengis.net/wms',

@@ -35,20 +35,21 @@ from geonode.layers.models import Layer, Style
 from geonode.compat import ensure_string
 from geonode.base.models import ResourceBase, resourcebase_post_save
 from geonode.maps.signals import map_changed_signal
-from geonode.security.utils import remove_object_permissions
 from geonode.client.hooks import hookset
-from geonode.utils import (GXPMapBase,
-                           GXPLayerBase,
-                           layer_from_viewer_config,
-                           default_map_config)
+from geonode.utils import (
+    GXPMapBase,
+    GXPLayerBase,
+    layer_from_viewer_config,
+    default_map_config)
 
 from geonode import geoserver  # noqa
 from geonode.utils import check_ogc_backend
+from geonode.security.utils import ResourceManager
 
 from deprecated import deprecated
 from pinax.ratings.models import OverallRating
 
-logger = logging.getLogger("geonode.maps.models")
+logger = logging.getLogger(__name__)
 
 
 class Map(ResourceBase, GXPMapBase):
@@ -211,7 +212,7 @@ class Map(ResourceBase, GXPMapBase):
             self.projection = projection
 
         if self.uuid is None or self.uuid == '':
-            self.uuid = str(uuid.uuid1())
+            self.uuid = str(uuid.uuid4())
 
         def source_for(layer):
             try:
@@ -284,7 +285,7 @@ class Map(ResourceBase, GXPMapBase):
         self.center_y = 0
 
         if self.uuid is None or self.uuid == '':
-            self.uuid = str(uuid.uuid1())
+            self.uuid = str(uuid.uuid4())
 
         DEFAULT_MAP_CONFIG, DEFAULT_BASE_LAYERS = default_map_config(None)
 
@@ -347,10 +348,9 @@ class Map(ResourceBase, GXPMapBase):
         Returns True if anonymous (public) user can view map.
         """
         from guardian.shortcuts import get_anonymous_user
+
         user = get_anonymous_user()
-        return user.has_perm(
-            'base.view_resourcebase',
-            obj=self.resourcebase_ptr)
+        return user.has_perm("base.view_resourcebase", obj=self.resourcebase_ptr)
 
     @property
     def layer_group(self):
@@ -359,6 +359,7 @@ class Map(ResourceBase, GXPMapBase):
         """
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
+
             lg_name = f'{slugify(self.title)}_{self.id}'
             try:
                 return {
@@ -382,13 +383,12 @@ class Map(ResourceBase, GXPMapBase):
             from geonode.geoserver.helpers import gs_catalog
             from geoserver.layergroup import UnsavedLayerGroup as GsUnsavedLayerGroup
         else:
-            raise Exception(
-                'Cannot publish layer group if geonode.geoserver is not in INSTALLED_APPS')
+            raise Exception("Cannot publish layer group if geonode.geoserver is not in INSTALLED_APPS")
 
         # temporary permission workaround:
         # only allow public maps to be published
         if not self.is_public:
-            return 'Only public maps can be saved as layer group.'
+            return "Only public maps can be saved as layer group."
 
         map_layers = MapLayer.objects.filter(map=self.id)
 
@@ -410,12 +410,7 @@ class Map(ResourceBase, GXPMapBase):
         # Update existing or add new group layer
         lg = self.layer_group
         if lg is None:
-            lg = GsUnsavedLayerGroup(
-                gs_catalog,
-                lg_name,
-                lg_layers,
-                lg_styles,
-                lg_bounds)
+            lg = GsUnsavedLayerGroup(gs_catalog, lg_name, lg_layers, lg_styles, lg_bounds)
         else:
             lg.layers, lg.styles, lg.bounds = lg_layers, lg_styles, lg_bounds
         gs_catalog.save(lg)
@@ -617,7 +612,7 @@ def pre_delete_map(instance, sender, **kwrargs):
     OverallRating.objects.filter(
         content_type=ct,
         object_id=instance.id).delete()
-    remove_object_permissions(instance.get_self_resource())
+    ResourceManager.remove_permissions(instance.uuid, instance=instance.get_self_resource())
 
 
 signals.pre_delete.connect(pre_delete_map, sender=Map)

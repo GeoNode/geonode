@@ -20,7 +20,6 @@ import json
 import logging
 import traceback
 import warnings
-from itertools import chain
 
 from django.conf import settings
 from django.db.models import F
@@ -45,6 +44,10 @@ from geonode.people.forms import ProfileForm
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 
 from geonode.base.models import ExtraMetadata, Thesaurus, TopicCategory
+
+from geonode.security.utils import (
+    get_user_visible_groups,
+    AdvancedSecurityWorkflowManager)
 
 from geonode.utils import (
     resolve_object,
@@ -347,7 +350,6 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
 
     else:
         geoapp_form = GeoAppForm(instance=geoapp_obj, prefix="resource")
-
         geoapp_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
             prefix="category_choice_field",
@@ -389,10 +391,10 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
     initial_thumb_url = geoapp_obj.thumbnail_url
     if request.method == "POST" and geoapp_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
-        new_poc = geoapp_form.cleaned_data['poc']
-        new_author = geoapp_form.cleaned_data['metadata_author']
-        new_keywords = current_keywords if request.keyword_readonly else geoapp_form.cleaned_data['keywords']
-        new_regions = geoapp_form.cleaned_data['regions']
+        new_poc = geoapp_form.cleaned_data.pop('poc')
+        new_author = geoapp_form.cleaned_data.pop('metadata_author')
+        new_keywords = current_keywords if request.keyword_readonly else geoapp_form.cleaned_data.pop('keywords')
+        new_regions = geoapp_form.cleaned_data.pop('regions')
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and \
@@ -519,36 +521,12 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
 
-    metadata_author_groups = []
-    if request.user.is_superuser or request.user.is_staff:
-        metadata_author_groups = GroupProfile.objects.all()
-    else:
-        try:
-            all_metadata_author_groups = chain(
-                request.user.group_list_all(),
-                GroupProfile.objects.exclude(
-                    access="private").exclude(access="public-invite"))
-        except Exception:
-            all_metadata_author_groups = GroupProfile.objects.exclude(
-                access="private").exclude(access="public-invite")
-        [metadata_author_groups.append(item) for item in all_metadata_author_groups
-            if item not in metadata_author_groups]
+    metadata_author_groups = get_user_visible_groups(request.user)
 
-    if settings.ADMIN_MODERATE_UPLOADS:
-        if not request.user.is_superuser:
-            can_change_metadata = request.user.has_perm(
-                'change_resourcebase_metadata',
-                geoapp_obj.get_self_resource())
-            try:
-                is_manager = request.user.groupmember_set.all().filter(role='manager').exists()
-            except Exception:
-                is_manager = False
-            if not is_manager or not can_change_metadata:
-                if settings.RESOURCE_PUBLISHING:
-                    geoapp_form.fields['is_published'].widget.attrs.update(
-                        {'disabled': 'true'})
-                geoapp_form.fields['is_approved'].widget.attrs.update(
-                    {'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, geoapp_obj):
+        geoapp_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, geoapp_obj):
+        geoapp_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
     return render(request, template, context={

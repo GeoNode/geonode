@@ -1675,6 +1675,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     # ]
     MAPSTORE_PLUGINS_CONFIG_PATCH_RULES = []
 
+    # Extensions path to use in importing custom extensions into geonode
+    MAPSTORE_EXTENSIONS_FOLDER_PATH = '/static/mapstore/extensions/'
+
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
@@ -1862,7 +1865,7 @@ if USE_GEOSERVER:
 #     },
 
 CELERY_BEAT_SCHEDULER = os.environ.get(
-    'CELERY_BEAT_SCHEDULER', "django_celery_beat.schedulers:DatabaseScheduler")
+    'CELERY_BEAT_SCHEDULER', "celery.beat:PersistentScheduler")
 CELERY_BEAT_SCHEDULE = {}
 
 DELAYED_SECURITY_SIGNALS = ast.literal_eval(os.environ.get('DELAYED_SECURITY_SIGNALS', 'False'))
@@ -2197,7 +2200,7 @@ FILE_UPLOAD_HANDLERS = [
 
 DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv('DEFAULT_MAX_UPLOAD_SIZE', 104857600))  # 100 MB
 DEFAULT_BUFFER_CHUNK_SIZE = int(os.getenv('DEFAULT_BUFFER_CHUNK_SIZE', 64 * 1024))
-
+DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER = int(os.getenv('DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER', 5))
 
 '''
 Default schema used to store extra and dynamic metadata for the resource
