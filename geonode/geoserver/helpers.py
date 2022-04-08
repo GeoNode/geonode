@@ -723,6 +723,7 @@ def gs_slurp(
         name = resource.name
         the_store = resource.store
         workspace = the_store.workspace
+        layer = None
         try:
             created = False
             layer = Layer.objects.filter(name=name, workspace=workspace.name).first()
@@ -739,7 +740,8 @@ def gs_slurp(
                     uuid=str(uuid.uuid4())
                 )
                 created = True
-
+            # Hide the resource until finished
+            layer.set_processing_state("RUNNING")
             bbox = resource.native_bbox
             ll_bbox = resource.latlon_bbox
             try:
@@ -774,8 +776,9 @@ def gs_slurp(
                         metadata_links.append((link.mime, link.name, link.url))
                     resource.metadata_links = metadata_links
                     cat.save(resource)
-
         except Exception as e:
+            # Hide the resource until finished
+            layer.set_processing_state("FAILED")
             if ignore_errors:
                 status = 'failed'
                 exception_type, error, traceback = sys.exc_info()
@@ -784,7 +787,6 @@ def gs_slurp(
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
                 raise Exception(f"Failed to process {resource.name}") from e
-
         else:
             if created:
                 if not permissions:
@@ -1160,11 +1162,6 @@ def set_styles(layer, gs_catalog):
         except Exception as e:
             logger.exception(e)
 
-    if style_set:
-        # Remove duplicates
-        style_set = list(dict.fromkeys(style_set))
-        layer.styles.set(style_set)
-
     # Update default style to database
     to_update = {
         'default_style': layer.default_style
@@ -1172,6 +1169,11 @@ def set_styles(layer, gs_catalog):
 
     Layer.objects.filter(id=layer.id).update(**to_update)
     layer.refresh_from_db()
+
+    if style_set:
+        # Remove duplicates
+        style_set = list(dict.fromkeys(style_set))
+        layer.styles.set(style_set)
 
     # Legend links
     logger.debug(" -- Resource Links[Legend link]...")
@@ -1998,199 +2000,205 @@ def sync_instance_with_geoserver(
         else:
             return instance
 
-    if updatemetadata:
-        # Save layer attributes
-        logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
-        try:
-            set_attributes_from_geoserver(instance)
-        except Exception as e:
-            logger.exception(e)
+    try:
+        instance.set_processing_state("RUNNING")
+        if updatemetadata:
+            # Save layer attributes
+            logger.debug(f"... Refresh GeoServer attributes list for Layer {instance.title}")
+            try:
+                set_attributes_from_geoserver(instance)
+            except Exception as e:
+                logger.exception(e)
 
-    # Don't run this signal handler if it is a tile layer or a remote store (Service)
-    #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
-    _is_remote_instance = hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']
+        # Don't run this signal handler if it is a tile layer or a remote store (Service)
+        #    Currently only gpkg files containing tiles will have this type & will be served via MapProxy.
+        _is_remote_instance = hasattr(instance, 'storeType') and getattr(instance, 'storeType') in ['tileStore', 'remoteStore']
 
-    # Let's reset the connections first
-    gs_catalog._cache.clear()
-    gs_catalog.reset()
+        # Let's reset the connections first
+        gs_catalog._cache.clear()
+        gs_catalog.reset()
 
-    gs_resource = None
-    if not _is_remote_instance:
-        values = None
-        _tries = 0
-        _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
+        gs_resource = None
+        if not _is_remote_instance:
+            values = None
+            _tries = 0
+            _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
 
-        try:
-            # If the store in None then it's a new instance from an upload,
-            # only in this case run the geoserver_upload method
-            if getattr(instance, 'overwrite', False):
-                base_file, info = instance.get_base_file()
+            try:
+                # If the store in None then it's a new instance from an upload,
+                # only in this case run the geoserver_upload method
+                if getattr(instance, 'overwrite', False):
+                    base_file, info = instance.get_base_file()
 
-                # There is no need to process it if there is no file.
-                if base_file:
-                    from geonode.geoserver.upload import geoserver_upload
-                    gs_name, workspace, values, gs_resource = geoserver_upload(
-                        instance,
-                        base_file.file.path,
-                        instance.owner,
-                        instance.name,
-                        overwrite=True,
-                        title=instance.title,
-                        abstract=instance.abstract,
-                        charset=instance.charset
-                    )
+                    # There is no need to process it if there is no file.
+                    if base_file:
+                        from geonode.geoserver.upload import geoserver_upload
+                        gs_name, workspace, values, gs_resource = geoserver_upload(
+                            instance,
+                            base_file.file.path,
+                            instance.owner,
+                            instance.name,
+                            overwrite=True,
+                            title=instance.title,
+                            abstract=instance.abstract,
+                            charset=instance.charset
+                        )
 
-            values, gs_resource = fetch_gs_resource(instance, values, _tries)
-            while not gs_resource and _tries < _max_tries:
                 values, gs_resource = fetch_gs_resource(instance, values, _tries)
-                _tries += 1
-                time.sleep(5)
+                while not gs_resource and _tries < _max_tries:
+                    values, gs_resource = fetch_gs_resource(instance, values, _tries)
+                    _tries += 1
+                    time.sleep(5)
 
-            # Get metadata links
-            metadata_links = []
-            for link in instance.link_set.metadata():
-                metadata_links.append((link.mime, link.name, link.url))
+                # Get metadata links
+                metadata_links = []
+                for link in instance.link_set.metadata():
+                    metadata_links.append((link.mime, link.name, link.url))
 
-            if gs_resource:
-                logger.debug(f"Found geoserver resource for this layer: {instance.name}")
-                instance.gs_resource = gs_resource
+                if gs_resource:
+                    logger.debug(f"Found geoserver resource for this layer: {instance.name}")
+                    instance.gs_resource = gs_resource
 
-                # Iterate over values from geoserver.
-                for key in ['alternate', 'store', 'storeType']:
-                    # attr_name = key if 'typename' not in key else 'alternate'
-                    # print attr_name
-                    setattr(instance, key, values[key])
+                    # Iterate over values from geoserver.
+                    for key in ['alternate', 'store', 'storeType']:
+                        # attr_name = key if 'typename' not in key else 'alternate'
+                        # print attr_name
+                        setattr(instance, key, values[key])
 
-                if updatemetadata:
-                    gs_resource.metadata_links = metadata_links
+                    if updatemetadata:
+                        gs_resource.metadata_links = metadata_links
 
-                    # Update Attribution link
-                    if instance.poc:
-                        # gsconfig now utilizes an attribution dictionary
-                        gs_resource.attribution = {
-                            'title': str(instance.poc),
-                            'width': None,
-                            'height': None,
-                            'href': None,
-                            'url': None,
-                            'type': None}
-                        profile = get_user_model().objects.get(username=instance.poc.username)
-                        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-                        gs_resource.attribution_link = site_url + profile.get_absolute_url()
+                        # Update Attribution link
+                        if instance.poc:
+                            # gsconfig now utilizes an attribution dictionary
+                            gs_resource.attribution = {
+                                'title': str(instance.poc),
+                                'width': None,
+                                'height': None,
+                                'href': None,
+                                'url': None,
+                                'type': None}
+                            profile = get_user_model().objects.get(username=instance.poc.username)
+                            site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+                            gs_resource.attribution_link = site_url + profile.get_absolute_url()
 
-                    try:
-                        if settings.RESOURCE_PUBLISHING:
-                            if instance.is_published != gs_resource.advertised:
-                                gs_resource.advertised = 'true'
+                        try:
+                            if settings.RESOURCE_PUBLISHING:
+                                if instance.is_published != gs_resource.advertised:
+                                    gs_resource.advertised = 'true'
 
-                        if any(instance.keyword_list()):
-                            keywords = gs_resource.keywords + instance.keyword_list()
-                            gs_resource.keywords = list(set(keywords))
+                            if any(instance.keyword_list()):
+                                keywords = gs_resource.keywords + instance.keyword_list()
+                                gs_resource.keywords = list(set(keywords))
 
-                        # gs_resource should only be called if
-                        # ogc_server_settings.BACKEND_WRITE_ENABLED == True
-                        if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-                            gs_catalog.save(gs_resource)
-                    except Exception as e:
-                        msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, try to use: "{e}"')
-                        e.args = (msg,)
-                        logger.exception(e)
-
-                if updatebbox:
-                    # store the resource to avoid another geoserver call in the post_save
-                    """Get information from geoserver.
-                    The attributes retrieved include:
-                    * Bounding Box
-                    * SRID
-                    """
-                    # This is usually done in Layer.pre_save, however if the hooks
-                    # are bypassed by custom create/updates we need to ensure the
-                    # bbox is calculated properly.
-                    srid = gs_resource.projection
-                    bbox = gs_resource.native_bbox
-                    ll_bbox = gs_resource.latlon_bbox
-                    try:
-                        instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
-                    except GeoNodeException as e:
-                        if not ll_bbox:
-                            raise
-                        else:
+                            # gs_resource should only be called if
+                            # ogc_server_settings.BACKEND_WRITE_ENABLED == True
+                            if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
+                                gs_catalog.save(gs_resource)
+                        except Exception as e:
+                            msg = (f'Error while trying to save resource named {gs_resource} in GeoServer, try to use: "{e}"')
+                            e.args = (msg,)
                             logger.exception(e)
-                            instance.srid = 'EPSG:4326'
-                            Layer.objects.filter(id=instance.id).update(srid=instance.srid)
-                    instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
 
-                    if instance.srid:
-                        instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
-                    else:
-                        raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
+                    if updatebbox:
+                        # store the resource to avoid another geoserver call in the post_save
+                        """Get information from geoserver.
+                        The attributes retrieved include:
+                        * Bounding Box
+                        * SRID
+                        """
+                        # This is usually done in Layer.pre_save, however if the hooks
+                        # are bypassed by custom create/updates we need to ensure the
+                        # bbox is calculated properly.
+                        srid = gs_resource.projection
+                        bbox = gs_resource.native_bbox
+                        ll_bbox = gs_resource.latlon_bbox
+                        try:
+                            instance.set_bbox_polygon([bbox[0], bbox[2], bbox[1], bbox[3]], srid)
+                        except GeoNodeException as e:
+                            if not ll_bbox:
+                                raise
+                            else:
+                                logger.exception(e)
+                                instance.srid = 'EPSG:4326'
+                                Layer.objects.filter(id=instance.id).update(srid=instance.srid)
+                        instance.set_ll_bbox_polygon([ll_bbox[0], ll_bbox[2], ll_bbox[1], ll_bbox[3]])
 
-                # Update the instance
-                to_update = {}
-                if updatemetadata:
-                    to_update = {
-                        'title': instance.title or instance.name,
-                        'abstract': instance.abstract or "",
-                        'alternate': instance.alternate
-                    }
+                        if instance.srid:
+                            instance.srid_url = f"http://www.spatialreference.org/ref/{instance.srid.replace(':', '/').lower()}/"
+                        else:
+                            raise GeoNodeException(_("Invalid Projection. Layer is missing CRS!"))
 
-                if updatebbox and is_monochromatic_image(instance.thumbnail_url):
-                    to_update['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
+                    # Update the instance
+                    to_update = {}
+                    if updatemetadata:
+                        to_update = {
+                            'title': instance.title or instance.name,
+                            'abstract': instance.abstract or "",
+                            'alternate': instance.alternate
+                        }
 
-                # Save all the modified information in the instance without triggering signals.
-                try:
-                    with transaction.atomic():
-                        ResourceBase.objects.filter(
-                            id=instance.resourcebase_ptr.id).update(
-                            **to_update)
+                    if updatebbox and is_monochromatic_image(instance.thumbnail_url):
+                        to_update['thumbnail_url'] = staticfiles.static(settings.MISSING_THUMBNAIL)
 
-                        # to_update['name'] = instance.name,
-                        to_update['workspace'] = gs_resource.store.workspace.name
-                        to_update['store'] = gs_resource.store.name
-                        to_update['storeType'] = instance.storeType
-                        to_update['typename'] = instance.alternate
-                        to_update['srid'] = instance.srid
-                        Layer.objects.filter(id=instance.id).update(**to_update)
-
-                        # Refresh from DB
-                        instance.refresh_from_db()
-                except Exception as e:
-                    raise GeoNodeException(e)
-
-                if updatemetadata:
-                    # Save layer styles
-                    logger.debug(f"... Refresh Legend links for Layer {instance.title}")
+                    # Save all the modified information in the instance without triggering signals.
                     try:
-                        set_styles(instance, gs_catalog)
-                    except Exception as e:
-                        logger.exception(e)
+                        with transaction.atomic():
+                            ResourceBase.objects.filter(
+                                id=instance.resourcebase_ptr.id).update(
+                                **to_update)
 
-                # Invalidate GeoWebCache for the updated resource
-                try:
-                    _stylefilterparams_geowebcache_layer(instance.alternate)
-                    _invalidate_geowebcache_layer(instance.alternate)
-                except Exception:
-                    pass
+                            # to_update['name'] = instance.name,
+                            to_update['workspace'] = gs_resource.store.workspace.name
+                            to_update['store'] = gs_resource.store.name
+                            to_update['storeType'] = instance.storeType
+                            to_update['typename'] = instance.alternate
+                            to_update['srid'] = instance.srid
+                            Layer.objects.filter(id=instance.id).update(**to_update)
+
+                            # Refresh from DB
+                            instance.refresh_from_db()
+                    except Exception as e:
+                        raise GeoNodeException(e)
+
+                    if updatemetadata:
+                        # Save layer styles
+                        logger.debug(f"... Refresh Legend links for Layer {instance.title}")
+                        try:
+                            set_styles(instance, gs_catalog)
+                        except Exception as e:
+                            logger.exception(e)
+
+                    # Invalidate GeoWebCache for the updated resource
+                    try:
+                        _stylefilterparams_geowebcache_layer(instance.alternate)
+                        _invalidate_geowebcache_layer(instance.alternate)
+                    except Exception:
+                        pass
+            except Exception as e:
+                raise GeoNodeException(e)
+
+        # Refreshing layer links
+        logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
+        try:
+            set_resource_default_links(instance, instance, prune=_is_remote_instance)
+        except Exception as e:
+            logger.warning(e)
+
+        # Refreshing CSW records
+        logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
+        try:
+            catalogue_post_save(instance=instance, sender=instance.__class__)
         except Exception as e:
             raise GeoNodeException(e)
 
-    # Refreshing layer links
-    logger.debug(f"... Creating Default Resource Links for Layer {instance.title}")
-    try:
-        set_resource_default_links(instance, instance, prune=_is_remote_instance)
+        # Creating Layer Thumbnail by sending a signal
+        geoserver_post_save_complete.send(
+            sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+        instance.set_processing_state("PROCESSED")
     except Exception as e:
-        logger.warning(e)
-
-    # Refreshing CSW records
-    logger.debug(f"... Updating the Catalogue entries for Layer {instance.title}")
-    try:
-        catalogue_post_save(instance=instance, sender=instance.__class__)
-    except Exception as e:
-        raise GeoNodeException(e)
-
-    # Creating Layer Thumbnail by sending a signal
-    geoserver_post_save_complete.send(
-        sender=instance.__class__, instance=instance, update_fields=['thumbnail_url'])
+        logger.exception(e)
+        instance.set_processing_state("FAILED")
     return instance
 
 

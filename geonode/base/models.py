@@ -1392,6 +1392,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def set_processing_state(self, state):
         if state == "PROCESSED":
             self.clear_dirty_state()
+        else:
+            self.set_dirty_state()
 
     @property
     def processed(self):

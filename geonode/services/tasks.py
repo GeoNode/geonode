@@ -39,12 +39,13 @@ logger = logging.getLogger(__name__)
     name='geonode.services.tasks.harvest_resource',
     queue='upload',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def harvest_resource(self, harvest_job_id):
     harvest_job = models.HarvestJob.objects.get(pk=harvest_job_id)
     harvest_job.update_status(
@@ -108,12 +109,13 @@ def harvest_resource(self, harvest_job_id):
     name='geonode.services.tasks.probe_services',
     queue='geonode',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 1, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def probe_services(self):
     # The cache key consists of the task name and the MD5 digest
     # of the name.

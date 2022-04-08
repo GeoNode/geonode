@@ -36,12 +36,13 @@ logger = get_task_logger(__name__)
     name='geonode.documents.tasks.create_document_thumbnail',
     queue='geonode',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 2, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
@@ -118,12 +119,13 @@ def create_document_thumbnail(self, object_id):
     name='geonode.documents.tasks.delete_orphaned_document_files',
     queue='cleanup',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 2, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def delete_orphaned_document_files(self):
     from geonode.documents.utils import delete_orphaned_document_files
     delete_orphaned_document_files()
@@ -134,12 +136,13 @@ def delete_orphaned_document_files(self):
     name='geonode.documents.tasks.delete_orphaned_thumbnails',
     queue='cleanup',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 2, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def delete_orphaned_thumbnails(self):
     from geonode.base.utils import delete_orphaned_thumbs
     delete_orphaned_thumbs()
