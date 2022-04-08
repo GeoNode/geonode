@@ -275,7 +275,7 @@ class OGC_Servers_Handler:
 
 def mkdtemp(dir=settings.MEDIA_ROOT):
     if not os.path.exists(dir):
-        os.makedirs(dir)
+        os.makedirs(dir, exist_ok=True)
     tempdir = None
     while not tempdir:
         try:
@@ -1693,7 +1693,7 @@ def copy_tree(src, dst, symlinks=False, ignore=None):
 def extract_archive(zip_file, dst):
     target_folder = os.path.join(dst, os.path.splitext(os.path.basename(zip_file))[0])
     if not os.path.exists(target_folder):
-        os.makedirs(target_folder)
+        os.makedirs(target_folder, exist_ok=True)
 
     with ZipFile(zip_file, "r", allowZip64=True) as z:
         z.extractall(target_folder)
