@@ -202,34 +202,35 @@ def _update_upload_session_state(self, upload_session_id: int):
                 elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
                     _upload.set_resume_url(_redirect_to)
                     _upload.set_processing_state(enumerations.STATE_WAITING)
-                elif session.state == enumerations.STATE_RUNNING and not _tasks_waiting:
-                    # GeoNode Layer updating...
-                    _upload.set_processing_state(enumerations.STATE_RUNNING)
-                    if _upload.resource:
-                        _upload.resource.set_processing_state(enumerations.STATE_RUNNING)
+                elif session.state in (enumerations.STATE_PENDING, enumerations.STATE_RUNNING) and not _tasks_waiting:
+                    if _upload.resource and _upload.resource.processed:
+                        _upload.set_processing_state(enumerations.STATE_PROCESSED)
+                    else:
+                        # GeoNode Layer updating...
+                        _upload.set_processing_state(enumerations.STATE_RUNNING)
                 elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting:
                     if not _upload.resource or not _upload.resource.processed:
                         _response = final_step_view(None, _upload.get_session)
-                        _upload.refresh_from_db()
-                        _content = _response.content
-                        if isinstance(_content, bytes):
-                            _content = _content.decode('UTF-8')
-                        _response_json = json.loads(_content)
-                        _success = _response_json.get('success', False)
-                        _status = _response_json.get('status', 'error')
-                        if _status == 'error':
-                            # GeoNode Layer creation errored!
-                            _upload.set_processing_state(enumerations.STATE_INVALID)
-                        elif _status == 'pending':
-                            # GeoNode Layer not ready yet...
-                            _upload.set_processing_state(enumerations.STATE_PENDING)
-                        elif _upload.state != enumerations.STATE_PROCESSED:
-                            if _upload.resource and _upload.resource.processed:
-                                # GeoNode Layer successfully processed...
-                                _upload.set_processing_state(enumerations.STATE_PROCESSED)
-                            else:
-                                # GeoNode Layer updating...
-                                _upload.set_processing_state(enumerations.STATE_RUNNING)
+                        if _response:
+                            _upload.refresh_from_db()
+                            _content = _response.content
+                            if isinstance(_content, bytes):
+                                _content = _content.decode('UTF-8')
+                            _response_json = json.loads(_content)
+                            _success = _response_json.get('success', False)
+                            _status = _response_json.get('status', 'error')
+                            if _status == 'error':
+                                # GeoNode Layer creation errored!
+                                _upload.set_processing_state(enumerations.STATE_INVALID)
+                            elif _upload.state != enumerations.STATE_PROCESSED:
+                                if _upload.resource and _upload.resource.processed:
+                                    # GeoNode Layer successfully processed...
+                                    _upload.set_processing_state(enumerations.STATE_PROCESSED)
+                                else:
+                                    # GeoNode Layer updating...
+                                    _upload.set_processing_state(enumerations.STATE_RUNNING)
+                    elif _upload.resource and _upload.resource.processed:
+                        _upload.set_processing_state(enumerations.STATE_PROCESSED)
                 logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
         except (NotFound, Exception) as e:
             logger.exception(e)
