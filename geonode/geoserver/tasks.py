@@ -53,12 +53,13 @@ logger = get_task_logger(__name__)
     name='geonode.geoserver.tasks.geoserver_update_datasets',
     queue='geoserver.catalog',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_update_datasets(self, *args, **kwargs):
     """
     Runs update layers.
@@ -74,13 +75,14 @@ def geoserver_update_datasets(self, *args, **kwargs):
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_set_style',
     queue='geoserver.catalog',
-    expires=30,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_set_style(
         self,
         instance_id,
@@ -114,13 +116,14 @@ def geoserver_set_style(
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_create_style',
     queue='geoserver.catalog',
-    expires=30,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_create_style(
         self,
         instance_id,
@@ -190,13 +193,14 @@ def geoserver_create_style(
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_post_save_datasets',
     queue='geoserver.catalog',
-    expires=3600,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_post_save_datasets(
         self,
         instance_id,
@@ -219,13 +223,14 @@ def geoserver_post_save_datasets(
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_create_thumbnail',
     queue='geoserver.events',
-    expires=30,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 1, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=True):
     """
     Runs create_gs_thumbnail.
@@ -257,12 +262,13 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     name='geonode.geoserver.tasks.geoserver_cascading_delete',
     queue='cleanup',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 1, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_cascading_delete(self, *args, **kwargs):
     """
     Runs cascading_delete.
@@ -278,12 +284,13 @@ def geoserver_cascading_delete(self, *args, **kwargs):
     name='geonode.geoserver.tasks.geoserver_delete_map',
     queue='cleanup',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 1, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_delete_map(self, object_id):
     """
     Deletes a map and the associated map layers.
@@ -306,12 +313,13 @@ def geoserver_delete_map(self, object_id):
     name='geonode.security.tasks.synch_guardian',
     queue='security',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def synch_guardian():
     """
     Sync resources with Guardian and clear their dirty state
