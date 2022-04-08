@@ -6,7 +6,7 @@ jobs:
     docker:
       - image: circleci/buildpack-deps:focal
 
-    parallelism: 16
+    # parallelism: 16
 
     parameters:
       load_docker_cache:
