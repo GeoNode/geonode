@@ -1206,23 +1206,6 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                         if response.status_code != 200:
                             raise Exception(response.content)
 
-                    from geonode.upload.models import Upload
-
-                    upload_session_to_complete = [
-                        z for z in Upload.objects.filter(layer=layer, state=Upload.STATE_COMPLETE)
-                        if z.get_session.import_session.state == Upload.STATE_COMPLETE and z.get_session.update_mode == 'REPLACE'
-                    ]
-                    for _upload in upload_session_to_complete:
-                        Upload.objects.filter(id=_upload.id).update(state=Upload.STATE_PROCESSED)
-
-                    for x in upload_session_to_complete:
-                        x.set_processing_state(Upload.STATE_PROCESSED)
-
-                    layer.refresh_from_db()
-
-                    if layer.dirty_state:
-                        layer.clear_dirty_state()
-
                     set_geowebcache_invalidate_cache(layer.typename)
 
                     out['success'] = True

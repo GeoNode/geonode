@@ -926,27 +926,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     saved_layer = utils.metadata_storers(saved_layer, custom)
 
-    if overwrite:
-        _check_dirty_state(saved_layer)
-
     return saved_layer
-
-
-def _check_dirty_state(layer):
-    upload_session_to_complete = [
-        z for z in Upload.objects.filter(layer=layer, state=Upload.STATE_COMPLETE)
-        if z.get_session.import_session.state == Upload.STATE_COMPLETE and z.get_session.update_mode == 'REPLACE'
-    ]
-    for _upload in upload_session_to_complete:
-        Upload.objects.filter(id=_upload.id).update(state=Upload.STATE_PROCESSED)
-
-    for x in upload_session_to_complete:
-        x.set_processing_state(Upload.STATE_PROCESSED)
-
-    layer.refresh_from_db()
-
-    if layer.dirty_state:
-        layer.clear_dirty_state()
 
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
