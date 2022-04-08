@@ -370,8 +370,8 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                 gs_layer = gs_catalog.get_layer(name)
                 _target_store = (
                     gs_layer.resource.store.name
-                    if not isinstance(gs_layer.resource.store, list)
-                    else gs_layer.resource.store[0].name
+                    if not isinstance(gs_layer.resource, list)
+                    else gs_layer.resource[0].store.name
                 )
                 #  opening Import session for the selected layer
                 # Let's reset the connections first
