@@ -20,6 +20,7 @@ import json
 import logging
 
 from celery import chord
+from celery.result import allow_join_result
 from gsimporter.api import NotFound
 
 from django.conf import settings
@@ -49,8 +50,7 @@ UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 2
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=True)
 def finalize_incomplete_session_uploads(self, *args, **kwargs):
     """The task periodically checks for pending and stale Upload sessions.
     It runs every 600 seconds (see the PeriodTask on geonode.upload._init_),
@@ -114,7 +114,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                             )
                         )
                     else:
-                        if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                        if _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
                             _upload.set_processing_state(enumerations.STATE_INVALID)
                             _upload_ids.append(_upload.id)
                             _upload_tasks.append(
@@ -132,8 +132,13 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                         immutable=True
                     )
                 )
+
                 upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
-                upload_workflow.apply_async()
+                result = upload_workflow.apply_async()
+                if result.ready():
+                    with allow_join_result():
+                        return result.get()
+                return result.state
 
 
 @app.task(
@@ -141,8 +146,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=False)
 def _upload_workflow_finalizer(self, task_name: str, upload_ids: list):
     """Task invoked at 'upload_workflow.chord' end in the case everything went well.
     """
@@ -169,8 +173,7 @@ def _upload_workflow_error(self, task_name: str, upload_ids: list):
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=False)
 def _update_upload_session_state(self, upload_session_id: int):
     """Task invoked by 'upload_workflow.chord' in order to process all the 'PENDING' Upload tasks."""
     _upload = Upload.objects.get(id=upload_session_id)
@@ -188,14 +191,27 @@ def _update_upload_session_state(self, upload_session_id: int):
             _response_json = json.loads(_content)
             _success = _response_json.get('success', False)
             _redirect_to = _response_json.get('redirect_to', '')
+
+            _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
+            _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
+
             if _success:
-                if 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to:
+                if _tasks_failed:
+                    # GeoNode Layer creation errored!
+                    _upload.set_processing_state(enumerations.STATE_INVALID)
+                elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
                     _upload.set_resume_url(_redirect_to)
                     _upload.set_processing_state(enumerations.STATE_WAITING)
-                else:
-                    if session.state == enumerations.STATE_COMPLETE and _upload.state == enumerations.STATE_PENDING:
-                        if not _upload.resource or not _upload.resource.processed:
-                            _response = final_step_view(None, _upload.get_session)
+                elif session.state in (enumerations.STATE_PENDING, enumerations.STATE_RUNNING) and not _tasks_waiting:
+                    if _upload.resource and _upload.resource.processed:
+                        _upload.set_processing_state(enumerations.STATE_PROCESSED)
+                    else:
+                        # GeoNode Layer updating...
+                        _upload.set_processing_state(enumerations.STATE_RUNNING)
+                elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting:
+                    if not _upload.resource or not _upload.resource.processed:
+                        _response = final_step_view(None, _upload.get_session)
+                        if _response:
                             _upload.refresh_from_db()
                             _content = _response.content
                             if isinstance(_content, bytes):
@@ -206,9 +222,6 @@ def _update_upload_session_state(self, upload_session_id: int):
                             if _status == 'error':
                                 # GeoNode Layer creation errored!
                                 _upload.set_processing_state(enumerations.STATE_INVALID)
-                            elif _status == 'pending':
-                                # GeoNode Layer not ready yet...
-                                _upload.set_processing_state(enumerations.STATE_PENDING)
                             elif _upload.state != enumerations.STATE_PROCESSED:
                                 if _upload.resource and _upload.resource.processed:
                                     # GeoNode Layer successfully processed...
@@ -216,12 +229,17 @@ def _update_upload_session_state(self, upload_session_id: int):
                                 else:
                                     # GeoNode Layer updating...
                                     _upload.set_processing_state(enumerations.STATE_RUNNING)
+                    elif _upload.resource and _upload.resource.processed:
+                        _upload.set_processing_state(enumerations.STATE_PROCESSED)
                 logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
         except (NotFound, Exception) as e:
             logger.exception(e)
             if _upload.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
                 _upload.set_processing_state(enumerations.STATE_INVALID)
                 logger.error(f"Upload {upload_session_id} deleted with state {_upload.state}.")
+    elif _upload.state != enumerations.STATE_PROCESSED:
+        _upload.set_processing_state(enumerations.STATE_INVALID)
+        logger.error(f"Unable to find the Importer Session - Upload {upload_session_id} deleted with state {_upload.state}.")
 
 
 @app.task(
@@ -229,8 +247,7 @@ def _update_upload_session_state(self, upload_session_id: int):
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=False)
 def _upload_session_cleanup(self, upload_session_id: int):
     """Task invoked by 'upload_workflow.chord' in order to remove and cleanup all the 'INVALID' stale Upload tasks."""
     try:

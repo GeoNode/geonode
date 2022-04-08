@@ -18,7 +18,7 @@
 #########################################################################
 import os
 
-from uuid import uuid1
+from uuid import uuid4
 from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
@@ -114,7 +114,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         dt = Dataset.objects.filter(uuid__isnull=False).exclude(uuid='').first()
         dataset_defaults = {"owner": self.user, "title": "test_create_dataset"}
         res = self.rm.create(dt.uuid, resource_type=Dataset)
-        new_uuid = str(uuid1())
+        new_uuid = str(uuid4())
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
 

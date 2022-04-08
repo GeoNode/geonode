@@ -16,10 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.documents.models import Document
-from geonode.people.models import Profile
-from geonode.tests.base import GeoNodeBaseTestSupport
+from uuid import uuid4
 from django.conf import settings
+from geonode.people.models import Profile
+from geonode.documents.models import Document
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 
 class ResourceBaseSearchTest(GeoNodeBaseTestSupport):
@@ -27,11 +28,13 @@ class ResourceBaseSearchTest(GeoNodeBaseTestSupport):
     def setUp(self):
         self.p = Profile.objects.create(username='test')
         self.d1 = Document.objects.create(
+            uuid=str(uuid4()),
             title='word',
             purpose='this is a test',
             abstract='a brief document about...',
             owner=self.p)
         self.d2 = Document.objects.create(
+            uuid=str(uuid4()),
             title='a word', purpose='this is a test',
             abstract='a brief document about...',
             owner=self.p)

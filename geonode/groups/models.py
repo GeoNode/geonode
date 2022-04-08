@@ -36,12 +36,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from geonode.utils import build_absolute_uri
 from geonode.thumbs.utils import MISSING_THUMB
-from geonode.security.permissions import VIEW_PERMISSIONS, DOWNLOAD_PERMISSIONS, ADMIN_PERMISSIONS
 
-from guardian.shortcuts import (
-    get_objects_for_user,
-    get_objects_for_group
-)
+from guardian.shortcuts import get_objects_for_group
 
 logger = logging.getLogger(__name__)
 
@@ -164,13 +160,23 @@ class GroupProfile(models.Model):
     def member_queryset(self):
         return self.groupmember_set.all()
 
+    def get_members(self):
+        """
+        Returns a queryset of the group's members.
+        """
+        return get_user_model().objects.filter(
+            Q(id__in=self.member_queryset().filter(
+                role=GroupMember.MEMBER).values_list(
+                "user",
+                flat=True)))
+
     def get_managers(self):
         """
         Returns a queryset of the group's managers.
         """
         return get_user_model().objects.filter(
             Q(id__in=self.member_queryset().filter(
-                role='manager').values_list(
+                role=GroupMember.MANAGER).values_list(
                 "user",
                 flat=True)))
 
@@ -210,10 +216,9 @@ class GroupProfile(models.Model):
             raise ValueError("The invited user cannot be anonymous")
         _members = GroupMember.objects.filter(group=self, user=user)
         if _members.count():
-            for member in _members:
-                member.demote()
+            for _member in _members:
+                _member.delete()
                 user.groups.remove(self.group)
-                member.delete()
         else:
             logger.warning(f"The invited user \"{user.username}\" is not a member")
 
@@ -260,50 +265,27 @@ class GroupMember(models.Model):
         # add django.contrib.auth.group to user
         self.user.groups.add(self.group.group)
         super().save(*args, **kwargs)
+        self._handle_perms(role=self.role)
 
     def delete(self, *args, **kwargs):
         self.user.groups.remove(self.group.group)
         super().delete(*args, **kwargs)
+        self._handle_perms()
 
     def promote(self, *args, **kwargs):
         self.role = "manager"
         super().save(*args, **kwargs)
-        self._handle_perms(perms=VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS)
+        self._handle_perms(role=self.role)
 
     def demote(self, *args, **kwargs):
         self.role = "member"
         super().save(*args, **kwargs)
-        self._handle_perms(perms=VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+        self._handle_perms(role=self.role)
 
-    def _handle_perms(self, perms=None):
-        '''
-        Internally the set_permissions function will automatically handle the permissions
-        that needs to be assigned to re resource.
-        Background at: https://github.com/GeoNode/geonode/pull/8145
-        If the user is demoted, we assign by default at least the view and the download permission
-        to the resource
-        '''
-        queryset = (
-            get_objects_for_user(
-                self.user,
-                ["base.view_resourcebase", "base.change_resourcebase"],
-                any_perm=True)
-            .filter(group=self.group.group)
-            .exclude(owner=self.user)
-        )
-        # A.F.: By including 'self.group.resources()' here, we will look also for resources
-        #       having permissions related to the current 'group' and not only the ones assigned
-        #       to the 'group' through the metadata settings.
-        # _resources = set([_r for _r in queryset.iterator()] + [_r for _r in self.group.resources()])
-        _resources = queryset.iterator()
-        for _r in _resources:
-            perm_spec = None
-            if perms:
-                perm_spec = _r.get_all_level_info()
-                if "users" not in perm_spec:
-                    perm_spec["users"] = {}
-                perm_spec["users"][self.user] = perms
-            _r.set_permissions(perm_spec)
+    def _handle_perms(self, role=None):
+        from geonode.security.utils import AdvancedSecurityWorkflowManager
+
+        AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
 
 
 def group_pre_delete(instance, sender, **kwargs):

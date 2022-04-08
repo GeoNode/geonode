@@ -474,6 +474,7 @@ def stop_django(options):
     """
     if ASYNC_SIGNALS:
         kill('python', 'celery')
+        kill('celery', 'worker')
     kill('python', 'runserver')
     kill('python', 'runmessaging')
 
@@ -1144,7 +1145,7 @@ def waitfor(url, timeout=300):
 
 def _copytree(src, dst, symlinks=False, ignore=None):
     if not os.path.exists(dst):
-        os.makedirs(dst)
+        os.makedirs(dst, exist_ok=True)
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
@@ -1163,7 +1164,7 @@ def justcopy(origin, target):
         _copytree(origin, target)
     elif os.path.isfile(origin):
         if not os.path.exists(target):
-            os.makedirs(target)
+            os.makedirs(target, exist_ok=True)
         shutil.copy(origin, target)
 
 

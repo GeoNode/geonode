@@ -23,6 +23,7 @@ import gisdata
 import logging
 import zipfile
 
+from uuid import uuid4
 from unittest.mock import MagicMock, patch
 from collections import namedtuple
 from pinax.ratings.models import OverallRating
@@ -176,6 +177,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
     def test_dataset_name_clash(self):
         _ll_1 = Dataset.objects.create(
+            uuid=str(uuid4()),
             owner=get_user_model().objects.get(username=self.user),
             name='states',
             store='geonode_data',
@@ -183,6 +185,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             alternate="geonode:states"
         )
         _ll_2 = Dataset.objects.create(
+            uuid=str(uuid4()),
             owner=get_user_model().objects.get(username=self.user),
             name='geonode:states',
             store='httpfooremoteservce',
@@ -1345,7 +1348,7 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         self.user = get_user_model().objects.create(username='dybala', email='dybala@gmail.com')
         self.user.set_password('very-secret')
         self.admin = get_user_model().objects.get(username='admin')
-        self.map = Map.objects.create(owner=self.admin, title='test', is_approved=True)
+        self.map = Map.objects.create(uuid=str(uuid4()), owner=self.admin, title='test', is_approved=True)
         self.not_admin = get_user_model().objects.create(username='r-lukaku', is_active=True)
         self.not_admin.set_password('very-secret')
         self.not_admin.save()

@@ -27,7 +27,7 @@ import gisdata
 from PIL import Image
 from io import BytesIO
 from time import sleep
-from uuid import uuid1, uuid4
+from uuid import uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
 
@@ -62,6 +62,7 @@ from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.security.utils import get_resources_with_perms
+from geonode.resource.api.tasks import resouce_service_dispatcher
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +148,7 @@ class BaseApiTests(APITestCase):
             "description": "test",
             "access": "private",
             "categories": []
-            }
+        }
         try:
             # Anonymous
             url = reverse('group-profiles-list')
@@ -470,6 +471,7 @@ class BaseApiTests(APITestCase):
 
         # Check user permissions
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
+        self.assertEqual(resource.owner.username, 'bobby')
         # Admin
         response = self.client.get(f"{url}/{resource.id}/", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
@@ -792,9 +794,6 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
-        if not resource.uuid:
-            resource.uuid = str(uuid1())
-            resource.save()
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
         get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
 
@@ -871,14 +870,22 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data.get('status'))
         self.assertIsNotNone(response.data.get('status_url'))
         status = response.data.get('status')
-        status_url = response.data.get('status_url')
-        _counter = 0
-        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
-            response = self.client.get(status_url)
-            status = response.data.get('status')
-            sleep(3.0)
-            _counter += 1
-            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+        resp_js = json.loads(response.content.decode('utf-8'))
+        status_url = resp_js.get("status_url", None)
+        execution_id = resp_js.get("execution_id", "")
+        self.assertIsNotNone(status_url)
+        self.assertIsNotNone(execution_id)
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode('utf-8'))
+            logger.error(f"[{_cnt + 1}] ... {resp_js}")
+            if resp_js.get("status", "") == "finished":
+                status = resp_js.get("status", "")
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
         self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
@@ -984,14 +991,22 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data.get('status'))
         self.assertIsNotNone(response.data.get('status_url'))
         status = response.data.get('status')
-        status_url = response.data.get('status_url')
-        _counter = 0
-        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
-            response = self.client.get(status_url)
-            status = response.data.get('status')
-            sleep(3.0)
-            _counter += 1
-            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+        resp_js = json.loads(response.content.decode('utf-8'))
+        status_url = resp_js.get("status_url", None)
+        execution_id = resp_js.get("execution_id", "")
+        self.assertIsNotNone(status_url)
+        self.assertIsNotNone(execution_id)
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode('utf-8'))
+            logger.error(f"[{_cnt + 1}] ... {resp_js}")
+            if resp_js.get("status", "") == "finished":
+                status = resp_js.get("status", "")
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
         self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         response = self.client.get(get_perms_url, format='json')
@@ -1597,21 +1612,24 @@ class BaseApiTests(APITestCase):
         # Anonymous
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        self.assertEqual(response.data['total'], len(HierarchicalKeyword.resource_keywords_tree(None)))
 
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
+        admin = get_user_model().objects.get(username='admin')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        self.assertEqual(response.data['total'], len(HierarchicalKeyword.resource_keywords_tree(admin)))
         # response has link to the response
-        self.assertTrue('link' in response.data['keywords'][0].keys())
+        if response.data['total'] > 0:
+            self.assertTrue('link' in response.data['keywords'][0].keys())
 
         # Authenticated user
         self.assertTrue(self.client.login(username='bobby', password='bob'))
+        bobby = get_user_model().objects.get(username='bobby')
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['total'], HierarchicalKeyword.objects.count())
+        self.assertEqual(response.data['total'], len(HierarchicalKeyword.resource_keywords_tree(bobby)))
 
         # Keywords Filtering
         response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
@@ -1852,11 +1870,10 @@ class BaseApiTests(APITestCase):
         """
         REST API must not forbid saving maps and apps to non-admin and non-owners.
         """
-        from uuid import uuid1
         from geonode.maps.models import Map
         _map = Map.objects.filter(uuid__isnull=False, owner__username='admin').first()
         if not len(_map.uuid):
-            _map.uuid = str(uuid1)
+            _map.uuid = str(uuid4())
             _map.save()
         resource = ResourceBase.objects.filter(uuid=_map.uuid).first()
         bobby = get_user_model().objects.get(username='bobby')
@@ -1884,14 +1901,22 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data.get('status'))
         self.assertIsNotNone(response.data.get('status_url'))
         status = response.data.get('status')
-        status_url = response.data.get('status_url')
-        _counter = 0
-        while _counter < 100 and status != ExecutionRequest.STATUS_FINISHED and status != ExecutionRequest.STATUS_FAILED:
-            response = self.client.get(status_url)
-            status = response.data.get('status')
-            sleep(3.0)
-            _counter += 1
-            logger.error(f"[{_counter}] GET {status_url} ----> {response.data}")
+        resp_js = json.loads(response.content.decode('utf-8'))
+        status_url = resp_js.get("status_url", None)
+        execution_id = resp_js.get("execution_id", "")
+        self.assertIsNotNone(status_url)
+        self.assertIsNotNone(execution_id)
+        for _cnt in range(0, 10):
+            response = self.client.get(f"{status_url}")
+            self.assertEqual(response.status_code, 200)
+            resp_js = json.loads(response.content.decode('utf-8'))
+            logger.error(f"[{_cnt + 1}] ... {resp_js}")
+            if resp_js.get("status", "") == "finished":
+                status = resp_js.get("status", "")
+                break
+            else:
+                resouce_service_dispatcher.apply((execution_id,))
+                sleep(3.0)
         self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
         get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': _map.get_self_resource().pk})}/", 'permissions')
@@ -1998,7 +2023,7 @@ class BaseApiTests(APITestCase):
             store='geonode_data',
             subtype="vector",
             alternate="geonode:test_copy",
-            uuid=str(uuid1()),
+            uuid=str(uuid4()),
             files=list(files_as_dict.values())
         )
         bobby = get_user_model().objects.get(username='bobby')
@@ -2024,11 +2049,11 @@ class BaseApiTests(APITestCase):
         response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
         self.assertEqual(response.status_code, 200)
         # clone resource
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(self.client.login(username="admin", password="admin"))
         response = self.client.put(copy_url)
         self.assertEqual(response.status_code, 200)
         cloned_resource = Dataset.objects.last()
-        self.assertEqual(cloned_resource.owner.username, 'bobby')
+        self.assertEqual(cloned_resource.owner.username, 'admin')
         # clone dataset with invalid file
         resource.files = ['/path/invalid_file.wrong']
         resource.save()
@@ -2043,7 +2068,6 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.json()['message'], 'Resource can not be cloned.')
         # clean
         resource.delete()
-        cloned_resource.delete()
 
     def test_base_resources_return_download_link_if_document(self):
         """

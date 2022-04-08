@@ -541,7 +541,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(
             GroupProfile.objects.filter(
-                id=self.bar.id).count() > 0)
+                id=self.bar.id).exists())
 
     def test_delete_group_view_no_perms(self):
         """
@@ -815,13 +815,13 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             self.assertEqual(len(perms_info['groups'].keys()), 1)
 
             # Add the foo group to the dataset object groups
-            dataset.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+            perms_info['groups']['bar'] = ['view_resourcebase']
+            dataset.set_permissions(perms_info)
 
             perms_info = _perms_info_json(dataset)
             # Ensure foo is in the perms_info output
             self.assertCountEqual(
-                json.loads(perms_info)['groups'], {
-                    'bar': ['view_resourcebase']})
+                json.loads(perms_info)['groups']['bar'], ['view_resourcebase'])
 
             dataset.group = self.bar.group
             dataset.save()

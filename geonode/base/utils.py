@@ -24,7 +24,7 @@
 import re
 import json
 import logging
-
+from schema import Schema
 from dateutil.parser import isoparse
 from datetime import datetime, timedelta
 
@@ -34,15 +34,13 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 # Geonode functionality
-from guardian.shortcuts import get_perms, remove_perm, assign_perm
-
 from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase, Link, Configuration
+from geonode.security.utils import AdvancedSecurityWorkflowManager
 from geonode.thumbs.utils import (
     get_thumbs,
     remove_thumb)
 from geonode.utils import get_legend_url
-from schema import Schema
 
 logger = logging.getLogger('geonode.base.utils')
 
@@ -134,7 +132,7 @@ class OwnerRightsRequestViewUtils:
     def get_message_recipients(owner):
         User = get_user_model()
         allowed_users = User.objects.none()
-        if OwnerRightsRequestViewUtils.is_admin_publish_mode():
+        if AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
             allowed_users |= User.objects.filter(is_superuser=True).exclude(pk=owner.pk)
             try:
                 from geonode.groups.models import GroupProfile
@@ -158,51 +156,6 @@ class OwnerRightsRequestViewUtils:
     @staticmethod
     def get_resource(resource_base):
         return resource_base.get_real_instance()
-
-    @staticmethod
-    def is_admin_publish_mode():
-        return settings.ADMIN_MODERATE_UPLOADS
-
-
-class ManageResourceOwnerPermissions:
-    def __init__(self, resource):
-        self.resource = resource
-
-    def set_owner_permissions_according_to_workflow(self):
-        if self.resource.is_approved and OwnerRightsRequestViewUtils.is_admin_publish_mode():
-            self._disable_owner_write_permissions()
-        else:
-            self._restore_owner_permissions()
-
-    def _disable_owner_write_permissions(self):
-
-        for perm in get_perms(self.resource.owner, self.resource.get_self_resource()):
-            remove_perm(perm, self.resource.owner, self.resource.get_self_resource())
-
-        for perm in get_perms(self.resource.owner, self.resource):
-            remove_perm(perm, self.resource.owner, self.resource)
-
-        for perm in self.resource.BASE_PERMISSIONS.get('read') + self.resource.BASE_PERMISSIONS.get('download'):
-            if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-            elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-
-    def _restore_owner_permissions(self):
-
-        for perm_list in self.resource.BASE_PERMISSIONS.values():
-            for perm in perm_list:
-                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-                elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                    assign_perm(perm, self.resource.owner, self.resource.get_self_resource())
-
-        for perm_list in self.resource.PERMISSIONS.values():
-            for perm in perm_list:
-                if not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS:
-                    assign_perm(perm, self.resource.owner, self.resource)
-                elif perm not in {'change_resourcebase_permissions', 'publish_resourcebase'}:
-                    assign_perm(perm, self.resource.owner, self.resource)
 
 
 def validate_extra_metadata(data, instance):

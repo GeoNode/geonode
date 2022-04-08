@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==9.0.1
+Pillow==9.1.0
 lxml==4.8.0
 psycopg2==2.9.3
 Django==3.2.12
@@ -17,7 +17,7 @@ decorator==5.1.1
 celery==5.2.3
 kombu==5.2.4
 vine==5.0.0
-tqdm==4.63.0
+tqdm==4.63.1
 Deprecated==1.2.13
 wrapt==1.14.0
 jsonschema==4.4.0
@@ -27,7 +27,7 @@ rdflib==6.1.1
 smart_open==5.2.1
 
 # Django Apps
-django-allauth==0.49.0
+django-allauth==0.50.0
 django-appconf==1.0.5
 django-celery-results==2.3.0
 django-filter==21.1
@@ -53,7 +53,7 @@ pyopenssl==22.0.0
 pyproj==3.3.0
 OWSLib==0.25.0
 pycsw==2.6.1
-SQLAlchemy==1.4.32 # required by PyCSW
+SQLAlchemy==1.4.34 # required by PyCSW
 Shapely==1.8.1.post1
 mercantile==1.2.1
 geoip2==4.5.0
@@ -76,7 +76,7 @@ djangorestframework-gis==0.18
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
-drf-spectacular==0.21.2
+drf-spectacular==0.22.0
 dynamic-rest==2.1.2
 Markdown==3.3.6
 
@@ -106,10 +106,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.12.3
-dropbox==11.28.0
+dropbox==11.29.0
 google-cloud-storage==2.2.1
 google-cloud-core==2.2.3
-boto3==1.21.22
+boto3==1.21.32
 
 # Django Caches
 python-memcached<=1.59
@@ -141,7 +141,7 @@ pycountry
 # production
 uWSGI==2.0.20
 gunicorn==20.1.0
-ipython==8.1.1
+ipython==8.2.0
 docker==5.0.3
 invoke==1.7.0
 
@@ -154,10 +154,10 @@ pytest-bdd==5.0.0
 splinter==0.17.0
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<60.11.0
+setuptools>=59.1.1,<61.4.0
 pip==22.0.4
 Twisted==22.2.0
-pixelmatch==0.2.4
+pixelmatch==0.3.0
 factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0

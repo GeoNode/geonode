@@ -21,7 +21,7 @@ import json
 import re
 
 from decimal import Decimal
-from uuid import uuid1
+from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
 
@@ -225,11 +225,15 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     """
     API endpoint that lists hierarchical keywords.
     """
+    def get_queryset(self):
+        resource_keywords = HierarchicalKeyword.resource_keywords_tree(self.request.user)
+        slugs = [obj.get('href') for obj in resource_keywords]
+        return HierarchicalKeyword.objects.filter(slug__in=slugs)
+
     permission_classes = [AllowAny, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -734,7 +738,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = QueryDict(request.body, mutable=True)
-            uuid = request_params.get('uuid', str(uuid1()))
+            uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
@@ -830,7 +834,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = QueryDict(request.body, mutable=True)
-            uuid = request_params.get('uuid', str(uuid1()))
+            uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
 
             _exec_request = ExecutionRequest.objects.create(

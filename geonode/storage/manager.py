@@ -17,6 +17,8 @@
 #
 #########################################################################
 import os
+import shutil
+import logging
 import importlib
 
 from uuid import uuid1
@@ -34,6 +36,8 @@ from . import settings as sm_settings
 from abc import ABCMeta, abstractmethod
 from django.core.files.storage import FileSystemStorage
 
+logger = logging.getLogger(__name__)
+
 
 class StorageManagerInterface(metaclass=ABCMeta):
 
@@ -48,6 +52,37 @@ class StorageManagerInterface(metaclass=ABCMeta):
     @abstractmethod
     def listdir(self, path):
         pass
+
+    def rmtree(self, path, ignore_errors=False):
+        if self.exists(path):
+            _dirs, _files = self.listdir(path)
+            for _entry in _files:
+                _entry_path = os.path.join(path, _entry)
+                if self.exists(_entry_path):
+                    try:
+                        self.delete(_entry_path)
+                    except Exception as e:
+                        if ignore_errors:
+                            logger.exception(e)
+                        else:
+                            raise
+            for _entry in _dirs:
+                _entry_path = os.path.join(path, _entry)
+                if self.exists(_entry_path):
+                    try:
+                        self.delete(_entry_path)
+                    except Exception as e:
+                        if ignore_errors:
+                            logger.exception(e)
+                        else:
+                            raise
+            try:
+                self.delete(path)
+            except Exception as e:
+                if ignore_errors:
+                    logger.exception(e)
+                else:
+                    raise
 
     @abstractmethod
     def open(self, name, mode='rb'):
@@ -106,6 +141,9 @@ class StorageManager(StorageManagerInterface):
 
     def listdir(self, path):
         return self._concrete_storage_manager.listdir(path)
+
+    def rmtree(self, path, ignore_errors=False):
+        return self._concrete_storage_manager.rmtree(path, ignore_errors=ignore_errors)
 
     def open(self, name, mode='rb'):
         try:
@@ -228,6 +266,10 @@ class DefaultStorageManager(StorageManagerInterface):
 
     def listdir(self, path):
         return self._fsm.listdir(path)
+
+    def rmtree(self, path, ignore_errors=False):
+        if os.path.exists(path):
+            shutil.rmtree(path, ignore_errors=ignore_errors)
 
     def open(self, name, mode='rb'):
         try:

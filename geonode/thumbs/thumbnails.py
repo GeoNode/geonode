@@ -30,7 +30,7 @@ from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
 from geonode.layers.models import Dataset
-from geonode.utils import OGC_Servers_Handler
+from geonode.geoserver.helpers import ogc_server_settings
 from geonode.utils import get_dataset_name, get_dataset_workspace
 from geonode.thumbs import utils
 from geonode.thumbs.exceptions import ThumbnailError
@@ -43,7 +43,6 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     Create a thumbnail with a GeoServer request.
     """
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
     wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.1"
 
     create_thumbnail(
@@ -109,7 +108,7 @@ def create_thumbnail(
     is_map_with_datasets = False
 
     if isinstance(instance, Map):
-        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).count() > 0
+        is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).exists()
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
@@ -256,7 +255,6 @@ def _datasets_locations(
              and a list optionally consisting of 5 elements containing west, east, south, north
              instance's boundaries and CRS
     """
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
     locations = []
     bbox = []
     if isinstance(instance, Dataset):
@@ -294,11 +292,11 @@ def _datasets_locations(
             workspace = get_dataset_workspace(map_dataset)
             map_dataset_style = map_dataset.current_style
 
-            if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).count() > 0:
+            if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).exists():
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
-            elif workspace and Dataset.objects.filter(workspace=workspace, name=name).count() > 0:
+            elif workspace and Dataset.objects.filter(workspace=workspace, name=name).exists():
                 dataset = Dataset.objects.filter(workspace=workspace, name=name).first()
-            elif Dataset.objects.filter(alternate=map_dataset.name).count() > 0:
+            elif Dataset.objects.filter(alternate=map_dataset.name).exists():
                 dataset = Dataset.objects.filter(alternate=map_dataset.name).first()
             else:
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")

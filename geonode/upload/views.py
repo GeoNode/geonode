@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 """
 Provide views for doing an upload.
 
@@ -37,7 +36,7 @@ import re
 import json
 import logging
 import gsimporter
-
+import traceback
 from http.client import BadStatusLine
 
 from django.shortcuts import render
@@ -66,8 +65,7 @@ from .models import (
     Upload)
 from .files import (
     get_scan_hint,
-    scan_file
-)
+    scan_file)
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -531,74 +529,80 @@ def final_step_view(req, upload_session):
     _json_response = None
     if not upload_session:
         upload_session = _get_upload_session(req)
-    if upload_session:
+    if upload_session and getattr(upload_session, 'import_session', None):
+        from geonode.tasks.tasks import AcquireLock
+
         import_session = upload_session.import_session
-        _log('Checking session %s validity', import_session.id)
-        if not check_import_session_is_valid(
-                req, upload_session, import_session):
-            error_msg = upload_session.import_session.tasks[0].error_message
-            url = "/upload/dataset_upload_invalid.html"
-            _json_response = json_response(
-                {
-                    'url': url,
-                    'status': 'error',
-                    'id': import_session.id,
-                    'error_msg': error_msg or 'Import Session is Invalid!',
-                    'success': False
-                }
-            )
-            return _json_response
-        else:
-            try:
-                dataset_id = None
-                if req and 'dataset_id' in req.GET:
-                    dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
-                    if dataset.exists():
-                        dataset_id = dataset.first().resourcebase_ptr_id
+        lock_id = f'{upload_session.name}-{import_session.id}'
+        with AcquireLock(lock_id) as lock:
+            if lock.acquire() is True:
+                _log('Checking session %s validity', import_session.id)
+                if not check_import_session_is_valid(
+                        req, upload_session, import_session):
+                    error_msg = upload_session.import_session.tasks[0].error_message
+                    url = "/upload/dataset_upload_invalid.html"
+                    _json_response = json_response(
+                        {
+                            'url': url,
+                            'status': 'error',
+                            'id': import_session.id,
+                            'error_msg': error_msg or 'Import Session is Invalid!',
+                            'success': False
+                        }
+                    )
+                    return _json_response
+                else:
+                    try:
+                        dataset_id = None
+                        if req and 'dataset_id' in req.GET:
+                            dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+                            if dataset.exists():
+                                dataset_id = dataset.first().resourcebase_ptr_id
 
-                saved_dataset = final_step(upload_session, upload_session.user, dataset_id)
+                        saved_dataset = final_step(upload_session, upload_session.user, dataset_id)
 
-                assert saved_dataset
+                        assert saved_dataset
 
-                # this response is different then all of the other views in the
-                # upload as it does not return a response as a json object
-                _json_response = json_response(
-                    {
-                        'status': 'finished',
-                        'id': import_session.id,
-                        'url': saved_dataset.get_absolute_url(),
-                        'bbox': saved_dataset.bbox_string,
-                        'crs': {
-                            'type': 'name',
-                            'properties': saved_dataset.srid
-                        },
-                        'success': True
-                    }
-                )
-                register_event(req, EventType.EVENT_UPLOAD, saved_dataset)
-                return _json_response
-            except (LayerNotReady, AssertionError):
-                force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
-                return json_response(
-                    {
-                        'status': 'pending',
-                        'success': True,
-                        'id': import_session.id,
-                        'redirect_to': f"/upload/final?id={import_session.id}{force_ajax}"
-                    }
-                )
-            except Exception as e:
-                logger.exception(e)
-                url = "upload/dataset_upload_invalid.html"
-                _json_response = json_response(
-                    {
-                        'status': 'error',
-                        'url': url,
-                        'error_msg': str(e),
-                        'success': False
-                    }
-                )
-                return _json_response
+                        # this response is different then all of the other views in the
+                        # upload as it does not return a response as a json object
+                        _json_response = json_response(
+                            {
+                                'status': 'finished',
+                                'id': import_session.id,
+                                'url': saved_dataset.get_absolute_url(),
+                                'bbox': saved_dataset.bbox_string,
+                                'crs': {
+                                    'type': 'name',
+                                    'properties': saved_dataset.srid
+                                },
+                                'success': True
+                            }
+                        )
+                        register_event(req, EventType.EVENT_UPLOAD, saved_dataset)
+                        return _json_response
+                    except (LayerNotReady, AssertionError):
+                        force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
+                        return json_response(
+                            {
+                                'status': 'pending',
+                                'success': True,
+                                'id': import_session.id,
+                                'redirect_to': f"/upload/final?id={import_session.id}{force_ajax}"
+                            }
+                        )
+                    except Exception as e:
+                        logger.exception(e)
+                        url = "upload/dataset_upload_invalid.html"
+                        _json_response = json_response(
+                            {
+                                'status': 'error',
+                                'url': url,
+                                'error_msg': str(e),
+                                'success': False
+                            }
+                        )
+                        return _json_response
+            return None
     else:
         url = "upload/dataset_upload_invalid.html"
         _json_response = json_response(
@@ -683,43 +687,49 @@ def view(req, step=None):
                 upload_session.completed_step = _completed_step
             except Exception as e:
                 logger.exception(e)
-                raise GeneralUploadException(detail=e.args[0])
+                if isinstance(e, APIException):
+                    raise e
+                raise GeneralUploadException(detail=traceback.format_exc())
 
         resp = _steps[step](req, upload_session)
         resp_js = None
-        try:
-            if 'json' in resp.headers.get('Content-Type', ''):
-                content = resp.content
-                if isinstance(content, bytes):
-                    content = content.decode('UTF-8')
+        if resp:
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            try:
                 resp_js = json.loads(content)
-        except Exception as e:
-            logger.exception(e)
-            raise GeneralUploadException(detail=e.args[0])
+            except json.decoder.JSONDecodeError:
+                resp_js = content
+            except Exception as e:
+                logger.exception(e)
+                if isinstance(e, APIException):
+                    raise e
+                raise GeneralUploadException(detail=traceback.format_exc())
 
-        # must be put back to update object in session
-        if upload_session:
-            if resp_js and step == 'final':
-                try:
-                    delete_session = resp_js.get('status') != 'pending'
-                    if delete_session:
-                        # we're done with this session, wax it
-                        upload_session = None
-                        del req.session[upload_id]
-                        req.session.modified = True
-                except Exception:
-                    pass
-        else:
-            upload_session = _get_upload_session(req)
-        if upload_session:
-            Upload.objects.update_from_session(upload_session)
-        if resp_js:
-            _success = resp_js.get('success', False)
-            _redirect_to = resp_js.get('redirect_to', '')
-            _required_input = resp_js.get('required_input', False)
-            if _success and (_required_input or 'upload/final' in _redirect_to):
-                from geonode.upload.tasks import finalize_incomplete_session_uploads
-                finalize_incomplete_session_uploads.apply_async()
+            # must be put back to update object in session
+            if upload_session:
+                if resp_js and step == 'final':
+                    try:
+                        delete_session = resp_js.get('status') != 'pending'
+                        if delete_session:
+                            # we're done with this session, wax it
+                            upload_session = None
+                            del req.session[upload_id]
+                            req.session.modified = True
+                    except Exception:
+                        pass
+            else:
+                upload_session = _get_upload_session(req)
+            if upload_session:
+                Upload.objects.update_from_session(upload_session)
+            if resp_js and isinstance(resp_js, dict):
+                _success = resp_js.get('success', False)
+                _redirect_to = resp_js.get('redirect_to', '')
+                _required_input = resp_js.get('required_input', False)
+                if _success and (_required_input or 'upload/final' in _redirect_to):
+                    from geonode.upload.tasks import finalize_incomplete_session_uploads
+                    finalize_incomplete_session_uploads.apply_async()
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')
@@ -738,8 +748,7 @@ def view(req, step=None):
         logger.exception(e)
         if isinstance(e, APIException):
             raise e
-        logger.exception(e.args[0])
-        raise GeneralUploadException(detail=e)
+        raise GeneralUploadException(detail=traceback.format_exc())
 
 
 @login_required

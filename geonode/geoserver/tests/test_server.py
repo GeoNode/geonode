@@ -1191,7 +1191,7 @@ class LayerTests(GeoNodeBaseTestSupport):
 
             # Delete all 'original' and 'metadata' links
             _links.delete()
-            self.assertFalse(_links.count() > 0, "No links have been deleted")
+            self.assertFalse(_links.exists(), "No links have been deleted")
             # Delete resources metadata
             _datasets = Dataset.objects.exclude(
                 Q(metadata_xml__isnull=True) |
@@ -1219,7 +1219,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Check links
             _post_migrate_links = Link.objects.filter(link_type__in=_def_link_types)
             self.assertTrue(
-                _post_migrate_links.count() > 0,
+                _post_migrate_links.exists(),
                 "No links have been restored"
             )
             # Check layers
@@ -1238,7 +1238,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                     link_type='original'
                 )
                 self.assertTrue(
-                    _post_migrate_links_orig.count() > 0,
+                    _post_migrate_links_orig.exists(),
                     f"No 'original' links has been found for the layer '{_lyr.alternate}'"
                 )
                 for _link_orig in _post_migrate_links_orig:
@@ -1273,3 +1273,9 @@ attribute of the layer '{_lyr.alternate}'"
                         _post_migrate_link_meta,
                         f"No '{name}' links have been found in the catalogue for the resource '{_lyr.alternate}'"
                     )
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_gs_proxy_never_caches(self):
+        url = reverse('gs_styles')
+        response = self.client.get(url)
+        self.assertFalse(response.has_header('Cache-Control'))

@@ -6,6 +6,8 @@ jobs:
     docker:
       - image: circleci/buildpack-deps:focal
 
+    # parallelism: 16
+
     parameters:
       load_docker_cache:
         type: boolean
@@ -16,10 +18,9 @@ jobs:
         default: ""
 
     steps:
-
       - checkout
-
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
 
       - when:
           condition: <<parameters.load_docker_cache>>

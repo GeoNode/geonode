@@ -46,6 +46,11 @@ DATA_EDITABLE_RESOURCES_SUBTYPES = [
     'vector'
 ]
 
+DATA_STYLABLE_RESOURCES_SUBTYPES = [
+    'raster',
+    'vector'
+]
+
 # The following permissions will be filtered out when READ_ONLY mode is active
 READ_ONLY_AFFECTED_PERMISSIONS = [
     'add_resource',
@@ -64,9 +69,12 @@ EDIT_PERMISSIONS = [
     'change_resourcebase',
 ]
 
-MANAGE_PERMISSIONS = [
+BASIC_MANAGE_PERMISSIONS = [
     'change_resourcebase_metadata',
     'delete_resourcebase',
+]
+
+MANAGE_PERMISSIONS = BASIC_MANAGE_PERMISSIONS + [
     'change_resourcebase_permissions',
     'publish_resourcebase',
 ]

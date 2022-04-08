@@ -30,9 +30,7 @@ from uuid import uuid4
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from geonode.utils import (
-    bbox_to_projection,
-    OGC_Servers_Handler)
+from geonode.utils import bbox_to_projection
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.storage.manager import storage_manager
@@ -179,9 +177,7 @@ def get_map(
     :param retry_delay: number of seconds waited between retries
     :returns: retrieved image
     """
-
-    ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
-
+    from geonode.geoserver.helpers import ogc_server_settings
     if ogc_server_location is not None:
         thumbnail_url = ogc_server_location
     else:
@@ -241,12 +237,10 @@ def get_map(
                 raise ThumbnailError(
                     f"Fetching partial thumbnail from {thumbnail_url} failed with response: {str(image)}"
                 )
-
         except Exception as e:
             if retry + 1 >= max_retries:
                 logger.exception(e)
                 return
-
             time.sleep(retry_delay)
             continue
         else:

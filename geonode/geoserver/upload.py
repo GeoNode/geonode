@@ -242,7 +242,7 @@ def geoserver_upload(
     # Step 8. Create the Django record for the layer
     logger.debug('>>> Step 8. Creating Django record for [%s]', name)
     alternate = f"{workspace.name}:{gs_resource.name}"
-    dataset_uuid = str(uuid.uuid1())
+    dataset_uuid = str(uuid.uuid4())
 
     defaults = dict(store=gs_resource.store.name,
                     subtype=gs_resource.store.resource_type,
