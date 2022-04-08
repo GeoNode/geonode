@@ -227,7 +227,7 @@ class Upload(models.Model):
             return None
 
     def get_detail_url(self):
-        if self.resource and self.resource.processed and self.resource.state == enumerations.STATE_PROCESSED:
+        if self.resource and self.state == enumerations.STATE_PROCESSED:
             return getattr(self.resource, 'detail_url', None)
         else:
             return None

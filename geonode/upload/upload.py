@@ -811,8 +811,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
             resource_manager.set_thumbnail(
                 None, instance=saved_dataset)
 
-            Upload.objects.filter(resource=saved_dataset.get_self_resource()).update(complete=True)
-            Upload.objects.get(resource=saved_dataset.get_self_resource()).set_processing_state(enumerations.STATE_PROCESSED)
+            if Upload.objects.filter(resource=saved_dataset.get_self_resource()).exists():
+                Upload.objects.filter(resource=saved_dataset.get_self_resource()).update(complete=True)
+                [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset.get_self_resource())]
     except Exception as e:
         raise GeoNodeException(e)
     finally:
