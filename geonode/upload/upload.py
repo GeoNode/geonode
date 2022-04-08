@@ -779,9 +779,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     if not created:
         return saved_layer
 
-    # Hide the resource until finished
-    saved_layer.set_dirty_state()
-
     # Create a new upload session
     geonode_upload_session, created = UploadSession.objects.get_or_create(
         resource=saved_layer, user=user
@@ -896,7 +893,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
     # Set default permissions on the newly created layer and send notifications
     permissions = upload_session.permissions
-    geoserver_finalize_upload.apply_async(
+    geoserver_finalize_upload.apply(
         (import_session.id, saved_layer.id, permissions, created,
          xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 

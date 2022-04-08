@@ -474,6 +474,7 @@ def stop_django(options):
     """
     if ASYNC_SIGNALS:
         kill('python', 'celery')
+        kill('celery', 'worker')
     kill('python', 'runserver')
     kill('python', 'runmessaging')
 
