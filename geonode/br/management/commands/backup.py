@@ -138,7 +138,7 @@ class Command(BaseCommand):
             dir_time_suffix = get_dir_time_suffix()
             target_folder = os.path.join(backup_dir, dir_time_suffix)
             if not os.path.exists(target_folder):
-                os.makedirs(target_folder)
+                os.makedirs(target_folder, exist_ok=True)
             # Temporary folder to store backup files. It will be deleted at the end.
             os.chmod(target_folder, 0o777)
 
@@ -169,7 +169,7 @@ class Command(BaseCommand):
                 media_root = settings.MEDIA_ROOT
                 media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
                 if not os.path.exists(media_folder):
-                    os.makedirs(media_folder)
+                    os.makedirs(media_folder, exist_ok=True)
 
                 copy_tree(media_root, media_folder,
                           ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
@@ -179,7 +179,7 @@ class Command(BaseCommand):
                 static_root = settings.STATIC_ROOT
                 static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
                 if not os.path.exists(static_folder):
-                    os.makedirs(static_folder)
+                    os.makedirs(static_folder, exist_ok=True)
 
                 copy_tree(static_root, static_folder,
                           ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
@@ -189,7 +189,7 @@ class Command(BaseCommand):
                 static_folders = settings.STATICFILES_DIRS
                 static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
                 if not os.path.exists(static_files_folders):
-                    os.makedirs(static_files_folders)
+                    os.makedirs(static_files_folders, exist_ok=True)
 
                 for static_files_folder in static_folders:
 
@@ -204,7 +204,7 @@ class Command(BaseCommand):
                     static_folder = os.path.join(static_files_folders,
                                                  os.path.basename(os.path.normpath(static_files_folder)))
                     if not os.path.exists(static_folder):
-                        os.makedirs(static_folder)
+                        os.makedirs(static_folder, exist_ok=True)
 
                     copy_tree(static_files_folder, static_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
@@ -221,7 +221,7 @@ class Command(BaseCommand):
                         pass
                 template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
                 if not os.path.exists(template_files_folders):
-                    os.makedirs(template_files_folders)
+                    os.makedirs(template_files_folders, exist_ok=True)
 
                 for template_files_folder in template_folders:
 
@@ -236,7 +236,7 @@ class Command(BaseCommand):
                     template_folder = os.path.join(template_files_folders,
                                                    os.path.basename(os.path.normpath(template_files_folder)))
                     if not os.path.exists(template_folder):
-                        os.makedirs(template_folder)
+                        os.makedirs(template_folder, exist_ok=True)
 
                     copy_tree(template_files_folder, template_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
@@ -246,7 +246,7 @@ class Command(BaseCommand):
                 locale_folders = settings.LOCALE_PATHS
                 locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
                 if not os.path.exists(locale_files_folders):
-                    os.makedirs(locale_files_folders)
+                    os.makedirs(locale_files_folders, exist_ok=True)
 
                 for locale_files_folder in locale_folders:
 
@@ -261,7 +261,7 @@ class Command(BaseCommand):
                     locale_folder = os.path.join(locale_files_folders,
                                                  os.path.basename(os.path.normpath(locale_files_folder)))
                     if not os.path.exists(locale_folder):
-                        os.makedirs(locale_folder)
+                        os.makedirs(locale_folder, exist_ok=True)
 
                     copy_tree(locale_files_folder, locale_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
@@ -400,7 +400,7 @@ class Command(BaseCommand):
                 if os.path.exists(gs_data_root):
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                     if not os.path.exists(gs_data_folder):
-                        os.makedirs(gs_data_folder)
+                        os.makedirs(gs_data_folder, exist_ok=True)
                     copy_tree(gs_data_root, gs_data_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
                     logger.info(f"Dumped GeoServer Uploaded Data from '{gs_data_root}'.")
@@ -415,7 +415,7 @@ class Command(BaseCommand):
                 if os.path.exists(gs_data_root):
                     gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')
                     if not os.path.exists(gs_data_folder):
-                        os.makedirs(gs_data_folder)
+                        os.makedirs(gs_data_folder, exist_ok=True)
 
                     copy_tree(gs_data_root, gs_data_folder,
                               ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
@@ -436,7 +436,7 @@ class Command(BaseCommand):
 
                 gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
                 if not os.path.exists(gs_data_folder):
-                    os.makedirs(gs_data_folder)
+                    os.makedirs(gs_data_folder, exist_ok=True)
 
                 utils.dump_db(config, ogc_db_name, ogc_db_user, ogc_db_port,
                               ogc_db_host, ogc_db_passwd, gs_data_folder)
@@ -455,7 +455,7 @@ class Command(BaseCommand):
             external_dir = os.path.dirname(external_path)
 
             if not os.path.isdir(external_dir):
-                os.makedirs(external_dir)
+                os.makedirs(external_dir, exist_ok=True)
 
             try:
                 if not os.path.isdir(external_path) and os.path.exists(external_path):
