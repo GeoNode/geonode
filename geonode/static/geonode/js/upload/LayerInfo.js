@@ -251,6 +251,7 @@ define(function (require, exports) {
 			}
         }
 
+        form_data.append('store_spatial_files', true);
         form_data.append('base_file', this.main);
         form_data.append('permissions', JSON.stringify(perm));
 
