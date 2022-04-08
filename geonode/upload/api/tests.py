@@ -676,10 +676,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(upload_data['state'], state, upload_data['state'])
 
         # Vector
-        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.COMPLETE)
+        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.STATE_COMPLETE)
 
         # Raster
-        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.COMPLETE)
+        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.STATE_COMPLETE)
 
         # Unsupported
         assert_processed_or_failed(3, 2, 'points_epsg2249_no_prj', Upload.STATE_WAITING)
