@@ -20,6 +20,7 @@ import json
 import logging
 
 from celery import chord
+from celery.result import allow_join_result
 from gsimporter.api import NotFound
 
 from django.conf import settings
@@ -129,8 +130,13 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                         immutable=True
                     )
                 )
+
                 upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
-                upload_workflow.apply_async()
+                result = upload_workflow.apply_async()
+                if result.ready():
+                    with allow_join_result():
+                        return result.get()
+                return result.state
 
 
 @app.task(
