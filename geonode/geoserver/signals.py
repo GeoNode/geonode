@@ -100,7 +100,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
         * Metadata Links,
         * Point of Contact name and url
     """
-    geoserver_post_save_layers.apply_async(
+    geoserver_post_save_layers.apply(
         (instance.id, args, kwargs))
 
 
@@ -131,7 +131,7 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
         if not instance.thumbnail_url or \
                 instance.thumbnail_url == staticfiles.static(settings.MISSING_THUMBNAIL):
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
-            geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
+            geoserver_create_thumbnail.apply((instance.id, False, True, ))
 
 
 @receiver(geoserver_post_save_complete)
@@ -150,7 +150,7 @@ def geoserver_post_save_thumbnail(sender, instance, **kwargs):
                 is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
-            geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
+            geoserver_create_thumbnail.apply((instance.id, False, True, ))
         else:
             logger.debug(f"... Thumbnail for Layer {instance.title} already exists: {instance.thumbnail_url}")
     except Exception as e:

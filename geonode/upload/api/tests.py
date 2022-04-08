@@ -354,122 +354,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    # AF: Intermittent failures on CircleCI
-    # @as_superuser
-    # def test_live_login(self):
-    #     """
-    #     Try to login to Live Server using the integrated "selenium" framework
-    #     """
-    #     pass
-
-    # AF: Intermittent failures on CircleCI
-    # @as_superuser
-    # def test_live_uploads(self):
-    #     """
-    #     Ensure we can access the Live Server Uploads list.
-    #     """
-    #     # Try to upload a good raster file and check the session IDs
-    #     fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-    #     resp, data = self.live_upload_file(fname)
-    #     self.assertEqual(resp.status_code, 200)
-    #     self.assertTrue(data['success'])
-    #     self.assertIn('redirect_to', data)
-    #     headers = {
-    #         'X-CSRFToken': self.csrf_token,
-    #         'X-Requested-With': 'XMLHttpRequest',
-    #         'Cookie': f'csrftoken={self.csrf_token}; sessionid={self.session_id}'
-    #     }
-    #     url = urljoin(
-    #         settings.SITEURL,
-    #         f"{reverse('uploads-list')}.json")
-    #     response = self.selenium.request('GET', url, headers=headers)
-    #     self.assertEqual(response.status_code, 200)
-    #     response_data = response.json()
-    #     self.assertEqual(len(response_data), 5)
-    #     total_uploads = response_data['total']
-    #     self.assertGreaterEqual(total_uploads, 1)
-    #     # Pagination
-    #     self.assertEqual(len(response_data['uploads']), 1)
-    #     logger.debug(response_data)
-
-    #     url = urljoin(
-    #         settings.SITEURL,
-    #         f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
-    #     response = self.selenium.request('GET', url, headers=headers)
-    #     self.assertEqual(response.status_code, 200)
-    #     upload_data = response.json()['upload']
-    #     self.assertIsNotNone(upload_data)
-    #     self.assertIn('relief_san_andres', upload_data['name'])
-
-    #     self.assertEqual(upload_data['state'], Upload.STATE_PENDING)
-    #     self.assertEqual(upload_data['progress'], 33.0)
-
-    #     self.assertIsNone(upload_data['detail_url'])
-    #     self.assertIsNone(upload_data['resume_url'])
-    #     self.assertIsNotNone(upload_data['delete_url'])
-
-    #     delete_url = urljoin(
-    #         settings.SITEURL,
-    #         f"{upload_data['delete_url']}"
-    #     )
-
-    #     url = urljoin(
-    #         settings.SITEURL,
-    #         f"{reverse('data_upload')}?id={upload_data['import_id']}"
-    #     )
-    #     response = self.selenium.request('GET', url, headers=headers)
-    #     self.assertEqual(response.status_code, 200)
-
-    #     url = urljoin(
-    #         settings.SITEURL,
-    #         f"{self.do_upload_step('final')}?id={response_data['uploads'][0]['import_id']}")
-    #     response = self.selenium.request('GET', url, headers=headers)
-    #     self.assertEqual(response.status_code, 200)
-
-    #     url = urljoin(
-    #         settings.SITEURL,
-    #         f"{reverse('uploads-detail', kwargs={'pk': response_data['uploads'][0]['id']})}.json")
-    #     for _cnt in range(10):
-    #         time.sleep(5.0)
-    #         response = self.selenium.request('GET', url, headers=headers)
-    #         self.assertEqual(response.status_code, 200)
-    #         upload_data = response.json()['upload']
-    #         if upload_data['state'] == Upload.STATE_PROCESSED and upload_data['detail_url']:
-    #             break
-
-    #     for _cnt in range(1, 10):
-    #         logger.error(f"[{_cnt}] Wait a bit until GeoNode finalizes the Layer configuration...")
-    #         if upload_data['state'] == Upload.STATE_PROCESSED:
-    #             break
-    #         time.sleep(10.0)
-
-    #     if upload_data['state'] == Upload.STATE_PROCESSED:
-    #         self.assertGreaterEqual(upload_data['progress'], 80.0)
-    #         self.assertIsNotNone(upload_data['detail_url'])
-    #         self.assertIsNone(upload_data['resume_url'])
-    #         self.assertIsNone(upload_data['delete_url'])
-    #     elif upload_data['state'] == Upload.STATE_PENDING:
-    #         self.assertGreaterEqual(upload_data['progress'], 33.0)
-    #         self.assertIsNone(upload_data['detail_url'])
-    #         self.assertIsNone(upload_data['resume_url'])
-    #         self.assertIsNotNone(upload_data['delete_url'])
-
-    #     response = self.selenium.request('GET', delete_url, headers=headers)
-    #     self.assertEqual(response.status_code, 200)
-
-    #     url = urljoin(
-    #         settings.SITEURL,
-    #         f"{reverse('uploads-list')}.json"
-    #     )
-    #     response = self.selenium.request('GET', url, headers=headers)
-    #     self.assertEqual(response.status_code, 200)
-    #     response_data = response.json()
-    #     self.assertEqual(len(response_data), 5)
-    #     self.assertEqual(response_data['total'], total_uploads - 1)
-    #     # Pagination
-    #     self.assertEqual(len(response_data['uploads']), 10)
-    #     logger.debug(response_data)
-
     def test_rest_uploads(self):
         """
         Ensure we can access the Local Server Uploads list.
@@ -515,6 +399,17 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIsNotNone(upload_data['delete_url'])
 
             self.assertIn('uploadfile_set', upload_data)
+
+            response = self.client.get(upload_data['delete_url'], format='json')
+            self.assertEqual(response.status_code, 200)
+
+            response = self.client.get(reverse('uploads-list'), format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 0)
+            # Pagination
+            self.assertEqual(len(response.data['uploads']), 0)
+            logger.debug(response.data)
         else:
             self.assertEqual(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['resume_url'])
@@ -533,17 +428,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
 
         self.assertNotIn('upload_dir', upload_data)
-
-        response = self.client.get(upload_data['delete_url'], format='json')
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(reverse('uploads-list'), format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 0)
-        # Pagination
-        self.assertEqual(len(response.data['uploads']), 0)
-        logger.debug(response.data)
 
     def test_rest_uploads_non_interactive(self):
         """
@@ -590,6 +474,17 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIsNotNone(upload_data['delete_url'])
 
             self.assertIn('uploadfile_set', upload_data)
+
+            response = self.client.get(upload_data['delete_url'], format='json')
+            self.assertEqual(response.status_code, 200)
+
+            response = self.client.get(reverse('uploads-list'), format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 0)
+            # Pagination
+            self.assertEqual(len(response.data['uploads']), 0)
+            logger.debug(response.data)
         else:
             self.assertEqual(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['resume_url'])
@@ -608,17 +503,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
 
         self.assertNotIn('upload_dir', upload_data)
-
-        response = self.client.get(upload_data['delete_url'], format='json')
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(reverse('uploads-list'), format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 0)
-        # Pagination
-        self.assertEqual(len(response.data['uploads']), 0)
-        logger.debug(response.data)
 
     def test_rest_uploads_by_path(self):
         """
@@ -665,6 +549,17 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIsNotNone(upload_data['delete_url'])
 
             self.assertIn('uploadfile_set', upload_data)
+
+            response = self.client.get(upload_data['delete_url'], format='json')
+            self.assertEqual(response.status_code, 200)
+
+            response = self.client.get(reverse('uploads-list'), format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data['total'], 0)
+            # Pagination
+            self.assertEqual(len(response.data['uploads']), 0)
+            logger.debug(response.data)
         else:
             self.assertEqual(upload_data['progress'], 100.0)
             self.assertIsNone(upload_data['resume_url'])
@@ -683,17 +578,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertIn('uploadfile_set', upload_data)
 
         self.assertNotIn('upload_dir', upload_data)
-
-        response = self.client.get(upload_data['delete_url'], format='json')
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(reverse('uploads-list'), format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 0)
-        # Pagination
-        self.assertEqual(len(response.data['uploads']), 0)
-        logger.debug(response.data)
 
     def test_rest_uploads_no_crs(self):
         """
@@ -730,7 +614,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                 if upload_data['state'] == Upload.STATE_WAITING:
                     break
                 else:
-                    for _upload in Upload.objects.filter(state=upload_data['state']):
+                    for _upload in Upload.objects.filter(name='san_andres_y_providencia_coastline_no_prj'):
                         _update_upload_session_state.apply((_upload.id,))
                     sleep(3.0)
         self.assertEqual(upload_data['state'], Upload.STATE_WAITING, upload_data['state'])
@@ -786,7 +670,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     if upload_data['state'] == state:
                         break
                     else:
-                        for _upload in Upload.objects.filter(state=upload_data['state']):
+                        for _upload in Upload.objects.filter(name=dataset_name):
                             _update_upload_session_state.apply((_upload.id,))
                         sleep(3.0)
             self.assertEqual(upload_data['state'], state, upload_data['state'])

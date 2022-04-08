@@ -47,8 +47,7 @@ UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 2
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=True)
 def finalize_incomplete_session_uploads(self, *args, **kwargs):
     """The task periodically checks for pending and stale Upload sessions.
     It runs every 600 seconds (see the PeriodTask on geonode.upload._init_),
@@ -139,8 +138,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=False)
 def _upload_workflow_finalizer(self, task_name: str, upload_ids: list):
     """Task invoked at 'upload_workflow.chord' end in the case everything went well.
     """
@@ -167,8 +165,7 @@ def _upload_workflow_error(self, task_name: str, upload_ids: list):
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=False)
 def _update_upload_session_state(self, upload_session_id: int):
     """Task invoked by 'upload_workflow.chord' in order to process all the 'PENDING' Upload tasks."""
     _upload = Upload.objects.get(id=upload_session_id)
@@ -197,7 +194,12 @@ def _update_upload_session_state(self, upload_session_id: int):
                 elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
                     _upload.set_resume_url(_redirect_to)
                     _upload.set_processing_state(Upload.STATE_WAITING)
-                elif session.state == Upload.STATE_COMPLETE and _upload.state == Upload.STATE_PENDING:
+                elif session.state == Upload.STATE_RUNNING and not _tasks_waiting:
+                    # GeoNode Layer updating...
+                    _upload.set_processing_state(Upload.STATE_RUNNING)
+                    if _upload.layer:
+                        _upload.layer.set_processing_state(Upload.STATE_RUNNING)
+                elif session.state == Upload.STATE_COMPLETE and _upload.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING, Upload.STATE_PENDING) and not _tasks_waiting:
                     if not _upload.layer or not _upload.layer.processed:
                         _response = final_step_view(None, _upload.get_session)
                         _upload.refresh_from_db()
@@ -226,6 +228,9 @@ def _update_upload_session_state(self, upload_session_id: int):
             if _upload.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
                 _upload.set_processing_state(Upload.STATE_INVALID)
                 logger.error(f"Upload {upload_session_id} deleted with state {_upload.state}.")
+    elif _upload.state != Upload.STATE_PROCESSED:
+        _upload.set_processing_state(Upload.STATE_INVALID)
+        logger.error(f"Unable to find the Importer Session - Upload {upload_session_id} deleted with state {_upload.state}.")
 
 
 @app.task(
@@ -233,8 +238,7 @@ def _update_upload_session_state(self, upload_session_id: int):
     base=FaultTolerantTask,
     queue='upload',
     acks_late=False,
-    ignore_result=False,
-)
+    ignore_result=False)
 def _upload_session_cleanup(self, upload_session_id: int):
     """Task invoked by 'upload_workflow.chord' in order to remove and cleanup all the 'INVALID' stale Upload tasks."""
     try:

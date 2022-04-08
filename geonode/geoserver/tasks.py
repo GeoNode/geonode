@@ -54,12 +54,13 @@ logger = get_task_logger(__name__)
     name='geonode.geoserver.tasks.geoserver_update_layers',
     queue='geoserver.catalog',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_update_layers(self, *args, **kwargs):
     """
     Runs update layers.
@@ -75,13 +76,14 @@ def geoserver_update_layers(self, *args, **kwargs):
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_set_style',
     queue='geoserver.catalog',
-    expires=30,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_set_style(
         self,
         instance_id,
@@ -115,13 +117,14 @@ def geoserver_set_style(
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_create_style',
     queue='geoserver.catalog',
-    expires=30,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_create_style(
         self,
         instance_id,
@@ -188,12 +191,13 @@ def geoserver_create_style(
     name='geonode.geoserver.tasks.geoserver_finalize_upload',
     queue='geoserver.events',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_finalize_upload(
         self,
         import_id,
@@ -212,20 +216,21 @@ def geoserver_finalize_upload(
     instance = None
     try:
         instance = Layer.objects.get(id=instance_id)
-    except Layer.DoesNotExist:
+    except Layer.DoesNotExist as e:
         logger.debug(f"Layer id {instance_id} does not exist yet!")
-        raise
+        geoserver_finalize_upload.retry(exc=e)
 
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
             # Hide the resource until finished
-            instance.set_dirty_state()
+            instance.set_processing_state("RUNNING")
 
             from geonode.upload.models import Upload
             upload = Upload.objects.get(import_id=import_id)
             upload.layer = instance
             upload.save()
+            upload.set_processing_state(Upload.STATE_RUNNING)
 
             try:
                 # Update the upload sessions
@@ -234,6 +239,7 @@ def geoserver_finalize_upload(
                 instance.upload_session = geonode_upload_sessions.first()
             except Exception as e:
                 logger.exception(e)
+                geoserver_finalize_upload.retry(exc=e)
 
             # Sanity checks
             if isinstance(xml_file, list):
@@ -301,14 +307,15 @@ def geoserver_finalize_upload(
                 geonode_upload_sessions = UploadSession.objects.filter(resource=instance)
                 geonode_upload_sessions.update(processed=True)
                 instance.upload_session = geonode_upload_sessions.first()
-            except Exception as e:
-                logger.exception(e)
-            finally:
                 upload.complete = True
                 upload.save()
-                # Show the resource finally finished
                 upload.set_processing_state(Upload.STATE_PROCESSED)
-                instance.clear_dirty_state()
+            except Exception as e:
+                logger.exception(e)
+                upload.complete = False
+                upload.save()
+                upload.set_processing_state(Upload.STATE_INVALID)
+                geoserver_finalize_upload.retry(exc=e)
 
             signals.upload_complete.send(sender=geoserver_finalize_upload, layer=instance)
 
@@ -318,13 +325,14 @@ def geoserver_finalize_upload(
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_post_save_layers',
     queue='geoserver.catalog',
-    expires=3600,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_post_save_layers(
         self,
         instance_id,
@@ -347,13 +355,14 @@ def geoserver_post_save_layers(
     base=FaultTolerantTask,
     name='geonode.geoserver.tasks.geoserver_create_thumbnail',
     queue='geoserver.events',
-    expires=30,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 1, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=True):
     """
     Runs create_gs_thumbnail.
@@ -381,12 +390,13 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
     name='geonode.geoserver.tasks.geoserver_cascading_delete',
     queue='cleanup',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 1, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def geoserver_cascading_delete(self, *args, **kwargs):
     """
     Runs cascading_delete.
