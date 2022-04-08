@@ -4,7 +4,7 @@ set -e
 do_npx=0
 do_update=1
 do_npm_install=1
-do_yarn_install=1
+do_yarn_install=0
 do_lint=0
 while getopts "xuny" opt
 do
