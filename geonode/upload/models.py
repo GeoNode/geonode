@@ -99,7 +99,7 @@ class Upload(models.Model):
     state = models.CharField(max_length=16)
     create_date = models.DateTimeField('create_date', default=now)
     date = models.DateTimeField('date', default=now)
-    layer = models.ForeignKey(Layer, null=True, on_delete=models.CASCADE)
+    layer = models.ForeignKey(Layer, null=True, on_delete=models.SET_NULL)
     upload_dir = models.TextField(null=True)
     store_spatial_files = models.BooleanField(default=True)
     name = models.CharField(max_length=64, null=True)

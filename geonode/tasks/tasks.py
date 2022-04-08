@@ -134,12 +134,13 @@ class FaultTolerantTask(celery.Task):
     name='geonode.tasks.email.send_mail',
     queue='email',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def send_email(self, *args, **kwargs):
     """
     Sends an email using django's send_mail functionality.
@@ -151,13 +152,14 @@ def send_email(self, *args, **kwargs):
     bind=True,
     name='geonode.tasks.notifications.send_queued_notifications',
     queue='email',
-    expires=10,
+    expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 2, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def send_queued_notifications(self, *args):
     """Sends queued notifications.
 
@@ -184,12 +186,13 @@ def send_queued_notifications(self, *args):
     name='geonode.tasks.layers.set_permissions',
     queue='security',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def set_permissions(self, permissions_names, resources_names,
                     users_usernames, groups_names, delete_flag):
     from geonode.layers.utils import set_layers_permissions

@@ -27,12 +27,13 @@ from geonode.geoserver.security import sync_resources_with_guardian
     name='geonode.security.tasks.synch_guardian',
     queue='security',
     expires=600,
+    time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 3, 'countdown': 10},
-    retry_backoff=True,
-    retry_backoff_max=700,
-    retry_jitter=True)
+    retry_kwargs={'max_retries': 5},
+    retry_backoff=3,
+    retry_backoff_max=30,
+    retry_jitter=False)
 def synch_guardian():
     """
     Sync resources with Guardian and clear their dirty state

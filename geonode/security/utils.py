@@ -778,7 +778,7 @@ class ResourceManager:
                 return True
             except Exception as e:
                 logger.exception(e)
-                _resource.set_dirty_state()
+                _resource.set_processing_state("FAILED")
         return False
 
     @staticmethod
@@ -953,5 +953,5 @@ class ResourceManager:
                 return True
             except Exception as e:
                 logger.exception(e)
-                _resource.set_dirty_state()
+                _resource.set_processing_state("FAILED")
         return False
