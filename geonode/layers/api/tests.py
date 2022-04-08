@@ -161,8 +161,8 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
 
         layer.refresh_from_db()
         logger.error(layer.alternate)
-        # renaming the file in the same way as the lasyer name
-        # the filename must be consiste with the layer name
+        # renaming the file in the same way as the layer name
+        # the filename must be consistent with the layer name
         tempdir = tempfile.mkdtemp(dir=settings.STATIC_ROOT)
 
         shutil.copyfile(f"{gisdata.GOOD_DATA}/vector/single_point.shp", f"{tempdir}/{layer.alternate.split(':')[1]}.shp")

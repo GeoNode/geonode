@@ -626,7 +626,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
-        resp, data = self.rest_upload_by_path_by_path(fname)
+        resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(data['success'])
 
@@ -792,10 +792,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(upload_data['state'], state, upload_data['state'])
 
         # Vector
-        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.STATE_PROCESSED)
+        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.COMPLETE)
 
         # Raster
-        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.STATE_PROCESSED)
+        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.COMPLETE)
 
         # Unsupported
         assert_processed_or_failed(3, 2, 'points_epsg2249_no_prj', Upload.STATE_WAITING)
