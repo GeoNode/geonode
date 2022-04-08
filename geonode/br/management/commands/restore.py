@@ -240,7 +240,7 @@ class Command(BaseCommand):
 
             restore_folder = os.path.join(temp_dir_path, f'tmp{str(uuid.uuid4())[:4]}')
             try:
-                os.makedirs(restore_folder)
+                os.makedirs(restore_folder, exist_ok=True)
             except Exception as e:
                 raise e
             try:
@@ -380,7 +380,7 @@ class Command(BaseCommand):
                             shutil.rmtree(media_root, ignore_errors=True)
 
                         if not os.path.exists(media_root):
-                            os.makedirs(media_root)
+                            os.makedirs(media_root, exist_ok=True)
 
                         copy_tree(media_folder, media_root)
                         chmod_tree(media_root)
@@ -391,7 +391,7 @@ class Command(BaseCommand):
                             shutil.rmtree(static_root, ignore_errors=True)
 
                         if not os.path.exists(static_root):
-                            os.makedirs(static_root)
+                            os.makedirs(static_root, exist_ok=True)
 
                         copy_tree(static_folder, static_root)
                         chmod_tree(static_root)
@@ -414,7 +414,7 @@ class Command(BaseCommand):
                                 shutil.rmtree(static_files_folder, ignore_errors=True)
 
                             if not os.path.exists(static_files_folder):
-                                os.makedirs(static_files_folder)
+                                os.makedirs(static_files_folder, exist_ok=True)
 
                             copy_tree(os.path.join(static_files_folders,
                                                    os.path.basename(os.path.normpath(static_files_folder))),
@@ -439,7 +439,7 @@ class Command(BaseCommand):
                                 shutil.rmtree(template_files_folder, ignore_errors=True)
 
                             if not os.path.exists(template_files_folder):
-                                os.makedirs(template_files_folder)
+                                os.makedirs(template_files_folder, exist_ok=True)
 
                             copy_tree(os.path.join(template_files_folders,
                                                    os.path.basename(os.path.normpath(template_files_folder))),
@@ -464,7 +464,7 @@ class Command(BaseCommand):
                                 shutil.rmtree(locale_files_folder, ignore_errors=True)
 
                             if not os.path.exists(locale_files_folder):
-                                os.makedirs(locale_files_folder)
+                                os.makedirs(locale_files_folder, exist_ok=True)
 
                             copy_tree(os.path.join(locale_files_folders,
                                                    os.path.basename(os.path.normpath(locale_files_folder))),
@@ -741,7 +741,7 @@ class Command(BaseCommand):
             except Exception:
                 pass
             if not os.path.exists(gwc_datasets_root):
-                os.makedirs(gwc_datasets_root)
+                os.makedirs(gwc_datasets_root, exist_ok=True)
 
     def restore_geoserver_raster_data(self, config, settings, target_folder):
         if (config.gs_data_dir):
@@ -754,7 +754,7 @@ class Command(BaseCommand):
                         gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
                     if not os.path.exists(gs_data_root):
-                        os.makedirs(gs_data_root)
+                        os.makedirs(gs_data_root, exist_ok=True)
 
                     copy_tree(gs_data_folder, gs_data_root)
                     print(f"GeoServer Uploaded Raster Data Restored to '{gs_data_root}'.")
@@ -769,7 +769,7 @@ class Command(BaseCommand):
                         gs_data_root = os.path.join(settings.PROJECT_ROOT, '..', gs_data_root)
 
                     if not os.path.exists(gs_data_root):
-                        os.makedirs(gs_data_root)
+                        os.makedirs(gs_data_root, exist_ok=True)
 
                     copy_tree(gs_data_folder, gs_data_root)
                     print(f"GeoServer Uploaded Data Restored to '{gs_data_root}'.")

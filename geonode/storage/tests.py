@@ -416,7 +416,7 @@ class TestStorageManager(TestCase):
 
         for _dir in _dirs:
             if not os.path.exists(os.path.join(_tmpdir, _dir)):
-                os.makedirs(os.path.join(_tmpdir, _dir))
+                os.makedirs(os.path.join(_tmpdir, _dir), exist_ok=True)
             self.assertTrue(os.path.exists(os.path.join(_tmpdir, _dir)))
             self.assertTrue(os.path.isdir(os.path.join(_tmpdir, _dir)))
 
