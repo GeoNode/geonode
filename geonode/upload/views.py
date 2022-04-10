@@ -510,7 +510,7 @@ def time_step_view(request, upload_session):
     except gsimporter.api.NotFound as e:
         logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
-        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
 
     if start_attribute_and_type:
         def tx(type_name):
