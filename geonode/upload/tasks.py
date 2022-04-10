@@ -197,6 +197,8 @@ def _update_upload_session_state(self, upload_session_id: int):
 
             _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
             _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
+            if not _tasks_waiting:
+                _tasks_waiting = (session.state == enumerations.STATE_PENDING and any([_task.state in ["READY"] for _task in session.tasks]))
 
             if _success:
                 if _tasks_failed:

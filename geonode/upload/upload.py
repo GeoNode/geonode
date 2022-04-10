@@ -78,7 +78,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.info(msg, *args)
+    logger.debug(msg, *args)
 
 
 class UploaderSession:
@@ -448,6 +448,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
     precision_value - number
     precision_step - year, month, day, week, etc.
     '''
+    import_session = upload_session.import_session
     transforms = []
 
     def build_time_transform(att, type, format, end_time_attribute, presentation_strategy):
@@ -509,13 +510,13 @@ def time_step(upload_session, time_attribute, time_transform_type,
         )
 
     if upload_session.time_transforms:
-        upload_session.import_session.tasks[0].remove_transforms(
+        import_session.tasks[0].remove_transforms(
             upload_session.time_transforms
         )
 
     if transforms:
         logger.debug(f'Setting transforms {transforms}')
-        upload_session.import_session.tasks[0].add_transforms(transforms)
+        import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
             upload_session.time = True
@@ -523,9 +524,17 @@ def time_step(upload_session, time_attribute, time_transform_type,
             logger.exception(br)
             Upload.objects.invalidate_from_session(upload_session)
             raise GeneralUploadException(detail=_('Error configuring time: ') + br)
-        upload_session.import_session.tasks[0].save_transforms()
+        import_session.tasks[0].save_transforms()
     else:
         upload_session.time = False
+    try:
+        import_session = import_session.reload()
+    except gsimporter.api.NotFound as e:
+        logger.exception(e)
+        Upload.objects.invalidate_from_session(upload_session)
+        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+    upload_session.import_session = import_session
+    Upload.objects.update_from_session(upload_session)
 
 
 def csv_step(upload_session, lat_field, lng_field):
