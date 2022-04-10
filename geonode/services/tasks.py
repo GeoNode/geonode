@@ -133,3 +133,5 @@ def probe_services(self):
                         logger.error(e)
             except Exception as e:
                 logger.error(e)
+            finally:
+                lock.release()

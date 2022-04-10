@@ -94,6 +94,9 @@ class AcquireLock():
         self.lock = memcache_lock(self.lock_id)
         return self
 
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.release()
+
     def acquire(self):
         if settings.ASYNC_SIGNALS:
             try:
@@ -103,12 +106,12 @@ class AcquireLock():
                 logger.warning(e)
         return True
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
+    def release(self):
         if self.lock:
             try:
                 self.lock.release()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug(e)
 
 
 class FaultTolerantTask(celery.Task):

@@ -465,6 +465,9 @@ def collect_metric(**options):
             except Exception as e:
                 log.info(f'[{lock_id}] Collecting Metrics - errored @ {_end_time}')
                 log.exception(e)
+            finally:
+                lock.release()
+
     log.info(f'[{lock_id}] Collecting Metrics - exit @ {_end_time}')
     return (_start_time, _end_time)
 
