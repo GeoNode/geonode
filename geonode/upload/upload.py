@@ -565,10 +565,11 @@ def srs_step(upload_session, source, target):
         logger.debug('Setting SRS to %s', source)
         task.set_srs(source)
 
-    transform = {'type': 'ReprojectTransform',
-                 'source': source,
-                 'target': target,
-                 }
+    transform = {
+        'type': 'ReprojectTransform',
+        'source': source,
+        'target': target,
+    }
     task.remove_transforms([transform], by_field='type', save=False)
     task.add_transforms([transform], save=False)
     task.save_transforms()
@@ -737,66 +738,70 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     has_time = True
 
                 if upload_session.append_to_mosaic_opts:
-                    # Is it a mosaic or a granule that must be added to an Image Mosaic?
-                    saved_dataset_filter = Dataset.objects.filter(
-                        name=upload_session.append_to_mosaic_name)
-                    if not saved_dataset_filter.exists():
-                        saved_dataset = resource_manager.create(
-                            name=upload_session.append_to_mosaic_name,
-                            defaults=dict(
-                                dirty_state=True,
-                                state=enumerations.STATE_READY)
-                        )
-                        created = True
-                    else:
-                        saved_dataset = saved_dataset_filter.get()
-                        created = False
-                    saved_dataset.set_dirty_state()
-                    if saved_dataset.temporal_extent_start and end:
-                        if pytz.utc.localize(
-                                saved_dataset.temporal_extent_start,
-                                is_dst=False) < end:
-                            saved_dataset.temporal_extent_end = end
-                            Dataset.objects.filter(
-                                name=upload_session.append_to_mosaic_name).update(
-                                temporal_extent_end=end)
+                    with transaction.atomic():
+                        # Is it a mosaic or a granule that must be added to an Image Mosaic?
+                        saved_dataset_filter = Dataset.objects.filter(
+                            name=upload_session.append_to_mosaic_name)
+                        if not saved_dataset_filter.exists() or saved_dataset_filter.count() > 1:
+                            saved_dataset_filter.delete()
+                            saved_dataset = resource_manager.create(
+                                name=upload_session.append_to_mosaic_name,
+                                defaults=dict(
+                                    dirty_state=True,
+                                    state=enumerations.STATE_READY)
+                            )
+                            created = True
                         else:
-                            saved_dataset.temporal_extent_start = end
-                            Dataset.objects.filter(
-                                name=upload_session.append_to_mosaic_name).update(
-                                temporal_extent_start=end)
+                            saved_dataset = saved_dataset_filter.get()
+                            created = False
+                        saved_dataset.set_dirty_state()
+                        if saved_dataset.temporal_extent_start and end:
+                            if pytz.utc.localize(
+                                    saved_dataset.temporal_extent_start,
+                                    is_dst=False) < end:
+                                saved_dataset.temporal_extent_end = end
+                                Dataset.objects.filter(
+                                    name=upload_session.append_to_mosaic_name).update(
+                                    temporal_extent_end=end)
+                            else:
+                                saved_dataset.temporal_extent_start = end
+                                Dataset.objects.filter(
+                                    name=upload_session.append_to_mosaic_name).update(
+                                    temporal_extent_start=end)
                 else:
                     # The dataset is a standard one, no mosaic options enabled...
-                    saved_dataset_filter = Dataset.objects.filter(
-                        store=target.name,
-                        alternate=alternate,
-                        workspace=target.workspace_name,
-                        name=task.layer.name)
-                    if not saved_dataset_filter.exists():
-                        saved_dataset = resource_manager.create(
-                            dataset_uuid,
-                            resource_type=Dataset,
-                            defaults=dict(
-                                store=target.name,
-                                subtype=get_dataset_storetype(target.store_type),
-                                alternate=alternate,
-                                workspace=target.workspace_name,
-                                title=title,
-                                name=task.layer.name,
-                                abstract=abstract or _('No abstract provided'),
-                                owner=user,
-                                dirty_state=True,
-                                state=enumerations.STATE_READY,
-                                temporal_extent_start=start,
-                                temporal_extent_end=end,
-                                is_mosaic=is_mosaic,
-                                has_time=has_time,
-                                has_elevation=has_elevation,
-                                time_regex=upload_session.mosaic_time_regex))
-                        created = True
-                    else:
-                        saved_dataset = saved_dataset_filter.get()
-                        created = False
+                    with transaction.atomic():
+                        saved_dataset_filter = Dataset.objects.filter(
+                            store=target.name,
+                            alternate=alternate,
+                            workspace=target.workspace_name,
+                            name=task.layer.name)
+                        if not saved_dataset_filter.exists() or saved_dataset_filter.count() > 1:
+                            saved_dataset_filter.delete()
+                            saved_dataset = resource_manager.create(
+                                dataset_uuid,
+                                resource_type=Dataset,
+                                defaults=dict(
+                                    store=target.name,
+                                    subtype=get_dataset_storetype(target.store_type),
+                                    alternate=alternate,
+                                    workspace=target.workspace_name,
+                                    title=title,
+                                    name=task.layer.name,
+                                    abstract=abstract or _('No abstract provided'),
+                                    owner=user,
+                                    dirty_state=True,
+                                    state=enumerations.STATE_READY,
+                                    temporal_extent_start=start,
+                                    temporal_extent_end=end,
+                                    is_mosaic=is_mosaic,
+                                    has_time=has_time,
+                                    has_elevation=has_elevation,
+                                    time_regex=upload_session.mosaic_time_regex))
+                            created = True
+                        else:
+                            saved_dataset = saved_dataset_filter.get()
+                            created = False
 
                 assert saved_dataset
 
