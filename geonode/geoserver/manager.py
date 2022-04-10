@@ -17,7 +17,6 @@
 #
 #########################################################################
 import os
-import copy
 import shutil
 import typing
 import logging
@@ -70,7 +69,6 @@ from .helpers import (
     create_geoserver_db_featurestore)
 from .security import (
     _get_gwc_filters_and_formats,
-    get_geofence_rules_count,
     toggle_dataset_cache,
     purge_geofence_dataset_rules,
     set_geofence_invalidate_cache,
@@ -409,81 +407,77 @@ class GeoServerResourceManager(ResourceManagerInterface):
         try:
             if _resource:
                 _resource = _resource.get_real_instance()
-                _prev_perm_spec = copy.deepcopy(_resource.get_all_level_info())
-                _geofence_rules_count = get_geofence_rules_count()
-                logger.debug(f'Fixup GIS Backend Security Rules Accordingly on resource {instance}')
-                # Avoid setting the permissions if nothing changed
-                if created or _geofence_rules_count == 0 or not _resource.compare_perms(_prev_perm_spec, permissions):
-                    if isinstance(_resource, Dataset):
-                        if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                            if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                                _disable_cache = []
-                                _owner = owner or _resource.owner
-                                if permissions is not None and len(permissions):
-                                    if not created:
-                                        purge_geofence_dataset_rules(_resource)
+                logger.error(f'Fixup GIS Backend Security Rules Accordingly on resource {instance} {isinstance(_resource, Dataset)}')
+                if isinstance(_resource, Dataset):
+                    if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                        if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                            _disable_cache = []
+                            _owner = owner or _resource.owner
+                            if permissions is not None and len(permissions):
+                                if not created:
+                                    purge_geofence_dataset_rules(_resource)
 
-                                    # Owner
-                                    perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
+                                # Owner
+                                perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
+                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
 
-                                    # All the other users
-                                    if 'users' in permissions and len(permissions['users']) > 0:
-                                        for user, perms in permissions['users'].items():
-                                            _user = get_user_model().objects.get(username=user)
-                                            if _user != _owner:
-                                                # Set the GeoFence Rules
-                                                group_perms = None
-                                                if 'groups' in permissions and len(permissions['groups']) > 0:
-                                                    group_perms = permissions['groups']
-                                                if user == "AnonymousUser":
-                                                    _user = None
-                                                _group = list(group_perms.keys())[0] if group_perms else None
-                                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _user, _group, group_perms)
-
-                                    # All the other groups
-                                    if 'groups' in permissions and len(permissions['groups']) > 0:
-                                        for group, perms in permissions['groups'].items():
-                                            _group = Group.objects.get(name=group)
+                                # All the other users
+                                if 'users' in permissions and len(permissions['users']) > 0:
+                                    for user, perms in permissions['users'].items():
+                                        _user = get_user_model().objects.get(username=user)
+                                        if _user != _owner:
                                             # Set the GeoFence Rules
-                                            if _group and _group.name and _group.name == 'anonymous':
-                                                _group = None
-                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, _group, None)
-                                else:
-                                    anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                                    anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+                                            group_perms = None
+                                            if 'groups' in permissions and len(permissions['groups']) > 0:
+                                                group_perms = permissions['groups']
+                                            if user == "AnonymousUser":
+                                                _user = None
+                                            _group = list(group_perms.keys())[0] if group_perms else None
+                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _user, _group, group_perms)
 
-                                    if not created:
-                                        purge_geofence_dataset_rules(_resource.get_self_resource())
-
-                                    # Owner & Managers
-                                    perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
-
-                                    _resource_groups, _group_managers = _resource.get_group_managers(group=_resource.group)
-                                    for _group_manager in _group_managers:
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _group_manager, None, None)
-
-                                    for user_group in _resource_groups:
-                                        if not skip_registered_members_common_group(user_group):
-                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, user_group, None)
-
-                                    # Anonymous
-                                    if anonymous_can_view:
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, VIEW_PERMISSIONS, None, None, None)
-
-                                    if anonymous_can_download:
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, DOWNLOAD_PERMISSIONS, None, None, None)
-
-                                if _disable_cache:
-                                    filters, formats = _get_gwc_filters_and_formats(_disable_cache)
-                                    try:
-                                        _dataset_workspace = get_dataset_workspace(_resource)
-                                        toggle_dataset_cache(f'{_dataset_workspace}:{_resource.name}', filters=filters, formats=formats)
-                                    except Dataset.DoesNotExist:
-                                        pass
+                                # All the other groups
+                                if 'groups' in permissions and len(permissions['groups']) > 0:
+                                    for group, perms in permissions['groups'].items():
+                                        _group = Group.objects.get(name=group)
+                                        # Set the GeoFence Rules
+                                        if _group and _group.name and _group.name == 'anonymous':
+                                            _group = None
+                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, _group, None)
                             else:
-                                _resource.set_dirty_state()
+                                anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+                                anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+
+                                if not created:
+                                    purge_geofence_dataset_rules(_resource.get_self_resource())
+
+                                # Owner & Managers
+                                perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
+                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
+
+                                _resource_groups, _group_managers = _resource.get_group_managers(group=_resource.group)
+                                for _group_manager in _group_managers:
+                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _group_manager, None, None)
+
+                                for user_group in _resource_groups:
+                                    if not skip_registered_members_common_group(user_group):
+                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, user_group, None)
+
+                                # Anonymous
+                                if anonymous_can_view:
+                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, VIEW_PERMISSIONS, None, None, None)
+
+                                if anonymous_can_download:
+                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, DOWNLOAD_PERMISSIONS, None, None, None)
+
+                            if _disable_cache:
+                                filters, formats = _get_gwc_filters_and_formats(_disable_cache)
+                                try:
+                                    _dataset_workspace = get_dataset_workspace(_resource)
+                                    toggle_dataset_cache(f'{_dataset_workspace}:{_resource.name}', filters=filters, formats=formats)
+                                except Dataset.DoesNotExist:
+                                    pass
+                        else:
+                            _resource.set_dirty_state()
         except Exception as e:
             logger.exception(e)
             return False
