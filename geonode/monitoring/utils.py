@@ -418,53 +418,57 @@ def collect_metric(**options):
     log.info(f'[{lock_id}] Collecting Metrics - started @ {_start_time}')
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            log.info(f'[{lock_id}] Collecting Metrics - [...acquired lock] @ {_start_time}')
             try:
-                oservice = options['service']
-                if not oservice:
-                    services = Service.objects.all()
-                else:
-                    services = [oservice]
-                if options['list_services']:
-                    print('available services')
+                log.info(f'[{lock_id}] Collecting Metrics - [...acquired lock] @ {_start_time}')
+                try:
+                    oservice = options['service']
+                    if not oservice:
+                        services = Service.objects.all()
+                    else:
+                        services = [oservice]
+                    if options['list_services']:
+                        print('available services')
+                        for s in services:
+                            print('  ', s.name, '(', s.url, ')')
+                            print('   type', s.service_type.name)
+                            print('   running on', s.host.name, s.host.ip)
+                            print('   active:', s.active)
+                            if s.last_check:
+                                print('    last check:', s.last_check)
+                            else:
+                                print('    not checked yet')
+                            print(' ')
+                        return
+                    c = CollectorAPI()
                     for s in services:
-                        print('  ', s.name, '(', s.url, ')')
-                        print('   type', s.service_type.name)
-                        print('   running on', s.host.name, s.host.ip)
-                        print('   active:', s.active)
-                        if s.last_check:
-                            print('    last check:', s.last_check)
-                        else:
-                            print('    not checked yet')
-                        print(' ')
-                    return
-                c = CollectorAPI()
-                for s in services:
-                    try:
-                        run_check(
-                            s,
-                            collector=c,
-                            since=options['since'],
-                            until=options['until'],
-                            force_check=options['force_check'],
-                            format=options['format'])
-                    except Exception as e:
-                        log.warning(e)
-                if not options['do_not_clear']:
-                    log.info("Clearing old data")
-                    c.clear_old_data()
-                if options['emit_notifications']:
-                    log.info("Processing notifications for %s", options['until'])
-                    # s = Service.objects.first()
-                    # interval = s.check_interval
-                    # now = datetime.utcnow().replace(tzinfo=pytz.utc)
-                    # notifications_check = now - interval
-                    c.emit_notifications()  # notifications_check))
-                _end_time = datetime.utcnow().isoformat()
-                log.info(f'[{lock_id}] Collecting Metrics - finished @ {_end_time}')
-            except Exception as e:
-                log.info(f'[{lock_id}] Collecting Metrics - errored @ {_end_time}')
-                log.exception(e)
+                        try:
+                            run_check(
+                                s,
+                                collector=c,
+                                since=options['since'],
+                                until=options['until'],
+                                force_check=options['force_check'],
+                                format=options['format'])
+                        except Exception as e:
+                            log.warning(e)
+                    if not options['do_not_clear']:
+                        log.info("Clearing old data")
+                        c.clear_old_data()
+                    if options['emit_notifications']:
+                        log.info("Processing notifications for %s", options['until'])
+                        # s = Service.objects.first()
+                        # interval = s.check_interval
+                        # now = datetime.utcnow().replace(tzinfo=pytz.utc)
+                        # notifications_check = now - interval
+                        c.emit_notifications()  # notifications_check))
+                    _end_time = datetime.utcnow().isoformat()
+                    log.info(f'[{lock_id}] Collecting Metrics - finished @ {_end_time}')
+                except Exception as e:
+                    log.info(f'[{lock_id}] Collecting Metrics - errored @ {_end_time}')
+                    log.exception(e)
+            finally:
+                lock.release()
+
     log.info(f'[{lock_id}] Collecting Metrics - exit @ {_end_time}')
     return (_start_time, _end_time)
 

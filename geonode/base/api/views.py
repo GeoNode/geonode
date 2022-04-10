@@ -225,6 +225,7 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     """
     API endpoint that lists hierarchical keywords.
     """
+
     def get_queryset(self):
         resource_keywords = HierarchicalKeyword.resource_keywords_tree(self.request.user)
         slugs = [obj.get('href') for obj in resource_keywords]
