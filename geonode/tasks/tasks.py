@@ -111,7 +111,7 @@ class AcquireLock():
             try:
                 self.lock.release()
             except Exception as e:
-                logger.exception(e)
+                logger.debug(e)
 
 
 class FaultTolerantTask(celery.Task):

@@ -78,7 +78,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.debug(msg, *args)
+    logger.info(msg, *args)
 
 
 class UploaderSession:
@@ -580,7 +580,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     saved_dataset = None
 
     lock_id = f'{upload_session.name}-{import_session.id}'
-    with AcquireLock(lock_id, blocking=False) as lock:
+    _log(f" - final_step - lock_id: {lock_id}")
+    with AcquireLock(lock_id, blocking=True) as lock:
         if lock.acquire() is True:
             try:
                 _log(f'Reloading session {import_id} to check validity')
@@ -590,12 +591,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
-
-                if Upload.objects.filter(import_id=import_id).count():
-                    Upload.objects.filter(import_id=import_id).update(complete=False)
-                    upload = Upload.objects.filter(import_id=import_id).get()
-                    if upload.state == enumerations.STATE_RUNNING:
-                        return
 
                 upload_session.import_session = import_session
                 Upload.objects.update_from_session(upload_session)
@@ -828,12 +823,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset.get_self_resource())]
                 except Exception as e:
                     raise GeoNodeException(e)
-                finally:
-                    if upload.state in (enumerations.STATE_PROCESSED, enumerations.STATE_INVALID):
-                        # Get rid if temporary files that have been uploaded via Upload form
-                        logger.debug(f"... Cleaning up the temporary folders {upload_session.tempdir}")
-                        shutil.rmtree(upload_session.tempdir, ignore_errors=True)
             finally:
                 lock.release()
+        else:
+            _log(f" - final_step - COULD NOT lock_id: {lock_id}")
 
     return saved_dataset
