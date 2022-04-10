@@ -306,8 +306,12 @@ class DownloadLinkField(DynamicComputedField):
         super().__init__(**kwargs)
 
     def get_attribute(self, instance):
-        _instance = instance.get_real_instance()
-        return _instance.download_url if hasattr(_instance, "download_url") else None
+        try:
+            _instance = instance.get_real_instance()
+            return _instance.download_url if hasattr(_instance, "download_url") else None
+        except Exception as e:
+            logger.exception(e)
+            return None
 
 
 class UserSerializer(BaseDynamicModelSerializer):

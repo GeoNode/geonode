@@ -462,8 +462,6 @@ class ResourceManager(ResourceManagerInterface):
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
             if _resource:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                _resource.save(notify=False)
                 to_update.update(defaults)
                 if 'user' in to_update:
                     to_update.pop('user')
@@ -474,13 +472,18 @@ class ResourceManager(ResourceManagerInterface):
                 if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
                     anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
                     _perms['groups'].pop(anonymous_group)
-                self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                # Refresh from DB
-                _resource.refresh_from_db()
-                return self.update(_resource.uuid, _resource, vals=to_update)
-            else:
-                instance.set_processing_state(enumerations.STATE_INVALID)
-                instance.save(notify=False)
+                if _resource.state == enumerations.STATE_PROCESSED:
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+                    return self.update(_resource.uuid, _resource, vals=to_update)
+                else:
+                    if not _resource.get_real_instance().name and 'title' in to_update:
+                        to_update['name'] = to_update['title']
+                    _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+                    return _resource
         return instance
 
     def append(self, instance: ResourceBase, vals: dict = {}):
