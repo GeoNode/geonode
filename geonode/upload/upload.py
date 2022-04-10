@@ -532,7 +532,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
     except gsimporter.api.NotFound as e:
         logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
-        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
 
@@ -553,7 +553,7 @@ def csv_step(upload_session, lat_field, lng_field):
     except gsimporter.api.NotFound as e:
         logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
-        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
 
@@ -577,7 +577,7 @@ def srs_step(upload_session, source, target):
     except gsimporter.api.NotFound as e:
         logger.exception(e)
         Upload.objects.invalidate_from_session(upload_session)
-        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+        raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
     upload_session.import_session = import_session
     Upload.objects.update_from_session(upload_session)
 
@@ -599,7 +599,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 except gsimporter.api.NotFound as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
-                    raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+                    raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
 
                 upload_session.import_session = import_session
                 Upload.objects.update_from_session(upload_session)
@@ -637,7 +637,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 except gsimporter.api.NotFound as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
-                    raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + e.args[0])
+                    raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
                 upload_session.import_session = import_session
                 Upload.objects.update_from_session(upload_session)
 
@@ -703,7 +703,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             sld_file = sld_file[0]
                         except Exception as e:
                             logger.exception(e)
-                            raise GeneralUploadException(detail=_('Error uploading Dataset') + e.args[0])
+                            raise GeneralUploadException(detail=_('Error uploading Dataset') + str(e))
                     sld_uploaded = True
                 else:
                     # get_files will not find the sld if it doesn't match the base name
