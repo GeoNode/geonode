@@ -63,82 +63,85 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     lock_id = f'{self.request.id}'
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
-            with transaction.atomic():
-                _upload_ids = []
-                _upload_tasks = []
+            try:
+                with transaction.atomic():
+                    _upload_ids = []
+                    _upload_tasks = []
 
-                # Check first if we need to delete stale sessions
-                expiry_time = now() - timedelta(hours=UPLOAD_SESSION_EXPIRY_HOURS)
-                for _upload in Upload.objects.exclude(state=enumerations.STATE_PROCESSED).exclude(date__gt=expiry_time):
-                    _upload.set_processing_state(enumerations.STATE_INVALID)
-                    _upload_ids.append(_upload.id)
-                    _upload_tasks.append(
-                        _upload_session_cleanup.signature(
-                            args=(_upload.id,)
-                        )
-                    )
-
-                upload_workflow_finalizer = _upload_workflow_finalizer.signature(
-                    args=('_upload_session_cleanup', _upload_ids,),
-                    immutable=True
-                ).on_error(
-                    _upload_workflow_error.signature(
-                        args=('_upload_session_cleanup', _upload_ids,),
-                        immutable=True
-                    )
-                )
-                upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
-                upload_workflow.apply_async()
-
-                # Let's finish the valid ones
-                _exclusion_processing_states = (
-                    enumerations.STATE_COMPLETE,
-                    enumerations.STATE_PROCESSED)
-                for _upload in Upload.objects.exclude(state__in=_exclusion_processing_states).exclude(id__in=_upload_ids):
-                    session = None
-                    try:
-                        if not _upload.import_id:
-                            raise NotFound
-                        session = _upload.get_session.import_session if _upload.get_session else None
-                        if not session or session.state != enumerations.STATE_COMPLETE:
-                            session = gs_uploader.get_session(_upload.import_id)
-                    except (NotFound, Exception) as e:
-                        logger.exception(e)
-                        session = None
-
-                    if session:
+                    # Check first if we need to delete stale sessions
+                    expiry_time = now() - timedelta(hours=UPLOAD_SESSION_EXPIRY_HOURS)
+                    for _upload in Upload.objects.exclude(state=enumerations.STATE_PROCESSED).exclude(date__gt=expiry_time):
+                        _upload.set_processing_state(enumerations.STATE_INVALID)
                         _upload_ids.append(_upload.id)
                         _upload_tasks.append(
-                            _update_upload_session_state.signature(
+                            _upload_session_cleanup.signature(
                                 args=(_upload.id,)
                             )
                         )
-                    else:
-                        if _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
-                            _upload.set_processing_state(enumerations.STATE_INVALID)
+
+                    upload_workflow_finalizer = _upload_workflow_finalizer.signature(
+                        args=('_upload_session_cleanup', _upload_ids,),
+                        immutable=True
+                    ).on_error(
+                        _upload_workflow_error.signature(
+                            args=('_upload_session_cleanup', _upload_ids,),
+                            immutable=True
+                        )
+                    )
+                    upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
+                    upload_workflow.apply_async()
+
+                    # Let's finish the valid ones
+                    _exclusion_processing_states = (
+                        enumerations.STATE_COMPLETE,
+                        enumerations.STATE_PROCESSED)
+                    for _upload in Upload.objects.exclude(state__in=_exclusion_processing_states).exclude(id__in=_upload_ids):
+                        session = None
+                        try:
+                            if not _upload.import_id:
+                                raise NotFound
+                            session = _upload.get_session.import_session if _upload.get_session else None
+                            if not session or session.state != enumerations.STATE_COMPLETE:
+                                session = gs_uploader.get_session(_upload.import_id)
+                        except (NotFound, Exception) as e:
+                            logger.exception(e)
+                            session = None
+
+                        if session:
                             _upload_ids.append(_upload.id)
                             _upload_tasks.append(
-                                _upload_session_cleanup.signature(
+                                _update_upload_session_state.signature(
                                     args=(_upload.id,)
                                 )
                             )
+                        else:
+                            if _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                                _upload.set_processing_state(enumerations.STATE_INVALID)
+                                _upload_ids.append(_upload.id)
+                                _upload_tasks.append(
+                                    _upload_session_cleanup.signature(
+                                        args=(_upload.id,)
+                                    )
+                                )
 
-                upload_workflow_finalizer = _upload_workflow_finalizer.signature(
-                    args=('_update_upload_session_state', _upload_ids,),
-                    immutable=True
-                ).on_error(
-                    _upload_workflow_error.signature(
+                    upload_workflow_finalizer = _upload_workflow_finalizer.signature(
                         args=('_update_upload_session_state', _upload_ids,),
                         immutable=True
+                    ).on_error(
+                        _upload_workflow_error.signature(
+                            args=('_update_upload_session_state', _upload_ids,),
+                            immutable=True
+                        )
                     )
-                )
 
-                upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
-                result = upload_workflow.apply_async()
-                if result.ready():
-                    with allow_join_result():
-                        return result.get()
-                return result.state
+                    upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
+                    result = upload_workflow.apply_async()
+                    if result.ready():
+                        with allow_join_result():
+                            return result.get()
+                    return result.state
+            finally:
+                lock.release()
 
 
 @app.task(
