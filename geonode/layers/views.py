@@ -55,6 +55,7 @@ from guardian.shortcuts import get_objects_for_user
 from geonode import geoserver
 from geonode.base.auth import get_or_create_token
 from geonode.layers.metadata import parse_metadata
+from geonode.upload.api.views import UploadViewSet
 from geonode.upload.upload import _update_layer_with_xml_info
 from geonode.base.forms import CategoryForm, TKeywordForm, BatchPermissionsForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify, get_url_for_model
@@ -74,7 +75,7 @@ from geonode.layers.models import (
     Attribute,
     UploadSession)
 from geonode.layers.utils import (
-    file_upload, get_files, gs_append_data_to_layer,
+    get_files, gs_append_data_to_layer,
     is_raster, is_sld_upload_only,
     is_vector, is_xml_upload_only,
     validate_input_source)
@@ -105,6 +106,7 @@ from geonode.geoserver.helpers import (
     ogc_server_settings)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
 from geonode.tasks.tasks import set_permissions
+from geonode.upload.forms import LayerUploadForm as UploadViewsetForm
 
 from celery.utils.log import get_logger
 
@@ -1164,14 +1166,19 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             'is_layer': True,
         }
         return render(request, template, context=ctx)
-    elif request.method == 'POST':
-        form = LayerUploadForm(request.POST, request.FILES)
-        tempdir = None
-        out = {}
+    elif request.method in ['POST', 'PUT']:
+        form = UploadViewsetForm(request.POST, request.FILES)
 
+        _tmpdir = None
+        out = {}
         if form.is_valid():
             try:
-                tempdir, base_file = form.write_files()
+                data_retriever = form.cleaned_data["data_retriever"]
+                base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
+                files = {_file.split('.')[1]: _file for _file in data_retriever.file_paths.values()}
+                if '.zip' in base_file:
+                    files, _tmpdir = get_files(base_file)
+
                 if layer.is_vector() and is_raster(base_file):
                     out['success'] = False
                     out['errors'] = _(
@@ -1183,43 +1190,40 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                 else:
                     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                         out['ogc_backend'] = geoserver.BACKEND_PACKAGE
+                resource_is_valid = validate_input_source(
+                    layer=layer, filename=base_file, files=files, action_type="replace"
+                )
+                data_retriever.delete_files()
+                if resource_is_valid:
+                    # Create a new upload session
+                    request.GET = {"layer_id": layer.id}
+                    steps = [None, "check", "final"] if layer.is_vector() else [None, "final"]
+                    for _step in steps:
+                        response, cat, valid = UploadViewSet()._emulate_client_upload_step(
+                            request,
+                            _step
+                        )
+                        if response.status_code != 200:
+                            raise Exception(response.content)
 
-                    saved_layer = file_upload(
-                        base_file,
-                        layer=layer,
-                        title=layer.title,
-                        abstract=layer.abstract,
-                        is_approved=layer.is_approved,
-                        is_published=layer.is_published,
-                        name=layer.name,
-                        user=layer.owner,
-                        license=layer.license.name if layer.license else None,
-                        category=layer.category,
-                        keywords=list(layer.keywords.all()),
-                        regions=list(layer.regions.values_list('name', flat=True)),
-                        overwrite=True,
-                        charset=form.cleaned_data["charset"],
-                    )
+                    set_geowebcache_invalidate_cache(layer.typename)
 
-                    upload_session = saved_layer.upload_session
-                    if upload_session:
-                        upload_session.processed = True
-                        upload_session.save()
                     out['success'] = True
                     out['url'] = reverse(
                         'layer_detail', args=[
-                            saved_layer.service_typename])
+                            layer.service_typename])
             except Exception as e:
                 logger.exception(e)
                 out['success'] = False
                 out['errors'] = str(e)
             finally:
-                if tempdir is not None:
-                    shutil.rmtree(tempdir, ignore_errors=True)
+                if _tmpdir is not None:
+                    shutil.rmtree(_tmpdir, ignore_errors=True)
         else:
             errormsgs = []
             for e in form.errors.values():
                 errormsgs.append([escape(v) for v in e])
+            out['success'] = False
             out['errors'] = form.errors
             out['errormsgs'] = errormsgs
 
@@ -1228,6 +1232,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
             register_event(request, 'change', layer)
         else:
             status_code = 400
+
+        if _tmpdir is not None:
+            shutil.rmtree(_tmpdir, ignore_errors=True)
+
         return HttpResponse(
             json.dumps(out),
             content_type='application/json',

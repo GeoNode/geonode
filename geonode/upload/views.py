@@ -58,6 +58,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.utils import fixup_shp_columnnames
 from geonode.decorators import logged_in_or_basicauth
 
+from django.views.decorators.csrf import csrf_exempt
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 
@@ -231,7 +232,6 @@ def save_step_view(req, session):
                     fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
                                           form.cleaned_data["charset"],
                                           tempdir=data_retriever.temporary_folder)
-
         _log(f'provided sld is {sld}')
         # upload_type = get_upload_type(base_file)
         upload_session = UploaderSession(
@@ -254,6 +254,10 @@ def save_step_view(req, session):
             mosaic_time_value=form.cleaned_data['mosaic_time_value'],
             user=upload.user
         )
+
+        if overwrite:
+            upload_session.update_mode = "REPLACE"
+
         Upload.objects.update_from_session(upload_session)
         return next_step_response(req, upload_session, force_ajax=True)
     else:
@@ -681,8 +685,9 @@ _steps = {
 }
 
 
-@login_required
+@csrf_exempt
 @logged_in_or_basicauth(realm="GeoNode")
+@login_required
 def view(req, step=None):
     """Main uploader view"""
 

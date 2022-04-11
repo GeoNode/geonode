@@ -19,13 +19,18 @@
 from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
+from rest_framework.exceptions import AuthenticationFailed, NotFound
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.layers.api.exceptions import LayerReplaceException
 from geonode.layers.models import Layer
+from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import action
+from geonode.layers.views import layer_replace
 
 from .serializers import LayerSerializer
 from .permissions import LayerPermissionsFilter
@@ -49,3 +54,31 @@ class LayerViewSet(DynamicModelViewSet):
     queryset = Layer.objects.all().order_by('-last_updated')
     serializer_class = LayerSerializer
     pagination_class = GeoNodeApiPagination
+
+    @extend_schema(
+        methods=["put"],
+        responses={200},
+        description="API endpoint allowing to replace a layer."
+    )
+    @action(
+        detail=False,
+        url_path="(?P<layer_id>\d+)/replace",  # noqa
+        url_name="replace-layer",
+        methods=["put"]
+    )
+    def replace(self, request, layer_id=None):
+        user = request.user
+        if not user or not user.is_authenticated:
+            raise AuthenticationFailed
+
+        if not self.queryset.filter(id=layer_id).exists():
+            raise NotFound(detail=f"Layer with ID {layer_id} is not available")
+
+        alternate = self.queryset.get(id=layer_id).alternate
+
+        response = layer_replace(request=request, layername=alternate)
+
+        if response.status_code != 200:
+            raise LayerReplaceException(detail=response.content)
+
+        return response

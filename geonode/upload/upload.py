@@ -372,16 +372,41 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                         if not next_id:
                             error_msg = 'No valid Importer Session could be found'
                     else:
-                        # moving forward with a regular Importer session
-                        import_session = gs_uploader.upload_files(
-                            files_to_upload,
-                            use_url=False,
-                            import_id=next_id,
-                            mosaic=False,
-                            target_store=target_store,
-                            name=name,
-                            charset_encoding=charset_encoding
-                        )
+                        if overwrite:
+                            gs_layer = gs_catalog.get_layer(name)
+                            _target_store = (
+                                gs_layer.resource.store.name
+                                if not isinstance(gs_layer.resource, list)
+                                else gs_layer.resource[0].store.name
+                            )
+                            #  opening Import session for the selected layer
+                            # Let's reset the connections first
+                            gs_catalog._cache.clear()
+                            gs_catalog.reset()
+
+                            import_session = gs_uploader.start_import(
+                                import_id=next_id, name=name, target_store=_target_store
+                            )
+                            import_session.upload_task(files_to_upload)
+                            task = import_session.tasks[0]
+                            #  Changing layer name, mode and target
+                            task.set_update_mode("REPLACE")
+                            task.layer.set_target_layer_name(name)
+                            task.set_target(store_name=_target_store, workspace=gs_layer.resource.workspace.name)
+                            #  Starting import process
+
+                            import_session = import_session.reload()
+                        else:
+                            # moving forward with a regular Importer session
+                            import_session = gs_uploader.upload_files(
+                                files_to_upload,
+                                use_url=False,
+                                import_id=next_id,
+                                mosaic=False,
+                                target_store=target_store,
+                                name=name,
+                                charset_encoding=charset_encoding
+                            )
                     upload.import_id = import_session.id
                     upload.save()
 
@@ -617,7 +642,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 # FIXME: Put this in gsconfig.py
                 task = import_session.tasks[0]
                 task.set_charset(charset)
-
+                overwrite = task.updateMode == 'REPLACE'
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
 
@@ -664,7 +689,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 # look for xml and finalize Layer metadata
                 metadata_uploaded = False
                 xml_file = upload_session.base_file[0].xml_files
-                if xml_file:
+                if xml_file and os.path.exists(xml_file[0]):
                     try:
                         # get model properties from XML
                         # If it's contained within a zip, need to extract it
@@ -684,7 +709,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         elif not isinstance(xml_file, str):
                             xml_file = None
 
-                        if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+                        if xml_file and os.path.exists(xml_file[0]) and os.access(xml_file, os.R_OK):
                             layer_uuid, vals, regions, keywords, custom = parse_metadata(
                                 open(xml_file).read())
                             metadata_uploaded = True
@@ -695,7 +720,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                             _("Exception occurred while parsing the provided Metadata file."), e)
 
                 # Make sure the layer does not exists already
-                if layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
+                if not overwrite and layer_uuid and Layer.objects.filter(uuid=layer_uuid).count():
                     Upload.objects.invalidate_from_session(upload_session)
                     logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
                     raise GeoNodeException(
@@ -792,7 +817,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
                 assert saved_layer
 
-                if not created:
+                if not created and not overwrite:
                     return saved_layer
 
                 # Create a new upload session
@@ -873,7 +898,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 # look for SLD
                 sld_file = upload_session.base_file[0].sld_files
                 sld_uploaded = False
-                if sld_file:
+                if sld_file and os.path.exists(sld_file[0]):
                     # If it's contained within a zip, need to extract it
                     if upload_session.base_file.archive:
                         archive = upload_session.base_file.archive
@@ -922,7 +947,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     # Updating layer with information coming from the XML file
-    if xml_file:
+    xml_file = xml_file[0] if isinstance(xml_file, list) and xml_file else xml_file
+    if xml_file and os.path.exists(xml_file):
         saved_layer.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)
         keywords.extend(convert_keyword(regions_unresolved))
