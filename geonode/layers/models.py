@@ -316,6 +316,7 @@ class Dataset(ResourceBase):
             ('change_dataset_data', 'Can edit layer data'),
             ('change_dataset_style', 'Can change layer style'),
         )
+        unique_together = ('store', 'workspace', 'name')
 
     # Permission Level Constants
     # LEVEL_NONE inherited

@@ -47,6 +47,8 @@ from geoserver.resource import (
 
 from django.conf import settings
 from django.db.models import Max
+from django.db import transaction
+from django.db.utils import IntegrityError
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
@@ -763,13 +765,19 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     saved_dataset_filter = Dataset.objects.filter(
                         name=upload_session.append_to_mosaic_name)
                     if not saved_dataset_filter.exists():
-                        saved_dataset = resource_manager.create(
-                            name=upload_session.append_to_mosaic_name,
-                            defaults=dict(
-                                dirty_state=True,
-                                state=enumerations.STATE_READY)
-                        )
-                        created = True
+                        try:
+                            saved_dataset = resource_manager.create(
+                                dataset_uuid,
+                                resource_type=Dataset,
+                                defaults=dict(
+                                    dirty_state=True,
+                                    state=enumerations.STATE_READY,
+                                    store=target.name,
+                                    workspace=target.workspace_name,
+                                    name=upload_session.append_to_mosaic_name))
+                            created = True
+                        except IntegrityError:
+                            return None
                     elif saved_dataset_filter.count() == 1:
                         saved_dataset = saved_dataset_filter.get()
                         created = False
@@ -792,32 +800,34 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 else:
                     # The dataset is a standard one, no mosaic options enabled...
                     saved_dataset_filter = Dataset.objects.filter(
-                        title=title,
                         store=target.name,
                         workspace=target.workspace_name,
                         name=task.layer.name)
                     if not saved_dataset_filter.exists():
-                        saved_dataset = resource_manager.create(
-                            dataset_uuid,
-                            resource_type=Dataset,
-                            defaults=dict(
-                                store=target.name,
-                                subtype=get_dataset_storetype(target.store_type),
-                                alternate=alternate,
-                                workspace=target.workspace_name,
-                                title=title,
-                                name=task.layer.name,
-                                abstract=abstract or _('No abstract provided'),
-                                owner=user,
-                                dirty_state=True,
-                                state=enumerations.STATE_READY,
-                                temporal_extent_start=start,
-                                temporal_extent_end=end,
-                                is_mosaic=is_mosaic,
-                                has_time=has_time,
-                                has_elevation=has_elevation,
-                                time_regex=upload_session.mosaic_time_regex))
-                        created = True
+                        try:
+                            saved_dataset = resource_manager.create(
+                                dataset_uuid,
+                                resource_type=Dataset,
+                                defaults=dict(
+                                    store=target.name,
+                                    subtype=get_dataset_storetype(target.store_type),
+                                    alternate=alternate,
+                                    workspace=target.workspace_name,
+                                    title=title,
+                                    name=task.layer.name,
+                                    abstract=abstract or _('No abstract provided'),
+                                    owner=user,
+                                    dirty_state=True,
+                                    state=enumerations.STATE_READY,
+                                    temporal_extent_start=start,
+                                    temporal_extent_end=end,
+                                    is_mosaic=is_mosaic,
+                                    has_time=has_time,
+                                    has_elevation=has_elevation,
+                                    time_regex=upload_session.mosaic_time_regex))
+                            created = True
+                        except IntegrityError:
+                            return None
                     elif saved_dataset_filter.count() == 1:
                         saved_dataset = saved_dataset_filter.get()
                         created = False
@@ -839,21 +849,22 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 # Set default permissions on the newly created layer and send notifications
                 permissions = upload_session.permissions
 
-                # Finalize Upload
-                resource_manager.set_permissions(
-                    None, instance=saved_dataset, permissions=permissions, created=created)
-                resource_manager.update(
-                    None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
-                resource_manager.exec(
-                    'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-                resource_manager.exec(
-                    'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
-                resource_manager.set_thumbnail(
-                    None, instance=saved_dataset)
+                with transaction.atomic():
+                    # Finalize Upload
+                    resource_manager.set_permissions(
+                        None, instance=saved_dataset, permissions=permissions, created=created)
+                    resource_manager.update(
+                        None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+                    resource_manager.exec(
+                        'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+                    resource_manager.exec(
+                        'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+                    resource_manager.set_thumbnail(
+                        None, instance=saved_dataset)
 
-                if Upload.objects.filter(resource=saved_dataset).exists():
-                    Upload.objects.filter(resource=saved_dataset).update(complete=True)
-                    [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
+                    if Upload.objects.filter(resource=saved_dataset).exists():
+                        Upload.objects.filter(resource=saved_dataset).update(complete=True)
+                        [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
 
-                return saved_dataset
+                    return saved_dataset
     return None

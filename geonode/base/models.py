@@ -803,7 +803,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     contacts = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ContactRole')
-    alternate = models.CharField(max_length=255, null=True, blank=True)
+    alternate = models.CharField(
+        _('alternate'),
+        max_length=255,
+        null=True,
+        blank=True)
     date = models.DateTimeField(
         _('date'),
         default=now,

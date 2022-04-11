@@ -169,12 +169,17 @@ class Upload(models.Model):
                             resource_id=self.resource.id,
                             files=files_to_upload)
                         self.resource.refresh_from_db()
-        if "COMPLETE" == self.state:
-            self.complete = True
-        if self.resource and self.resource.processed:
-            self.state = enumerations.STATE_RUNNING
+
+        if self.resource:
+            if self.resource.state == enumerations.STATE_PROCESSED:
+                self.state = enumerations.STATE_PROCESSED
+            else:
+                self.state = enumerations.STATE_RUNNING
         elif self.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
             self.state = upload_session.import_session.state
+            if self.state == enumerations.STATE_COMPLETE:
+                self.complete = True
+
         self.save()
 
     @property
@@ -189,7 +194,7 @@ class Upload(models.Model):
         elif self.state == enumerations.STATE_PROCESSED:
             return 100.0
         elif self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
-            if self.resource and self.resource.processed and self.resource.state == enumerations.STATE_PROCESSED:
+            if self.resource and self.resource.state == enumerations.STATE_PROCESSED:
                 self.state = enumerations.STATE_PROCESSED
                 self.save()
                 return 90.0
