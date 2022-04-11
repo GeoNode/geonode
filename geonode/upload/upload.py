@@ -47,7 +47,6 @@ from geoserver.resource import (
 
 from django.conf import settings
 from django.db.models import Max
-from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
@@ -624,8 +623,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     gs_catalog.get_layer(name)
                 except Exception:
                     Upload.objects.invalidate_from_session(upload_session)
-                    raise LayerNotReady(
-                        _(f"Expected to find layer named '{name}' in geoserver"))
+                    raise LayerNotReady(_(f"Expected to find layer named '{name}' in geoserver"))
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
@@ -634,7 +632,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     import_session.commit()
                 elif _tasks_failed or (import_session.state == 'INCOMPLETE' and task.state != 'ERROR'):
                     Upload.objects.invalidate_from_session(upload_session)
-                    raise Exception(f'unknown item state: {task.state}')
+                    raise GeneralUploadException(detail=f'Unknown Session task state: {task.state}')
                 try:
                     import_session = gs_uploader.get_session(import_id)
                 except gsimporter.api.NotFound as e:
@@ -649,7 +647,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 if _tasks_failed:
                     Upload.objects.invalidate_from_session(upload_session)
-                    raise Exception('Import Session failed.')
+                    _cause = Exception(import_session.tasks[0].errorMessage)
+                    raise GeneralUploadException(detail=f'Import Session failed: {import_session.message}' + str(_cause))
                 if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting:
                     return None
 
@@ -657,7 +656,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 if Upload.objects.filter(import_id=import_id).exists():
                     if Upload.objects.filter(import_id=import_id).count() > 1:
                         Upload.objects.invalidate_from_session(upload_session)
-                        raise Exception('Import Session failed. More than Upload Session associated to the Importer ID {import_id}')
+                        _cause = f'More than Upload Session associated to the Importer ID {import_id}'
+                        raise GeneralUploadException(detail='Import Session failed.' + str(_cause))
                     saved_dataset = Upload.objects.filter(import_id=import_id).get().resource
                     created = False
 
@@ -700,9 +700,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             metadata_uploaded = True
                     except Exception as e:
                         Upload.objects.invalidate_from_session(upload_session)
-                        logger.error(e)
-                        raise GeoNodeException(
-                            _("Exception occurred while parsing the provided Metadata file."), e)
+                        logger.exception(e)
+                        raise GeneralUploadException(detail=_("Exception occurred while parsing the provided Metadata file.") + str(e))
 
                 # look for SLD
                 sld_file = upload_session.base_file[0].sld_files
@@ -743,8 +742,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
                     Upload.objects.invalidate_from_session(upload_session)
                     logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
-                    raise GeoNodeException(
-                        _("The UUID identifier from the XML Metadata is already in use in this system."))
+                    raise GeneralUploadException(detail=_("The UUID identifier from the XML Metadata is already in use in this system."))
 
                 # Is it a regular file or an ImageMosaic?
                 is_mosaic = False
@@ -776,7 +774,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         saved_dataset = saved_dataset_filter.get()
                         created = False
                     else:
-                        raise GeoNodeException(f"There's an incosistent number of Datasets on the DB for {upload_session.append_to_mosaic_name}")
+                        raise GeneralUploadException(detail=f"There's an incosistent number of Datasets on the DB for {upload_session.append_to_mosaic_name}")
                     saved_dataset.set_dirty_state()
                     if saved_dataset.temporal_extent_start and end:
                         if pytz.utc.localize(
@@ -794,8 +792,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 else:
                     # The dataset is a standard one, no mosaic options enabled...
                     saved_dataset_filter = Dataset.objects.filter(
+                        title=title,
                         store=target.name,
-                        alternate=alternate,
                         workspace=target.workspace_name,
                         name=task.layer.name)
                     if not saved_dataset_filter.exists():
@@ -824,42 +822,38 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         saved_dataset = saved_dataset_filter.get()
                         created = False
                     else:
-                        raise GeoNodeException(f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
+                        raise GeneralUploadException(detail=f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
 
                 assert saved_dataset
 
                 if not created:
                     return saved_dataset
 
-                try:
-                    # Update the state from session...
-                    Upload.objects.update_from_session(upload_session, resource=saved_dataset)
+                # Hide the dataset until the upload process finishes...
+                saved_dataset.set_dirty_state()
 
-                    # Hide the dataset until the upload process finishes...
-                    saved_dataset.set_dirty_state()
+                # Update the state from session...
+                Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
-                    # Finalize the upload...
-                    with transaction.atomic():
-                        # Set default permissions on the newly created layer and send notifications
-                        permissions = upload_session.permissions
+                # Finalize the upload...
+                # Set default permissions on the newly created layer and send notifications
+                permissions = upload_session.permissions
 
-                        # Finalize Upload
-                        resource_manager.set_permissions(
-                            None, instance=saved_dataset, permissions=permissions, created=created)
-                        resource_manager.update(
-                            None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
-                        resource_manager.exec(
-                            'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-                        resource_manager.exec(
-                            'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
-                        resource_manager.set_thumbnail(
-                            None, instance=saved_dataset)
+                # Finalize Upload
+                resource_manager.set_permissions(
+                    None, instance=saved_dataset, permissions=permissions, created=created)
+                resource_manager.update(
+                    None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+                resource_manager.exec(
+                    'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+                resource_manager.exec(
+                    'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+                resource_manager.set_thumbnail(
+                    None, instance=saved_dataset)
 
-                        if Upload.objects.filter(resource=saved_dataset.get_self_resource()).exists():
-                            Upload.objects.filter(resource=saved_dataset.get_self_resource()).update(complete=True)
-                            [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset.get_self_resource())]
-                except Exception as e:
-                    raise GeoNodeException(e)
+                if Upload.objects.filter(resource=saved_dataset).exists():
+                    Upload.objects.filter(resource=saved_dataset).update(complete=True)
+                    [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
 
                 return saved_dataset
     return None
