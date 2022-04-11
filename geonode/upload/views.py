@@ -221,45 +221,47 @@ def save_step_view(req, session):
             charset_encoding=form.cleaned_data["charset"],
             target_store=target_store
         )
-        import_session.tasks[0].set_charset(form.cleaned_data["charset"])
-        sld = None
-        if spatial_files[0].sld_files:
-            sld = spatial_files[0].sld_files[0]
-        if not os.path.isfile(os.path.join(data_retriever.temporary_folder, spatial_files[0].base_file)):
-            tmp_files = [f for f in os.listdir(data_retriever.temporary_folder) if os.path.isfile(os.path.join(data_retriever.temporary_folder, f))]
-            for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
-                    fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
-                                          form.cleaned_data["charset"],
-                                          tempdir=data_retriever.temporary_folder)
-        _log(f'provided sld is {sld}')
-        # upload_type = get_upload_type(base_file)
-        upload_session = UploaderSession(
-            tempdir=data_retriever.temporary_folder,
-            base_file=spatial_files,
-            name=upload.name,
-            charset=form.cleaned_data["charset"],
-            import_session=import_session,
-            layer_abstract=form.cleaned_data["abstract"],
-            layer_title=form.cleaned_data["layer_title"],
-            permissions=form.cleaned_data["permissions"],
-            import_sld_file=sld,
-            spatial_files_uploaded=form.cleaned_data['uploaded'],
-            upload_type=spatial_files[0].file_type.code,
-            time=form.cleaned_data['time'],
-            mosaic=form.cleaned_data['mosaic'],
-            append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
-            append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
-            mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
-            mosaic_time_value=form.cleaned_data['mosaic_time_value'],
-            user=upload.user
-        )
 
-        if overwrite:
-            upload_session.update_mode = "REPLACE"
+        if upload and import_session and import_session.state in (Upload.STATE_READY, Upload.STATE_PENDING):
+            import_session.tasks[0].set_charset(form.cleaned_data["charset"])
+            sld = None
+            if spatial_files[0].sld_files:
+                sld = spatial_files[0].sld_files[0]
+            if os.path.exists(data_retriever.temporary_folder):
+                tmp_files = [f for f in data_retriever.get_paths().values() if os.path.exists(f)]
+                for f in tmp_files:
+                    if zipfile.is_zipfile(os.path.join(data_retriever.temporary_folder, f)):
+                        fixup_shp_columnnames(os.path.join(data_retriever.temporary_folder, f),
+                                              form.cleaned_data["charset"],
+                                              tempdir=data_retriever.temporary_folder)
 
-        Upload.objects.update_from_session(upload_session)
-        return next_step_response(req, upload_session, force_ajax=True)
+            _log(f'provided sld is {sld}')
+            # upload_type = get_upload_type(base_file)
+            upload_session = UploaderSession(
+                tempdir=data_retriever.temporary_folder,
+                base_file=spatial_files,
+                name=upload.name,
+                charset=form.cleaned_data["charset"],
+                import_session=import_session,
+                layer_abstract=form.cleaned_data["abstract"],
+                layer_title=form.cleaned_data["layer_title"],
+                permissions=form.cleaned_data["permissions"],
+                import_sld_file=sld,
+                spatial_files_uploaded=form.cleaned_data['uploaded'],
+                upload_type=spatial_files[0].file_type.code,
+                time=form.cleaned_data['time'],
+                mosaic=form.cleaned_data['mosaic'],
+                append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
+                append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
+                mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
+                mosaic_time_value=form.cleaned_data['mosaic_time_value'],
+                user=upload.user
+            )
+            if overwrite:
+                upload_session.update_mode = "REPLACE"
+            Upload.objects.update_from_session(upload_session)
+            return next_step_response(req, upload_session, force_ajax=True)
+        return next_step_response(req, None, force_ajax=True)
     else:
         if hasattr(form, "data_retriever"):
             form.data_retriever.delete_files()
@@ -462,8 +464,9 @@ def check_step_view(request, upload_session):
                 upload_session.error_msg = 'Could not access/read the uploaded file!'
             else:
                 (has_time_dim, layer_values) = \
-                    layer_eligible_for_time_dimension(request,
-                                                      import_session.tasks[0].layer, upload_session=upload_session)
+                    layer_eligible_for_time_dimension(
+                        request,
+                        import_session.tasks[0].layer, upload_session=upload_session)
                 if has_time_dim:
                     upload_session.completed_step = 'check'
                 else:
@@ -511,8 +514,7 @@ def time_step_view(request, upload_session):
         layer = check_import_session_is_valid(
             request, upload_session, import_session)
         if layer:
-            (has_time_dim, layer_values) = layer_eligible_for_time_dimension(request,
-                                                                             layer, upload_session=upload_session)
+            (has_time_dim, layer_values) = layer_eligible_for_time_dimension(request, layer, upload_session=upload_session)
             if has_time_dim and layer_values:
                 upload_session.completed_step = 'check'
                 if not force_ajax:
@@ -591,7 +593,7 @@ def final_step_view(req, upload_session):
     _json_response = None
     if not upload_session:
         upload_session = _get_upload_session(req)
-    if upload_session:
+    if upload_session and getattr(upload_session, 'import_session', None):
         import_session = upload_session.import_session
         _log('Checking session %s validity', import_session.id)
         if not check_import_session_is_valid(
