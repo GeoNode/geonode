@@ -689,7 +689,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 # look for xml and finalize Layer metadata
                 metadata_uploaded = False
                 xml_file = upload_session.base_file[0].xml_files
-                if xml_file and os.path.exists(xml_file):
+                if xml_file and os.path.exists(xml_file[0]):
                     try:
                         # get model properties from XML
                         # If it's contained within a zip, need to extract it
@@ -709,7 +709,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         elif not isinstance(xml_file, str):
                             xml_file = None
 
-                        if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+                        if xml_file and os.path.exists(xml_file[0]) and os.access(xml_file, os.R_OK):
                             layer_uuid, vals, regions, keywords, custom = parse_metadata(
                                 open(xml_file).read())
                             metadata_uploaded = True
@@ -947,6 +947,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     # Updating layer with information coming from the XML file
+    xml_file = xml_file[0] if isinstance(xml_file, list) else xml_file
     if xml_file and os.path.exists(xml_file):
         saved_layer.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)
