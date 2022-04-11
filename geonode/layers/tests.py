@@ -1004,7 +1004,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(200, resp.status_code)
         updated_dataset = Dataset.objects.get(alternate=f"geonode:{layer.name}")
         # just checking some values if are updated
-        self.assertEqual(1, updated_dataset.styles.all().count())
+        self.assertGreaterEqual(updated_dataset.styles.all().count(), 1)
         self.assertIsNotNone(updated_dataset.styles.first().sld_title)
 
     def test_xml_should_raise_an_error_if_the_uuid_is_changed(self):
