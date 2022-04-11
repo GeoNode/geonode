@@ -87,7 +87,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     upload_workflow.apply_async()
 
     # Let's finish the valid ones
-    for _upload in Upload.objects.exclude(state__in=[enumerations.STATE_PROCESSED]).exclude(id__in=_upload_ids_expired):
+    for _upload in Upload.objects.exclude(state__in=[enumerations.STATE_PROCESSED, enumerations.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
         session = None
         try:
             if not _upload.import_id:
@@ -182,8 +182,10 @@ def _update_upload_session_state(self, upload_session_id: int):
                     _success = _response_json.get('success', False)
                     _redirect_to = _response_json.get('redirect_to', '')
 
+                    _tasks_ready = any([_task.state in ["READY"] for _task in session.tasks])
                     _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
                     _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
+
                     if not _tasks_waiting:
                         _tasks_waiting = (session.state == enumerations.STATE_PENDING and any([_task.state in ["READY"] for _task in session.tasks]))
 
@@ -197,8 +199,11 @@ def _update_upload_session_state(self, upload_session_id: int):
                         elif session.state in (enumerations.STATE_PENDING, enumerations.STATE_RUNNING) and not _tasks_waiting:
                             # GeoNode Layer updating...
                             _upload.set_processing_state(enumerations.STATE_RUNNING)
-                        elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING) and not _tasks_waiting:
-                            if not _upload.resource or _upload.state == enumerations.STATE_RUNNING:
+                        elif (session.state == enumerations.STATE_COMPLETE and _upload.state in (
+                                enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting) or (
+                                    session.state == enumerations.STATE_PENDING and _tasks_ready
+                                ):
+                            if (not _upload.resource and _upload.state != enumerations.STATE_RUNNING) or (_upload.resource and _upload.state == enumerations.STATE_RUNNING):
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
                                     _upload.refresh_from_db()
@@ -218,7 +223,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                                         else:
                                             # GeoNode Layer updating...
                                             _upload.set_processing_state(enumerations.STATE_RUNNING)
-                            elif _upload.resource.processed:
+                            elif _upload.resource and _upload.resource.processed:
                                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
                         logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
                 except (NotFound, Exception) as e:

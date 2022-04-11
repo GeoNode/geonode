@@ -310,9 +310,9 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save()
                 resourcebase_post_save(_resource.get_real_instance())
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
                 self.delete(_resource.uuid, instance=_resource)
@@ -374,6 +374,8 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.save(notify=notify)
                 resourcebase_post_save(_resource.get_real_instance())
                 _resource.set_permissions()
+                if _resource.state != enumerations.STATE_INVALID:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -576,7 +578,6 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
         return False
 
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
@@ -741,7 +742,6 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
         return False
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
@@ -758,10 +758,11 @@ class ResourceManager(ResourceManagerInterface):
                             if overwrite or instance.thumbnail_url == static(thumb_utils.MISSING_THUMB):
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
 
