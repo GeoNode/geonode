@@ -117,14 +117,6 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                         elif _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED, enumerations.STATE_RUNNING):
                             if _upload.resource and _upload.resource.processed:
                                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
-                            elif not _upload.resource:
-                                _upload.set_processing_state(enumerations.STATE_INVALID)
-                                _upload_ids.append(_upload.id)
-                                _upload_tasks.append(
-                                    _upload_session_cleanup.signature(
-                                        args=(_upload.id,)
-                                    )
-                                )
 
                     upload_workflow_finalizer = _upload_workflow_finalizer.signature(
                         args=('_update_upload_session_state', _upload_ids,),
