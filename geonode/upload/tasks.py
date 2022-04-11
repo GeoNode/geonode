@@ -107,7 +107,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                 )
             )
         elif _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
-            if _upload.resource and _upload.resource.processed:
+            if session.state == enumerations.STATE_COMPLETE and _upload.resource and _upload.resource.processed:
                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
 
     upload_workflow_finalizer = _upload_workflow_finalizer.signature(
@@ -198,7 +198,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                             # GeoNode Layer updating...
                             _upload.set_processing_state(enumerations.STATE_RUNNING)
                         elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING) and not _tasks_waiting:
-                            if not _upload.resource:
+                            if not _upload.resource or _upload.state == enumerations.STATE_RUNNING:
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
                                     _upload.refresh_from_db()
