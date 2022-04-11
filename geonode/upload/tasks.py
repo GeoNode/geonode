@@ -197,13 +197,15 @@ def _update_upload_session_state(self, upload_session_id: int):
                             _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(enumerations.STATE_WAITING)
                         elif session.state in (enumerations.STATE_PENDING, enumerations.STATE_RUNNING) and not _tasks_waiting:
-                            # GeoNode Layer updating...
-                            _upload.set_processing_state(enumerations.STATE_RUNNING)
-                        elif (session.state == enumerations.STATE_COMPLETE and _upload.state in (
-                                enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting) or (
-                                    session.state == enumerations.STATE_PENDING and _tasks_ready
-                                ):
-                            if (not _upload.resource and _upload.state != enumerations.STATE_RUNNING) or (_upload.resource and _upload.state == enumerations.STATE_RUNNING):
+                            if _upload.resource and not _upload.resource.processed:
+                                # GeoNode Layer updating...
+                                _upload.set_processing_state(enumerations.STATE_RUNNING)
+                            elif session.state == enumerations.STATE_RUNNING and _upload.resource and _upload.resource.processed:
+                                # GeoNode Layer successfully processed...
+                                _upload.set_processing_state(enumerations.STATE_PROCESSED)
+                        elif (session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_PENDING) and not _tasks_waiting) or (
+                                    session.state == enumerations.STATE_PENDING and _tasks_ready):
+                            if not _upload.resource:
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
                                     _upload.refresh_from_db()
