@@ -19,7 +19,6 @@
 import re
 import os
 import json
-import shutil
 import logging
 import zipfile
 import traceback
@@ -275,6 +274,16 @@ def _advance_step(req, upload_session):
 
 def next_step_response(req, upload_session, force_ajax=True):
     _force_ajax = '&force_ajax=true' if req and force_ajax and 'force_ajax' not in req.GET else ''
+    if not upload_session:
+        return json_response(
+            {
+                'status': 'error',
+                'success': False,
+                'id': None,
+                'error_msg': 'No Upload Session provided.',
+            }
+        )
+
     import_session = upload_session.import_session
     # if the current step is the view POST for this step, advance one
     if req and req.method == 'POST':
@@ -383,6 +392,7 @@ def next_step_response(req, upload_session, force_ajax=True):
     # @todo this is not handled cleanly - run is not a real step in that it
     # has no corresponding view served by the 'view' function.
     if next == 'run':
+        logger.error(f" ---------------- RUN IMPORT ID [{upload_session.import_session.id}] - {upload_session.name} - STATE: {upload_session.import_session.state}")
         upload_session.completed_step = next
         if (_ASYNC_UPLOAD and not req) or (req and req.is_ajax()):
             return run_response(req, upload_session)
@@ -506,32 +516,21 @@ def _get_time_dimensions(layer, upload_session, values=None):
 
 
 def _fixup_base_file(absolute_base_file, tempdir=None):
-    tempdir_was_created = False
     if not tempdir or not os.path.exists(tempdir):
         tempdir = mkdtemp()
-        tempdir_was_created = True
-    try:
-        if not os.path.isfile(absolute_base_file):
-            tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
-            for f in tmp_files:
-                if zipfile.is_zipfile(os.path.join(tempdir, f)):
-                    absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
-                    absolute_base_file = os.path.join(tempdir,
-                                                      absolute_base_file)
-        elif zipfile.is_zipfile(absolute_base_file):
-            absolute_base_file = unzip_file(absolute_base_file,
-                                            '.shp', tempdir=tempdir)
-            absolute_base_file = os.path.join(tempdir,
-                                              absolute_base_file)
-        if os.path.exists(absolute_base_file):
-            return absolute_base_file
-        else:
-            raise Exception(_(f'File does not exist: {absolute_base_file}'))
-    finally:
-        if tempdir_was_created:
-            # Get rid if temporary files that have been uploaded via Upload form
-            logger.debug(f"... Cleaning up the temporary folders {tempdir}")
-            shutil.rmtree(tempdir, ignore_errors=True)
+    if not os.path.isfile(absolute_base_file):
+        tmp_files = [f for f in os.listdir(tempdir) if os.path.isfile(os.path.join(tempdir, f))]
+        for f in tmp_files:
+            if zipfile.is_zipfile(os.path.join(tempdir, f)):
+                absolute_base_file = unzip_file(os.path.join(tempdir, f), '.shp', tempdir=tempdir)
+                absolute_base_file = os.path.join(tempdir, absolute_base_file)
+    elif zipfile.is_zipfile(absolute_base_file):
+        absolute_base_file = unzip_file(absolute_base_file, '.shp', tempdir=tempdir)
+        absolute_base_file = os.path.join(tempdir, absolute_base_file)
+    if os.path.exists(absolute_base_file):
+        return absolute_base_file
+    else:
+        raise Exception(_(f'File does not exist: {absolute_base_file}'))
 
 
 def _get_dataset_values(layer, upload_session, expand=0):
