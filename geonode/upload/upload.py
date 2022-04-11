@@ -654,6 +654,18 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     return None
 
                 _log(f'Creating Django record for [{name}]')
+                if Upload.objects.filter(import_id=import_id).exists():
+                    if Upload.objects.filter(import_id=import_id).count() > 1:
+                        Upload.objects.invalidate_from_session(upload_session)
+                        raise Exception('Import Session failed. More than Upload Session associated to the Importer ID {import_id}')
+                    saved_dataset = Upload.objects.filter(import_id=import_id).get().resource
+                    created = False
+
+                if saved_dataset:
+                    if saved_dataset.processed:
+                        Upload.objects.filter(import_id=import_id).get().set_processing_state(enumerations.STATE_PROCESSED)
+                    return saved_dataset
+
                 target = task.target
                 alternate = task.get_target_layer_name()
                 dataset_uuid = None
@@ -753,7 +765,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     saved_dataset_filter = Dataset.objects.filter(
                         name=upload_session.append_to_mosaic_name)
                     if not saved_dataset_filter.exists():
-                        saved_dataset_filter.delete()
                         saved_dataset = resource_manager.create(
                             name=upload_session.append_to_mosaic_name,
                             defaults=dict(
@@ -788,7 +799,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         workspace=target.workspace_name,
                         name=task.layer.name)
                     if not saved_dataset_filter.exists():
-                        saved_dataset_filter.delete()
                         saved_dataset = resource_manager.create(
                             dataset_uuid,
                             resource_type=Dataset,
@@ -829,7 +839,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     saved_dataset.set_dirty_state()
 
                     # Finalize the upload...
-                    logger.error(f" ------------------------------------------------------------------> {import_session.id} / {import_session.state} / {saved_dataset}")
                     with transaction.atomic():
                         # Set default permissions on the newly created layer and send notifications
                         permissions = upload_session.permissions
