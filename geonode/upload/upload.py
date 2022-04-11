@@ -947,7 +947,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
 def _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals):
     # Updating layer with information coming from the XML file
-    xml_file = xml_file[0] if isinstance(xml_file, list) else xml_file
+    xml_file = xml_file[0] if isinstance(xml_file, list) and xml_file else xml_file
     if xml_file and os.path.exists(xml_file):
         saved_layer.metadata_xml = open(xml_file).read()
         regions_resolved, regions_unresolved = resolve_regions(regions)
