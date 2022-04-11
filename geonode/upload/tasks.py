@@ -213,7 +213,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                     else:
                         # GeoNode Layer updating...
                         _upload.set_processing_state(enumerations.STATE_RUNNING)
-                elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting:
+                elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING) and not _tasks_waiting:
                     if not _upload.resource or not _upload.resource.processed:
                         _response = final_step_view(None, _upload.get_session)
                         if _response:

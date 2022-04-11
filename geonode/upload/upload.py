@@ -188,7 +188,7 @@ def upload(
         user = get_default_user()
     if isinstance(user, str):
         user = get_user_model().objects.get(username=user)
-    import_session = save_step(
+    import_session, upload = save_step(
         user,
         name,
         base_file,
@@ -310,73 +310,82 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                 logger.debug(f'Uploading {the_dataset_type}')
                 error_msg = None
                 try:
-                    next_id = _get_next_id()
-                    # Truncate name to maximum length defined by the field.
-                    max_length = Upload._meta.get_field('name').max_length
-                    name = name[:max_length]
-                    # save record of this whether valid or not - will help w/ debugging
-                    upload, _ = Upload.objects.get_or_create(
+                    upload = Upload.objects.filter(
                         user=user,
                         name=name,
                         state=enumerations.STATE_READY,
                         upload_dir=spatial_files.dirname
-                    )
-                    upload.store_spatial_files = store_spatial_files
+                    ).first()
+                    if upload:
+                        import_session = upload.get_session.import_session
+                    else:
+                        next_id = _get_next_id()
+                        # Truncate name to maximum length defined by the field.
+                        max_length = Upload._meta.get_field('name').max_length
+                        name = name[:max_length]
+                        # save record of this whether valid or not - will help w/ debugging
+                        upload, _ = Upload.objects.get_or_create(
+                            user=user,
+                            name=name,
+                            state=enumerations.STATE_READY,
+                            upload_dir=spatial_files.dirname
+                        )
+                        upload.store_spatial_files = store_spatial_files
 
-                    # @todo settings for use_url or auto detection if geoserver is
-                    # on same host
+                        # @todo settings for use_url or auto detection if geoserver is
+                        # on same host
 
-                    # Is it a regular file or an ImageMosaic?
-                    # if mosaic_time_regex and mosaic_time_value:
-                    if mosaic:  # we want to ingest as ImageMosaic
-                        target_store, files_to_upload = utils.import_imagemosaic_granules(
-                            spatial_files,
-                            append_to_mosaic_opts,
-                            append_to_mosaic_name,
-                            mosaic_time_regex,
-                            mosaic_time_value,
-                            time_presentation,
-                            time_presentation_res,
-                            time_presentation_default_value,
-                            time_presentation_reference_value)
-                        upload.mosaic = mosaic
-                        upload.append_to_mosaic_opts = append_to_mosaic_opts
-                        upload.append_to_mosaic_name = append_to_mosaic_name
-                        upload.mosaic_time_regex = mosaic_time_regex
-                        upload.mosaic_time_value = mosaic_time_value
-                        # moving forward with a regular Importer session
-                        if len(files_to_upload) > 1:
-                            import_session = gs_uploader.upload_files(
-                                files_to_upload[1:],
-                                use_url=False,
-                                # import_id=next_id,
-                                target_store=target_store,
-                                charset_encoding=charset_encoding
-                            )
+                        # Is it a regular file or an ImageMosaic?
+                        # if mosaic_time_regex and mosaic_time_value:
+                        if mosaic:  # we want to ingest as ImageMosaic
+                            target_store, files_to_upload = utils.import_imagemosaic_granules(
+                                spatial_files,
+                                append_to_mosaic_opts,
+                                append_to_mosaic_name,
+                                mosaic_time_regex,
+                                mosaic_time_value,
+                                time_presentation,
+                                time_presentation_res,
+                                time_presentation_default_value,
+                                time_presentation_reference_value)
+                            upload.mosaic = mosaic
+                            upload.append_to_mosaic_opts = append_to_mosaic_opts
+                            upload.append_to_mosaic_name = append_to_mosaic_name
+                            upload.mosaic_time_regex = mosaic_time_regex
+                            upload.mosaic_time_value = mosaic_time_value
+                            # moving forward with a regular Importer session
+                            if len(files_to_upload) > 1:
+                                import_session = gs_uploader.upload_files(
+                                    files_to_upload[1:],
+                                    use_url=False,
+                                    # import_id=next_id,
+                                    target_store=target_store,
+                                    charset_encoding=charset_encoding
+                                )
+                            else:
+                                import_session = gs_uploader.upload_files(
+                                    files_to_upload,
+                                    use_url=False,
+                                    # import_id=next_id,
+                                    target_store=target_store,
+                                    charset_encoding=charset_encoding
+                                )
+                            next_id = import_session.id if import_session else None
+                            if not next_id:
+                                error_msg = 'No valid Importer Session could be found'
                         else:
+                            # moving forward with a regular Importer session
                             import_session = gs_uploader.upload_files(
                                 files_to_upload,
                                 use_url=False,
-                                # import_id=next_id,
+                                import_id=next_id,
+                                mosaic=False,
                                 target_store=target_store,
+                                name=name,
                                 charset_encoding=charset_encoding
                             )
-                        next_id = import_session.id if import_session else None
-                        if not next_id:
-                            error_msg = 'No valid Importer Session could be found'
-                    else:
-                        # moving forward with a regular Importer session
-                        import_session = gs_uploader.upload_files(
-                            files_to_upload,
-                            use_url=False,
-                            import_id=next_id,
-                            mosaic=False,
-                            target_store=target_store,
-                            name=name,
-                            charset_encoding=charset_encoding
-                        )
-                    upload.import_id = import_session.id
-                    upload.save()
+                        upload.import_id = import_session.id
+                        upload.save()
 
                     # any unrecognized tasks/files must be deleted or we can't proceed
                     import_session.delete_unrecognized_tasks()
@@ -421,6 +430,9 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                     _log("Finished upload of [%s] to GeoServer without errors.", name)
             finally:
                 lock.release()
+        else:
+            _log(f" - final_step - COULD NOT lock_id: {lock_id}")
+            return None, None
 
     return import_session, upload
 
@@ -738,70 +750,72 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     has_time = True
 
                 if upload_session.append_to_mosaic_opts:
-                    with transaction.atomic():
-                        # Is it a mosaic or a granule that must be added to an Image Mosaic?
-                        saved_dataset_filter = Dataset.objects.filter(
-                            name=upload_session.append_to_mosaic_name)
-                        if not saved_dataset_filter.exists() or saved_dataset_filter.count() > 1:
-                            saved_dataset_filter.delete()
-                            saved_dataset = resource_manager.create(
-                                name=upload_session.append_to_mosaic_name,
-                                defaults=dict(
-                                    dirty_state=True,
-                                    state=enumerations.STATE_READY)
-                            )
-                            created = True
+                    # Is it a mosaic or a granule that must be added to an Image Mosaic?
+                    saved_dataset_filter = Dataset.objects.filter(
+                        name=upload_session.append_to_mosaic_name)
+                    if not saved_dataset_filter.exists():
+                        saved_dataset_filter.delete()
+                        saved_dataset = resource_manager.create(
+                            name=upload_session.append_to_mosaic_name,
+                            defaults=dict(
+                                dirty_state=True,
+                                state=enumerations.STATE_READY)
+                        )
+                        created = True
+                    elif saved_dataset_filter.count() == 1:
+                        saved_dataset = saved_dataset_filter.get()
+                        created = False
+                    else:
+                        raise GeoNodeException(f"There's an incosistent number of Datasets on the DB for {upload_session.append_to_mosaic_name}")
+                    saved_dataset.set_dirty_state()
+                    if saved_dataset.temporal_extent_start and end:
+                        if pytz.utc.localize(
+                                saved_dataset.temporal_extent_start,
+                                is_dst=False) < end:
+                            saved_dataset.temporal_extent_end = end
+                            Dataset.objects.filter(
+                                name=upload_session.append_to_mosaic_name).update(
+                                temporal_extent_end=end)
                         else:
-                            saved_dataset = saved_dataset_filter.get()
-                            created = False
-                        saved_dataset.set_dirty_state()
-                        if saved_dataset.temporal_extent_start and end:
-                            if pytz.utc.localize(
-                                    saved_dataset.temporal_extent_start,
-                                    is_dst=False) < end:
-                                saved_dataset.temporal_extent_end = end
-                                Dataset.objects.filter(
-                                    name=upload_session.append_to_mosaic_name).update(
-                                    temporal_extent_end=end)
-                            else:
-                                saved_dataset.temporal_extent_start = end
-                                Dataset.objects.filter(
-                                    name=upload_session.append_to_mosaic_name).update(
-                                    temporal_extent_start=end)
+                            saved_dataset.temporal_extent_start = end
+                            Dataset.objects.filter(
+                                name=upload_session.append_to_mosaic_name).update(
+                                temporal_extent_start=end)
                 else:
                     # The dataset is a standard one, no mosaic options enabled...
-                    with transaction.atomic():
-                        saved_dataset_filter = Dataset.objects.filter(
-                            store=target.name,
-                            alternate=alternate,
-                            workspace=target.workspace_name,
-                            name=task.layer.name)
-                        if not saved_dataset_filter.exists() or saved_dataset_filter.count() > 1:
-                            saved_dataset_filter.delete()
-                            saved_dataset = resource_manager.create(
-                                dataset_uuid,
-                                resource_type=Dataset,
-                                defaults=dict(
-                                    store=target.name,
-                                    subtype=get_dataset_storetype(target.store_type),
-                                    alternate=alternate,
-                                    workspace=target.workspace_name,
-                                    title=title,
-                                    name=task.layer.name,
-                                    abstract=abstract or _('No abstract provided'),
-                                    owner=user,
-                                    dirty_state=True,
-                                    state=enumerations.STATE_READY,
-                                    temporal_extent_start=start,
-                                    temporal_extent_end=end,
-                                    is_mosaic=is_mosaic,
-                                    has_time=has_time,
-                                    has_elevation=has_elevation,
-                                    time_regex=upload_session.mosaic_time_regex))
-                            created = True
-                        else:
-                            saved_dataset = saved_dataset_filter.get()
-                            created = False
+                    saved_dataset_filter = Dataset.objects.filter(
+                        store=target.name,
+                        alternate=alternate,
+                        workspace=target.workspace_name,
+                        name=task.layer.name)
+                    if not saved_dataset_filter.exists():
+                        saved_dataset_filter.delete()
+                        saved_dataset = resource_manager.create(
+                            dataset_uuid,
+                            resource_type=Dataset,
+                            defaults=dict(
+                                store=target.name,
+                                subtype=get_dataset_storetype(target.store_type),
+                                alternate=alternate,
+                                workspace=target.workspace_name,
+                                title=title,
+                                name=task.layer.name,
+                                abstract=abstract or _('No abstract provided'),
+                                owner=user,
+                                dirty_state=True,
+                                state=enumerations.STATE_READY,
+                                temporal_extent_start=start,
+                                temporal_extent_end=end,
+                                is_mosaic=is_mosaic,
+                                has_time=has_time,
+                                has_elevation=has_elevation,
+                                time_regex=upload_session.mosaic_time_regex))
+                        created = True
+                    elif saved_dataset_filter.count() == 1:
+                        saved_dataset = saved_dataset_filter.get()
+                        created = False
+                    else:
+                        raise GeoNodeException(f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
 
                 assert saved_dataset
 
@@ -841,5 +855,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 lock.release()
         else:
             _log(f" - final_step - COULD NOT lock_id: {lock_id}")
+            return None
 
     return saved_dataset

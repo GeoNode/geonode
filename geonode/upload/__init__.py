@@ -39,7 +39,7 @@ def run_setup_hooks(sender, **kwargs):
         check_intervals = IntervalSchedule.objects.filter(every=600, period="seconds")
         if not check_intervals.exists():
             check_interval, _ = IntervalSchedule.objects.get_or_create(
-                every=10,
+                every=60,
                 period="seconds"
             )
         else:
@@ -65,7 +65,7 @@ class UploadAppConfig(AppConfig):
         post_migrate.connect(run_setup_hooks, sender=self)
         settings.CELERY_BEAT_SCHEDULE['finalize-incomplete-session-resources'] = {
             'task': 'geonode.upload.tasks.finalize_incomplete_session_uploads',
-            'schedule': 10.0,
+            'schedule': 60.0,
         }
 
 
