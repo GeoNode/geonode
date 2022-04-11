@@ -392,7 +392,6 @@ def next_step_response(req, upload_session, force_ajax=True):
     # @todo this is not handled cleanly - run is not a real step in that it
     # has no corresponding view served by the 'view' function.
     if next == 'run':
-        logger.error(f" ---------------- RUN IMPORT ID [{upload_session.import_session.id}] - {upload_session.name} - STATE: {upload_session.import_session.state}")
         upload_session.completed_step = next
         if (_ASYNC_UPLOAD and not req) or (req and req.is_ajax()):
             return run_response(req, upload_session)

@@ -114,8 +114,10 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                                     args=(_upload.id,)
                                 )
                             )
-                        else:
-                            if _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                        elif _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED, enumerations.STATE_RUNNING):
+                            if _upload.resource and _upload.resource.processed:
+                                _upload.set_processing_state(enumerations.STATE_PROCESSED)
+                            elif not _upload.resource:
                                 _upload.set_processing_state(enumerations.STATE_INVALID)
                                 _upload_ids.append(_upload.id)
                                 _upload_tasks.append(
@@ -214,7 +216,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                         # GeoNode Layer updating...
                         _upload.set_processing_state(enumerations.STATE_RUNNING)
                 elif session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING) and not _tasks_waiting:
-                    if not _upload.resource or not _upload.resource.processed:
+                    if not _upload.resource:
                         _response = final_step_view(None, _upload.get_session)
                         if _response:
                             _upload.refresh_from_db()
@@ -234,7 +236,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                                 else:
                                     # GeoNode Layer updating...
                                     _upload.set_processing_state(enumerations.STATE_RUNNING)
-                    elif _upload.resource and _upload.resource.processed:
+                    elif _upload.resource.processed:
                         _upload.set_processing_state(enumerations.STATE_PROCESSED)
                 logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
         except (NotFound, Exception) as e:
