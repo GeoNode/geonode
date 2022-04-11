@@ -278,162 +278,152 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
               time_presentation_default_value=None,
               time_presentation_reference_value=None,
               charset_encoding="UTF-8", target_store=None):
-    lock_id = 'upload-workflow-save_step'
-    with AcquireLock(lock_id, blocking=True) as lock:
-        if lock.acquire() is True:
-            try:
-                logger.debug(
-                    f'Uploading layer: {layer}, files {spatial_files}')
-                if len(spatial_files) > 1:
-                    # we only support more than one file if they're rasters for mosaicing
-                    if not all(
-                            [f.file_type.dataset_type == 'coverage' for f in spatial_files]):
-                        msg = "Please upload only one type of file at a time"
-                        logger.exception(Exception(msg))
-                        raise GeneralUploadException(detail=msg)
-                name = get_valid_dataset_name(layer, overwrite)
-                logger.debug(f'Name for layer: {name}')
-                if not any(spatial_files.all_files()):
-                    msg = "Unable to recognize the uploaded file(s)"
-                    logger.exception(Exception(msg))
-                    raise GeneralUploadException(detail=msg)
-                the_dataset_type = get_dataset_type(spatial_files)
-                _check_geoserver_store(name, the_dataset_type, overwrite)
-                if the_dataset_type not in (
-                        FeatureType.resource_type,
-                        Coverage.resource_type):
-                    msg = f"Expected layer type to FeatureType or Coverage, not {the_dataset_type}"
-                    logger.exception(Exception(msg))
-                    raise GeneralUploadException(msg)
-                files_to_upload = preprocess_files(spatial_files)
-                logger.debug(f"files_to_upload: {files_to_upload}")
-                logger.debug(f'Uploading {the_dataset_type}')
-                error_msg = None
-                try:
-                    upload = Upload.objects.filter(
-                        user=user,
-                        name=name,
-                        state=enumerations.STATE_READY,
-                        upload_dir=spatial_files.dirname
-                    ).first()
-                    if upload:
-                        import_session = upload.get_session.import_session
-                    else:
-                        next_id = _get_next_id()
-                        # Truncate name to maximum length defined by the field.
-                        max_length = Upload._meta.get_field('name').max_length
-                        name = name[:max_length]
-                        # save record of this whether valid or not - will help w/ debugging
-                        upload, _ = Upload.objects.get_or_create(
-                            user=user,
-                            name=name,
-                            state=enumerations.STATE_READY,
-                            upload_dir=spatial_files.dirname
-                        )
-                        upload.store_spatial_files = store_spatial_files
-
-                        # @todo settings for use_url or auto detection if geoserver is
-                        # on same host
-
-                        # Is it a regular file or an ImageMosaic?
-                        # if mosaic_time_regex and mosaic_time_value:
-                        if mosaic:  # we want to ingest as ImageMosaic
-                            target_store, files_to_upload = utils.import_imagemosaic_granules(
-                                spatial_files,
-                                append_to_mosaic_opts,
-                                append_to_mosaic_name,
-                                mosaic_time_regex,
-                                mosaic_time_value,
-                                time_presentation,
-                                time_presentation_res,
-                                time_presentation_default_value,
-                                time_presentation_reference_value)
-                            upload.mosaic = mosaic
-                            upload.append_to_mosaic_opts = append_to_mosaic_opts
-                            upload.append_to_mosaic_name = append_to_mosaic_name
-                            upload.mosaic_time_regex = mosaic_time_regex
-                            upload.mosaic_time_value = mosaic_time_value
-                            # moving forward with a regular Importer session
-                            if len(files_to_upload) > 1:
-                                import_session = gs_uploader.upload_files(
-                                    files_to_upload[1:],
-                                    use_url=False,
-                                    # import_id=next_id,
-                                    target_store=target_store,
-                                    charset_encoding=charset_encoding
-                                )
-                            else:
-                                import_session = gs_uploader.upload_files(
-                                    files_to_upload,
-                                    use_url=False,
-                                    # import_id=next_id,
-                                    target_store=target_store,
-                                    charset_encoding=charset_encoding
-                                )
-                            next_id = import_session.id if import_session else None
-                            if not next_id:
-                                error_msg = 'No valid Importer Session could be found'
-                        else:
-                            # moving forward with a regular Importer session
-                            import_session = gs_uploader.upload_files(
-                                files_to_upload,
-                                use_url=False,
-                                import_id=next_id,
-                                mosaic=False,
-                                target_store=target_store,
-                                name=name,
-                                charset_encoding=charset_encoding
-                            )
-                        upload.import_id = import_session.id
-                        upload.save()
-
-                    # any unrecognized tasks/files must be deleted or we can't proceed
-                    import_session.delete_unrecognized_tasks()
-
-                    if not mosaic:
-                        if not import_session.tasks:
-                            error_msg = 'No valid upload files could be found'
-                    if import_session.tasks:
-                        if import_session.tasks[0].state == 'NO_FORMAT' \
-                                or import_session.tasks[0].state == 'BAD_FORMAT':
-                            error_msg = 'There may be a problem with the data provided - ' \
-                                        'we could not identify its format'
-
-                    if not mosaic and len(import_session.tasks) > 1:
-                        error_msg = "Only a single upload is supported at the moment"
-
-                    if not error_msg and import_session.tasks:
-                        task = import_session.tasks[0]
-                        # single file tasks will have just a file entry
-                        if hasattr(task, 'files'):
-                            # @todo gsimporter - test this
-                            if not all([hasattr(f, 'timestamp')
-                                        for f in task.source.files]):
-                                error_msg = (
-                                    "Not all timestamps could be recognized."
-                                    "Please ensure your files contain the correct formats.")
-
-                    if error_msg:
-                        upload.set_processing_state(enumerations.STATE_INVALID)
-
-                    # @todo once the random tmp9723481758915 type of name is not
-                    # around, need to track the name computed above, for now, the
-                    # target store name can be used
-                except Exception as e:
-                    logger.exception(e)
-                    raise e
-
-                if error_msg:
-                    logger.exception(Exception(error_msg))
-                    raise GeneralUploadException(detail=error_msg)
-                else:
-                    _log("Finished upload of [%s] to GeoServer without errors.", name)
-            finally:
-                lock.release()
+    logger.debug(
+        f'Uploading layer: {layer}, files {spatial_files}')
+    if len(spatial_files) > 1:
+        # we only support more than one file if they're rasters for mosaicing
+        if not all(
+                [f.file_type.dataset_type == 'coverage' for f in spatial_files]):
+            msg = "Please upload only one type of file at a time"
+            logger.exception(Exception(msg))
+            raise GeneralUploadException(detail=msg)
+    name = get_valid_dataset_name(layer, overwrite)
+    logger.debug(f'Name for layer: {name}')
+    if not any(spatial_files.all_files()):
+        msg = "Unable to recognize the uploaded file(s)"
+        logger.exception(Exception(msg))
+        raise GeneralUploadException(detail=msg)
+    the_dataset_type = get_dataset_type(spatial_files)
+    _check_geoserver_store(name, the_dataset_type, overwrite)
+    if the_dataset_type not in (
+            FeatureType.resource_type,
+            Coverage.resource_type):
+        msg = f"Expected layer type to FeatureType or Coverage, not {the_dataset_type}"
+        logger.exception(Exception(msg))
+        raise GeneralUploadException(msg)
+    files_to_upload = preprocess_files(spatial_files)
+    logger.debug(f"files_to_upload: {files_to_upload}")
+    logger.debug(f'Uploading {the_dataset_type}')
+    error_msg = None
+    try:
+        upload = Upload.objects.filter(
+            user=user,
+            name=name,
+            state=enumerations.STATE_READY,
+            upload_dir=spatial_files.dirname
+        ).first()
+        if upload:
+            import_session = upload.get_session.import_session
         else:
-            _log(f" - final_step - COULD NOT lock_id: {lock_id}")
-            return None, None
+            next_id = _get_next_id()
+            # Truncate name to maximum length defined by the field.
+            max_length = Upload._meta.get_field('name').max_length
+            name = name[:max_length]
+            # save record of this whether valid or not - will help w/ debugging
+            upload, _ = Upload.objects.get_or_create(
+                user=user,
+                name=name,
+                state=enumerations.STATE_READY,
+                upload_dir=spatial_files.dirname
+            )
+            upload.store_spatial_files = store_spatial_files
 
+            # @todo settings for use_url or auto detection if geoserver is
+            # on same host
+
+            # Is it a regular file or an ImageMosaic?
+            # if mosaic_time_regex and mosaic_time_value:
+            if mosaic:  # we want to ingest as ImageMosaic
+                target_store, files_to_upload = utils.import_imagemosaic_granules(
+                    spatial_files,
+                    append_to_mosaic_opts,
+                    append_to_mosaic_name,
+                    mosaic_time_regex,
+                    mosaic_time_value,
+                    time_presentation,
+                    time_presentation_res,
+                    time_presentation_default_value,
+                    time_presentation_reference_value)
+                upload.mosaic = mosaic
+                upload.append_to_mosaic_opts = append_to_mosaic_opts
+                upload.append_to_mosaic_name = append_to_mosaic_name
+                upload.mosaic_time_regex = mosaic_time_regex
+                upload.mosaic_time_value = mosaic_time_value
+                # moving forward with a regular Importer session
+                if len(files_to_upload) > 1:
+                    import_session = gs_uploader.upload_files(
+                        files_to_upload[1:],
+                        use_url=False,
+                        # import_id=next_id,
+                        target_store=target_store,
+                        charset_encoding=charset_encoding
+                    )
+                else:
+                    import_session = gs_uploader.upload_files(
+                        files_to_upload,
+                        use_url=False,
+                        # import_id=next_id,
+                        target_store=target_store,
+                        charset_encoding=charset_encoding
+                    )
+                next_id = import_session.id if import_session else None
+                if not next_id:
+                    error_msg = 'No valid Importer Session could be found'
+            else:
+                # moving forward with a regular Importer session
+                import_session = gs_uploader.upload_files(
+                    files_to_upload,
+                    use_url=False,
+                    import_id=next_id,
+                    mosaic=False,
+                    target_store=target_store,
+                    name=name,
+                    charset_encoding=charset_encoding
+                )
+            upload.import_id = import_session.id
+            upload.save()
+
+        # any unrecognized tasks/files must be deleted or we can't proceed
+        import_session.delete_unrecognized_tasks()
+
+        if not mosaic:
+            if not import_session.tasks:
+                error_msg = 'No valid upload files could be found'
+        if import_session.tasks:
+            if import_session.tasks[0].state == 'NO_FORMAT' \
+                    or import_session.tasks[0].state == 'BAD_FORMAT':
+                error_msg = 'There may be a problem with the data provided - ' \
+                            'we could not identify its format'
+
+        if not mosaic and len(import_session.tasks) > 1:
+            error_msg = "Only a single upload is supported at the moment"
+
+        if not error_msg and import_session.tasks:
+            task = import_session.tasks[0]
+            # single file tasks will have just a file entry
+            if hasattr(task, 'files'):
+                # @todo gsimporter - test this
+                if not all([hasattr(f, 'timestamp')
+                            for f in task.source.files]):
+                    error_msg = (
+                        "Not all timestamps could be recognized."
+                        "Please ensure your files contain the correct formats.")
+
+        if error_msg:
+            upload.set_processing_state(enumerations.STATE_INVALID)
+
+        # @todo once the random tmp9723481758915 type of name is not
+        # around, need to track the name computed above, for now, the
+        # target store name can be used
+    except Exception as e:
+        logger.exception(e)
+        raise e
+
+    if error_msg:
+        logger.exception(Exception(error_msg))
+        raise GeneralUploadException(detail=error_msg)
+    else:
+        _log("Finished upload of [%s] to GeoServer without errors.", name)
     return import_session, upload
 
 
@@ -597,18 +587,15 @@ def srs_step(upload_session, source, target):
 
 def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     import_session = upload_session.import_session
-    import_id = import_session.id
-
-    saved_dataset = None
-
-    lock_id = f'{upload_session.name}-{import_session.id}'
-    _log(f" - final_step - lock_id: {lock_id}")
-    with AcquireLock(lock_id, blocking=True) as lock:
-        if lock.acquire() is True:
-            try:
+    if import_session:
+        import_id = import_session.id
+        saved_dataset = None
+        lock_id = f'final_step-{import_id}'
+        with AcquireLock(lock_id) as lock:
+            if lock.acquire() is True:
                 _log(f'Reloading session {import_id} to check validity')
                 try:
-                    import_session = import_session.reload()
+                    import_session = gs_uploader.get_session(import_id)
                 except gsimporter.api.NotFound as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
@@ -640,19 +627,31 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     raise LayerNotReady(
                         _(f"Expected to find layer named '{name}' in geoserver"))
 
-                if import_session.state == 'READY' or (import_session.state == 'PENDING' and task.state == 'READY'):
+                _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
+                _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
+
+                if not _tasks_failed and not _tasks_waiting and (import_session.state == 'READY' or (import_session.state == 'PENDING' and task.state == 'READY')):
                     import_session.commit()
-                elif import_session.state == 'INCOMPLETE' and task.state != 'ERROR':
+                elif _tasks_failed or (import_session.state == 'INCOMPLETE' and task.state != 'ERROR'):
                     Upload.objects.invalidate_from_session(upload_session)
                     raise Exception(f'unknown item state: {task.state}')
                 try:
-                    import_session = import_session.reload()
+                    import_session = gs_uploader.get_session(import_id)
                 except gsimporter.api.NotFound as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
                 upload_session.import_session = import_session
                 Upload.objects.update_from_session(upload_session)
+
+                _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
+                _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
+
+                if _tasks_failed:
+                    Upload.objects.invalidate_from_session(upload_session)
+                    raise Exception('Import Session failed.')
+                if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting:
+                    return None
 
                 _log(f'Creating Django record for [{name}]')
                 target = task.target
@@ -830,6 +829,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     saved_dataset.set_dirty_state()
 
                     # Finalize the upload...
+                    logger.error(f" ------------------------------------------------------------------> {import_session.id} / {import_session.state} / {saved_dataset}")
                     with transaction.atomic():
                         # Set default permissions on the newly created layer and send notifications
                         permissions = upload_session.permissions
@@ -851,10 +851,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset.get_self_resource())]
                 except Exception as e:
                     raise GeoNodeException(e)
-            finally:
-                lock.release()
-        else:
-            _log(f" - final_step - COULD NOT lock_id: {lock_id}")
-            return None
 
-    return saved_dataset
+                return saved_dataset
+    return None

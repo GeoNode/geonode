@@ -304,7 +304,7 @@ def next_step_response(req, upload_session, force_ajax=True):
             }
         )
 
-    if next == 'check':
+    if next == 'check' and import_session.tasks:
         store_type = import_session.tasks[0].target.store_type
         if store_type == 'coverageStore' or _force_ajax:
             # @TODO we skip time steps for coverages currently
@@ -322,7 +322,7 @@ def next_step_response(req, upload_session, force_ajax=True):
                 }
             )
 
-    if next == 'time':
+    if next == 'time' and import_session.tasks:
         store_type = import_session.tasks[0].target.store_type
         layer = import_session.tasks[0].layer
         (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(
@@ -391,7 +391,7 @@ def next_step_response(req, upload_session, force_ajax=True):
 
     # @todo this is not handled cleanly - run is not a real step in that it
     # has no corresponding view served by the 'view' function.
-    if next == 'run':
+    if next == 'run' and import_session.tasks:
         upload_session.completed_step = next
         if (_ASYNC_UPLOAD and not req) or (req and req.is_ajax()):
             return run_response(req, upload_session)
@@ -582,45 +582,47 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
     # run_import can raise an exception which callers should handle
     import_session = upload_session.import_session
     import_session = gs_uploader.get_session(import_session.id)
-    task = import_session.tasks[0]
-    import_execution_requested = False
-    if import_session.state == 'INCOMPLETE':
-        if task.state != 'ERROR':
-            raise Exception(_(f'unknown item state: {task.state}'))
-    elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
-        if task.state == 'READY':
+    if import_session.tasks:
+        task = import_session.tasks[0]
+        import_execution_requested = False
+        if import_session.state == 'INCOMPLETE':
+            if task.state != 'ERROR':
+                raise Exception(_(f'unknown item state: {task.state}'))
+        elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
+            if task.state == 'READY':
+                import_session.commit(async_upload)
+                import_execution_requested = True
+            if task.state == 'ERROR':
+                progress = task.get_progress()
+                raise Exception(_(f"error during import: {progress.get('message')}"))
+
+        # if a target datastore is configured, ensure the datastore exists
+        # in geoserver and set the uploader target appropriately
+        if ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
+            target = create_geoserver_db_featurestore(
+                # store_name=ogc_server_settings.DATASTORE,
+                store_name=ogc_server_settings.datastore_db['NAME'],
+                workspace=settings.DEFAULT_WORKSPACE
+            )
+            _log(
+                f'setting target datastore {target.name} {target.workspace.name}')
+            task.set_target(target.name, target.workspace.name)
+        else:
+            target = task.target
+
+        if upload_session.update_mode:
+            _log(f'setting updateMode to {upload_session.update_mode}')
+            task.set_update_mode(upload_session.update_mode)
+
+        _log('running import session')
+        # run async if using a database
+        if not import_execution_requested:
             import_session.commit(async_upload)
-            import_execution_requested = True
-        if task.state == 'ERROR':
-            progress = task.get_progress()
-            raise Exception(_(f"error during import: {progress.get('message')}"))
 
-    # if a target datastore is configured, ensure the datastore exists
-    # in geoserver and set the uploader target appropriately
-    if ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
-        target = create_geoserver_db_featurestore(
-            # store_name=ogc_server_settings.DATASTORE,
-            store_name=ogc_server_settings.datastore_db['NAME'],
-            workspace=settings.DEFAULT_WORKSPACE
-        )
-        _log(
-            f'setting target datastore {target.name} {target.workspace.name}')
-        task.set_target(target.name, target.workspace.name)
-    else:
-        target = task.target
-
-    if upload_session.update_mode:
-        _log(f'setting updateMode to {upload_session.update_mode}')
-        task.set_update_mode(upload_session.update_mode)
-
-    _log('running import session')
-    # run async if using a database
-    if not import_execution_requested:
-        import_session.commit(async_upload)
-
-    # @todo check status of import session - it may fail, but due to protocol,
-    # this will not be reported during the commit
-    return target
+        # @todo check status of import session - it may fail, but due to protocol,
+        # this will not be reported during the commit
+        return target
+    return None
 
 
 def progress_redirect(step, upload_id):

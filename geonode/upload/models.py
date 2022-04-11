@@ -219,7 +219,7 @@ class Upload(models.Model):
             if not session or session.state != enumerations.STATE_COMPLETE:
                 session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
-            if self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+            if not session and self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
                 self.set_processing_state(enumerations.STATE_INVALID)
         if session and self.state != enumerations.STATE_INVALID:
             return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
