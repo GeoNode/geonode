@@ -743,59 +743,62 @@ def view(req, step=None):
                     step)
                 upload_session.completed_step = _completed_step
             except Exception as e:
-                logger.warning(e)
+                logger.exception(e)
                 return error_response(req, errors=e.args)
 
         resp = _steps[step](req, upload_session)
         resp_js = None
-        content = resp.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        try:
-            resp_js = json.loads(content)
-        except json.decoder.JSONDecodeError:
-            resp_js = content
-        except Exception as e:
-            return error_response(req, exception=e)
+        if resp:
+            content = resp.content
+            if isinstance(content, bytes):
+                content = content.decode('UTF-8')
+            try:
+                resp_js = json.loads(content)
+            except json.decoder.JSONDecodeError:
+                resp_js = content
+            except Exception as e:
+                logger.exception(e)
+                return error_response(req, exception=e)
 
-        # must be put back to update object in session
-        if upload_session:
-            if resp_js and step == 'final':
-                try:
-                    delete_session = resp_js.get('status') != 'pending'
-                    if delete_session:
-                        # we're done with this session, wax it
-                        upload_session = None
-                        del req.session[upload_id]
-                        req.session.modified = True
-                except Exception:
-                    pass
-        else:
-            upload_session = _get_upload_session(req)
-        if upload_session:
-            Upload.objects.update_from_session(upload_session)
-        if resp_js and isinstance(resp_js, dict):
-            _success = resp_js.get('success', False)
-            _redirect_to = resp_js.get('redirect_to', '')
-            _required_input = resp_js.get('required_input', False)
-            if _success and (_required_input or 'upload/final' in _redirect_to):
-                from geonode.upload.tasks import finalize_incomplete_session_uploads
-                finalize_incomplete_session_uploads.apply_async()
+            # must be put back to update object in session
+            if upload_session:
+                if resp_js and step == 'final':
+                    try:
+                        delete_session = resp_js.get('status') != 'pending'
+                        if delete_session:
+                            # we're done with this session, wax it
+                            upload_session = None
+                            del req.session[upload_id]
+                            req.session.modified = True
+                    except Exception:
+                        pass
+            else:
+                upload_session = _get_upload_session(req)
+            if upload_session:
+                Upload.objects.update_from_session(upload_session)
+            if resp_js and isinstance(resp_js, dict):
+                _success = resp_js.get('success', False)
+                _redirect_to = resp_js.get('redirect_to', '')
+                _required_input = resp_js.get('required_input', False)
+                if _success and (_required_input or 'upload/final' in _redirect_to):
+                    from geonode.upload.tasks import finalize_incomplete_session_uploads
+                    finalize_incomplete_session_uploads.apply_async()
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')
         return error_response(req, errors=[_geoserver_down_error_msg])
     except gsimporter.RequestFailed as e:
-        logger.exception('request failed')
+        logger.exception(e)
         errors = e.args
         # http bad gateway or service unavailable
         if int(errors[0]) in (502, 503):
             errors = [_geoserver_down_error_msg]
         return error_response(req, errors=errors)
     except gsimporter.BadRequest as e:
-        logger.exception('bad request')
+        logger.exception(e)
         return error_response(req, errors=e.args)
     except Exception as e:
+        logger.exception(e)
         return error_response(req, exception=e)
 
 

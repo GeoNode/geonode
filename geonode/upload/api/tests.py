@@ -587,8 +587,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
         resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data['status'], 'incomplete')
-        self.assertTrue(data['success'])
 
         url = reverse('uploads-list')
         # Admin
@@ -627,8 +625,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         fname = os.path.join(BAD_DATA, 'points_epsg2249_no_prj.shp')
         resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data['status'], 'incomplete')
-        self.assertTrue(data['success'])
 
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
@@ -676,10 +672,10 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(upload_data['state'], state, upload_data['state'])
 
         # Vector
-        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.STATE_COMPLETE)
+        assert_processed_or_failed(3, 0, 'san_andres_y_providencia_coastline', Upload.STATE_PROCESSED)
 
         # Raster
-        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.STATE_COMPLETE)
+        assert_processed_or_failed(3, 1, 'relief_san_andres', Upload.STATE_PROCESSED)
 
         # Unsupported
         assert_processed_or_failed(3, 2, 'points_epsg2249_no_prj', Upload.STATE_WAITING)

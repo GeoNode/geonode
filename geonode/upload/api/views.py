@@ -89,27 +89,32 @@ class UploadViewSet(DynamicModelViewSet):
             content = response.content
             if isinstance(content, bytes):
                 content = content.decode('UTF-8')
-            data = json.loads(content)
+            try:
+                data = json.loads(content)
+            except json.decoder.JSONDecodeError:
+                data = content
 
-            required_input = data.get('required_input', None)
-            response_status = data.get('status', '')
-            response_success = data.get('success', False)
-            redirect_to = data.get('redirect_to', '')
-            if required_input or not response_success or not redirect_to or response_status == 'finished':
-                return response, None, True
+            next_step = None
+            if isinstance(data, dict):
+                response_status = data.get('status', '')
+                response_success = data.get('success', False)
+                redirect_to = data.get('redirect_to', '')
+                if not response_success or not redirect_to or response_status == 'finished':
+                    return response, None, True
 
-            # Prepare next step
-            parsed_redirect_to = urlparse(redirect_to)
-            if reverse("data_upload") not in parsed_redirect_to.path:
-                # Error, next step cannot be performed by `upload_view`
-                return response, None, True
-            next_step = parsed_redirect_to.path.split(reverse("data_upload"))[1]
-            query_params = parse_qsl(parsed_redirect_to.query)
-            request.method = 'GET'
-            request.GET.clear()
-            for key, value in query_params:
-                request.GET[key] = value
-            return response, next_step, False
+                # Prepare next step
+                parsed_redirect_to = urlparse(redirect_to)
+                if reverse("data_upload") not in parsed_redirect_to.path:
+                    # Error, next step cannot be performed by `upload_view`
+                    return response, None, True
+                next_step = parsed_redirect_to.path.split(reverse("data_upload"))[1]
+                query_params = parse_qsl(parsed_redirect_to.query)
+                request.method = 'GET'
+                request.GET.clear()
+                for key, value in query_params:
+                    request.GET[key] = value
+            if next_step:
+                return response, next_step, False
         elif response.status_code == status.HTTP_302_FOUND:
             # Get next step, should be final
             parsed_redirect_to = urlparse(response.url)
@@ -118,8 +123,8 @@ class UploadViewSet(DynamicModelViewSet):
                 return response, None, True
             next_step = parsed_redirect_to.path.split(reverse("data_upload"))[1]
             return response, next_step, False
-        else:
-            return response, None, True
+        # Error, next step cannot be performed by `upload_view`
+        return response, None, True
 
     @extend_schema(methods=['post'],
                    responses={201: None},
