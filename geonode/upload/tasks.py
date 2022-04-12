@@ -85,7 +85,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     upload_workflow.apply_async()
 
     # Let's finish the valid ones
-    for _upload in Upload.objects.exclude(state__in=[Upload.STATE_PROCESSED]).exclude(id__in=_upload_ids_expired):
+    for _upload in Upload.objects.exclude(state__in=[Upload.STATE_PROCESSED, Upload.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
         session = None
         try:
             if not _upload.import_id:
@@ -105,18 +105,24 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                 )
             )
         elif _upload.state not in (Upload.STATE_READY, Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
-            if session.state == Upload.STATE_COMPLETE and _upload.layer and _upload.layer.processed:
+            if session and session.state == Upload.STATE_COMPLETE and _upload.layer and _upload.layer.processed:
                 _upload.set_processing_state(Upload.STATE_PROCESSED)
 
-    upload_workflow_finalizer = _upload_workflow_finalizer.signature(
-        args=('_update_upload_session_state', _upload_ids,),
-        immutable=True
-    ).on_error(
+    if session and any([_task.state in ["ERROR"] for _task in session.tasks]):
         _upload_workflow_error.signature(
-            args=('_update_upload_session_state', _upload_ids,),
+            args=('_upload_workflow_error', _upload_ids,),
             immutable=True
         )
-    )
+    else:
+        upload_workflow_finalizer = _upload_workflow_finalizer.signature(
+            args=('_update_upload_session_state', _upload_ids,),
+            immutable=True
+        ).on_error(
+            _upload_workflow_error.signature(
+                args=('_update_upload_session_state', _upload_ids,),
+                immutable=True
+            )
+        )
 
     upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
     result = upload_workflow.apply_async()
@@ -135,7 +141,8 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
 def _upload_workflow_finalizer(self, task_name: str, upload_ids: list):
     """Task invoked at 'upload_workflow.chord' end in the case everything went well.
     """
-    logger.info(f"Task {task_name} upload ids: {upload_ids} finished successfully!")
+    if upload_ids:
+        logger.info(f"Task {task_name} upload ids: {upload_ids} finished successfully!")
 
 
 @app.task(
@@ -180,23 +187,28 @@ def _update_upload_session_state(self, upload_session_id: int):
                     _success = _response_json.get('success', False)
                     _redirect_to = _response_json.get('redirect_to', '')
 
+                    _tasks_ready = any([_task.state in ["READY"] for _task in session.tasks])
                     _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
                     _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
-                    if not _tasks_waiting:
-                        _tasks_waiting = (session.state == Upload.STATE_PENDING and any([_task.state in ["READY"] for _task in session.tasks]))
 
                     if _success:
                         if _tasks_failed:
                             # GeoNode Layer creation errored!
                             _upload.set_processing_state(Upload.STATE_INVALID)
-                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
+                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and (_tasks_waiting or _tasks_ready):
                             _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(Upload.STATE_WAITING)
-                        elif session.state in (Upload.STATE_PENDING, Upload.STATE_RUNNING) and not _tasks_waiting:
-                            # GeoNode Layer updating...
-                            _upload.set_processing_state(Upload.STATE_RUNNING)
-                        elif session.state == Upload.STATE_COMPLETE and _upload.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING, Upload.STATE_PENDING) and not _tasks_waiting:
-                            if not _upload.layer or _upload.state == Upload.STATE_RUNNING:
+                        elif session.state in (Upload.STATE_PENDING, Upload.STATE_RUNNING) and not (_tasks_waiting or _tasks_ready):
+                            if _upload.layer and not _upload.layer.processed:
+                                # GeoNode Layer updating...
+                                _upload.set_processing_state(Upload.STATE_RUNNING)
+                            elif session.state == Upload.STATE_RUNNING and _upload.layer and _upload.layer.processed:
+                                # GeoNode Layer successfully processed...
+                                _upload.set_processing_state(Upload.STATE_PROCESSED)
+                        elif (session.state == Upload.STATE_COMPLETE and _upload.state in (
+                            Upload.STATE_COMPLETE, Upload.STATE_RUNNING, Upload.STATE_PENDING) and not _tasks_waiting) or (
+                                    session.state == Upload.STATE_PENDING and _tasks_ready):
+                            if not _upload.layer:
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
                                     _upload.refresh_from_db()
@@ -216,7 +228,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                                         else:
                                             # GeoNode Layer updating...
                                             _upload.set_processing_state(Upload.STATE_RUNNING)
-                            elif _upload.layer.processed:
+                            elif _upload.layer and _upload.layer.processed:
                                 _upload.set_processing_state(Upload.STATE_PROCESSED)
                         logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
                 except (NotFound, Exception) as e:

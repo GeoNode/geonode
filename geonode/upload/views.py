@@ -101,8 +101,9 @@ from .upload import (
 logger = logging.getLogger(__name__)
 
 
-def _log(msg, *args):
-    logger.debug(msg, *args)
+def _log(msg, *args, level='error'):
+    # this logger is used also for debug purpose with error level
+    getattr(logger, level)(msg, *args)
 
 
 def _get_upload_session(req):
@@ -534,7 +535,7 @@ def time_step_view(request, upload_session):
 
     form = create_time_form(request, upload_session, request.POST)
     if not form.is_valid():
-        logger.warning('Invalid upload form: %s', form.errors)
+        logger.exception('Invalid upload form: %s', form.errors)
         return error_response(request, errors=["Invalid Submission"])
 
     cleaned = form.cleaned_data
@@ -639,7 +640,8 @@ def final_step_view(req, upload_session):
                 )
                 register_event(req, EventType.EVENT_UPLOAD, saved_layer)
                 return _json_response
-            except (LayerNotReady, AssertionError):
+            except (LayerNotReady, AssertionError) as e:
+                logger.exception(e)
                 force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response(
                     {

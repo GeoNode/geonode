@@ -185,12 +185,16 @@ class Upload(models.Model):
                                 _f,
                                 assigned_name)
 
-        if "COMPLETE" == self.state:
-            self.complete = True
-        if self.layer and self.layer.processed:
-            self.state = Upload.STATE_RUNNING
+        if self.layer:
+            if self.layer.processed:
+                self.state = Upload.STATE_PROCESSED
+            else:
+                self.state = Upload.STATE_RUNNING
         elif self.state in (Upload.STATE_READY, Upload.STATE_PENDING):
             self.state = upload_session.import_session.state
+            if self.state == Upload.STATE_COMPLETE:
+                self.complete = True
+
         self.save()
 
     @property
@@ -235,7 +239,7 @@ class Upload(models.Model):
             if not session or session.state != Upload.STATE_COMPLETE:
                 session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
-            if self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
+            if not session and self.state not in (Upload.STATE_COMPLETE, Upload.STATE_PROCESSED):
                 self.set_processing_state(Upload.STATE_INVALID)
         if session and self.state != Upload.STATE_INVALID:
             return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"

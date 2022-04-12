@@ -76,8 +76,9 @@ from .upload_preprocessing import preprocess_files
 logger = logging.getLogger(__name__)
 
 
-def _log(msg, *args):
-    logger.debug(msg, *args)
+def _log(msg, *args, level='error'):
+    # this logger is used also for debug purpose with error level
+    getattr(logger, level)(msg, *args)
 
 
 class UploaderSession:
@@ -187,7 +188,7 @@ def upload(
         user = get_default_user()
     if isinstance(user, str):
         user = get_user_model().objects.get(username=user)
-    import_session = save_step(
+    import_session, upload = save_step(
         user,
         name,
         base_file,
@@ -426,6 +427,10 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                     or import_session.tasks[0].state == 'BAD_FORMAT':
                 error_msg = 'There may be a problem with the data provided - ' \
                             'we could not identify its format'
+            elif import_session.tasks[0].state == 'ERROR':
+                task = import_session.tasks[0]
+                error_msg = "Unexpected error durng the GeoServer upload" \
+                    "please check GeoServer logs for more information"
 
         if not mosaic and len(import_session.tasks) > 1:
             error_msg = "Only a single upload is supported at the moment"
@@ -455,7 +460,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
         logger.exception(Exception(error_msg))
         raise UploadException(error_msg)
     else:
-        _log("Finished upload of [%s] to GeoServer without errors.", name)
+        _log("The File [%s] has been sent to GeoServer without errors.", name, level="debug")
     return import_session, upload
 
 
@@ -628,6 +633,13 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         lock_id = f'final_step-{import_id}'
         with AcquireLock(lock_id) as lock:
             if lock.acquire() is True:
+                try:
+                    Upload.objects.get(import_id=import_id)
+                except Exception as e:
+                    logger.exception(e)
+                    Upload.objects.invalidate_from_session(upload_session)
+                    raise UploadException.from_exc(
+                        _("The Upload Session is no more available"), e)
                 _log(f'Reloading session {import_id} to check validity')
                 try:
                     import_session = gs_uploader.get_session(import_id)

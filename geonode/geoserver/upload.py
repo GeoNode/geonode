@@ -142,7 +142,11 @@ def geoserver_upload(
         logger.warn(msg)
         e.args = (msg,)
         raise
-    logger.debug(f'Finished upload of {name} to GeoServer without errors.')
+    except Exception as e:
+        logger.error("Error during the creation of the resource in GeoServer", exc_info=e)
+        raise e
+
+    logger.debug(f'The File {name} has been sent to GeoServer without errors.')
 
     # Step 5. Create the resource in GeoServer
     logger.debug(f'>>> Step 5. Generating the metadata for {name} after successful import to GeoSever')
