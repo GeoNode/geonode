@@ -29,6 +29,7 @@ from datetime import datetime, timedelta
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
+from django.db.utils import IntegrityError
 from django.contrib.gis.geos import Polygon
 from django.core.serializers import serialize
 from django.contrib.auth import get_user_model
@@ -246,32 +247,35 @@ def create_models(type=None, integration=False):
                     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ld
                     end = start + timedelta(days=365)
                     logger.debug(f"[SetUp] Add dataset {title}")
-                    dataset, _ = Dataset.objects.get_or_create(
-                        alternate=alternate,
-                        defaults=dict(
-                            title=title,
-                            abstract=abstract,
-                            name=name,
-                            bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                            ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-                            srid='EPSG:4326',
-                            uuid=str(uuid4()),
-                            owner=user,
-                            temporal_extent_start=start,
-                            temporal_extent_end=end,
-                            date=start,
-                            subtype=subtype,
-                            category=category,
-                            metadata_only=title == 'dataset metadata true'
+                    try:
+                        dataset, _ = Dataset.objects.get_or_create(
+                            alternate=alternate,
+                            defaults=dict(
+                                title=title,
+                                abstract=abstract,
+                                name=name,
+                                bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                                ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                                srid='EPSG:4326',
+                                uuid=str(uuid4()),
+                                owner=user,
+                                temporal_extent_start=start,
+                                temporal_extent_end=end,
+                                date=start,
+                                subtype=subtype,
+                                category=category,
+                                metadata_only=title == 'dataset metadata true'
+                            )
                         )
-                    )
-                    dataset.set_default_permissions(owner=user)
-                    dataset.clear_dirty_state()
-                    dataset.set_processing_state(enumerations.STATE_PROCESSED)
-                    obj_ids.append(dataset.id)
-                    for kw in kws:
-                        dataset.keywords.add(kw)
-                        dataset.save()
+                        dataset.set_default_permissions(owner=user)
+                        dataset.clear_dirty_state()
+                        dataset.set_processing_state(enumerations.STATE_PROCESSED)
+                        obj_ids.append(dataset.id)
+                        for kw in kws:
+                            dataset.keywords.add(kw)
+                            dataset.save()
+                    except IntegrityError:
+                        pass
     return obj_ids
 
 
@@ -335,35 +339,38 @@ def create_single_dataset(name, keywords=None, owner=None, group=None, **kwargs)
     ll = (name, 'lorem ipsum', name, f'geonode:{name}', [
         0, 22, 0, 22], test_datetime, ('populartag',), "farming")
     title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws, category = ll
-    dataset, _ = Dataset.objects.get_or_create(
-        alternate=alternate,
-        defaults=dict(
-            title=title,
-            abstract=abstract,
-            name=name,
-            bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-            ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
-            srid='EPSG:4326',
-            uuid=str(uuid4()),
-            owner=owner or admin,
-            temporal_extent_start=test_datetime,
-            temporal_extent_end=test_datetime,
-            date=start,
-            subtype="vector",
-            resource_type="dataset",
-            typename=f"geonode:{title}",
-            group=group,
-            **kwargs
+    try:
+        dataset, _ = Dataset.objects.get_or_create(
+            alternate=alternate,
+            defaults=dict(
+                title=title,
+                abstract=abstract,
+                name=name,
+                bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+                srid='EPSG:4326',
+                uuid=str(uuid4()),
+                owner=owner or admin,
+                temporal_extent_start=test_datetime,
+                temporal_extent_end=test_datetime,
+                date=start,
+                subtype="vector",
+                resource_type="dataset",
+                typename=f"geonode:{title}",
+                group=group,
+                **kwargs
+            )
         )
-    )
 
-    if isinstance(keywords, list):
-        dataset = add_keywords_to_resource(dataset, keywords)
+        if isinstance(keywords, list):
+            dataset = add_keywords_to_resource(dataset, keywords)
 
-    dataset.set_default_permissions(owner=owner or admin)
-    dataset.clear_dirty_state()
-    dataset.set_processing_state(enumerations.STATE_PROCESSED)
-    return dataset
+        dataset.set_default_permissions(owner=owner or admin)
+        dataset.clear_dirty_state()
+        dataset.set_processing_state(enumerations.STATE_PROCESSED)
+        return dataset
+    except IntegrityError:
+        return Dataset.objects.get(alternate=alternate)
 
 
 def create_single_map(name, owner=None, **kwargs):

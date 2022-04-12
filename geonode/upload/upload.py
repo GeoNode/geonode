@@ -649,7 +649,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 if _tasks_failed:
                     Upload.objects.invalidate_from_session(upload_session)
-                    _cause = Exception(import_session.tasks[0].errorMessage)
+                    _cause = Exception(getattr(import_session.tasks[0], 'error_message', 'Unkown'))
                     raise GeneralUploadException(detail=f'Import Session failed: {import_session.message}' + str(_cause))
                 if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting:
                     return None
