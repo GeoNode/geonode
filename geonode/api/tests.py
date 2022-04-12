@@ -688,7 +688,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(list_url, authentication=auth_header)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(8, resp.json()["meta"]["total_count"])
+        self.assertEqual(Dataset.objects.filter(metadata_only=False).count(), resp.json()["meta"]["total_count"])
 
     def test_the_api_should_return_all_datasets_with_metadata_true(self):
         list_url = reverse(
@@ -703,7 +703,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         url = f"{list_url}?metadata_only=True"
         resp = self.api_client.get(url, authentication=auth_header)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(1, resp.json()["meta"]["total_count"])
+        self.assertEqual(Dataset.objects.filter(metadata_only=True).count(), resp.json()["meta"]["total_count"])
 
     def test_the_api_should_return_all_documents_with_metadata_false(self):
         list_url = reverse(
@@ -714,7 +714,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 9)
+        self.assertEqual(Document.objects.filter(metadata_only=False).count(), resp.json()["meta"]["total_count"])
 
     def test_the_api_should_return_all_documents_with_metadata_true(self):
         list_url = reverse(
@@ -726,7 +726,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         url = f"{list_url}?metadata_only=True"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+        self.assertEqual(Document.objects.filter(metadata_only=True).count(), resp.json()["meta"]["total_count"])
 
     def test_the_api_should_return_all_maps_with_metadata_false(self):
         list_url = reverse(
@@ -737,7 +737,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         resp = self.api_client.get(list_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 9)
+        self.assertEqual(Map.objects.filter(metadata_only=False).count(), resp.json()["meta"]["total_count"])
 
     def test_the_api_should_return_all_maps_with_metadata_true(self):
         list_url = reverse(
@@ -749,7 +749,7 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         url = f"{list_url}?metadata_only=True"
         resp = self.api_client.get(url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(resp.json()["meta"]["total_count"], 1)
+        self.assertEqual(Map.objects.filter(metadata_only=True).count(), resp.json()["meta"]["total_count"])
 
     def test_api_will_return_a_valid_json_response(self):
         list_url = reverse(

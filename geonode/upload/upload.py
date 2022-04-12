@@ -273,6 +273,7 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
                             raise GeoNodeException(msg)
 
 
+@transaction.atomic
 def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=True,
               mosaic=False, append_to_mosaic_opts=None, append_to_mosaic_name=None,
               mosaic_time_regex=None, mosaic_time_value=None,
@@ -308,12 +309,9 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
     logger.debug(f'Uploading {the_dataset_type}')
     error_msg = None
     try:
-        upload = Upload.objects.filter(
-            user=user,
-            name=name,
-            state=enumerations.STATE_READY,
-            upload_dir=spatial_files.dirname
-        ).first()
+        upload = None
+        if Upload.objects.filter(user=user, name=name).exists():
+            upload = Upload.objects.filter(user=user, name=name).get()
         if upload:
             import_session = upload.get_session.import_session
         else:
@@ -322,7 +320,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
             max_length = Upload._meta.get_field('name').max_length
             name = name[:max_length]
             # save record of this whether valid or not - will help w/ debugging
-            upload, _ = Upload.objects.get_or_create(
+            upload = Upload.objects.create(
                 user=user,
                 name=name,
                 state=enumerations.STATE_READY,
@@ -619,7 +617,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
 
-                upload_session.import_session = import_session
+                upload_session.import_session = import_session.reload()
                 Upload.objects.update_from_session(upload_session)
 
                 # Create the style and assign it to the created resource
@@ -645,12 +643,14 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     raise LayerNotReady(
                         _(f"Expected to find layer named '{name}' in geoserver"))
 
+                _tasks_ready = any([_task.state in ["READY"] for _task in import_session.tasks])
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
-                if not _tasks_failed and not _tasks_waiting and (import_session.state == 'READY' or (import_session.state == 'PENDING' and task.state == 'READY')):
+                if not (_tasks_failed or _tasks_waiting) and import_session.state != enumerations.STATE_COMPLETE and (
+                        import_session.state == enumerations.STATE_READY or (import_session.state == enumerations.STATE_PENDING and _tasks_ready)):
                     import_session.commit()
-                elif _tasks_failed or (import_session.state == 'INCOMPLETE' and task.state != 'ERROR'):
+                elif _tasks_failed or (import_session.state == enumerations.STATE_INCOMPLETE and task.state != 'ERROR'):
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=f'Unknown Session task state: {task.state}')
                 try:
@@ -668,7 +668,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 if _tasks_failed:
                     Upload.objects.invalidate_from_session(upload_session)
                     _cause = Exception(getattr(import_session.tasks[0], 'error_message', 'Unkown'))
-                    raise GeneralUploadException(detail=f'Import Session failed: {import_session.message}' + str(_cause))
+                    raise GeneralUploadException(detail=f'Import Session failed: {import_id}' + str(_cause))
                 if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting:
                     return None
 

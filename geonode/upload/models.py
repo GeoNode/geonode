@@ -111,7 +111,7 @@ class Upload(models.Model):
     resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.SET_NULL)
     upload_dir = models.TextField(null=True)
     store_spatial_files = models.BooleanField(default=True)
-    name = models.CharField(max_length=64, null=True)
+    name = models.CharField(max_length=64, null=False, blank=False)
     complete = models.BooleanField(default=False)
     # hold our serialized session object
     session = models.TextField(null=True, blank=True)
@@ -132,6 +132,7 @@ class Upload(models.Model):
 
     class Meta:
         ordering = ['-date']
+        unique_together = ('user', 'name')
 
     @property
     def get_session(self):

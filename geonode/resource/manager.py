@@ -23,7 +23,7 @@ import typing
 import logging
 import importlib
 
-from uuid import uuid4
+from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
 
 from guardian.models import (
@@ -423,40 +423,44 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
+        _resource = None
         if instance:
             try:
-                _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
-                _owner = owner or instance.get_real_instance().owner
-                _perms = copy.copy(instance.get_real_instance().get_all_level_info())
-                _resource = copy.copy(instance.get_real_instance())
-                _resource.pk = _resource.id = None
-                _resource.uuid = uuid or str(uuid4())
-                _resource.save()
-                if isinstance(instance.get_real_instance(), Document):
-                    for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
-                        _resource_link = copy.copy(resource_link)
-                        _resource_link.pk = _resource_link.id = None
-                        _resource_link.document = _resource.get_real_instance()
-                        _resource_link.save()
-                if isinstance(instance.get_real_instance(), Dataset):
-                    for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
-                        _attribute = copy.copy(attribute)
-                        _attribute.pk = _attribute.id = None
-                        _attribute.dataset = _resource.get_real_instance()
-                        _attribute.save()
-                if isinstance(instance.get_real_instance(), Map):
-                    for maplayer in instance.get_real_instance().maplayers.iterator():
-                        _maplayer = copy.copy(maplayer)
-                        _maplayer.pk = _maplayer.id = None
-                        _maplayer.map = _resource.get_real_instance()
-                        _maplayer.save()
-                to_update = {}
-                try:
-                    to_update = storage_manager.copy(_resource).copy()
-                except Exception as e:
-                    logger.exception(e)
-                _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+                with transaction.atomic():
+                    _owner = owner or instance.get_real_instance().owner
+                    _perms = copy.copy(instance.get_real_instance().get_all_level_info())
+                    _resource = copy.copy(instance.get_real_instance())
+                    _resource.pk = _resource.id = None
+                    _resource.uuid = uuid or str(uuid4())
+                    if isinstance(instance.get_real_instance(), Document):
+                        _resource.save()
+                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
+                            _resource_link = copy.copy(resource_link)
+                            _resource_link.pk = _resource_link.id = None
+                            _resource_link.document = _resource.get_real_instance()
+                            _resource_link.save()
+                    if isinstance(instance.get_real_instance(), Dataset):
+                        _resource.name = f'{_resource.name}_{uuid1().hex[:8]}'
+                        _resource.save()
+                        for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
+                            _attribute = copy.copy(attribute)
+                            _attribute.pk = _attribute.id = None
+                            _attribute.dataset = _resource.get_real_instance()
+                            _attribute.save()
+                    if isinstance(instance.get_real_instance(), Map):
+                        _resource.save()
+                        for maplayer in instance.get_real_instance().maplayers.iterator():
+                            _maplayer = copy.copy(maplayer)
+                            _maplayer.pk = _maplayer.id = None
+                            _maplayer.map = _resource.get_real_instance()
+                            _maplayer.save()
+                    to_update = {}
+                    try:
+                        to_update = storage_manager.copy(_resource).copy()
+                    except Exception as e:
+                        logger.exception(e)
+                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
             except Exception as e:
                 logger.exception(e)
                 _resource = None
@@ -485,8 +489,7 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
                     # Refresh from DB
                     _resource.refresh_from_db()
-                    return _resource
-        return instance
+        return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}):
         if self._validate_resource(instance.get_real_instance(), 'append'):
