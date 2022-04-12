@@ -188,7 +188,7 @@ def upload(
         user = get_default_user()
     if isinstance(user, str):
         user = get_user_model().objects.get(username=user)
-    import_session = save_step(
+    import_session, upload = save_step(
         user,
         name,
         base_file,
