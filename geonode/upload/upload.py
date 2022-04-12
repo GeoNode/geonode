@@ -600,12 +600,17 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         lock_id = f'final_step-{import_id}'
         with AcquireLock(lock_id) as lock:
             if lock.acquire() is True:
+                _upload = None
                 try:
-                    Upload.objects.get(import_id=import_id)
+                    _upload = Upload.objects.get(import_id=import_id)
+                    saved_dataset = _upload.resource
+                    if saved_dataset:
+                        return saved_dataset
                 except Exception as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The Upload Session is no more available ") + str(e))
+
                 _log(f'Reloading session {import_id} to check validity')
                 try:
                     import_session = gs_uploader.get_session(import_id)
@@ -675,11 +680,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         raise GeneralUploadException(detail='Import Session failed.' + str(_cause))
                     saved_dataset = Upload.objects.filter(import_id=import_id).get().resource
                     created = False
-
-                if saved_dataset:
-                    if saved_dataset.processed:
-                        Upload.objects.filter(import_id=import_id).get().set_processing_state(enumerations.STATE_PROCESSED)
-                    return saved_dataset
 
                 target = task.target
                 alternate = task.get_target_layer_name()
