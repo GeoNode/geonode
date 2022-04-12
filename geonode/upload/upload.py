@@ -633,13 +633,16 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         lock_id = f'final_step-{import_id}'
         with AcquireLock(lock_id) as lock:
             if lock.acquire() is True:
+                _upload = None
                 try:
-                    Upload.objects.get(import_id=import_id)
+                    _upload = Upload.objects.get(import_id=import_id)
+                    saved_layer = _upload.layer
                 except Exception as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
                     raise UploadException.from_exc(
                         _("The Upload Session is no more available"), e)
+
                 _log(f'Reloading session {import_id} to check validity')
                 try:
                     import_session = gs_uploader.get_session(import_id)
@@ -649,7 +652,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     raise UploadException.from_exc(
                         _("The GeoServer Import Session is no more available"), e)
 
-                upload_session.import_session = import_session
+                upload_session.import_session = import_session.reload()
                 Upload.objects.update_from_session(upload_session)
 
                 # Create the style and assign it to the created resource
@@ -659,9 +662,10 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 overwrite = task.updateMode == 'REPLACE'
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
+                target = task.target
 
-                if layer_id:
-                    name = Layer.objects.get(resourcebase_ptr_id=layer_id).name
+                if saved_layer:
+                    name = saved_layer.name
 
                 _log(f'Getting from catalog [{name}]')
                 try:
@@ -675,12 +679,17 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     raise LayerNotReady(
                         _(f"Expected to find layer named '{name}' in geoserver"))
 
+                _tasks_ready = any([_task.state in ["READY"] for _task in import_session.tasks])
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
-                if not _tasks_failed and not _tasks_waiting and (import_session.state == 'READY' or (import_session.state == 'PENDING' and task.state == 'READY')):
+                if not saved_layer and not (_tasks_failed or _tasks_waiting) and (
+                        import_session.state == Upload.STATE_READY or (import_session.state == Upload.STATE_PENDING and _tasks_ready)):
+                    _log(f"final_step: Running Import Session {import_session.id} - target: {target.name} - alternate: {task.get_target_layer_name()}")
+                    _log(f" -- session state: {import_session.state} - task state: {task.state}")
                     import_session.commit()
-                elif _tasks_failed or (import_session.state == 'INCOMPLETE' and task.state != 'ERROR'):
+                    import_session = import_session.reload()
+                elif import_session.state == Upload.STATE_INCOMPLETE and task.state != 'ERROR':
                     Upload.objects.invalidate_from_session(upload_session)
                     raise Exception(f'unknown item state: {task.state}')
                 try:
@@ -696,9 +705,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
-                if _tasks_failed:
-                    Upload.objects.invalidate_from_session(upload_session)
-                    raise Exception('Import Session failed.')
                 if import_session.state != Upload.STATE_COMPLETE or _tasks_waiting:
                     return None
 
@@ -708,18 +714,25 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         Upload.objects.invalidate_from_session(upload_session)
                         raise Exception('Import Session failed. More than Upload Session associated to the Importer ID {import_id}')
                     saved_layer = Upload.objects.filter(import_id=import_id).get().layer
-                    created = False
 
-                if saved_layer:
-                    if saved_layer.processed:
-                        Upload.objects.filter(import_id=import_id).get().set_processing_state(Upload.STATE_PROCESSED)
-                    return saved_layer
-
-                target = task.target
-                alternate = task.get_target_layer_name()
                 layer_uuid = None
-                title = upload_session.layer_title
-                abstract = upload_session.layer_abstract
+
+                _vals = dict(
+                    title=upload_session.layer_title,
+                    abstract=upload_session.layer_abstract,
+                    alternate=task.get_target_layer_name(),
+                    store=target.name,
+                    name=task.layer.name,
+                    workspace=target.workspace_name)
+                if saved_layer:
+                    _vals['name'] = saved_layer.name
+                    _log(f'Django record for [{saved_layer.name}] already exists, updating with vals: {_vals}')
+                    Layer.objects.filter(id=saved_layer.id).update(**_vals)
+                    saved_layer.refresh_from_db()
+                    return saved_layer
+                else:
+                    _log(f'Django record for [{name}] does not exist, creating with vals: {_vals}')
+
                 regions = []
                 keywords = []
                 vals = {}
@@ -753,7 +766,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                             metadata_uploaded = True
                     except Exception as e:
                         Upload.objects.invalidate_from_session(upload_session)
-                        logger.error(e)
+                        logger.exception(e)
                         raise GeoNodeException(
                             _("Exception occurred while parsing the provided Metadata file."), e)
 
@@ -779,20 +792,20 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 if upload_session.mosaic:
                     if not upload_session.append_to_mosaic_opts:
                         saved_dataset_filter = Layer.objects.filter(
-                            store=target.name,
-                            alternate=alternate,
-                            workspace=target.workspace_name,
-                            name=task.layer.name)
+                            store=_vals.get('store'),
+                            alternate=_vals.get('alternate'),
+                            workspace=_vals.get('workspace'),
+                            name=_vals.get('name'))
                         if not saved_dataset_filter.exists():
                             saved_layer = Layer.objects.create(
                                 uuid=layer_uuid or str(uuid.uuid4()),
-                                store=target.name,
+                                store=_vals.get('store'),
                                 storeType=target.store_type,
-                                alternate=alternate,
-                                workspace=target.workspace_name,
-                                title=title,
-                                name=task.layer.name,
-                                abstract=abstract or '',
+                                alternate=_vals.get('alternate'),
+                                workspace=_vals.get('workspace'),
+                                title=_vals.get('title'),
+                                name=_vals.get('name'),
+                                abstract=_vals.get('abstract', _('No abstract provided')),
                                 owner=user,
                                 temporal_extent_start=start,
                                 temporal_extent_end=end,
@@ -829,20 +842,20 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 else:
                     # The dataset is a standard one, no mosaic options enabled...
                     saved_dataset_filter = Layer.objects.filter(
-                        store=target.name,
-                        alternate=alternate,
-                        workspace=target.workspace_name,
-                        name=task.layer.name)
+                        store=_vals.get('store'),
+                        alternate=_vals.get('alternate'),
+                        workspace=_vals.get('workspace'),
+                        name=_vals.get('name'))
                     if not saved_dataset_filter.exists():
                         saved_layer = Layer.objects.create(
                             uuid=layer_uuid or str(uuid.uuid4()),
-                            store=target.name,
+                            store=_vals.get('store'),
                             storeType=target.store_type,
-                            alternate=alternate,
-                            workspace=target.workspace_name,
-                            title=title,
-                            name=task.layer.name,
-                            abstract=abstract or '',
+                            alternate=_vals.get('alternate'),
+                            workspace=_vals.get('workspace'),
+                            title=_vals.get('title'),
+                            name=_vals.get('name'),
+                            abstract=_vals.get('abstract', _('No abstract provided')),
                             owner=user,
                             temporal_extent_start=start,
                             temporal_extent_end=end,
@@ -857,7 +870,11 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     else:
                         raise GeoNodeException(f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
 
+                assert _upload
                 assert saved_layer
+
+                _upload.layer = saved_layer
+                _upload.save()
 
                 if not created and not overwrite:
                     return saved_layer
@@ -959,6 +976,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                             logger.exception(e)
                             sld_file = sld_file[0]
                         except Exception as e:
+                            logger.exception(e)
                             raise UploadException.from_exc(_('Error uploading Dataset'), e)
                     sld_uploaded = True
                 else:
