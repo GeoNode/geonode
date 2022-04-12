@@ -79,7 +79,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.debug(msg, *args)
+    logger.error(msg, *args)
 
 
 class UploaderSession:
@@ -586,6 +586,7 @@ def srs_step(upload_session, source, target):
     Upload.objects.update_from_session(upload_session)
 
 
+@transaction.atomic
 def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     import_session = upload_session.import_session
     if import_session:
@@ -594,6 +595,12 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         lock_id = f'final_step-{import_id}'
         with AcquireLock(lock_id) as lock:
             if lock.acquire() is True:
+                try:
+                    Upload.objects.get(import_id=import_id)
+                except Exception as e:
+                    logger.exception(e)
+                    Upload.objects.invalidate_from_session(upload_session)
+                    raise GeneralUploadException(detail=_("The Upload Session is no more available ") + str(e))
                 _log(f'Reloading session {import_id} to check validity')
                 try:
                     import_session = gs_uploader.get_session(import_id)
@@ -625,7 +632,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     gs_catalog.get_layer(name)
                 except Exception:
                     Upload.objects.invalidate_from_session(upload_session)
-                    raise LayerNotReady(_(f"Expected to find layer named '{name}' in geoserver"))
+                    raise LayerNotReady(
+                        _(f"Expected to find layer named '{name}' in geoserver"))
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
@@ -676,7 +684,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 metadata_uploaded = False
                 xml_file = upload_session.base_file[0].xml_files
-                if xml_file:
+                if xml_file and os.path.exists(xml_file[0]):
                     try:
                         # get model properties from XML
                         # If it's contained within a zip, need to extract it
@@ -696,7 +704,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         elif not isinstance(xml_file, str):
                             xml_file = None
 
-                        if xml_file and os.path.exists(xml_file) and os.access(xml_file, os.R_OK):
+                        if xml_file and os.path.exists(xml_file[0]) and os.access(xml_file, os.R_OK):
                             dataset_uuid, vals, regions, keywords, custom = parse_metadata(
                                 open(xml_file).read())
                             metadata_uploaded = True
@@ -849,22 +857,20 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 # Set default permissions on the newly created layer and send notifications
                 permissions = upload_session.permissions
 
-                with transaction.atomic():
-                    # Finalize Upload
-                    resource_manager.set_permissions(
-                        None, instance=saved_dataset, permissions=permissions, created=created)
-                    resource_manager.update(
-                        None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
-                    resource_manager.exec(
-                        'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-                    resource_manager.exec(
-                        'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
-                    resource_manager.set_thumbnail(
-                        None, instance=saved_dataset)
+                # Finalize Upload
+                resource_manager.set_permissions(
+                    None, instance=saved_dataset, permissions=permissions, created=created)
+                resource_manager.update(
+                    None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+                resource_manager.exec(
+                    'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+                resource_manager.exec(
+                    'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+                resource_manager.set_thumbnail(
+                    None, instance=saved_dataset)
 
-                    if Upload.objects.filter(resource=saved_dataset).exists():
-                        Upload.objects.filter(resource=saved_dataset).update(complete=True)
-                        [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
+                if Upload.objects.filter(resource=saved_dataset).exists():
+                    Upload.objects.filter(resource=saved_dataset).update(complete=True)
+                    [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
 
-                    return saved_dataset
-    return None
+    return saved_dataset

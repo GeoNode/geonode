@@ -96,7 +96,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.debug(msg, *args)
+    logger.error(msg, *args)
 
 
 def _get_upload_session(req):
@@ -589,7 +589,8 @@ def final_step_view(req, upload_session):
                 )
                 register_event(req, EventType.EVENT_UPLOAD, saved_dataset)
                 return _json_response
-            except (LayerNotReady, AssertionError):
+            except (LayerNotReady, AssertionError) as e:
+                logger.exception(e)
                 force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response(
                     {
@@ -611,7 +612,6 @@ def final_step_view(req, upload_session):
                     }
                 )
                 return _json_response
-            return None
     else:
         url = "upload/dataset_upload_invalid.html"
         _json_response = json_response(

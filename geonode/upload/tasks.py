@@ -107,7 +107,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                 )
             )
         elif _upload.state not in (enumerations.STATE_READY, enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
-            if session.state == enumerations.STATE_COMPLETE and _upload.resource and _upload.resource.processed:
+            if session and session.state == enumerations.STATE_COMPLETE and _upload.resource and _upload.resource.processed:
                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
 
     upload_workflow_finalizer = _upload_workflow_finalizer.signature(
@@ -186,24 +186,22 @@ def _update_upload_session_state(self, upload_session_id: int):
                     _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
                     _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
 
-                    if not _tasks_waiting:
-                        _tasks_waiting = (session.state == enumerations.STATE_PENDING and any([_task.state in ["READY"] for _task in session.tasks]))
-
                     if _success:
                         if _tasks_failed:
                             # GeoNode Layer creation errored!
                             _upload.set_processing_state(enumerations.STATE_INVALID)
-                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
+                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and (_tasks_waiting or _tasks_ready):
                             _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(enumerations.STATE_WAITING)
-                        elif session.state in (enumerations.STATE_PENDING, enumerations.STATE_RUNNING) and not _tasks_waiting:
+                        elif session.state in (enumerations.STATE_PENDING, enumerations.STATE_RUNNING) and not (_tasks_waiting or _tasks_ready):
                             if _upload.resource and not _upload.resource.processed:
                                 # GeoNode Layer updating...
                                 _upload.set_processing_state(enumerations.STATE_RUNNING)
                             elif session.state == enumerations.STATE_RUNNING and _upload.resource and _upload.resource.processed:
                                 # GeoNode Layer successfully processed...
                                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
-                        elif (session.state == enumerations.STATE_COMPLETE and _upload.state in (enumerations.STATE_COMPLETE, enumerations.STATE_PENDING) and not _tasks_waiting) or (
+                        elif (session.state == enumerations.STATE_COMPLETE and _upload.state in (
+                            enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting) or (
                                     session.state == enumerations.STATE_PENDING and _tasks_ready):
                             if not _upload.resource:
                                 _response = final_step_view(None, _upload.get_session)
