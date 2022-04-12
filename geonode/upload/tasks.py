@@ -108,15 +108,21 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
             if session and session.state == Upload.STATE_COMPLETE and _upload.layer and _upload.layer.processed:
                 _upload.set_processing_state(Upload.STATE_PROCESSED)
 
-    upload_workflow_finalizer = _upload_workflow_finalizer.signature(
-        args=('_update_upload_session_state', _upload_ids,),
-        immutable=True
-    ).on_error(
+    if session and any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT", "ERROR"] for _task in session.tasks]):
         _upload_workflow_error.signature(
-            args=('_update_upload_session_state', _upload_ids,),
+            args=('_upload_workflow_error', _upload_ids,),
             immutable=True
         )
-    )
+    else:
+        upload_workflow_finalizer = _upload_workflow_finalizer.signature(
+            args=('_update_upload_session_state', _upload_ids,),
+            immutable=True
+        ).on_error(
+            _upload_workflow_error.signature(
+                args=('_update_upload_session_state', _upload_ids,),
+                immutable=True
+            )
+        )
 
     upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
     result = upload_workflow.apply_async()
@@ -135,7 +141,8 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
 def _upload_workflow_finalizer(self, task_name: str, upload_ids: list):
     """Task invoked at 'upload_workflow.chord' end in the case everything went well.
     """
-    logger.info(f"Task {task_name} upload ids: {upload_ids} finished successfully!")
+    if upload_ids:
+        logger.info(f"Task {task_name} upload ids: {upload_ids} finished successfully!")
 
 
 @app.task(
