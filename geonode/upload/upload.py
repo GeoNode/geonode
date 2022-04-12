@@ -254,7 +254,7 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
             resources = store.get_resources()
             if len(resources) == 0:
                 if overwrite:
-                    logger.debug("Deleting previously existing store")
+                    _log("Deleting previously existing store")
                     store.delete()
                 else:
                     raise GeoNodeException(_("Dataset already exists"))
@@ -269,7 +269,7 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
                             msg = (f"Type of uploaded file {store_name} ({dataset_type}) does not "
                                    "match type of existing resource type "
                                    f"{existing_type}")
-                            logger.error(msg)
+                            _log(msg)
                             raise GeoNodeException(msg)
 
 
@@ -281,7 +281,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
               time_presentation_default_value=None,
               time_presentation_reference_value=None,
               charset_encoding="UTF-8", target_store=None):
-    logger.debug(
+    _log(
         f'Uploading layer: {layer}, files {spatial_files}')
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
@@ -291,7 +291,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
             logger.exception(Exception(msg))
             raise GeneralUploadException(detail=msg)
     name = get_valid_dataset_name(layer, overwrite)
-    logger.debug(f'Name for layer: {name}')
+    _log(f'Name for layer: {name}')
     if not any(spatial_files.all_files()):
         msg = "Unable to recognize the uploaded file(s)"
         logger.exception(Exception(msg))
@@ -305,8 +305,8 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
         logger.exception(Exception(msg))
         raise GeneralUploadException(msg)
     files_to_upload = preprocess_files(spatial_files)
-    logger.debug(f"files_to_upload: {files_to_upload}")
-    logger.debug(f'Uploading {the_dataset_type}')
+    _log(f"files_to_upload: {files_to_upload}")
+    _log(f'Uploading {the_dataset_type}')
     error_msg = None
     try:
         upload = None
@@ -521,7 +521,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
         )
 
     if transforms:
-        logger.debug(f'Setting transforms {transforms}')
+        _log(f'Setting transforms {transforms}')
         import_session.tasks[0].add_transforms(transforms)
         try:
             upload_session.time_transforms = transforms
@@ -568,7 +568,7 @@ def srs_step(upload_session, source, target):
     import_session = upload_session.import_session
     task = import_session.tasks[0]
     if source:
-        logger.debug('Setting SRS to %s', source)
+        _log('Setting SRS to %s', source)
         task.set_srs(source)
 
     transform = {
@@ -602,8 +602,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 try:
                     _upload = Upload.objects.get(import_id=import_id)
                     saved_dataset = _upload.resource
-                    if saved_dataset:
-                        return saved_dataset
                 except Exception as e:
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
@@ -627,9 +625,10 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
+                target = task.target
 
-                if dataset_id:
-                    name = Dataset.objects.get(resourcebase_ptr_id=dataset_id).name
+                if saved_dataset:
+                    name = saved_dataset.name
 
                 _log(f'Getting from catalog [{name}]')
                 try:
@@ -647,10 +646,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
-                if not (_tasks_failed or _tasks_waiting) and import_session.state != enumerations.STATE_COMPLETE and (
+                if not saved_dataset and not (_tasks_failed or _tasks_waiting) and (
                         import_session.state == enumerations.STATE_READY or (import_session.state == enumerations.STATE_PENDING and _tasks_ready)):
+                    _log(f"final_step: Running Import Session {import_session.id} - target: {target.name} - alternate: {task.get_target_layer_name()}")
+                    _log(f" -- session state: {import_session.state} - task state: {task.state}")
                     import_session.commit()
-                elif _tasks_failed or (import_session.state == enumerations.STATE_INCOMPLETE and task.state != 'ERROR'):
+                    import_session = import_session.reload()
+                elif import_session.state == enumerations.STATE_INCOMPLETE and task.state != 'ERROR':
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=f'Unknown Session task state: {task.state}')
                 try:
@@ -665,11 +667,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
-                if _tasks_failed:
-                    Upload.objects.invalidate_from_session(upload_session)
-                    _cause = Exception(getattr(import_session.tasks[0], 'error_message', 'Unkown'))
-                    raise GeneralUploadException(detail=f'Import Session failed: {import_id}' + str(_cause))
-                if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting:
+                if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting or _tasks_failed:
                     return None
 
                 _log(f'Creating Django record for [{name}]')
@@ -679,13 +677,26 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         _cause = f'More than Upload Session associated to the Importer ID {import_id}'
                         raise GeneralUploadException(detail='Import Session failed.' + str(_cause))
                     saved_dataset = Upload.objects.filter(import_id=import_id).get().resource
-                    created = False
 
-                target = task.target
-                alternate = task.get_target_layer_name()
                 dataset_uuid = None
-                title = upload_session.dataset_title
-                abstract = upload_session.dataset_abstract
+
+                _vals = dict(
+                    title=upload_session.dataset_title,
+                    abstract=upload_session.dataset_abstract,
+                    alternate=task.get_target_layer_name(),
+                    store=target.name,
+                    name=task.layer.name,
+                    workspace=target.workspace_name,
+                    subtype=get_dataset_storetype(target.store_type))
+                if saved_dataset:
+                    _vals['name'] = saved_dataset.name
+                    _log(f'Django record for [{saved_dataset.name}] already exists, updating with vals: {_vals}')
+                    return resource_manager.update(
+                        saved_dataset.uuid,
+                        instance=saved_dataset,
+                        vals=_vals)
+                else:
+                    _log(f'Django record for [{name}] does not exist, creating with vals: {_vals}')
 
                 metadata_uploaded = False
                 xml_file = upload_session.base_file[0].xml_files
@@ -725,14 +736,14 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     # If it's contained within a zip, need to extract it
                     if upload_session.base_file.archive:
                         archive = upload_session.base_file.archive
-                        logger.debug(f'using uploaded sld file from {archive}')
+                        _log(f'using uploaded sld file from {archive}')
                         zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
                         zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
                         # Assign the absolute path to this file
                         sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
                     else:
                         _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
-                        logger.debug(f"copying [{sld_file[0]}] to [{_sld_file}]")
+                        _log(f"copying [{sld_file[0]}] to [{_sld_file}]")
                         try:
                             shutil.copyfile(sld_file[0], _sld_file)
                             sld_file = _sld_file
@@ -747,16 +758,16 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     # get_files will not find the sld if it doesn't match the base name
                     # so we've worked around that in the view - if provided, it will be here
                     if upload_session.import_sld_file:
-                        logger.debug('using provided sld file from importer')
+                        _log('using provided sld file from importer')
                         base_file = upload_session.base_file
                         sld_file = base_file[0].sld_files[0]
                     sld_uploaded = False
-                logger.debug(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
+                _log(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
 
                 # Make sure the layer does not exists already
                 if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
                     Upload.objects.invalidate_from_session(upload_session)
-                    logger.error("The UUID identifier from the XML Metadata is already in use in this system.")
+                    _log("The UUID identifier from the XML Metadata is already in use in this system.")
                     raise GeneralUploadException(detail=_("The UUID identifier from the XML Metadata is already in use in this system."))
 
                 # Is it a regular file or an ImageMosaic?
@@ -785,12 +796,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                                 defaults=dict(
                                     dirty_state=True,
                                     state=enumerations.STATE_READY,
-                                    store=target.name,
-                                    workspace=target.workspace_name,
+                                    store=_vals.get('store'),
+                                    workspace=_vals.get('workspace'),
                                     name=upload_session.append_to_mosaic_name))
                             created = True
-                        except IntegrityError:
-                            return None
+                        except IntegrityError as e:
+                            logger.exception(e)
+                            raise GeneralUploadException(detail=f"There's an incosistent Datasets on the DB for {task.layer.name}" + str(e))
                     elif saved_dataset_filter.count() == 1:
                         saved_dataset = saved_dataset_filter.get()
                         created = False
@@ -813,22 +825,22 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 else:
                     # The dataset is a standard one, no mosaic options enabled...
                     saved_dataset_filter = Dataset.objects.filter(
-                        store=target.name,
-                        workspace=target.workspace_name,
-                        name=task.layer.name)
+                        store=_vals.get('store'),
+                        workspace=_vals.get('workspace'),
+                        name=_vals.get('name'))
                     if not saved_dataset_filter.exists():
                         try:
                             saved_dataset = resource_manager.create(
                                 dataset_uuid,
                                 resource_type=Dataset,
                                 defaults=dict(
-                                    store=target.name,
-                                    subtype=get_dataset_storetype(target.store_type),
-                                    alternate=alternate,
-                                    workspace=target.workspace_name,
-                                    title=title,
-                                    name=task.layer.name,
-                                    abstract=abstract or _('No abstract provided'),
+                                    store=_vals.get('store'),
+                                    subtype=_vals.get('subtype'),
+                                    alternate=_vals.get('alternate'),
+                                    workspace=_vals.get('workspace'),
+                                    title=_vals.get('title'),
+                                    name=_vals.get('name'),
+                                    abstract=_vals.get('abstract', _('No abstract provided')),
                                     owner=user,
                                     dirty_state=True,
                                     state=enumerations.STATE_READY,
@@ -839,15 +851,20 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                                     has_elevation=has_elevation,
                                     time_regex=upload_session.mosaic_time_regex))
                             created = True
-                        except IntegrityError:
-                            return None
+                        except IntegrityError as e:
+                            logger.exception(e)
+                            raise GeneralUploadException(detail=f"There's an incosistent Datasets on the DB for {task.layer.name}" + str(e))
                     elif saved_dataset_filter.count() == 1:
                         saved_dataset = saved_dataset_filter.get()
                         created = False
                     else:
                         raise GeneralUploadException(detail=f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
 
+                assert _upload
                 assert saved_dataset
+
+                _upload.resource = saved_dataset
+                _upload.save()
 
                 if not created:
                     return saved_dataset
