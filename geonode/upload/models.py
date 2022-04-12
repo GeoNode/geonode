@@ -171,7 +171,7 @@ class Upload(models.Model):
                         self.resource.refresh_from_db()
 
         if self.resource:
-            if self.resource.state == enumerations.STATE_PROCESSED:
+            if self.resource.processed:
                 self.state = enumerations.STATE_PROCESSED
             else:
                 self.state = enumerations.STATE_RUNNING

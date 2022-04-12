@@ -95,8 +95,9 @@ from .upload import (
 logger = logging.getLogger(__name__)
 
 
-def _log(msg, *args):
-    logger.error(msg, *args)
+def _log(msg, *args, level='error'):
+    # this logger is used also for debug purpose with error level
+    getattr(logger, level)(msg, *args)
 
 
 def _get_upload_session(req):
