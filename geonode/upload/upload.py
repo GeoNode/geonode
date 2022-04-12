@@ -279,6 +279,7 @@ def _get_layer_type(spatial_files):
     return the_layer_type
 
 
+@transaction.atomic
 def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=True,
               mosaic=False, append_to_mosaic_opts=None, append_to_mosaic_name=None,
               mosaic_time_regex=None, mosaic_time_value=None,
@@ -286,7 +287,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
               time_presentation_default_value=None,
               time_presentation_reference_value=None,
               charset_encoding="UTF-8", target_store=None):
-    logger.debug(
+    _log(
         f'Uploading layer: {layer}, files {spatial_files}')
     if len(spatial_files) > 1:
         # we only support more than one file if they're rasters for mosaicing
@@ -296,7 +297,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
             logger.exception(Exception(msg))
             raise UploadException(msg)
     name = get_valid_layer_name(layer, overwrite)
-    logger.debug(f'Name for layer: {name}')
+    _log(f'Name for layer: {name}')
     if not any(spatial_files.all_files()):
         msg = "Unable to recognize the uploaded file(s)"
         logger.exception(Exception(msg))
@@ -310,16 +311,13 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
         logger.exception(Exception(msg))
         raise RuntimeError(msg)
     files_to_upload = preprocess_files(spatial_files)
-    logger.debug(f"files_to_upload: {files_to_upload}")
-    logger.debug(f'Uploading {the_layer_type}')
+    _log(f"files_to_upload: {files_to_upload}")
+    _log(f'Uploading {the_layer_type}')
     error_msg = None
     try:
-        upload = Upload.objects.filter(
-            user=user,
-            name=name,
-            state=Upload.STATE_READY,
-            upload_dir=spatial_files.dirname
-        ).first()
+        upload = None
+        if Upload.objects.filter(user=user, name=name).exists():
+            upload = Upload.objects.filter(user=user, name=name).get()
         if upload:
             import_session = upload.get_session.import_session
         else:
@@ -328,7 +326,7 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
             max_length = Upload._meta.get_field('name').max_length
             name = name[:max_length]
             # save record of this whether valid or not - will help w/ debugging
-            upload, _ = Upload.objects.get_or_create(
+            upload = Upload.objects.create(
                 user=user,
                 name=name,
                 state=Upload.STATE_READY,
