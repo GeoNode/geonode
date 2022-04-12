@@ -180,23 +180,28 @@ def _update_upload_session_state(self, upload_session_id: int):
                     _success = _response_json.get('success', False)
                     _redirect_to = _response_json.get('redirect_to', '')
 
+                    _tasks_ready = any([_task.state in ["READY"] for _task in session.tasks])
                     _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in session.tasks])
                     _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in session.tasks])
-                    if not _tasks_waiting:
-                        _tasks_waiting = (session.state == Upload.STATE_PENDING and any([_task.state in ["READY"] for _task in session.tasks]))
 
                     if _success:
                         if _tasks_failed:
                             # GeoNode Layer creation errored!
                             _upload.set_processing_state(Upload.STATE_INVALID)
-                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and _tasks_waiting:
+                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and (_tasks_waiting or _tasks_ready):
                             _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(Upload.STATE_WAITING)
-                        elif session.state in (Upload.STATE_PENDING, Upload.STATE_RUNNING) and not _tasks_waiting:
-                            # GeoNode Layer updating...
-                            _upload.set_processing_state(Upload.STATE_RUNNING)
-                        elif session.state == Upload.STATE_COMPLETE and _upload.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING, Upload.STATE_PENDING) and not _tasks_waiting:
-                            if not _upload.layer or _upload.state == Upload.STATE_RUNNING:
+                        elif session.state in (Upload.STATE_PENDING, Upload.STATE_RUNNING) and not (_tasks_waiting or _tasks_ready):
+                            if _upload.layer and not _upload.layer.processed:
+                                # GeoNode Layer updating...
+                                _upload.set_processing_state(Upload.STATE_RUNNING)
+                            elif session.state == Upload.STATE_RUNNING and _upload.layer and _upload.layer.processed:
+                                # GeoNode Layer successfully processed...
+                                _upload.set_processing_state(Upload.STATE_PROCESSED)
+                        elif (session.state == Upload.STATE_COMPLETE and _upload.state in (
+                            Upload.STATE_COMPLETE, Upload.STATE_RUNNING, Upload.STATE_PENDING) and not _tasks_waiting) or (
+                                    session.state == Upload.STATE_PENDING and _tasks_ready):
+                            if not _upload.layer:
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
                                     _upload.refresh_from_db()
@@ -216,7 +221,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                                         else:
                                             # GeoNode Layer updating...
                                             _upload.set_processing_state(Upload.STATE_RUNNING)
-                            elif _upload.layer.processed:
+                            elif _upload.layer and _upload.layer.processed:
                                 _upload.set_processing_state(Upload.STATE_PROCESSED)
                         logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
                 except (NotFound, Exception) as e:
