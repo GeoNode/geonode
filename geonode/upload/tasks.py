@@ -85,7 +85,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     upload_workflow.apply_async()
 
     # Let's finish the valid ones
-    for _upload in Upload.objects.exclude(state__in=[Upload.STATE_PROCESSED]).exclude(id__in=_upload_ids_expired):
+    for _upload in Upload.objects.exclude(state__in=[Upload.STATE_PROCESSED, Upload.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
         session = None
         try:
             if not _upload.import_id:
@@ -105,7 +105,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
                 )
             )
         elif _upload.state not in (Upload.STATE_READY, Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
-            if session.state == Upload.STATE_COMPLETE and _upload.layer and _upload.layer.processed:
+            if session and session.state == Upload.STATE_COMPLETE and _upload.layer and _upload.layer.processed:
                 _upload.set_processing_state(Upload.STATE_PROCESSED)
 
     upload_workflow_finalizer = _upload_workflow_finalizer.signature(

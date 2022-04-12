@@ -77,7 +77,7 @@ logger = logging.getLogger(__name__)
 
 
 def _log(msg, *args):
-    logger.debug(msg, *args)
+    logger.error(msg, *args)
 
 
 class UploaderSession:
@@ -628,6 +628,13 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         lock_id = f'final_step-{import_id}'
         with AcquireLock(lock_id) as lock:
             if lock.acquire() is True:
+                try:
+                    Upload.objects.get(import_id=import_id)
+                except Exception as e:
+                    logger.exception(e)
+                    Upload.objects.invalidate_from_session(upload_session)
+                    raise UploadException.from_exc(
+                        _("The Upload Session is no more available"), e)
                 _log(f'Reloading session {import_id} to check validity')
                 try:
                     import_session = gs_uploader.get_session(import_id)
