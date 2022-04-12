@@ -108,7 +108,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
             if session and session.state == Upload.STATE_COMPLETE and _upload.layer and _upload.layer.processed:
                 _upload.set_processing_state(Upload.STATE_PROCESSED)
 
-    if session and any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT", "ERROR"] for _task in session.tasks]):
+    if session and any([_task.state in ["ERROR"] for _task in session.tasks]):
         _upload_workflow_error.signature(
             args=('_upload_workflow_error', _upload_ids,),
             immutable=True
