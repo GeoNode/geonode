@@ -132,7 +132,6 @@ class Upload(models.Model):
 
     class Meta:
         ordering = ['-date']
-        unique_together = ('user', 'name')
 
     @property
     def get_session(self):

@@ -311,10 +311,13 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
     try:
         upload = None
         if Upload.objects.filter(user=user, name=name).exists():
-            upload = Upload.objects.filter(user=user, name=name).get()
+            upload = Upload.objects.filter(user=user, name=name).order_by('-date').first()
         if upload:
-            import_session = upload.get_session.import_session
-        else:
+            if upload.state == enumerations.STATE_READY:
+                import_session = upload.get_session.import_session
+            else:
+                upload = None
+        if not upload:
             next_id = _get_next_id()
             # Truncate name to maximum length defined by the field.
             max_length = Upload._meta.get_field('name').max_length
