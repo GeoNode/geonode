@@ -92,11 +92,6 @@ def filter_bbox(queryset, bbox):
     search_queryset = None
     for _bbox in bboxes:
         _bbox = list(map(Decimal, _bbox))
-
-        # Return all layers when the search extent exceeds 360deg
-        if abs(_bbox[0] - _bbox[2]) >= 360:
-            return queryset.all()
-
         search_polygon = polygon_from_bbox((_bbox[0], _bbox[1], _bbox[2], _bbox[3]))
         for search_polygon_dl in [DjangoPolygon.from_ewkt(_p.wkt) for _p in split_polygon(json.loads(search_polygon.json), output_format="polygons")]:
             _qs = queryset.filter(ll_bbox_polygon__intersects=search_polygon_dl)
