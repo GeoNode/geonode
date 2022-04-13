@@ -368,18 +368,14 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
+                _resource.set_dirty_state()
                 raise
             finally:
-                try:
-                    _resource.save(notify=notify)
-                    resourcebase_post_save(_resource.get_real_instance())
-                    _resource.set_permissions()
-                    if _resource.state != enumerations.STATE_INVALID:
-                        _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                except Exception as e:
-                    logger.exception(e)
-                finally:
-                    _resource.clear_dirty_state()
+                _resource.save(notify=notify)
+                resourcebase_post_save(_resource.get_real_instance())
+                _resource.set_permissions()
+                if _resource.state != enumerations.STATE_INVALID:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -416,18 +412,14 @@ class ResourceManager(ResourceManagerInterface):
             logger.exception(e)
             if instance:
                 instance.set_processing_state(enumerations.STATE_INVALID)
+                instance.set_dirty_state()
         if instance:
-            try:
-                resourcebase_post_save(instance.get_real_instance())
-                # Finalize Upload
-                if 'user' in to_update:
-                    to_update.pop('user')
-                instance = self.update(instance.uuid, instance=instance, vals=to_update)
-                self.set_thumbnail(instance.uuid, instance=instance)
-            except Exception as e:
-                logger.exception(e)
-            finally:
-                instance.clear_dirty_state()
+            resourcebase_post_save(instance.get_real_instance())
+            # Finalize Upload
+            if 'user' in to_update:
+                to_update.pop('user')
+            instance = self.update(instance.uuid, instance=instance, vals=to_update)
+            self.set_thumbnail(instance.uuid, instance=instance)
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
@@ -476,32 +468,27 @@ class ResourceManager(ResourceManagerInterface):
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
             if _resource:
-                try:
-                    to_update.update(defaults)
-                    if 'user' in to_update:
-                        to_update.pop('user')
-                    # We need to remove any public access to the cloned dataset here
-                    if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
-                        anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
-                        _perms['users'].pop(anonymous_user)
-                    if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
-                        anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
-                        _perms['groups'].pop(anonymous_group)
-                    if _resource.state == enumerations.STATE_PROCESSED:
-                        self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                        # Refresh from DB
-                        _resource.refresh_from_db()
-                        return self.update(_resource.uuid, _resource, vals=to_update)
-                    else:
-                        if not _resource.get_real_instance().name and 'title' in to_update:
-                            to_update['name'] = to_update['title']
-                        _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
-                        # Refresh from DB
-                        _resource.refresh_from_db()
-                except Exception as e:
-                    logger.exception(e)
-                finally:
-                    _resource.clear_dirty_state()
+                to_update.update(defaults)
+                if 'user' in to_update:
+                    to_update.pop('user')
+                # We need to remove any public access to the cloned dataset here
+                if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
+                    anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
+                    _perms['users'].pop(anonymous_user)
+                if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
+                    anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
+                    _perms['groups'].pop(anonymous_group)
+                if _resource.state == enumerations.STATE_PROCESSED:
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+                    return self.update(_resource.uuid, _resource, vals=to_update)
+                else:
+                    if not _resource.get_real_instance().name and 'title' in to_update:
+                        to_update['name'] = to_update['title']
+                    _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
         return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}):
@@ -594,8 +581,6 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-            finally:
-                _resource.clear_dirty_state()
         return False
 
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
@@ -760,8 +745,6 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-            finally:
-                _resource.clear_dirty_state()
         return False
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
