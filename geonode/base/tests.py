@@ -50,12 +50,13 @@ from geonode.base.models import (
 )
 
 from django.conf import settings
-from django.shortcuts import reverse
+from django.contrib.gis.geos import Polygon
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.storage import default_storage as storage
 from django.test import Client, TestCase, override_settings, SimpleTestCase
+from django.shortcuts import reverse
 
 from geonode.base.models import CuratedThumbnail
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
@@ -747,6 +748,30 @@ class TestGetVisibleResource(TestCase):
         """
         self.assertFalse(show_notification('monitoring_alert', self.user))
         self.assertTrue(show_notification('request_download_resourcebase', self.user))
+
+    def test_extent_filter_crossing_dateline(self):
+        from .bbox_utils import filter_bbox
+
+        _ll = None
+        try:
+            bbox = [166.06619, -22.40043, 172.09202, -13.03425]
+            _ll = Dataset.objects.create(
+                uuid=str(uuid4()),
+                owner=self.user,
+                name='test_extent_filter_crossing_dateline',
+                title='test_extent_filter_crossing_dateline',
+                alternate='geonode:test_extent_filter_crossing_dateline',
+                is_approved=True,
+                is_published=True,
+                ll_bbox_polygon=Polygon.from_bbox(bbox)
+            )
+            self.assertListEqual(list(_ll.ll_bbox_polygon.extent), bbox, _ll.ll_bbox_polygon.extent)
+            self.assertTrue(Dataset.objects.filter(title=_ll.title).exists(), Dataset.objects.all())
+            _qs = filter_bbox(Dataset.objects.all(), '-180.0000,-39.7790,-164.2456,9.2702,134.0552,-39.7790,180.0000,9.2702')
+            self.assertTrue(_qs.filter(title=_ll.title), Dataset.objects.all() | _qs.all())
+        finally:
+            if _ll:
+                _ll.delete()
 
 
 class TestHtmlTagRemoval(SimpleTestCase):
