@@ -283,7 +283,12 @@ class Dataset(ResourceBase):
 
     @property
     def embed_url(self):
-        return reverse('dataset_embed', kwargs={'layername': self.service_typename})
+        try:
+            if self.service_typename:
+                return reverse('dataset_embed', kwargs={'layername': self.service_typename})
+        except Exception as e:
+            logger.exception(e)
+            return None
 
     def attribute_config(self):
         # Get custom attribute sort order and labels if any
@@ -311,6 +316,7 @@ class Dataset(ResourceBase):
             ('change_dataset_data', 'Can edit layer data'),
             ('change_dataset_style', 'Can change layer style'),
         )
+        unique_together = ('store', 'workspace', 'name')
 
     # Permission Level Constants
     # LEVEL_NONE inherited

@@ -23,7 +23,7 @@ import typing
 import logging
 import importlib
 
-from uuid import uuid4
+from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
 
 from guardian.models import (
@@ -310,9 +310,9 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save()
                 resourcebase_post_save(_resource.get_real_instance())
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
                 self.delete(_resource.uuid, instance=_resource)
@@ -374,6 +374,8 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.save(notify=notify)
                 resourcebase_post_save(_resource.get_real_instance())
                 _resource.set_permissions()
+                if _resource.state != enumerations.STATE_INVALID:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -421,40 +423,44 @@ class ResourceManager(ResourceManagerInterface):
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
+        _resource = None
         if instance:
             try:
-                _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
-                _owner = owner or instance.get_real_instance().owner
-                _perms = copy.copy(instance.get_real_instance().get_all_level_info())
-                _resource = copy.copy(instance.get_real_instance())
-                _resource.pk = _resource.id = None
-                _resource.uuid = uuid or str(uuid4())
-                _resource.save()
-                if isinstance(instance.get_real_instance(), Document):
-                    for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
-                        _resource_link = copy.copy(resource_link)
-                        _resource_link.pk = _resource_link.id = None
-                        _resource_link.document = _resource.get_real_instance()
-                        _resource_link.save()
-                if isinstance(instance.get_real_instance(), Dataset):
-                    for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
-                        _attribute = copy.copy(attribute)
-                        _attribute.pk = _attribute.id = None
-                        _attribute.dataset = _resource.get_real_instance()
-                        _attribute.save()
-                if isinstance(instance.get_real_instance(), Map):
-                    for maplayer in instance.get_real_instance().maplayers.iterator():
-                        _maplayer = copy.copy(maplayer)
-                        _maplayer.pk = _maplayer.id = None
-                        _maplayer.map = _resource.get_real_instance()
-                        _maplayer.save()
-                to_update = {}
-                try:
-                    to_update = storage_manager.copy(_resource).copy()
-                except Exception as e:
-                    logger.exception(e)
-                _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+                with transaction.atomic():
+                    _owner = owner or instance.get_real_instance().owner
+                    _perms = copy.copy(instance.get_real_instance().get_all_level_info())
+                    _resource = copy.copy(instance.get_real_instance())
+                    _resource.pk = _resource.id = None
+                    _resource.uuid = uuid or str(uuid4())
+                    if isinstance(instance.get_real_instance(), Document):
+                        _resource.save()
+                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
+                            _resource_link = copy.copy(resource_link)
+                            _resource_link.pk = _resource_link.id = None
+                            _resource_link.document = _resource.get_real_instance()
+                            _resource_link.save()
+                    if isinstance(instance.get_real_instance(), Dataset):
+                        _resource.name = f'{_resource.name}_{uuid1().hex[:8]}'
+                        _resource.save()
+                        for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
+                            _attribute = copy.copy(attribute)
+                            _attribute.pk = _attribute.id = None
+                            _attribute.dataset = _resource.get_real_instance()
+                            _attribute.save()
+                    if isinstance(instance.get_real_instance(), Map):
+                        _resource.save()
+                        for maplayer in instance.get_real_instance().maplayers.iterator():
+                            _maplayer = copy.copy(maplayer)
+                            _maplayer.pk = _maplayer.id = None
+                            _maplayer.map = _resource.get_real_instance()
+                            _maplayer.save()
+                    to_update = {}
+                    try:
+                        to_update = storage_manager.copy(_resource).copy()
+                    except Exception as e:
+                        logger.exception(e)
+                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
             except Exception as e:
                 logger.exception(e)
                 _resource = None
@@ -462,8 +468,6 @@ class ResourceManager(ResourceManagerInterface):
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
             if _resource:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                _resource.save(notify=False)
                 to_update.update(defaults)
                 if 'user' in to_update:
                     to_update.pop('user')
@@ -474,14 +478,18 @@ class ResourceManager(ResourceManagerInterface):
                 if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
                     anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
                     _perms['groups'].pop(anonymous_group)
-                self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                # Refresh from DB
-                _resource.refresh_from_db()
-                return self.update(_resource.uuid, _resource, vals=to_update)
-            else:
-                instance.set_processing_state(enumerations.STATE_INVALID)
-                instance.save(notify=False)
-        return instance
+                if _resource.state == enumerations.STATE_PROCESSED:
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+                    return self.update(_resource.uuid, _resource, vals=to_update)
+                else:
+                    if not _resource.get_real_instance().name and 'title' in to_update:
+                        to_update['name'] = to_update['title']
+                    _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+        return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}):
         if self._validate_resource(instance.get_real_instance(), 'append'):
@@ -573,7 +581,6 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
         return False
 
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
@@ -738,7 +745,6 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
         return False
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
@@ -755,10 +761,11 @@ class ResourceManager(ResourceManagerInterface):
                             if overwrite or instance.thumbnail_url == static(thumb_utils.MISSING_THUMB):
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)
+            finally:
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
 

@@ -928,31 +928,76 @@ class TestFacets(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_boxes', abstract='nothing', subtype='vector', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_1', abstract='contains boxes', subtype='vector', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_2', purpose='contains boxes', subtype='vector', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_3', subtype='vector', is_approved=True
-        )
-
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_boxes', abstract='nothing', subtype='raster', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_1', abstract='contains boxes', subtype='raster', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_2', purpose='contains boxes', subtype='raster', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_boxes', subtype='raster', is_approved=True
-        )
+        Dataset.objects.update_or_create(
+            name='test_boxes_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_boxes',
+                abstract='nothing',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_1_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_1',
+                abstract='contains boxes',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_2_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_2',
+                purpose='contains boxes',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_3_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_3',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_boxes_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_boxes',
+                abstract='nothing',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_1_raster',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_1',
+                abstract='contains boxes',
+                subtype='raster',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_2_raster',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_2',
+                purpose='contains boxes',
+                subtype='raster',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_boxes_raster',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_boxes',
+                subtype='raster',
+                is_approved=True))
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
@@ -974,7 +1019,7 @@ class TestFacets(TestCase):
         self.request_mock.user = self.user
         results = facets({'request': self.request_mock})
         self.assertEqual(results['vector'], 3)
-        self.assertEqual(results['raster'], 4)
+        self.assertEqual(results['raster'], 3)
 
 
 class TestGenerateThesaurusReference(TestCase):
