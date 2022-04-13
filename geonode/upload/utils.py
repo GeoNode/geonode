@@ -53,8 +53,9 @@ ogr.UseExceptions()
 logger = logging.getLogger(__name__)
 
 
-def _log(msg, *args):
-    logger.debug(msg, *args)
+def _log(msg, *args, level='error'):
+    # this logger is used also for debug purpose with error level
+    getattr(logger, level)(msg, *args)
 
 
 iso8601 = re.compile(r'^(?P<full>((?P<year>\d{4})([/-]?(?P<mon>(0[1-9])|(1[012]))' +
@@ -590,6 +591,7 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
                 raise Exception(_(f'unknown item state: {task.state}'))
         elif import_session.state == 'PENDING' and task.target.store_type == 'coverageStore':
             if task.state == 'READY':
+                _log(f"run_import: async_upload[{async_upload}] Commit Import Session {import_session.id} - target: / - alternate: {task.get_target_layer_name()}")
                 import_session.commit(async_upload)
                 import_execution_requested = True
             if task.state == 'ERROR':
@@ -604,8 +606,7 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
                 store_name=ogc_server_settings.datastore_db['NAME'],
                 workspace=settings.DEFAULT_WORKSPACE
             )
-            _log(
-                f'setting target datastore {target.name} {target.workspace.name}')
+            _log(f'run_import: Setting target datastore {target.name} {target.workspace.name}')
             task.set_target(target.name, target.workspace.name)
         else:
             target = task.target
@@ -614,7 +615,7 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
             _log(f'setting updateMode to {upload_session.update_mode}')
             task.set_update_mode(upload_session.update_mode)
 
-        _log('running import session')
+        _log(f'run_import: Running Import Session {import_session.id}')
         # run async if using a database
         if not import_execution_requested:
             import_session.commit(async_upload)

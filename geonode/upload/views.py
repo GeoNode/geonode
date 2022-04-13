@@ -41,6 +41,7 @@ import gsimporter
 
 from http.client import BadStatusLine
 
+from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404
@@ -95,8 +96,9 @@ from .upload import (
 logger = logging.getLogger(__name__)
 
 
-def _log(msg, *args):
-    logger.debug(msg, *args)
+def _log(msg, *args, level='error'):
+    # this logger is used also for debug purpose with error level
+    getattr(logger, level)(msg, *args)
 
 
 def _get_upload_session(req):
@@ -210,7 +212,7 @@ def save_step_view(req, session):
                 mosaic_time_value=form.cleaned_data['mosaic_time_value'],
                 user=upload.user
             )
-            Upload.objects.update_from_session(upload_session)
+            upload_session = Upload.objects.update_from_session(upload_session)
             return next_step_response(req, upload_session, force_ajax=True)
         return next_step_response(req, None, force_ajax=True)
     else:
@@ -589,7 +591,8 @@ def final_step_view(req, upload_session):
                 )
                 register_event(req, EventType.EVENT_UPLOAD, saved_dataset)
                 return _json_response
-            except (LayerNotReady, AssertionError):
+            except (LayerNotReady, AssertionError) as e:
+                logger.exception(e)
                 force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response(
                     {
@@ -611,7 +614,6 @@ def final_step_view(req, upload_session):
                     }
                 )
                 return _json_response
-            return None
     else:
         url = "upload/dataset_upload_invalid.html"
         _json_response = json_response(
@@ -731,14 +733,17 @@ def view(req, step=None):
             else:
                 upload_session = _get_upload_session(req)
             if upload_session:
-                Upload.objects.update_from_session(upload_session)
+                upload_session = Upload.objects.update_from_session(upload_session)
             if resp_js and isinstance(resp_js, dict):
                 _success = resp_js.get('success', False)
                 _redirect_to = resp_js.get('redirect_to', '')
                 _required_input = resp_js.get('required_input', False)
                 if _success and (_required_input or 'upload/final' in _redirect_to):
                     from geonode.upload.tasks import finalize_incomplete_session_uploads
-                    finalize_incomplete_session_uploads.apply_async()
+                    if settings.ASYNC_SIGNALS:
+                        finalize_incomplete_session_uploads.apply_async()
+                    else:
+                        finalize_incomplete_session_uploads.apply()
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')

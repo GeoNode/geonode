@@ -146,7 +146,8 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # test with no reference object provided
         self.assertIsNone(self.rm.copy(None))
         res = self.rm.copy(dt)
-        self.assertEqual(res.perms, dt.perms)
+        if res:
+            self.assertEqual(res.perms, dt.perms)
 
     @patch.object(ResourceManager, '_validate_resource')
     def test_append(self, mock_validator):

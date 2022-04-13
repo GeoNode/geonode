@@ -1518,7 +1518,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
@@ -1526,7 +1526,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
 
         # Test 'is_approved=False' 'is_published=False'
         Dataset.objects.filter(
@@ -1540,7 +1540,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
@@ -1548,7 +1548,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
@@ -1573,7 +1573,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
