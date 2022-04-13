@@ -884,9 +884,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 assert _upload
                 assert saved_layer
 
-                _upload.layer = saved_layer
-                _upload.save()
-
                 if not created and not overwrite:
                     return saved_layer
 
