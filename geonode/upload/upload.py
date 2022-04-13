@@ -687,6 +687,10 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
                 if import_session.state != enumerations.STATE_COMPLETE or _tasks_waiting or _tasks_failed:
+                    if import_session.state == enumerations.STATE_PENDING and _tasks_waiting:
+                        _redirect_to = f"/upload/srs?id={import_session.id}"
+                        _upload.set_resume_url(_redirect_to)
+                        _upload.set_processing_state(enumerations.STATE_WAITING)
                     return None
 
                 _log(f'Creating Django record for [{name}]')
