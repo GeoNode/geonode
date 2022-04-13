@@ -41,6 +41,7 @@ import gsimporter
 
 from http.client import BadStatusLine
 
+from django.conf import settings
 from django.shortcuts import render
 from django.utils.html import escape
 from django.shortcuts import get_object_or_404
@@ -739,7 +740,10 @@ def view(req, step=None):
                 _required_input = resp_js.get('required_input', False)
                 if _success and (_required_input or 'upload/final' in _redirect_to):
                     from geonode.upload.tasks import finalize_incomplete_session_uploads
-                    finalize_incomplete_session_uploads.apply_async()
+                    if settings.ASYNC_SIGNALS:
+                        finalize_incomplete_session_uploads.apply_async()
+                    else:
+                        finalize_incomplete_session_uploads.apply()
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')
