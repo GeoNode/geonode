@@ -51,8 +51,8 @@ class UploadManager(models.Manager):
             import_id=upload_session.import_session.id
         ).update(state=enumerations.STATE_INVALID)
 
-    def update_from_session(self, upload_session, resource=None):
-        self.get(
+    def update_from_session(self, upload_session, resource: ResourceBase = None):
+        return self.get(
             user=upload_session.user,
             name=upload_session.name,
             import_id=upload_session.import_session.id).update_from_session(
@@ -111,7 +111,7 @@ class Upload(models.Model):
     resource = models.ForeignKey(ResourceBase, null=True, on_delete=models.SET_NULL)
     upload_dir = models.TextField(null=True)
     store_spatial_files = models.BooleanField(default=True)
-    name = models.CharField(max_length=64, null=True)
+    name = models.CharField(max_length=64, null=False, blank=False)
     complete = models.BooleanField(default=False)
     # hold our serialized session object
     session = models.TextField(null=True, blank=True)
@@ -171,7 +171,7 @@ class Upload(models.Model):
                         self.resource.refresh_from_db()
 
         if self.resource:
-            if self.resource.state == enumerations.STATE_PROCESSED:
+            if self.resource.processed:
                 self.state = enumerations.STATE_PROCESSED
             else:
                 self.state = enumerations.STATE_RUNNING
@@ -181,6 +181,7 @@ class Upload(models.Model):
                 self.complete = True
 
         self.save()
+        return self.get_session
 
     @property
     def progress(self):
