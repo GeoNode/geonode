@@ -755,7 +755,7 @@ class TestGetVisibleResource(TestCase):
         _ll = None
         try:
             bbox = [166.06619, -22.40043, 172.09202, -13.03425]
-            _ll = Dataset.objects.create(
+            _ll = Layer.objects.create(
                 uuid=str(uuid4()),
                 owner=self.user,
                 name='test_extent_filter_crossing_dateline',
@@ -766,9 +766,9 @@ class TestGetVisibleResource(TestCase):
                 ll_bbox_polygon=Polygon.from_bbox(bbox)
             )
             self.assertListEqual(list(_ll.ll_bbox_polygon.extent), bbox, _ll.ll_bbox_polygon.extent)
-            self.assertTrue(Dataset.objects.filter(title=_ll.title).exists(), Dataset.objects.all())
-            _qs = filter_bbox(Dataset.objects.all(), '-180.0000,-39.7790,-164.2456,9.2702,134.0552,-39.7790,180.0000,9.2702')
-            self.assertTrue(_qs.filter(title=_ll.title), Dataset.objects.all() | _qs.all())
+            self.assertTrue(Layer.objects.filter(title=_ll.title).exists(), Layer.objects.all())
+            _qs = filter_bbox(Layer.objects.all(), '-180.0000,-39.7790,-164.2456,9.2702,134.0552,-39.7790,180.0000,9.2702')
+            self.assertTrue(_qs.filter(title=_ll.title), Layer.objects.all() | _qs.all())
         finally:
             if _ll:
                 _ll.delete()
