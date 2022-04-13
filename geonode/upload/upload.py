@@ -543,7 +543,7 @@ def time_step(upload_session, time_attribute, time_transform_type,
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
     upload_session.import_session = import_session
-    Upload.objects.update_from_session(upload_session)
+    upload_session = Upload.objects.update_from_session(upload_session)
 
 
 def csv_step(upload_session, lat_field, lng_field):
@@ -564,7 +564,7 @@ def csv_step(upload_session, lat_field, lng_field):
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
     upload_session.import_session = import_session
-    Upload.objects.update_from_session(upload_session)
+    upload_session = Upload.objects.update_from_session(upload_session)
 
 
 def srs_step(upload_session, source, target):
@@ -589,7 +589,7 @@ def srs_step(upload_session, source, target):
         Upload.objects.invalidate_from_session(upload_session)
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
     upload_session.import_session = import_session
-    Upload.objects.update_from_session(upload_session)
+    upload_session = Upload.objects.update_from_session(upload_session)
 
 
 @transaction.atomic
@@ -619,7 +619,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
 
                 upload_session.import_session = import_session.reload()
-                Upload.objects.update_from_session(upload_session)
+                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 # Create the style and assign it to the created resource
                 # FIXME: Put this in gsconfig.py
@@ -629,6 +629,15 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
                 target = task.target
+
+                _vals = dict(
+                    title=upload_session.dataset_title,
+                    abstract=upload_session.dataset_abstract,
+                    alternate=task.get_target_layer_name(),
+                    store=target.name,
+                    name=task.layer.name,
+                    workspace=target.workspace_name,
+                    subtype=get_dataset_storetype(target.store_type))
 
                 if saved_dataset:
                     name = saved_dataset.get_real_instance().name
@@ -655,6 +664,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     _log(f" -- session state: {import_session.state} - task state: {task.state}")
                     import_session.commit()
                     import_session = import_session.reload()
+                    task = import_session.tasks[0]
+                    name = task.layer.name
+                    target = task.target
+                    _vals['store'] = target.name
+                    _vals['name'] = task.layer.name
+                    _vals['workspace'] = target.workspace_name
+                    _vals['alternate'] = task.get_target_layer_name()
                 elif import_session.state == enumerations.STATE_INCOMPLETE and task.state != 'ERROR':
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=f'Unknown Session task state: {task.state}')
@@ -665,7 +681,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
                 upload_session.import_session = import_session
-                Upload.objects.update_from_session(upload_session)
+                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
@@ -683,14 +699,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 dataset_uuid = None
 
-                _vals = dict(
-                    title=upload_session.dataset_title,
-                    abstract=upload_session.dataset_abstract,
-                    alternate=task.get_target_layer_name(),
-                    store=target.name,
-                    name=task.layer.name,
-                    workspace=target.workspace_name,
-                    subtype=get_dataset_storetype(target.store_type))
                 if saved_dataset:
                     _vals['name'] = saved_dataset.get_real_instance().name
                     _log(f'Django record for [{saved_dataset.get_real_instance().name}] already exists, updating with vals: {_vals}')
@@ -876,7 +884,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 saved_dataset.set_dirty_state()
 
                 # Update the state from session...
-                Upload.objects.update_from_session(upload_session, resource=saved_dataset)
+                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications

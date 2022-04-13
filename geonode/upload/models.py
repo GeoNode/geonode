@@ -51,8 +51,8 @@ class UploadManager(models.Manager):
             import_id=upload_session.import_session.id
         ).update(state=enumerations.STATE_INVALID)
 
-    def update_from_session(self, upload_session, resource=None):
-        self.get(
+    def update_from_session(self, upload_session, resource: ResourceBase = None):
+        return self.get(
             user=upload_session.user,
             name=upload_session.name,
             import_id=upload_session.import_session.id).update_from_session(
@@ -181,6 +181,7 @@ class Upload(models.Model):
                 self.complete = True
 
         self.save()
+        return self.get_session
 
     @property
     def progress(self):
