@@ -631,7 +631,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 target = task.target
 
                 if saved_dataset:
-                    name = saved_dataset.name
+                    name = saved_dataset.get_real_instance().name
 
                 _log(f'Getting from catalog [{name}]')
                 try:
@@ -692,8 +692,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     workspace=target.workspace_name,
                     subtype=get_dataset_storetype(target.store_type))
                 if saved_dataset:
-                    _vals['name'] = saved_dataset.name
-                    _log(f'Django record for [{saved_dataset.name}] already exists, updating with vals: {_vals}')
+                    _vals['name'] = saved_dataset.get_real_instance().name
+                    _log(f'Django record for [{saved_dataset.get_real_instance().name}] already exists, updating with vals: {_vals}')
                     return resource_manager.update(
                         saved_dataset.uuid,
                         instance=saved_dataset,
