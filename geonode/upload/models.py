@@ -53,7 +53,7 @@ class UploadManager(models.Manager):
         ).update(state=Upload.STATE_INVALID)
 
     def update_from_session(self, upload_session, layer=None):
-        self.get(
+        return self.get(
             user=upload_session.user,
             name=upload_session.name,
             import_id=upload_session.import_session.id).update_from_session(
@@ -123,7 +123,6 @@ class Upload(models.Model):
 
     class Meta:
         ordering = ['-date']
-        unique_together = ('user', 'name')
 
     STATE_READY = "READY"
     STATE_RUNNING = "RUNNING"
@@ -197,6 +196,7 @@ class Upload(models.Model):
                 self.complete = True
 
         self.save()
+        return self.get_session
 
     @property
     def progress(self):

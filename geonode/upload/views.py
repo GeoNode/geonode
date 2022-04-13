@@ -260,7 +260,7 @@ def save_step_view(req, session):
             )
             if overwrite:
                 upload_session.update_mode = "REPLACE"
-            Upload.objects.update_from_session(upload_session)
+            upload_session = Upload.objects.update_from_session(upload_session)
             return next_step_response(req, upload_session, force_ajax=True)
         return next_step_response(req, None, force_ajax=True)
     else:
@@ -779,14 +779,17 @@ def view(req, step=None):
             else:
                 upload_session = _get_upload_session(req)
             if upload_session:
-                Upload.objects.update_from_session(upload_session)
+                upload_session = Upload.objects.update_from_session(upload_session)
             if resp_js and isinstance(resp_js, dict):
                 _success = resp_js.get('success', False)
                 _redirect_to = resp_js.get('redirect_to', '')
                 _required_input = resp_js.get('required_input', False)
                 if _success and (_required_input or 'upload/final' in _redirect_to):
                     from geonode.upload.tasks import finalize_incomplete_session_uploads
-                    finalize_incomplete_session_uploads.apply_async()
+                    if settings.ASYNC_SIGNALS:
+                        finalize_incomplete_session_uploads.apply_async()
+                    else:
+                        finalize_incomplete_session_uploads.apply()
         return resp
     except BadStatusLine:
         logger.exception('bad status line, geoserver down?')

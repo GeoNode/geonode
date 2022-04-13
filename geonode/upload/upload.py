@@ -317,10 +317,13 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
     try:
         upload = None
         if Upload.objects.filter(user=user, name=name).exists():
-            upload = Upload.objects.filter(user=user, name=name).get()
+            upload = Upload.objects.filter(user=user, name=name).order_by('-date').first()
         if upload:
-            import_session = upload.get_session.import_session
-        else:
+            if upload.state == Upload.STATE_READY:
+                import_session = upload.get_session.import_session
+            else:
+                upload = None
+        if not upload:
             next_id = _get_next_id()
             # Truncate name to maximum length defined by the field.
             max_length = Upload._meta.get_field('name').max_length
@@ -651,7 +654,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         _("The GeoServer Import Session is no more available"), e)
 
                 upload_session.import_session = import_session.reload()
-                Upload.objects.update_from_session(upload_session)
+
+                upload_session = Upload.objects.update_from_session(upload_session)
 
                 # Create the style and assign it to the created resource
                 # FIXME: Put this in gsconfig.py
@@ -664,6 +668,15 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
                 if saved_layer:
                     name = saved_layer.name
+
+                _vals = dict(
+                    title=upload_session.layer_title,
+                    abstract=upload_session.layer_abstract,
+                    alternate=task.get_target_layer_name(),
+                    store=target.name,
+                    name=task.layer.name,
+                    workspace=target.workspace_name
+                )
 
                 _log(f'Getting from catalog [{name}]')
                 try:
@@ -687,6 +700,13 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     _log(f" -- session state: {import_session.state} - task state: {task.state}")
                     import_session.commit()
                     import_session = import_session.reload()
+                    task = import_session.tasks[0]
+                    name = task.layer.name
+                    _vals['name'] = task.layer.name
+                    _vals['alternate'] = task.get_target_layer_name()
+                    _vals['store'] = task.target.name
+                    _vals['workspace'] = task.target.workspace_name
+
                 elif import_session.state == Upload.STATE_INCOMPLETE and task.state != 'ERROR':
                     Upload.objects.invalidate_from_session(upload_session)
                     raise Exception(f'unknown item state: {task.state}')
@@ -698,7 +718,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     raise UploadException.from_exc(
                         _("The GeoServer Import Session is no more available"), e)
                 upload_session.import_session = import_session
-                Upload.objects.update_from_session(upload_session)
+                upload_session = Upload.objects.update_from_session(upload_session)
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
@@ -715,13 +735,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
                 layer_uuid = None
 
-                _vals = dict(
-                    title=upload_session.layer_title,
-                    abstract=upload_session.layer_abstract,
-                    alternate=task.get_target_layer_name(),
-                    store=target.name,
-                    name=task.layer.name,
-                    workspace=target.workspace_name)
                 if saved_layer:
                     _vals['name'] = saved_layer.name
                     _log(f'Django record for [{saved_layer.name}] already exists, updating with vals: {_vals}')
@@ -883,7 +896,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 )
                 geonode_upload_session.processed = False
                 geonode_upload_session.save()
-                Upload.objects.update_from_session(upload_session, layer=saved_layer)
+                upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
                 # Add them to the upload session (new file fields are created).
                 assigned_name = None

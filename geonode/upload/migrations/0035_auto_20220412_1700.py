@@ -16,9 +16,5 @@ class Migration(migrations.Migration):
             model_name='upload',
             name='name',
             field=models.CharField(max_length=64),
-        ),
-        migrations.AlterUniqueTogether(
-            name='upload',
-            unique_together={('user', 'name')},
-        ),
+        )
     ]
