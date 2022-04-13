@@ -871,20 +871,16 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     else:
                         raise GeneralUploadException(detail=f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
 
-                assert _upload
                 assert saved_dataset
 
-                _upload.resource = saved_dataset
-                _upload.save()
+                # Update the state from session...
+                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 if not created:
                     return saved_dataset
 
                 # Hide the dataset until the upload process finishes...
                 saved_dataset.set_dirty_state()
-
-                # Update the state from session...
-                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications

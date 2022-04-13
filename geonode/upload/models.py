@@ -148,15 +148,16 @@ class Upload(models.Model):
         if not self.upload_dir:
             self.upload_dir = os.path.dirname(upload_session.base_file)
 
-        if resource and not self.resource:
-            if not isinstance(resource, ResourceBase) and hasattr(resource, 'resourcebase_ptr'):
-                self.resource = resource.resourcebase_ptr
-            elif not isinstance(resource, ResourceBase):
-                raise GeoNodeException("Invalid resource uploaded, plase select one of the available")
-            else:
-                self.resource = resource
+        if resource:
+            if not self.resource:
+                if not isinstance(resource, ResourceBase) and hasattr(resource, 'resourcebase_ptr'):
+                    self.resource = resource.resourcebase_ptr
+                elif not isinstance(resource, ResourceBase):
+                    raise GeoNodeException("Invalid resource uploaded, plase select one of the available")
+                else:
+                    self.resource = resource
 
-            if upload_session.base_file and self.resource and self.resource.title:
+            if upload_session.base_file and len(self.resource.files) == 0:
                 uploaded_files = upload_session.base_file[0]
                 aux_files = uploaded_files.auxillary_files
                 sld_files = uploaded_files.sld_files
