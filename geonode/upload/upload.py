@@ -884,9 +884,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 assert _upload
                 assert saved_layer
 
-                _upload.layer = saved_layer
-                _upload.save()
-
                 if not created and not overwrite:
                     return saved_layer
 
@@ -1010,6 +1007,9 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                      xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 
                 saved_layer = utils.metadata_storers(saved_layer, custom)
+
+    if upload_session:
+        Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
     return saved_layer
 
