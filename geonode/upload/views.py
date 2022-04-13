@@ -779,7 +779,7 @@ def view(req, step=None):
             else:
                 upload_session = _get_upload_session(req)
             if upload_session:
-                upload_session = Upload.objects.update_from_session(upload_session)
+                Upload.objects.update_from_session(upload_session)
             if resp_js and isinstance(resp_js, dict):
                 _success = resp_js.get('success', False)
                 _redirect_to = resp_js.get('redirect_to', '')

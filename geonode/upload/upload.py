@@ -720,7 +720,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 upload_session.import_session = import_session
                 upload_session = Upload.objects.update_from_session(upload_session)
 
-                _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
+                #  _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
                 if import_session.state != Upload.STATE_COMPLETE or _tasks_waiting:
