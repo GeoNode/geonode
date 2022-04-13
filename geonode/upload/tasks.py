@@ -85,8 +85,8 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     upload_workflow.apply_async()
 
     # Let's finish the valid ones
+    session = None
     for _upload in Upload.objects.exclude(state__in=[Upload.STATE_PROCESSED, Upload.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
-        session = None
         try:
             if not _upload.import_id:
                 raise NotFound
@@ -195,7 +195,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                         if _tasks_failed:
                             # GeoNode Layer creation errored!
                             _upload.set_processing_state(Upload.STATE_INVALID)
-                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and (_tasks_waiting or _tasks_ready):
+                        elif 'upload/final' not in _redirect_to and 'upload/check' not in _redirect_to and (_tasks_waiting or _upload.get_session.time):
                             _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(Upload.STATE_WAITING)
                         elif session.state in (Upload.STATE_PENDING, Upload.STATE_RUNNING) and not (_tasks_waiting or _tasks_ready):
