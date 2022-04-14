@@ -93,7 +93,7 @@ services:
       retries: 1
       start_period: 60s
     env_file:
-      - ./scripts/docker/env/${DOCKER_ENV}/geoserver.env
+      - .env_test
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
@@ -116,7 +116,7 @@ services:
     image: geonode/postgis:13
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
-      - ./scripts/docker/env/${DOCKER_ENV}/db.env
+      - .env_test
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups

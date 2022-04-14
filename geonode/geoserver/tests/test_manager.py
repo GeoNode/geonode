@@ -80,4 +80,4 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     def test_revise_resource_value_in_replace_should_return_none_for_not_existing_dataset(self):
         layer = create_single_dataset('fake_dataset')
         _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
-        self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_PENDING)
+        self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_COMPLETE)
