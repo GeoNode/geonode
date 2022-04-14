@@ -113,32 +113,6 @@ class CategoryChoiceField(forms.ModelChoiceField):
             '<br/><strong>' + obj.gn_description + '</strong></span>'
 
 
-# NOTE: This is commented as it needs updating to work with select2 and autocomlete light.
-#
-# class TreeWidget(autocomplete.TaggitSelect2):
-#     input_type = 'text'
-
-#     def render(self, name, value, attrs=None):
-#         if isinstance(value, basestring):
-#             vals = value
-#         elif value:
-#             vals = ','.join([i.tag.name for i in value])
-#         else:
-#             vals = ""
-#         output = ["""<div class="keywords-container"><span class="input-group">
-#                 <input class="form-control"
-#                        id="id_resource-keywords"
-#                        name="resource-keywords"
-#                        value="%s"><br/>""" % (vals)]
-#         output.append(
-#             '<div id="treeview" class="" style="display: none"></div>')
-#         output.append(
-#             '<span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>')
-#         output.append('</span></div>')
-
-#         return mark_safe(u'\n'.join(output))
-
-
 class RegionsMultipleChoiceField(forms.MultipleChoiceField):
 
     def validate(self, value):
