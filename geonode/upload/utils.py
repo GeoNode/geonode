@@ -184,7 +184,7 @@ def get_kml_doc(kml_bytes):
 _pages = {
     'shp': ('srs', 'check', 'time', 'run', 'final'),
     'csv': ('csv', 'srs', 'check', 'time', 'run', 'final'),
-    'tif': ('run', 'final'),
+    'tif': ('srs', 'run', 'final'),
     'zip-mosaic': ('run', 'final'),
     'asc': ('run', 'final'),
     'kml': ('run', 'final'),
