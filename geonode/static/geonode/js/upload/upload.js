@@ -652,7 +652,7 @@ define(['underscore',
         $(options.clear_button).on('click', doClearState);
         $(options.upload_button).on('click', doUploads);
 
-        initUploadProgressTable();
+        // initUploadProgressTable();
     };
 
     // public api
