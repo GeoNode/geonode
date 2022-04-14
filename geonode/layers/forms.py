@@ -26,7 +26,7 @@ from geonode.utils import check_ogc_backend
 
 import json
 from geonode.utils import unzip_file, mkdtemp
-from geonode.base.forms import ResourceBaseForm
+from geonode.base.forms import ResourceBaseForm, get_tree_data
 from geonode.layers.models import Dataset, Attribute
 
 
@@ -45,6 +45,7 @@ class JSONField(forms.CharField):
 
 
 class DatasetForm(ResourceBaseForm):
+
     class Meta(ResourceBaseForm.Meta):
         model = Dataset
         exclude = ResourceBaseForm.Meta.exclude + (
@@ -70,6 +71,7 @@ class DatasetForm(ResourceBaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['regions'].choices = get_tree_data()
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None

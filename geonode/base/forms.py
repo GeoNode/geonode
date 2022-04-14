@@ -56,6 +56,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_tree_data():
+
     def rectree(parent, path):
         children_list_of_tuples = list()
         c = Region.objects.filter(parent=parent)
@@ -393,6 +394,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
 
 
 class ResourceBaseForm(TranslationModelForm):
+
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
     abstract = forms.CharField(
         label=_("Abstract"),
@@ -478,7 +480,6 @@ class ResourceBaseForm(TranslationModelForm):
     regions = RegionsMultipleChoiceField(
         label=_("Regions"),
         required=False,
-        choices=get_tree_data(),
         widget=RegionsSelect)
 
     regions.widget.attrs = {"size": 20}
@@ -495,6 +496,7 @@ class ResourceBaseForm(TranslationModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        self.fields['regions'].choices = get_tree_data()
 
         if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
