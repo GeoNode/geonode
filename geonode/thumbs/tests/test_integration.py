@@ -720,7 +720,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             self.rm.ingest(dt_files)
             # ingest with datasets
             res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
-            self.assertTrue(isinstance(res, Dataset))
+            self.assertTrue(isinstance(res.get_real_instance(), Dataset))
 
             expected_results_dir = f"{EXPECTED_RESULTS_DIR}thumbnails/"
             expected_thumb_path = f"{expected_results_dir}WY_USNG_thumb.png"
