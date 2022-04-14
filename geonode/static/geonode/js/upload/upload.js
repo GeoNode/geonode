@@ -23,8 +23,6 @@ define(['underscore',
         doUpload,
         doUploads,
         doSrs,
-        doSuccessfulUpload,
-        attach_events,
         checkFiles,
         fileTypes = fileTypes;
 
