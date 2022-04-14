@@ -198,26 +198,25 @@ def dataset_upload_metadata(request):
             ['xml'],
             iter(request.FILES.values())
         )
-
         logger.debug(f"relevant_files: {relevant_files}")
-
         write_uploaded_files_to_disk(tempdir, relevant_files)
-
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
-
-        name = form.cleaned_data['dataset_title']
-        layer = Dataset.objects.filter(typename=name)
-        if layer.exists():
+        layer = _resolve_dataset(
+                request,
+                form.cleaned_data.get('dataset_title'),
+                'base.change_resourcebase',
+                _PERMISSION_MSG_MODIFY)
+        if layer:
             dataset_uuid, vals, regions, keywords, _ = parse_metadata(
                 open(base_file).read())
-            if dataset_uuid and layer.first().uuid != dataset_uuid:
+            if dataset_uuid and layer.uuid != dataset_uuid:
                 out['success'] = False
                 out['errors'] = "The UUID identifier from the XML Metadata, is different from the one saved"
                 return HttpResponse(
                     json.dumps(out),
                     content_type='application/json',
                     status=404)
-            updated_dataset = update_resource(layer.first(), base_file, regions, keywords, vals)
+            updated_dataset = update_resource(layer, base_file, regions, keywords, vals)
             updated_dataset.save()
             out['status'] = ['finished']
             out['url'] = updated_dataset.get_absolute_url()
@@ -258,50 +257,61 @@ def dataset_upload_metadata(request):
 
 
 def dataset_style_upload(request):
+    out = {}
+    errormsgs = []
+
     form = NewLayerUploadForm(request.POST, request.FILES)
-    body = {}
-    if not form.is_valid():
-        body['success'] = False
-        body['errors'] = form.errors
+
+    if form.is_valid():
+        status_code = 200
+        try:
+            data = form.cleaned_data
+            out = {
+                'success': True,
+                'style': data.get('dataset_title'),
+            }
+
+            layer = _resolve_dataset(
+                request,
+                data.get('dataset_title'),
+                'base.change_resourcebase',
+                _PERMISSION_MSG_MODIFY)
+
+            if layer:
+                sld = request.FILES['sld_file'].read()
+
+                set_dataset_style(layer, data.get('dataset_title'), sld)
+                out['url'] = layer.get_absolute_url()
+                out['bbox'] = layer.bbox_string
+                out['crs'] = {
+                    'type': 'name',
+                    'properties': layer.srid
+                }
+                out['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
+                out['status'] = ['finished']
+            else:
+                out['success'] = False
+                out['errors'] = "Dataset selected does not exists"
+                status_code = 404
+        except Exception as e:
+            status_code = 500
+            out['success'] = False
+            out['errors'] = str(e.args[0])
+
         return HttpResponse(
-            json.dumps(body),
+            json.dumps(out),
             content_type='application/json',
-            status=500)
-
-    status_code = 200
-    try:
-        data = form.cleaned_data
-        body = {
-            'success': True,
-            'style': data.get('dataset_title'),
-        }
-
-        layer = _resolve_dataset(
-            request,
-            data.get('dataset_title'),
-            'base.change_resourcebase',
-            _PERMISSION_MSG_MODIFY)
-
-        sld = request.FILES['sld_file'].read()
-
-        set_dataset_style(layer, data.get('dataset_title'), sld)
-        body['url'] = layer.get_absolute_url()
-        body['bbox'] = layer.bbox_string
-        body['crs'] = {
-            'type': 'name',
-            'properties': layer.srid
-        }
-        body['ogc_backend'] = settings.OGC_SERVER['default']['BACKEND']
-        body['status'] = ['finished']
-    except Exception as e:
-        status_code = 500
-        body['success'] = False
-        body['errors'] = str(e.args[0])
+            status=status_code)
+    else:
+        for e in form.errors.values():
+            errormsgs.extend([escape(v) for v in e])
+        out['errors'] = errormsgs
+        out['errormsgs'] = errormsgs
 
     return HttpResponse(
-        json.dumps(body),
+        json.dumps(out),
         content_type='application/json',
-        status=status_code)
+        status=500)
 
 
 def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
