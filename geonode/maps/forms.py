@@ -17,8 +17,8 @@
 #
 #########################################################################
 
-from geonode.base.forms import ResourceBaseForm
 from geonode.maps.models import Map
+from geonode.base.forms import ResourceBaseForm, get_tree_data
 
 
 class MapForm(ResourceBaseForm):
@@ -29,6 +29,7 @@ class MapForm(ResourceBaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['regions'].choices = get_tree_data()
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None

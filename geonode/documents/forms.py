@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from geonode.base.forms import ResourceBaseForm
 import os
 import re
 import json
@@ -34,6 +33,7 @@ from django.template.defaultfilters import filesizeformat
 
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
+from geonode.base.forms import ResourceBaseForm, get_tree_data
 from geonode.resource.utils import get_related_resources
 from geonode.documents.models import (
     Document,
@@ -136,6 +136,7 @@ class DocumentForm(ResourceBaseForm, DocumentFormMixin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['regions'].choices = get_tree_data()
         self.fields['links'].choices = self.generate_link_choices()
         self.fields['links'].initial = self.generate_link_values(
             resources=get_related_resources(self.instance)
