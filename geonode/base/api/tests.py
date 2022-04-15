@@ -1220,8 +1220,8 @@ class BaseApiTests(APITestCase):
             f"dataset : {list(r_type_perms['dataset'].keys())}")
         for _key in r_type_perms['dataset']['perms'].keys():
             self.assertListEqual(
-                list(set(r_type_perms['dataset']['perms'].get(_key))),
-                list(set(_pp_e['perms'].get(_key))),
+                list(set(r_type_perms['dataset']['perms'].get(_key))).sort(),
+                list(set(_pp_e['perms'].get(_key))).sort(),
                 f"{_key} : {list(set(r_type_perms['dataset']['perms'].get(_key)))}")
         for _key in r_type_perms['dataset']['compact'].keys():
             self.assertListEqual(
@@ -1325,8 +1325,8 @@ class BaseApiTests(APITestCase):
             f"document : {list(r_type_perms['document'].keys())}")
         for _key in r_type_perms['document']['perms'].keys():
             self.assertListEqual(
-                list(set(r_type_perms['document']['perms'].get(_key))),
-                list(set(_pp_e['perms'].get(_key))),
+                list(set(r_type_perms['document']['perms'].get(_key))).sort(),
+                list(set(_pp_e['perms'].get(_key))).sort(),
                 f"{_key} : {list(set(r_type_perms['document']['perms'].get(_key)))}")
         for _key in r_type_perms['document']['compact'].keys():
             self.assertListEqual(
@@ -1415,8 +1415,8 @@ class BaseApiTests(APITestCase):
             f"map : {list(r_type_perms['map'].keys())}")
         for _key in r_type_perms['map']['perms'].keys():
             self.assertListEqual(
-                list(set(r_type_perms['map']['perms'].get(_key))),
-                list(set(_pp_e['perms'].get(_key))),
+                list(set(r_type_perms['map']['perms'].get(_key))).sort(),
+                list(set(_pp_e['perms'].get(_key))).sort(),
                 f"{_key} : {list(set(r_type_perms['map']['perms'].get(_key)))}")
         for _key in r_type_perms['map']['compact'].keys():
             self.assertListEqual(
