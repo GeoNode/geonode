@@ -352,7 +352,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
         geoapp_obj = geoapp_form.instance
 
         _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
-        _vals.update( { "resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL } )
+        _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
 
         resource_manager.update(
             geoapp_obj.uuid,
