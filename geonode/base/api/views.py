@@ -492,7 +492,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="perms-spec",
         methods=['get', 'put', 'patch', 'delete'],
         permission_classes=[
-            IsOwnerOrAdmin,
+            IsAuthenticated
         ])
     def resource_service_permissions(self, request, pk=None):
         """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'

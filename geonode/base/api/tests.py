@@ -16,12 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+import os
+import re
 import sys
 import json
 import logging
-import re
-import os
-from django.conf import settings
 import gisdata
 
 from PIL import Image
@@ -32,6 +32,7 @@ from unittest.mock import patch
 from urllib.parse import urljoin
 
 from django.urls import reverse
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -1948,6 +1949,55 @@ class BaseApiTests(APITestCase):
                 sleep(3.0)
         self.assertTrue(status, ExecutionRequest.STATUS_FINISHED)
 
+        # Test "bobby" can access the "permissions" endpoint
+        resource_service_permissions_url = reverse('base-resources-perms-spec', kwargs={'pk': resource.pk})
+        response = self.client.get(resource_service_permissions_url, format='json')
+        self.assertEqual(response.status_code, 200)
+        resource_perm_spec = response.data
+        self.assertEqual(
+            resource_perm_spec,
+            {
+                'users': [
+                    {
+                        'id': bobby.id,
+                        'username': 'bobby',
+                        'first_name': 'bobby',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240',
+                        'permissions': 'manage',
+                        'is_superuser': False,
+                        'is_staff': False
+                    },
+                    {
+                        'id': 1,
+                        'username': 'admin',
+                        'first_name': 'admin',
+                        'last_name': '',
+                        'avatar': 'https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240',
+                        'permissions': 'owner',
+                        'is_superuser': True,
+                        'is_staff': True
+                    }
+                ],
+                'organizations': [],
+                'groups': [
+                    {
+                        'id': 3,
+                        'title': 'anonymous',
+                        'name': 'anonymous',
+                        'permissions': 'view'},
+                    {
+                        'id': 2,
+                        'title': 'Registered Members',
+                        'name': 'registered-members',
+                        'permissions': 'none'
+                    }
+                ]
+            },
+            resource_perm_spec
+        )
+
+        # Test "bobby" can manage the resource permissions
         get_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': _map.get_self_resource().pk})}/", 'permissions')
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
@@ -1992,7 +2042,8 @@ class BaseApiTests(APITestCase):
                         'permissions': 'none'
                     }
                 ]
-            }
+            },
+            resource_perm_spec
         )
 
         # Fetch the map perms as user "bobby"
@@ -2040,7 +2091,8 @@ class BaseApiTests(APITestCase):
                         'permissions': 'none'
                     }
                 ]
-            }
+            },
+            resource_perm_spec
         )
 
     def test_resource_service_copy(self):
