@@ -70,9 +70,9 @@ from .serializers import (
     TopicCategorySerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
+    ExtraMetadataSerializer
 )
 from .pagination import GeoNodeApiPagination
-from geonode.base.api.serializers import ExtraMetadataSerializer
 from geonode.base.utils import validate_extra_metadata
 
 import logging
@@ -193,11 +193,24 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     """
     API endpoint that lists hierarchical keywords.
     """
+
+    def get_queryset(self):
+        resource_keywords = HierarchicalKeyword.resource_keywords_tree(self.request.user)
+
+        def _get_kw_hrefs(keywords, slugs: list = []):
+            for obj in keywords:
+                if obj.get('tags', []):
+                    slugs.append(obj.get('href'))
+                _get_kw_hrefs(obj.get('nodes', []), slugs)
+            return slugs
+
+        slugs = _get_kw_hrefs(resource_keywords)
+        return HierarchicalKeyword.objects.filter(slug__in=slugs)
+
     permission_classes = [AllowAny, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = HierarchicalKeyword.objects.all()
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
 
