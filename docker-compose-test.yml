@@ -60,7 +60,7 @@ services:
       - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
       - RESOLVER=127.0.0.11
     ports:
-      - "${HTTP_PORT}:80"
+      - "${HTTP_PORT}:${HTTP_PORT}"
       - "${HTTPS_PORT}:443"
     volumes:
       - nginx-confd:/etc/nginx
