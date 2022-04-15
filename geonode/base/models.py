@@ -421,6 +421,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
                         node = node["nodes"][-1]
                     else:
                         node = item_found
+                        node["nodes"] = getattr(node, "nodes", [])
 
         # All leaves appended but a child which is not a leaf may not be added
         # again, as a leaf, but only its tag count be updated
