@@ -23,6 +23,7 @@ from geonode.geoapps.forms import GeoAppForm
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.base.models import TopicCategory
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -135,3 +136,26 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
         })
         self.assertTrue(form.is_valid())
+
+    def test_geoapp_category_is_correctly_assigned_in_metadata_upload(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("geoapp_metadata", args=(self.geoapp.id,))
+
+        # assign a category to the GeoApp
+        category = TopicCategory.objects.order_by('identifier').first()
+        self.geoapp.category = category
+        self.geoapp.save()
+        # retrieving the new one
+        new_category = TopicCategory.objects.order_by('identifier').last()
+
+        response = self.client.post(url, data={
+            "resource-owner": self.geoapp.owner.id,
+            "resource-title": "geoapp_title",
+            "resource-date": "2022-01-24 16:38 pm",
+            "resource-date_type": "creation",
+            "resource-language": "eng",
+            "category_choice_field": new_category.id,
+        })
+        self.geoapp.refresh_from_db()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(new_category.identifier, self.geoapp.category.identifier)
