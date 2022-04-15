@@ -45,7 +45,9 @@ from django.contrib.contenttypes.models import ContentType
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.thumbs import utils as thumb_utils
-from geonode.security.permissions import PermSpecCompact
+from geonode.security.permissions import (
+    PermSpecCompact,
+    DATA_STYLABLE_RESOURCES_SUBTYPES)
 from geonode.security.utils import (
     perms_as_set,
     get_user_groups,
@@ -614,7 +616,8 @@ class ResourceManager(ResourceManagerInterface):
                         _resource.owner = owner
                         ResourceBase.objects.filter(uuid=_resource.uuid).update(owner=owner)
                     _owner = _resource.owner
-                    _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
+                    _resource_type = getattr(_resource, 'resource_type', None) or _resource.polymorphic_ctype.name
+                    _resource_subtype = (getattr(_resource, 'subtype', None) or '').lower()
 
                     # default permissions for anonymous users
                     anonymous_group, _ = Group.objects.get_or_create(name='anonymous')
@@ -674,7 +677,10 @@ class ResourceManager(ResourceManagerInterface):
                                 if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
-                                    assign_perm(perm, anonymous_group, _resource.dataset)
+                                    if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                        pass
+                                    else:
+                                        assign_perm(perm, anonymous_group, _resource.dataset)
                                 elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
@@ -687,7 +693,10 @@ class ResourceManager(ResourceManagerInterface):
                                         if _resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
                                                 'add_dataset', 'change_dataset', 'delete_dataset'):
-                                            assign_perm(perm, _user, _resource.dataset)
+                                            if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                                pass
+                                            else:
+                                                assign_perm(perm, _user, _resource.dataset)
                                         elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
 
@@ -699,7 +708,10 @@ class ResourceManager(ResourceManagerInterface):
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _group, _resource.dataset)
+                                        if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                            pass
+                                        else:
+                                            assign_perm(perm, _group, _resource.dataset)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
 
@@ -713,7 +725,10 @@ class ResourceManager(ResourceManagerInterface):
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _user, _resource.dataset)
+                                        if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                            pass
+                                        else:
+                                            assign_perm(perm, _user, _resource.dataset)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
                     else:
@@ -741,7 +756,7 @@ class ResourceManager(ResourceManagerInterface):
                                         _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
 
-                        if _resource.__class__.__name__ == 'Dataset':
+                        if _resource_type == 'dataset':
                             # only for layer owner
                             assign_perm('change_dataset_data', _owner, _resource)
                             assign_perm('change_dataset_style', _owner, _resource)
@@ -752,7 +767,7 @@ class ResourceManager(ResourceManagerInterface):
 
                     # Fixup GIS Backend Security Rules Accordingly
                     if not self._concrete_resource_manager.set_permissions(
-                            uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
+                            uuid, instance=_resource, owner=owner, permissions=_resource.get_all_level_info(), created=created):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer
                         logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)

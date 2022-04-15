@@ -1119,274 +1119,310 @@ class BaseApiTests(APITestCase):
         self.assertFalse('service' in r_type_names)
 
         r_type_perms = {r_type['name']: r_type['allowed_perms'] for r_type in r_types}
-        self.assertDictEqual(
-            r_type_perms['dataset'],
-            {
-                "perms": {
-                    "anonymous": [
-                        "view_resourcebase",
-                        "download_resourcebase"
-                    ],
-                    "default": [
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase",
-                        "download_resourcebase",
-                        "change_dataset_data",
-                        "change_dataset_style"
-                    ],
-                    "registered-members": [
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase",
-                        "download_resourcebase",
-                        "change_dataset_data",
-                        "change_dataset_style"
-                    ]
-                },
-                "compact": {
-                    "anonymous": [
-                        {
-                            "name": "none",
-                            "label": "None"
-                        },
-                        {
-                            "name": "view",
-                            "label": "View"
-                        },
-                        {
-                            "name": "download",
-                            "label": "Download"
-                        }
-                    ],
-                    "default": [
-                        {
-                            "name": "view",
-                            "label": "View"
-                        },
-                        {
-                            "name": "download",
-                            "label": "Download"
-                        },
-                        {
-                            "name": "edit",
-                            "label": "Edit"
-                        },
-                        {
-                            "name": "manage",
-                            "label": "Manage"
-                        },
-                        {
-                            "name": "owner",
-                            "label": "Owner"
-                        },
-                        {
-                            "name": "owner",
-                            "label": "Owner"
-                        }
-                    ],
-                    "registered-members": [
-                        {
-                            "name": "none",
-                            "label": "None"
-                        },
-                        {
-                            "name": "view",
-                            "label": "View"
-                        },
-                        {
-                            "name": "download",
-                            "label": "Download"
-                        },
-                        {
-                            "name": "edit",
-                            "label": "Edit"
-                        },
-                        {
-                            "name": "manage",
-                            "label": "Manage"
-                        }
-                    ]
-                }
+        _pp_e = {
+            "perms": {
+                "anonymous": [
+                    "view_resourcebase",
+                    "download_resourcebase"
+                ],
+                "default": [
+                    "delete_resourcebase",
+                    "view_resourcebase",
+                    "change_resourcebase_metadata",
+                    "change_resourcebase_permissions",
+                    "publish_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "download_resourcebase",
+                    "change_dataset_data",
+                    "change_dataset_style"
+                ],
+                "registered-members": [
+                    "delete_resourcebase",
+                    "view_resourcebase",
+                    "change_resourcebase_permissions",
+                    "publish_resourcebase",
+                    "change_resourcebase",
+                    "change_resourcebase_metadata",
+                    "download_resourcebase",
+                    "change_dataset_data",
+                    "change_dataset_style"
+                ]
+            },
+            "compact": {
+                "anonymous": [
+                    {
+                        "name": "none",
+                        "label": "None"
+                    },
+                    {
+                        "name": "view",
+                        "label": "View"
+                    },
+                    {
+                        "name": "download",
+                        "label": "Download"
+                    }
+                ],
+                "default": [
+                    {
+                        "name": "view",
+                        "label": "View"
+                    },
+                    {
+                        "name": "download",
+                        "label": "Download"
+                    },
+                    {
+                        "name": "edit",
+                        "label": "Edit"
+                    },
+                    {
+                        "name": "manage",
+                        "label": "Manage"
+                    },
+                    {
+                        "name": "owner",
+                        "label": "Owner"
+                    },
+                    {
+                        "name": "owner",
+                        "label": "Owner"
+                    }
+                ],
+                "registered-members": [
+                    {
+                        "name": "none",
+                        "label": "None"
+                    },
+                    {
+                        "name": "view",
+                        "label": "View"
+                    },
+                    {
+                        "name": "download",
+                        "label": "Download"
+                    },
+                    {
+                        "name": "edit",
+                        "label": "Edit"
+                    },
+                    {
+                        "name": "manage",
+                        "label": "Manage"
+                    }
+                ]
             }
-        )
-        self.assertDictEqual(
-            r_type_perms['document'],
-            {
-                "perms": {
-                    "anonymous": [
-                        "view_resourcebase",
-                        "download_resourcebase"
-                    ],
-                    "default": [
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase",
-                        "download_resourcebase"
-                    ],
-                    "registered-members": [
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase",
-                        "download_resourcebase"
-                    ]
-                },
-                "compact": {
-                    "anonymous": [
-                        {
-                            "name": "none",
-                            "label": "None"
-                        },
-                        {
-                            "name": "view",
-                            "label": "View Metadata"
-                        },
-                        {
-                            "name": "download",
-                            "label": "View and Download"
-                        }
-                    ],
-                    "default": [
-                        {
-                            "name": "view",
-                            "label": "View Metadata"
-                        },
-                        {
-                            "name": "download",
-                            "label": "View and Download"
-                        },
-                        {
-                            "name": "edit",
-                            "label": "Edit"
-                        },
-                        {
-                            "name": "manage",
-                            "label": "Manage"
-                        },
-                        {
-                            "name": "owner",
-                            "label": "Owner"
-                        },
-                        {
-                            "name": "owner",
-                            "label": "Owner"
-                        }
-                    ],
-                    "registered-members": [
-                        {
-                            "name": "none",
-                            "label": "None"
-                        },
-                        {
-                            "name": "view",
-                            "label": "View Metadata"
-                        },
-                        {
-                            "name": "download",
-                            "label": "View and Download"
-                        },
-                        {
-                            "name": "edit",
-                            "label": "Edit"
-                        },
-                        {
-                            "name": "manage",
-                            "label": "Manage"
-                        }
-                    ]
-                }
+        }
+        self.assertListEqual(
+            list(r_type_perms['dataset'].keys()),
+            list(_pp_e.keys()),
+            f"dataset : {list(r_type_perms['dataset'].keys())}")
+        for _key in r_type_perms['dataset']['perms'].keys():
+            self.assertListEqual(
+                list(set(r_type_perms['dataset']['perms'].get(_key))),
+                list(set(_pp_e['perms'].get(_key))),
+                f"{_key} : {list(set(r_type_perms['dataset']['perms'].get(_key)))}")
+        for _key in r_type_perms['dataset']['compact'].keys():
+            self.assertListEqual(
+                r_type_perms['dataset']['compact'].get(_key),
+                _pp_e['compact'].get(_key),
+                f"{_key} : {r_type_perms['dataset']['compact'].get(_key)}")
+
+        _pp_e = {
+            "perms": {
+                "anonymous": [
+                    "view_resourcebase",
+                    "download_resourcebase"
+                ],
+                "default": [
+                    "change_resourcebase_metadata",
+                    "delete_resourcebase",
+                    "change_resourcebase_permissions",
+                    "publish_resourcebase",
+                    "change_resourcebase",
+                    "view_resourcebase",
+                    "download_resourcebase"
+                ],
+                "registered-members": [
+                    "change_resourcebase_metadata",
+                    "delete_resourcebase",
+                    "change_resourcebase_permissions",
+                    "publish_resourcebase",
+                    "change_resourcebase",
+                    "view_resourcebase",
+                    "download_resourcebase"
+                ]
+            },
+            "compact": {
+                "anonymous": [
+                    {
+                        "name": "none",
+                        "label": "None"
+                    },
+                    {
+                        "name": "view",
+                        "label": "View Metadata"
+                    },
+                    {
+                        "name": "download",
+                        "label": "View and Download"
+                    }
+                ],
+                "default": [
+                    {
+                        "name": "view",
+                        "label": "View Metadata"
+                    },
+                    {
+                        "name": "download",
+                        "label": "View and Download"
+                    },
+                    {
+                        "name": "edit",
+                        "label": "Edit"
+                    },
+                    {
+                        "name": "manage",
+                        "label": "Manage"
+                    },
+                    {
+                        "name": "owner",
+                        "label": "Owner"
+                    },
+                    {
+                        "name": "owner",
+                        "label": "Owner"
+                    }
+                ],
+                "registered-members": [
+                    {
+                        "name": "none",
+                        "label": "None"
+                    },
+                    {
+                        "name": "view",
+                        "label": "View Metadata"
+                    },
+                    {
+                        "name": "download",
+                        "label": "View and Download"
+                    },
+                    {
+                        "name": "edit",
+                        "label": "Edit"
+                    },
+                    {
+                        "name": "manage",
+                        "label": "Manage"
+                    }
+                ]
             }
-        )
-        self.assertDictEqual(
-            r_type_perms['map'],
-            {
-                "perms": {
-                    "anonymous": [
-                        "view_resourcebase",
-                    ],
-                    "default": [
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase"
-                    ],
-                    "registered-members": [
-                        "change_resourcebase_metadata",
-                        "delete_resourcebase",
-                        "change_resourcebase_permissions",
-                        "publish_resourcebase",
-                        "change_resourcebase",
-                        "view_resourcebase"
-                    ]
-                },
-                "compact": {
-                    "anonymous": [
-                        {
-                            "name": "none",
-                            "label": "None"
-                        },
-                        {
-                            "name": "view",
-                            "label": "View"
-                        }
-                    ],
-                    "default": [
-                        {
-                            "name": "view",
-                            "label": "View"
-                        },
-                        {
-                            "name": "edit",
-                            "label": "Edit"
-                        },
-                        {
-                            "name": "manage",
-                            "label": "Manage"
-                        },
-                        {
-                            "name": "owner",
-                            "label": "Owner"
-                        },
-                        {
-                            "name": "owner",
-                            "label": "Owner"
-                        }
-                    ],
-                    "registered-members": [
-                        {
-                            "name": "none",
-                            "label": "None"
-                        },
-                        {
-                            "name": "view",
-                            "label": "View"
-                        },
-                        {
-                            "name": "edit",
-                            "label": "Edit"
-                        },
-                        {
-                            "name": "manage",
-                            "label": "Manage"
-                        }
-                    ]
-                }
+        }
+        self.assertListEqual(
+            list(r_type_perms['document'].keys()),
+            list(_pp_e.keys()),
+            f"document : {list(r_type_perms['document'].keys())}")
+        for _key in r_type_perms['document']['perms'].keys():
+            self.assertListEqual(
+                list(set(r_type_perms['document']['perms'].get(_key))),
+                list(set(_pp_e['perms'].get(_key))),
+                f"{_key} : {list(set(r_type_perms['document']['perms'].get(_key)))}")
+        for _key in r_type_perms['document']['compact'].keys():
+            self.assertListEqual(
+                r_type_perms['document']['compact'].get(_key),
+                _pp_e['compact'].get(_key),
+                f"{_key} : {r_type_perms['document']['compact'].get(_key)}")
+
+        _pp_e = {
+            "perms": {
+                "anonymous": [
+                    "view_resourcebase",
+                ],
+                "default": [
+                    "change_resourcebase_metadata",
+                    "delete_resourcebase",
+                    "change_resourcebase_permissions",
+                    "publish_resourcebase",
+                    "change_resourcebase",
+                    "view_resourcebase"
+                ],
+                "registered-members": [
+                    "change_resourcebase_metadata",
+                    "delete_resourcebase",
+                    "change_resourcebase_permissions",
+                    "publish_resourcebase",
+                    "change_resourcebase",
+                    "view_resourcebase"
+                ]
+            },
+            "compact": {
+                "anonymous": [
+                    {
+                        "name": "none",
+                        "label": "None"
+                    },
+                    {
+                        "name": "view",
+                        "label": "View"
+                    }
+                ],
+                "default": [
+                    {
+                        "name": "view",
+                        "label": "View"
+                    },
+                    {
+                        "name": "edit",
+                        "label": "Edit"
+                    },
+                    {
+                        "name": "manage",
+                        "label": "Manage"
+                    },
+                    {
+                        "name": "owner",
+                        "label": "Owner"
+                    },
+                    {
+                        "name": "owner",
+                        "label": "Owner"
+                    }
+                ],
+                "registered-members": [
+                    {
+                        "name": "none",
+                        "label": "None"
+                    },
+                    {
+                        "name": "view",
+                        "label": "View"
+                    },
+                    {
+                        "name": "edit",
+                        "label": "Edit"
+                    },
+                    {
+                        "name": "manage",
+                        "label": "Manage"
+                    }
+                ]
             }
-        )
+        }
+        self.assertListEqual(
+            list(r_type_perms['map'].keys()),
+            list(_pp_e.keys()),
+            f"map : {list(r_type_perms['map'].keys())}")
+        for _key in r_type_perms['map']['perms'].keys():
+            self.assertListEqual(
+                list(set(r_type_perms['map']['perms'].get(_key))),
+                list(set(_pp_e['perms'].get(_key))),
+                f"{_key} : {list(set(r_type_perms['map']['perms'].get(_key)))}")
+        for _key in r_type_perms['map']['compact'].keys():
+            self.assertListEqual(
+                r_type_perms['map']['compact'].get(_key),
+                _pp_e['compact'].get(_key),
+                f"{_key} : {r_type_perms['map']['compact'].get(_key)}")
 
     def test_get_favorites(self):
         """
@@ -1635,6 +1671,80 @@ class BaseApiTests(APITestCase):
         response = self.client.get(f"{url}?filter{{name.icontains}}=Africa", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 0)
+
+        # Testing Hierarchical Keywords tree
+        try:
+            HierarchicalKeyword.objects.filter(slug__in=['a', 'a1', 'a2', 'b', 'b1']).delete()
+            HierarchicalKeyword.add_root(name='a')
+            HierarchicalKeyword.add_root(name='b')
+            a = HierarchicalKeyword.objects.get(slug='a')
+            b = HierarchicalKeyword.objects.get(slug='b')
+            a.add_child(name='a1')
+            a.add_child(name='a2')
+            b.add_child(name='b1')
+            resources = ResourceBase.objects.filter(owner__username='bobby')
+            res1 = resources.first()
+            res2 = resources.last()
+            self.assertNotEqual(res1, res2)
+            res1.keywords.add(HierarchicalKeyword.objects.get(slug='a1'))
+            res1.keywords.add(HierarchicalKeyword.objects.get(slug='a2'))
+            res2.keywords.add(HierarchicalKeyword.objects.get(slug='b1'))
+            resource_keywords = HierarchicalKeyword.resource_keywords_tree(bobby)
+            logger.error(resource_keywords)
+
+            """
+            Final api outcome will be something like
+            [
+                {
+                    'id': 116,
+                    'text': 'a',
+                    'href': 'a',
+                    'tags': [],
+                    'nodes': [
+                        {
+                            'id': 118,
+                            'text': 'a1',
+                            'href': 'a1',
+                            'tags': [1]
+                        },
+                        {
+                            'id': 119,
+                            'text': 'a2',
+                            'href': 'a2',
+                            'tags': [1]
+                        }
+                    ]
+                },
+                {
+                    'id': 117,
+                    'text': 'b',
+                    'href': 'b',
+                    'tags': [],
+                    'nodes': [
+                        {
+                            'id': 120,
+                            'text': 'b1',
+                            'href': 'b1',
+                            'tags': [1]
+                        }
+                    ]
+                },
+                ...
+            ]
+            """
+            url = reverse('keywords-list')
+            # Authenticated user
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            for _kw in response.data["keywords"]:
+                if _kw.get('href') in ['a', 'b']:
+                    self.assertListEqual(_kw.get('tags'), [], _kw.get('tags'))
+                    self.assertEqual(len(_kw.get('nodes')), 2)
+                    for _kw_child in _kw.get('nodes'):
+                        self.assertEqual(_kw_child.get('tags')[0], 1)
+        finally:
+            HierarchicalKeyword.objects.filter(slug__in=['a', 'a1', 'a2', 'b', 'b1']).delete()
 
     def test_tkeywords_list(self):
         """
