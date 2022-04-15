@@ -273,7 +273,7 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
       - owner: admin permissions
     """
 
-    def safe_list(perms): return list(set(copy.deepcopy(perms))).sort() if perms else []
+    def safe_list(perms): return sorted(list(set(copy.deepcopy(perms)))) if perms else []
 
     if is_owner:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
