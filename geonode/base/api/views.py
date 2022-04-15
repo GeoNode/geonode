@@ -228,7 +228,15 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
 
     def get_queryset(self):
         resource_keywords = HierarchicalKeyword.resource_keywords_tree(self.request.user)
-        slugs = [obj.get('href') for obj in resource_keywords]
+
+        def _get_kw_hrefs(keywords, slugs: list = []):
+            for obj in keywords:
+                if obj.get('tags', []):
+                    slugs.append(obj.get('href'))
+                _get_kw_hrefs(obj.get('nodes', []), slugs)
+            return slugs
+
+        slugs = _get_kw_hrefs(resource_keywords)
         return HierarchicalKeyword.objects.filter(slug__in=slugs)
 
     permission_classes = [AllowAny, ]

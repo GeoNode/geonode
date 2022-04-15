@@ -1806,7 +1806,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         for _key in _pp.extended.keys():
             self.assertListEqual(list(_pp.extended.get(_key).keys()), list(_pp_e.get(_key).keys()))
             for __key in _pp.extended.get(_key).keys():
-                self.assertListEqual(list(set(_pp.extended.get(_key).get(__key))), list(set(_pp_e.get(_key).get(__key))))
+                self.assertListEqual(
+                    sorted(list(set(_pp.extended.get(_key).get(__key)))),
+                    sorted(list(set(_pp_e.get(_key).get(__key))))
+                )
 
         _pp2 = PermSpecCompact({
             "users":
@@ -1857,7 +1860,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         for _key in _pp.extended.keys():
             self.assertListEqual(list(_pp.extended.get(_key).keys()), list(_pp_e.get(_key).keys()))
             for __key in _pp.extended.get(_key).keys():
-                self.assertListEqual(list(set(_pp.extended.get(_key).get(__key))), list(set(_pp_e.get(_key).get(__key))))
+                self.assertListEqual(
+                    sorted(list(set(_pp.extended.get(_key).get(__key)))),
+                    sorted(list(set(_pp_e.get(_key).get(__key))))
+                )
 
         # Test "download" permissions retention policy
         # 1. "download" permissions are allowed on "Documents"
