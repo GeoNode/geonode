@@ -273,7 +273,6 @@ def _check_geoserver_store(store_name, dataset_type, overwrite):
                             raise GeoNodeException(msg)
 
 
-@transaction.atomic
 def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=True,
               mosaic=False, append_to_mosaic_opts=None, append_to_mosaic_name=None,
               mosaic_time_regex=None, mosaic_time_value=None,
@@ -592,7 +591,6 @@ def srs_step(upload_session, source, target):
     upload_session = Upload.objects.update_from_session(upload_session)
 
 
-@transaction.atomic
 def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
     import_session = upload_session.import_session
     if import_session:
@@ -621,8 +619,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 upload_session.import_session = import_session.reload()
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
-                # Create the style and assign it to the created resource
-                # FIXME: Put this in gsconfig.py
+                if import_session.tasks is None or len(import_session.tasks) == 0:
+                    return saved_dataset
+
                 task = import_session.tasks[0]
                 task.set_charset(charset)
 
@@ -894,19 +893,24 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 permissions = upload_session.permissions
 
                 # Finalize Upload
-                resource_manager.set_permissions(
-                    None, instance=saved_dataset, permissions=permissions, created=created)
-                resource_manager.update(
-                    None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
-                resource_manager.exec(
-                    'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-                resource_manager.exec(
-                    'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
-                resource_manager.set_thumbnail(
-                    None, instance=saved_dataset)
+                try:
+                    with transaction.atomic():
+                        resource_manager.set_permissions(
+                            None, instance=saved_dataset, permissions=permissions, created=created)
+                        resource_manager.update(
+                            None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
+                        resource_manager.exec(
+                            'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
+                        resource_manager.exec(
+                            'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+                        resource_manager.set_thumbnail(
+                            None, instance=saved_dataset)
 
-                if Upload.objects.filter(resource=saved_dataset).exists():
-                    Upload.objects.filter(resource=saved_dataset).update(complete=True)
-                    [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
+                        Upload.objects.filter(resource=saved_dataset).update(complete=True)
+                        [u.set_processing_state(enumerations.STATE_PROCESSED) for u in Upload.objects.filter(resource=saved_dataset)]
+                except Exception as e:
+                    logger.exception(e)
+                    Upload.objects.filter(resource=saved_dataset).update(complete=False)
+                    [u.set_processing_state(enumerations.STATE_INVALID) for u in Upload.objects.filter(resource=saved_dataset)]
 
     return saved_dataset

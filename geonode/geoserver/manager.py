@@ -16,8 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
-import shutil
 import typing
 import logging
 import tempfile
@@ -120,12 +120,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
                     if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                         geoserver_cascading_delete.apply_async((_real_instance.alternate,))
-                        if "geonode.upload" in settings.INSTALLED_APPS:
-                            from geonode.upload.models import Upload
-                            for upload in Upload.objects.filter(resource_id=_real_instance.id):
-                                if upload.upload_dir and os.path.exists(upload.upload_dir):
-                                    shutil.rmtree(upload.upload_dir)
-                                upload.delete()
                 elif isinstance(_real_instance, Map):
                     geoserver_delete_map.apply_async((_real_instance.id, ))
             except Exception as e:
