@@ -645,7 +645,7 @@ def final_step_view(req, upload_session):
                 force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
                 return json_response(
                     {
-                        'status': 'pending',
+                        'status': 'running',
                         'success': True,
                         'id': import_session.id,
                         'redirect_to': f"/upload/final?id={import_session.id}{force_ajax}"

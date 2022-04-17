@@ -279,7 +279,6 @@ def _get_layer_type(spatial_files):
     return the_layer_type
 
 
-@transaction.atomic
 def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=True,
               mosaic=False, append_to_mosaic_opts=None, append_to_mosaic_name=None,
               mosaic_time_regex=None, mosaic_time_value=None,
@@ -625,7 +624,6 @@ def srs_step(upload_session, source, target):
     Upload.objects.update_from_session(upload_session)
 
 
-@transaction.atomic
 def final_step(upload_session, user, charset="UTF-8", layer_id=None):
     import_session = upload_session.import_session
     if import_session:
@@ -654,11 +652,11 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         _("The GeoServer Import Session is no more available"), e)
 
                 upload_session.import_session = import_session.reload()
+                upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
-                upload_session = Upload.objects.update_from_session(upload_session)
+                if import_session.tasks is None or len(import_session.tasks) == 0:
+                    return saved_layer
 
-                # Create the style and assign it to the created resource
-                # FIXME: Put this in gsconfig.py
                 task = import_session.tasks[0]
                 task.set_charset(charset)
                 overwrite = task.updateMode == 'REPLACE'
@@ -881,135 +879,150 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     else:
                         raise GeoNodeException(f"There's an incosistent number of Datasets on the DB for {task.layer.name}")
 
-                assert _upload
                 assert saved_layer
+
+                # Update the state from session...
+                upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
                 if not created and not overwrite:
                     return saved_layer
 
-                # Create a new upload session
-                geonode_upload_session, created = UploadSession.objects.get_or_create(
-                    resource=saved_layer, user=user
-                )
-                geonode_upload_session.processed = False
-                geonode_upload_session.save()
-                upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
+                # Hide the layer until the upload process finishes...
+                saved_layer.set_dirty_state()
 
-                # Add them to the upload session (new file fields are created).
-                assigned_name = None
+                # Finalize the upload...
+                # Set default permissions on the newly created layer and send notifications
+                permissions = upload_session.permissions
 
-                # Update Layer with information coming from XML File if available
-                saved_layer = _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals)
+                # Finalize Upload
+                try:
+                    with transaction.atomic():
+                        # Create a new upload session
+                        geonode_upload_session, created = UploadSession.objects.get_or_create(
+                            resource=saved_layer, user=user
+                        )
+                        geonode_upload_session.processed = False
+                        geonode_upload_session.save()
+                        upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
-                def _store_file(saved_layer,
+                        # Add them to the upload session (new file fields are created).
+                        assigned_name = None
+
+                        # Update Layer with information coming from XML File if available
+                        saved_layer = _update_layer_with_xml_info(saved_layer, xml_file, regions, keywords, vals)
+
+                        def _store_file(saved_layer,
+                                        geonode_upload_session,
+                                        base_file,
+                                        assigned_name,
+                                        base=False):
+                            if os.path.exists(base_file):
+                                with open(base_file, 'rb') as f:
+                                    file_name, type_name = os.path.splitext(os.path.basename(base_file))
+                                    geonode_upload_session.layerfile_set.create(
+                                        name=file_name,
+                                        base=base,
+                                        file=File(
+                                            f, name=f'{assigned_name or saved_layer.name}{type_name}'))
+                                    # save the system assigned name for the remaining files
+                                    if not assigned_name:
+                                        the_file = geonode_upload_session.layerfile_set.first().file.name
+                                        assigned_name = os.path.splitext(os.path.basename(the_file))[0]
+
+                                return assigned_name
+
+                        if upload_session.base_file:
+                            uploaded_files = upload_session.base_file[0]
+                            base_file = uploaded_files.base_file
+                            aux_files = uploaded_files.auxillary_files
+                            sld_files = uploaded_files.sld_files
+                            xml_files = uploaded_files.xml_files
+
+                            assigned_name = _store_file(
+                                saved_layer,
                                 geonode_upload_session,
                                 base_file,
                                 assigned_name,
-                                base=False):
-                    if os.path.exists(base_file):
-                        with open(base_file, 'rb') as f:
-                            file_name, type_name = os.path.splitext(os.path.basename(base_file))
-                            geonode_upload_session.layerfile_set.create(
-                                name=file_name,
-                                base=base,
-                                file=File(
-                                    f, name=f'{assigned_name or saved_layer.name}{type_name}'))
-                            # save the system assigned name for the remaining files
-                            if not assigned_name:
-                                the_file = geonode_upload_session.layerfile_set.first().file.name
-                                assigned_name = os.path.splitext(os.path.basename(the_file))[0]
+                                base=True)
 
-                        return assigned_name
+                            for _f in aux_files:
+                                _store_file(saved_layer,
+                                            geonode_upload_session,
+                                            _f,
+                                            assigned_name)
 
-                if upload_session.base_file:
-                    uploaded_files = upload_session.base_file[0]
-                    base_file = uploaded_files.base_file
-                    aux_files = uploaded_files.auxillary_files
-                    sld_files = uploaded_files.sld_files
-                    xml_files = uploaded_files.xml_files
+                            for _f in sld_files:
+                                _store_file(saved_layer,
+                                            geonode_upload_session,
+                                            _f,
+                                            assigned_name)
 
-                    assigned_name = _store_file(
-                        saved_layer,
-                        geonode_upload_session,
-                        base_file,
-                        assigned_name,
-                        base=True)
+                            for _f in xml_files:
+                                _store_file(saved_layer,
+                                            geonode_upload_session,
+                                            _f,
+                                            assigned_name)
 
-                    for _f in aux_files:
-                        _store_file(saved_layer,
-                                    geonode_upload_session,
-                                    _f,
-                                    assigned_name)
+                        # @todo if layer was not created, need to ensure upload target is
+                        # same as existing target
+                        # Create the points of contact records for the layer
+                        _log(f'Creating points of contact records for {name}')
+                        saved_layer.poc = user
+                        saved_layer.metadata_author = user
+                        saved_layer.metadata_uploaded = metadata_uploaded
 
-                    for _f in sld_files:
-                        _store_file(saved_layer,
-                                    geonode_upload_session,
-                                    _f,
-                                    assigned_name)
+                        _log('Creating style for [%s]', name)
+                        # look for SLD
+                        sld_file = upload_session.base_file[0].sld_files
+                        sld_uploaded = False
+                        if sld_file and os.path.exists(sld_file[0]):
+                            # If it's contained within a zip, need to extract it
+                            if upload_session.base_file.archive:
+                                archive = upload_session.base_file.archive
+                                _log(f'using uploaded sld file from {archive}')
+                                zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
+                                zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
+                                # Assign the absolute path to this file
+                                sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
+                            else:
+                                _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
+                                _log(f"copying [{sld_file[0]}] to [{_sld_file}]")
+                                try:
+                                    shutil.copyfile(sld_file[0], _sld_file)
+                                    sld_file = _sld_file
+                                except (IsADirectoryError, shutil.SameFileError) as e:
+                                    logger.exception(e)
+                                    sld_file = sld_file[0]
+                                except Exception as e:
+                                    logger.exception(e)
+                                    raise UploadException.from_exc(_('Error uploading Dataset'), e)
+                            sld_uploaded = True
+                        else:
+                            # get_files will not find the sld if it doesn't match the base name
+                            # so we've worked around that in the view - if provided, it will be here
+                            if upload_session.import_sld_file:
+                                _log('using provided sld file')
+                                base_file = upload_session.base_file
+                                sld_file = base_file[0].sld_files[0]
+                            sld_uploaded = False
+                        _log(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
 
-                    for _f in xml_files:
-                        _store_file(saved_layer,
-                                    geonode_upload_session,
-                                    _f,
-                                    assigned_name)
+                        if upload_session.time_info:
+                            set_time_info(saved_layer, **upload_session.time_info)
 
-                # @todo if layer was not created, need to ensure upload target is
-                # same as existing target
-                # Create the points of contact records for the layer
-                _log(f'Creating points of contact records for {name}')
-                saved_layer.poc = user
-                saved_layer.metadata_author = user
-                saved_layer.metadata_uploaded = metadata_uploaded
+                        # Set default permissions on the newly created layer and send notifications
+                        geoserver_finalize_upload.apply(
+                            (import_session.id, saved_layer.id, permissions, created,
+                             xml_file, sld_file, sld_uploaded, upload_session.tempdir))
 
-                _log('Creating style for [%s]', name)
-                # look for SLD
-                sld_file = upload_session.base_file[0].sld_files
-                sld_uploaded = False
-                if sld_file and os.path.exists(sld_file[0]):
-                    # If it's contained within a zip, need to extract it
-                    if upload_session.base_file.archive:
-                        archive = upload_session.base_file.archive
-                        _log(f'using uploaded sld file from {archive}')
-                        zf = zipfile.ZipFile(archive, 'r', allowZip64=True)
-                        zf.extract(sld_file[0], os.path.dirname(archive), path=upload_session.tempdir)
-                        # Assign the absolute path to this file
-                        sld_file[0] = f"{os.path.dirname(archive)}/{sld_file[0]}"
-                    else:
-                        _sld_file = f"{os.path.dirname(upload_session.tempdir)}/{os.path.basename(sld_file[0])}"
-                        _log(f"copying [{sld_file[0]}] to [{_sld_file}]")
-                        try:
-                            shutil.copyfile(sld_file[0], _sld_file)
-                            sld_file = _sld_file
-                        except (IsADirectoryError, shutil.SameFileError) as e:
-                            logger.exception(e)
-                            sld_file = sld_file[0]
-                        except Exception as e:
-                            logger.exception(e)
-                            raise UploadException.from_exc(_('Error uploading Dataset'), e)
-                    sld_uploaded = True
-                else:
-                    # get_files will not find the sld if it doesn't match the base name
-                    # so we've worked around that in the view - if provided, it will be here
-                    if upload_session.import_sld_file:
-                        _log('using provided sld file')
-                        base_file = upload_session.base_file
-                        sld_file = base_file[0].sld_files[0]
-                    sld_uploaded = False
-                _log(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
+                        saved_layer = utils.metadata_storers(saved_layer, custom)
 
-                if upload_session.time_info:
-                    set_time_info(saved_layer, **upload_session.time_info)
-
-                # Set default permissions on the newly created layer and send notifications
-                permissions = upload_session.permissions
-                geoserver_finalize_upload.apply(
-                    (import_session.id, saved_layer.id, permissions, created,
-                     xml_file, sld_file, sld_uploaded, upload_session.tempdir))
-
-                saved_layer = utils.metadata_storers(saved_layer, custom)
-
-    if upload_session:
-        Upload.objects.update_from_session(upload_session, layer=saved_layer)
+                        Upload.objects.filter(layer=saved_layer).update(complete=True)
+                        [u.set_processing_state(Upload.STATE_PROCESSED) for u in Upload.objects.filter(layer=saved_layer)]
+                except Exception as e:
+                    logger.exception(e)
+                    Upload.objects.filter(layer=saved_layer).update(complete=False)
+                    [u.set_processing_state(Upload.STATE_INVALID) for u in Upload.objects.filter(layer=saved_layer)]
 
     return saved_layer
 
