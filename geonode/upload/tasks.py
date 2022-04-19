@@ -211,11 +211,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                                         _content = _content.decode('UTF-8')
                                     _response_json = json.loads(_content)
                                     _success = _response_json.get('success', False)
-                                    _status = _response_json.get('status', 'error')
-                                    if _status == 'error':
-                                        # GeoNode Layer creation errored!
-                                        _upload.set_processing_state(Upload.STATE_INVALID)
-                                    elif _upload.state != Upload.STATE_PROCESSED:
+                                    if _upload.state != Upload.STATE_PROCESSED:
                                         if _upload.layer and _upload.layer.processed:
                                             # GeoNode Layer successfully processed...
                                             _upload.set_processing_state(Upload.STATE_PROCESSED)
