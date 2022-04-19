@@ -507,6 +507,18 @@ def document_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        _group_status_changed = False
+        _approval_status_changed = False
+        if 'group' in document_form.changed_data:
+            _group_status_changed = True
+            vals['group'] = document_form.cleaned_data.get('group')
+        if any([x in document_form.changed_data for x in ['is_approved', 'is_published']]):
+            _approval_status_changed = True
+            vals['is_approved'] = document_form.cleaned_data.get('is_approved', document.is_approved)
+            vals['is_published'] = document_form.cleaned_data.get('is_published', document.is_published)
+        document.save(notify=True)
+        document.set_permissions(approval_status_changed=_approval_status_changed, group_status_changed=_group_status_changed)
         return HttpResponse(json.dumps({'message': message}))
     elif request.method == "POST" and (not document_form.is_valid(
     ) or not category_form.is_valid() or not tkeywords_form.is_valid()):

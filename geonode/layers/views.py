@@ -1065,7 +1065,18 @@ def layer_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        _group_status_changed = False
+        _approval_status_changed = False
+        if 'group' in layer_form.changed_data:
+            _group_status_changed = True
+            vals['group'] = layer_form.cleaned_data.get('group')
+        if any([x in layer_form.changed_data for x in ['is_approved', 'is_published']]):
+            _approval_status_changed = True
+            vals['is_approved'] = layer_form.cleaned_data.get('is_approved', layer.is_approved)
+            vals['is_published'] = layer_form.cleaned_data.get('is_published', layer.is_published)
         layer.save(notify=True)
+        layer.set_permissions(approval_status_changed=_approval_status_changed, group_status_changed=_group_status_changed)
         return HttpResponse(json.dumps({'message': message}))
 
     if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, layer):

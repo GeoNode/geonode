@@ -374,8 +374,18 @@ def map_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        _group_status_changed = False
+        _approval_status_changed = False
+        if 'group' in map_form.changed_data:
+            _group_status_changed = True
+            vals['group'] = map_form.cleaned_data.get('group')
+        if any([x in map_form.changed_data for x in ['is_approved', 'is_published']]):
+            _approval_status_changed = True
+            vals['is_approved'] = map_form.cleaned_data.get('is_approved', map_obj.is_approved)
+            vals['is_published'] = map_form.cleaned_data.get('is_published', map_obj.is_published)
         map_obj.save(notify=True)
-
+        map_obj.set_permissions(approval_status_changed=_approval_status_changed, group_status_changed=_group_status_changed)
         return HttpResponse(json.dumps({'message': message}))
     elif request.method == "POST" and (not map_form.is_valid(
     ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
