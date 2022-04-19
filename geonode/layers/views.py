@@ -726,10 +726,17 @@ def dataset_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        if 'group' in dataset_form.changed_data:
+            vals['group'] = dataset_form.cleaned_data.get('group')
+        if any([x in dataset_form.changed_data for x in ['is_approved', 'is_published']]):
+            vals['is_approved'] = dataset_form.cleaned_data.get('is_approved', layer.is_approved)
+            vals['is_published'] = dataset_form.cleaned_data.get('is_published', layer.is_published)
         resource_manager.update(
             layer.uuid,
             instance=layer,
             notify=True,
+            vals=vals,
             extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
         )
         return HttpResponse(json.dumps({'message': message}))
