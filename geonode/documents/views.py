@@ -495,6 +495,19 @@ def document_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        if 'group' in document_form.changed_data:
+            vals['group'] = document_form.cleaned_data.get('group')
+        if any([x in document_form.changed_data for x in ['is_approved', 'is_published']]):
+            vals['is_approved'] = document_form.cleaned_data.get('is_approved', document.is_approved)
+            vals['is_published'] = document_form.cleaned_data.get('is_published', document.is_published)
+        resource_manager.update(
+            document.uuid,
+            instance=document,
+            notify=True,
+            vals=vals,
+            extra_metadata=json.loads(document_form.cleaned_data['extra_metadata'])
+        )
         return HttpResponse(json.dumps({'message': message}))
     elif request.method == "POST" and (not document_form.is_valid(
     ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
