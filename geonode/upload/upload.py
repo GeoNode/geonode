@@ -691,7 +691,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             _redirect_to = f"/upload/srs?id={import_session.id}"
                             _upload.set_resume_url(_redirect_to)
                             _upload.set_processing_state(enumerations.STATE_WAITING)
-                        else:
+                        elif _tasks_failed:
                             _upload.set_processing_state(enumerations.STATE_INVALID)
                     return None
 
