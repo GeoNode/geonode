@@ -495,6 +495,18 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        _group_status_changed = False
+        _approval_status_changed = False
+        if 'group' in geoapp_form.changed_data:
+            _group_status_changed = True
+            vals['group'] = geoapp_form.cleaned_data.get('group')
+        if any([x in geoapp_form.changed_data for x in ['is_approved', 'is_published']]):
+            _approval_status_changed = True
+            vals['is_approved'] = geoapp_form.cleaned_data.get('is_approved', geoapp_obj.is_approved)
+            vals['is_published'] = geoapp_form.cleaned_data.get('is_published', geoapp_obj.is_published)
+        geoapp_obj.save(notify=True)
+        geoapp_obj.set_permissions(approval_status_changed=_approval_status_changed, group_status_changed=_group_status_changed)
         return HttpResponse(json.dumps({'message': message}))
     elif request.method == "POST" and (not geoapp_form.is_valid(
     ) or not category_form.is_valid() or not tkeywords_form.is_valid()):

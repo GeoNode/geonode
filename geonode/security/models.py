@@ -92,31 +92,6 @@ class PermissionLevelMixin:
         resource = self.get_self_resource()
         users = get_users_with_perms(resource)
         groups = get_groups_with_perms(resource, attach_perms=True)
-        if groups:
-            for group in groups:
-                try:
-                    group_profile = GroupProfile.objects.get(slug=group.name)
-                    managers = group_profile.get_managers()
-                    if managers:
-                        for manager in managers:
-                            if manager not in users and not manager.is_superuser and \
-                                    manager != resource.owner:
-                                users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
-                except GroupProfile.DoesNotExist:
-                    tb = traceback.format_exc()
-                    logger.debug(tb)
-        if resource.group:
-            try:
-                group_profile = GroupProfile.objects.get(slug=resource.group.name)
-                managers = group_profile.get_managers()
-                if managers:
-                    for manager in managers:
-                        if manager not in users and not manager.is_superuser and \
-                                manager != resource.owner:
-                            users[manager] = ADMIN_PERMISSIONS + VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
-            except GroupProfile.DoesNotExist:
-                tb = traceback.format_exc()
-                logger.debug(tb)
 
         info = {
             'users': users,
@@ -171,28 +146,34 @@ class PermissionLevelMixin:
         """
         obj_groups = []
         obj_group_managers = []
-        user_groups = get_user_groups(self.owner, group=group)
-        if user_groups:
-            for _user_group in user_groups:
-                if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
-                    try:
-                        _group_profile = GroupProfile.objects.get(slug=_user_group)
-                        managers = _group_profile.get_managers()
-                        if managers:
-                            for manager in managers:
-                                if manager not in obj_group_managers and not manager.is_superuser:
-                                    obj_group_managers.append(manager)
-                    except GroupProfile.DoesNotExist:
-                        tb = traceback.format_exc()
-                        logger.debug(tb)
+        if group:
+            user_groups = get_user_groups(self.owner, group=group)
+            if user_groups:
+                for _user_group in user_groups:
+                    if not skip_registered_members_common_group(Group.objects.get(name=_user_group)):
+                        try:
+                            _group_profile = GroupProfile.objects.get(slug=_user_group)
+                            managers = _group_profile.get_managers()
+                            if managers:
+                                for manager in managers:
+                                    if manager not in obj_group_managers and not manager.is_superuser:
+                                        obj_group_managers.append(manager)
+                        except GroupProfile.DoesNotExist:
+                            tb = traceback.format_exc()
+                            logger.debug(tb)
 
         if self.group:
             obj_groups.append(self.group)
         for x in self.owner.groupmember_set.all():
             if x.group.slug != groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
                 obj_groups.append(x.group.group)
+                managers = x.group.get_managers()
+                if managers:
+                    for manager in managers:
+                        if manager not in obj_group_managers and not manager.is_superuser:
+                            obj_group_managers.append(manager)
 
-        return obj_groups, obj_group_managers
+        return list(set(obj_groups)), list(set(obj_group_managers))
 
     def set_default_permissions(self, owner=None, created=False):
         """
