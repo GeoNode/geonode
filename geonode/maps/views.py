@@ -38,6 +38,7 @@ from geonode.base.forms import CategoryForm, ThesaurusAvailableForm, TKeywordFor
 from geonode.base.models import ExtraMetadata, Thesaurus, TopicCategory
 from geonode.base.views import batch_modify
 from geonode.client.hooks import hookset
+from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
 from geonode.groups.models import GroupProfile
 from geonode.layers.models import Dataset
@@ -237,8 +238,19 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
             tb = traceback.format_exc()
             logger.error(tb)
 
-        map_obj.save(notify=True)
-
+        vals = {}
+        if 'group' in map_form.changed_data:
+            vals['group'] = map_form.cleaned_data.get('group')
+        if any([x in map_form.changed_data for x in ['is_approved', 'is_published']]):
+            vals['is_approved'] = map_form.cleaned_data.get('is_approved', map_obj.is_approved)
+            vals['is_published'] = map_form.cleaned_data.get('is_published', map_obj.is_published)
+        resource_manager.update(
+            map_obj.uuid,
+            instance=map_obj,
+            notify=True,
+            vals=vals,
+            extra_metadata=json.loads(map_form.cleaned_data['extra_metadata'])
+        )
         return HttpResponse(json.dumps({'message': message}))
     elif request.method == "POST" and (not map_form.is_valid(
     ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
