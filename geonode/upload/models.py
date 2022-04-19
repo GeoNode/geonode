@@ -16,10 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import base64
-import pickle
 import shutil
+import pickle
 import logging
 
 from slugify import slugify
@@ -254,22 +255,8 @@ class Upload(models.Model):
             return None
 
     def delete(self, *args, **kwargs):
-        importer_locations = []
         upload_files = [_file.file for _file in UploadFile.objects.filter(upload=self)]
         super().delete(*args, **kwargs)
-        try:
-            session = gs_uploader.get_session(self.import_id)
-        except (NotFound, Exception):
-            session = None
-        if session:
-            for task in session.tasks:
-                if getattr(task, 'data'):
-                    importer_locations.append(
-                        getattr(task.data, 'location'))
-            try:
-                session.delete()
-            except Exception:
-                logging.warning('error deleting upload session')
 
         # we delete directly the folder with the files of the resource
         if self.layer:
@@ -279,18 +266,10 @@ class Upload(models.Model):
                         os.remove(_file.path)
                 except Exception as e:
                     logger.warning(e)
-        for _location in importer_locations:
-            try:
-                shutil.rmtree(_location)
-            except Exception as e:
-                logger.warning(e)
 
         # here we are deleting the local that soon will be removed
         if self.upload_dir and os.path.exists(self.upload_dir):
-            try:
-                shutil.rmtree(self.upload_dir)
-            except Exception as e:
-                logger.warning(e)
+            shutil.rmtree(self.upload_dir, ignore_errors=True)
 
     def set_processing_state(self, state):
         if self.state != state:
