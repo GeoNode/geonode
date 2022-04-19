@@ -162,7 +162,6 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     """
     Returns resources a user has access to.
     """
-
     from geonode.base.models import ResourceBase
 
     if settings.SKIP_PERMS_FILTER:
@@ -210,7 +209,6 @@ def get_geoapp_subtypes():
     Returns a list of geoapp subtypes.
     eg ['geostory']
     """
-
     from geonode.geoapps.models import GeoApp
 
     subtypes = []
@@ -678,12 +676,8 @@ class AdvancedSecurityWorkflowManager:
                     ["base.view_resourcebase", "base.change_resourcebase"],
                     any_perm=True)
                 .filter(group=group.group)
-                .exclude(owner=user)
             )
-            # A.F.: By including 'group.resources()' here, we will look also for resources
-            #       having permissions related to the current 'group' and not only the ones assigned
-            #       to the 'group' through the metadata settings.
-            _resources = set([_r for _r in queryset.iterator()] + [_r for _r in group.resources()])
+            _resources = set([_r for _r in queryset.iterator()])
             if len(_resources) == 0:
                 queryset = (
                     get_objects_for_user(
