@@ -701,19 +701,12 @@ class ResourceBaseManager(PolymorphicManager):
             remove_thumbs(filename)
 
             # Remove the uploaded sessions, if any
-            try:
-                if 'geonode.upload' in settings.INSTALLED_APPS:
-                    from geonode.upload.models import Upload
-                    # Need to call delete one by one in order to invoke the
-                    #  'delete' overridden method
-                    for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
-                        try:
-                            if upload.upload_dir:
-                                storage_manager.rmtree(upload.upload_dir, ignore_errors=True)
-                        finally:
-                            upload.delete()
-            except Exception as e:
-                logger.exception(e)
+            if 'geonode.upload' in settings.INSTALLED_APPS:
+                from geonode.upload.models import Upload
+                # Need to call delete one by one in order to invoke the
+                #  'delete' overridden method
+                for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                    upload.delete()
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
