@@ -786,7 +786,6 @@ class ResourceManager(ResourceManagerInterface):
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
                     if thumbnail:
@@ -800,8 +799,6 @@ class ResourceManager(ResourceManagerInterface):
                 return True
             except Exception as e:
                 logger.exception(e)
-            finally:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return False
 
 

@@ -250,8 +250,6 @@ class Upload(models.Model):
             Upload.objects.filter(id=self.id).update(state=state)
         if self.resource:
             self.resource.set_processing_state(state)
-            if state != enumerations.STATE_PROCESSED:
-                self.resource.set_dirty_state()
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
