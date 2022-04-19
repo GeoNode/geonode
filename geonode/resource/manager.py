@@ -375,7 +375,11 @@ class ResourceManager(ResourceManagerInterface):
                 try:
                     _resource.save(notify=notify)
                     resourcebase_post_save(_resource.get_real_instance())
-                    _resource.set_permissions()
+                    _resource.set_permissions(
+                        created=False,
+                        approval_status_changed=(vals is not None and any([x in vals for x in ['is_approved', 'is_published']])),
+                        group_status_changed=(vals is not None and 'group' in vals)
+                    )
                     if _resource.state != enumerations.STATE_INVALID:
                         _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 except Exception as e:
