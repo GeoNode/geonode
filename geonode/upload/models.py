@@ -277,8 +277,6 @@ class Upload(models.Model):
             Upload.objects.filter(id=self.id).update(state=state)
         if self.layer:
             self.layer.set_processing_state(state)
-            if self.state != Upload.STATE_PROCESSED:
-                self.layer.set_dirty_state()
 
     def __str__(self):
         return f'Upload [{self.pk}] gs{self.import_id} - {self.name}, {self.user}'
