@@ -1977,7 +1977,7 @@ THUMBNAIL_SIZE = {
 
 THUMBNAIL_BACKGROUND = {
     # class generating thumbnail's background
-    #'class': 'geonode.thumbs.background.WikiMediaTileBackground',
+    # 'class': 'geonode.thumbs.background.WikiMediaTileBackground',
     'class': 'geonode.thumbs.background.OSMTileBackground',
     # 'class': 'geonode.thumbs.background.GenericXYZBackground',
     # initialization parameters for generator instance, valid only for generic classes
