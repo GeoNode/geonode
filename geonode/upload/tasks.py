@@ -88,7 +88,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
 
     # Let's finish the valid ones
     session = None
-    for _upload in Upload.objects.exclude(state__in=[enumerations.STATE_RUNNING, enumerations.STATE_PROCESSED, enumerations.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
+    for _upload in Upload.objects.exclude(state__in=[enumerations.STATE_PROCESSED, enumerations.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
         try:
             if not _upload.import_id:
                 raise NotFound
