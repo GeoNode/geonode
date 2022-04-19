@@ -676,7 +676,6 @@ class AdvancedSecurityWorkflowManager:
                     ["base.view_resourcebase", "base.change_resourcebase"],
                     any_perm=True)
                 .filter(group=group.group)
-                .exclude(owner=user)
             )
             _resources = set([_r for _r in queryset.iterator()])
             if len(_resources) == 0:
