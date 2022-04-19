@@ -88,7 +88,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
 
     # Let's finish the valid ones
     session = None
-    for _upload in Upload.objects.exclude(state__in=[enumerations.STATE_PROCESSED, enumerations.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
+    for _upload in Upload.objects.exclude(state__in=[enumerations.STATE_RUNNING, enumerations.STATE_PROCESSED, enumerations.STATE_INVALID]).exclude(id__in=_upload_ids_expired):
         try:
             if not _upload.import_id:
                 raise NotFound
@@ -110,21 +110,15 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
             if session and session.state == enumerations.STATE_COMPLETE and _upload.resource and _upload.resource.processed:
                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
 
-    if session and any([_task.state in ["ERROR"] for _task in session.tasks]):
+    upload_workflow_finalizer = _upload_workflow_finalizer.signature(
+        args=('_update_upload_session_state', _upload_ids,),
+        immutable=True
+    ).on_error(
         _upload_workflow_error.signature(
-            args=('_upload_workflow_error', _upload_ids,),
-            immutable=True
-        )
-    else:
-        upload_workflow_finalizer = _upload_workflow_finalizer.signature(
             args=('_update_upload_session_state', _upload_ids,),
             immutable=True
-        ).on_error(
-            _upload_workflow_error.signature(
-                args=('_update_upload_session_state', _upload_ids,),
-                immutable=True
-            )
         )
+    )
 
     upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
     result = upload_workflow.apply_async()
@@ -208,7 +202,7 @@ def _update_upload_session_state(self, upload_session_id: int):
                                 # GeoNode Layer successfully processed...
                                 _upload.set_processing_state(enumerations.STATE_PROCESSED)
                         elif (session.state == enumerations.STATE_COMPLETE and _upload.state in (
-                            enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING, enumerations.STATE_PENDING) and not _tasks_waiting) or (
+                            enumerations.STATE_COMPLETE, enumerations.STATE_PENDING) and not _tasks_waiting) or (
                                     session.state == enumerations.STATE_PENDING and _tasks_ready):
                             if not _upload.resource:
                                 _response = final_step_view(None, _upload.get_session)
