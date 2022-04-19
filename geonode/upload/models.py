@@ -16,10 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
 import base64
 import pickle
-import shutil
 import logging
 
 from gsimporter.api import NotFound
@@ -35,6 +35,7 @@ from django.utils.translation import ugettext_lazy as _
 from geonode import GeoNodeException
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
+from geonode.storage.manager import storage_manager
 from geonode.geoserver.helpers import gs_uploader, ogc_server_settings
 
 logger = logging.getLogger(__name__)
@@ -240,27 +241,8 @@ class Upload(models.Model):
             return None
 
     def delete(self, *args, **kwargs):
-        importer_locations = []
         super().delete(*args, **kwargs)
-        try:
-            session = gs_uploader.get_session(self.import_id)
-        except (NotFound, Exception):
-            session = None
-        if session:
-            for task in session.tasks:
-                if getattr(task, 'data'):
-                    importer_locations.append(
-                        getattr(task.data, 'location'))
-            try:
-                session.delete()
-            except Exception:
-                logging.warning('error deleting upload session')
-
-        # here we are deleting the local that soon will be removed
-        for _location in importer_locations:
-            shutil.rmtree(_location, ignore_errors=True)
-        if self.upload_dir and os.path.exists(self.upload_dir):
-            shutil.rmtree(self.upload_dir, ignore_errors=True)
+        storage_manager.rmtree(self.upload_dir, ignore_errors=True)
 
     def set_processing_state(self, state):
         if self.state != state:
