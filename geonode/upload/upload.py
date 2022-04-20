@@ -670,7 +670,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     _vals['name'] = task.layer.name
                     _vals['workspace'] = target.workspace_name
                     _vals['alternate'] = task.get_target_layer_name()
-                elif import_session.state == enumerations.STATE_INCOMPLETE and task.state != 'ERROR':
+                elif import_session.state == enumerations.STATE_INCOMPLETE and _tasks_failed:
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=f'Unknown Session task state: {task.state}')
                 try:
@@ -682,6 +682,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 upload_session.import_session = import_session
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
+                _tasks_ready = any([_task.state in ["READY"] for _task in import_session.tasks])
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
 
@@ -879,14 +880,16 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 assert saved_dataset
 
+                # Hide the dataset until the upload process finishes...
+                saved_dataset.set_processing_state(enumerations.STATE_RUNNING)
+                saved_dataset.set_dirty_state()
+                _log(f" -- Finalizing Upload for {saved_dataset}... {saved_dataset.state}")
+
                 # Update the state from session...
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 if not created:
                     return saved_dataset
-
-                # Hide the dataset until the upload process finishes...
-                saved_dataset.set_dirty_state()
 
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications
@@ -912,5 +915,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     logger.exception(e)
                     Upload.objects.filter(resource=saved_dataset).update(complete=False)
                     [u.set_processing_state(enumerations.STATE_INVALID) for u in Upload.objects.filter(resource=saved_dataset)]
+                finally:
+                    _log(f" -- Upload completed for {saved_dataset}... {saved_dataset.state}")
 
     return saved_dataset
