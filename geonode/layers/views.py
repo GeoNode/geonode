@@ -1210,12 +1210,21 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     request.GET = {"layer_id": layer.id}
                     steps = [None, "check", "final"] if layer.is_vector() else [None, "final"]
                     for _step in steps:
-                        response, cat, valid = UploadViewSet()._emulate_client_upload_step(
-                            request,
-                            _step
-                        )
-                        if response.status_code != 200:
-                            raise Exception(response.content)
+                        if _step != 'final':
+                            response, cat, valid = UploadViewSet()._emulate_client_upload_step(
+                                request,
+                                _step
+                            )
+                            if response.status_code != 200:
+                                raise Exception(response.content)
+                        else:
+                            logger.error("starting final step for Replace Layer")
+                            from geonode.upload.tasks import finalize_incomplete_session_uploads
+                            if settings.ASYNC_SIGNALS:
+                                logger.error("async starting")
+                                finalize_incomplete_session_uploads.apply_async()
+                            else:
+                                finalize_incomplete_session_uploads.apply()
 
                     set_geowebcache_invalidate_cache(layer.typename)
 
