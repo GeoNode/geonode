@@ -16,14 +16,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.contrib.auth import get_user_model
-from django.test import override_settings
+
 from django.urls import reverse
-from geonode.geoapps.forms import GeoAppForm
+from django.test import override_settings
+from django.contrib.auth import get_user_model
+
 from geonode.geoapps.models import GeoApp
+from geonode.geoapps.forms import GeoAppForm
+from geonode.base.models import TopicCategory
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.base.models import TopicCategory
 
 from geonode.base.populate_test_data import (
     all_public,
@@ -159,3 +161,14 @@ class GeoAppTests(GeoNodeBaseTestSupport):
         self.geoapp.refresh_from_db()
         self.assertEqual(200, response.status_code)
         self.assertEqual(new_category.identifier, self.geoapp.category.identifier)
+
+    def test_geoapp_copy(self):
+        self.client.login(username="admin", password="admin")
+        geoapp_copy = resource_manager.copy(
+            self.geoapp,
+            defaults=dict(
+                title="Testing GeoApp 2"
+            )
+        )
+        self.assertIsNotNone(geoapp_copy)
+        self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")

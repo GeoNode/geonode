@@ -447,8 +447,8 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = copy.copy(instance.get_real_instance())
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
+                    _resource.save()
                     if isinstance(instance.get_real_instance(), Document):
-                        _resource.save()
                         for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
                             _resource_link = copy.copy(resource_link)
                             _resource_link.pk = _resource_link.id = None
@@ -456,14 +456,12 @@ class ResourceManager(ResourceManagerInterface):
                             _resource_link.save()
                     if isinstance(instance.get_real_instance(), Dataset):
                         _resource.name = f'{_resource.name}_{uuid1().hex[:8]}'
-                        _resource.save()
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
                             _attribute = copy.copy(attribute)
                             _attribute.pk = _attribute.id = None
                             _attribute.dataset = _resource.get_real_instance()
                             _attribute.save()
                     if isinstance(instance.get_real_instance(), Map):
-                        _resource.save()
                         for maplayer in instance.get_real_instance().maplayers.iterator():
                             _maplayer = copy.copy(maplayer)
                             _maplayer.pk = _maplayer.id = None
