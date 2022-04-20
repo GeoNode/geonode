@@ -209,7 +209,9 @@ class Upload(models.Model):
         elif self.state == Upload.STATE_WAITING:
             return 50.0
         elif self.state == Upload.STATE_PROCESSED:
-            return 100.0
+            if self.layer and self.layer.processed:
+                return 100.0
+            return 80.0
         elif self.state in (Upload.STATE_COMPLETE, Upload.STATE_RUNNING):
             if self.layer and self.layer.processed and self.layer.instance_is_processed:
                 self.state = Upload.STATE_PROCESSED
@@ -249,7 +251,7 @@ class Upload(models.Model):
             return None
 
     def get_detail_url(self):
-        if self.layer and self.state == Upload.STATE_PROCESSED:
+        if self.layer and self.layer.processed:
             return getattr(self.layer, 'detail_url', None)
         else:
             return None
