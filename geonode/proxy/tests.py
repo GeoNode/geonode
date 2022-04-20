@@ -88,7 +88,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.client.login(username='admin', password='admin')
         response = self.client.get(f'{self.proxy_url}?url={self.url}')
         if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertEqual(response.status_code, 403, response.status_code)
+            self.assertEqual(response.status_code, 200, response.status_code)
 
     @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
     def test_validate_remote_services_hosts(self):
