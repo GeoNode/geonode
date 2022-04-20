@@ -164,11 +164,17 @@ class GeoAppTests(GeoNodeBaseTestSupport):
 
     def test_geoapp_copy(self):
         self.client.login(username="admin", password="admin")
-        geoapp_copy = resource_manager.copy(
-            self.geoapp,
-            defaults=dict(
-                title="Testing GeoApp 2"
+        geoapp_copy = None
+        try:
+            geoapp_copy = resource_manager.copy(
+                self.geoapp,
+                defaults=dict(
+                    title="Testing GeoApp 2"
+                )
             )
-        )
-        self.assertIsNotNone(geoapp_copy)
-        self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
+            self.assertIsNotNone(geoapp_copy)
+            self.assertEqual(geoapp_copy.title, "Testing GeoApp 2")
+        finally:
+            if geoapp_copy:
+                geoapp_copy.delete()
+            self.assertIsNotNone(self.geoapp)
