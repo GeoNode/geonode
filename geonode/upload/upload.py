@@ -705,7 +705,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     _vals['store'] = task.target.name
                     _vals['workspace'] = task.target.workspace_name
 
-                elif import_session.state == Upload.STATE_INCOMPLETE and task.state != 'ERROR':
+                elif import_session.state == Upload.STATE_INCOMPLETE and _tasks_failed:
                     Upload.objects.invalidate_from_session(upload_session)
                     raise Exception(f'unknown item state: {task.state}')
                 try:
@@ -888,14 +888,16 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
 
                 assert saved_layer
 
+                # Hide the dataset until the upload process finishes...
+                saved_layer.set_processing_state(Upload.STATE_RUNNING)
+                saved_layer.set_dirty_state()
+                _log(f" -- Finalizing Upload for {saved_layer}... {Upload.STATE_RUNNING}")
+
                 # Update the state from session...
                 upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
                 if not created and not overwrite:
                     return saved_layer
-
-                # Hide the layer until the upload process finishes...
-                saved_layer.set_dirty_state()
 
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications
@@ -1030,6 +1032,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     logger.exception(e)
                     Upload.objects.filter(layer=saved_layer).update(complete=False)
                     [u.set_processing_state(Upload.STATE_INVALID) for u in Upload.objects.filter(layer=saved_layer)]
+                finally:
+                    _log(f" -- Upload completed for {saved_layer}...")
 
     return saved_layer
 

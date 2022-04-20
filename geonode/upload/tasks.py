@@ -206,20 +206,9 @@ def _update_upload_session_state(self, upload_session_id: int):
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
                                     _upload.refresh_from_db()
-                                    _content = _response.content
-                                    if isinstance(_content, bytes):
-                                        _content = _content.decode('UTF-8')
-                                    _response_json = json.loads(_content)
-                                    _success = _response_json.get('success', False)
-                                    if _upload.state != Upload.STATE_PROCESSED:
-                                        if _upload.layer and _upload.layer.processed:
-                                            # GeoNode Layer successfully processed...
-                                            _upload.set_processing_state(Upload.STATE_PROCESSED)
-                                        else:
-                                            # GeoNode Layer updating...
-                                            _upload.set_processing_state(Upload.STATE_RUNNING)
-                            elif _upload.layer and _upload.layer.processed:
-                                _upload.set_processing_state(Upload.STATE_PROCESSED)
+                                    if _upload.state not in (Upload.STATE_PROCESSED, Upload.STATE_RUNNING) and not _upload.layer:
+                                        # GeoNode Layer still updating...
+                                        _upload.set_processing_state(Upload.STATE_RUNNING)
                         logger.debug(f"Upload {upload_session_id} updated with state {_upload.state}.")
                 except (NotFound, Exception) as e:
                     logger.exception(e)
