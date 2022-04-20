@@ -39,8 +39,11 @@ from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+    ValidationError,
+    FieldDoesNotExist)
 
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
@@ -396,6 +399,8 @@ class ResourceManager(ResourceManagerInterface):
         try:
             with transaction.atomic():
                 if resource_type == Document:
+                    if 'name' in to_update:
+                        to_update.pop("name")
                     if files:
                         to_update['files'] = storage_manager.copy_files_list(files)
                     instance = self.create(
@@ -447,23 +452,28 @@ class ResourceManager(ResourceManagerInterface):
                     _resource = copy.copy(instance.get_real_instance())
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
+                    try:
+                        # Avoid Integrity errors...
+                        _resource.get_real_instance()._meta.get_field('name')
+                        _name = defaults.get('name', _resource.get_real_instance().name)
+                        _resource.get_real_instance().name = defaults['name'] = f'{_name}_{uuid1().hex[:8]}'
+                    except FieldDoesNotExist:
+                        if 'name' in defaults:
+                            defaults.pop('name')
+                    _resource.save()
                     if isinstance(instance.get_real_instance(), Document):
-                        _resource.save()
                         for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
                             _resource_link = copy.copy(resource_link)
                             _resource_link.pk = _resource_link.id = None
                             _resource_link.document = _resource.get_real_instance()
                             _resource_link.save()
                     if isinstance(instance.get_real_instance(), Dataset):
-                        _resource.name = f'{_resource.name}_{uuid1().hex[:8]}'
-                        _resource.save()
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
                             _attribute = copy.copy(attribute)
                             _attribute.pk = _attribute.id = None
                             _attribute.dataset = _resource.get_real_instance()
                             _attribute.save()
                     if isinstance(instance.get_real_instance(), Map):
-                        _resource.save()
                         for maplayer in instance.get_real_instance().maplayers.iterator():
                             _maplayer = copy.copy(maplayer)
                             _maplayer.pk = _maplayer.id = None
@@ -493,21 +503,14 @@ class ResourceManager(ResourceManagerInterface):
                     if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
                         anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
                         _perms['groups'].pop(anonymous_group)
-                    if _resource.state == enumerations.STATE_PROCESSED:
-                        self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                        # Refresh from DB
-                        _resource.refresh_from_db()
-                        return self.update(_resource.uuid, _resource, vals=to_update)
-                    else:
-                        if not _resource.get_real_instance().name and 'title' in to_update:
-                            to_update['name'] = to_update['title']
-                        _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
-                        # Refresh from DB
-                        _resource.refresh_from_db()
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+                    return self.update(_resource.uuid, _resource, vals=to_update)
                 except Exception as e:
                     logger.exception(e)
                 finally:
-                    _resource.clear_dirty_state()
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}):

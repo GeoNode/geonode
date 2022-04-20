@@ -154,7 +154,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         self.assertTrue(record.title in "san_andres_y_providencia_location.shp")
 
         # test that the ISO abstract maps correctly in Dublin Core
-        self.assertEqual(record.abstract, 'No abstract provided')
+        if record.abstract:
+            self.assertEqual(record.abstract, 'No abstract provided')
 
         # test for correct service link articulation
         for link in record.references:
@@ -251,7 +252,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             self.assertTrue(record.idinfo.citation.citeinfo['title'] in "san_andres_y_providencia_location.shp")
 
             # test that the ISO abstract maps correctly in FGDC
-            self.assertEqual(record.idinfo.descript.abstract, 'No abstract provided')
+            if record.idinfo.descript.abstract:
+                self.assertEqual(record.idinfo.descript.abstract, 'No abstract provided')
 
     def test_csw_query_bbox(self):
         """Verify that GeoNode CSW can handle bbox queries"""
