@@ -146,7 +146,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
     def test_dataset_copy(self):
         self.client.login(username="admin", password="admin")
         dt_files = [os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')]
-        defaults = {"owner": self.user}
+        defaults = {"owner": self.user, "files": dt_files}
 
         # ingest with datasets
         res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
