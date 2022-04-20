@@ -1498,7 +1498,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def processed(self):
-        return not self.dirty_state
+        return self.state == enumerations.STATE_PROCESSED and not self.dirty_state
 
     @property
     def keyword_csv(self):
