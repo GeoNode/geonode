@@ -716,7 +716,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     raise UploadException.from_exc(
                         _("The GeoServer Import Session is no more available"), e)
                 upload_session.import_session = import_session
-                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_layer)
+                upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
                 _tasks_waiting = any([_task.state in ["NO_CRS", "NO_BOUNDS", "NO_FORMAT"] for _task in import_session.tasks])
