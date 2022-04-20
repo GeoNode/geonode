@@ -199,7 +199,7 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         'abstract': ''
     }
     for _key in _default_values.keys():
-        if not getattr(defaults, _key, None):
+        if not defaults.get(_key, None):
             try:
                 instance._meta.get_field(_key)
                 defaults[_key] = getattr(instance, _key, None) or _default_values.get(_key)
