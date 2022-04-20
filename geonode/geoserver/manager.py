@@ -157,18 +157,18 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if uuid and instance:
             _resource = ResourceManager._get_instance(uuid)
-            if isinstance(_resource.get_real_instance(), Dataset):
+            if _resource and isinstance(_resource.get_real_instance(), Dataset):
                 importer_session_opts = defaults.get('importer_session_opts', {})
                 if not importer_session_opts:
                     _src_upload_session = Upload.objects.filter(resource=instance.get_real_instance().resourcebase_ptr)
                     if _src_upload_session.exists():
                         _src_upload_session = _src_upload_session.get()
-                        try:
-                            _src_importer_session = _src_upload_session.get_session.import_session.reload()
-                            importer_session_opts.update({'transforms': _src_importer_session.tasks[0].transforms})
-                        except Exception:
-                            _resource.delete()
-                            raise
+                        if _src_upload_session and _src_upload_session.get_session:
+                            try:
+                                _src_importer_session = _src_upload_session.get_session.import_session.reload()
+                                importer_session_opts.update({'transforms': _src_importer_session.tasks[0].transforms})
+                            except Exception as e:
+                                logger.exception(e)
                 return self.import_dataset(
                     'import_dataset',
                     uuid,
@@ -178,7 +178,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     defaults=defaults,
                     action_type='create',
                     importer_session_opts=importer_session_opts)
-        return ResourceManager._get_instance(uuid) if uuid else instance
+        return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
