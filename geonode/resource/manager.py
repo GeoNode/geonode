@@ -498,7 +498,7 @@ class ResourceManager(ResourceManagerInterface):
                         _resource.refresh_from_db()
                         return self.update(_resource.uuid, _resource, vals=to_update)
                     else:
-                        if not _resource.get_real_instance().name and 'title' in to_update:
+                        if hasattr(_resource.get_real_instance(), 'name') and not _resource.get_real_instance().name and 'title' in to_update:
                             to_update['name'] = to_update['title']
                         _resource.get_real_instance_class().objects.filter(uuid=_resource.uuid).update(**to_update)
                         # Refresh from DB
