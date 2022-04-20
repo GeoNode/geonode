@@ -193,12 +193,19 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
                 defaults.pop(_key)
 
     # Save all the modified information in the instance without triggering signals.
-    if hasattr(instance, 'title') and 'title' not in defaults:
-        defaults['title'] = instance.title or getattr(instance, 'name', "")
-    if hasattr(instance, 'abstract') and 'abstract' not in defaults:
-        defaults['abstract'] = instance.abstract or ''
-    if hasattr(instance, 'date') and 'date' not in defaults:
-        defaults['date'] = instance.date or timezone.now()
+    _default_values = {
+        'date': timezone.now(),
+        'title': getattr(instance, 'name', ''),
+        'abstract': ''
+    }
+    for _key in _default_values.keys():
+        if not getattr(defaults, _key, None):
+            try:
+                instance._meta.get_field(_key)
+                defaults[_key] = getattr(instance, _key, None) or _default_values.get(_key)
+            except FieldDoesNotExist:
+                if _key in defaults:
+                    defaults.pop(_key)
 
     if isinstance(instance, Dataset):
         for _key in ('workspace', 'store', 'subtype', 'alternate', 'typename'):
