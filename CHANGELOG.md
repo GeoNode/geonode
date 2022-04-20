@@ -17,16 +17,18 @@
  - GDAL 3.3.2
 
  - Highlights GeoNode 4.0.0:
-  - [Features](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Afeature)
-  - [Enhancements](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Aenhancement)
-  - [Security Fixes](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Asecurity)
-  - [Severe Issues](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Ablocker)
-  - [Regressions](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Aregression)
-  - [Bug Fixes](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Amajor)
-  - [Minor Issues](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Aminor)
-  - [Performance](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Aperformance)
-  - [Translations](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Atranslations)
-  - [Dependencies](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Adependencies)
+   - [Features](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Afeature)
+   - [Enhancements](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aenhancement)
+   - [Security Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Asecurity)
+   - [Severe Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Ablocker)
+   - [Regressions](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aregression)
+   - [Bug Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Amajor)
+   - [Minor Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aminor)
+   - [Performance](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aperformance)
+   - [Translations](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Atranslations)
+   - [Translations](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Atranslations)
+   - [Dependencies](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Adependencies)
+   - [Dependencies](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Adependencies)
 
 ### Full Changelog
 
