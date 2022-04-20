@@ -137,17 +137,36 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # ingest with documents
         res = self.rm.ingest(dt_files, resource_type=Document, defaults=defaults)
         self.assertTrue(isinstance(res, Document))
+        res.delete()
+        # ingest with datasets
+        res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
+        self.assertTrue(isinstance(res, Dataset))
+        res.delete()
+
+    def test_dataset_copy(self):
+        self.client.login(username="admin", password="admin")
+        dt_files = [os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')]
+        defaults = {"owner": self.user}
+
         # ingest with datasets
         res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
         self.assertTrue(isinstance(res, Dataset))
 
-    def test_copy(self):
-        dt = create_single_dataset("test_copy_dataset")
-        # test with no reference object provided
-        self.assertIsNone(self.rm.copy(None))
-        res = self.rm.copy(dt)
-        if res:
-            self.assertEqual(res.perms, dt.perms)
+        dataset_copy = None
+        try:
+            dataset_copy = self.rm.copy(
+                res,
+                defaults=dict(
+                    title="Testing Dataset 2"
+                )
+            )
+            self.assertIsNotNone(dataset_copy)
+            self.assertEqual(dataset_copy.title, "Testing Dataset 2")
+        finally:
+            if dataset_copy:
+                dataset_copy.delete()
+            self.assertIsNotNone(res)
+            res.delete()
 
     @patch.object(ResourceManager, '_validate_resource')
     def test_append(self, mock_validator):
