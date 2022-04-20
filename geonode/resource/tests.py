@@ -30,13 +30,16 @@ from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import ResourceManager
 from geonode.base.models import ResourceBase
-from geonode.documents.models import Document
 from geonode.layers.models import Dataset
-from geonode.base.populate_test_data import create_single_doc, create_single_dataset, create_single_map
-from geonode.layers.populate_datasets_data import create_dataset_data
-from geonode.maps.models import MapLayer
 from geonode.services.models import Service
+from geonode.documents.models import Document
+from geonode.maps.models import Map, MapLayer
 from geonode.resource import settings as rm_settings
+from geonode.layers.populate_datasets_data import create_dataset_data
+from geonode.base.populate_test_data import (
+    create_single_doc,
+    create_single_map,
+    create_single_dataset)
 
 from pinax.ratings.models import OverallRating
 from gisdata import GOOD_DATA
@@ -144,29 +147,54 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res.delete()
 
     def test_dataset_copy(self):
+
+        def _copy_assert_resource(res, title):
+            dataset_copy = None
+            try:
+                dataset_copy = self.rm.copy(
+                    res,
+                    defaults=dict(
+                        title=title
+                    )
+                )
+                self.assertIsNotNone(dataset_copy)
+                self.assertEqual(dataset_copy.title, title)
+            finally:
+                if dataset_copy:
+                    dataset_copy.delete()
+                self.assertIsNotNone(res)
+                res.delete()
+
         self.client.login(username="admin", password="admin")
         dt_files = [os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')]
-        defaults = {"owner": self.user, "files": dt_files}
 
-        # ingest with datasets
-        res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
+        # copy with documents
+        res = self.rm.ingest(
+            dt_files,
+            resource_type=Document,
+            defaults={
+                "title": "relief_san_andres",
+                "owner": self.user
+            })
+        self.assertTrue(isinstance(res, Document))
+        _copy_assert_resource(res, "Testing Document 2")
+
+        # copy with datasets
+        res = self.rm.ingest(
+            dt_files,
+            resource_type=Dataset,
+            defaults={
+                "owner": self.user,
+                "title": "Testing Dataset",
+                "files": dt_files
+            })
         self.assertTrue(isinstance(res, Dataset))
+        _copy_assert_resource(res, "Testing Dataset 2")
 
-        dataset_copy = None
-        try:
-            dataset_copy = self.rm.copy(
-                res,
-                defaults=dict(
-                    title="Testing Dataset 2"
-                )
-            )
-            self.assertIsNotNone(dataset_copy)
-            self.assertEqual(dataset_copy.title, "Testing Dataset 2")
-        finally:
-            if dataset_copy:
-                dataset_copy.delete()
-            self.assertIsNotNone(res)
-            res.delete()
+        # copy with maps
+        res = create_single_map("A Test Map")
+        self.assertTrue(isinstance(res, Map))
+        _copy_assert_resource(res, "A Test Map 2")
 
     @patch.object(ResourceManager, '_validate_resource')
     def test_append(self, mock_validator):

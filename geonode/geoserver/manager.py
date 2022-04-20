@@ -167,9 +167,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                             try:
                                 _src_importer_session = _src_upload_session.get_session.import_session.reload()
                                 importer_session_opts.update({'transforms': _src_importer_session.tasks[0].transforms})
-                            except Exception:
-                                _resource.delete()
-                                raise
+                            except Exception as e:
+                                logger.exception(e)
                 return self.import_dataset(
                     'import_dataset',
                     uuid,
