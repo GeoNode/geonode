@@ -92,7 +92,10 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                         F('ows_url'), Value(source_address), Value(target_address), function='replace'))
                 print(f"Updated {_cnt} MapLayers")
                 logger.info(f"Updated {_cnt} MapLayers")
-
+                
+                _cnt = Dataset.objects.filter(ows_url__icontains=source_address).update(
+                    ows_url=Func(
+                        F('ows_url'), Value(source_address), Value(target_address), function='replace'))
                 _cnt = Dataset.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
