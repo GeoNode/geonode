@@ -39,7 +39,6 @@ def get_version(version=None):
     main = '.'.join(str(x) for x in version[:3])
     sub = version[3]
     sub_version = str(version[4])
-    print(f'sub: {sub}')
     if sub == 'rc':
         sub += sub_version
     else:
