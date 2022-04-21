@@ -23,30 +23,27 @@ import subprocess
 
 
 def get_version(version=None):
-    "Returns a PEP 386-compliant version number from VERSION."
+    "Returns a PEP 440 compliant version number from VERSION."
     if version is None or not isinstance(version, list):
         from geonode import __version__ as version
     else:
         assert len(version) == 5
-        assert version[3] in ('unstable', 'beta', 'rc', 'final', 'post')
+        assert version[3] in ('rc', 'post', 'dev')
 
-    # Now build the two parts of the version number:
-    # main = X.Y[.Z]
-    # sub = .devN - for pre-alpha releases
-    #     | {a|b|c}N - for alpha, beta and rc releases
-    git_changeset = get_git_changeset()
+    # [N!]N(.N)*[{a|b|rc}N][.postN][.devN]
+    # Epoch segment: N!
+    # Release segment: N(.N)*
+    # Pre-release segment: {a|b|rc}N
+    # Post-release segment: .postN
+    # Development release segment: .devN
     main = '.'.join(str(x) for x in version[:3])
-    sub = ''
-    if version[3] not in ('unstable', 'final', 'post'):
-        mapping = {'beta': 'b', 'rc': 'rc'}
-        sub = mapping[version[3]] + str(version[4])
-    if git_changeset:
-        if version[3] == 'unstable':
-            sub += f'.dev{git_changeset}'
-        elif version[3] == 'post':
-            sub += f'.post{version[4]}'
-        elif version[3] != 'final':
-            sub += f'.build{git_changeset}'
+    sub = version[3]
+    sub_version = str(version[4])
+    print(f'sub: {sub}')
+    if sub == 'rc':
+        sub += sub_version
+    else:
+        sub = '.' + sub + sub_version
     return main + sub
 
 
