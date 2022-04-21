@@ -28,7 +28,7 @@ def get_version(version=None):
         from geonode import __version__ as version
     else:
         assert len(version) == 5
-        assert version[3] in ('rc', 'post', 'dev')
+        assert version[3] in ('final', 'rc', 'post', 'dev')
 
     # [N!]N(.N)*[{a|b|rc}N][.postN][.devN]
     # Epoch segment: N!
@@ -41,8 +41,10 @@ def get_version(version=None):
     sub_version = str(version[4])
     if sub == 'rc':
         sub += sub_version
-    else:
+    elif sub in ['post', 'dev']:
         sub = '.' + sub + sub_version
+    else:
+        sub = ''
     return main + sub
 
 
