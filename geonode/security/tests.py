@@ -295,60 +295,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 302)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_login_with_headers_middleware(self):
-        """
-        Tests the Geonode login with auth headers and apikey parameter
-        """
-        from django.contrib.sessions.middleware import SessionMiddleware
-        from geonode.security.middleware import LoginWithHeaderOrKeyMiddleware
-        from geonode.base.auth import create_auth_token
-        session_middleware = SessionMiddleware(None)
-        middleware = LoginWithHeaderOrKeyMiddleware(None)
-
-        standard_user = get_user_model().objects.get(username="bobby")
-        access_token = create_auth_token(standard_user)
-
-        request = HttpRequest()
-        request.user = get_anonymous_user()
-
-        request.path = reverse('maps_browse')
-        session_middleware.process_request(request)
-        middleware.process_request(request)
-        self.assertEqual(request.user, get_anonymous_user())
-
-        request = HttpRequest()
-        request.path = reverse('maps_browse')
-        request.user = get_anonymous_user()
-        request.META["HTTP_AUTHORIZATION"] = f'Basic {base64.b64encode(b"fake:fake").decode("utf-8")}'
-        session_middleware.process_request(request)
-        middleware.process_request(request)
-        self.assertEqual(request.user, get_anonymous_user())
-
-        request = HttpRequest()
-        request.path = reverse('maps_browse')
-        request.user = get_anonymous_user()
-        request.META["HTTP_AUTHORIZATION"] = f'Basic {base64.b64encode(b"bobby:bob").decode("utf-8")}'
-        session_middleware.process_request(request)
-        middleware.process_request(request)
-        self.assertEqual(request.user, standard_user)
-
-        request = HttpRequest()
-        request.path = reverse('maps_browse')
-        request.user = get_anonymous_user()
-        request.META["HTTP_AUTHORIZATION"] = f'Bearer {access_token.token}'
-        session_middleware.process_request(request)
-        middleware.process_request(request)
-        self.assertEqual(request.user, standard_user)
-
-        request = HttpRequest()
-        request.path = reverse('maps_browse')
-        request.user = get_anonymous_user()
-        request.GET['apikey'] = access_token.token
-        session_middleware.process_request(request)
-        middleware.process_request(request)
-        self.assertEqual(request.user, standard_user)
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_attributes_sats_refresh(self):
         layers = Layer.objects.all()[:2].values_list('id', flat=True)
         test_layer = Layer.objects.get(id=layers[0])

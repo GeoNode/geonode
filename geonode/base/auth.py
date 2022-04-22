@@ -101,11 +101,12 @@ def get_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     return None
 
 
-def get_auth_user(token, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
+def get_auth_user(access_token, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     try:
-        access_token = AccessToken.objects.filter(token=token).first()
-        if access_token and access_token.is_valid():
-            return access_token.user
+        Application = get_application_model()
+        app = Application.objects.get(name=client)
+        user = AccessToken.objects.filter(token=access_token, application=app).order_by('-expires').first().user
+        return user
     except Exception:
         tb = traceback.format_exc()
         if tb:
@@ -169,10 +170,7 @@ def get_token_from_auth_header(auth_header, create_if_not_exists=False):
         if user and user.is_active:
             return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
     elif re.search('Bearer', auth_header, re.IGNORECASE):
-        token = re.compile(re.escape('Bearer '), re.IGNORECASE).sub('', auth_header)
-        access_token = AccessToken.objects.filter(token=token).first()
-        if access_token and access_token.is_valid():
-            return access_token
+        return re.compile(re.escape('Bearer '), re.IGNORECASE).sub('', auth_header)
     return None
 
 
@@ -215,8 +213,3 @@ def basic_auth_authenticate_user(auth_header: str):
     password = decoded_credentials[1]
 
     return authenticate(username=username, password=password)
-
-
-def token_header_authenticate_user(auth_header: str):
-    token = get_token_from_auth_header(auth_header)
-    return get_auth_user(token)
