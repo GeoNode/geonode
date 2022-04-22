@@ -319,6 +319,14 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         request = HttpRequest()
         request.path = reverse('maps_browse')
         request.user = get_anonymous_user()
+        request.META["HTTP_AUTHORIZATION"] = f'Basic {base64.b64encode(b"fake:fake").decode("utf-8")}'
+        session_middleware.process_request(request)
+        middleware.process_request(request)
+        self.assertEqual(request.user, get_anonymous_user())
+
+        request = HttpRequest()
+        request.path = reverse('maps_browse')
+        request.user = get_anonymous_user()
         request.META["HTTP_AUTHORIZATION"] = f'Basic {base64.b64encode(b"bobby:bob").decode("utf-8")}'
         session_middleware.process_request(request)
         middleware.process_request(request)

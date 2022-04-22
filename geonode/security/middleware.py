@@ -154,24 +154,19 @@ class LoginWithHeaderOrKeyMiddleware(MiddlewareMixin):
     This middleware permits to expose ebedded views and APIs when LCKDOWN_GEONODE is active
     """
     def process_request(self, request):
-        auth_backend = "django.contrib.auth.backends.ModelBackend"
         if not request.user.is_authenticated or request.user == get_anonymous_user():
-            auth_backend = "django.contrib.auth.backends.ModelBackend"
+            user = None
             if "HTTP_AUTHORIZATION" in request.META:
                 auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
 
                 if auth_header and "Basic" in auth_header:
                     user = basic_auth_authenticate_user(auth_header)
-                    if user:
-                        login(request, user, auth_backend)
-                        return
                 elif auth_header and "Bearer" in auth_header:
                     user = token_header_authenticate_user(auth_header)
-                    if user:
-                        login(request, user, auth_backend)
-                        return
+
             if "apikey" in request.GET:
                 user = get_auth_user(request.GET.get('apikey'))
-                if user:
-                    login(request, user, auth_backend)
-                    return
+
+            if user is not None:
+                for backend in settings.AUTHENTICATION_BACKENDS:
+                    login(request, user, backend)
