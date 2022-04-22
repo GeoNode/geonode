@@ -103,7 +103,7 @@ def get_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
 
 def get_auth_user(token, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     try:
-        access_token = AccessToken.objects.all(token=token).first()
+        access_token = AccessToken.objects.filter(token=token).first()
         if access_token and access_token.is_valid():
             return access_token.user
     except Exception:
@@ -170,7 +170,7 @@ def get_token_from_auth_header(auth_header, create_if_not_exists=False):
             return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
     elif re.search('Bearer', auth_header, re.IGNORECASE):
         token = re.compile(re.escape('Bearer '), re.IGNORECASE).sub('', auth_header)
-        access_token = AccessToken.objects.all(token=token).first()
+        access_token = AccessToken.objects.filter(token=token).first()
         if access_token and access_token.is_valid():
             return access_token
     return None
