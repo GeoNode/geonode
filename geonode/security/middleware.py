@@ -20,10 +20,12 @@
 from re import compile
 
 from django.conf import settings
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
+
+from allauth.account.adapter import get_adapter
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -168,5 +170,4 @@ class LoginWithHeaderOrKeyMiddleware(MiddlewareMixin):
                 user = get_auth_user(request.GET.get('apikey'))
 
             if user is not None:
-                for backend in settings.AUTHENTICATION_BACKENDS:
-                    login(request, user, backend)
+                get_adapter().login(request, user)
