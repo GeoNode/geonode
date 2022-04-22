@@ -538,6 +538,8 @@ class AdvancedSecurityWorkflowManager:
                     if not AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() and (_resource.is_approved or _resource.is_published):
                         safe_remove(prev_perms, 'change_resourcebase')
                         safe_remove(prev_perms, 'change_resourcebase_metadata')
+                        safe_remove(prev_perms, 'change_layer_style')
+                        safe_remove(prev_perms, 'change_layer_data')
                     if AdvancedSecurityWorkflowManager.is_advanced_workflow():
                         safe_remove(prev_perms, 'change_resourcebase_permissions')
             _perm_spec['users'][_resource.owner] = list(set(prev_perms))
