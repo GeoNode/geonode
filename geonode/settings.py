@@ -863,8 +863,6 @@ ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv('ACCESS_TOKEN_EXPIRE_SECONDS', '8640
 # Require users to authenticate before using Geonode
 LOCKDOWN_GEONODE = ast.literal_eval(os.getenv('LOCKDOWN_GEONODE', 'False'))
 
-LOGIN_WITH_HEADER_OR_KEY = ast.literal_eval(os.getenv('LOGIN_WITH_HEADER_OR_KEY', 'False'))
-
 # Add additional paths (as regular expressions) that don't require
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
@@ -1936,11 +1934,6 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # ########################################################################### #
 # SECURITY SETTINGS
 # ########################################################################### #
-
-# Creates a session from valid authentication headers (Basic Auth or Bearer Token) or apikey parameter (token)
-if LOGIN_WITH_HEADER_OR_KEY:
-    MIDDLEWARE += \
-        ('geonode.security.middleware.LoginWithHeaderOrKeyMiddleware',)
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:
