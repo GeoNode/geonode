@@ -4,7 +4,7 @@
   "description": "Builds static (JS, CSS, IMG) assets for GeoNode 2.0",
   "main": "gruntfile.js",
   "dependencies": {
-    "@yaireo/tagify": "^3.6.2",
+    "@yaireo/tagify": "^4.9.8",
     "angular": "^1.8.2",
     "angular-cookies": "1.4.0",
     "angular-openlayers-directive": "^2.1.0",
