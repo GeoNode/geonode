@@ -5,7 +5,7 @@ psycopg2==2.9.3
 Django==3.2.13
 
 # Other
-amqp==5.1.0
+amqp==5.1.1
 beautifulsoup4==4.10.0
 httplib2<0.20.5
 hyperlink==21.0.0
@@ -24,7 +24,7 @@ jsonschema==4.4.0
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
-smart_open==5.2.1
+smart_open==6.0.0
 
 # Django Apps
 django-allauth==0.50.0
@@ -50,10 +50,10 @@ oauthlib==3.2.0
 pyopenssl==22.0.0
 
 # geopython dependencies
-pyproj==3.3.0
+pyproj==3.3.1
 OWSLib==0.25.0
 pycsw==2.6.1
-SQLAlchemy==1.4.34 # required by PyCSW
+SQLAlchemy==1.4.35 # required by PyCSW
 Shapely==1.8.1.post1
 mercantile==1.2.1
 geoip2==4.5.0
