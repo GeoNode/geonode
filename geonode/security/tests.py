@@ -2662,7 +2662,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         resource_perm_specs = self.resource.get_all_level_info()
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.author]),
-            set(self.owner_perms + self.dataset_perms))
+            set(self.owner_perms))
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.member_with_perms]),
             set(self.owner_perms + self.dataset_perms))
