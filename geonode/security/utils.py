@@ -524,8 +524,8 @@ class AdvancedSecurityWorkflowManager:
                         safe_remove(prev_perms, 'change_resourcebase')
                         safe_remove(prev_perms, 'change_resourcebase_metadata')
                         if _resource.polymorphic_ctype.model == "dataset":
-                            safe_remove(prev_perms, 'change_layer_style')
-                            safe_remove(prev_perms, 'change_layer_data')
+                            safe_remove(prev_perms, 'change_dataset_style')
+                            safe_remove(prev_perms, 'change_dataset_data')
                     if AdvancedSecurityWorkflowManager.is_advanced_workflow():
                         safe_remove(prev_perms, 'change_resourcebase_permissions')
             _perm_spec['users'][_resource.owner] = list(set(prev_perms))
