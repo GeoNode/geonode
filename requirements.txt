@@ -24,7 +24,7 @@ jsonschema==4.4.0
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
-smart_open==5.2.1
+smart_open==6.0.0
 
 # Django Apps
 django-allauth==0.50.0
