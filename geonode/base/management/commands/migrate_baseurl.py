@@ -84,32 +84,37 @@ Styles and Links Base URLs from [{source_address}] to [{target_address}].")
                 _cnt = Map.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
-                print(f"Updated {_cnt} Maps")
-                logger.info(f"Updated {_cnt} Maps")
+                print(f"Updated {_cnt} Maps Thumbnail URLs")
+                logger.info(f"Updated {_cnt} Maps Thumbnail URLs")
 
                 _cnt = MapLayer.objects.filter(ows_url__icontains=source_address).update(
                     ows_url=Func(
                         F('ows_url'), Value(source_address), Value(target_address), function='replace'))
-                print(f"Updated {_cnt} MapLayers")
-                logger.info(f"Updated {_cnt} MapLayers")
+                print(f"Updated {_cnt} MapLayers OWS URLs")
+                logger.info(f"Updated {_cnt} MapLayers OWS URLs")
 
+                _cnt = Dataset.objects.filter(ows_url__icontains=source_address).update(
+                    ows_url=Func(
+                        F('ows_url'), Value(source_address), Value(target_address), function='replace'))
+                print(f"Updated {_cnt} Datasets OWS URLs")
+                logger.info(f"Updated {_cnt} Datasets OWS URLs")
                 _cnt = Dataset.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
                         F('thumbnail_url'), Value(source_address), Value(target_address), function='replace'))
-                print(f"Updated {_cnt} Datasets")
-                logger.info(f"Updated {_cnt} Datasets")
+                print(f"Updated {_cnt} Datasets Thumbnail URLs")
+                logger.info(f"Updated {_cnt} Datasets Thumbnail URLs")
 
                 _cnt = Style.objects.filter(sld_url__icontains=source_address).update(
                     sld_url=Func(
                         F('sld_url'), Value(source_address), Value(target_address), function='replace'))
-                print(f"Updated {_cnt} Styles")
-                logger.info(f"Updated {_cnt} Styles")
+                print(f"Updated {_cnt} Styles URLs")
+                logger.info(f"Updated {_cnt} Styles URLs")
 
                 _cnt = Link.objects.filter(url__icontains=source_address).update(
                     url=Func(
                         F('url'), Value(source_address), Value(target_address), function='replace'))
-                print(f"Updated {_cnt} Links")
-                logger.info(f"Updated {_cnt} Links")
+                print(f"Updated {_cnt} Links URLs")
+                logger.info(f"Updated {_cnt} Links URLs")
 
                 _cnt = ResourceBase.objects.filter(thumbnail_url__icontains=source_address).update(
                     thumbnail_url=Func(
