@@ -87,6 +87,8 @@ class ResourceBaseToRepresentationSerializerMixin(DynamicModelSerializer):
         if request:
             data['perms'] = instance.get_user_perms(request.user).union(
                 instance.get_self_resource().get_user_perms(request.user)
+            ).union(
+                instance.get_real_instance().get_user_perms(request.user)
             )
             if not request.user.is_anonymous and getattr(settings, "FAVORITE_ENABLED", False):
                 favorite = Favorite.objects.filter(user=request.user, object_id=instance.pk).count()
