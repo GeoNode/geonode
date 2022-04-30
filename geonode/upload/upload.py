@@ -623,7 +623,10 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     return saved_dataset
 
                 task = import_session.tasks[0]
-                task.set_charset(charset)
+                try:
+                    task.set_charset(charset)
+                except Exception as e:
+                    logger.exception(e)
 
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
