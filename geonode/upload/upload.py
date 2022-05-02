@@ -60,14 +60,16 @@ from geonode.base.models import ResourceBase, SpatialRepresentationType, TopicCa
 
 from ..people.utils import get_default_user
 from ..layers.metadata import convert_keyword, parse_metadata
-from ..layers.utils import get_valid_layer_name, resolve_regions
+from ..layers.utils import get_valid_layer_name, is_vector, resolve_regions
 from ..layers.models import Layer, UploadSession
 from ..geoserver.tasks import geoserver_finalize_upload
 from ..geoserver.helpers import (
+    create_geoserver_db_featurestore,
     set_time_info,
     gs_catalog,
     gs_uploader,
-    import_imagemosaic_granules
+    import_imagemosaic_granules,
+    ogc_server_settings
 )
 from . import utils
 from .models import Upload
@@ -412,7 +414,16 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                         target_store=target_store,
                         name=name,
                         charset_encoding=charset_encoding
-                )
+                    )
+                    if ogc_server_settings.datastore_db and any(map(is_vector, files_to_upload)):
+                        target = create_geoserver_db_featurestore(
+                            # store_name=ogc_server_settings.DATASTORE,
+                            store_name=ogc_server_settings.datastore_db['NAME'],
+                            workspace=settings.DEFAULT_WORKSPACE
+                        )
+                        task = import_session.tasks[0]
+                        task.set_target(store_name=target_store or target.name, workspace=settings.DEFAULT_WORKSPACE)
+
             upload.import_id = import_session.id
             upload.save()
 
