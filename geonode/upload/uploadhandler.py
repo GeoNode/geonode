@@ -16,7 +16,8 @@ from geonode.upload.models import UploadSizeLimit
 
 class SizeRestrictedFileUploadHandler(FileUploadHandler):
     """
-    Upload handler that avoid streaming data when the file is bigged than a given size.
+    Upload handler exhaust the stream to avoit overload the memory when the file is bigger than the limit set.
+    The upload will be blocked afterwards by the Upload Form
     It only applies for elegible urls set in ``elegible_url_names`` property.
     """
 
