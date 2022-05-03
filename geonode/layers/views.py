@@ -1224,7 +1224,10 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                                 logger.error("async starting")
                                 finalize_incomplete_session_uploads.apply_async()
                             else:
-                                finalize_incomplete_session_uploads.apply()
+                                response, cat, valid = UploadViewSet()._emulate_client_upload_step(
+                                    request,
+                                    _step
+                                )
 
                     set_geowebcache_invalidate_cache(layer.typename)
 
