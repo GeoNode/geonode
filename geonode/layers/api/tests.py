@@ -21,6 +21,7 @@ import shutil
 import tempfile
 from unittest.mock import patch
 from django.conf import settings
+from django.test import override_settings
 
 import gisdata
 from django.conf.urls import url
@@ -142,6 +143,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         self.assertDictEqual(expected, response.json())
 
     @patch("geonode.layers.views.validate_input_source")
+    @override_settings(ASYNC_SYGNALS=False)
     def test_layer_replace_should_work(self, _validate_input_source):
 
         _validate_input_source.return_value = True
