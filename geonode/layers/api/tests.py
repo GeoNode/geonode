@@ -143,7 +143,7 @@ class LayersApiTests(APITestCase, URLPatternsTestCase):
         self.assertDictEqual(expected, response.json())
 
     @patch("geonode.layers.views.validate_input_source")
-    @override_settings(ASYNC_SYGNALS=False)
+    @override_settings(ASYNC_SIGNALS=False)
     def test_layer_replace_should_work(self, _validate_input_source):
 
         _validate_input_source.return_value = True
