@@ -692,7 +692,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         mocked_validation_error.side_effect = ValidationError(expected_error)
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             defaults={
                 "description": "The sum of sizes for the files of a dataset upload.",
                 "max_size": 1,
@@ -723,7 +723,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         mocked_validation_error.side_effect = ValidationError(expected_error)
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="total_upload_size_sum",
+            slug="dataset_upload_size",
             defaults={
                 "description": "The sum of sizes for the files of a dataset upload.",
                 "max_size": 1,
