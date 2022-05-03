@@ -1210,7 +1210,7 @@ def layer_replace(request, layername, template='layers/layer_replace.html'):
                     request.GET = {"layer_id": layer.id}
                     steps = [None, "check", "final"] if layer.is_vector() and settings.ASYNC_SIGNALS else [None, "final"]
                     for _step in steps:
-                        if _step != 'final' or (_step =='final' and not settings.ASYNC_SIGNALS):
+                        if _step != 'final' or (_step == 'final' and not settings.ASYNC_SIGNALS):
                             response, cat, valid = UploadViewSet()._emulate_client_upload_step(
                                 request,
                                 _step
