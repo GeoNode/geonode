@@ -63,7 +63,7 @@ from geonode.upload.api.exceptions import GeneralUploadException
 from ..layers.models import Dataset
 from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
-from ..layers.utils import get_valid_dataset_name
+from ..layers.utils import get_valid_dataset_name, is_vector
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader
@@ -73,7 +73,9 @@ from .models import Upload
 from .upload_preprocessing import preprocess_files
 from geonode.geoserver.helpers import (
     get_dataset_type,
-    get_dataset_storetype)
+    get_dataset_storetype,
+    create_geoserver_db_featurestore,
+    ogc_server_settings)
 
 logger = logging.getLogger(__name__)
 
@@ -382,6 +384,14 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                     name=name,
                     charset_encoding=charset_encoding
                 )
+                if ogc_server_settings.datastore_db and any(map(is_vector, files_to_upload)):
+                    target = create_geoserver_db_featurestore(
+                        # store_name=ogc_server_settings.DATASTORE,
+                        store_name=ogc_server_settings.datastore_db['NAME'],
+                        workspace=settings.DEFAULT_WORKSPACE
+                    )
+                    task = import_session.tasks[0]
+                    task.set_target(store_name=target_store or target.name, workspace=settings.DEFAULT_WORKSPACE)
             upload.import_id = import_session.id
             upload.save()
 
