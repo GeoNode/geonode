@@ -711,7 +711,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                         import_session.state == Upload.STATE_READY or (import_session.state == Upload.STATE_PENDING and _tasks_ready)):
                     _log(f"final_step: Running Import Session {import_session.id} - target: {target.name} - alternate: {task.get_target_layer_name()}")
                     _log(f" -- session state: {import_session.state} - task state: {task.state}")
-                    import_session.commit()
+
+                    utils.run_import(upload_session, async_upload=False)
                     import_session = import_session.reload()
                     task = import_session.tasks[0]
                     name = task.layer.name
