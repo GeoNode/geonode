@@ -56,6 +56,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_tree_data():
+
     def rectree(parent, path):
         children_list_of_tuples = list()
         c = Region.objects.filter(parent=parent)
@@ -110,32 +111,6 @@ class CategoryChoiceField(forms.ModelChoiceField):
             '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
             'data-content="' + obj.description + '" trigger="hover">' \
             '<br/><strong>' + obj.gn_description + '</strong></span>'
-
-
-# NOTE: This is commented as it needs updating to work with select2 and autocomlete light.
-#
-# class TreeWidget(autocomplete.TaggitSelect2):
-#     input_type = 'text'
-
-#     def render(self, name, value, attrs=None):
-#         if isinstance(value, basestring):
-#             vals = value
-#         elif value:
-#             vals = ','.join([i.tag.name for i in value])
-#         else:
-#             vals = ""
-#         output = ["""<div class="keywords-container"><span class="input-group">
-#                 <input class="form-control"
-#                        id="id_resource-keywords"
-#                        name="resource-keywords"
-#                        value="%s"><br/>""" % (vals)]
-#         output.append(
-#             '<div id="treeview" class="" style="display: none"></div>')
-#         output.append(
-#             '<span class="input-group-addon" id="treeview-toggle"><i class="fa fa-folder"></i></span>')
-#         output.append('</span></div>')
-
-#         return mark_safe(u'\n'.join(output))
 
 
 class RegionsMultipleChoiceField(forms.MultipleChoiceField):
@@ -393,6 +368,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
 
 
 class ResourceBaseForm(TranslationModelForm):
+
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
     abstract = forms.CharField(
         label=_("Abstract"),
@@ -478,7 +454,6 @@ class ResourceBaseForm(TranslationModelForm):
     regions = RegionsMultipleChoiceField(
         label=_("Regions"),
         required=False,
-        choices=get_tree_data(),
         widget=RegionsSelect)
 
     regions.widget.attrs = {"size": 20}
@@ -495,6 +470,7 @@ class ResourceBaseForm(TranslationModelForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        self.fields['regions'].choices = get_tree_data()
 
         if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]

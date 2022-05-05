@@ -1518,7 +1518,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
@@ -1526,7 +1526,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
 
         # Test 'is_approved=False' 'is_published=False'
         Dataset.objects.filter(
@@ -1540,7 +1540,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
@@ -1548,7 +1548,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
@@ -1573,7 +1573,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             unpublished_not_visible=True,
             private_groups_not_visibile=True)
         # The method returns only 'metadata_only=False' resources
-        self.assertEqual(layers.count() - 1, actual.count())
+        self.assertEqual(layers.count(), actual.count())
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
@@ -1771,44 +1771,45 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         self.assertTrue(PermSpecCompact.validate(_p.compact))
         _pp = PermSpecCompact(_p.compact, dataset)
-        self.assertDictEqual(
-            _pp.extended,
-            {
-                'users':
-                    {
-                        'bobby':
-                        [
-                            'change_dataset_data',
-                            'change_dataset_style',
-                            'change_resourcebase_metadata',
-                            'delete_resourcebase',
-                            'change_resourcebase_permissions',
-                            'publish_resourcebase',
-                            'change_resourcebase',
-                            'view_resourcebase',
-                            'download_resourcebase'
-                        ],
-                        'admin':
-                        [
-                            'change_dataset_data',
-                            'change_dataset_style',
-                            'view_resourcebase',
-                            'change_resourcebase_metadata',
-                            'delete_resourcebase',
-                            'change_resourcebase_permissions',
-                            'publish_resourcebase',
-                            'change_resourcebase',
-                            'download_resourcebase'
-                        ],
-                        'AnonymousUser': ['view_resourcebase']
-                    },
-                'groups':
-                    {
-                        'anonymous': ['view_resourcebase'],
-                        'registered-members': []
-                    }
+        _pp_e = {
+            'users': {
+                'bobby': [
+                    'change_dataset_style',
+                    'publish_resourcebase',
+                    'delete_resourcebase',
+                    'change_resourcebase_metadata',
+                    'download_resourcebase',
+                    'change_resourcebase',
+                    'change_resourcebase_permissions',
+                    'view_resourcebase',
+                    'change_dataset_data'
+                ],
+                'admin': [
+                    'change_dataset_style',
+                    'publish_resourcebase',
+                    'delete_resourcebase',
+                    'change_resourcebase_metadata',
+                    'download_resourcebase',
+                    'change_resourcebase',
+                    'change_resourcebase_permissions',
+                    'view_resourcebase',
+                    'change_dataset_data'
+                ],
+                'AnonymousUser': ['view_resourcebase']
+            },
+            'groups': {
+                'anonymous': ['view_resourcebase'],
+                'registered-members': []
             }
-        )
+        }
+        self.assertListEqual(list(_pp.extended.keys()), list(_pp_e.keys()))
+        for _key in _pp.extended.keys():
+            self.assertListEqual(list(_pp.extended.get(_key).keys()), list(_pp_e.get(_key).keys()))
+            for __key in _pp.extended.get(_key).keys():
+                self.assertListEqual(
+                    sorted(list(set(_pp.extended.get(_key).get(__key)))),
+                    sorted(list(set(_pp_e.get(_key).get(__key))))
+                )
 
         _pp2 = PermSpecCompact({
             "users":
@@ -1824,44 +1825,45 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 ]
         }, dataset)
         _pp.merge(_pp2)
-        self.assertDictEqual(
-            _pp.extended,
-            {
-                'users':
-                    {
-                        'bobby':
-                        [
-                            'change_dataset_data',
-                            'change_dataset_style',
-                            'change_resourcebase_metadata',
-                            'delete_resourcebase',
-                            'change_resourcebase_permissions',
-                            'publish_resourcebase',
-                            'change_resourcebase',
-                            'view_resourcebase',
-                            'download_resourcebase'
-                        ],
-                        'admin':
-                        [
-                            'change_dataset_data',
-                            'change_dataset_style',
-                            'view_resourcebase',
-                            'change_resourcebase_metadata',
-                            'delete_resourcebase',
-                            'change_resourcebase_permissions',
-                            'publish_resourcebase',
-                            'change_resourcebase',
-                            'download_resourcebase'
-                        ],
-                        'AnonymousUser': ['view_resourcebase']
-                    },
-                'groups':
-                    {
-                        'anonymous': ['view_resourcebase'],
-                        'registered-members': []
-                    }
+        _pp_e = {
+            'users': {
+                'bobby': [
+                    'change_resourcebase_permissions',
+                    'change_resourcebase_metadata',
+                    'change_dataset_data',
+                    'change_resourcebase',
+                    'delete_resourcebase',
+                    'publish_resourcebase',
+                    'download_resourcebase',
+                    'change_dataset_style',
+                    'view_resourcebase'
+                ],
+                'admin': [
+                    'change_resourcebase_permissions',
+                    'change_resourcebase_metadata',
+                    'change_dataset_data',
+                    'change_resourcebase',
+                    'delete_resourcebase',
+                    'publish_resourcebase',
+                    'download_resourcebase',
+                    'change_dataset_style',
+                    'view_resourcebase'
+                ],
+                'AnonymousUser': ['view_resourcebase']
+            },
+            'groups': {
+                'anonymous': ['view_resourcebase'],
+                'registered-members': []
             }
-        )
+        }
+        self.assertListEqual(list(_pp.extended.keys()), list(_pp_e.keys()))
+        for _key in _pp.extended.keys():
+            self.assertListEqual(list(_pp.extended.get(_key).keys()), list(_pp_e.get(_key).keys()))
+            for __key in _pp.extended.get(_key).keys():
+                self.assertListEqual(
+                    sorted(list(set(_pp.extended.get(_key).get(__key)))),
+                    sorted(list(set(_pp_e.get(_key).get(__key))))
+                )
 
         # Test "download" permissions retention policy
         # 1. "download" permissions are allowed on "Documents"
@@ -1888,7 +1890,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             ]
                     },
                 "groups": {}
-            }
+            },
+            json.loads(str(_p))
         )
 
         self.assertDictEqual(
@@ -1933,7 +1936,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'title': 'Registered Members'
                     }
                 ]
-            }
+            },
+            _p.compact
         )
         # 2. "download" permissions are NOT allowed on "Maps"
         test_map = Map.objects.first()
@@ -1959,7 +1963,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                             ]
                     },
                 "groups": {}
-            }
+            },
+            json.loads(str(_p))
         )
 
         self.assertDictEqual(
@@ -2004,7 +2009,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         'title': 'Registered Members'
                     }
                 ]
-            }
+            },
+            _p.compact
         )
 
 
@@ -2159,7 +2165,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     self.not_group_member: [
                         "change_resourcebase",
                         "view_resourcebase",
-                        "download_resourcebase"
+                        "download_resourcebase",
+                        "change_resourcebase_metadata"
                     ],
                     self.anonymous_user: ["view_resourcebase"],
                 },
@@ -2655,7 +2662,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         resource_perm_specs = self.resource.get_all_level_info()
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.author]),
-            set(self.owner_perms + self.dataset_perms))
+            set(self.owner_perms))
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.member_with_perms]),
             set(self.owner_perms + self.dataset_perms))

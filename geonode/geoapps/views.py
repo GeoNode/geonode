@@ -30,6 +30,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.views.decorators.clickjacking import xframe_options_sameorigin
+from geonode.base.enumerations import SOURCE_TYPE_LOCAL
 
 from geonode.client.hooks import hookset
 from geonode.people.forms import ProfileForm
@@ -337,24 +338,30 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             if author_form.has_changed and author_form.is_valid():
                 new_author = author_form.save()
 
+        geoapp_form.cleaned_data.pop('ptype')
+
         additional_vals = dict(
             poc=new_poc or geoapp_obj.poc,
             metadata_author=new_author or geoapp_obj.metadata_author,
             category=new_category
         )
 
+        geoapp_form.cleaned_data.pop('metadata')
+        extra_metadata = geoapp_form.cleaned_data.pop('extra_metadata')
+
         geoapp_obj = geoapp_form.instance
-        geoapp_obj.resource_type = resource_type
+
+        _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
+        _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
+
         resource_manager.update(
             geoapp_obj.uuid,
             instance=geoapp_obj,
             keywords=new_keywords,
             regions=new_regions,
-            vals=dict(
-                **geoapp_form.cleaned_data, **additional_vals
-            ),
+            vals=_vals,
             notify=True,
-            extra_metadata=json.loads(geoapp_form.cleaned_data['extra_metadata'])
+            extra_metadata=json.loads(extra_metadata)
         )
         resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
 
@@ -385,6 +392,18 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             tb = traceback.format_exc()
             logger.error(tb)
 
+        vals = {}
+        if 'group' in geoapp_form.changed_data:
+            vals['group'] = geoapp_form.cleaned_data.get('group')
+        if any([x in geoapp_form.changed_data for x in ['is_approved', 'is_published']]):
+            vals['is_approved'] = geoapp_form.cleaned_data.get('is_approved', geoapp_obj.is_approved)
+            vals['is_published'] = geoapp_form.cleaned_data.get('is_published', geoapp_obj.is_published)
+        resource_manager.update(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            notify=True,
+            vals=vals
+        )
         return HttpResponse(json.dumps({'message': message}))
     elif request.method == "POST" and (not geoapp_form.is_valid(
     ) or not category_form.is_valid() or not tkeywords_form.is_valid()):

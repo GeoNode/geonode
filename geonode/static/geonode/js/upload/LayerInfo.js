@@ -272,7 +272,7 @@ define(function (require, exports) {
         }
         if ($('#id_style_upload_form').prop('checked')) {
              form_data.append('style_upload_form', true);
-             form_data.append('dataset_title', $('#id_ldataset_title').val());
+             form_data.append('dataset_title', $('#id_dataset_title').val());
         }
         return form_data;
     };
@@ -460,16 +460,8 @@ define(function (require, exports) {
         }
         var info_message = gettext('Your ' + resourceType +' was successfully created.');
         var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext(resourceType.capitalize() + ' Info') + '</a>&nbsp;&nbsp;&nbsp;';
-        var b = '<a href="' + resp.url + '/metadata" class="btn btn-warning">' + gettext('Edit Metadata') + '</a>&nbsp;&nbsp;&nbsp;';
-        var c = '<a href="' + resp.url + '/metadata_upload" class="btn btn-warning">' + gettext('Upload Metadata') + '</a>&nbsp;&nbsp;&nbsp;';
-        var d = '<a href="' + resp.url + '/style_upload" class="btn btn-warning">' + gettext('Upload SLD') + '</a>&nbsp;&nbsp;&nbsp;';
-        var e = '<a href="' + resp.url.replace(/^\/datasets/, '/gs') + '/style/manage" class="btn btn-warning">' + gettext('Manage Styles') + '</a>&nbsp;&nbsp;&nbsp;';
-        if(resourceType != 'dataset') {
+        if(resourceType == 'dataset') {
             // Only Layers have Metadata and SLD Upload features for the moment
-            c = '';
-            d = '';
-            e = '';
-        } else {
             info_message += ' ' + gettext('Please wait until GeoNode finished configuring it!');
             a = '';
         }
@@ -481,7 +473,7 @@ define(function (require, exports) {
             }
         }
         self.logStatus({
-            msg: '<p>' + info_message + '<br/>' + msg_col + '<br/>' + a + b + c + d + e + '</p>',
+            msg: '<p>' + info_message + '<br/>' + msg_col + '<br/>' + a + '</p>',
             level: 'alert-success',
             empty: 'true'
         });

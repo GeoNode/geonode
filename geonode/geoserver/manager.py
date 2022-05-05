@@ -16,9 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
-import copy
-import shutil
 import typing
 import logging
 import tempfile
@@ -69,7 +68,6 @@ from .helpers import (
     create_geoserver_db_featurestore)
 from .security import (
     _get_gwc_filters_and_formats,
-    get_geofence_rules_count,
     toggle_dataset_cache,
     purge_geofence_dataset_rules,
     set_geofence_invalidate_cache,
@@ -121,12 +119,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
                     if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
                         geoserver_cascading_delete.apply_async((_real_instance.alternate,))
-                        if "geonode.upload" in settings.INSTALLED_APPS:
-                            from geonode.upload.models import Upload
-                            for upload in Upload.objects.filter(resource_id=_real_instance.id):
-                                if upload.upload_dir and os.path.exists(upload.upload_dir):
-                                    shutil.rmtree(upload.upload_dir)
-                                upload.delete()
                 elif isinstance(_real_instance, Map):
                     geoserver_delete_map.apply_async((_real_instance.id, ))
             except Exception as e:
@@ -164,17 +156,18 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         if uuid and instance:
             _resource = ResourceManager._get_instance(uuid)
-            if isinstance(_resource.get_real_instance(), Dataset):
+            if _resource and isinstance(_resource.get_real_instance(), Dataset):
                 importer_session_opts = defaults.get('importer_session_opts', {})
                 if not importer_session_opts:
                     _src_upload_session = Upload.objects.filter(resource=instance.get_real_instance().resourcebase_ptr)
                     if _src_upload_session.exists():
                         _src_upload_session = _src_upload_session.get()
-                        try:
-                            _src_importer_session = _src_upload_session.get_session.import_session.reload()
-                            importer_session_opts.update({'transforms': _src_importer_session.tasks[0].transforms})
-                        except Exception as e:
-                            logger.exception(e)
+                        if _src_upload_session and _src_upload_session.get_session:
+                            try:
+                                _src_importer_session = _src_upload_session.get_session.import_session.reload()
+                                importer_session_opts.update({'transforms': _src_importer_session.tasks[0].transforms})
+                            except Exception as e:
+                                logger.exception(e)
                 return self.import_dataset(
                     'import_dataset',
                     uuid,
@@ -184,7 +177,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     defaults=defaults,
                     action_type='create',
                     importer_session_opts=importer_session_opts)
-        return ResourceManager._get_instance(uuid) if uuid else instance
+        return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
@@ -226,10 +219,39 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     action_type=kwargs.get('action_type', 'create'),
                     importer_session_opts=kwargs.get('importer_session_opts', None))
                 import_session = _gs_import_session_info.import_session
-                if import_session and import_session.state == enumerations.STATE_COMPLETE:
-                    _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}'
+                if import_session:
+                    if import_session.state == enumerations.STATE_PENDING:
+                        task = None
+                        native_crs = None
+                        target_crs = 'EPSG:4326'
+                        for _task in import_session.tasks:
+                            # CRS missing/unknown
+                            if _task.state == 'NO_CRS':
+                                task = _task
+                                native_crs = _task.layer.srs
+                                break
+                        if not native_crs:
+                            native_crs = 'EPSG:4326'
+                        if task:
+                            task.set_srs(native_crs)
+
+                        transform = {
+                            'type': 'ReprojectTransform',
+                            'source': native_crs,
+                            'target': target_crs,
+                        }
+                        task.remove_transforms([transform], by_field='type', save=False)
+                        task.add_transforms([transform], save=False)
+                        task.save_transforms()
+                        #  Starting import process
+                        import_session.commit()
+                        import_session = import_session.reload()
+                        _gs_import_session_info.import_session = import_session
+                        _gs_import_session_info.dataset_name = import_session.tasks[0].layer.name
+                    _name = _gs_import_session_info.dataset_name if import_session.state == enumerations.STATE_COMPLETE else ''
+                    _alternate = f'{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}' if import_session.state == enumerations.STATE_COMPLETE else ''
                     _to_update = {
-                        'name': _gs_import_session_info.dataset_name,
+                        'name': _name,
                         'title': instance.title or _gs_import_session_info.dataset_name,
                         'files': kwargs.get('files', None),
                         'workspace': _gs_import_session_info.workspace,
@@ -240,12 +262,21 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     }
                     if 'defaults' in kwargs:
                         kwargs['defaults'].update(_to_update)
+                    Dataset.objects.filter(uuid=instance.uuid).update(**_to_update)
                     instance.get_real_instance_class().objects.filter(uuid=instance.uuid).update(**_to_update)
+                    # Refresh from DB
+                    instance.refresh_from_db()
                     if kwargs.get('action_type', 'create') == 'create':
                         set_styles(instance.get_real_instance(), gs_catalog)
                         set_attributes_from_geoserver(instance.get_real_instance(), overwrite=True)
                 elif kwargs.get('action_type', 'create') == 'create':
-                    raise Exception(f"Importer Session not valid - STATE: {import_session.state}")
+                    logger.exception(Exception(f"Importer Session not valid - STATE: {import_session.state}"))
+                if import_session.state == enumerations.STATE_COMPLETE:
+                    instance.set_processing_state(enumerations.STATE_PROCESSED)
+                else:
+                    instance.set_processing_state(import_session.state)
+                    instance.set_dirty_state()
+                instance.save(notify=False)
             except Exception as e:
                 logger.exception(e)
                 if kwargs.get('action_type', 'create') == 'create':
@@ -366,81 +397,77 @@ class GeoServerResourceManager(ResourceManagerInterface):
         try:
             if _resource:
                 _resource = _resource.get_real_instance()
-                _prev_perm_spec = copy.deepcopy(_resource.get_all_level_info())
-                _geofence_rules_count = get_geofence_rules_count()
-                logger.debug(f'Fixup GIS Backend Security Rules Accordingly on resource {instance}')
-                # Avoid setting the permissions if nothing changed
-                if created or _geofence_rules_count == 0 or not _resource.compare_perms(_prev_perm_spec, permissions):
-                    if isinstance(_resource, Dataset):
-                        if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
-                            if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                                _disable_cache = []
-                                _owner = owner or _resource.owner
-                                if permissions is not None and len(permissions):
-                                    if not created:
-                                        purge_geofence_dataset_rules(_resource)
+                logger.error(f'Fixup GIS Backend Security Rules Accordingly on resource {instance} {isinstance(_resource, Dataset)}')
+                if isinstance(_resource, Dataset):
+                    if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
+                        if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+                            _disable_cache = []
+                            _owner = owner or _resource.owner
+                            if permissions is not None and len(permissions):
+                                if not created:
+                                    purge_geofence_dataset_rules(_resource)
 
-                                    # Owner
-                                    perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
+                                # Owner
+                                perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
+                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
 
-                                    # All the other users
-                                    if 'users' in permissions and len(permissions['users']) > 0:
-                                        for user, perms in permissions['users'].items():
-                                            _user = get_user_model().objects.get(username=user)
-                                            if _user != _owner:
-                                                # Set the GeoFence Rules
-                                                group_perms = None
-                                                if 'groups' in permissions and len(permissions['groups']) > 0:
-                                                    group_perms = permissions['groups']
-                                                if user == "AnonymousUser":
-                                                    _user = None
-                                                _group = list(group_perms.keys())[0] if group_perms else None
-                                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _user, _group, group_perms)
-
-                                    # All the other groups
-                                    if 'groups' in permissions and len(permissions['groups']) > 0:
-                                        for group, perms in permissions['groups'].items():
-                                            _group = Group.objects.get(name=group)
+                                # All the other users
+                                if 'users' in permissions and len(permissions['users']) > 0:
+                                    for user, perms in permissions['users'].items():
+                                        _user = get_user_model().objects.get(username=user)
+                                        if _user != _owner:
                                             # Set the GeoFence Rules
-                                            if _group and _group.name and _group.name == 'anonymous':
-                                                _group = None
-                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, _group, None)
-                                else:
-                                    anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                                    anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+                                            group_perms = None
+                                            if 'groups' in permissions and len(permissions['groups']) > 0:
+                                                group_perms = permissions['groups']
+                                            if user == "AnonymousUser":
+                                                _user = None
+                                            _group = list(group_perms.keys())[0] if group_perms else None
+                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _user, _group, group_perms)
 
-                                    if not created:
-                                        purge_geofence_dataset_rules(_resource.get_self_resource())
-
-                                    # Owner & Managers
-                                    perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
-
-                                    _resource_groups, _group_managers = _resource.get_group_managers(group=_resource.group)
-                                    for _group_manager in _group_managers:
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _group_manager, None, None)
-
-                                    for user_group in _resource_groups:
-                                        if not skip_registered_members_common_group(user_group):
-                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, user_group, None)
-
-                                    # Anonymous
-                                    if anonymous_can_view:
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, VIEW_PERMISSIONS, None, None, None)
-
-                                    if anonymous_can_download:
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, DOWNLOAD_PERMISSIONS, None, None, None)
-
-                                if _disable_cache:
-                                    filters, formats = _get_gwc_filters_and_formats(_disable_cache)
-                                    try:
-                                        _dataset_workspace = get_dataset_workspace(_resource)
-                                        toggle_dataset_cache(f'{_dataset_workspace}:{_resource.name}', filters=filters, formats=formats)
-                                    except Dataset.DoesNotExist:
-                                        pass
+                                # All the other groups
+                                if 'groups' in permissions and len(permissions['groups']) > 0:
+                                    for group, perms in permissions['groups'].items():
+                                        _group = Group.objects.get(name=group)
+                                        # Set the GeoFence Rules
+                                        if _group and _group.name and _group.name == 'anonymous':
+                                            _group = None
+                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, _group, None)
                             else:
-                                _resource.set_dirty_state()
+                                anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
+                                anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+
+                                if not created:
+                                    purge_geofence_dataset_rules(_resource.get_self_resource())
+
+                                # Owner & Managers
+                                perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
+                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
+
+                                _resource_groups, _group_managers = _resource.get_group_managers(group=_resource.group)
+                                for _group_manager in _group_managers:
+                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _group_manager, None, None)
+
+                                for user_group in _resource_groups:
+                                    if not skip_registered_members_common_group(user_group):
+                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, user_group, None)
+
+                                # Anonymous
+                                if anonymous_can_view:
+                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, VIEW_PERMISSIONS, None, None, None)
+
+                                if anonymous_can_download:
+                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, DOWNLOAD_PERMISSIONS, None, None, None)
+
+                            if _disable_cache:
+                                filters, formats = _get_gwc_filters_and_formats(_disable_cache)
+                                try:
+                                    _dataset_workspace = get_dataset_workspace(_resource)
+                                    toggle_dataset_cache(f'{_dataset_workspace}:{_resource.name}', filters=filters, formats=formats)
+                                except Dataset.DoesNotExist:
+                                    pass
+                        else:
+                            _resource.set_dirty_state()
         except Exception as e:
             logger.exception(e)
             return False

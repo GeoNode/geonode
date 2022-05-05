@@ -141,7 +141,6 @@ class GroupProfile(models.Model):
 
         :param resource_type: Filter's the queryset to objects with the same type.
         """
-
         queryset = get_objects_for_group(
             self.group, [
                 'base.view_resourcebase', 'base.change_resourcebase'], any_perm=True)
@@ -285,7 +284,8 @@ class GroupMember(models.Model):
     def _handle_perms(self, role=None):
         from geonode.security.utils import AdvancedSecurityWorkflowManager
 
-        AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
+        if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
+            AdvancedSecurityWorkflowManager.set_group_member_permissions(self.user, self.group, role)
 
 
 def group_pre_delete(instance, sender, **kwargs):

@@ -225,9 +225,18 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
     """
     API endpoint that lists hierarchical keywords.
     """
+
     def get_queryset(self):
         resource_keywords = HierarchicalKeyword.resource_keywords_tree(self.request.user)
-        slugs = [obj.get('href') for obj in resource_keywords]
+
+        def _get_kw_hrefs(keywords, slugs: list = []):
+            for obj in keywords:
+                if obj.get('tags', []):
+                    slugs.append(obj.get('href'))
+                _get_kw_hrefs(obj.get('nodes', []), slugs)
+            return slugs
+
+        slugs = _get_kw_hrefs(resource_keywords)
         return HierarchicalKeyword.objects.filter(slug__in=slugs)
 
     permission_classes = [AllowAny, ]
@@ -491,7 +500,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="perms-spec",
         methods=['get', 'put', 'patch', 'delete'],
         permission_classes=[
-            IsOwnerOrAdmin,
+            IsAuthenticated
         ])
     def resource_service_permissions(self, request, pk=None):
         """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
@@ -554,7 +563,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = self.get_object()
-        _user_can_manage = request.user.has_perm('change_resourcebase', resource.get_self_resource()) or request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
+        _user_can_manage = request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not _user_can_manage:
             return Response(status=status.HTTP_403_FORBIDDEN)

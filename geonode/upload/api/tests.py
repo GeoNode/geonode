@@ -591,8 +591,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         fname = os.path.join(os.getcwd(), 'geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip')
         resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data['status'], 'incomplete')
-        self.assertTrue(data['success'])
 
         url = reverse('uploads-list')
         # Admin
@@ -623,6 +621,39 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     sleep(3.0)
         self.assertEqual(upload_data['state'], enumerations.STATE_WAITING, upload_data['state'])
 
+        # Try to upload a GeoTIFF without a CRS def.
+        fname = os.path.join(os.getcwd(), 'geonode/tests/data/n32_1991_0001_123.tif')
+        resp, data = self.rest_upload_by_path(fname)
+        self.assertEqual(resp.status_code, 200)
+
+        # Admin
+        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5, response.data)
+        self.assertEqual(response.data['total'], 2, response.data['total'])
+        # Pagination
+        self.assertEqual(len(response.data['uploads']), 2)
+        self.assertEqual(response.status_code, 200)
+        upload_data = response.data['uploads'][0]
+        self.assertIsNotNone(upload_data)
+        self.assertEqual(upload_data['name'], 'n32_1991_0001_123', upload_data['name'])
+        if upload_data['state'] != enumerations.STATE_WAITING:
+            for _cnt in range(0, 10):
+                response = self.client.get(url, format='json')
+                self.assertEqual(response.status_code, 200)
+                logger.error(f"[{_cnt + 1}] ... {response.data}")
+                upload_data = response.data['uploads'][0]
+                self.assertIsNotNone(upload_data)
+                self.assertEqual(upload_data['name'], 'n32_1991_0001_123', upload_data['name'])
+                if upload_data['state'] == enumerations.STATE_WAITING:
+                    break
+                else:
+                    for _upload in Upload.objects.filter(state=upload_data['state']):
+                        _update_upload_session_state.apply((_upload.id,))
+                    sleep(3.0)
+        self.assertEqual(upload_data['state'], enumerations.STATE_WAITING, upload_data['state'])
+
     def test_emulate_upload_through_rest_apis(self):
         """
         Emulating Upload via REST APIs with several datasets.
@@ -631,8 +662,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         fname = os.path.join(BAD_DATA, 'points_epsg2249_no_prj.shp')
         resp, data = self.rest_upload_by_path(fname)
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data['status'], 'incomplete')
-        self.assertTrue(data['success'])
 
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')

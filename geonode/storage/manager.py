@@ -16,7 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
+import re
 import shutil
 import logging
 import importlib
@@ -184,13 +186,19 @@ class StorageManager(StorageManagerInterface):
 
     def copy_files_list(self, files: List[str]):
         out = []
+        random_suffix = f'{uuid1().hex[:8]}'
         for f in files:
             with self.open(f, 'rb+') as open_file:
                 old_path = str(os.path.basename(Path(f).parent.absolute()))
                 old_file_name, _ = os.path.splitext(os.path.basename(f))
                 _, ext = os.path.splitext(open_file.name)
-                path = os.path.join(old_path, f'{uuid1().hex[:8]}')
-                new_file = f"{path}/{self.generate_filename(old_file_name)}{ext}"
+                # path = os.path.join(old_path, random_suffix)
+                path = old_path
+                if re.match(r'.*_\w{7}$', old_file_name):
+                    suffixed_name = re.sub(r'_\w{7}$', f'_{random_suffix}', old_file_name)
+                    new_file = f"{path}/{suffixed_name}{ext}"
+                else:
+                    new_file = f"{path}/{old_file_name}_{random_suffix}{ext}"
                 out.append(self.copy_single_file(open_file, new_file))
         return out
 
@@ -200,20 +208,21 @@ class StorageManager(StorageManagerInterface):
 
     def replace_files_list(self, old_files: List[str], new_files: List[str]):
         out = []
+        random_prefix = f'{uuid1().hex[:8]}'
         if len(old_files) and old_files[0]:
             for f in new_files:
                 with self.open(f, 'rb+') as open_file:
-                    out.append(self.replace_single_file(old_files[0], open_file))
+                    out.append(self.replace_single_file(old_files[0], open_file, prefix=random_prefix))
         elif len(old_files) == 0:
             # if it comes from the DataRetriver, the list is made with Path objects and not strings
             out = [str(x) for x in new_files]
         return out
 
-    def replace_single_file(self, old_file: str, new_file: BinaryIO):
+    def replace_single_file(self, old_file: str, new_file: BinaryIO, prefix: str = None):
         old_path = str(os.path.basename(Path(old_file).parent.absolute()))
         old_file_name, _ = os.path.splitext(os.path.basename(old_file))
         _, ext = os.path.splitext(new_file.name)
-        path = os.path.join(old_path, f'{uuid1().hex[:8]}')
+        path = os.path.join(old_path, prefix) if prefix else old_path
         try:
             filepath = self.save(f"{path}/{old_file_name}{ext}", new_file)
         except SuspiciousFileOperation:

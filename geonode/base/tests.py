@@ -52,6 +52,7 @@ from geonode.base.models import (
     generate_thesaurus_reference
 )
 from django.conf import settings
+from django.contrib.gis.geos import Polygon
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
 from geonode.storage.manager import storage_manager
@@ -732,6 +733,30 @@ class TestGetVisibleResource(TestCase):
         self.assertFalse(show_notification('monitoring_alert', self.user))
         self.assertTrue(show_notification('request_download_resourcebase', self.user))
 
+    def test_extent_filter_crossing_dateline(self):
+        from .bbox_utils import filter_bbox
+
+        _ll = None
+        try:
+            bbox = [166.06619, -22.40043, 172.09202, -13.03425]
+            _ll = Dataset.objects.create(
+                uuid=str(uuid4()),
+                owner=self.user,
+                name='test_extent_filter_crossing_dateline',
+                title='test_extent_filter_crossing_dateline',
+                alternate='geonode:test_extent_filter_crossing_dateline',
+                is_approved=True,
+                is_published=True,
+                ll_bbox_polygon=Polygon.from_bbox(bbox)
+            )
+            self.assertListEqual(list(_ll.ll_bbox_polygon.extent), bbox, _ll.ll_bbox_polygon.extent)
+            self.assertTrue(Dataset.objects.filter(title=_ll.title).exists(), Dataset.objects.all())
+            _qs = filter_bbox(Dataset.objects.all(), '-180.0000,-39.7790,-164.2456,9.2702,134.0552,-39.7790,180.0000,9.2702')
+            self.assertTrue(_qs.filter(title=_ll.title), Dataset.objects.all() | _qs.all())
+        finally:
+            if _ll:
+                _ll.delete()
+
 
 class TestHtmlTagRemoval(SimpleTestCase):
 
@@ -903,31 +928,76 @@ class TestFacets(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create(username='test', email='test@test.com')
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_boxes', abstract='nothing', subtype='vector', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_1', abstract='contains boxes', subtype='vector', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_2', purpose='contains boxes', subtype='vector', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_3', subtype='vector', is_approved=True
-        )
-
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_boxes', abstract='nothing', subtype='raster', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_1', abstract='contains boxes', subtype='raster', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_2', purpose='contains boxes', subtype='raster', is_approved=True
-        )
-        Dataset.objects.create(
-            uuid=str(uuid4()), owner=self.user, title='test_boxes', subtype='raster', is_approved=True
-        )
+        Dataset.objects.update_or_create(
+            name='test_boxes_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_boxes',
+                abstract='nothing',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_1_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_1',
+                abstract='contains boxes',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_2_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_2',
+                purpose='contains boxes',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_3_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_3',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_boxes_vector',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_boxes',
+                abstract='nothing',
+                subtype='vector',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_1_raster',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_1',
+                abstract='contains boxes',
+                subtype='raster',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_2_raster',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_2',
+                purpose='contains boxes',
+                subtype='raster',
+                is_approved=True))
+        Dataset.objects.update_or_create(
+            name='test_boxes_raster',
+            defaults=dict(
+                uuid=str(uuid4()),
+                owner=self.user,
+                title='test_boxes',
+                subtype='raster',
+                is_approved=True))
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
@@ -949,7 +1019,7 @@ class TestFacets(TestCase):
         self.request_mock.user = self.user
         results = facets({'request': self.request_mock})
         self.assertEqual(results['vector'], 3)
-        self.assertEqual(results['raster'], 4)
+        self.assertEqual(results['raster'], 3)
 
 
 class TestGenerateThesaurusReference(TestCase):

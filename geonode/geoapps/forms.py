@@ -16,8 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 from geonode.geoapps.models import GeoApp
-from geonode.base.forms import ResourceBaseForm
+from geonode.base.forms import ResourceBaseForm, get_tree_data
 
 
 class GeoAppForm(ResourceBaseForm):
@@ -34,6 +35,7 @@ class GeoAppForm(ResourceBaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['regions'].choices = get_tree_data()
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None

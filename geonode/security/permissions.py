@@ -16,6 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+import copy
 import json
 import pprint
 import jsonschema
@@ -31,6 +33,33 @@ from django.contrib.auth import get_user_model
 from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
 
+"""
+Permissions will be managed according to a "compact" set:
+
+ - view: view resource
+ - download: view and download
+ - edit: view download and edit (metadata, style, data)
+ - manage: change permissions, delete resource, etc.
+
+The GET method will return:
+
+users:
+ - username
+ - first name
+ - last name
+ - permissions (view | download | edit | manage)
+
+organizations:
+ - title
+ - name
+ - permissions (view | download | edit | manage)
+
+groups:
+ - title
+ - name
+ - permissions (view | download | edit | manage)
+
+"""
 
 # Permissions mapping
 PERMISSIONS = {
@@ -67,15 +96,15 @@ DOWNLOAD_PERMISSIONS = [
 
 EDIT_PERMISSIONS = [
     'change_resourcebase',
+    'change_resourcebase_metadata',
 ]
 
 BASIC_MANAGE_PERMISSIONS = [
-    'change_resourcebase_metadata',
     'delete_resourcebase',
+    'change_resourcebase_permissions',
 ]
 
 MANAGE_PERMISSIONS = BASIC_MANAGE_PERMISSIONS + [
-    'change_resourcebase_permissions',
     'publish_resourcebase',
 ]
 
@@ -243,39 +272,42 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
       - manage: change permissions, delete resource, etc.
       - owner: admin permissions
     """
+
+    def safe_list(perms): return sorted(list(set(copy.deepcopy(perms)))) if perms else []
+
     if is_owner:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
-                return DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
+            if resource_subtype and resource_subtype.lower() in safe_list(DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES):
+                return safe_list(DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS)
             else:
-                return OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                return safe_list(OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS)
         else:
-            return OWNER_PERMISSIONS
+            return safe_list(OWNER_PERMISSIONS)
     elif perm is None or len(perm) == 0 or perm == NONE_RIGHTS:
         return []
     elif perm == VIEW_RIGHTS:
-        return VIEW_PERMISSIONS
+        return safe_list(VIEW_PERMISSIONS)
     elif perm == DOWNLOAD_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            return VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS
+            return safe_list(VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS)
         else:
-            return VIEW_PERMISSIONS
+            return safe_list(VIEW_PERMISSIONS)
     elif perm == EDIT_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
-                return DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS
+            if resource_subtype and resource_subtype.lower() in safe_list(DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES):
+                return safe_list(DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS)
             else:
-                return VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                return safe_list(VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS)
         else:
-            return VIEW_PERMISSIONS + EDIT_PERMISSIONS
+            return safe_list(VIEW_PERMISSIONS + EDIT_PERMISSIONS)
     elif perm == MANAGE_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_subtype and resource_subtype.lower() in DATA_EDITABLE_RESOURCES_SUBTYPES:
-                return DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
+            if resource_subtype and resource_subtype.lower() in safe_list(DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES):
+                return safe_list(DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS)
             else:
-                return VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                return safe_list(VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS)
         else:
-            return VIEW_PERMISSIONS + ADMIN_PERMISSIONS
+            return safe_list(VIEW_PERMISSIONS + ADMIN_PERMISSIONS)
 
 
 def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> str:
@@ -707,7 +739,7 @@ def get_compact_perms_list(perms: list,
         for _p in COMPACT_RIGHT_MODES:
             if (_p[1] not in [DOWNLOAD_RIGHTS] + DATASET_ADMIN_PERMISSIONS or
                     _p[1] in [DOWNLOAD_RIGHTS] and any(__p in DOWNLOAD_PERMISSIONS for __p in perms) or
-                    _p[1] in DATASET_ADMIN_PERMISSIONS and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES for __p in perms)):
+                    _p[1] in DATASET_ADMIN_PERMISSIONS and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES for __p in perms)):
                 _perms_list.append(_get_labeled_compact_perm(_p[1]))
                 if _p[1] == _perm:
                     break

@@ -23,7 +23,7 @@ import typing
 import logging
 import importlib
 
-from uuid import uuid4
+from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
 
 from guardian.models import (
@@ -39,13 +39,18 @@ from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+    ValidationError,
+    FieldDoesNotExist)
 
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.thumbs import utils as thumb_utils
-from geonode.security.permissions import PermSpecCompact
+from geonode.security.permissions import (
+    PermSpecCompact,
+    DATA_STYLABLE_RESOURCES_SUBTYPES)
 from geonode.security.utils import (
     perms_as_set,
     get_user_groups,
@@ -310,9 +315,9 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(uuid, resource_type=resource_type, defaults=defaults)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 _resource.save()
                 resourcebase_post_save(_resource.get_real_instance())
+                _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
                 self.delete(_resource.uuid, instance=_resource)
@@ -373,20 +378,31 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
                 raise
             finally:
-                _resource.save(notify=notify)
-                resourcebase_post_save(_resource.get_real_instance())
-            if kwargs.get('sld_file', False) and kwargs.get('sld_uploaded', False):
-                self._concrete_resource_manager.set_style(
-                    method="",
-                    uuid=_resource.uuid,
-                    resource=_resource,
-                    sld_file=kwargs.get('sld_file', False),
-                    sld_uploaded=kwargs.get('sld_uploaded', False)
-                )
-                _resource.set_permissions()
+                try:
+                    _resource.save(notify=notify)
+                    resourcebase_post_save(_resource.get_real_instance())
+                    _resource.set_permissions(
+                        created=False,
+                        approval_status_changed=(vals is not None and any([x in vals for x in ['is_approved', 'is_published']])),
+                        group_status_changed=(vals is not None and 'group' in vals)
+                    )
+                    if kwargs.get('sld_file', False) and kwargs.get('sld_uploaded', False):
+                        self._concrete_resource_manager.set_style(
+                            method="",
+                            uuid=_resource.uuid,
+                            resource=_resource,
+                            sld_file=kwargs.get('sld_file', False),
+                            sld_uploaded=kwargs.get('sld_uploaded', False)
+                        )
+                        _resource.set_permissions()
+                    if _resource.state != enumerations.STATE_INVALID:
+                        _resource.set_processing_state(enumerations.STATE_PROCESSED)
+                except Exception as e:
+                    logger.exception(e)
+                finally:
+                    _resource.clear_dirty_state()
         return _resource
 
     def ingest(self, files: typing.List[str], /, uuid: str = None, resource_type: typing.Optional[object] = None, defaults: dict = {}, **kwargs) -> ResourceBase:
@@ -397,6 +413,8 @@ class ResourceManager(ResourceManagerInterface):
         try:
             with transaction.atomic():
                 if resource_type == Document:
+                    if 'name' in to_update:
+                        to_update.pop("name")
                     if files:
                         to_update['files'] = storage_manager.copy_files_list(files)
                     instance = self.create(
@@ -423,51 +441,64 @@ class ResourceManager(ResourceManagerInterface):
             logger.exception(e)
             if instance:
                 instance.set_processing_state(enumerations.STATE_INVALID)
-                instance.set_dirty_state()
         if instance:
-            resourcebase_post_save(instance.get_real_instance())
-            # Finalize Upload
-            if 'user' in to_update:
-                to_update.pop('user')
-            instance = self.update(instance.uuid, instance=instance, vals=to_update)
-            self.set_thumbnail(instance.uuid, instance=instance)
+            try:
+                resourcebase_post_save(instance.get_real_instance())
+                # Finalize Upload
+                if 'user' in to_update:
+                    to_update.pop('user')
+                instance = self.update(instance.uuid, instance=instance, vals=to_update)
+                self.set_thumbnail(instance.uuid, instance=instance)
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                instance.clear_dirty_state()
         return instance
 
     def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
+        _resource = None
         if instance:
             try:
-                _resource = None
                 instance.set_processing_state(enumerations.STATE_RUNNING)
-                _owner = owner or instance.get_real_instance().owner
-                _perms = copy.copy(instance.get_real_instance().get_all_level_info())
-                _resource = copy.copy(instance.get_real_instance())
-                _resource.pk = _resource.id = None
-                _resource.uuid = uuid or str(uuid4())
-                _resource.save()
-                if isinstance(instance.get_real_instance(), Document):
-                    for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
-                        _resource_link = copy.copy(resource_link)
-                        _resource_link.pk = _resource_link.id = None
-                        _resource_link.document = _resource.get_real_instance()
-                        _resource_link.save()
-                if isinstance(instance.get_real_instance(), Dataset):
-                    for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
-                        _attribute = copy.copy(attribute)
-                        _attribute.pk = _attribute.id = None
-                        _attribute.dataset = _resource.get_real_instance()
-                        _attribute.save()
-                if isinstance(instance.get_real_instance(), Map):
-                    for maplayer in instance.get_real_instance().maplayers.iterator():
-                        _maplayer = copy.copy(maplayer)
-                        _maplayer.pk = _maplayer.id = None
-                        _maplayer.map = _resource.get_real_instance()
-                        _maplayer.save()
-                to_update = {}
-                try:
-                    to_update = storage_manager.copy(_resource).copy()
-                except Exception as e:
-                    logger.exception(e)
-                _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+                with transaction.atomic():
+                    _owner = owner or instance.get_real_instance().owner
+                    _perms = copy.copy(instance.get_real_instance().get_all_level_info())
+                    _resource = copy.copy(instance.get_real_instance())
+                    _resource.pk = _resource.id = None
+                    _resource.uuid = uuid or str(uuid4())
+                    try:
+                        # Avoid Integrity errors...
+                        _resource.get_real_instance()._meta.get_field('name')
+                        _name = defaults.get('name', _resource.get_real_instance().name)
+                        _resource.get_real_instance().name = defaults['name'] = f'{_name}_{uuid1().hex[:8]}'
+                    except FieldDoesNotExist:
+                        if 'name' in defaults:
+                            defaults.pop('name')
+                    _resource.save()
+                    if isinstance(instance.get_real_instance(), Document):
+                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
+                            _resource_link = copy.copy(resource_link)
+                            _resource_link.pk = _resource_link.id = None
+                            _resource_link.document = _resource.get_real_instance()
+                            _resource_link.save()
+                    if isinstance(instance.get_real_instance(), Dataset):
+                        for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
+                            _attribute = copy.copy(attribute)
+                            _attribute.pk = _attribute.id = None
+                            _attribute.dataset = _resource.get_real_instance()
+                            _attribute.save()
+                    if isinstance(instance.get_real_instance(), Map):
+                        for maplayer in instance.get_real_instance().maplayers.iterator():
+                            _maplayer = copy.copy(maplayer)
+                            _maplayer.pk = _maplayer.id = None
+                            _maplayer.map = _resource.get_real_instance()
+                            _maplayer.save()
+                    to_update = {}
+                    try:
+                        to_update = storage_manager.copy(_resource).copy()
+                    except Exception as e:
+                        logger.exception(e)
+                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
             except Exception as e:
                 logger.exception(e)
                 _resource = None
@@ -475,26 +506,26 @@ class ResourceManager(ResourceManagerInterface):
                 instance.set_processing_state(enumerations.STATE_PROCESSED)
                 instance.save(notify=False)
             if _resource:
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
-                _resource.save(notify=False)
-                to_update.update(defaults)
-                if 'user' in to_update:
-                    to_update.pop('user')
-                # We need to remove any public access to the cloned dataset here
-                if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
-                    anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
-                    _perms['users'].pop(anonymous_user)
-                if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
-                    anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
-                    _perms['groups'].pop(anonymous_group)
-                self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
-                # Refresh from DB
-                _resource.refresh_from_db()
-                return self.update(_resource.uuid, _resource, vals=to_update)
-            else:
-                instance.set_processing_state(enumerations.STATE_INVALID)
-                instance.save(notify=False)
-        return instance
+                try:
+                    to_update.update(defaults)
+                    if 'user' in to_update:
+                        to_update.pop('user')
+                    # We need to remove any public access to the cloned dataset here
+                    if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
+                        anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
+                        _perms['users'].pop(anonymous_user)
+                    if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
+                        anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
+                        _perms['groups'].pop(anonymous_group)
+                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
+                    # Refresh from DB
+                    _resource.refresh_from_db()
+                    return self.update(_resource.uuid, _resource, vals=to_update)
+                except Exception as e:
+                    logger.exception(e)
+                finally:
+                    _resource.set_processing_state(enumerations.STATE_PROCESSED)
+        return _resource
 
     def append(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs):
         if self._validate_resource(instance.get_real_instance(), 'append'):
@@ -586,7 +617,8 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
+            finally:
+                _resource.clear_dirty_state()
         return False
 
     def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
@@ -605,7 +637,8 @@ class ResourceManager(ResourceManagerInterface):
                         _resource.owner = owner
                         ResourceBase.objects.filter(uuid=_resource.uuid).update(owner=owner)
                     _owner = _resource.owner
-                    _resource_type = _resource.resource_type or _resource.polymorphic_ctype.name
+                    _resource_type = getattr(_resource, 'resource_type', None) or _resource.polymorphic_ctype.name
+                    _resource_subtype = (getattr(_resource, 'subtype', None) or '').lower()
 
                     # default permissions for anonymous users
                     anonymous_group, _ = Group.objects.get_or_create(name='anonymous')
@@ -665,7 +698,10 @@ class ResourceManager(ResourceManagerInterface):
                                 if _resource_type == 'dataset' and perm in (
                                         'change_dataset_data', 'change_dataset_style',
                                         'add_dataset', 'change_dataset', 'delete_dataset'):
-                                    assign_perm(perm, anonymous_group, _resource.dataset)
+                                    if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                        pass
+                                    else:
+                                        assign_perm(perm, anonymous_group, _resource.dataset)
                                 elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                     assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
@@ -678,7 +714,10 @@ class ResourceManager(ResourceManagerInterface):
                                         if _resource_type == 'dataset' and perm in (
                                                 'change_dataset_data', 'change_dataset_style',
                                                 'add_dataset', 'change_dataset', 'delete_dataset'):
-                                            assign_perm(perm, _user, _resource.dataset)
+                                            if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                                pass
+                                            else:
+                                                assign_perm(perm, _user, _resource.dataset)
                                         elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                             assign_perm(perm, _user, _resource.get_self_resource())
 
@@ -690,7 +729,10 @@ class ResourceManager(ResourceManagerInterface):
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _group, _resource.dataset)
+                                        if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                            pass
+                                        else:
+                                            assign_perm(perm, _group, _resource.dataset)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _group, _resource.get_self_resource())
 
@@ -704,7 +746,10 @@ class ResourceManager(ResourceManagerInterface):
                                     if _resource_type == 'dataset' and perm in (
                                             'change_dataset_data', 'change_dataset_style',
                                             'add_dataset', 'change_dataset', 'delete_dataset'):
-                                        assign_perm(perm, _user, _resource.dataset)
+                                        if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
+                                            pass
+                                        else:
+                                            assign_perm(perm, _user, _resource.dataset)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
                                         assign_perm(perm, _user, _resource.get_self_resource())
                     else:
@@ -732,7 +777,7 @@ class ResourceManager(ResourceManagerInterface):
                                         _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
 
-                        if _resource.__class__.__name__ == 'Dataset':
+                        if _resource_type == 'dataset':
                             # only for layer owner
                             assign_perm('change_dataset_data', _owner, _resource)
                             assign_perm('change_dataset_style', _owner, _resource)
@@ -743,7 +788,7 @@ class ResourceManager(ResourceManagerInterface):
 
                     # Fixup GIS Backend Security Rules Accordingly
                     if not self._concrete_resource_manager.set_permissions(
-                            uuid, instance=_resource, owner=owner, permissions=_perm_spec, created=created):
+                            uuid, instance=_resource, owner=owner, permissions=_resource.get_all_level_info(), created=created):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer
                         logger.error(Exception("Could not complete concrete manager operation successfully!"))
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
@@ -751,13 +796,13 @@ class ResourceManager(ResourceManagerInterface):
             except Exception as e:
                 logger.exception(e)
                 _resource.set_processing_state(enumerations.STATE_INVALID)
-                _resource.set_dirty_state()
+            finally:
+                _resource.clear_dirty_state()
         return False
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True, thumbnail=None) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
-            _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
                 with transaction.atomic():
                     if thumbnail:
@@ -768,7 +813,6 @@ class ResourceManager(ResourceManagerInterface):
                             if overwrite or instance.thumbnail_url == static(thumb_utils.MISSING_THUMB):
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
-                _resource.set_processing_state(enumerations.STATE_PROCESSED)
                 return True
             except Exception as e:
                 logger.exception(e)

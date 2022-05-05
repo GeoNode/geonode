@@ -84,7 +84,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.19.x
+    image: geonode/geoserver:2.19.6
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/rest/workspaces/geonode.html"
@@ -93,7 +93,7 @@ services:
       retries: 1
       start_period: 60s
     env_file:
-      - ./scripts/docker/env/${DOCKER_ENV}/geoserver.env
+      - .env_test
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
@@ -103,7 +103,7 @@ services:
     restart: on-failure
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.19.x
+    image: geonode/geoserver_data:2.19.6
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     command: /bin/true
     volumes:
@@ -116,7 +116,7 @@ services:
     image: geonode/postgis:13
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
-      - ./scripts/docker/env/${DOCKER_ENV}/db.env
+      - .env_test
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups

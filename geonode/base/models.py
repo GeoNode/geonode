@@ -421,6 +421,7 @@ class HierarchicalKeyword(TagBase, MP_Node):
                         node = node["nodes"][-1]
                     else:
                         node = item_found
+                        node["nodes"] = getattr(node, "nodes", [])
 
         # All leaves appended but a child which is not a leaf may not be added
         # again, as a leaf, but only its tag count be updated
@@ -700,19 +701,12 @@ class ResourceBaseManager(PolymorphicManager):
             remove_thumbs(filename)
 
             # Remove the uploaded sessions, if any
-            try:
-                if 'geonode.upload' in settings.INSTALLED_APPS:
-                    from geonode.upload.models import Upload
-                    # Need to call delete one by one in order to invoke the
-                    #  'delete' overridden method
-                    for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
-                        try:
-                            if upload.upload_dir:
-                                storage_manager.rmtree(upload.upload_dir, ignore_errors=True)
-                        finally:
-                            upload.delete()
-            except Exception as e:
-                logger.exception(e)
+            if 'geonode.upload' in settings.INSTALLED_APPS:
+                from geonode.upload.models import Upload
+                # Need to call delete one by one in order to invoke the
+                #  'delete' overridden method
+                for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
+                    upload.delete()
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
@@ -803,7 +797,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     contacts = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='ContactRole')
-    alternate = models.CharField(max_length=255, null=True, blank=True)
+    alternate = models.CharField(
+        _('alternate'),
+        max_length=255,
+        null=True,
+        blank=True)
     date = models.DateTimeField(
         _('date'),
         default=now,
@@ -1495,10 +1493,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         ResourceBase.objects.filter(id=self.id).update(state=state)
         if state == enumerations.STATE_PROCESSED:
             self.clear_dirty_state()
+        elif state == enumerations.STATE_INVALID:
+            self.set_dirty_state()
 
     @property
     def processed(self):
-        return not self.dirty_state
+        return self.state == enumerations.STATE_PROCESSED and not self.dirty_state
 
     @property
     def keyword_csv(self):
