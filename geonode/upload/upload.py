@@ -386,12 +386,12 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
                 )
                 if ogc_server_settings.datastore_db and any(map(is_vector, files_to_upload)):
                     target = create_geoserver_db_featurestore(
-                        # store_name=ogc_server_settings.DATASTORE,
                         store_name=ogc_server_settings.datastore_db['NAME'],
                         workspace=settings.DEFAULT_WORKSPACE
                     )
                     task = import_session.tasks[0]
                     task.set_target(store_name=target_store or target.name, workspace=settings.DEFAULT_WORKSPACE)
+
             upload.import_id = import_session.id
             upload.save()
 
@@ -674,7 +674,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         import_session.state == enumerations.STATE_READY or (import_session.state == enumerations.STATE_PENDING and _tasks_ready)):
                     _log(f"final_step: Running Import Session {import_session.id} - target: {target.name} - alternate: {task.get_target_layer_name()}")
                     _log(f" -- session state: {import_session.state} - task state: {task.state}")
-                    import_session.commit()
+
+                    utils.run_import(upload_session, async_upload=False)
+
                     import_session = import_session.reload()
                     task = import_session.tasks[0]
                     name = task.layer.name
