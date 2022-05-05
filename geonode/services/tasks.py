@@ -63,6 +63,7 @@ def harvest_resource(self, harvest_job_id):
         logger.debug("Resource harvested successfully")
         workspace = base.get_geoserver_cascading_workspace(create=False)
         _cnt = 0
+        harvest_job.refresh_from_db()
         while _cnt < 5 and not result:
             try:
                 layer = None
