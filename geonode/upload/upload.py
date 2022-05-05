@@ -658,7 +658,11 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     return saved_layer
 
                 task = import_session.tasks[0]
-                task.set_charset(charset)
+                try:
+                    task.set_charset(charset)
+                except Exception as e:
+                    logger.exception(e)
+
                 overwrite = task.updateMode == 'REPLACE'
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
