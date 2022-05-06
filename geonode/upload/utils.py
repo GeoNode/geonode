@@ -608,7 +608,7 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
         # @todo check status of import session - it may fail, but due to protocol,
         # this will not be reported during the commit
         import_session = import_session.reload()
-        return import_session.taks[0].target
+        return import_session.tasks[0].target
     return None
 
 
