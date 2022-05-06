@@ -200,8 +200,8 @@ def _update_upload_session_state(self, upload_session_id: int):
                                 # GeoNode Layer successfully processed...
                                 _upload.set_processing_state(Upload.STATE_PROCESSED)
                         elif (session.state == Upload.STATE_COMPLETE and _upload.state in (
-                            Upload.STATE_COMPLETE, Upload.STATE_PENDING) and not _tasks_waiting) or (
-                                    session.state == Upload.STATE_PENDING and _tasks_ready):
+                                Upload.STATE_COMPLETE, Upload.STATE_PENDING) and not _tasks_waiting) or (
+                                session.state == Upload.STATE_PENDING and _tasks_ready):
                             if not _upload.layer:
                                 _response = final_step_view(None, _upload.get_session)
                                 if _response:
