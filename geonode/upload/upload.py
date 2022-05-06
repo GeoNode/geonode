@@ -609,7 +609,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         import_id = import_session.id
         saved_dataset = None
         lock_id = f'final_step-{import_id}'
-        with AcquireLock(lock_id) as lock:
+        with AcquireLock(lock_id, blocking=True) as lock:
             if lock.acquire() is True:
                 _upload = None
                 try:

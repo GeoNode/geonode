@@ -21,11 +21,10 @@ import io
 import os
 import shutil
 import logging
-import tempfile
-from typing import Mapping
 import zipfile
 import smart_open
 from pathlib import Path
+from typing import Mapping
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 
@@ -81,6 +80,7 @@ class DataItemRetriever(object):
         return self.file_path
 
     def transfer_remote_file(self, temporary_folder=None):
+        from geonode.utils import mkdtemp
 
         def file_chunks_iterable(file, chunk_size=None):
             """
@@ -98,8 +98,9 @@ class DataItemRetriever(object):
                 if not data:
                     break
                 yield data
+
         try:
-            self.temporary_folder = temporary_folder or tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+            self.temporary_folder = temporary_folder or mkdtemp()
             self.file_path = os.path.join(self.temporary_folder, self.name)
 
             if self._is_django_form_file:
@@ -151,7 +152,9 @@ class DataRetriever(object):
             self.transfer_remote_files()
 
     def transfer_remote_files(self):
-        self.temporary_folder = tempfile.mkdtemp(dir=settings.MEDIA_ROOT)
+        from geonode.utils import mkdtemp
+
+        self.temporary_folder = mkdtemp()
         for name, data_item_retriever in self.data_items.items():
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = Path(file_path)
