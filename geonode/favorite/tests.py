@@ -71,16 +71,21 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     def test_favorite(self):
         # assume we created at least one User and two Documents in setUp.
         test_user = get_user_model().objects.first()
+        test_user2 = get_user_model().objects.last()
         test_document_1 = Document.objects.first()
         test_document_2 = Document.objects.last()
+        test_geoapp_1 = GeoApp.objects.first()
         self.assertIsNotNone(test_document_1)
         self.assertIsNotNone(test_document_2)
+        self.assertIsNotNone(test_geoapp_1)
 
         # test create favorite.
         Favorite.objects.create_favorite(test_document_1, test_user)
         Favorite.objects.create_favorite(test_document_2, test_user)
+        Favorite.objects.create_favorite(test_geoapp_1, test_user2)
+
         favorites = Favorite.objects.all()
-        self.assertEqual(favorites.count(), 2)
+        self.assertEqual(favorites.count(), 3)
         ct = ContentType.objects.get_for_model(test_document_1)
         self.assertEqual(favorites[0].content_type, ct)
 
@@ -107,6 +112,10 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         # test favorite for user and a specific content object.
         user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(test_user, test_document_1)
         self.assertEqual(user_content_favorite.object_id, test_document_1.id)
+
+        # test favorite for user and a specific content object for geoapp.
+        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(test_user2, test_geoapp_1)
+        self.assertEqual(user_content_favorite.object_id, test_geoapp_1.id)
 
         # test bulk favorites.
         bulk_favorites = Favorite.objects.bulk_favorite_objects(test_user)
