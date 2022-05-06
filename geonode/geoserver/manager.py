@@ -49,7 +49,6 @@ from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
 
-from geonode.storage.manager import storage_manager
 from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
@@ -133,7 +132,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return _resource
 
     def update(self, uuid: str, /, instance: ResourceBase = None, xml_file: str = None, metadata_uploaded: bool = False,
-               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True) -> ResourceBase:
+               vals: dict = {}, regions: dict = {}, keywords: dict = {}, custom: dict = {}, notify: bool = True, **kwargs) -> ResourceBase:
         if instance:
             if isinstance(instance.get_real_instance(), Dataset):
                 _synced_resource = sync_instance_with_geoserver(instance.id)
@@ -180,7 +179,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     importer_session_opts=importer_session_opts)
         return _resource
 
-    def append(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+    def append(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_dataset(
                 'import_dataset',
@@ -189,10 +188,12 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 files=vals.get('files', None),
                 user=vals.get('user', instance.owner),
                 action_type='append',
-                importer_session_opts=vals.get('importer_session_opts', None))
+                importer_session_opts=vals.get('importer_session_opts', None),
+                **kwargs
+            )
         return instance
 
-    def replace(self, instance: ResourceBase, vals: dict = {}) -> ResourceBase:
+    def replace(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs) -> ResourceBase:
         if instance and isinstance(instance.get_real_instance(), Dataset):
             return self.import_dataset(
                 'import_dataset',
@@ -201,7 +202,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 files=vals.get('files', None),
                 user=vals.get('user', instance.owner),
                 action_type='replace',
-                importer_session_opts=vals.get('importer_session_opts', None))
+                importer_session_opts=vals.get('importer_session_opts', None),
+                **kwargs
+            )
         return instance
 
     def import_dataset(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
@@ -350,73 +353,24 @@ class GeoServerResourceManager(ResourceManagerInterface):
             target_store=_target_store
         )
 
-        _local_files = []
-        _temporary_files = []
-        try:
-            for _f in files:
-                if os.path.exists(_f) and os.path.isfile(_f):
-                    _local_files.append(os.path.abspath(_f))
-                    try:
-                        if hasattr(_f, 'close'):
-                            os.close(_f)
-                    except Exception:
-                        pass
-                else:
-                    _suffix = os.path.splitext(os.path.basename(_f))[1] if len(os.path.splitext(os.path.basename(_f))) else None
-                    with tempfile.NamedTemporaryFile(mode="wb+", delete=False, dir=settings.MEDIA_ROOT, suffix=_suffix) as _tmp_file:
-                        _tmp_file.write(storage_manager.open(_f, 'rb+').read())
-                        _tmp_file.seek(0)
-                        _tmp_file_name = f'{_tmp_file.name}'
-                        _local_files.append(os.path.abspath(_tmp_file_name))
-                        _temporary_files.append(os.path.abspath(_tmp_file_name))
-                    try:
-                        storage_manager.close(_f)
-                    except Exception:
-                        pass
-        except Exception as e:
-            logger.exception(e)
+        import_session.upload_task(files)
+        task = import_session.tasks[0]
+        #  Changing layer name, mode and target
+        task.layer.set_target_layer_name(_name)
+        task.set_update_mode(action_type.upper())
+        task.set_target(
+            store_name=_target_store,
+            workspace=_workspace
+        )
+        transforms = session_opts.get('transforms', None)
+        if transforms:
+            task.set_transforms(transforms)
+        #  Starting import process
+        import_session.commit()
+        import_session = import_session.reload()
 
-        if _local_files:
-            _spatial_files = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, _local_files)
-
-            try:
-                import_session.upload_task(list(set([str(_spatial_files.base_file)] + _local_files)))
-                task = import_session.tasks[0]
-                #  Changing layer name, mode and target
-                task.layer.set_target_layer_name(_name)
-                task.set_update_mode(action_type.upper())
-                task.set_target(
-                    store_name=_target_store,
-                    workspace=_workspace
-                )
-                transforms = session_opts.get('transforms', None)
-                if transforms:
-                    task.set_transforms(transforms)
-                #  Starting import process
-                import_session.commit()
-                import_session = import_session.reload()
-
-                try:
-                    # Updating Resource with the files replaced
-                    if action_type.lower() == 'replace':
-                        updated_files_list = storage_manager.replace(instance, files)
-                        # Using update instead of save in order to avoid calling
-                        # side-effect function of the resource
-                        r = ResourceBase.objects.filter(id=instance.id)
-                        r.update(**updated_files_list)
-                    else:
-                        instance.files = files
-                except Exception as e:
-                    logger.exception(e)
-
-                _gs_import_session_info.import_session = import_session
-                _gs_import_session_info.dataset_name = import_session.tasks[0].layer.name
-            finally:
-                for _f in _temporary_files:
-                    try:
-                        os.remove(_f)
-                    except Exception as e:
-                        logger.debug(e)
+        _gs_import_session_info.import_session = import_session
+        _gs_import_session_info.dataset_name = import_session.tasks[0].layer.name
 
         return _gs_import_session_info
 
@@ -529,7 +483,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         raise NotImplementedError
 
-    def set_style(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
+    def set_style(self, method: str, uuid: str, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         instance = instance or ResourceManager._get_instance(uuid)
 
         if instance and isinstance(instance.get_real_instance(), Dataset):
