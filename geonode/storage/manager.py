@@ -277,8 +277,7 @@ class DefaultStorageManager(StorageManagerInterface):
         return self._fsm.listdir(path)
 
     def rmtree(self, path, ignore_errors=False):
-        if os.path.exists(path):
-            shutil.rmtree(path, ignore_errors=ignore_errors)
+        shutil.rmtree(path, ignore_errors=ignore_errors)
 
     def open(self, name, mode='rb'):
         try:

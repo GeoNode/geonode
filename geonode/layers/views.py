@@ -200,10 +200,10 @@ def dataset_upload_metadata(request):
         write_uploaded_files_to_disk(tempdir, relevant_files)
         base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
         layer = _resolve_dataset(
-                request,
-                form.cleaned_data.get('dataset_title'),
-                'base.change_resourcebase',
-                _PERMISSION_MSG_MODIFY)
+            request,
+            form.cleaned_data.get('dataset_title'),
+            'base.change_resourcebase',
+            _PERMISSION_MSG_MODIFY)
         if layer:
             dataset_uuid, vals, regions, keywords, _ = parse_metadata(
                 open(base_file).read())
