@@ -1419,9 +1419,14 @@ def create_geoserver_db_featurestore(
 
     if ds_exists:
         ds.save_method = "PUT"
-
-    logger.debug('Updating target datastore % s' % dsname)
-    cat.save(ds)
+    else:
+        logger.debug('Updating target datastore % s' % dsname)
+        try:
+            cat.save(ds)
+        except FailedRequestError as e:
+            if 'already exists in workspace' not in e.args[0]:
+                raise e
+            logger.warning("The store was already present in the workspace selected")
 
     logger.debug('Reloading target datastore % s' % dsname)
     ds = get_store(cat, dsname, workspace=workspace)
