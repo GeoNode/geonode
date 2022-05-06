@@ -53,18 +53,19 @@ class UploadManager(models.Manager):
         ).update(state=enumerations.STATE_INVALID)
 
     def update_from_session(self, upload_session, resource: ResourceBase = None):
-        return self.get(
-            user=upload_session.user,
-            name=upload_session.name,
-            import_id=upload_session.import_session.id).update_from_session(
-            upload_session, resource=resource)
-
-    def create_from_session(self, user, import_session):
-        return self.create(
-            user=user,
-            name=import_session.name,
-            import_id=import_session.id,
-            state=import_session.state)
+        _upload = None
+        if resource:
+            try:
+                _upload = self.get(resource=resource)
+            except Upload.DoesNotExist:
+                _upload = None
+        if not _upload:
+            _upload = self.filter(
+                user=upload_session.user,
+                name=upload_session.name).order_by('-date').first()
+        if _upload:
+            return _upload.update_from_session(upload_session, resource=resource)
+        return None
 
     def get_incomplete_uploads(self, user):
         return self.filter(user=user).exclude(state=enumerations.STATE_PROCESSED).exclude(
@@ -91,6 +92,7 @@ class UploadSizeLimitManager(models.Manager):
 
 
 class UploadParallelismLimitManager(models.Manager):
+
     def create_default_limit(self):
         default_limit = self.create(
             slug="default_max_parallel_uploads",
@@ -142,6 +144,7 @@ class Upload(models.Model):
 
     def update_from_session(self, upload_session, resource: ResourceBase = None):
         self.session = base64.encodebytes(pickle.dumps(upload_session)).decode('UTF-8')
+        self.import_id = upload_session.import_session.id
         self.name = upload_session.name
         self.user = upload_session.user
         self.date = now()

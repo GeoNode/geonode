@@ -1046,7 +1046,13 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     def test_will_raise_exception_for_replace_dataset_with_unknown_format(self):
         layer = Dataset.objects.get(name="single_point")
         filename = "/tpm/filename.ccc"
-        files = ["/opt/file1.shp", "/opt/file2.ccc"]
+        file_path = gisdata.VECTOR_DATA
+        files = {
+            "shp": filename,
+            "dbf": f"{file_path}/san_andres_y_providencia_highway.asd",
+            "prj": f"{file_path}/san_andres_y_providencia_highway.asd",
+            "shx": f"{file_path}/san_andres_y_providencia_highway.asd",
+        }
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
         expected = "You are attempting to append a vector dataset with an unknown format."
@@ -1073,14 +1079,15 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     @patch("geonode.layers.utils.gs_catalog")
     def test_will_raise_exception_for_not_existing_dataset_in_the_catalog(self, catalog):
         catalog.get_layer.return_value = None
-        layer = Dataset.objects.get(name="single_point")
+        create_single_dataset("san_andres_y_providencia_water")
+        layer = Dataset.objects.get(name="san_andres_y_providencia_water")
         file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "single_point.shp")
+        filename = os.path.join(file_path, "san_andres_y_providencia_water.shp")
         files = {
             "shp": filename,
-            "dbf": f"{file_path}/single_point.sbf",
-            "prj": f"{file_path}/single_point.prj",
-            "shx": f"{file_path}/single_point.shx",
+            "dbf": f"{file_path}/san_andres_y_providencia_water.sbf",
+            "prj": f"{file_path}/san_andres_y_providencia_water.prj",
+            "shx": f"{file_path}/san_andres_y_providencia_water.shx",
         }
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
@@ -1096,14 +1103,15 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         attr.attributes = []
         self.r.resource = attr
         catalog.get_layer.return_value = self.r
-        layer = Dataset.objects.filter(name="single_point")[0]
+        create_single_dataset("san_andres_y_providencia_water")
+        layer = Dataset.objects.filter(name="san_andres_y_providencia_water")[0]
         file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "single_point.shp")
+        filename = os.path.join(file_path, "san_andres_y_providencia_water.shp")
         files = {
             "shp": filename,
-            "dbf": f"{file_path}/single_point.sbf",
-            "prj": f"{file_path}/single_point.prj",
-            "shx": f"{file_path}/single_point.shx",
+            "dbf": f"{file_path}/san_andres_y_providencia_water.sbf",
+            "prj": f"{file_path}/san_andres_y_providencia_water.prj",
+            "shx": f"{file_path}/san_andres_y_providencia_water.shx",
         }
         with self.assertRaises(Exception) as e:
             validate_input_source(layer, filename, files, action_type="append")
@@ -1116,17 +1124,18 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     @patch("geonode.layers.utils.gs_catalog")
     def test_validation_will_pass_for_valid_append(self, catalog):
         attr = namedtuple('GSCatalogAttr', ['attributes'])
-        attr.attributes = ['label']
+        attr.attributes = ['NATURAL', 'NAME']
         self.r.resource = attr
         catalog.get_layer.return_value = self.r
-        layer = Dataset.objects.filter(name="single_point")[0]
+        create_single_dataset("san_andres_y_providencia_water")
+        layer = Dataset.objects.filter(name="san_andres_y_providencia_water")[0]
         file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "single_point.shp")
+        filename = os.path.join(file_path, "san_andres_y_providencia_water.shp")
         files = {
             "shp": filename,
-            "dbf": f"{file_path}/single_point.sbf",
-            "prj": f"{file_path}/single_point.prj",
-            "shx": f"{file_path}/single_point.shx",
+            "dbf": f"{file_path}/san_andres_y_providencia_water.sbf",
+            "prj": f"{file_path}/san_andres_y_providencia_water.prj",
+            "shx": f"{file_path}/san_andres_y_providencia_water.shx",
         }
         actual = validate_input_source(layer, filename, files, action_type="append")
         self.assertTrue(actual)
