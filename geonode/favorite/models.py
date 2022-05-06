@@ -57,8 +57,11 @@ class FavoriteManager(models.Manager):
         if Favorite exists for input user and type and pk of the input
         content_object, return it.  else return None.
         impl note: can only be 0 or 1, per the class's unique_together.
+        For geoapp we need to get the real_instance type
         """
         content_type = ContentType.objects.get_for_model(type(content_object))
+        if content_type.model == 'geoapp':
+            content_type = ContentType.objects.get_for_model(type(content_object.get_real_instance()))
         result = self.filter(
             user=user,
             content_type=content_type,
