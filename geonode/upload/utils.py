@@ -38,8 +38,7 @@ from django.utils.translation import ugettext as _
 from geonode.utils import json_response as do_json_response, unzip_file, mkdtemp
 from geonode.geoserver.helpers import (
     gs_uploader,
-    ogc_server_settings,
-    create_geoserver_db_featurestore)  # mosaic_delete_first_granule
+    ogc_server_settings)  # mosaic_delete_first_granule
 from geonode.base.models import HierarchicalKeyword, ThesaurusKeyword
 ogr.UseExceptions()
 
@@ -612,20 +611,6 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
 
         # if a target datastore is configured, ensure the datastore exists
         # in geoserver and set the uploader target appropriately
-        if ogc_server_settings.datastore_db and task.target.store_type != 'coverageStore':
-            target = create_geoserver_db_featurestore(
-                # store_name=ogc_server_settings.DATASTORE,
-                store_name=ogc_server_settings.datastore_db['NAME'],
-                workspace=settings.DEFAULT_WORKSPACE
-            )
-            _log(f'run_import: Setting target datastore {target.name} {target.workspace.name}')
-            task.set_target(target.name, target.workspace.name)
-        else:
-            target = task.target
-
-        if upload_session.update_mode:
-            _log(f'setting updateMode to {upload_session.update_mode}')
-            task.set_update_mode(upload_session.update_mode)
 
         _log(f'run_import: Running Import Session {import_session.id}')
         # run async if using a database
@@ -634,7 +619,8 @@ def run_import(upload_session, async_upload=_ASYNC_UPLOAD):
 
         # @todo check status of import session - it may fail, but due to protocol,
         # this will not be reported during the commit
-        return target
+        import_session = import_session.reload()
+        return import_session.tasks[0].target
     return None
 
 
