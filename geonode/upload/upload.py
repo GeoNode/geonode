@@ -609,7 +609,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
         import_id = import_session.id
         saved_dataset = None
         lock_id = f'final_step-{import_id}'
-        with AcquireLock(lock_id) as lock:
+        with AcquireLock(lock_id, blocking=True) as lock:
             if lock.acquire() is True:
                 _upload = None
                 try:
@@ -864,6 +864,12 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         name=_vals.get('name'))
                     if not saved_dataset_filter.exists():
                         try:
+                            files_list = []
+                            if upload_session.spatial_files_uploaded:
+                                files_list.append(upload_session.base_file.data[0].base_file)
+                                files_list.extend(upload_session.base_file.data[0].auxillary_files)
+                                files_list.extend(upload_session.base_file.data[0].sld_files)
+                                files_list.extend(upload_session.base_file.data[0].xml_files)
                             saved_dataset = resource_manager.create(
                                 dataset_uuid,
                                 resource_type=Dataset,
@@ -883,6 +889,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                                     is_mosaic=is_mosaic,
                                     has_time=has_time,
                                     has_elevation=has_elevation,
+                                    files=files_list,
                                     time_regex=upload_session.mosaic_time_regex))
                             created = True
                         except IntegrityError as e:
