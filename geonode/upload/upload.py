@@ -63,7 +63,7 @@ from geonode.upload.api.exceptions import GeneralUploadException
 from ..layers.models import Dataset
 from ..layers.metadata import parse_metadata
 from ..people.utils import get_default_user
-from ..layers.utils import get_valid_dataset_name
+from ..layers.utils import get_valid_dataset_name, is_vector
 from ..geoserver.helpers import (
     gs_catalog,
     gs_uploader
@@ -73,7 +73,9 @@ from .models import Upload
 from .upload_preprocessing import preprocess_files
 from geonode.geoserver.helpers import (
     get_dataset_type,
-    get_dataset_storetype)
+    get_dataset_storetype,
+    create_geoserver_db_featurestore,
+    ogc_server_settings)
 
 logger = logging.getLogger(__name__)
 
@@ -280,157 +282,167 @@ def save_step(user, layer, spatial_files, overwrite=True, store_spatial_files=Tr
               time_presentation_default_value=None,
               time_presentation_reference_value=None,
               charset_encoding="UTF-8", target_store=None):
-    _log(
-        f'Uploading layer: {layer}, files {spatial_files}')
-    if len(spatial_files) > 1:
-        # we only support more than one file if they're rasters for mosaicing
-        if not all(
-                [f.file_type.dataset_type == 'coverage' for f in spatial_files]):
-            msg = "Please upload only one type of file at a time"
-            logger.exception(Exception(msg))
-            raise GeneralUploadException(detail=msg)
-    name = get_valid_dataset_name(layer, overwrite)
-    _log(f'Name for layer: {name}')
-    if not any(spatial_files.all_files()):
-        msg = "Unable to recognize the uploaded file(s)"
-        logger.exception(Exception(msg))
-        raise GeneralUploadException(detail=msg)
-    the_dataset_type = get_dataset_type(spatial_files)
-    _check_geoserver_store(name, the_dataset_type, overwrite)
-    if the_dataset_type not in (
-            FeatureType.resource_type,
-            Coverage.resource_type):
-        msg = f"Expected layer type to FeatureType or Coverage, not {the_dataset_type}"
-        logger.exception(Exception(msg))
-        raise GeneralUploadException(msg)
-    files_to_upload = preprocess_files(spatial_files)
-    _log(f"files_to_upload: {files_to_upload}")
-    _log(f'Uploading {the_dataset_type}')
-    error_msg = None
-    try:
-        upload = None
-        if Upload.objects.filter(user=user, name=name).exists():
-            upload = Upload.objects.filter(user=user, name=name).order_by('-date').first()
-        if upload:
-            if upload.state == enumerations.STATE_READY:
-                import_session = upload.get_session.import_session
-            else:
+    lock_id = 'upload_workflow_save_step'
+    with AcquireLock(lock_id, blocking=True) as lock:
+        if lock.acquire() is True:
+            _log(f'Uploading layer: {layer}, files {spatial_files}')
+            if len(spatial_files) > 1:
+                # we only support more than one file if they're rasters for mosaicing
+                if not all(
+                        [f.file_type.dataset_type == 'coverage' for f in spatial_files]):
+                    msg = "Please upload only one type of file at a time"
+                    logger.exception(Exception(msg))
+                    raise GeneralUploadException(detail=msg)
+            name = get_valid_dataset_name(layer, overwrite)
+            _log(f'Name for layer: {name}')
+            if not any(spatial_files.all_files()):
+                msg = "Unable to recognize the uploaded file(s)"
+                logger.exception(Exception(msg))
+                raise GeneralUploadException(detail=msg)
+            the_dataset_type = get_dataset_type(spatial_files)
+            _check_geoserver_store(name, the_dataset_type, overwrite)
+            if the_dataset_type not in (
+                    FeatureType.resource_type,
+                    Coverage.resource_type):
+                msg = f"Expected layer type to FeatureType or Coverage, not {the_dataset_type}"
+                logger.exception(Exception(msg))
+                raise GeneralUploadException(msg)
+            files_to_upload = preprocess_files(spatial_files)
+            _log(f"files_to_upload: {files_to_upload}")
+            _log(f'Uploading {the_dataset_type}')
+            error_msg = None
+            try:
                 upload = None
-        if not upload:
-            next_id = _get_next_id()
-            # Truncate name to maximum length defined by the field.
-            max_length = Upload._meta.get_field('name').max_length
-            name = name[:max_length]
-            # save record of this whether valid or not - will help w/ debugging
-            upload = Upload.objects.create(
-                user=user,
-                name=name,
-                state=enumerations.STATE_READY,
-                upload_dir=spatial_files.dirname
-            )
-            upload.store_spatial_files = store_spatial_files
-
-            # @todo settings for use_url or auto detection if geoserver is
-            # on same host
-
-            # Is it a regular file or an ImageMosaic?
-            # if mosaic_time_regex and mosaic_time_value:
-            if mosaic:  # we want to ingest as ImageMosaic
-                target_store, files_to_upload = utils.import_imagemosaic_granules(
-                    spatial_files,
-                    append_to_mosaic_opts,
-                    append_to_mosaic_name,
-                    mosaic_time_regex,
-                    mosaic_time_value,
-                    time_presentation,
-                    time_presentation_res,
-                    time_presentation_default_value,
-                    time_presentation_reference_value)
-                upload.mosaic = mosaic
-                upload.append_to_mosaic_opts = append_to_mosaic_opts
-                upload.append_to_mosaic_name = append_to_mosaic_name
-                upload.mosaic_time_regex = mosaic_time_regex
-                upload.mosaic_time_value = mosaic_time_value
-                # moving forward with a regular Importer session
-                if len(files_to_upload) > 1:
-                    import_session = gs_uploader.upload_files(
-                        files_to_upload[1:],
-                        use_url=False,
-                        # import_id=next_id,
-                        target_store=target_store,
-                        charset_encoding=charset_encoding
+                if Upload.objects.filter(user=user, name=name).exists():
+                    upload = Upload.objects.filter(user=user, name=name).order_by('-date').first()
+                if upload:
+                    if upload.state == enumerations.STATE_READY:
+                        import_session = upload.get_session.import_session
+                    else:
+                        upload = None
+                if not upload:
+                    next_id = _get_next_id()
+                    # Truncate name to maximum length defined by the field.
+                    max_length = Upload._meta.get_field('name').max_length
+                    name = name[:max_length]
+                    # save record of this whether valid or not - will help w/ debugging
+                    upload = Upload.objects.create(
+                        user=user,
+                        name=name,
+                        state=enumerations.STATE_READY,
+                        upload_dir=spatial_files.dirname
                     )
-                else:
-                    import_session = gs_uploader.upload_files(
-                        files_to_upload,
-                        use_url=False,
-                        # import_id=next_id,
-                        target_store=target_store,
-                        charset_encoding=charset_encoding
-                    )
-                next_id = import_session.id if import_session else None
-                if not next_id:
-                    error_msg = 'No valid Importer Session could be found'
+                    upload.store_spatial_files = store_spatial_files
+
+                    # @todo settings for use_url or auto detection if geoserver is
+                    # on same host
+
+                    # Is it a regular file or an ImageMosaic?
+                    # if mosaic_time_regex and mosaic_time_value:
+                    if mosaic:  # we want to ingest as ImageMosaic
+                        target_store, files_to_upload = utils.import_imagemosaic_granules(
+                            spatial_files,
+                            append_to_mosaic_opts,
+                            append_to_mosaic_name,
+                            mosaic_time_regex,
+                            mosaic_time_value,
+                            time_presentation,
+                            time_presentation_res,
+                            time_presentation_default_value,
+                            time_presentation_reference_value)
+                        upload.mosaic = mosaic
+                        upload.append_to_mosaic_opts = append_to_mosaic_opts
+                        upload.append_to_mosaic_name = append_to_mosaic_name
+                        upload.mosaic_time_regex = mosaic_time_regex
+                        upload.mosaic_time_value = mosaic_time_value
+                        # moving forward with a regular Importer session
+                        if len(files_to_upload) > 1:
+                            import_session = gs_uploader.upload_files(
+                                files_to_upload[1:],
+                                use_url=False,
+                                # import_id=next_id,
+                                target_store=target_store,
+                                charset_encoding=charset_encoding
+                            )
+                        else:
+                            import_session = gs_uploader.upload_files(
+                                files_to_upload,
+                                use_url=False,
+                                # import_id=next_id,
+                                target_store=target_store,
+                                charset_encoding=charset_encoding
+                            )
+                        next_id = import_session.id if import_session else None
+                        if not next_id:
+                            error_msg = 'No valid Importer Session could be found'
+                    else:
+                        # moving forward with a regular Importer session
+                        import_session = gs_uploader.upload_files(
+                            files_to_upload,
+                            use_url=False,
+                            import_id=next_id,
+                            mosaic=False,
+                            target_store=target_store,
+                            name=name,
+                            charset_encoding=charset_encoding
+                        )
+                        if ogc_server_settings.datastore_db and any(map(is_vector, files_to_upload)):
+                            target = create_geoserver_db_featurestore(
+                                store_name=ogc_server_settings.datastore_db['NAME'],
+                                workspace=settings.DEFAULT_WORKSPACE
+                            )
+                            task = import_session.tasks[0]
+                            task.set_target(store_name=target_store or target.name, workspace=settings.DEFAULT_WORKSPACE)
+
+                    upload.import_id = import_session.id
+                    upload.save()
+
+                # any unrecognized tasks/files must be deleted or we can't proceed
+                import_session.delete_unrecognized_tasks()
+
+                if not mosaic:
+                    if not import_session.tasks:
+                        error_msg = 'No valid upload files could be found'
+                if import_session.tasks:
+                    if import_session.tasks[0].state == 'NO_FORMAT' \
+                            or import_session.tasks[0].state == 'BAD_FORMAT':
+                        error_msg = 'There may be a problem with the data provided - ' \
+                                    'we could not identify its format'
+                    elif import_session.tasks[0].state == 'ERROR':
+                        task = import_session.tasks[0]
+                        error_msg = "Unexpected error durng the GeoServer upload" \
+                            "please check GeoServer logs for more information"
+
+                if not mosaic and len(import_session.tasks) > 1:
+                    error_msg = "Only a single upload is supported at the moment"
+
+                if not error_msg and import_session.tasks:
+                    task = import_session.tasks[0]
+                    # single file tasks will have just a file entry
+                    if hasattr(task, 'files'):
+                        # @todo gsimporter - test this
+                        if not all([hasattr(f, 'timestamp')
+                                    for f in task.source.files]):
+                            error_msg = (
+                                "Not all timestamps could be recognized."
+                                "Please ensure your files contain the correct formats.")
+
+                if error_msg:
+                    upload.set_processing_state(enumerations.STATE_INVALID)
+
+                # @todo once the random tmp9723481758915 type of name is not
+                # around, need to track the name computed above, for now, the
+                # target store name can be used
+            except Exception as e:
+                logger.exception(e)
+                raise e
+
+            if error_msg:
+                logger.exception(Exception(error_msg))
+                raise GeneralUploadException(detail=error_msg)
             else:
-                # moving forward with a regular Importer session
-                import_session = gs_uploader.upload_files(
-                    files_to_upload,
-                    use_url=False,
-                    import_id=next_id,
-                    mosaic=False,
-                    target_store=target_store,
-                    name=name,
-                    charset_encoding=charset_encoding
-                )
-            upload.import_id = import_session.id
-            upload.save()
-
-        # any unrecognized tasks/files must be deleted or we can't proceed
-        import_session.delete_unrecognized_tasks()
-
-        if not mosaic:
-            if not import_session.tasks:
-                error_msg = 'No valid upload files could be found'
-        if import_session.tasks:
-            if import_session.tasks[0].state == 'NO_FORMAT' \
-                    or import_session.tasks[0].state == 'BAD_FORMAT':
-                error_msg = 'There may be a problem with the data provided - ' \
-                            'we could not identify its format'
-            elif import_session.tasks[0].state == 'ERROR':
-                task = import_session.tasks[0]
-                error_msg = "Unexpected error durng the GeoServer upload" \
-                    "please check GeoServer logs for more information"
-
-        if not mosaic and len(import_session.tasks) > 1:
-            error_msg = "Only a single upload is supported at the moment"
-
-        if not error_msg and import_session.tasks:
-            task = import_session.tasks[0]
-            # single file tasks will have just a file entry
-            if hasattr(task, 'files'):
-                # @todo gsimporter - test this
-                if not all([hasattr(f, 'timestamp')
-                            for f in task.source.files]):
-                    error_msg = (
-                        "Not all timestamps could be recognized."
-                        "Please ensure your files contain the correct formats.")
-
-        if error_msg:
-            upload.set_processing_state(enumerations.STATE_INVALID)
-
-        # @todo once the random tmp9723481758915 type of name is not
-        # around, need to track the name computed above, for now, the
-        # target store name can be used
-    except Exception as e:
-        logger.exception(e)
-        raise e
-
-    if error_msg:
-        logger.exception(Exception(error_msg))
-        raise GeneralUploadException(detail=error_msg)
-    else:
-        _log("The File [%s] has been sent to GeoServer without errors.", name, level="debug")
-    return import_session, upload
+                _log("The File [%s] has been sent to GeoServer without errors.", name, level="debug")
+            return import_session, upload
 
 
 def time_step(upload_session, time_attribute, time_transform_type,
@@ -664,7 +676,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         import_session.state == enumerations.STATE_READY or (import_session.state == enumerations.STATE_PENDING and _tasks_ready)):
                     _log(f"final_step: Running Import Session {import_session.id} - target: {target.name} - alternate: {task.get_target_layer_name()}")
                     _log(f" -- session state: {import_session.state} - task state: {task.state}")
-                    import_session.commit()
+
+                    utils.run_import(upload_session, async_upload=False)
+
                     import_session = import_session.reload()
                     task = import_session.tasks[0]
                     name = task.layer.name
@@ -703,7 +717,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     if Upload.objects.filter(import_id=import_id).count() > 1:
                         Upload.objects.invalidate_from_session(upload_session)
                         _cause = f'More than Upload Session associated to the Importer ID {import_id}'
-                        raise GeneralUploadException(detail='Import Session failed.' + str(_cause))
+                        raise GeneralUploadException(detail=f"Import Session failed.{str(_cause)}")
                     saved_dataset = Upload.objects.filter(import_id=import_id).get().resource
 
                 dataset_uuid = None
@@ -822,7 +836,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             created = True
                         except IntegrityError as e:
                             logger.exception(e)
-                            raise GeneralUploadException(detail=f"There's an incosistent Datasets on the DB for {task.layer.name}" + str(e))
+                            raise GeneralUploadException(detail=f"There's an incosistent Datasets on the DB for {task.layer.name}{str(e)}")
                     elif saved_dataset_filter.count() == 1:
                         saved_dataset = saved_dataset_filter.get()
                         created = False
@@ -873,7 +887,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             created = True
                         except IntegrityError as e:
                             logger.exception(e)
-                            raise GeneralUploadException(detail=f"There's an incosistent Datasets on the DB for {task.layer.name}" + str(e))
+                            raise GeneralUploadException(detail=f"There's an incosistent Datasets on the DB for {task.layer.name}{str(e)}")
                     elif saved_dataset_filter.count() == 1:
                         saved_dataset = saved_dataset_filter.get()
                         created = False
