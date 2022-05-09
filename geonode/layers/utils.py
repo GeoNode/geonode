@@ -39,7 +39,8 @@ from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
+from geonode.layers.api.exceptions import InvalidDatasetException
 from geonode.storage.manager import storage_manager
 # Geonode functionality
 from geonode.base.models import Region
@@ -614,36 +615,37 @@ def get_uuid_handler():
     return import_string(settings.LAYER_UUID_HANDLER)
 
 
-def validate_input_source(layer, filename, files, gtype=None, action_type='replace'):
+def validate_input_source(layer, filename, files, gtype=None, action_type='replace', storage_manager=storage_manager):
     if layer.is_vector() and is_raster(filename):
-        raise Exception(_(
+        raise InvalidDatasetException(_(
             f"You are attempting to {action_type} a vector dataset with a raster."))
     elif (not layer.is_vector()) and is_vector(filename):
-        raise Exception(_(
+        raise InvalidDatasetException(_(
             f"You are attempting to {action_type} a raster dataset with a vector."))
 
     if layer.is_vector():
-        from geonode.upload.utils import _fixup_base_file
         absolute_base_file = None
         try:
-            if 'shp' in files and os.path.exists(files['shp']):
-                absolute_base_file = _fixup_base_file(files['shp'])
-            elif 'zip' in files and os.path.exists(files['zip']):
-                absolute_base_file = _fixup_base_file(files['zip'])
-        except Exception:
+            absolute_base_file = storage_manager.path(files['shp'])
+        except SuspiciousFileOperation:
+            absolute_base_file = files['shp']
+        except InvalidDatasetException:
             absolute_base_file = None
 
         if not absolute_base_file or \
                 os.path.splitext(absolute_base_file)[1].lower() != '.shp':
-            raise Exception(
+            raise InvalidDatasetException(
                 _(f"You are attempting to {action_type} a vector dataset with an unknown format."))
         else:
             try:
                 gtype = layer.gtype if not gtype else gtype
                 inDataSource = ogr.Open(absolute_base_file)
+                if inDataSource is None:
+                    raise InvalidDatasetException(
+                        _(f"Please ensure that the base_file {absolute_base_file} is not empty"))
                 lyr = inDataSource.GetLayer(str(layer.name))
                 if not lyr:
-                    raise Exception(
+                    raise InvalidDatasetException(
                         _(f"Please ensure the name is consistent with the file you are trying to {action_type}."))
                 schema_is_compliant = False
                 _ff = json.loads(lyr.GetFeature(0).ExportToJson())
@@ -656,7 +658,7 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
                     schema_is_compliant = True
 
                 if not schema_is_compliant:
-                    raise Exception(
+                    raise InvalidDatasetException(
                         _(f"Please ensure there is at least one geometry type \
                             that is consistent with the file you are trying to {action_type}."))
 
@@ -664,19 +666,19 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
                 gs_dataset = gs_catalog.get_layer(layer.name)
 
                 if not gs_dataset:
-                    raise Exception(
+                    raise InvalidDatasetException(
                         _("The selected Dataset does not exists in the catalog."))
 
                 gs_dataset = gs_dataset.resource.attributes
                 schema_is_compliant = all([x.replace("-", '_') in gs_dataset for x in new_schema_fields])
 
                 if not schema_is_compliant:
-                    raise Exception(
+                    raise InvalidDatasetException(
                         _("Please ensure that the dataset structure is consistent "
                           f"with the file you are trying to {action_type}."))
                 return True
             except Exception as e:
-                raise Exception(
+                raise InvalidDatasetException(
                     _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
 
 

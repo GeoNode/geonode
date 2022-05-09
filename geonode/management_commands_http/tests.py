@@ -104,7 +104,7 @@ class ManagementCommandsTestCase(APITestCase):
     def test_management_commands_create_without_command(self):
         response = self.client.post(self.resource_list_url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("This field may not be null.", response.json()["command"])
+        self.assertIn("This field may not be null.", response.json()["errors"])
 
     def test_management_commands_create_not_found(self):
         cmd_name = "some_unavaliable_command"

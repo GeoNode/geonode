@@ -235,7 +235,7 @@ class Dataset(ResourceBase):
             _attrs = Attribute.objects.filter(dataset=self)
         if _attrs.filter(attribute='the_geom').exists():
             _att_type = _attrs.filter(attribute='the_geom').first().attribute_type
-            _gtype = re.match(r'\(\'gml:(.*?)\',', _att_type)
+            _gtype = re.match(r'gml:(.*)PropertyType', _att_type)
             return _gtype.group(1) if _gtype else None
         return None
 

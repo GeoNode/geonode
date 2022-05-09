@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from rest_framework.exceptions import APIException
 from rest_framework.views import exception_handler
 
 
@@ -24,11 +25,30 @@ def geonode_exception_handler(exc, context):
     # to get the standard error response.
     response = exception_handler(exc, context)
 
-    if response is not None and hasattr(exc, "category") and exc.category == 'upload':
+    if response is not None and isinstance(exc, APIException):
         # for the upload exception we need a custom response
+        detail = _extract_detail(exc)
         response.data = {
             "success": False,
-            "errors": [str(exc.detail) if hasattr(exc, "detail") else exc.default_detail],
+            "errors": [str(detail)],
             "code": exc.code if hasattr(exc, "code") else exc.default_code
         }
     return response
+
+
+def _extract_detail(exc, loop=False):
+    if hasattr(exc, "detail"):
+        if isinstance(exc.detail, list):
+            return exc.detail[0]
+        elif isinstance(exc.detail, dict):
+            return _extract_detail(exc.detail, loop=True)
+        else:
+            return exc.detail
+    elif loop:
+        try:
+            error = exc.get(list(exc)[0])
+            if isinstance(error, list):
+                return error[0]
+        except Exception:
+            return exc.default_detail
+    return exc.default_detail
