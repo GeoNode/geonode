@@ -7,6 +7,8 @@
  - Based on MapStore client [3.2.4](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/3.2.4)
  - MapStore client is no more compatible with 3.1.x/3.x train
 
+<li> Mon May 9 17:19:33 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/8f8b87543a2d3a85b1f5ab5eefca0d60745ec27d target=blank>Bump django-geonode-mapstore-client to version 3.2.4</a></li>
+<li> Mon May 9 16:48:10 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/4d3ffc47f4a03a9b529cd08c996015762ffc6e93 target=blank> - Bump to version 3.2.4 final</a></li>
 <li> Mon May 9 16:26:59 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/889c00729dca5d93b2ea9c9ef265d846be3eae81 target=blank>[Fixes #9202] PEP-440 compliant version (#9203) (#9310)</a></li>
 <li> Thu May 5 13:30:33 2022 +0200: nicokant <a href=https://github.com/GeoNode/geonode/commit/48550d5e3500dd3c096dd3cf6f8e61362dc9ae24 target=blank>bump django-markdownify to 0.9.1 fixes #9263 (#9264)</a></li>
 <li> Wed Apr 20 13:46:49 2022 +0200: luca pasquali <a href=https://github.com/GeoNode/geonode/commit/e64aca779bd912e2339a56c800ae81c25d243c4d target=blank>bump to GeoServer 2.18.6 (#9130)</a></li>
@@ -23,7 +25,6 @@
 <li> Wed Feb 23 18:23:52 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/dfabd2d95c1678ced7d49571fa906ecced08c2e3 target=blank> - Update docker images names to version 3.2.x</a></li>
 <li> Wed Feb 23 15:27:25 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/6fc1449270678467e6e896ac8bf0facae0a8befe target=blank> Bump django_geonode_mapstore_client to version 3.2.x</a></li>
 <li> Wed Feb 23 15:26:35 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/dbc2781ff8b5ba49cde650ad41dd07a2b8a3f30b target=blank>Bump to version 3.2.4</a></li>
-
 
 ## [3.2.3](https://github.com/GeoNode/geonode/tree/3.2.3) (2022-02-25)
 
