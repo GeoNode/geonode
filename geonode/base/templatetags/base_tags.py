@@ -472,11 +472,20 @@ def get_visibile_resources(user):
 @register.simple_tag
 def display_edit_request_button(resource, user, perms):
     def _has_owner_his_permissions():
-        _owner_set = set(resource.BASE_PERMISSIONS.get('owner') +
-                         resource.BASE_PERMISSIONS.get('read') +
-                         resource.BASE_PERMISSIONS.get('write') +
-                         resource.BASE_PERMISSIONS.get('download')) - \
-            set(perms)
+        _owner_perms = set(
+            resource.BASE_PERMISSIONS.get('owner') +
+            resource.BASE_PERMISSIONS.get('read') +
+            resource.BASE_PERMISSIONS.get('write')
+        )
+
+        if resource.polymorphic_ctype.model in ['layer', 'document']:
+            '''
+            The download resource permission should be available only
+            if the resource is a layer or Documents. You cant downlod maps
+            '''
+            _owner_perms = _owner_perms.union(set(resource.BASE_PERMISSIONS.get('download')))
+
+        _owner_set = _owner_perms.difference(set(perms))
         return _owner_set == set() or \
             _owner_set == {'change_resourcebase_permissions', 'publish_resourcebase'}
 
