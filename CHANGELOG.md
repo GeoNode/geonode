@@ -1,5 +1,30 @@
 # Change Log
 
+## [3.2.4](https://github.com/GeoNode/geonode/tree/3.2.4) (2022-05-09)
+
+### Breaking Changes
+
+ - Based on MapStore client [3.2.4](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/3.2.4)
+ - MapStore client is no more compatible with 3.1.x/3.x train
+
+<li> Mon May 9 16:26:59 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/889c00729dca5d93b2ea9c9ef265d846be3eae81 target=blank>[Fixes #9202] PEP-440 compliant version (#9203) (#9310)</a></li>
+<li> Thu May 5 13:30:33 2022 +0200: nicokant <a href=https://github.com/GeoNode/geonode/commit/48550d5e3500dd3c096dd3cf6f8e61362dc9ae24 target=blank>bump django-markdownify to 0.9.1 fixes #9263 (#9264)</a></li>
+<li> Wed Apr 20 13:46:49 2022 +0200: luca pasquali <a href=https://github.com/GeoNode/geonode/commit/e64aca779bd912e2339a56c800ae81c25d243c4d target=blank>bump to GeoServer 2.18.6 (#9130)</a></li>
+<li> Tue Apr 12 18:42:44 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/31cd792682af82fcc689b409ae8aec565fac95c2 target=blank>[Fixes #9042] Disable caching header in GeoNode proxy for the REST API (#9051) (#9052) (#9087)</a></li>
+<li> Tue Apr 12 18:41:05 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/68102b8ff651b50ac94a9cad6af9037d54ca5e07 target=blank>[Fixes #9042] Disable caching header in GeoNode proxy for the REST API (#9043) (#9047) (#9086)</a></li>
+<li> Tue Mar 15 01:30:02 2022 +0100: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/4b9b5d701b143b53ba20e05a9060ad8b9f75239e target=blank>[Backport to 3.3.x][Fixes #8920] The thumbnail of a UTM proj dataset is not correctly generated (#8931) (#8932)</a></li>
+<li> Fri Feb 25 15:05:13 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/200dea5d48fb57b305c8fe2444544fd29f36c5fc target=blank>Bump to version 3.2.4.rc.0</a></li>
+<li> Fri Feb 25 14:30:00 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/57e769bd3d402b72887a6b327468c1e91f675892 target=blank>Bump to version 3.2.3.post1</a></li>
+<li> Fri Feb 25 14:24:18 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/7aea09f2b9ea8085907a3a3fbdb227c82c4a9d08 target=blank> - Allow 'post' suffix on GeoNode release versions</a></li>
+<li> Fri Feb 25 09:09:48 2022 +0000: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/89f85087981bb034c44ccb41ad6929ce2465052c target=blank>[Backport to 3.2.x][Fixes #8858] Support "workspaced" requests on GeoServer proxy view (#8861)</a></li>
+<li> Thu Feb 24 10:59:47 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/bf01d78f6d26a71a18c2b3bdb33fb34f446ff851 target=blank>[CircleCI][Regression] Test: "style_change_check" always fails in the case the style does not exist on GeoNode too, preventing a user editing temporary generated styles</a></li>
+<li> Wed Feb 23 19:27:06 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/8396170f3e71f6c9e30b28179de2fd006e7c3375 target=blank>[Regression] "style_change_check" always fails in the case the style does not exist on GeoNode too, preventing a user editing temporary generated styles</a></li>
+<li> Wed Feb 23 18:47:52 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/1c80ef916a0b29d029ab6fdecab09f42c8885290 target=blank> - Update docker images names to version 3.2.x</a></li>
+<li> Wed Feb 23 18:23:52 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/dfabd2d95c1678ced7d49571fa906ecced08c2e3 target=blank> - Update docker images names to version 3.2.x</a></li>
+<li> Wed Feb 23 15:27:25 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/6fc1449270678467e6e896ac8bf0facae0a8befe target=blank> Bump django_geonode_mapstore_client to version 3.2.x</a></li>
+<li> Wed Feb 23 15:26:35 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/dbc2781ff8b5ba49cde650ad41dd07a2b8a3f30b target=blank>Bump to version 3.2.4</a></li>
+
+
 ## [3.2.3](https://github.com/GeoNode/geonode/tree/3.2.3) (2022-02-25)
 
 <li> Fri Feb 25 14:24:18 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/7aea09f2b9ea8085907a3a3fbdb227c82c4a9d08 target=blank> - Allow 'post' suffix on GeoNode release versions</a></li>
