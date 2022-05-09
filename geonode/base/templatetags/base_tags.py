@@ -478,7 +478,7 @@ def display_edit_request_button(resource, user, perms):
             resource.BASE_PERMISSIONS.get('write')
         )
 
-        if resource.polymorphic_ctype.model in ['layer', 'documents']:
+        if resource.polymorphic_ctype.model in ['layer', 'document']:
             '''
             The download resource permission should be available only
             if the resource is a layer or Documents. You cant downlod maps
