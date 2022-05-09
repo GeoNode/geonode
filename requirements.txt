@@ -20,7 +20,7 @@ vine==5.0.0
 tqdm==4.64.0
 Deprecated==1.2.13
 wrapt==1.14.1
-jsonschema==4.4.0
+jsonschema==4.5.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
@@ -98,7 +98,7 @@ gn-gsimporter==2.0.3
 gisdata==0.5.4
 
 # haystack/elasticsearch
-django-haystack==3.1.1
+django-haystack==3.2.1
 elasticsearch>=2.0.0,<9.0.0
 
 # datetimepicker widget
@@ -109,7 +109,7 @@ django-storages==1.12.3
 dropbox==11.30.0
 google-cloud-storage==2.3.0
 google-cloud-core==2.3.0
-boto3==1.22.8
+boto3==1.22.9
 
 # Django Caches
 python-memcached<=1.59
