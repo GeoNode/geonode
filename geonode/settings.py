@@ -858,7 +858,6 @@ LOCKDOWN_GEONODE = ast.literal_eval(os.getenv('LOCKDOWN_GEONODE', 'False'))
 # authentication.
 # - authorized exempt urls needed for oauth when GeoNode is set to lockdown
 AUTH_EXEMPT_URLS = (
-    r'^%s/?$' % FORCE_SCRIPT_NAME,
     f'{FORCE_SCRIPT_NAME}/o/*',
     f'{FORCE_SCRIPT_NAME}/gs/*',
     f'{FORCE_SCRIPT_NAME}/account/*',
