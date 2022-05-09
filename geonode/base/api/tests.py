@@ -1811,7 +1811,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.json()['overall_rating'], 2.0)
         self.assertEqual(response.status_code, 200)
 
-    def test_set_resource_thumbanil(self):
+    def test_set_resource_thumbnail(self):
         re_uuid = "[0-F]{8}-([0-F]{4}-){3}[0-F]{12}"
         resource = Dataset.objects.first()
         url = reverse('base-resources-set_thumbnail', args=[resource.pk])
@@ -1831,7 +1831,12 @@ class BaseApiTests(APITestCase):
         data = {"file": "invali url"}
         response = self.client.put(url, data=data, format="json")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), ['file is either a file upload, ASCII byte string or a valid image url string'])
+        expected = {
+            'success': False,
+            'errors': ['file is either a file upload, ASCII byte string or a valid image url string'],
+            'code': 'invalid'
+        }
+        self.assertEqual(response.json(), expected)
         # Test with non image url
         data = {"file": "http://localhost:8000/thumb.txt"}
         response = self.client.put(url, data=data, format="json")
@@ -1866,7 +1871,9 @@ class BaseApiTests(APITestCase):
         url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
         # Anonymous
         expected = {
-            "detail": "Authentication credentials were not provided."
+            "success": False,
+            "errors": ["Authentication credentials were not provided."],
+            "code": "not_authenticated",
         }
         response = self.client.post(url, format='json')
         self.assertEqual(response.status_code, 403)

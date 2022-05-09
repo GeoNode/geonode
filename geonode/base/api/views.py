@@ -1262,18 +1262,18 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     resource.save()
                     return Response({"thumbnail_url": resource.thumbnail_url})
                 except Exception:
-                    raise ValidationError('file is either a file upload, ASCII byte string or a valid image url string')
+                    raise ValidationError(detail='file is either a file upload, ASCII byte string or a valid image url string')
         else:
             # Validate size
             if file_data.size > 1000000:
-                raise ValidationError('File must not exceed 1MB')
+                raise ValidationError(detail='File must not exceed 1MB')
 
             thumbnail = file_data.read()
             try:
                 file_data.seek(0)
                 Image.open(file_data)
             except Exception:
-                raise ValidationError('Invalid data provided')
+                raise ValidationError(detail='Invalid data provided')
         if thumbnail:
             resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
             return Response({"thumbnail_url": resource.thumbnail_url})

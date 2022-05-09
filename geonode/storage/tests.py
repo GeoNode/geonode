@@ -18,6 +18,7 @@
 #########################################################################
 import io
 import os
+import gisdata
 
 from unittest.mock import patch
 
@@ -25,6 +26,7 @@ from django.test.testcases import SimpleTestCase, TestCase
 
 from geonode.utils import mkdtemp
 from geonode.storage.aws import AwsStorageManager
+from geonode.storage.exceptions import DataRetrieverExcepion
 from geonode.storage.manager import StorageManager
 from geonode.storage.gcs import GoogleStorageManager
 from geonode.storage.dropbox import DropboxStorageManager
@@ -396,6 +398,145 @@ class TestStorageManager(TestCase):
         with open('geonode/base/fixtures/test_sld.sld') as new_file:
             output = self.sut().replace(dataset, new_file)
         self.assertListEqual([expected], output['files'])
+
+
+class TestDataRetriever(TestCase):
+    def setUp(self):
+        self.sut = StorageManager
+        self.local_files_paths = {
+            "base_file": f"{gisdata.GOOD_DATA}/vector/single_point.shp",
+            "dbf_file": f"{gisdata.GOOD_DATA}/vector/single_point.dbf",
+            "shx_file": f"{gisdata.GOOD_DATA}/vector/single_point.shx",
+            "prj_file": f"{gisdata.GOOD_DATA}/vector/single_point.prj",
+        }
+        github_path = "https://github.com/GeoNode/gisdata/tree/master/gisdata/data/good/vector/"
+        self.remote_files = {
+            "base_file": f"{github_path}/single_point.shp",
+            "dbf_file": f"{github_path}/single_point.dbf",
+            "shx_file": f"{github_path}/single_point.shx",
+            "prj_file": f"{github_path}/single_point.prj",
+        }
+        return super().setUp()
+
+    def test_file_are_not_transfered_local(self):
+        _obj = self.sut(remote_files=self.local_files_paths)
+        self.assertTrue(hasattr(_obj, "data_retriever"))
+        self.assertIsNone(_obj.data_retriever.temporary_folder)
+
+    def test_clone_remote_files_local(self):
+        storage_manager = self.sut(remote_files=self.local_files_paths)
+        storage_manager.clone_remote_files()
+        expected_file_set = {
+            'single_point.shx',
+            'single_point.prj',
+            'single_point.dbf',
+            'single_point.shp'
+        }
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        _files = os.listdir(storage_manager.data_retriever.temporary_folder)
+        self.assertSetEqual(expected_file_set, set(_files))
+
+    def test_get_retrieved_paths_local(self):
+        self.maxDiff = None
+        storage_manager = self.sut(remote_files=self.local_files_paths)
+        # get_retrieved_paths should not transfer the remote paths
+        with self.assertRaises(DataRetrieverExcepion):
+            storage_manager.get_retrieved_paths()
+
+        # instead first is needed to clone the remove files and then take the paths
+        storage_manager.clone_remote_files()
+        files = storage_manager.get_retrieved_paths()
+
+        expected_sorted_list = [
+            ('base_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.shp'),
+            ('dbf_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.dbf'),
+            ('prj_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.prj'),
+            ('shx_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.shx')
+        ]
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        self.assertListEqual(expected_sorted_list, sorted(files.items()))
+
+    def test_delete_retrieved_paths_local(self):
+        self.maxDiff = None
+        storage_manager = self.sut(remote_files=self.local_files_paths)
+        # instead first is needed to clone the remove files and then take the paths
+        storage_manager.clone_remote_files()
+        expected_file_set = {
+            'single_point.shx',
+            'single_point.prj',
+            'single_point.dbf',
+            'single_point.shp'
+        }
+        _tmp_folder_path = storage_manager.data_retriever.temporary_folder
+        self.assertIsNotNone(_tmp_folder_path)
+        _files = os.listdir(storage_manager.data_retriever.temporary_folder)
+        # check the file exists in the temporary folder so we can be sure that the delete works
+        self.assertSetEqual(expected_file_set, set(_files))
+
+        storage_manager.delete_retrieved_paths(force=True)
+        self.assertIsNone(storage_manager.data_retriever.temporary_folder)
+        # the directory does not exists
+        self.assertFalse(os.path.exists(_tmp_folder_path))
+
+    def test_file_are_not_transfered_remote(self):
+        _obj = self.sut(remote_files=self.remote_files)
+        self.assertTrue(hasattr(_obj, "data_retriever"))
+        self.assertIsNone(_obj.data_retriever.temporary_folder)
+
+    def test_clone_remote_files_remote(self):
+        storage_manager = self.sut(remote_files=self.remote_files)
+        storage_manager.clone_remote_files()
+        expected_file_set = {
+            'single_point.shx',
+            'single_point.prj',
+            'single_point.dbf',
+            'single_point.shp'
+        }
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        _files = os.listdir(storage_manager.data_retriever.temporary_folder)
+        self.assertSetEqual(expected_file_set, set(_files))
+
+    def test_get_retrieved_paths_remote(self):
+        self.maxDiff = None
+        storage_manager = self.sut(remote_files=self.remote_files)
+        # get_retrieved_paths should not transfer the remote paths
+        with self.assertRaises(DataRetrieverExcepion):
+            storage_manager.get_retrieved_paths()
+
+        # instead first is needed to clone the remove files and then take the paths
+        storage_manager.clone_remote_files()
+        files = storage_manager.get_retrieved_paths()
+
+        expected_sorted_list = [
+            ('base_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.shp'),
+            ('dbf_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.dbf'),
+            ('prj_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.prj'),
+            ('shx_file', f'{storage_manager.data_retriever.temporary_folder}/single_point.shx')
+        ]
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        self.assertListEqual(expected_sorted_list, sorted(files.items()))
+
+    def test_delete_retrieved_paths_remote(self):
+        self.maxDiff = None
+        storage_manager = self.sut(remote_files=self.remote_files)
+        # instead first is needed to clone the remove files and then take the paths
+        storage_manager.clone_remote_files()
+        expected_file_set = {
+            'single_point.shx',
+            'single_point.prj',
+            'single_point.dbf',
+            'single_point.shp'
+        }
+        _tmp_folder_path = storage_manager.data_retriever.temporary_folder
+        self.assertIsNotNone(_tmp_folder_path)
+        _files = os.listdir(storage_manager.data_retriever.temporary_folder)
+        # check the file exists in the temporary folder so we can be sure that the delete works
+        self.assertSetEqual(expected_file_set, set(_files))
+
+        storage_manager.delete_retrieved_paths(force=True)
+        self.assertIsNone(storage_manager.data_retriever.temporary_folder)
+        # the directory does not exists
+        self.assertFalse(os.path.exists(_tmp_folder_path))
 
     def test_storage_manager_rmtree(self):
         '''
