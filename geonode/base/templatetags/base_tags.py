@@ -398,7 +398,7 @@ def display_edit_request_button(resource, user, perms):
         if resource.resource_type in ['dataset', 'document']:
             '''
             The download resource permission should be available only
-            if the resource is a layer or Documents. You cant downlod maps
+            if the resource is a datasets or Documents. You cant download maps
             '''
             _owner_perms = _owner_perms.union(set(resource.BASE_PERMISSIONS.get('download')))
 
