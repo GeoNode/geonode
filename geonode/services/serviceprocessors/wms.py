@@ -283,7 +283,6 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     def get_harvester_configuration_options(self):
         return {
-            "harvest_maps": False,
             "harvest_datasets": True,
             "harvest_documents": True,
             "copy_datasets": False,
