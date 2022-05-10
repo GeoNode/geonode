@@ -54,7 +54,6 @@ class HarvesterAdmin(admin.ModelAdmin):
         "show_link_to_selected_harvestable_resources",
         "show_link_to_latest_harvesting_session",
         "show_link_to_latest_refresh_session",
-        "get_worker_specific_configuration",
         "get_time_until_next_availability_update",
         "get_time_until_next_refresh",
         "get_time_until_next_harvesting",
