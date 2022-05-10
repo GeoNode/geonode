@@ -54,6 +54,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "show_link_to_selected_harvestable_resources",
         "show_link_to_latest_harvesting_session",
         "show_link_to_latest_refresh_session",
+        "get_worker_specific_configuration",
         "get_time_until_next_availability_update",
         "get_time_until_next_refresh",
         "get_time_until_next_harvesting",
@@ -240,11 +241,14 @@ class HarvesterAdmin(admin.ModelAdmin):
 
     @admin.display(description="Worker-specific configuration")
     def get_worker_specific_configuration(self, harvester: models.Harvester):
-        worker = harvester.get_harvester_worker()
-        worker_config = worker.get_current_config()
         result = "<ul>"
-        for key, value in worker_config.items():
-            result += format_html("<li>{}: {}</li>", key, value)
+        try:
+            worker = harvester.get_harvester_worker()
+            worker_config = worker.get_current_config()
+            for key, value in worker_config.items():
+                result += format_html("<li>{}: {}</li>", key, value)
+        except Exception as e:
+            logger.exception(e)
         result += "</ul>"
         return mark_safe(result)
 
