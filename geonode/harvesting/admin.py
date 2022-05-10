@@ -241,11 +241,14 @@ class HarvesterAdmin(admin.ModelAdmin):
 
     @admin.display(description="Worker-specific configuration")
     def get_worker_specific_configuration(self, harvester: models.Harvester):
-        worker = harvester.get_harvester_worker()
-        worker_config = worker.get_current_config()
         result = "<ul>"
-        for key, value in worker_config.items():
-            result += format_html("<li>{}: {}</li>", key, value)
+        try:
+            worker = harvester.get_harvester_worker()
+            worker_config = worker.get_current_config()
+            for key, value in worker_config.items():
+                result += format_html("<li>{}: {}</li>", key, value)
+        except Exception as e:
+            logger.exception(e)
         result += "</ul>"
         return mark_safe(result)
 
