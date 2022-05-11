@@ -373,6 +373,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             temporal_extent_start = None
             temporal_extent_end = None
         spatial_extent = geos.GEOSGeometry(json.dumps(resource.get("bbox_polygon")))
+        lonlat_extent = geos.GEOSGeometry(json.dumps(resource.get("ll_bbox_polygon")))
         link_info = self._get_resource_link_info(resource, remote_resource_type, spatial_extent)
         native_format, download_url, embed_url, thumbnail_url, wms_url, wfs_url, wcs_url = link_info
         descriptor = resourcedescriptor.RecordDescription(
@@ -401,6 +402,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 topic_category=(resource.get("category") or {}).get("identifier"),
                 supplemental_information=resource.get("raw_supplemental_information"),
                 spatial_extent=spatial_extent,
+                lonlat_extent=lonlat_extent,
                 temporal_extent=(temporal_extent_start, temporal_extent_end) if temporal_extent_start else None
             ),
             distribution=resourcedescriptor.RecordDistribution(

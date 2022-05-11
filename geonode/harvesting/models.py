@@ -121,7 +121,7 @@ class Harvester(models.Model):
             "deleted, in which case all of the resources that originated from that "
             "harvester are now considered to be orphan."
         ),
-        default=False,
+        default=True
     )
     last_updated = models.DateTimeField(
         help_text=_("Date of last update to the harvester configuration."),
