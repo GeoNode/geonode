@@ -185,20 +185,20 @@ class StorageManager(StorageManagerInterface):
         return updated_files
 
     def copy_files_list(self, files: List[str]):
+        from geonode.utils import mkdtemp
         out = []
         random_suffix = f'{uuid1().hex[:8]}'
+        new_path = mkdtemp()
         for f in files:
             with self.open(f, 'rb+') as open_file:
-                old_path = str(os.path.basename(Path(f).parent.absolute()))
                 old_file_name, _ = os.path.splitext(os.path.basename(f))
                 _, ext = os.path.splitext(open_file.name)
                 # path = os.path.join(old_path, random_suffix)
-                path = old_path
                 if re.match(r'.*_\w{7}$', old_file_name):
                     suffixed_name = re.sub(r'_\w{7}$', f'_{random_suffix}', old_file_name)
-                    new_file = f"{path}/{suffixed_name}{ext}"
+                    new_file = f"{new_path}/{suffixed_name}{ext}"
                 else:
-                    new_file = f"{path}/{old_file_name}_{random_suffix}{ext}"
+                    new_file = f"{new_path}/{old_file_name}_{random_suffix}{ext}"
                 out.append(self.copy_single_file(open_file, new_file))
         return out
 
