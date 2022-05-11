@@ -191,7 +191,6 @@ class StorageManager(StorageManagerInterface):
         new_path = mkdtemp()
         for f in files:
             with self.open(f, 'rb+') as open_file:
-                old_path = str(os.path.basename(Path(f).parent.absolute()))
                 old_file_name, _ = os.path.splitext(os.path.basename(f))
                 _, ext = os.path.splitext(open_file.name)
                 # path = os.path.join(old_path, random_suffix)
