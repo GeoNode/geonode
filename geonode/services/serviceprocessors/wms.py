@@ -143,6 +143,7 @@ class WmsServiceHandler(base.ServiceHandlerBase,
                 default_owner=owner,
                 scheduling_enabled=False,
                 remote_url=instance.service_url,
+                delete_orphan_resources_automatically=True,
                 harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
                 harvester_type_specific_configuration=self.get_harvester_configuration_options()
             )

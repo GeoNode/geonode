@@ -59,6 +59,7 @@ class RecordIdentification:
     topic_category: typing.Optional[str] = None
     supplemental_information: typing.Optional[str] = ""
     spatial_extent: typing.Optional[geos.Polygon] = None
+    lonlat_extent: typing.Optional[geos.Polygon] = None
     temporal_extent: typing.Optional[typing.Tuple[dt.datetime, dt.datetime]] = None
 
 

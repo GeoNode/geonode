@@ -21,9 +21,10 @@
 
 import logging
 
+
 from django.dispatch import receiver
 from django.db.models import signals
-
+from geonode.harvesting.models import Harvester
 from .models import Service
 
 logger = logging.getLogger(__name__)
@@ -32,8 +33,11 @@ logger = logging.getLogger(__name__)
 @receiver(signals.post_delete, sender=Service)
 def remove_harvesters(instance, **kwargs):
     """Remove a Service's harvesters and related resources."""
-    if instance.harvester:
-        instance.harvester.delete()
+    try:
+        if instance.harvester:
+            instance.harvester.delete()
+    except Harvester.DoesNotExist as e:
+        logger.warn(e)
 
 
 @receiver(signals.post_save, sender=Service)
