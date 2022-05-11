@@ -198,7 +198,7 @@ class StorageManager(StorageManagerInterface):
                 path = old_path
                 if re.match(r'.*_\w{7}$', old_file_name):
                     suffixed_name = re.sub(r'_\w{7}$', f'_{random_suffix}', old_file_name)
-                    new_file = f"{path}/{suffixed_name}{ext}"
+                    new_file = f"{new_path}/{suffixed_name}{ext}"
                 else:
                     new_file = f"{new_path}/{old_file_name}_{random_suffix}{ext}"
                 out.append(self.copy_single_file(open_file, new_file))
