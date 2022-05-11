@@ -247,7 +247,8 @@ def _wcs_link(wcs_url, identifier, mime, srid=None, bbox=None, compression=None,
             _axis_labels = _get_wcs_axis_labels(coverage_id)
             if _axis_labels:
                 _wcs_params += f'&subset={_axis_labels[0]}({_bbox[0]},{_bbox[2]})&subset={_axis_labels[1]}({_bbox[1]},{_bbox[3]})'
-    return f'{wcs_url}{_wcs_params}'
+    _query_separator = '?' if not wcs_url.endswith('?') else ''
+    return f'{wcs_url}{_query_separator}{_wcs_params}'
 
 
 def wcs_links(wcs_url, identifier, bbox=None, srid=None):
@@ -298,7 +299,8 @@ def _wfs_link(wfs_url, identifier, mime, extra_params, bbox=None, srid=None):
     if bbox:
         params['bbox'] = bbox
     params.update(extra_params)
-    return wfs_url + urlencode(params)
+    _query_separator = '?' if not wfs_url.endswith('?') else ''
+    return f'{wfs_url}{_query_separator}{urlencode(params)}'
 
 
 def wfs_links(wfs_url, identifier, bbox=None, srid=None):
@@ -344,8 +346,8 @@ def _wms_link(wms_url, identifier, mime, height, width, srid=None, bbox=None):
         wms_params['srs'] = srid
     if bbox:
         wms_params['bbox'] = bbox
-
-    return wms_url + urlencode(wms_params)
+    _query_separator = '?' if not wms_url.endswith('?') else ''
+    return f'{wms_url}{_query_separator}{urlencode(wms_params)}'
 
 
 def wms_links(wms_url, identifier, bbox, srid, height, width):

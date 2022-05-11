@@ -39,6 +39,7 @@ from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import (
     ObjectDoesNotExist,
@@ -668,6 +669,12 @@ class ResourceManager(ResourceManagerInterface):
                     """
                     self.remove_permissions(uuid, instance=_resource)
 
+                    def _safe_assign_perm(perm, user_or_group, obj=None):
+                        try:
+                            assign_perm(perm, user_or_group, obj)
+                        except Permission.DoesNotExist as e:
+                            logger.warn(e)
+
                     if permissions is not None and len(permissions):
                         """
                         Sets an object's the permission levels based on the perm_spec JSON.
@@ -701,9 +708,9 @@ class ResourceManager(ResourceManagerInterface):
                                     if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
                                         pass
                                     else:
-                                        assign_perm(perm, anonymous_group, _resource.dataset)
+                                        _safe_assign_perm(perm, anonymous_group, _resource.dataset)
                                 elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                    assign_perm(perm, anonymous_group, _resource.get_self_resource())
+                                    _safe_assign_perm(perm, anonymous_group, _resource.get_self_resource())
 
                         # All the other users
                         if 'users' in _perm_spec and len(_perm_spec['users']) > 0:
@@ -717,9 +724,9 @@ class ResourceManager(ResourceManagerInterface):
                                             if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
                                                 pass
                                             else:
-                                                assign_perm(perm, _user, _resource.dataset)
+                                                _safe_assign_perm(perm, _user, _resource.dataset)
                                         elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                            assign_perm(perm, _user, _resource.get_self_resource())
+                                            _safe_assign_perm(perm, _user, _resource.get_self_resource())
 
                         # All the other groups
                         if 'groups' in _perm_spec and len(_perm_spec['groups']) > 0:
@@ -732,9 +739,9 @@ class ResourceManager(ResourceManagerInterface):
                                         if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
                                             pass
                                         else:
-                                            assign_perm(perm, _group, _resource.dataset)
+                                            _safe_assign_perm(perm, _group, _resource.dataset)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                        assign_perm(perm, _group, _resource.get_self_resource())
+                                        _safe_assign_perm(perm, _group, _resource.get_self_resource())
 
                         # AnonymousUser
                         if 'users' in _perm_spec and len(_perm_spec['users']) > 0:
@@ -749,38 +756,38 @@ class ResourceManager(ResourceManagerInterface):
                                         if perm == 'change_dataset_style' and _resource_subtype not in DATA_STYLABLE_RESOURCES_SUBTYPES:
                                             pass
                                         else:
-                                            assign_perm(perm, _user, _resource.dataset)
+                                            _safe_assign_perm(perm, _user, _resource.dataset)
                                     elif AdvancedSecurityWorkflowManager.assignable_perm_condition(perm, _resource_type):
-                                        assign_perm(perm, _user, _resource.get_self_resource())
+                                        _safe_assign_perm(perm, _user, _resource.get_self_resource())
                     else:
                         # Anonymous
                         if AdvancedSecurityWorkflowManager.is_anonymous_can_view():
-                            assign_perm('view_resourcebase', anonymous_group, _resource.get_self_resource())
+                            _safe_assign_perm('view_resourcebase', anonymous_group, _resource.get_self_resource())
                             _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
                             _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
                         else:
                             for user_group in get_user_groups(_owner):
                                 if not skip_registered_members_common_group(user_group):
-                                    assign_perm('view_resourcebase', user_group, _resource.get_self_resource())
+                                    _safe_assign_perm('view_resourcebase', user_group, _resource.get_self_resource())
                                     _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                     _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('view_resourcebase'))
 
                         if AdvancedSecurityWorkflowManager.assignable_perm_condition('download_resourcebase', _resource_type):
                             if AdvancedSecurityWorkflowManager.is_anonymous_can_download():
-                                assign_perm('download_resourcebase', anonymous_group, _resource.get_self_resource())
+                                _safe_assign_perm('download_resourcebase', anonymous_group, _resource.get_self_resource())
                                 _prev_perm = _perm_spec["groups"].get(anonymous_group, []) if "groups" in _perm_spec else []
                                 _perm_spec["groups"][anonymous_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
                             else:
                                 for user_group in get_user_groups(_owner):
                                     if not skip_registered_members_common_group(user_group):
-                                        assign_perm('download_resourcebase', user_group, _resource.get_self_resource())
+                                        _safe_assign_perm('download_resourcebase', user_group, _resource.get_self_resource())
                                         _prev_perm = _perm_spec["groups"].get(user_group, []) if "groups" in _perm_spec else []
                                         _perm_spec["groups"][user_group] = set.union(perms_as_set(_prev_perm), perms_as_set('download_resourcebase'))
 
                         if _resource_type == 'dataset':
                             # only for layer owner
-                            assign_perm('change_dataset_data', _owner, _resource)
-                            assign_perm('change_dataset_style', _owner, _resource)
+                            _safe_assign_perm('change_dataset_data', _owner, _resource)
+                            _safe_assign_perm('change_dataset_style', _owner, _resource)
                             _prev_perm = _perm_spec["users"].get(_owner, []) if "users" in _perm_spec else []
                             _perm_spec["users"][_owner] = set.union(perms_as_set(_prev_perm), perms_as_set(['change_dataset_data', 'change_dataset_style']))
 
