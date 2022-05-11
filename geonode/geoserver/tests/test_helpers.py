@@ -31,6 +31,11 @@ from geonode.geoserver.views import _response_callback
 from geonode.geoserver.helpers import get_dataset_storetype
 from geonode.layers.populate_datasets_data import create_dataset_data
 
+from geonode.geoserver.ows import (
+    _wcs_link,
+    _wfs_link,
+    _wms_link)
+
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
@@ -202,3 +207,39 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
         response = self.client.get(f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=image/png&access_token=something")
         self.assertEqual(response.status_code, 200)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_ows_links(self):
+        ows_url = 'http://foo.org/ows'
+        identifier = 'foo:fake_alternate'
+        min_x, min_y, max_x, max_y = -1, -1, 1, 1
+        expected_url = f'{ows_url}?service=WCS&request=GetCoverage&coverageid=foo__fake_alternate&format=image%2Ftiff&version=2.0.1&compression=DEFLATE&tileWidth=512&tileHeight=512&outputCrs=4326'
+        download_url = _wcs_link(
+            ows_url,
+            identifier,
+            "image/tiff",
+            srid='4326',
+            bbox=[min_x, min_y, max_x, max_y],
+            compression="DEFLATE",
+            tile_size=512)
+        self.assertEqual(download_url, expected_url, download_url)
+
+        expected_url = f'{ows_url}?service=WFS&version=1.0.0&request=GetFeature&typename=foo%3Afake_alternate&outputFormat=application%2Fzip&srs=4326&bbox=%5B-1%2C+-1%2C+1%2C+1%5D'
+        download_url = _wfs_link(
+            ows_url,
+            identifier,
+            "application/zip",
+            {},
+            srid='4326',
+            bbox=[min_x, min_y, max_x, max_y])
+        self.assertEqual(download_url, expected_url, download_url)
+
+        expected_url = f'{ows_url}?service=WMS&request=GetMap&layers=foo%3Afake_alternate&format=image%2Fpng&height=512&width=512&srs=4326&bbox=%5B-1%2C+-1%2C+1%2C+1%5D'
+        download_url = _wms_link(
+            ows_url,
+            identifier,
+            "image/png",
+            512, 512,
+            srid='4326',
+            bbox=[min_x, min_y, max_x, max_y])
+        self.assertEqual(download_url, expected_url, download_url)
