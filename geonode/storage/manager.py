@@ -195,7 +195,6 @@ class StorageManager(StorageManagerInterface):
                 old_file_name, _ = os.path.splitext(os.path.basename(f))
                 _, ext = os.path.splitext(open_file.name)
                 # path = os.path.join(old_path, random_suffix)
-                path = old_path
                 if re.match(r'.*_\w{7}$', old_file_name):
                     suffixed_name = re.sub(r'_\w{7}$', f'_{random_suffix}', old_file_name)
                     new_file = f"{new_path}/{suffixed_name}{ext}"
