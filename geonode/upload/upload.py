@@ -628,15 +628,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
 
-                upload_session.import_session = import_session.reload()
-                upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
-
                 if import_session.tasks is None or len(import_session.tasks) == 0:
                     return saved_dataset
 
                 task = import_session.tasks[0]
                 try:
-                    task.set_charset(charset)
+                    if charset:
+                        task.set_charset(charset)
                 except Exception as e:
                     logger.exception(e)
 
@@ -696,7 +694,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     logger.exception(e)
                     Upload.objects.invalidate_from_session(upload_session)
                     raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
-                upload_session.import_session = import_session
+
+                upload_session.import_session = import_session.reload()
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
