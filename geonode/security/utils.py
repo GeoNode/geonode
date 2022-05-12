@@ -538,6 +538,7 @@ class AdvancedSecurityWorkflowManager:
                     if not AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() and (_resource.is_approved or _resource.is_published):
                         safe_remove(prev_perms, 'change_resourcebase')
                         safe_remove(prev_perms, 'change_resourcebase_metadata')
+                        safe_remove(prev_perms, 'delete_resourcebase')
                         if _resource.polymorphic_ctype.model == "layer":
                             safe_remove(prev_perms, 'change_layer_style')
                             safe_remove(prev_perms, 'change_layer_data')
