@@ -112,6 +112,12 @@ class Harvester(models.Model):
         ),
         default=False,
     )
+    publish_new_resources_by_default = models.BooleanField(
+        help_text=_(
+            "Should new resources be automatically published on GeoNode?"
+        ),
+        default=True,
+    )
     delete_orphan_resources_automatically = models.BooleanField(
         help_text=_(
             "Orphan resources are those that have previously been created by means of "

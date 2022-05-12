@@ -250,7 +250,8 @@ class BaseHarvesterWorker(abc.ABC):
                 harvested_info.resource_descriptor.identification.supplemental_information),
             "title": harvested_info.resource_descriptor.identification.title,
             "files": [str(path) for path in harvested_info.copied_resources],
-            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url
+            "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+            "is_published": harvestable_resource.harvester.publish_new_resources_by_default
         }
         if harvested_info.resource_descriptor.identification.lonlat_extent:
             defaults["ll_bbox_polygon"] = harvested_info.resource_descriptor.identification.lonlat_extent
@@ -295,6 +296,9 @@ class BaseHarvesterWorker(abc.ABC):
         harvestable_resource.save()
         geonode_resource = resource_manager.update(
             str(harvested_info.resource_descriptor.uuid), regions=regions, keywords=keywords)
+        if not harvestable_resource.harvester.publish_new_resources_by_default:
+            resource_manager.set_permissions(
+                str(harvested_info.resource_descriptor.uuid), instance=geonode_resource, permissions={'AnonymousUser': []})
         self.finalize_resource_update(
             geonode_resource,
             harvested_info,
