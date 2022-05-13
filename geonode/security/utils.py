@@ -35,11 +35,13 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import (
     PermSpecCompact,
+    EDIT_PERMISSIONS,
     VIEW_PERMISSIONS,
     ADMIN_PERMISSIONS,
     SERVICE_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     DOWNLOADABLE_RESOURCES,
+    BASIC_MANAGE_PERMISSIONS,
     DATASET_ADMIN_PERMISSIONS,
     DATASET_EDIT_DATA_PERMISSIONS,
     DATASET_EDIT_STYLE_PERMISSIONS,
@@ -521,13 +523,14 @@ class AdvancedSecurityWorkflowManager:
                 if _resource.owner not in ResourceGroupsAndMembersSet.managers:
                     safe_remove(prev_perms, 'publish_resourcebase')
                     if not AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() and (_resource.is_approved or _resource.is_published):
-                        safe_remove(prev_perms, 'change_resourcebase')
-                        safe_remove(prev_perms, 'change_resourcebase_metadata')
-                        if _resource.polymorphic_ctype.model == "dataset":
-                            safe_remove(prev_perms, 'change_dataset_style')
-                            safe_remove(prev_perms, 'change_dataset_data')
+                        for _perm in EDIT_PERMISSIONS:
+                            safe_remove(prev_perms, _perm)
+                        if _resource.resource_type == "dataset":
+                            for _perm in DATASET_ADMIN_PERMISSIONS:
+                                safe_remove(prev_perms, _perm)
                     if AdvancedSecurityWorkflowManager.is_advanced_workflow():
-                        safe_remove(prev_perms, 'change_resourcebase_permissions')
+                        for _perm in BASIC_MANAGE_PERMISSIONS:
+                            safe_remove(prev_perms, _perm)
             _perm_spec['users'][_resource.owner] = list(set(prev_perms))
 
             # Computing the MANAGERs and MEMBERs Permissions
@@ -580,8 +583,8 @@ class AdvancedSecurityWorkflowManager:
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
                     if ((AdvancedSecurityWorkflowManager.is_simple_publishing_workflow() or AdvancedSecurityWorkflowManager.is_advanced_workflow()) and not _resource.is_published) or (
                             AdvancedSecurityWorkflowManager.is_simplified_workflow() and not (_resource.is_approved or _resource.is_published)):
-                        safe_remove(prev_perms, 'view_resourcebase')
-                        safe_remove(prev_perms, 'download_resourcebase')
+                        for _perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
+                            safe_remove(prev_perms, _perm)
             _perm_spec['groups'][ResourceGroupsAndMembersSet.anonymous_group] = list(set(prev_perms))
 
             if ResourceGroupsAndMembersSet.registered_members_group and getattr(groups_settings, 'AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME', False):
@@ -590,8 +593,8 @@ class AdvancedSecurityWorkflowManager:
                     prev_perms += AdminViewPermissionsSet.view_perms.copy()
                     prev_perms = list(set(prev_perms))
                 if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow() and not _resource.is_approved:
-                    safe_remove(prev_perms, 'view_resourcebase')
-                    safe_remove(prev_perms, 'download_resourcebase')
+                    for _perm in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS:
+                        safe_remove(prev_perms, _perm)
                 _perm_spec['groups'][ResourceGroupsAndMembersSet.registered_members_group] = list(set(prev_perms))
 
         return _perm_spec
