@@ -643,7 +643,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
         import_id = import_session.id
         saved_layer = None
         lock_id = f'final_step-{import_id}'
-        with AcquireLock(lock_id) as lock:
+        with AcquireLock(lock_id, blocking=True) as lock:
             if lock.acquire() is True:
                 _upload = None
                 try:
@@ -664,15 +664,13 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     raise UploadException.from_exc(
                         _("The GeoServer Import Session is no more available"), e)
 
-                upload_session.import_session = import_session.reload()
-                upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
-
                 if import_session.tasks is None or len(import_session.tasks) == 0:
                     return saved_layer
 
                 task = import_session.tasks[0]
                 try:
-                    task.set_charset(charset)
+                    if charset:
+                        task.set_charset(charset)
                 except Exception as e:
                     logger.exception(e)
 
@@ -715,6 +713,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     _log(f" -- session state: {import_session.state} - task state: {task.state}")
 
                     utils.run_import(upload_session, async_upload=False)
+
                     import_session = import_session.reload()
                     task = import_session.tasks[0]
                     name = task.layer.name
@@ -733,7 +732,8 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                     Upload.objects.invalidate_from_session(upload_session)
                     raise UploadException.from_exc(
                         _("The GeoServer Import Session is no more available"), e)
-                upload_session.import_session = import_session
+
+                upload_session.import_session = import_session.reload()
                 upload_session = Upload.objects.update_from_session(upload_session, layer=saved_layer)
 
                 _tasks_failed = any([_task.state in ["BAD_FORMAT", "ERROR", "CANCELED"] for _task in import_session.tasks])
@@ -891,6 +891,7 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                             name=_vals.get('name'),
                             abstract=_vals.get('abstract', _('No abstract provided')),
                             owner=user,
+                            dirty_state=True,
                             temporal_extent_start=start,
                             temporal_extent_end=end,
                             is_mosaic=False,
