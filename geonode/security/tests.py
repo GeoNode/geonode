@@ -16,12 +16,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
+import os
 import json
 import base64
 import logging
 import requests
 import importlib
 
+from gisdata import GOOD_DATA
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
 
@@ -45,9 +48,9 @@ from geonode.compat import ensure_string
 from geonode.utils import check_ogc_backend
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
-from geonode.geoserver.helpers import gs_slurp
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 
@@ -779,34 +782,19 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             ))
 
         # Test that layer owner can wipe GWC Cache
-        ignore_errors = True
-        skip_unadvertised = False
-        skip_geonode_registered = False
-        remove_deleted = True
-        verbosity = 2
-        owner = bobby
         workspace = 'geonode'
-        filter = None
         store = None
         permissions = {
             'users': {"bobby": ['view_resourcebase', 'change_dataset_data']},
             'groups': {anonymous_group: ['view_resourcebase']},
         }
-        gs_slurp(
-            ignore_errors=ignore_errors,
-            verbosity=verbosity,
-            owner=owner,
-            workspace=workspace,
-            store=store,
-            filter=filter,
-            skip_unadvertised=skip_unadvertised,
-            skip_geonode_registered=skip_geonode_registered,
-            remove_deleted=remove_deleted,
-            permissions=permissions,
-            execute_signals=True)
+        fname = os.path.join(GOOD_DATA, 'time', 'boxes_with_date.shp')
+        resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
+        self.assertEqual(resp.status_code, 200)
 
         saved_dataset = Dataset.objects.get(name='boxes_with_date.shp')
         check_dataset(saved_dataset)
+        resource_manager.set_permissions(saved_dataset.uuid, instance=saved_dataset, permissions=permissions)
 
         from lxml import etree
         from owslib.etree import etree as dlxml

@@ -1245,8 +1245,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                     self.assertIn(
                         _link_orig.url,
                         _lyr.csw_anytext,
-                        f"The link URL {_link_orig.url} is not present in the 'csw_anytext' \
-attribute of the layer '{_lyr.alternate}'"
+                        f"The link URL {_link_orig.url} is not present in the 'csw_anytext' attribute of the layer '{_lyr.alternate}'"
                     )
                 # Check catalogue
                 catalogue = get_catalogue()
