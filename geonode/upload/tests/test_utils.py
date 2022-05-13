@@ -30,6 +30,7 @@ from geonode.upload.utils import get_max_upload_size, get_max_upload_parallelism
 
 
 class UtilsTestCase(GeoNodeBaseTestSupport):
+
     def test_pages(self):
         self.assertIn("kml-overlay", utils._pages)
 
