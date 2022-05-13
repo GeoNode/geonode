@@ -2246,7 +2246,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {}},
                 {
                     self.author: [
-                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2268,7 +2267,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
-                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2368,7 +2366,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             .first()
         expected = {
             self.author: [
-                "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2425,7 +2422,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "member")
         expected = {
             self.author: [
-                "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2546,7 +2542,6 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             group=self.resource_group.group)
 
         self.owner_perms = [
-            'delete_resourcebase',
             'view_resourcebase',
             'download_resourcebase'
         ]
@@ -2555,7 +2550,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             'change_resourcebase_metadata'
         ]
         self.dataset_perms = ["change_dataset_style", "change_dataset_data"]
-        self.adv_owner_limit = ["change_resourcebase_permissions", "publish_resourcebase"]
+        self.adv_owner_limit = ["delete_resourcebase", "change_resourcebase_permissions", "publish_resourcebase"]
         self.safe_perms = ["download_resourcebase", "view_resourcebase"]
         self.data = {
             'resource-title': self.resource.title,
