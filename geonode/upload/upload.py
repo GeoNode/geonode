@@ -891,7 +891,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                             name=_vals.get('name'),
                             abstract=_vals.get('abstract', _('No abstract provided')),
                             owner=user,
-                            dirty_state=True,
                             temporal_extent_start=start,
                             temporal_extent_end=end,
                             is_mosaic=False,
