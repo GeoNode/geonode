@@ -2566,6 +2566,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             group=self.resource_group.group)
 
         self.owner_perms = [
+            'delete_resourcebase',
             'view_resourcebase',
             'download_resourcebase'
         ]
@@ -2574,7 +2575,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             'change_resourcebase_metadata'
         ]
         self.layer_perms = ['change_layer_style', 'change_layer_data']
-        self.adv_owner_limit = ["delete_resourcebase", "change_resourcebase_permissions", "publish_resourcebase"]
+        self.adv_owner_limit = ["change_resourcebase_permissions", "publish_resourcebase"]
         self.safe_perms = ["download_resourcebase", "view_resourcebase"]
         self.data = {
             'resource-title': self.resource.title,
@@ -2669,7 +2670,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         resource_perm_specs = self.resource.get_all_level_info()
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.author]),
-            set(self.owner_perms))
+            set(self.safe_perms))
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.member_with_perms]),
             set(self.owner_perms + self.layer_perms))
