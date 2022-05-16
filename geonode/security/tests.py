@@ -2270,7 +2270,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {}},
                 {
                     self.author: [
-                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2292,7 +2291,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 {"users": {}, "groups": {"second_custom_group": ["view_resourcebase"]}},
                 {
                     self.author: [
-                        "delete_resourcebase",
                         "download_resourcebase",
                         "view_resourcebase",
                     ],
@@ -2392,7 +2390,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             .first()
         expected = {
             self.author: [
-                "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2449,7 +2446,6 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(sut.role, "member")
         expected = {
             self.author: [
-                "delete_resourcebase",
                 "download_resourcebase",
                 "view_resourcebase",
             ],
@@ -2674,7 +2670,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         resource_perm_specs = self.resource.get_all_level_info()
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.author]),
-            set(self.owner_perms))
+            set(self.safe_perms))
         self.assertSetEqual(
             set(resource_perm_specs['users'][self.member_with_perms]),
             set(self.owner_perms + self.layer_perms))
