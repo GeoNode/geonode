@@ -83,9 +83,6 @@ def create_thumbnail(
     instance.refresh_from_db()
 
     default_thumbnail_name = _generate_thumbnail_name(instance)
-    mime_type = "image/png"
-    width = settings.THUMBNAIL_SIZE["width"]
-    height = settings.THUMBNAIL_SIZE["height"]
 
     if default_thumbnail_name is None:
         # instance is Map and has no layers defined
@@ -119,6 +116,25 @@ def create_thumbnail(
     # --- define layer locations ---
     locations, layers_bbox = _layers_locations(instance, compute_bbox=compute_bbox_from_layers, target_crs=target_crs)
 
+    return create_thumbnail_from_locations(instance, locations, layers_bbox, default_thumbnail_name, compute_bbox_from_layers, is_map_with_datasets, bbox, wms_version, styles, background_zoom)
+
+
+def create_thumbnail_from_locations(
+        instance,
+        locations,
+        layers_bbox,
+        default_thumbnail_name,
+        compute_bbox_from_layers,
+        is_map_with_datasets,
+        bbox,
+        wms_version=settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
+        styles=None,
+        background_zoom=None
+        ):
+
+    mime_type = "image/png"
+    width = settings.THUMBNAIL_SIZE["width"]
+    height = settings.THUMBNAIL_SIZE["height"]
     if compute_bbox_from_layers and is_map_with_datasets:
         if not layers_bbox:
             raise ThumbnailError(f"Thumbnail generation couldn't determine a BBOX for: {instance}.")
