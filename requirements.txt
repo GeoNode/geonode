@@ -72,7 +72,7 @@ django-recaptcha==3.0.0
 
 # REST
 djangorestframework<3.12.0,>=3.8.0
-djangorestframework-gis==0.18
+djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
