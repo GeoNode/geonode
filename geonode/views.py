@@ -105,6 +105,10 @@ def ajax_lookup(request):
                 Q(access='private') & ~Q(
                     slug__in=request.user.groupmember_set.values_list("group__slug", flat=True))
         )
+        user_groups = GroupProfile.objects.filter(
+            slug__in=request.user.groupmember_set.all().values_list("group__slug", flat=True))
+        members = user_groups.values_list("groupmember__user__id", flat=True)
+        users = users.filter(id__in=members)
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),

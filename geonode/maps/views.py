@@ -33,7 +33,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 
 from geonode import geoserver
 from geonode.base import register_event
-from geonode.base.auth import get_or_create_token
+from geonode.base.auth import auth_user_from_header, get_or_create_token
 from geonode.base.forms import CategoryForm, ThesaurusAvailableForm, TKeywordForm
 from geonode.base.models import ExtraMetadata, Thesaurus, TopicCategory
 from geonode.base.views import batch_modify
@@ -322,6 +322,7 @@ def map_metadata_advanced(request, mapid):
         template='maps/map_metadata_advanced.html')
 
 
+@auth_user_from_header
 @xframe_options_exempt
 def map_embed(
         request,
