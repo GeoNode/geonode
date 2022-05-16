@@ -118,19 +118,20 @@ def create_thumbnail(
 
     return create_thumbnail_from_locations(instance, locations, layers_bbox, default_thumbnail_name, compute_bbox_from_layers, is_map_with_datasets, bbox, wms_version, styles, background_zoom)
 
+
 def create_thumbnail_from_locations(
-        instance, 
-        locations, 
+        instance,
+        locations,
         layers_bbox,
         default_thumbnail_name,
         compute_bbox_from_layers,
         is_map_with_datasets,
         bbox,
-        wms_version = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"), 
-        styles = None, 
-        background_zoom = None
+        wms_version=settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
+        styles=None,
+        background_zoom=None
         ):
-    
+
     mime_type = "image/png"
     width = settings.THUMBNAIL_SIZE["width"]
     height = settings.THUMBNAIL_SIZE["height"]
