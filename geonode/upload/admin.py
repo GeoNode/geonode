@@ -42,7 +42,7 @@ class UploadAdmin(admin.ModelAdmin):
     list_display_links = ('id',)
     date_hierarchy = 'date'
     list_filter = ('name', 'layer', 'user', 'date', 'state')
-    search_fields = ('name', 'layer', 'user', 'date', 'state')
+    search_fields = ('name', 'layer__title', 'user__username', 'date', 'state')
 
     def delete_queryset(self, request, queryset):
         """
