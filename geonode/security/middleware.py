@@ -27,7 +27,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import get_token_object_from_session, basic_auth_authenticate_user
+from geonode.base.auth import extract_user_from_headers, get_token_object_from_session
 
 from guardian.shortcuts import get_anonymous_user
 
@@ -91,15 +91,10 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
         if not request.user.is_authenticated or request.user == get_anonymous_user():
 
-            if "HTTP_AUTHORIZATION" in request.META:
-                auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
+            _r = extract_user_from_headers(request)
 
-                if auth_header and "Basic" in auth_header:
-                    user = basic_auth_authenticate_user(auth_header)
-
-                    if user:
-                        # allow Basic Auth authenticated requests with valid credentials
-                        return
+            if _r.user and _r.user != get_anonymous_user() and _r.user.is_authenticated:
+                return
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(

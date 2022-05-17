@@ -39,23 +39,28 @@ def auth_user_from_header(view):
     """
     @wraps(view)
     def _wrapped_view(request, *args, **kwargs):
-        if not request.user.is_authenticated or request.user == get_anonymous_user():
-            user = None
-            if "HTTP_AUTHORIZATION" in request.META:
-                auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
-
-                if auth_header and "Basic" in auth_header:
-                    user = basic_auth_authenticate_user(auth_header)
-                elif auth_header and "Bearer" in auth_header:
-                    user = token_header_authenticate_user(auth_header)
-
-            if "apikey" in request.GET:
-                user = get_auth_user_from_token(request.GET.get('apikey'))
-
-            if user is not None:
-                request.user = user
+        request = extract_user_from_headers(request)
         return view(request, *args, **kwargs)
     return _wrapped_view
+
+
+def extract_user_from_headers(request):
+    if not request.user.is_authenticated or request.user == get_anonymous_user():
+        user = None
+        if "HTTP_AUTHORIZATION" in request.META:
+            auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
+
+            if auth_header and "Basic" in auth_header:
+                user = basic_auth_authenticate_user(auth_header)
+            elif auth_header and "Bearer" in auth_header:
+                user = token_header_authenticate_user(auth_header)
+
+        if "apikey" in request.GET:
+            user = get_auth_user_from_token(request.GET.get('apikey'))
+
+        if user is not None:
+            request.user = user
+    return request
 
 
 def extract_headers(request):
