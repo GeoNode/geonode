@@ -50,7 +50,7 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 
 from geonode import geoserver  # noqa
 from geonode.base import register_event
-from geonode.base.auth import auth_user_from_header, get_auth_user, get_token_from_auth_header
+from geonode.base.auth import get_auth_user, get_token_from_auth_header
 
 BUFFER_CHUNK_SIZE = 64 * 1024
 
@@ -65,7 +65,6 @@ ows_regexp = re.compile(
     r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
 
 
-@auth_user_from_header
 @requires_csrf_token
 def proxy(request, url=None, response_callback=None,
           sec_chk_hosts=True, sec_chk_rules=True, timeout=None,

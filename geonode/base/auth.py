@@ -21,7 +21,6 @@ import base64
 import datetime
 import logging
 import traceback
-from functools import wraps
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -30,18 +29,6 @@ from oauthlib.common import generate_token
 from guardian.shortcuts import get_anonymous_user
 
 logger = logging.getLogger(__name__)
-
-
-def auth_user_from_header(view):
-    """
-    Decorator for views that checks that the user has authentication, redirecting
-    to the log-in page if necessary.
-    """
-    @wraps(view)
-    def _wrapped_view(request, *args, **kwargs):
-        request = extract_user_from_headers(request)
-        return view(request, *args, **kwargs)
-    return _wrapped_view
 
 
 def extract_user_from_headers(request):

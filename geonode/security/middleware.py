@@ -46,10 +46,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse('dataset_acls_dep'),
         reverse('dataset_resolve_user'),
         reverse('dataset_resolve_user_dep'),
-        reverse('proxy'),
-        '/maps/(?P<mapid>[^/]+)/embed',
-        '/layers/(?P<layername>[^/]+)/embed',
-        '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
         login_url,
