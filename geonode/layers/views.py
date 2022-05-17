@@ -55,7 +55,7 @@ from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
 from geonode.resource.utils import update_resource
 
-from geonode.base.auth import get_or_create_token, auth_user_from_header
+from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import (
@@ -1153,7 +1153,6 @@ def dataset_sld_upload(
     })
 
 
-@auth_user_from_header
 @xframe_options_exempt
 def dataset_embed(
         request,
