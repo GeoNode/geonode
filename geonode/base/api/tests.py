@@ -617,6 +617,35 @@ class BaseApiTests(APITestCase):
             resource.tkeywords.set(ThesaurusKeyword.objects.none())
             self.assertEqual(0, resource.tkeywords.count())
 
+    def test_write_resources(self):
+        """
+        Ensure we can perform write oprtation afainst the Resource Bases.
+        """
+        url = reverse('base-resources-list')
+        # Check user permissions
+        for resource_type in ['dataset', 'document', 'map']:
+            resource = ResourceBase.objects.filter(owner__username='bobby', resource_type=resource_type).first()
+            self.assertEqual(resource.owner.username, 'bobby')
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            response = self.client.get(f"{url}/{resource.id}/", format='json')
+            self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
+            self.assertEqual(True, response.data['resource']['is_published'], response.data['resource']['is_published'])
+            data = {
+                "title": "Foo Title",
+                "abstract": "Foo Abstract",
+                "attribution": "Foo Attribution",
+                "doi": "321-12345-987654321",
+                "is_published": False
+            }
+            response = self.client.patch(f"{url}/{resource.id}/", data=data, format='json')
+            self.assertEqual(response.status_code, 200, response.status_code)
+            response = self.client.get(f"{url}/{resource.id}/", format='json')
+            self.assertEqual('Foo Title', response.data['resource']['title'], response.data['resource']['title'])
+            self.assertEqual('Foo Abstract', response.data['resource']['abstract'], response.data['resource']['abstract'])
+            self.assertEqual('Foo Attribution', response.data['resource']['attribution'], response.data['resource']['attribution'])
+            self.assertEqual('321-12345-987654321', response.data['resource']['doi'], response.data['resource']['doi'])
+            self.assertEqual(False, response.data['resource']['is_published'], response.data['resource']['is_published'])
+
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
         Dataset(
