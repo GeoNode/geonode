@@ -27,9 +27,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import extract_user_from_headers, get_token_object_from_session, basic_auth_authenticate_user
-
-from guardian.shortcuts import get_anonymous_user
+from geonode.base.auth import extract_user_from_headers, get_token_object_from_session
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
@@ -47,8 +45,6 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse('dataset_resolve_user'),
         reverse('dataset_resolve_user_dep'),
         reverse('proxy'),
-        '/maps/(?P<mapid>[^/]+)/embed',
-        '/layers/(?P<layername>[^/]+)/embed',
         '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
@@ -89,17 +85,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
 
-        if not request.user.is_authenticated or request.user == get_anonymous_user():
-
-            if "HTTP_AUTHORIZATION" in request.META:
-                auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
-
-                if auth_header and "Basic" in auth_header:
-                    user = basic_auth_authenticate_user(auth_header)
-
-                    if user:
-                        # allow Basic Auth authenticated requests with valid credentials
-                        return
+        if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
@@ -113,15 +99,16 @@ class LoginFromApiKeyMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def process_request(self, request):
-
-        if not request.user.is_authenticated or request.user == get_anonymous_user():
+        '''
+        If an api key is provided and validated, the user can access to the page even without the login
+        This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
+        '''
+        if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
 
             request.user = extract_user_from_headers(request)
 
-            if request.user and request.user != get_anonymous_user() and request.user.is_authenticated:
+            if request.user and not request.user.is_anonymous and request.user.is_authenticated:
                 return
-            else:
-                logout(request)
 
 
 class SessionControlMiddleware(MiddlewareMixin):

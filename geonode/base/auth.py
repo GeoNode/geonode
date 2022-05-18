@@ -26,24 +26,23 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from oauth2_provider.models import AccessToken, get_application_model
 from oauthlib.common import generate_token
-from guardian.shortcuts import get_anonymous_user
+from django.contrib.auth.models import AnonymousUser
 
 logger = logging.getLogger(__name__)
 
 
 def extract_user_from_headers(request):
-    user = get_anonymous_user()
-    if not request.user.is_authenticated or request.user == get_anonymous_user():
-        if "HTTP_AUTHORIZATION" in request.META:
-            auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
+    user = AnonymousUser()
+    if "HTTP_AUTHORIZATION" in request.META:
+        auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
 
-            if auth_header and "Basic" in auth_header:
-                user = basic_auth_authenticate_user(auth_header)
-            elif auth_header and "Bearer" in auth_header:
-                user = token_header_authenticate_user(auth_header)
+        if auth_header and "Basic" in auth_header:
+            user = basic_auth_authenticate_user(auth_header)
+        elif auth_header and "Bearer" in auth_header:
+            user = token_header_authenticate_user(auth_header)
 
-        if "apikey" in request.GET:
-            user = get_auth_user_from_token(request.GET.get('apikey'))
+    if "apikey" in request.GET:
+        user = get_auth_user_from_token(request.GET.get('apikey'))
     return user
 
 

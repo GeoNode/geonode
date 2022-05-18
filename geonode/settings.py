@@ -1840,7 +1840,7 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # SECURITY SETTINGS
 # ########################################################################### #
 
-ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv('ENABLE_APIKEY_LOGIN', 'True'))
+ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv('ENABLE_APIKEY_LOGIN', 'False'))
 
 if ENABLE_APIKEY_LOGIN:
     MIDDLEWARE += ('geonode.security.middleware.LoginFromApiKeyMiddleware',)
