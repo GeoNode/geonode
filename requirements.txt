@@ -35,7 +35,7 @@ django-imagekit==4.1.0
 django-taggit==1.5.1
 django-markdownify==0.9.1
 django-mptt==0.13.4
-django-modeltranslation>=0.11,<0.18.0
+django-modeltranslation>=0.11,<0.19.0
 django-treebeard==4.5.1
 django-guardian<2.4.1
 django-downloadview==2.3.0
@@ -72,7 +72,7 @@ django-recaptcha==3.0.0
 
 # REST
 djangorestframework<3.12.0,>=3.8.0
-djangorestframework-gis==0.18
+djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.3
@@ -109,7 +109,7 @@ django-storages==1.12.3
 dropbox==11.30.0
 google-cloud-storage==2.3.0
 google-cloud-core==2.3.0
-boto3==1.22.9
+boto3==1.23.0
 
 # Django Caches
 python-memcached<=1.59
@@ -130,7 +130,7 @@ sherlock==0.3.2
 
 # required by monitoring
 psutil==5.9.0
-django-cors-headers==3.11.0
+django-cors-headers==3.12.0
 user-agents
 django-user-agents
 xmljson
@@ -143,10 +143,10 @@ uWSGI==2.0.20
 gunicorn==20.1.0
 ipython==8.3.0
 docker==5.0.3
-invoke==1.7.0
+invoke==1.7.1
 
 # tests
-coverage==6.3.2
+coverage==6.3.3
 requests-toolbelt==0.9.1
 flake8==4.0.1
 pytest==7.1.2
@@ -154,8 +154,8 @@ pytest-bdd==5.0.0
 splinter==0.17.0
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<62.2.0
-pip==22.0.4
+setuptools>=59.1.1,<62.3.0
+pip==22.1
 Twisted==22.4.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
