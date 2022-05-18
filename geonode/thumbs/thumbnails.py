@@ -130,7 +130,7 @@ def create_thumbnail_from_locations(
         wms_version=settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
         styles=None,
         background_zoom=None
-        ):
+):
 
     mime_type = "image/png"
     width = settings.THUMBNAIL_SIZE["width"]

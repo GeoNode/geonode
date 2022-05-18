@@ -81,9 +81,9 @@ def catalogue_post_save(instance, sender, **kwargs):
                 )
             except Exception:
                 _d = dict(name=name,
-                        extension='xml',
-                        mime=mime,
-                        link_type='metadata')
+                          extension='xml',
+                          mime=mime,
+                          link_type='metadata')
                 Link.objects.filter(
                     resource=resources.get(),
                     url=metadata_url,
