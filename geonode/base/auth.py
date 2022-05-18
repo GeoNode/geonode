@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 
 
 def extract_user_from_headers(request):
+    user = get_anonymous_user()
     if not request.user.is_authenticated or request.user == get_anonymous_user():
-        user = None
         if "HTTP_AUTHORIZATION" in request.META:
             auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
 
@@ -44,10 +44,7 @@ def extract_user_from_headers(request):
 
         if "apikey" in request.GET:
             user = get_auth_user_from_token(request.GET.get('apikey'))
-
-        if user is not None:
-            request.user = user
-    return request
+    return user
 
 
 def extract_headers(request):

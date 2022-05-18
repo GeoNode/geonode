@@ -763,7 +763,7 @@ MIDDLEWARE = (
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     'geonode.base.middleware.MaintenanceMiddleware',
-    'geonode.base.middleware.ReadOnlyMiddleware',   # a Middleware enabling Read Only mode of Geonode
+    'geonode.base.middleware.ReadOnlyMiddleware'  # a Middleware enabling Read Only mode of Geonode
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -1839,6 +1839,11 @@ if NOTIFICATIONS_MODULE and NOTIFICATIONS_MODULE not in INSTALLED_APPS:
 # ########################################################################### #
 # SECURITY SETTINGS
 # ########################################################################### #
+
+ENABLE_APIKEY_LOGIN = ast.literal_eval(os.getenv('ENABLE_APIKEY_LOGIN', 'True'))
+
+if ENABLE_APIKEY_LOGIN:
+    MIDDLEWARE += ('geonode.security.middleware.LoginFromApiKeyMiddleware',)
 
 # Require users to authenticate before using Geonode
 if LOCKDOWN_GEONODE:

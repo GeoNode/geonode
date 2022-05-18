@@ -17,19 +17,25 @@
 #
 #########################################################################
 
+import base64
+from io import BytesIO
 from re import compile
 
 from django.conf import settings
-from django.contrib.auth import logout
+from django.contrib.auth import get_user_model, logout, login
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
+from django.contrib import auth
+from httplib2 import Response
+from django.contrib.auth import authenticate
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import extract_user_from_headers, get_token_object_from_session
+from geonode.base.auth import extract_user_from_headers, get_token_object_from_session, basic_auth_authenticate_user
 
 from guardian.shortcuts import get_anonymous_user
+from geonode.settings import AUTHENTICATION_BACKENDS
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
@@ -46,6 +52,10 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         reverse('dataset_acls_dep'),
         reverse('dataset_resolve_user'),
         reverse('dataset_resolve_user_dep'),
+        reverse('proxy'),
+        '/maps/(?P<mapid>[^/]+)/embed',
+        '/layers/(?P<layername>[^/]+)/embed',
+        '/account/(?!.*(?:signup))',
         # block unauthenticated users from creating new accounts.
         '/static/*',
         login_url,
@@ -87,15 +97,41 @@ class LoginRequiredMiddleware(MiddlewareMixin):
 
         if not request.user.is_authenticated or request.user == get_anonymous_user():
 
-            _r = extract_user_from_headers(request)
+            if "HTTP_AUTHORIZATION" in request.META:
+                auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
 
-            if _r.user and _r.user != get_anonymous_user() and _r.user.is_authenticated:
-                return
+                if auth_header and "Basic" in auth_header:
+                    user = basic_auth_authenticate_user(auth_header)
+
+                    if user:
+                        # allow Basic Auth authenticated requests with valid credentials
+                        return
 
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
                     f"{self.redirect_to}?next={request.path}"
                 )
+
+
+class LoginFromApiKeyMiddleware(MiddlewareMixin):
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def process_request(self, request):
+
+        if not request.user.is_authenticated or request.user == get_anonymous_user():
+
+            request.user = extract_user_from_headers(request)
+
+            if request.user and request.user != get_anonymous_user() and request.user.is_authenticated:
+                pwd = get_user_model().objects.get(username=request.user.username)
+                login(
+                    request=request,
+                    username=request.user.get_username(),
+                    backend="django.contrib.auth.backends.ModelBackend"
+                )
+                return
 
 
 class SessionControlMiddleware(MiddlewareMixin):
