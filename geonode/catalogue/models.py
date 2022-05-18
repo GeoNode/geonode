@@ -40,7 +40,8 @@ def catalogue_pre_delete(instance, sender, **kwargs):
 
 def catalogue_post_save(instance, sender, **kwargs):
     """Get information from catalogue"""
-    resources = ResourceBase.objects.filter(id=instance.resourcebase_ptr.id)
+    _id = instance.resourcebase_ptr.id if hasattr(instance, 'resourcebase_ptr') else instance.id
+    resources = ResourceBase.objects.filter(id=_id)
 
     # Update the Catalog
     try:
@@ -65,28 +66,29 @@ def catalogue_post_save(instance, sender, **kwargs):
         raise Exception(msg)
 
     # Create the different metadata links with the available formats
-    for mime, name, metadata_url in record.links['metadata']:
-        try:
-            Link.objects.get_or_create(
-                resource=instance.resourcebase_ptr,
-                url=metadata_url,
-                defaults=dict(
-                    name=name,
-                    extension='xml',
-                    mime=mime,
-                    link_type='metadata'
+    if resources.exists():
+        for mime, name, metadata_url in record.links['metadata']:
+            try:
+                Link.objects.get_or_create(
+                    resource=resources.get(),
+                    url=metadata_url,
+                    defaults=dict(
+                        name=name,
+                        extension='xml',
+                        mime=mime,
+                        link_type='metadata'
+                    )
                 )
-            )
-        except Exception:
-            _d = dict(name=name,
-                      extension='xml',
-                      mime=mime,
-                      link_type='metadata')
-            Link.objects.filter(
-                resource=instance.resourcebase_ptr,
-                url=metadata_url,
-                extension='xml',
-                link_type='metadata').update(**_d)
+            except Exception:
+                _d = dict(name=name,
+                          extension='xml',
+                          mime=mime,
+                          link_type='metadata')
+                Link.objects.filter(
+                    resource=resources.get(),
+                    url=metadata_url,
+                    extension='xml',
+                    link_type='metadata').update(**_d)
 
     # generate an XML document (GeoNode's default is ISO)
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
