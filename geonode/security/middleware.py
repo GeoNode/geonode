@@ -17,25 +17,19 @@
 #
 #########################################################################
 
-import base64
-from io import BytesIO
 from re import compile
 
 from django.conf import settings
-from django.contrib.auth import get_user_model, logout, login
+from django.contrib.auth import logout
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
-from django.contrib import auth
-from httplib2 import Response
-from django.contrib.auth import authenticate
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
 from geonode.base.auth import extract_user_from_headers, get_token_object_from_session, basic_auth_authenticate_user
 
 from guardian.shortcuts import get_anonymous_user
-from geonode.settings import AUTHENTICATION_BACKENDS
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
@@ -125,13 +119,9 @@ class LoginFromApiKeyMiddleware(MiddlewareMixin):
             request.user = extract_user_from_headers(request)
 
             if request.user and request.user != get_anonymous_user() and request.user.is_authenticated:
-                pwd = get_user_model().objects.get(username=request.user.username)
-                login(
-                    request=request,
-                    username=request.user.get_username(),
-                    backend="django.contrib.auth.backends.ModelBackend"
-                )
                 return
+            else:
+                logout(request)
 
 
 class SessionControlMiddleware(MiddlewareMixin):
