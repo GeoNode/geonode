@@ -35,6 +35,7 @@ from django.http import HttpRequest
 from django.test.testcases import TestCase
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
+from django.contrib.auth.models import AnonymousUser
 
 from guardian.shortcuts import (
     assign_perm,
@@ -261,7 +262,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 # unauthorized request to black listed URL should be redirected to `redirect_to` URL
                 request = HttpRequest()
-                request.user = get_anonymous_user()
+                request.user = AnonymousUser()
                 request.path = black_listed_url
 
                 response = middleware.process_request(request)
