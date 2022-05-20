@@ -36,7 +36,7 @@ from avatar.templatetags.avatar_tags import avatar_url
 from geonode import geoserver
 from geonode.api.paginator import CrossSiteXHRPaginator
 from geonode.api.authorization import GeoNodeStyleAuthorization, ApiLockdownAuthorization, \
-    GroupAuthorization, GroupProfileAuthorization
+    GroupAuthorization, GroupProfileAuthorization, GeoNodePeopleAuthorization
 from guardian.shortcuts import get_objects_for_user
 from tastypie.bundle import Bundle
 
@@ -49,9 +49,8 @@ from geonode.layers.models import Dataset, Style
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
-from geonode.groups.models import GroupProfile, GroupCategory
+from geonode.groups.models import GroupProfile, GroupCategory, GroupMember
 from django.core.serializers.json import DjangoJSONEncoder
-from tastypie.authorization import DjangoAuthorization
 from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -497,6 +496,14 @@ class ProfileResource(TypeFilteredResource):
             semi_filtered = semi_filtered.filter(
                 profile__first_name__icontains=name)
 
+        if request.user and not group and not request.user.is_superuser:
+            # Only return user that are members of any group profile the current user is member of
+            members_user_ids = GroupMember.objects.filter(
+                group__in=GroupProfile.objects.filter(
+                    Q(access='public') | Q(group__in=request.user.groups.all()))
+                ).select_related('user').values_list('user__id', flat=True)
+            semi_filtered = semi_filtered.filter(id__in=members_user_ids)
+
         return semi_filtered
 
     def dehydrate_email(self, bundle):
@@ -591,7 +598,7 @@ class ProfileResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
-        authorization = DjangoAuthorization()
+        authorization = GeoNodePeopleAuthorization()
 
 
 class OwnersResource(TypeFilteredResource):

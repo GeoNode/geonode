@@ -32,7 +32,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, get_user_model
 
 from geonode import get_version
-from geonode.groups.models import GroupProfile
+from geonode.groups.models import GroupProfile, GroupMember
 from geonode.geoapps.models import GeoApp
 
 
@@ -87,9 +87,11 @@ def ajax_lookup(request):
             content='use a field named "query" to specify a prefix to filter usernames',
             content_type='text/plain')
     keyword = request.POST['query']
+    user_query_filter = Q(username__icontains=keyword)
+    user_active_not_anonymous_filter = (Q(username='AnonymousUser') | Q(is_active=False))
+
     users = get_user_model().objects.filter(
-        Q(username__icontains=keyword)).exclude(Q(username='AnonymousUser') |
-                                                Q(is_active=False))
+        Q(user_query_filter)).exclude(user_active_not_anonymous_filter)
     if request.user and request.user.is_authenticated and request.user.is_superuser:
         groups = GroupProfile.objects.filter(
             Q(title__icontains=keyword) |
@@ -99,12 +101,16 @@ def ajax_lookup(request):
             Q(title__icontains=keyword) |
             Q(slug__icontains=keyword)).exclude(Q(access='private'))
     else:
-        groups = GroupProfile.objects.filter(
-            Q(title__icontains=keyword) |
-            Q(slug__icontains=keyword)).exclude(
-                Q(access='private') & ~Q(
-                    slug__in=request.user.groupmember_set.values_list("group__slug", flat=True))
+        group_profiles = GroupProfile.objects.filter(
+            Q(access='public') | Q(group__in=request.user.groups.all())
         )
+        groups = group_profiles.filter(
+            Q(title__icontains=keyword) |
+            Q(slug__icontains=keyword))
+        # Only return user that are members of any group profile the current user is member o
+        members_user_ids = GroupMember.objects.filter(group__in=group_profiles).select_related('user').values_list('user__id', flat=True)
+        users = users.filter(id__in=members_user_ids)
+
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
