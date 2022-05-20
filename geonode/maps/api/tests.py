@@ -162,7 +162,7 @@ class MapsApiTests(APITestCase):
         expected_error = {
             "success": False,
             "errors": [
-                "serializer instance and object found are different"
+                "serializer instance and object are different"
             ],
             "code": "maps_exception"
         }
