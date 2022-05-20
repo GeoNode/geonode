@@ -137,7 +137,7 @@ class MapViewSet(DynamicModelViewSet):
         )
         instance = serializer.instance
         if instance != map_obj:
-            raise GeneralMapsException(detail="serializer instance and object found are different")
+            raise GeneralMapsException(detail="serializer instance and object are different")
         # Thumbnail will be handled later
         post_change_data = {
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
