@@ -26,7 +26,6 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
@@ -35,6 +34,7 @@ from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.layers.api.serializers import DatasetSerializer
+from geonode.maps.api.exception import GeneralMapsException
 from geonode.maps.api.permissions import MapPermissionsFilter
 from geonode.maps.api.serializers import MapLayerSerializer, MapSerializer
 from geonode.maps.contants import _PERMISSION_MSG_SAVE
@@ -137,7 +137,7 @@ class MapViewSet(DynamicModelViewSet):
         )
         instance = serializer.instance
         if instance != map_obj:
-            raise ValidationError()
+            raise GeneralMapsException(detail="serializer instance and object found are different")
         # Thumbnail will be handled later
         post_change_data = {
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
