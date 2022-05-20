@@ -117,7 +117,7 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsSelfOrAdminOrReadOnly, ]
+    permission_classes = [IsAuthenticated, IsSelfOrAdminOrReadOnly, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]

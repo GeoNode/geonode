@@ -51,6 +51,7 @@ from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile, GroupCategory
 from django.core.serializers.json import DjangoJSONEncoder
+from tastypie.authorization import DjangoAuthorization
 from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.resources import ModelResource
@@ -590,7 +591,7 @@ class ProfileResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
-        authorization = ApiLockdownAuthorization()
+        authorization = DjangoAuthorization()
 
 
 class OwnersResource(TypeFilteredResource):

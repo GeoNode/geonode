@@ -19,6 +19,8 @@
 
 from django.conf.urls import url
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
+
 from .views import ProfileAutocomplete, SetUserLayerPermission
 from . import views
 
@@ -32,7 +34,7 @@ urlpatterns = [  # 'geonode.people.views',
         views.profile_detail, name="profile_detail"),
     url(r'^forgotname', views.forgot_username, name='forgot_username'),
     url(r'^autocomplete/$',
-        ProfileAutocomplete.as_view(), name='autocomplete_profile'),
+        login_required(ProfileAutocomplete.as_view()), name='autocomplete_profile'),
     url(r'^layer/permission/$',
         SetUserLayerPermission.as_view(), name='set_user_dataset_permissions'),
 ]
