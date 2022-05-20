@@ -33,7 +33,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import Subquery
+from django.db.models import Subquery, Q
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 
@@ -121,7 +121,6 @@ class UserViewSet(DynamicModelViewSet):
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -130,6 +129,14 @@ class UserViewSet(DynamicModelViewSet):
         Filters and sorts users.
         """
         queryset = get_user_model().objects.all()
+
+        if self.request and self.request.user and not self.request.user.is_superuser:
+            # Only return user that are members of any group profile the current user is member of
+            members_user_ids = GroupMember.objects.filter(
+                group__in=GroupProfile.objects.filter(
+                    Q(access='public') | Q(group__in=self.request.user.groups.all()))
+                ).select_related('user').values_list('user__id', flat=True)
+            queryset = queryset.filter(id__in=members_user_ids)
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
