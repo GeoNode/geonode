@@ -59,6 +59,7 @@ from geonode.base.models import (
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
 from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models, create_single_dataset
@@ -1535,6 +1536,28 @@ class BaseApiTests(APITestCase):
         # 1 favorite is saved, so the total should be 1
         self.assertEqual(response.data['total'], 1)
         self.assertEqual(len(response.data['resources']), 1)
+
+    def test_search_resources_with_favorite_true_with_geoapps_icluded(self):
+        url = reverse('base-resources-list')
+        # Admin
+        admin = get_user_model().objects.get(username='admin')
+        try:
+            geo_app = GeoApp.objects.create(
+                title="Test GeoApp Favorite",
+                owner=admin,
+                resource_type="geostory"
+            )
+            Favorite.objects.create_favorite(geo_app, admin)
+
+            self.assertTrue(self.client.login(username='admin', password='admin'))
+
+            response = self.client.get(
+                f"{url}?favorite=true", format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['total'], 1)
+            self.assertEqual(len(response.data['resources']), 1)
+        finally:
+            geo_app.delete()
 
     def test_thumbnail_urls(self):
         """
