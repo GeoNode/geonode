@@ -498,7 +498,7 @@ class ProfileResource(TypeFilteredResource):
                 profile__first_name__icontains=name)
 
         if request.user and not group and not request.user.is_superuser:
-            semi_filtered = get_available_users(request.user)
+            semi_filtered = semi_filtered & get_available_users(request.user)
 
         return semi_filtered
 

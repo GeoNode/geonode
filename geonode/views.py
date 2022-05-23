@@ -34,7 +34,6 @@ from django.contrib.auth import authenticate, login, get_user_model
 from geonode import get_version
 from geonode.groups.models import GroupProfile
 from geonode.geoapps.models import GeoApp
-from geonode.people.utils import get_available_users
 
 
 class AjaxLoginForm(forms.Form):
@@ -106,7 +105,6 @@ def ajax_lookup(request):
                 Q(access='private') & ~Q(
                     slug__in=request.user.groupmember_set.values_list("group__slug", flat=True))
         )
-        users = get_available_users(request.user)
     json_dict = {
         'users': [({'username': u.username}) for u in users],
         'count': users.count(),
