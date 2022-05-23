@@ -46,10 +46,11 @@ from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
 from geonode.layers.models import Dataset, Style
+from geonode.people.utils import get_available_users
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
-from geonode.groups.models import GroupProfile, GroupCategory, GroupMember
+from geonode.groups.models import GroupProfile, GroupCategory
 from django.core.serializers.json import DjangoJSONEncoder
 from tastypie.serializers import Serializer
 from tastypie import fields
@@ -497,12 +498,7 @@ class ProfileResource(TypeFilteredResource):
                 profile__first_name__icontains=name)
 
         if request.user and not group and not request.user.is_superuser:
-            # Only return user that are members of any group profile the current user is member of
-            members_user_ids = GroupMember.objects.filter(
-                group__in=GroupProfile.objects.filter(
-                    Q(access='public') | Q(group__in=request.user.groups.all()))
-                ).select_related('user').values_list('user__id', flat=True)
-            semi_filtered = semi_filtered.filter(id__in=members_user_ids)
+            semi_filtered = get_available_users(request.user)
 
         return semi_filtered
 

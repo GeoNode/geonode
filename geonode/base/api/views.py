@@ -33,7 +33,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import Subquery, Q
+from django.db.models import Subquery
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 
@@ -68,6 +68,7 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.people.utils import get_available_users
 from geonode.security.permissions import (
     PermSpec,
     PermSpecCompact,
@@ -131,12 +132,7 @@ class UserViewSet(DynamicModelViewSet):
         queryset = get_user_model().objects.all()
 
         if self.request and self.request.user and not self.request.user.is_superuser:
-            # Only return user that are members of any group profile the current user is member of
-            members_user_ids = GroupMember.objects.filter(
-                group__in=GroupProfile.objects.filter(
-                    Q(access='public') | Q(group__in=self.request.user.groups.all()))
-                ).select_related('user').values_list('user__id', flat=True)
-            queryset = queryset.filter(id__in=members_user_ids)
+            queryset = get_available_users(self.request.user)
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")

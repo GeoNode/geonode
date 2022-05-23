@@ -31,10 +31,10 @@ from django.views import View
 
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
+from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
-from geonode.groups.models import GroupProfile, GroupMember
 
 from dal import autocomplete
 
@@ -148,12 +148,7 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
         qs = get_user_model().objects.all().exclude(Q(username='AnonymousUser') | Q(is_active=False))
 
         if self.request and self.request.user and not self.request.user.is_superuser:
-            # Only return user that are members of any group profile the current user is member of
-            members_user_ids = GroupMember.objects.filter(
-                group__in=GroupProfile.objects.filter(
-                    Q(access='public') | Q(group__in=self.request.user.groups.all()))
-                ).select_related('user').values_list('user__id', flat=True)
-            qs = qs.filter(id__in=members_user_ids)
+            qs = get_available_users(self.request.user)
 
         if self.q:
             qs = qs.filter(Q(username__icontains=self.q)

@@ -17,10 +17,13 @@
 #
 #########################################################################
 
+from django.db.models import Q
 from django.contrib.auth import get_user_model
-
+from django.contrib.auth.models import Group
 
 from geonode import GeoNodeException
+from geonode.groups.models import GroupProfile, GroupMember
+from geonode.groups.conf import settings as groups_settings
 
 
 def get_default_user():
@@ -103,3 +106,19 @@ def format_address(street=None, zipcode=None, city=None, area=None, country=None
         if country:
             address.append(country)
         return " ".join(address)
+
+
+def get_available_users(user):
+    if user.is_superuser:
+        return get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
+    # Only return user that are members of any group profile the current user is member of
+    member_ids = list(GroupMember.objects.filter(
+        group__in=GroupProfile.objects.filter(
+            Q(access='public') | Q(group__in=user.groups.all()))
+        ).select_related('user').values_list('user__id', flat=True))
+    if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).count():
+        rm_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
+        users_ids = list(rm_group.user_set.all().values_list('id', flat=True))
+        member_ids.extend(users_ids)
+
+    return get_user_model().objects.filter(id__in=member_ids)
