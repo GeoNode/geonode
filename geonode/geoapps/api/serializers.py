@@ -19,7 +19,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
-from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException
+from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException, GeneralGeoAppException
 
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
