@@ -21,6 +21,7 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
+from mock import patch
 from rest_framework.test import APITestCase
 
 from geonode.base.populate_test_data import create_models
@@ -136,6 +137,37 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
+
+    @patch("geonode.maps.api.views.resolve_object")
+    def test_patch_map_raise_exception(self, mocked_obj):
+        """
+        Patch to maps/<pk>/
+        """
+        # Get Layers List (backgrounds)
+        resource = Map.objects.first()
+        mocked_obj.return_value = Map.objects.last()
+
+        url = reverse("maps-detail", kwargs={"pk": resource.pk})
+
+        data = {
+            "title": f"{resource.title}-edited",
+            "abstract": resource.abstract,
+            "data": DUMMY_MAPDATA,
+            "id": resource.id,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.patch(f"{url}?include[]=data", data=data, format="json")
+
+        expected_error = {
+            "success": False,
+            "errors": [
+                "serializer instance and object are different"
+            ],
+            "code": "maps_exception"
+        }
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(expected_error, response.json())
 
     def test_create_map(self):
         """
