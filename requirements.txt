@@ -45,7 +45,7 @@ django-tinymce==3.4.0
 django-grappelli==3.0.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.12
-django-sequences==2.6
+django-sequences==2.7
 oauthlib==3.2.0
 pyopenssl==22.0.0
 
