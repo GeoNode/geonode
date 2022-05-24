@@ -18,10 +18,13 @@
 #########################################################################
 import json
 import logging
+from unittest.mock import MagicMock
 
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
+from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException
+from geonode.geoapps.api.serializers import GeoAppSerializer
 
 from geonode.geoapps.models import GeoApp
 from geonode.base.populate_test_data import create_models
@@ -170,3 +173,57 @@ class GeoAppsApiTests(APITestCase):
         response = self.client.get(
             f"{url}?include[]=data", format='json')
         self.assertEqual(response.status_code, 200)
+
+    def test_extra_create_checks_with_no_owner(self):
+        serializer = GeoAppSerializer()
+        data = {"name": "fakename"}
+        with self.assertRaises(InvalidGeoAppException) as exp:
+            serializer.extra_create_checks(data)
+
+        self.assertEqual(exp.exception.category, "geoapp_api")
+        self.assertEqual(exp.exception.default_code, "geoapp_exception")
+        self.assertEqual(str(exp.exception.detail), "No valid data: 'name' and 'owner' are mandatory fields!")
+
+    def test_extra_create_checks_duplicated(self):
+        serializer = GeoAppSerializer()
+        _geoapp = GeoApp.objects.first()
+        data = {"name": _geoapp.name, "owner": _geoapp.owner}
+        with self.assertRaises(DuplicateGeoAppException) as exp:
+            serializer.extra_create_checks(data)
+
+        self.assertEqual(exp.exception.category, "geoapp_api")
+        self.assertEqual(exp.exception.default_code, "geoapp_exception")
+        self.assertEqual(str(exp.exception.detail), "A GeoApp with the same 'name' already exists!")
+
+    def test_create_with_no_owner(self):
+        serializer = GeoAppSerializer()
+        data = {"name": "fakename"}
+        with self.assertRaises(InvalidGeoAppException) as exp:
+            serializer.create(data)
+
+        self.assertEqual(exp.exception.category, "geoapp_api")
+        self.assertEqual(exp.exception.default_code, "geoapp_exception")
+        self.assertEqual(str(exp.exception.detail), "No valid data: ['name', 'owner', 'resource_type'] are mandatory fields!")
+
+    def test_update_with_no_owner(self):
+        serializer = GeoAppSerializer()
+        data = {"name": "fakename"}
+        _geoapp = MagicMock()
+        _geoapp.resource_type = None
+        with self.assertRaises(InvalidGeoAppException) as exp:
+            serializer.update(_geoapp, data)
+
+        self.assertEqual(exp.exception.category, "geoapp_api")
+        self.assertEqual(exp.exception.default_code, "geoapp_exception")
+        self.assertEqual(str(exp.exception.detail), "No valid data: ['resource_type'] are mandatory fields!")
+
+    def test_create_checks_duplicated(self):
+        serializer = GeoAppSerializer()
+        _geoapp = GeoApp.objects.first()
+        data = {"name": _geoapp.name, "owner": _geoapp.owner, "resource_type": _geoapp.resource_type}
+        with self.assertRaises(DuplicateGeoAppException) as exp:
+            serializer.create(data)
+
+        self.assertEqual(exp.exception.category, "geoapp_api")
+        self.assertEqual(exp.exception.default_code, "geoapp_exception")
+        self.assertEqual(str(exp.exception.detail), "A GeoApp with the same 'name' already exists!")
