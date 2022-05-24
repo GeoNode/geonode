@@ -267,40 +267,45 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertNotIn('add_resource', response.data['user']['perms'])
 
-        # Bobby
-        self.assertTrue(self.client.login(username='bobby', password='bob'))
-        url = reverse('users-detail', kwargs={'pk': 5})
-        # Bobby can access other users details from same group
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
+        try:
+            # Bobby
+            group_user = get_user_model().objects.create(username='group_user')
+            bobby = get_user_model().objects.filter(username='bobby').get()
+            groupx = GroupProfile.objects.create(slug="groupx", title="groupx", access="private")
+            groupx.join(bobby)
+            groupx.join(group_user)
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            url = reverse('users-detail', kwargs={'pk': group_user.id})
+            # Bobby can access other users details from same group
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
 
-        # Bobby can see himself in the list
-        url = reverse('users-list')
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        logger.debug(response.data)
-        self.assertEqual(response.data['total'], 6)
-        self.assertEqual(len(response.data['users']), 6)
+            # Bobby can see himself in the list
+            url = reverse('users-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('"username": "bobby"', json.dumps(response.data['users']))
 
-        # Bobby can access its own details
-        bobby = get_user_model().objects.filter(username='bobby').get()
-        url = reverse('users-detail', kwargs={'pk': bobby.id})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['user']['username'], 'bobby')
-        self.assertIsNotNone(response.data['user']['avatar'])
-        # default contributor group_perm is returned in perms
-        self.assertIn('add_resource', response.data['user']['perms'])
+            # Bobby can access its own details
+            url = reverse('users-detail', kwargs={'pk': bobby.id})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['user']['username'], 'bobby')
+            self.assertIsNotNone(response.data['user']['avatar'])
+            # default contributor group_perm is returned in perms
+            self.assertIn('add_resource', response.data['user']['perms'])
 
-        # Bobby can't access other users perms list
-        user1 = get_user_model().objects.filter(username='user1').get()
-        url = reverse('users-detail', kwargs={'pk': user1.id})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['user']['username'], 'user1')
-        self.assertIsNotNone(response.data['user']['avatar'])
-        # default contributor group_perm is returned in perms
-        self.assertNotIn('perms', response.data['user'])
+            # Bobby can't access other users perms list
+            url = reverse('users-detail', kwargs={'pk': group_user.id})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['user']['username'], 'group_user')
+            self.assertIsNotNone(response.data['user']['avatar'])
+            # default contributor group_perm is returned in perms
+            self.assertNotIn('perms', response.data['user'])
+        finally:
+            group_user.delete()
+            groupx.delete()
 
     def test_register_users(self):
         """
