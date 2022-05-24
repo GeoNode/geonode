@@ -406,9 +406,10 @@ def _consolidate_resource_keywords(
         geonode_resource,
         harvester_id: int
 ) -> typing.List[str]:
+    geonode_keywords = geonode_resource.keyword_list() if geonode_resource else []
     keywords = list(
         resource_descriptor.identification.other_keywords
-    ) + geonode_resource.keyword_list()
+    ) + geonode_keywords
     harvester_keyword = _generate_harvester_keyword(harvester_id)
     keywords.append(harvester_keyword)
     return list(set(keywords))
