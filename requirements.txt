@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==9.1.0
+Pillow==9.1.1
 lxml==4.8.0
 psycopg2==2.9.3
 Django==3.2.13
@@ -45,7 +45,7 @@ django-tinymce==3.4.0
 django-grappelli==3.0.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.12
-django-sequences==2.6
+django-sequences==2.7
 oauthlib==3.2.0
 pyopenssl==22.0.0
 
@@ -106,10 +106,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.12.3
-dropbox==11.30.0
+dropbox==11.31.0
 google-cloud-storage==2.3.0
 google-cloud-core==2.3.0
-boto3==1.23.0
+boto3==1.23.5
 
 # Django Caches
 python-memcached<=1.59
@@ -129,7 +129,7 @@ pylibmc==1.6.1
 sherlock==0.3.2
 
 # required by monitoring
-psutil==5.9.0
+psutil==5.9.1
 django-cors-headers==3.12.0
 user-agents
 django-user-agents
@@ -146,7 +146,7 @@ docker==5.0.3
 invoke==1.7.1
 
 # tests
-coverage==6.3.3
+coverage==6.4
 requests-toolbelt==0.9.1
 flake8==4.0.1
 pytest==7.1.2
