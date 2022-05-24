@@ -18,9 +18,8 @@
 #########################################################################
 import logging
 
-from rest_framework.serializers import ValidationError
-
 from django.contrib.auth import get_user_model
+from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException, GeneralGeoAppException
 
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
@@ -54,15 +53,15 @@ class GeoAppSerializer(ResourceBaseSerializer):
             if _u:
                 validated_data[_key] = _u
             else:
-                raise ValidationError(f"The specified '{_key}' does not exist!")
+                raise InvalidGeoAppException(f"The specified '{_key}' does not exist!")
 
     def extra_create_checks(self, validated_data):
         if 'name' not in validated_data or \
                 'owner' not in validated_data:
-            raise ValidationError("No valid data: 'name' and 'owner' are mandatory fields!")
+            raise InvalidGeoAppException("No valid data: 'name' and 'owner' are mandatory fields!")
 
         if self.Meta.model.objects.filter(name=validated_data['name']).count():
-            raise ValidationError("A GeoApp with the same 'name' already exists!")
+            raise DuplicateGeoAppException("A GeoApp with the same 'name' already exists!")
 
         self.extra_update_checks(validated_data)
 
@@ -84,7 +83,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             if _u:
                 validated_data[_key] = _u
             else:
-                raise ValidationError(f"The specified '{_key}' does not exist!")
+                raise InvalidGeoAppException(f"The specified '{_key}' does not exist!")
 
         return validated_data
 
@@ -108,7 +107,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
             self.Meta.model.objects.filter(pk=_instance.id).update(**validated_data)
             _instance.refresh_from_db()
         except Exception as e:
-            raise ValidationError(e)
+            raise GeneralGeoAppException(e)
 
         # Let's finalize the instance and notify the users
         validated_data['blob'] = _data
@@ -122,10 +121,10 @@ class GeoAppSerializer(ResourceBaseSerializer):
         # Sanity checks
         _mandatory_fields = ['name', 'owner', 'resource_type']
         if not all([_x in validated_data for _x in _mandatory_fields]):
-            raise ValidationError(f"No valid data: {_mandatory_fields} are mandatory fields!")
+            raise InvalidGeoAppException(f"No valid data: {_mandatory_fields} are mandatory fields!")
 
         if self.Meta.model.objects.filter(name=validated_data['name']).count():
-            raise ValidationError("A GeoApp with the same 'name' already exists!")
+            raise DuplicateGeoAppException("A GeoApp with the same 'name' already exists!")
 
         return self._create_and_update(self._sanitize_validated_data(validated_data))
 
@@ -135,6 +134,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
         # Sanity checks
         _mandatory_fields = ['resource_type', ]
         if not all([_x in validated_data for _x in _mandatory_fields]):
-            raise ValidationError(f"No valid data: {_mandatory_fields} are mandatory fields!")
+            raise InvalidGeoAppException(f"No valid data: {_mandatory_fields} are mandatory fields!")
 
         return self._create_and_update(self._sanitize_validated_data(validated_data), instance=instance)
