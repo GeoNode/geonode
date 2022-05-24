@@ -477,7 +477,6 @@ class WmsServiceHandler(base.ServiceHandlerBase,
             layer_resource = layer_resource.resource
         else:
             logger.debug(f"Layer {layer_meta.id} is already present. Skipping...")
-        layer_resource.refresh()
         return layer_resource
 
     def _offers_geonode_projection(self):
