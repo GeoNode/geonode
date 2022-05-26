@@ -129,10 +129,11 @@ class UserViewSet(DynamicModelViewSet):
         """
         Filters and sorts users.
         """
-        queryset = get_user_model().objects.all()
-
         if self.request and self.request.user and not self.request.user.is_superuser:
             queryset = get_available_users(self.request.user)
+        else:
+            queryset = get_user_model().objects.all()
+
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")

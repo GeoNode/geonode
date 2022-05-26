@@ -145,10 +145,13 @@ def forgot_username(request):
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
-        qs = get_user_model().objects.all().exclude(Q(username='AnonymousUser') | Q(is_active=False))
 
         if self.request and self.request.user and not self.request.user.is_superuser:
             qs = get_available_users(self.request.user)
+        else:
+            qs = get_user_model().objects.all().exclude(
+                Q(username='AnonymousUser') | Q(is_active=False)
+                )
 
         if self.q:
             qs = qs.filter(Q(username__icontains=self.q)

@@ -109,16 +109,27 @@ def format_address(street=None, zipcode=None, city=None, area=None, country=None
 
 
 def get_available_users(user):
+    """Filters users a given user can see.
+    eg all users from public groups and all users in private groups as a given user.
+
+    Args:
+        user (settings.AUTH_USER_MODEL): User object
+
+    Returns:
+        Queryset: Queryset of users a given user can see
+    """
     if user.is_superuser:
-        return get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
+        return get_user_model().objects.all()
+
     # Only return user that are members of any group profile the current user is member of
     member_ids = list(GroupMember.objects.filter(
         group__in=GroupProfile.objects.filter(
             Q(access='public') | Q(group__in=user.groups.all()))
         ).select_related('user').values_list('user__id', flat=True))
-    if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).count():
+    if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():
+        # Retrieve all members in Registered member's group
         rm_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
-        users_ids = list(rm_group.user_set.all().values_list('id', flat=True))
+        users_ids = list(rm_group.user_set.values_list('id', flat=True))
         member_ids.extend(users_ids)
 
     return get_user_model().objects.filter(id__in=member_ids)
