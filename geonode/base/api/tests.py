@@ -250,8 +250,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 10)
-        self.assertEqual(len(response.data['users']), 10)
+        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(len(response.data['users']), 9)
         # response has link to the response
         self.assertTrue('link' in response.data['users'][0].keys())
 
@@ -263,9 +263,7 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data['user']['avatar'])
 
         # anonymous users are not in contributors group
-        url = reverse('users-detail', kwargs={'pk': -1})
-        response = self.client.get(url, format='json')
-        self.assertNotIn('add_resource', response.data['user']['perms'])
+        self.assertNotIn('add_resource', get_user_model().objects.get(id=-1).perms)
 
         try:
             # Bobby
