@@ -68,6 +68,7 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
+from geonode.people.utils import get_available_users
 from geonode.security.permissions import (
     PermSpec,
     PermSpecCompact,
@@ -117,11 +118,10 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsSelfOrAdminOrReadOnly, ]
+    permission_classes = [IsAuthenticated, IsSelfOrAdminOrReadOnly, ]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
-    queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -129,7 +129,11 @@ class UserViewSet(DynamicModelViewSet):
         """
         Filters and sorts users.
         """
-        queryset = get_user_model().objects.all()
+        if self.request and self.request.user:
+            queryset = get_available_users(self.request.user)
+        else:
+            queryset = get_user_model().objects.all()
+
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")

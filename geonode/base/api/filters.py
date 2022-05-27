@@ -52,12 +52,12 @@ class FavoriteFilter(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, _):
         if strtobool(request.query_params.get("favorite", 'False')):
-            ctype = list({r.resource_type for r in queryset})
+            c_types = list({r.polymorphic_ctype.model for r in queryset})
             return queryset.filter(
                 pk__in=Subquery(
                     Favorite.objects.values_list("object_id", flat=True)
                     .filter(user=request.user)
-                    .filter(content_type__model__in=ctype)
+                    .filter(content_type__model__in=c_types)
                 )
             )
         return queryset
