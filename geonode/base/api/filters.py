@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
 from geonode.favorite.models import Favorite
 import logging
 from rest_framework.filters import SearchFilter, BaseFilterBackend
@@ -68,7 +69,7 @@ class FacetVisibleResourceFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, _):
-        if request.GET.get("with_resources", None):
+        if ast.literal_eval(request.GET.get("with_resources", 'False')):
             return queryset.filter(
                 id__in=[
                     _facet.id
