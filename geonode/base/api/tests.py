@@ -1670,6 +1670,17 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['total'], 8)
 
+    def test_regions_with_resources(self):
+        """
+        Ensure we can access the list of regions.
+        """
+        self.assertTrue(self.client.login(username='admin', password='admin'))
+        url = reverse('regions-list')
+        response = self.client.get(f"{url}?with_resources=True", format='json')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['total'], 0)
+
     def test_keywords_list(self):
         """
         Ensure we can access the list of keywords.
