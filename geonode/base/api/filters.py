@@ -60,3 +60,21 @@ class FavoriteFilter(BaseFilterBackend):
                 )
             )
         return queryset
+
+
+class FacetVisibleResourceFilter(BaseFilterBackend):
+    """
+    Return Only elements that have a resource assigned.
+    """
+
+    def filter_queryset(self, request, queryset, _):
+        if request.GET.get("with_resources", None):
+            return queryset.filter(
+                id__in=[
+                    _facet.id
+                    for _facet in queryset
+                    if _facet.resourcebase_set.exists()
+                ]
+            )
+        else:
+            return queryset
