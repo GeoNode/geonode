@@ -211,13 +211,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         # Get user's profile as anonymous
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        # Returns limitted info about a user
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        self.assertIn('Profile of bobby', content)
-        self.assertNotIn(bobby.voice, content)
+        self.assertEqual(response.status_code, 302)
 
         # Get user's profile by another authenticated user
         self.assertTrue(self.client.login(username='norman', password='norman'))

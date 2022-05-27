@@ -36,7 +36,7 @@ from avatar.templatetags.avatar_tags import avatar_url
 from geonode import geoserver
 from geonode.api.paginator import CrossSiteXHRPaginator
 from geonode.api.authorization import GeoNodeStyleAuthorization, ApiLockdownAuthorization, \
-    GroupAuthorization, GroupProfileAuthorization
+    GroupAuthorization, GroupProfileAuthorization, GeoNodePeopleAuthorization
 from guardian.shortcuts import get_objects_for_user
 from tastypie.bundle import Bundle
 
@@ -46,6 +46,7 @@ from geonode.base.models import Region
 from geonode.base.models import HierarchicalKeyword
 from geonode.base.models import ThesaurusKeywordLabel
 from geonode.layers.models import Dataset, Style
+from geonode.people.utils import get_available_users
 from geonode.maps.models import Map
 from geonode.geoapps.models import GeoApp
 from geonode.documents.models import Document
@@ -496,6 +497,9 @@ class ProfileResource(TypeFilteredResource):
             semi_filtered = semi_filtered.filter(
                 profile__first_name__icontains=name)
 
+        if request.user and not group and not request.user.is_superuser:
+            semi_filtered = semi_filtered & get_available_users(request.user)
+
         return semi_filtered
 
     def dehydrate_email(self, bundle):
@@ -590,7 +594,7 @@ class ProfileResource(TypeFilteredResource):
             'username': ALL,
         }
         serializer = CountJSONSerializer()
-        authorization = ApiLockdownAuthorization()
+        authorization = GeoNodePeopleAuthorization()
 
 
 class OwnersResource(TypeFilteredResource):

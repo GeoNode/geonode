@@ -244,20 +244,15 @@ class BaseApiTests(APITestCase):
         url = reverse('users-list')
         # Anonymous
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        logger.debug(response.data)
-        self.assertEqual(response.data['total'], 10)
-        self.assertEqual(len(response.data['users']), 10)
-
-        # Auhtorized
+        self.assertEqual(response.status_code, 403)
+        # Authorized
         self.assertTrue(self.client.login(username='admin', password='admin'))
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 10)
-        self.assertEqual(len(response.data['users']), 10)
+        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(len(response.data['users']), 9)
         # response has link to the response
         self.assertTrue('link' in response.data['users'][0].keys())
 
@@ -269,46 +264,47 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(response.data['user']['avatar'])
 
         # anonymous users are not in contributors group
-        url = reverse('users-detail', kwargs={'pk': -1})
-        response = self.client.get(url, format='json')
-        self.assertNotIn('add_resource', response.data['user']['perms'])
+        self.assertNotIn('add_resource', get_user_model().objects.get(id=-1).perms)
 
-        # Bobby
-        self.assertTrue(self.client.login(username='bobby', password='bob'))
-        # Bobby can access other users' details
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
+        try:
+            # Bobby
+            group_user = get_user_model().objects.create(username='group_user')
+            bobby = get_user_model().objects.filter(username='bobby').get()
+            groupx = GroupProfile.objects.create(slug="groupx", title="groupx", access="private")
+            groupx.join(bobby)
+            groupx.join(group_user)
+            self.assertTrue(self.client.login(username='bobby', password='bob'))
+            url = reverse('users-detail', kwargs={'pk': group_user.id})
+            # Bobby can access other users details from same group
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
 
-        # Bobby can see himself in the list
-        url = reverse('users-list')
-        self.assertEqual(len(response.data), 1)
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        logger.debug(response.data)
-        self.assertEqual(response.data['total'], 10)
-        self.assertEqual(len(response.data['users']), 10)
+            # Bobby can see himself in the list
+            url = reverse('users-list')
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('"username": "bobby"', json.dumps(response.data['users']))
 
-        # Bobby can access its own details
-        bobby = get_user_model().objects.filter(username='bobby').get()
-        url = reverse('users-detail', kwargs={'pk': bobby.id})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        logger.debug(response.data)
-        self.assertEqual(response.data['user']['username'], 'bobby')
-        self.assertIsNotNone(response.data['user']['avatar'])
-        # default contributor group_perm is returned in perms
-        self.assertIn('add_resource', response.data['user']['perms'])
+            # Bobby can access its own details
+            url = reverse('users-detail', kwargs={'pk': bobby.id})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['user']['username'], 'bobby')
+            self.assertIsNotNone(response.data['user']['avatar'])
+            # default contributor group_perm is returned in perms
+            self.assertIn('add_resource', response.data['user']['perms'])
 
-        # Bobby can't access other users perms list
-        norman = get_user_model().objects.filter(username='norman').get()
-        url = reverse('users-detail', kwargs={'pk': norman.id})
-        response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, 200)
-        logger.debug(response.data)
-        self.assertEqual(response.data['user']['username'], 'norman')
-        self.assertIsNotNone(response.data['user']['avatar'])
-        # default contributor group_perm is returned in perms
-        self.assertNotIn('perms', response.data['user'])
+            # Bobby can't access other users perms list
+            url = reverse('users-detail', kwargs={'pk': group_user.id})
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data['user']['username'], 'group_user')
+            self.assertIsNotNone(response.data['user']['avatar'])
+            # default contributor group_perm is returned in perms
+            self.assertNotIn('perms', response.data['user'])
+        finally:
+            group_user.delete()
+            groupx.delete()
 
     def test_register_users(self):
         """
@@ -376,9 +372,9 @@ class BaseApiTests(APITestCase):
                 email="user_test_delete@geonode.org",
                 password='user')
             url = reverse('users-detail', kwargs={'pk': user.pk})
-            # Anonymous can read
+            # Anonymous can't read
             response = self.client.get(url, format='json')
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 403)
             # Anonymous can't delete user
             response = self.client.delete(url, format='json')
             self.assertEqual(response.status_code, 403)

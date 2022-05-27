@@ -164,6 +164,18 @@ class ApiLockdownAuthorization(DjangoAuthorization):
             return object_list
 
 
+class GeoNodePeopleAuthorization(DjangoAuthorization):
+    """API authorization that allows only authenticated users to view list of users
+    """
+
+    def read_list(self, object_list, bundle):
+        user = bundle.request.user
+        if not user.is_authenticated:
+            # return empty list
+            return []
+        return object_list
+
+
 class GroupAuthorization(ApiLockdownAuthorization):
 
     def read_list(self, object_list, bundle):
