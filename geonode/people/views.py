@@ -146,12 +146,10 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
 
-        if self.request and self.request.user and not self.request.user.is_superuser:
+        if self.request and self.request.user:
             qs = get_available_users(self.request.user)
         else:
-            qs = get_user_model().objects.all().exclude(
-                Q(username='AnonymousUser') | Q(is_active=False)
-                )
+            qs = get_user_model().objects.all()
 
         if self.q:
             qs = qs.filter(Q(username__icontains=self.q)

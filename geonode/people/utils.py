@@ -119,7 +119,7 @@ def get_available_users(user):
         Queryset: Queryset of users a given user can see
     """
     if user.is_superuser:
-        return get_user_model().objects.all()
+        return get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
 
     # Only return user that are members of any group profile the current user is member of
     member_ids = list(GroupMember.objects.filter(
