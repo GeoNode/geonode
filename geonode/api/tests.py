@@ -288,6 +288,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         filter_url = profiles_list_url
 
         with self.settings(API_LOCKDOWN=False):
+            # anonymous
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
+            # admin
+            self.api_client.client.login(username='admin', password='admin')
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 9)
@@ -309,7 +315,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username='bobby', password='bob')
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 6)
         # Returns limitted info about other users
         bobby = get_user_model().objects.get(username='bobby')
         profiles = self.deserialize(resp)['objects']
@@ -458,10 +464,15 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
-            self.assertEqual(len(self.deserialize(resp)['objects']), 9)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
             filter_url = f"{self.profiles_list_url}?name__icontains=norm"
+            # Anonymous
+            resp = self.api_client.get(filter_url)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(len(self.deserialize(resp)['objects']), 0)
 
+            self.api_client.client.login(username='admin', password='admin')
             resp = self.api_client.get(filter_url)
             self.assertValidJSONResponse(resp)
             self.assertEqual(len(self.deserialize(resp)['objects']), 1)

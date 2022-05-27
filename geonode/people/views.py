@@ -27,13 +27,14 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
+from django.views import View
 
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
+from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
-from django.views import View
 
 from dal import autocomplete
 
@@ -88,6 +89,7 @@ def profile_edit(request, username=None):
             'You are not allowed to edit other users profile')
 
 
+@login_required
 def profile_detail(request, username):
     profile = get_object_or_404(get_user_model(), Q(is_active=True), username=username)
     # combined queryset from each model content type
@@ -143,7 +145,11 @@ def forgot_username(request):
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
-        qs = get_user_model().objects.all().exclude(Q(username='AnonymousUser') | Q(is_active=False))
+
+        if self.request and self.request.user:
+            qs = get_available_users(self.request.user)
+        else:
+            qs = get_user_model().objects.all()
 
         if self.q:
             qs = qs.filter(Q(username__icontains=self.q)
