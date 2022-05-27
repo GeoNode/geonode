@@ -91,6 +91,7 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     @override_settings(USE_GEOSERVER=False)
     def test_profiles(self):
         '''Test that user profile pages render.'''
+        self.client.login(username='admin', password='admin')
         response = self.client.get(reverse('profile_detail', args=['admin']))
         self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('profile_detail', args=['norman']))
