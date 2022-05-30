@@ -66,7 +66,7 @@ from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
+from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
 from geonode.security.permissions import (
@@ -218,7 +218,7 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin,
     """
     permission_classes = [AllowAny, ]
     filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, FacetVisibleResourceFilter
     ]
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
@@ -270,7 +270,7 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveMode
     """
     permission_classes = [AllowAny, ]
     filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, FacetVisibleResourceFilter
     ]
     queryset = TopicCategory.objects.all()
     serializer_class = TopicCategorySerializer
