@@ -162,4 +162,4 @@ factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
 selenium-requests==1.4.1
-webdriver_manager==3.6.3
+webdriver_manager==3.7.0
