@@ -428,11 +428,12 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
             name=saved_dataset.name))
         _old_styles.append(gs_catalog.get_style(
             name=f"{saved_dataset.workspace}_{saved_dataset.name}"))
-        _old_styles.append(gs_catalog.get_style(
-            name=layer.default_style.name))
-        _old_styles.append(gs_catalog.get_style(
-            name=layer.default_style.name,
-            workspace=layer.default_style.workspace))
+        if layer.default_style and layer.default_style.name:
+            _old_styles.append(gs_catalog.get_style(
+                name=layer.default_style.name))
+            _old_styles.append(gs_catalog.get_style(
+                name=layer.default_style.name,
+                workspace=layer.default_style.workspace))
         layer.default_style = style
         gs_catalog.save(layer)
         for _s in _old_styles:
@@ -1143,9 +1144,11 @@ def set_styles(layer, gs_catalog):
             logger.exception("No GeoServer Dataset found!")
 
     if gs_dataset:
-        default_style = gs_catalog.get_style(
-            name=gs_dataset.default_style.name,
-            workspace=gs_dataset.default_style.workspace)
+        default_style = None
+        if gs_dataset.default_style and gs_dataset.default_style.name:
+            default_style = gs_catalog.get_style(
+                name=gs_dataset.default_style.name,
+                workspace=gs_dataset.default_style.workspace)
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
             layer.default_style = save_style(default_style, layer)
