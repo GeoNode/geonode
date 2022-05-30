@@ -93,7 +93,7 @@ geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.4
 geonode-dialogos==3.0.1
-geoserver-restconfig==2.0.5
+geoserver-restconfig==2.0.6
 gn-gsimporter==2.0.3
 gisdata==0.5.4
 
