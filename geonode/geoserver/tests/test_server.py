@@ -39,7 +39,7 @@ from guardian.shortcuts import assign_perm
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.views import check_geoserver_access, style_change_check
 
-from geonode import geoserver
+from geonode import geoserver, GeoNodeException
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
@@ -1076,16 +1076,58 @@ class LayerTests(GeoNodeBaseTestSupport):
         width = 512
 
         # Default Style (expect exception since we are offline)
-        style = get_sld_for(gs_catalog, instance)
-        if isinstance(style, str):
+        style = None
+        with self.assertRaises(GeoNodeException):
+            style = get_sld_for(gs_catalog, instance)
+        if style and isinstance(style, str):
             style = gs_catalog.get_style(instance.name, workspace=instance.workspace)
-        self.assertIsNotNone(style)
-        self.assertFalse(isinstance(style, str))
+            self.assertIsNotNone(style)
+            self.assertFalse(isinstance(style, str))
+        style_name = 'point'
+        style_body = """
+<?xml version="1.0" encoding="UTF-8"?>
+<StyledLayerDescriptor version="1.0.0"
+ xsi:schemaLocation="http://www.opengis.net/sld StyledLayerDescriptor.xsd"
+ xmlns="http://www.opengis.net/sld"
+ xmlns:ogc="http://www.opengis.net/ogc"
+ xmlns:xlink="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!-- a Named Layer is the basic building block of an SLD document -->
+  <NamedLayer>
+    <Name>default_point</Name>
+    <UserStyle>
+    <!-- Styles can have names, titles and abstracts -->
+      <Title>Default Point</Title>
+      <Abstract>A sample style that draws a point</Abstract>
+      <!-- FeatureTypeStyles describe how to render different features -->
+      <!-- A FeatureTypeStyle for rendering points -->
+      <FeatureTypeStyle>
+        <Rule>
+          <Name>rule1</Name>
+          <Title>Red Square</Title>
+          <Abstract>A 6 pixel square with a red fill and no stroke</Abstract>
+            <PointSymbolizer>
+              <Graphic>
+                <Mark>
+                  <WellKnownName>square</WellKnownName>
+                  <Fill>
+                    <CssParameter name="fill">#FF0000</CssParameter>
+                  </Fill>
+                </Mark>
+              <Size>6</Size>
+            </Graphic>
+          </PointSymbolizer>
+        </Rule>
+      </FeatureTypeStyle>
+    </UserStyle>
+  </NamedLayer>
+</StyledLayerDescriptor>
+"""
         instance.default_style, _ = Style.objects.get_or_create(
-            name=style.name,
+            name=style_name,
             defaults=dict(
-                sld_title=style.sld_title,
-                sld_body=style.sld_body
+                sld_title=style_name,
+                sld_body=style_body
             )
         )
         self.assertIsNotNone(instance.default_style)
