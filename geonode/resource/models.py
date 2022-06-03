@@ -49,3 +49,6 @@ class ExecutionRequest(models.Model):
 
     geonode_resource = models.ForeignKey(
         "base.ResourceBase", null=True, on_delete=models.SET_NULL)
+
+    step = models.CharField(max_length=250, null=True, default=None)
+    log = models.TextField(null=True, default=None)
