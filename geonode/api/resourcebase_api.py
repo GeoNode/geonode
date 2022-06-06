@@ -96,7 +96,8 @@ class CommonMetaApi:
         'purpose': ALL,
         'uuid': ALL_WITH_RELATIONS,
         'abstract': ALL,
-        'metadata': ALL_WITH_RELATIONS
+        'metadata': ALL_WITH_RELATIONS,
+        "resource_type": ALL
     }
     ordering = ['date', 'title', 'popular_count']
     max_limit = None
