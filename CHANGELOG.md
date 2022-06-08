@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.3.2.post1](https://github.com/GeoNode/geonode/tree/3.3.2) (2022-06-08)
+
+<li> Wed Jun 8 14:48:30 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/064e69ef5cfe1421854eae4753d5c502dd7287b5 target=blank>[Fixes #9492] Default Style uploading and editing throw errors (#9493)</a></li>
+
 ## [3.3.2](https://github.com/GeoNode/geonode/tree/3.3.2) (2022-06-06)
 
 <li> Mon Jun 6 12:18:33 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/376208e13b5da9c0c455e274d811b5ec89add7a3 target=blank>[Fixes #9475] PRINT_BASE_URL on JAVA_OPTS should be pointing to localhost:8080 on default env (#9485) (#9486)</a></li>

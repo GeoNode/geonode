@@ -19,7 +19,7 @@
 
 import os
 
-__version__ = (3, 3, 2, 'final', 0)
+__version__ = (3, 3, 2, 'post', 1)
 
 
 default_app_config = "geonode.apps.AppConfig"
