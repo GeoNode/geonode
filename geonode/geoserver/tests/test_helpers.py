@@ -18,6 +18,7 @@
 #########################################################################
 import os
 import re
+from typing import final
 import gisdata
 
 from urllib.parse import urljoin
@@ -271,6 +272,32 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
                     self.assertNotEqual(_layer.bbox, original_gs_bbox)
             except GeoNodeException:
                 pass
+        finally:
+            # Clean up and completely delete the layers
+            layer.delete()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_sld_for_geoserver(self):
+        admin = get_user_model().objects.get(username="admin")
+        # upload a shapefile
+        shp_file = os.path.join(
+            gisdata.VECTOR_DATA,
+            'san_andres_y_providencia_poi.shp')
+        layer = file_upload(
+            shp_file,
+            name="san_andres_y_providencia_poi",
+            user=admin,
+            overwrite=True,
+        )
+        try:
+            self.assertIsNotNone(layer.default_style)
+            try:
+                from geonode.geoserver.helpers import gs_catalog
+                gs_layer = gs_catalog.get_layer(layer.name)
+                if gs_layer:
+                    self.assertIsNotNone(gs_layer.default_style)
+            except Exception as e:
+                logger.exception(e)
         finally:
             # Clean up and completely delete the layers
             layer.delete()

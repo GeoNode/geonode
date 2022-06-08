@@ -45,6 +45,7 @@ from decimal import Decimal
 from threading import local
 from slugify import slugify
 from contextlib import closing
+from requests.exceptions import RetryError
 from collections import namedtuple, defaultdict
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
@@ -1605,7 +1606,7 @@ class HttpClient:
                     timeout=_req_tout,
                     stream=stream,
                     verify=verify)
-            except (requests.exceptions.RequestException, ValueError) as e:
+            except (requests.exceptions.RequestException, ValueError, RetryError) as e:
                 msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
                 logger.exception(Exception(msg))
                 response = None
