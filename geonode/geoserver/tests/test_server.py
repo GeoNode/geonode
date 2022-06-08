@@ -39,7 +39,7 @@ from guardian.shortcuts import assign_perm
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.geoserver.views import check_geoserver_access, style_change_check
 
-from geonode import geoserver, GeoNodeException
+from geonode import geoserver
 from geonode.base.models import Configuration
 from geonode.decorators import on_ogc_backend
 
