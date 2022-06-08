@@ -18,7 +18,6 @@
 #########################################################################
 import os
 import re
-from typing import final
 import gisdata
 
 from urllib.parse import urljoin
