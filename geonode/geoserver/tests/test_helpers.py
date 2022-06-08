@@ -289,7 +289,6 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
             overwrite=True,
         )
         try:
-            self.assertIsNotNone(layer.default_style)
             try:
                 from geonode.geoserver.helpers import gs_catalog
                 gs_layer = gs_catalog.get_layer(layer.name)
