@@ -1076,9 +1076,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         width = 512
 
         # Default Style (expect exception since we are offline)
-        style = None
-        with self.assertRaises(GeoNodeException):
-            style = get_sld_for(gs_catalog, instance)
+        style = get_sld_for(gs_catalog, instance)
         if style and isinstance(style, str):
             style = gs_catalog.get_style(instance.name, workspace=instance.workspace)
             self.assertIsNotNone(style)
