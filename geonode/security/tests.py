@@ -141,6 +141,16 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": []}
 
+    def test_get_users_with_perms(self):
+        """
+        Make sure the 'get_users_with_perms' method actually returns non empty perms
+        """
+        # Test with a Map object
+        a_map = Map.objects.first()
+        perms = get_users_with_perms(a_map)
+        self.assertIsNotNone(perms)
+        self.assertTrue(len(perms["users"]) > 0, perms["users"])
+
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_login_middleware(self):
         """
