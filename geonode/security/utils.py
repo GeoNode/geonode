@@ -131,20 +131,23 @@ def get_users_with_perms(obj):
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
     try:
-        if hasattr(obj.get_real_instance(), 'storeType'):
-            # include explicit permissions appliable to "storeType == 'dataStore'"
-            if obj.get_real_instance().storeType == 'dataStore':
-                PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
-                for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-                    permissions[perm.id] = perm.codename
-            elif obj.get_real_instance().storeType == 'coverageStore':
-                PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
-                for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
-                    permissions[perm.id] = perm.codename
-            else:
-                PERMISSIONS_TO_FETCH += LAYER_EDIT_DATA_PERMISSIONS
-                for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
-                    permissions[perm.id] = perm.codename
+        # include explicit permissions appliable to "storeType == 'dataStore'"
+        try:
+            _resource = obj.get_real_instance()
+        except Exception:
+            _resource = obj
+        if hasattr(_resource, 'storeType') and _resource.storeType == 'dataStore':
+            PERMISSIONS_TO_FETCH += LAYER_ADMIN_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+                permissions[perm.id] = perm.codename
+        elif hasattr(_resource, 'storeType') and _resource.storeType == 'coverageStore':
+            PERMISSIONS_TO_FETCH += LAYER_EDIT_STYLE_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id=ctype.id):
+                permissions[perm.id] = perm.codename
+        else:
+            PERMISSIONS_TO_FETCH += LAYER_EDIT_DATA_PERMISSIONS
+            for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH):
+                permissions[perm.id] = perm.codename
     except Exception as e:
         logger.debug(e)
 
