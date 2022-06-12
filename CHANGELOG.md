@@ -1,6 +1,11 @@
 # Change Log
 
-## [3.3.2.post1](https://github.com/GeoNode/geonode/tree/3.3.2) (2022-06-08)
+## [3.3.2.post2](https://github.com/GeoNode/geonode/tree/3.3.2.post2) (2022-06-12)
+
+<li> Fri Jun 10 17:58:47 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/af1e1114d444edb40d1b92da1d33322675a6e31c target=blank>[Fixes #9500] OWS Url wrong for INDEXED Remote Services (#9501)</a></li>
+<li> Fri Jun 10 17:58:33 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/08453bb39c1cf78175a6780d9cb2447814a40b9a target=blank>[Fixes #9498] Documents, Maps and GeoApps permissions are not persisted on GeoNode (#9499)</a></li>
+
+## [3.3.2.post1](https://github.com/GeoNode/geonode/tree/3.3.2.post1) (2022-06-08)
 
 <li> Wed Jun 8 14:48:30 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/064e69ef5cfe1421854eae4753d5c502dd7287b5 target=blank>[Fixes #9492] Default Style uploading and editing throw errors (#9493)</a></li>
 
