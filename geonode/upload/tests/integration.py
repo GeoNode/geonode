@@ -527,6 +527,15 @@ class TestUpload(UploaderBase):
             abspath,
             self.complete_upload,
             check_name='san_andres_y_providencia_poi')
+        layer = Dataset.objects.filter(name__contains='san_andres_y_providencia_poi').first()
+        self.assertIsNotNone(layer.default_style)
+        try:
+            from geonode.geoserver.helpers import gs_catalog
+            gs_layer = gs_catalog.get_layer(layer.name)
+            if gs_layer:
+                self.assertIsNotNone(gs_layer.default_style)
+        except Exception as e:
+            logger.exception(e)
 
     def test_geonode_same_UUID_error(self):
         """

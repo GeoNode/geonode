@@ -424,7 +424,7 @@ def check_geoserver_access(request,
             try:
                 path = f'/{strip_prefix(path, f"/{ws}:")}'
             except Exception:
-                pass
+                ws = None
 
         if proxy_path == f'/gs/{settings.DEFAULT_WORKSPACE}' and layername:
             import posixpath
