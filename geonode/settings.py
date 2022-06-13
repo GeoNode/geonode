@@ -2144,3 +2144,18 @@ EXTRA_METADATA_SCHEMA = {**{
     "document": os.getenv('DOCUMENT_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA),
     "geoapp": os.getenv('GEOAPP_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA)
 }, **CUSTOM_METADATA_SCHEMA}
+
+CELERY_TASK_QUEUES += (
+    Queue('importer.import_orchestrator', GEONODE_EXCHANGE, routing_key='importer.import_orchestrator', priority=0),
+    Queue('importer.import_resource', GEONODE_EXCHANGE, routing_key='importer.import_resource', priority=0),
+    Queue('importer.publish_resource', GEONODE_EXCHANGE, routing_key='importer.publish_resource', priority=0),
+    Queue('importer.create_gn_resource', GEONODE_EXCHANGE, routing_key='importer.create_gn_resource', priority=0),
+)
+
+INSTALLED_APPS += ('importer', 'dynamic_models',)
+
+DYNAMIC_MODELS = {
+   "USE_APP_LABEL": "geonode_importer"
+}
+
+DATABASE_ROUTERS = ["importer.db_router.DatastoreRouter"]
