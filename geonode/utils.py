@@ -44,6 +44,7 @@ from decimal import Decimal
 from threading import local
 from slugify import slugify
 from contextlib import closing
+from requests.exceptions import RetryError
 from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, sin, tan, floor
@@ -1196,7 +1197,7 @@ class HttpClient:
                     timeout=_req_tout,
                     stream=stream,
                     verify=verify)
-            except (requests.exceptions.RequestException, ValueError) as e:
+            except (requests.exceptions.RequestException, ValueError, RetryError) as e:
                 msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
                 logger.exception(Exception(msg))
                 response = None
