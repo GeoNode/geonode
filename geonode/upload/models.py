@@ -232,8 +232,9 @@ class Upload(models.Model):
             if not session or session.state != enumerations.STATE_COMPLETE:
                 session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
-            logger.warning(f"Import session was not found for upload with ID: {self.pk}")
-            pass
+            if not session and self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
+                logger.warning(f"Import session was not found for upload with ID: {self.pk}")
+                pass
         if session and self.state != enumerations.STATE_INVALID:
             return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
         else:
