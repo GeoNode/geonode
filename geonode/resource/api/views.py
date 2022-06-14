@@ -104,7 +104,9 @@ def resource_service_execution_status(request, execution_id: str):
                         'finished': _request.finished,
                         'last_updated': _request.last_updated,
                         'input_params': _request.input_params,
-                        'output_params': _request.output_params
+                        'output_params': _request.output_params,
+                        'step': _request.step,
+                        'log': _request.log
                     },
                     status=status.HTTP_200_OK)
         return Response(status=status.HTTP_403_FORBIDDEN)
