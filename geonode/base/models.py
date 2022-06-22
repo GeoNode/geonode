@@ -479,9 +479,12 @@ class _HierarchicalTagManager(_TaggableManager):
             _new_keyword = str_tags - set(t.name for t in existing)
             for new_tag in list(_new_keyword):
                 new_tag = escape(new_tag)
-                new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
-                tag_objs.add(new_tag_obj)
-                new_ids.add(new_tag_obj.id)
+                try:
+                    new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                    tag_objs.add(new_tag_obj)
+                    new_ids.add(new_tag_obj.id)
+                except Exception as e:
+                    logger.exception(e)
 
         signals.m2m_changed.send(
             sender=self.through,
