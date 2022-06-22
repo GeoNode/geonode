@@ -46,8 +46,8 @@ logger = logging.getLogger(__name__)
 
 
 def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group=None,
-                          service=None, request=None, geo_limit=None):
-    highest_priority = get_highest_priority()
+                          service=None, request=None, geo_limit=None, priority=None):
+    highest_priority = priority if priority is not None else get_highest_priority()
     root_el = etree.Element("Rule")
     username_el = etree.SubElement(root_el, "userName")
     if user is not None:
@@ -86,7 +86,7 @@ def _get_geofence_payload(layer, layer_name, workspace, access, user=None, group
 def _update_geofence_rule(layer, layer_name, workspace,
                           service, request=None,
                           user=None, group=None,
-                          geo_limit=None, allow=True):
+                          geo_limit=None, allow=True, priority=None):
     payload = _get_geofence_payload(
         layer=layer,
         layer_name=layer_name,
@@ -96,7 +96,8 @@ def _update_geofence_rule(layer, layer_name, workspace,
         group=group,
         service=service,
         request=request,
-        geo_limit=geo_limit
+        geo_limit=geo_limit,
+        priority=priority
     )
     logger.debug(f"request data: {payload}")
     response = requests.post(
