@@ -20,7 +20,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
     The upload will be blocked afterwards by the Upload Form
     """
 
-    elegible_url_names = ("data_upload", "uploads-upload", "document_upload",)
+    elegible_url_names = settings.SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES
 
     def handle_raw_input(self, input_data, META, content_length, boundary, encoding=None):
         """
