@@ -751,7 +751,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload and verify if it passed only by the form size validation
         fname = os.path.join(GOOD_DATA, 'raster', 'relief_san_andres.tif')
 
-        _get_parallel_uploads_count_path = "geonode.upload.forms.LayerUploadForm._get_parallel_uploads_count"
+        _get_parallel_uploads_count_path = "geonode.upload.forms.UploadLimitValidator._get_parallel_uploads_count"
         with mock.patch(_get_parallel_uploads_count_path, new_callable=mock.PropertyMock) as mocked_get_parallel_uploads_count:
             mocked_get_parallel_uploads_count.return_value = lambda: 200
 
