@@ -2144,3 +2144,11 @@ EXTRA_METADATA_SCHEMA = {**{
     "document": os.getenv('DOCUMENT_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA),
     "geoapp": os.getenv('GEOAPP_EXTRA_METADATA_SCHEMA', DEFAULT_EXTRA_METADATA_SCHEMA)
 }, **CUSTOM_METADATA_SCHEMA}
+
+
+'''
+Define the URLs patterns used by the SizeRestrictedFileUploadHandler
+to evaluate if the file is greater than the limit size defined
+'''
+
+SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = ("data_upload", "uploads-upload", "document_upload",)
