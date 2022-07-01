@@ -759,9 +759,6 @@ def final_step(upload_session, user, charset="UTF-8", layer_id=None):
                 layer_uuid = None
 
                 if saved_layer:
-                    _vals['name'] = saved_layer.name
-                    _log(f'Django record for [{saved_layer.name}] already exists, updating with vals: {_vals}')
-                    Layer.objects.filter(id=saved_layer.id).update(**_vals)
                     saved_layer.refresh_from_db()
                     return saved_layer
                 else:
