@@ -56,7 +56,7 @@ pycsw==2.6.1
 SQLAlchemy==1.4.39 # required by PyCSW
 Shapely==1.8.2
 mercantile==1.2.1
-geoip2==4.5.0
+geoip2==4.6.0
 numpy==1.23.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
@@ -107,9 +107,9 @@ django-bootstrap3-datetimepicker-2==2.8.2
 # storage manager dependencies
 django-storages==1.12.3
 dropbox==11.32.0
-google-cloud-storage==2.3.0
+google-cloud-storage==2.4.0
 google-cloud-core==2.3.1
-boto3==1.24.2
+boto3==1.24.17
 
 # Django Caches
 python-memcached<=1.59
