@@ -1,5 +1,39 @@
 # Change Log
 
+## [4.0.0rc1](https://github.com/GeoNode/geonode/tree/4.0rc1) (2022-07-01)
+
+### Breaking Changes
+
+ - Based on MapStore client [4.0.2](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/4.0.2)
+ - MapStore client is no more compatible with 3.x train
+ - GeoNode 4.0.0rc1 architecture is slightly different from the previous versions; please refer to:
+   - [GNIP 89: Architecture Design - Resource and Storage Manager Modules](https://github.com/GeoNode/geonode/issues/7664)
+
+### Features
+
+ - Python upgrade 3.8/3.9/3.10
+ - Django upgrade 3.2.13
+ - GeoServer upgrade 2.19.6
+ - GDAL 3.3.2
+
+ - Highlights GeoNode 4.0.0:
+   - [Features](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Afeature)
+   - [Enhancements](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aenhancement)
+   - [Security Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Asecurity)
+   - [Severe Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Ablocker)
+   - [Regressions](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aregression)
+   - [Bug Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Amajor)
+   - [Minor Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aminor)
+   - [Performance](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Aperformance)
+   - [Translations](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Atranslations)
+   - [Translations](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Atranslations)
+   - [Dependencies](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.0+label%3Adependencies)
+   - [Dependencies](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.0+label%3Adependencies)
+
+### Full Changelog
+
+[https://github.com/GeoNode/geonode/compare/3.3.1...4.0.0rc1](https://github.com/GeoNode/geonode/compare/3.3.1...4.0.0rc1)
+
 ## [4.0.0rc0](https://github.com/GeoNode/geonode/tree/4.0rc0) (2022-04-20)
 
 ### Breaking Changes
