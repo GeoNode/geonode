@@ -1583,6 +1583,58 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     # Extensions path to use in importing custom extensions into geonode
     MAPSTORE_EXTENSIONS_FOLDER_PATH = '/static/mapstore/extensions/'
 
+    # Supported Dataset file types for uploading Datasets. This setting is being from from the client
+    MAPSTORE_SUPPORTED_DATASET_FILE_TYPES = [
+        {
+            "id": "shp",
+            "label": "ESRI Shapefile",
+            "format": "vector",
+            "ext": ["shp"],
+            "requires": ["shp", "prj", "dbf", "shx"],
+            "optional": ["xml", "sld"]
+        },
+        {
+            "id": "tiff",
+            "label": "GeoTIFF",
+            "format": "raster",
+            "ext": ["tiff", "tif"],
+            "mimeType": ["image/tiff"],
+            "optional": ["xml", "sld"]
+        },
+        {
+            "id": "csv",
+            "label": "Comma Separated Value (CSV)",
+            "format": "vector",
+            "ext": ["csv"],
+            "mimeType": ["text/csv"],
+            "optional": ["xml", "sld"]
+        },
+        {
+            "id": "zip",
+            "label": "Zip Archive",
+            "format": "archive",
+            "ext": ["zip"],
+            "mimeType": ["application/zip"],
+            "optional": ["xml", "sld"]
+        },
+        {
+            "id": "xml",
+            "label": "XML Metadata File",
+            "format": "metadata",
+            "ext": ["xml"],
+            "mimeType": ["application/json"],
+            "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "sld"]
+        },
+        {
+            "id": "sld",
+            "label": "Styled Layer Descriptor (SLD)",
+            "format": "metadata",
+            "ext": ["sld"],
+            "mimeType": ["application/json"],
+            "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "xml"]
+        }
+    ]
+
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
