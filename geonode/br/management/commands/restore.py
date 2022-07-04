@@ -325,7 +325,7 @@ class Command(BaseCommand):
                 # Prepare Target DB
                 try:
                     call_command('makemigrations', interactive=False)
-                    call_command('migrate', interactive=False, load_initial_data=False)
+                    call_command('migrate', interactive=False)
 
                     db_name = settings.DATABASES['default']['NAME']
                     db_user = settings.DATABASES['default']['USER']
