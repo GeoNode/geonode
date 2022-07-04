@@ -91,7 +91,7 @@ geonode-oauth-toolkit==2.2.2
 geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
-gn-arcrest==10.5.4
+gn-arcrest==10.5.5
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.7
 gn-gsimporter==2.0.4
