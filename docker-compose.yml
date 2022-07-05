@@ -101,6 +101,8 @@ services:
       - data:/data
       - tmp:/tmp
     restart: on-failure
+    depends_on:
+      - data-dir-conf
 
   data-dir-conf:
     image: geonode/geoserver_data:2.20.5
