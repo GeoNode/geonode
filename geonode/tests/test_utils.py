@@ -37,7 +37,7 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, fixup_shp_columnnames, get_supported_file_types, unzip_file
+from geonode.utils import copy_tree, fixup_shp_columnnames, get_supported_datasets_file_types, unzip_file
 from geonode import settings
 
 
@@ -248,7 +248,7 @@ class TestSupportedTypes(TestCase):
         ])
     def test_should_append_additional_type_if_config_is_provided(self):
         prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
-        supported_types = get_supported_file_types()
+        supported_types = get_supported_datasets_file_types()
         supported_keys = [t.get('id') for t in supported_types]
         self.assertIn('dummy_type', supported_keys)
         self.assertEqual(len(supported_keys), prev_count + 1)
@@ -265,7 +265,7 @@ class TestSupportedTypes(TestCase):
         ])
     def test_should_replace_the_type_id_if_already_exists(self):
         prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
-        supported_types = get_supported_file_types()
+        supported_types = get_supported_datasets_file_types()
         supported_keys = [t.get('id') for t in supported_types]
         self.assertIn('shp', supported_keys)
         self.assertEqual(len(supported_keys), prev_count)
