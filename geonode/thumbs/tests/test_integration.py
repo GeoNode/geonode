@@ -45,7 +45,6 @@ from geonode.utils import http_client, DisableDjangoSignals
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.thumbs.thumbnails import create_gs_thumbnail_geonode, create_thumbnail
 from geonode.layers.models import Dataset
-from geonode.thumbs.utils import MISSING_THUMB
 from geonode.thumbs.background import (
     OSMTileBackground,
     WikiMediaTileBackground,
@@ -60,7 +59,6 @@ from geonode.base.populate_test_data import (
 
 logger = logging.getLogger(__name__)
 
-missing_thumbnail_url = static(MISSING_THUMB)
 
 LOCAL_TIMEOUT = 300
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
@@ -535,7 +533,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             cls.map_composition.refresh_from_db()
 
     def _fetch_thumb_and_compare(self, url, expected_image):
-        if url == missing_thumbnail_url:
+        if not url:
             logger.error(f'It was not possible to fetch the remote dataset WMS GetMap! thumb_url: {url}')
             return
         _, img = http_client.request(url)

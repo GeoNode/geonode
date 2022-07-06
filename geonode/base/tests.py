@@ -90,11 +90,11 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def test_initial_behavior(self):
         """
-        Tests that an empty resource has a missing image as default thumbnail.
+        Tests that an empty resource has a missing image as null.
         """
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
-        self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
+        self.assertIsNone(missing)
 
     def test_empty_image(self):
         """

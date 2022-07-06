@@ -1705,7 +1705,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Return a thumbnail url.
 
            It could be a local one if it exists, a remote one (WMS GetImage) for example
-           or a 'Missing Thumbnail' one.
         """
         _thumbnail_url = self.thumbnail_url
         local_thumbnails = self.link_set.filter(name='Thumbnail')
