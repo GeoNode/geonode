@@ -4,7 +4,7 @@ jobs:
   build:
 
     docker:
-      - image: cimg/current-22.04
+      - image: cimg/base:current-22.04
 
     parameters:
       load_docker_cache:
