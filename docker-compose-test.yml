@@ -31,9 +31,9 @@ services:
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
-      interval: 1m30s
+      interval: 60s
       timeout: 10s
-      retries: 3
+      retries: 10
     environment:
       - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
