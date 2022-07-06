@@ -23,7 +23,6 @@ import logging
 from django.db.models import Q
 from django.http import HttpResponse
 from django.conf import settings
-from django.templatetags.static import static
 from tastypie.authentication import MultiAuthentication, SessionAuthentication
 from tastypie.bundle import Bundle
 
