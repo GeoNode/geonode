@@ -102,6 +102,7 @@ services:
       - tmp:/tmp
     restart: on-failure
     depends_on:
+      - db
       - data-dir-conf
 
   data-dir-conf:
