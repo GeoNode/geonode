@@ -19,6 +19,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
+          version: 20.10.12
 
       - when:
           condition: <<parameters.load_docker_cache>>
