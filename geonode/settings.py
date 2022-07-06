@@ -1678,6 +1678,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     # Extensions path to use in importing custom extensions into geonode
     MAPSTORE_EXTENSIONS_FOLDER_PATH = '/static/mapstore/extensions/'
 
+    # Expanded state setting fot mapstore timeeline plugin
+    MAPSTORE_TIMELINE_EXPANDED = False
+
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
