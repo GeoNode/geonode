@@ -1878,7 +1878,7 @@ def get_geonode_app_types():
     return list(set(GeoApp.objects.values_list('resource_type', flat=True)))
 
 
-def get_supported_file_types():
+def get_supported_datasets_file_types():
     from django.conf import settings as gn_settings
     '''
     Return a list of all supported file type in geonode
