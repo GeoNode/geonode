@@ -105,17 +105,20 @@ services:
       - tmp:/tmp
     restart: on-failure
     depends_on:
-      - data-dir-conf
       db:
+        condition: service_healthy
+      data-dir-conf:
         condition: service_healthy
 
   data-dir-conf:
     image: geonode/geoserver_data:2.20.5
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
-    command: /bin/true
+    entrypoint: sleep infinity
     volumes:
       - geoserver-data-dir:/geoserver_data/data
     restart: on-failure
+    healthcheck:
+      test: "ls -A '/geoserver_data/data' | wc -l"
 
   # PostGIS database.
   db:
