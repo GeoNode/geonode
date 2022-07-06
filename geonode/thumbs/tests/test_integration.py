@@ -33,8 +33,6 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
-from django.templatetags.static import static
-
 
 from geonode import geoserver
 from geonode.maps.models import Map, MapLayer

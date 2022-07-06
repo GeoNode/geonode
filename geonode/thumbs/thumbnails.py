@@ -23,7 +23,6 @@ from PIL import Image, UnidentifiedImageError
 from typing import List, Union, Optional, Tuple
 
 from django.conf import settings
-from django.templatetags.static import static
 from django.utils.module_loading import import_string
 
 from geonode.documents.models import Document

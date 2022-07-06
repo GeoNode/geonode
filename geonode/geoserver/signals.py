@@ -23,7 +23,6 @@ from deprecated import deprecated
 from geoserver.layer import Layer as GsLayer
 
 from django.db.models import Q
-from django.templatetags.static import static
 from django.dispatch import Signal
 
 # use different name to avoid module clash

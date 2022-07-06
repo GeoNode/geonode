@@ -42,7 +42,6 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType

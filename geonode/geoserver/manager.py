@@ -28,7 +28,6 @@ from gsimporter.api import Session
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
