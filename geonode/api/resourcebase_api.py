@@ -52,7 +52,6 @@ from geonode.base.models import HierarchicalKeyword
 from geonode.base.bbox_utils import filter_bbox
 from geonode.groups.models import GroupProfile
 from geonode.utils import check_ogc_backend
-from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.utils import get_visible_resources
 from .authentication import OAuthAuthentication
 from .authorization import GeoNodeAuthorization, GeonodeApiKeyAuthentication
@@ -575,9 +574,6 @@ class CommonModelApi(ModelResource):
             formatted_obj = model_to_dict(obj, fields=self.VALUES)
             if 'site_url' not in formatted_obj or len(formatted_obj['site_url']) == 0:
                 formatted_obj['site_url'] = settings.SITEURL
-
-            if formatted_obj['thumbnail_url'] and len(formatted_obj['thumbnail_url']) == 0:
-                formatted_obj['thumbnail_url'] = static(MISSING_THUMB)
 
             formatted_obj['owner__username'] = obj.owner.username
             formatted_obj['owner_name'] = obj.owner.get_full_name() or obj.owner.username

@@ -94,7 +94,7 @@ def create_thumbnail(
 
     # handle custom, uploaded thumbnails, which may have different extensions from the default thumbnail
     thumbnail_exists = False
-    if instance.thumbnail_url and instance.thumbnail_url != static(utils.MISSING_THUMB):
+    if instance.thumbnail_url:
         thumbnail_exists = utils.thumb_exists(instance.thumbnail_url.rsplit('/')[-1])
 
     if (thumbnail_exists or utils.thumb_exists(default_thumbnail_name)) and not overwrite:

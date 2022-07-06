@@ -35,7 +35,6 @@ from geonode.geoserver.helpers import (
 from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.layers.models import Dataset
 from geonode.services.enumerations import CASCADED
-from geonode.thumbs.utils import MISSING_THUMB
 
 from . import BACKEND_PACKAGE
 from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
@@ -117,8 +116,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
-        if not instance.thumbnail_url or \
-                instance.thumbnail_url == static(MISSING_THUMB):
+        if not instance.thumbnail_url:
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
             geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
 
@@ -135,7 +133,6 @@ def geoserver_set_thumbnail(instance, **kwargs):
                 'thumbnail_url' in kwargs['update_fields']:
             _recreate_thumbnail = True
         if not instance.thumbnail_url or \
-                instance.thumbnail_url == static(MISSING_THUMB) or \
                 is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
