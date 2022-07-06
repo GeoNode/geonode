@@ -4,7 +4,7 @@ jobs:
   build:
 
     docker:
-      - image: cimg/base:edge-22.04
+      - image: circleci/buildpack-deps:focal
 
     parameters:
       load_docker_cache:
