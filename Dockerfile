@@ -42,7 +42,8 @@ RUN pip install pip --upgrade \
 
 # Activate "memcached"
 RUN apt-get install -y memcached
-RUN pip install pylibmc \
+RUN pip install uwsgi \
+    && pip install pylibmc \
     && pip install sherlock
 
 # add bower and grunt command
