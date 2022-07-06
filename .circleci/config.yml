@@ -6,8 +6,6 @@ jobs:
     docker:
       - image: cimg/base:edge-22.04
 
-    # parallelism: 16
-
     parameters:
       load_docker_cache:
         type: boolean
@@ -20,7 +18,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          docker_layer_caching: true
+          docker_layer_caching: false
 
       - when:
           condition: <<parameters.load_docker_cache>>
