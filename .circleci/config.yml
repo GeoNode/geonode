@@ -7,10 +7,6 @@ jobs:
       - image: cimg/base:current-22.04
 
     parameters:
-      load_docker_cache:
-        type: boolean
-      save_docker_cache:
-        type: boolean
       test_suite:
         type: string
         default: ""
@@ -18,39 +14,12 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          docker_layer_caching: true
           version: 20.10.12
-
-      - when:
-          condition: <<parameters.load_docker_cache>>
-          steps:
-            - restore_cache:
-                keys:
-                  - v2-docker-images-{{ .Branch }}
-            - run:
-                name: Load Docker layers cache
-                command: |
-                  docker load -i ~/docker-layers-cache.tar || true
 
       - run:
           name: Build the stack
           command: docker-compose -f docker-compose-test.yml build --no-cache
           working_directory: ./
-
-      - when:
-          condition: <<parameters.save_docker_cache>>
-          steps:
-            - run:
-                name: Save Docker layers cache
-                command: |
-                  rm -f ~/docker-layers-cache.tar
-                  docker save -o ~/docker-layers-cache.tar $(docker images -a --format "{{.ID}}")
-                when: always
-            - save_cache:
-                key: v2-docker-images-{{ .Branch }}-{{ epoch }}
-                paths:
-                  - ~/docker-layers-cache.tar
-                when: always
 
       - run:
           name: Start the stack

@@ -31,6 +31,7 @@ services:
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
+      start_period: 60s
       interval: 60s
       timeout: 10s
       retries: 10
@@ -91,8 +92,9 @@ services:
     image: geonode/geoserver:2.20.5
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
-      test: curl --fail -s http://127.0.0.1:8080/geoserver/index.html || exit 1
-      interval: 30s
+      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/rest/workspaces/geonode.html"
+      start_period: 60s
+      interval: 60s
       timeout: 10s
       retries: 10
     env_file:
