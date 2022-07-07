@@ -1,154 +1,139 @@
 # native dependencies
-Pillow==8.2.0
-lxml==4.6.3
-defusedxml==0.7.1
-psycopg2==2.8.6
-Django==2.2.16
+Pillow==7.1.2
+lxml==4.5.0
+defusedxml==0.6.0
+psycopg2==2.8.5
+Django==2.2.12
 
 # Other
-amqp==5.0.6
+amqp==2.5.2
 pyyaml>=4.2b1
-beautifulsoup4==4.9.3
-httplib2<0.19.2
-hyperlink==21.0.0
-idna>=2.5,<2.11
-urllib3==1.26.4
+beautifulsoup4==4.9.0
+httplib2<0.17.4
+hyperlink==19.0.0
+idna>=2.5,<2.9
+urllib3==1.25.9
 Paver==1.3.4
-python-slugify==4.0.1
-decorator==5.0.5
-celery==5.0.5
-kombu==5.0.2
-vine==5.0.0
-boto3==1.17.45
-tqdm==4.59.0
-Deprecated==1.2.12
+python-slugify==4.0.0
+decorator==4.4.2
+celery==4.4.2
+kombu==4.6.8
+boto3==1.13.8
+six==1.12.0
+tqdm==4.46.0
+Deprecated==1.2.9
 wrapt==1.12.1
-jsonfield==3.1.0
-jsonschema==3.2.0
-pyrsistent==0.17.3
 
 # Django Apps
-django-allauth==0.44.0
+django-allauth==0.41.0
 django-appconf==1.0.4
-django-filter==2.4.0
+django-filter==2.2.0
 django-imagekit==4.0.2
-django-jsonfield==1.4.1
+django-jsonfield==1.4.0
 django-jsonfield-compat==0.4.4
-django-taggit==1.3.0
-django-markdownify==0.9.0
-django-mptt==0.12.0
-django-modeltranslation>=0.11,<0.17.0
-django-treebeard==4.5.1
-django-guardian<2.3.1
-django-downloadview==2.1.1
-django-polymorphic==3.0.0
+django-taggit==1.2.0
+django-mptt==0.11.0
+django-modeltranslation>=0.11,<0.16.0
+django-treebeard==4.3.1
+django-guardian<=1.4.9
+django-downloadview==1.10
+django-polymorphic==2.1.2
 django-tastypie<0.15.0
-django-tinymce==3.3.0
-django-grappelli==2.14.3
-django-uuid-upload-path==1.0.0
 oauthlib==3.1.0
-pyopenssl==20.0.1
+pyopenssl==19.1.0
 
 # geopython dependencies
-pyproj==3.0.1
-OWSLib==0.23.0
-pycsw==2.6.0
-SQLAlchemy==1.3.23 # required by PyCSW
-Shapely==1.7.1
-mercantile==1.1.6
-geoip2==4.1.0
-numpy==1.19.*
+pyproj==2.6.1.post1
+OWSLib==0.19.1
+pycsw==2.4.2
+SQLAlchemy==1.3.16 # required by PyCSW
+Shapely
+mercantile==1.1.4
+geoip2==3.0.0
+numpy==1.18.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
 dj-database-url==0.5.0
-dj-pagination==2.5.0
-django-floppyforms<1.10.0
+dj-pagination==2.4.0
+pinax-notifications==5.0.3
+pinax-ratings==3.0.3
+django-celery-monitor<=1.1.2
+django-celery-beat==2.0.0
+django-floppyforms<1.9.0
 django-forms-bootstrap<=3.1.0
+geonode-django-activity-stream==0.9.0
 django-autocomplete-light==3.5.1
+django-leaflet==0.26.0
 django-invitations<1.9.4
 django-recaptcha==2.0.6
-
-# REST
-djangorestframework==3.11.2
-djangorestframework-gis==0.17
-djangorestframework-guardian==0.3.0
-drf-extensions==0.7.0
-drf-writable-nested==0.6.2
-drf-spectacular==0.15.0
-dynamic-rest==2.0.0
-Markdown==3.3.4
-
-pinax-notifications==6.0.0
-pinax-ratings==4.0.0
+geonode-oauth-toolkit==1.1.5.1
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client==2.1.1
--e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
-geonode-avatar==5.0.7
-geonode-oauth-toolkit==2.1.1
-geonode-user-messages==2.0.2
+django-mapstore-adapter==2.0.3.3
+django-geonode-mapstore-client==2.0.5
+django-geonode-client==1.0.9
+geonode-user-messages==2.0.1
+geonode-avatar==5.0.3
 geonode-announcements==2.0.2
-geonode-django-activity-stream==0.9.0
-gn-arcrest==10.5.4
+gn-arcrest==10.5
 geonode-dialogos==3.0.1
-geoserver-restconfig==2.0.4.8
-gn-gsimporter==2.0.1
+geoserver-restconfig==2.0.2
+gn-gsimporter==2.0.0
 gisdata==0.5.4
 
 # haystack/elasticsearch
-django-haystack==3.0
+django-haystack==2.8.1
 elasticsearch>=2.0.0,<8.0.0
 
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.2
 
 # AWS S3 dependencies
-django-storages==1.11.1
+django-storages==1.9.1
 
 # Django Caches
 python-memcached<=1.59
 
 # Contribs
 xmltodict<0.12.1
-inflection==0.3.1
+inflection<0.4.1
 jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.1
-pytz==2021.1
-requests==2.25.1
-timeout-decorator==0.5.0
+pytz==2020.1
+requests==2.23.0
+timeout-decorator==0.4.1
+python_resize_image==1.1.19
 
 # required by monitoring
-psutil==5.8.0
-django-cors-headers==3.7.0
+psutil==5.7.0
+django-cors-headers==3.2.1
 user-agents
 xmljson
-django-ipware<3.1
+django-ipware<2.2
 # no version here, use latest one with fresh data
 pycountry
 
 # production
-uWSGI==2.0.19.1
-gunicorn==20.1.0
-ipython==7.22.0
-docker==4.4.4
-invoke==1.5.0
+#uWSGI==2.0.18
+#gunicorn==20.0.4
+#ipython==7.14.0
+#docker==4.2.0
+#invoke==1.4.1
 
 # tests
-coverage==5.5
+coverage==5.1
 parse-type==0.5.2
 requests-toolbelt==0.9.1
-flake8==3.9.0
-pytest==6.2.3
-pytest-bdd==4.0.2
-splinter==0.14.0
-pytest-splinter==3.3.1
-pytest-django==4.1.0
-setuptools==54.2.0
-pip==21.0.1
-Twisted==21.2.0
-pixelmatch==0.2.3
-factory-boy==3.2.0
-flaky==3.7.0
+flake8==3.7.9
+pytest==5.4.2
+pytest-bdd==3.3.0
+splinter==0.13.0
+pytest-splinter==2.0.1
+pytest-django==3.9.0
+setuptools==46.2.0
+pip==20.1
+twisted
+factory-boy==2.12.0
