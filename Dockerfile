@@ -77,6 +77,17 @@ RUN pip install --upgrade  -e .
 # Cleanup apt update lists
 RUN rm -rf /var/lib/apt/lists/*
 
+
+# LDAP ZALF EXTENDS
+WORKDIR /
+RUN apt install libldap2-dev libsasl2-dev
+RUN git clone https://github.com/GeoNode/geonode-contribs.git
+WORKDIR /geonode-contribs/ldap
+RUN pip install .
+
+WORKDIR /usr/src/geonode
+RUN rm -rf /geonode-contribs/*
+
 # Export ports
 EXPOSE 8000
 

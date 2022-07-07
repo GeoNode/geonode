@@ -37,7 +37,10 @@ from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
 
-from . import serializer
+# add these import lines to the top of your geonode settings file
+from django_auth_ldap import config as ldap_config
+from geonode_ldap.config import GeonodeNestedGroupOfNamesType
+import ldap
 
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
@@ -164,8 +167,8 @@ geonode_data:geonode_data@localhost:5432/geonode_data')
         _geo_db['OPTIONS'].update({
             'connect_timeout': GEONODE_DB_CONN_TOUT,
         })
-
     DATABASES[os.getenv('DEFAULT_BACKEND_DATASTORE')] = _geo_db
+
 
 # If set to 'True' it will refresh/regenrate all resource links everytime a 'migrate' will be performed
 UPDATE_RESOURCE_LINKS_AT_MIGRATE = ast.literal_eval(os.getenv('UPDATE_RESOURCE_LINKS_AT_MIGRATE', 'False'))
@@ -801,6 +804,50 @@ if 'announcements' in INSTALLED_APPS:
     AUTHENTICATION_BACKENDS += (
         'announcements.auth_backends.AnnouncementPermissionsBackend',
     )
+
+LDAP_ENABLED = strtobool(os.getenv("LDAP_ENABLED", 'False'))
+if LDAP_ENABLED:
+  # add both standard ModelBackend auth and geonode.contrib.ldap auth
+  AUTHENTICATION_BACKENDS += (
+      'geonode_ldap.backend.GeonodeLdapBackend',
+  )
+
+# django_auth_ldap configuration
+AUTH_LDAP_SERVER_URI = os.getenv("LDAP_SERVER_URL")
+AUTH_LDAP_BIND_DN = os.getenv("LDAP_BIND_DN")
+AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD")
+AUTH_LDAP_USER_SEARCH = ldap_config.LDAPSearch(
+    os.getenv("LDAP_USER_SEARCH_DN"),
+    ldap.SCOPE_SUBTREE,
+    os.getenv("LDAP_USER_SEARCH_FILTERSTR")
+)
+# should LDAP groups be used to spawn groups in GeoNode?
+AUTH_LDAP_MIRROR_GROUPS = strtobool(os.getenv("LDAP_MIRROR_GROUPS", 'True'))
+AUTH_LDAP_GROUP_SEARCH = ldap_config.LDAPSearch(
+    os.getenv("LDAP_GROUP_SEARCH_DN"),
+    ldap.SCOPE_SUBTREE,
+    os.getenv("LDAP_GROUP_SEARCH_FILTERSTR")
+)
+
+AUTH_LDAP_GROUP_TYPE = GeonodeNestedGroupOfNamesType()
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mailPrimaryAddress"
+}
+AUTH_LDAP_FIND_GROUP_PERMS = True
+AUTH_LDAP_MIRROR_GROUPS_EXCEPT = [
+    "test_group"
+]
+
+# these are not needed by django_auth_ldap - we use them to find and match
+# GroupProfiles and GroupCategories
+GEONODE_LDAP_GROUP_NAME_ATTRIBUTE = os.getenv("LDAP_GROUP_NAME_ATTRIBUTE", default="cn")
+GEONODE_LDAP_GROUP_PROFILE_FILTERSTR = os.getenv("LDAP_GROUP_SEARCH_FILTERSTR", default='(ou=research group)')
+GEONODE_LDAP_GROUP_PROFILE_MEMBER_ATTR = os.getenv("LDAP_GROUP_PROFILE_MEMBER_ATTR", default='member')
+
+
+
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
@@ -1583,8 +1630,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     # Extensions path to use in importing custom extensions into geonode
     MAPSTORE_EXTENSIONS_FOLDER_PATH = '/static/mapstore/extensions/'
 
-    # Supported Dataset file types for uploading Datasets. This setting is being from from the client
-
 # -- END Client Hooksets Setup
 
 SERVICE_UPDATE_INTERVAL = 0
@@ -2152,9 +2197,7 @@ EXTRA_METADATA_SCHEMA = {**{
 Define the URLs patterns used by the SizeRestrictedFileUploadHandler
 to evaluate if the file is greater than the limit size defined
 '''
-
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = ("data_upload", "uploads-upload", "document_upload",)
-
 SUPPORTED_DATASET_FILE_TYPES = [
         {
             "id": "shp",
