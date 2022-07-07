@@ -35,30 +35,29 @@
 
     <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
 
-    <link rel="shortcut icon" href="{% static 'geonode/img/favicon.ico' %}" />
-    <link href="{% static "lib/css/ol.css" %}" rel="stylesheet" />
-    <script src="{% static "lib/js/ol.js" %}"></script>
-    <link rel="preload" as="style" href="{% static "geonode/css/font-awesome.min.css" %}" />
-    <link rel="preload" as="font" href="{% static "geonode/fonts/lato_regular.ttf" %}" crossorigin="" />
-    <link rel="preload" as="font" href="{% static "geonode/fonts/lato_bold.ttf" %}" crossorigin="" />
-    <link rel="preload" as="font" href="{% static "geonode/fonts/lato_light.ttf" %}" crossorigin="" />
+    <link rel="shortcut icon" href="{% static 'geonode/img/rsi logo.png' %}" />
+    <link href='{% static "lib/css/ol.css" %}' rel="stylesheet" />
+    <script src='{% static "lib/js/ol.js" %}'></script>
 
     {% block head %}
 
       {% if DEBUG_STATIC %}
-          <link href="{% static "lib/css/jquery.dataTables.css" %}" rel="stylesheet" />
-          <link href="{% static "lib/css/select2.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.theme.min.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/jquery-ui.structure.min.css" %}" rel="stylesheet"/>
-          <link href="{% static "lib/css/bootstrap-treeview.css" %}" rel="stylesheet"/>
+          <link href='{% static "lib/css/jquery.dataTables.css" %}' rel="stylesheet" />
+          <link href='{% static "lib/css/select2.css" %}' rel="stylesheet"/>
+          <link href='{% static "lib/css/bootstrap.css" %}' rel="stylesheet"/>
+          <link href='{% static "lib/css/bootstrap-treeview.css" %}' rel="stylesheet"/>
+          <link href='{% static "lib/css/jquery-ui.theme.css" %}' rel="stylesheet"/>
+          <link href='{% static "lib/css/jquery-ui.structure.css" %}' rel="stylesheet"/>
+          <link href='{% static "lib/css/bootstrap-treeview.css" %}' rel="stylesheet"/>
       {% else %}
-      <link href="{% static "lib/css/assets.min.css" %}" rel="stylesheet"/>
+      <link href='{% static "lib/css/assets.min.css" %}' rel="stylesheet"/>
       {% endif %}
-      <link href="{% static "geonode/css/base.css" %}" rel="stylesheet"/>
-      <link rel='stylesheet' id='cookie-law-info-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}" type='text/css' media='all' />
-      <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}" type='text/css' media='all' />
+
+      <link href='{% static "geonode/css/base.css" %}' rel="stylesheet" />
+
+      <link rel='stylesheet' id='cookie-law-info-css'  href='{% static "geonode/css/cookie-law-info/cookie-law-info-public.css" %}' type='text/css' media='all' />
+      <link rel='stylesheet' id='cookie-law-info-gdpr-css'  href="='{% static "geonode/css/cookie-law-info/cookie-law-info-gdpr.css" %}' type='text/css' media='all' />
+
       <style type="text/css">[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}</style>
       <style type="text/css">
         /* Additional styles by custom themes */
@@ -237,15 +236,15 @@
         }
       </style>
     <![endif]-->
-    <link rel="search" type="application/opensearchdescription+xml" href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}catalogue/opensearch" title="{% trans "GeoNode Search" %}"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="{{SITEURL}}catalogue/opensearch" title='{% trans "GeoNode Search" %}'/>
 
     <script>
         var siteUrl = '{{ SITEURL }}'.replace(/\/?$/, '/');
-        var staticUrl = '{% static '' %}';
+        var staticUrl = '{% static " " %}';
     </script>
 
     <!-- Autocomplete script for input boxes -->
-    <script src="{% static "geonode/js/search/autocomplete.js" %}"></script>
+    <script src='{% static "geonode/js/search/autocomplete.js" %}'></script>
 
     <script type="text/javascript">
       function thumbnailFeedbacks(data, status) {
@@ -261,28 +260,19 @@
       }
     </script>
 
-    <!-- RTL styles -->
-    {% get_current_language_bidi as LANGUAGE_BIDI %}
-    {% if LANGUAGE_BIDI %}
-        <link rel="stylesheet" href="//cdn.rawgit.com/morteza/bootstrap-rtl/v3.3.4/dist/css/bootstrap-rtl.min.css">
-        {% if DEBUG_STATIC %}
-          <link rel="stylesheet" type="text/css" href="{% static "geonode/css/geonode-rtl.css" %}">
-        {% else %}
-          <link rel="stylesheet" type="text/css" href="{% static "geonode/css/geonode-rtl.min.css" %}">
-        {% endif %}
-    {% endif %}
   </head>
 
   <body class="{% block body_class %}{% endblock %}">
     <!-- Navbar -->
     {% block header %}
   <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="nav-container">
-        <div class="navbar-header">
+    <div class="container" >
+      <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
           <i class="fa fa-navicon fa-lg"></i>
         </button>
-        <a class="navbar-brand" href="{% url "home" %}">GeoNode</a>
+        <a class="navbar-brand"
+       href="{% url "home" %}">GeoNode</a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav toolbar">
@@ -312,29 +302,17 @@
             </li>
           <li id="nav_maps">
               {% if user.is_authenticated %}
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
-                <ul class="dropdown-menu">
-                  <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
-                  {% if not READ_ONLY_MODE %}
-                    <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
-                  {% endif %}
-                </ul>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "Maps" %}<i class="fa fa-angle-down fa-lg"></i></a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore Maps" %}</a></li>
+                {% if not READ_ONLY_MODE %}
+                  <li> <a href="{% url "new_map" %}">{% trans "Create Map" %}</a></li>
+                {% endif %}
+              </ul>
               {% else %}
-                <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
+              <a href="{% url "maps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Maps" %}</a>
               {% endif %}
           </li>
-          {% if GEONODE_APPS_ENABLE and GEONODE_APPS_NAV_MENU_ENABLE %}
-          <li id="nav_maps">
-            {% if user.is_authenticated %}
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}<i class="fa fa-angle-down fa-lg"></i></a>
-              <ul class="dropdown-menu">
-                  <li><a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% trans "Explore" %} {% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a></li>
-                </ul>
-            {% else %}
-              <a href="{% url "apps_browse" %}?limit={{ CLIENT_RESULTS_LIMIT }}">{% blocktrans %}{{GEONODE_APPS_NAME}}{% endblocktrans %}</a>
-            {% endif %}
-          </li>
-          {% endif %}
           <li>
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{% trans "About" %}<i class="fa fa-angle-down fa-lg"></i></a>
               <ul class="dropdown-menu">
@@ -342,15 +320,15 @@
                 <li><a href="{% url "group_list" %}">{% trans "Groups" %}</a></li>
                 <li><a href="{% url "group_category_list" %}">{% trans "Group Categories" %}</a></li>
                 {% if perms.announcements.can_manage %}
-                  <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
+                <li><a href="{% url "announcements_list" %}">{% trans "Announcements" %}</a></li>
                 {% endif %}
                 {% if user.is_authenticated and not READ_ONLY_MODE %}
-                  <li role="separator" class="divider"></li>
-                  <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
                 {% endif %}
                 {% if user.is_superuser and not READ_ONLY_MODE %}
-                  <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}admin/people/profile/add/">{% trans "Add User" %}</a></li>
-                  <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
+                <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
+                <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
                 {% endif %}
               </ul>
           </li>
@@ -365,8 +343,10 @@
         <ul class="nav navbar-nav navbar-right">
 
             {% block my_extra_right_tab %}
+
                {% render_nav_menu 'TOPBAR_MENU' %}
-            {% endblock my_extra_right_tab %}
+
+           {% endblock my_extra_right_tab %}
 
             <li>
               <div class="search">
@@ -375,13 +355,13 @@
                   <div id="search-container" class="autocomplete-input">
                     {% if HAYSTACK_SEARCH %}
                     <input autocomplete="off" id="search_input" type="text" placeholder="{% trans 'Search' %}" name="q">
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
+                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="Search" >
+                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="Search" >
                     <input type="hidden" name="f_method" id="filtering_type" value="or" >
                     {% else %}
-                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="{% trans 'Search' %}" >
-                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="{% trans 'Search' %}" >
+                    <input autocomplete="off" type="text" name="title__icontains" id="search_input" placeholder="Search" >
+                    <input type="hidden" name="abstract__icontains" id="search_abstract_input" placeholder="Search" >
+                    <input type="hidden" name="purpose__icontains" id="search_purpose_input" placeholder="Search" >
                     <input type="hidden" name="f_method" id="filtering_type" value="or" >
                     {% endif %}
                   </div>
@@ -425,7 +405,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="{% url "help" %}">{% trans "Help" %}</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}account/logout/">{% trans "Log out" %}</a></li>
+                <li><a href="{{SITEURL}}account/logout/">{% trans "Log out" %}</a></li>
                 </ul>
               </li>
           {% else %}
@@ -505,7 +485,7 @@
             {% endif %}
           </ul>
         </div>
-        <div class="col-md-2">
+    <div class="col-md-2">
           <ul class="list-unstyled">
             <li>{% trans "About" %}</li>
             <li><a href="{% url "profile_browse" %}">{% trans "People" %}</a></li>
@@ -517,7 +497,7 @@
             <li><a href="{% url "geonode.invitations:geonode-send-invite" %}">{% trans "Invite Users" %}</a></li>
             {% endif %}
             {% if user.is_superuser and not READ_ONLY_MODE %}
-            <li><a href="{% if SITEURL|default:""|slice:"-1:" == "/" %}{{SITEURL}}{% else %}{{SITEURL}}/{% endif %}admin/people/profile/add/">{% trans "Add User" %}</a></li>
+            <li><a href="{{SITEURL}}admin/people/profile/add/">{% trans "Add User" %}</a></li>
             <li><a href="{% url "group_create" %}">{% trans "Create Group" %}</a></li>
             {% endif %}
           </ul>
@@ -540,10 +520,10 @@
               {% if custom_theme.contact_facsimile %}<li style="text-align: left;">{% trans "Fax" %}: {{ custom_theme.contact_facsimile }}</li>{% endif %}
               {% if custom_theme.contact_email %}<li style="text-align: left;">{% trans "E-mail" %}: {{ custom_theme.contact_email }}</li>{% endif %}
           </ul>
-          {% endif %}
+          {% endif %} 
           {% endblock contactus %}
           <ul class="list-unstyled">
-            <li>{% trans "Powered by" %} <a href="http://geonode.org">{% trans "GeoNode" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li>
+            <li>{% trans "Powered by" %} <a href="https://www.rsisoftech.com/">{% trans "RSI-SOFTECH" %}</a>{% if user.is_staff %} <em>{% trans "version" %} {{ VERSION }}</em>{% endif %}</li>
             <li><a href="{% url "developer" %}">{% trans "Developers" %}</a> | <a href="{% url "about" %}">{% trans "About" %}</a><li>
           </ul>
           <label class="hidden">{% trans "Language" %}</label>
@@ -641,7 +621,6 @@
     <script src="{% static "lib/js/bootstrap-datetimepicker.js" %}"></script>
     <script src="{% static "lib/js/json2.js" %}"></script>
     <script src="{% static "lib/js/waypoints.js" %}"></script>
-    <script src="{% static "lib/js/underscore.js" %}"></script>
     {% else %}
     <script src="{% static "lib/js/assets.min.js" %}"></script>
     {% endif %}
@@ -733,7 +712,7 @@
     </div>
 
     <div id="confirmMsgBoxModalOK" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <!-- How to use it:
+      <!-- How to use it: 
         $("#confirmMsgBoxModalOK").find('.modal-title').text('{% trans "Title" %}');
         $("#confirmMsgBoxModalOK").find('.modal-body').text('{% trans "Message. Do you want to proceed?" %}');
         $("#confirmMsgBoxModalOK_control_field").val('your_control_value');
