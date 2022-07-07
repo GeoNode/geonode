@@ -1803,22 +1803,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             )
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                obj, _created = Link.objects.get_or_create(
-                    resource=self,
-                    name='Thumbnail',
-                    defaults=dict(
-                        url="",
-                        extension='png',
-                        mime='image/png',
-                        link_type='image',
-                    )
-                )
-                self.thumbnail_url = None
-                obj.url = ""
-                obj.save()
-                ResourceBase.objects.filter(id=self.id).update(
-                    thumbnail_url=None
-                )
             except Exception as e:
                 logger.error(
                     f'Error when generating the thumbnail for resource {self.id}. ({e})'
