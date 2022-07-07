@@ -21,7 +21,6 @@ import os
 import requests
 
 from uuid import uuid4
-from urllib.parse import urlparse
 from unittest.mock import patch, Mock
 from django.core.exceptions import ObjectDoesNotExist
 
