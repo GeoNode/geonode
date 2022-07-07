@@ -102,7 +102,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         """
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail('test-thumb', None)
-        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+        self.assertEqual(current, self.rb.get_thumbnail_url())
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_monochromatic_image(self, image):
@@ -113,7 +113,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail(filename, image)
-        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+        self.assertEqual(current, self.rb.get_thumbnail_url())
 
         # cleanup: remove saved thumbnail
         thumb_utils.remove_thumbs(filename)
