@@ -7,6 +7,10 @@ jobs:
       - image: cimg/base:current-22.04
 
     parameters:
+      load_docker_cache:
+        type: boolean
+      save_docker_cache:
+        type: boolean
       test_suite:
         type: string
         default: ""
@@ -14,6 +18,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
+          docker_layer_caching: false
           version: 20.10.12
 
       - run:
