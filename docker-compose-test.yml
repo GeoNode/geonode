@@ -18,7 +18,7 @@ x-common-django:
     db:
       condition: service_healthy
     geoserver:
-      condition: service_started
+      condition: service_healthy
 
 services:
 
@@ -90,6 +90,11 @@ services:
   geoserver:
     image: geonode/geoserver:2.20.5
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    healthcheck:
+      test: "curl --fail -s http://127.0.0.1:8080/"
+      interval: 1m30s
+      timeout: 30s
+      retries: 3
     env_file:
       - .env_test
     volumes:
