@@ -19,8 +19,10 @@
 import os
 import copy
 import shutil
+from unittest import TestCase
 import zipfile
 import tempfile
+from django.test import override_settings
 
 from osgeo import ogr
 from unittest.mock import patch
@@ -35,7 +37,8 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, fixup_shp_columnnames, unzip_file
+from geonode.utils import copy_tree, fixup_shp_columnnames, get_supported_datasets_file_types, unzip_file
+from geonode import settings
 
 
 class TestCopyTree(GeoNodeBaseTestSupport):
@@ -219,3 +222,52 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
         # The name and type should be set as provided by attribute map
         for a in _l.attributes:
             self.assertIn([a.attribute, a.attribute_type], expected_results)
+
+
+class TestSupportedTypes(TestCase):
+
+    def setUp(self):
+        self.replaced = [
+            {
+                "id": "shp",
+                "label": "Replaced type",
+                "format": "vector",
+                "ext": ["shp"],
+                "requires": ["shp", "prj", "dbf", "shx"],
+                "optional": ["xml", "sld"]
+            },
+        ]
+
+    @override_settings(ADDITIONAL_DATASET_FILE_TYPES=[
+            {
+                "id": "dummy_type",
+                "label": "Dummy Type",
+                "format": "dummy",
+                "ext": ["dummy"]
+            },
+        ])
+    def test_should_append_additional_type_if_config_is_provided(self):
+        prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
+        supported_types = get_supported_datasets_file_types()
+        supported_keys = [t.get('id') for t in supported_types]
+        self.assertIn('dummy_type', supported_keys)
+        self.assertEqual(len(supported_keys), prev_count + 1)
+
+    @override_settings(ADDITIONAL_DATASET_FILE_TYPES=[
+            {
+                "id": "shp",
+                "label": "Replaced type",
+                "format": "vector",
+                "ext": ["shp"],
+                "requires": ["shp", "prj", "dbf", "shx"],
+                "optional": ["xml", "sld"]
+            },
+        ])
+    def test_should_replace_the_type_id_if_already_exists(self):
+        prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
+        supported_types = get_supported_datasets_file_types()
+        supported_keys = [t.get('id') for t in supported_types]
+        self.assertIn('shp', supported_keys)
+        self.assertEqual(len(supported_keys), prev_count)
+        shp_type = [t for t in supported_types if t['id'] == "shp"][0]
+        self.assertEqual(shp_type['label'], "Replaced type")
