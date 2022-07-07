@@ -26,6 +26,8 @@
 
 import ast
 import os
+
+from urllib.parse import urlparse, urlunparse, urljoin,urlsplit
 try:  # python2
     from urlparse import urlparse, urlunparse, urlsplit, urljoin
 except ImportError:
@@ -43,6 +45,7 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 
 TIME_ZONE = 'UTC'
 
+
 # Login and logout urls override
 LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
 LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
@@ -55,13 +58,13 @@ AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv('AVATAR_GRAVATAR_SSL', 'True'))
 # Backend
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'geonode',
         'USER': 'geonode',
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
-        'CONN_MAX_AGE': 0,
+        'CONN_MAX_AGE': 5,
         'CONN_TOUT': 5,
         'OPTIONS': {
             'connect_timeout': 5,
@@ -76,7 +79,7 @@ DATABASES = {
         'PASSWORD': 'geonode',
         'HOST': 'localhost',
         'PORT': '5432',
-        'CONN_MAX_AGE': 0,
+        'CONN_MAX_AGE': 5,
         'CONN_TOUT': 5,
         'OPTIONS': {
             'connect_timeout': 5,
@@ -85,7 +88,7 @@ DATABASES = {
 }
 
 GEOSERVER_LOCATION = os.getenv(
-    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+    'GEOSERVER_LOCATION', 'http://192.100.100.26:8080/geoserver/'
 )
 
 GEOSERVER_PUBLIC_HOST = os.getenv(
@@ -138,7 +141,7 @@ OGC_SERVER = {
         'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
         'DATASTORE': 'datastore',
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '60')),
+        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '30')),
         'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '5')),
         'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
         'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
@@ -151,7 +154,7 @@ UPLOADER = {
     # 'BACKEND': 'geonode.rest',
     'BACKEND': 'geonode.importer',
     'OPTIONS': {
-        'TIME_ENABLED': True,
+        'TIME_ENABLED': False,
         'MOSAIC_ENABLED': False,
     },
     'SUPPORTED_CRS': [
@@ -159,7 +162,8 @@ UPLOADER = {
         'EPSG:3785',
         'EPSG:3857',
         'EPSG:32647',
-        'EPSG:32736'
+        'EPSG:32736',
+        'Epsg:32645',
     ],
     'SUPPORTED_EXT': [
         '.shp',
@@ -184,11 +188,20 @@ CATALOGUE = {
         'ENGINE': 'geonode.catalogue.backends.pycsw_local',
         # pycsw in non-local mode
         # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
+        # GeoNetwork opensource
+        # 'ENGINE': 'geonode.catalogue.backends.geonetwork',
         # deegree and others
         # 'ENGINE': 'geonode.catalogue.backends.generic',
+
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
         'URL': urljoin(SITEURL, '/catalogue/csw'),
+        # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
+
+        # login credentials (for GeoNetwork)
+        # 'USER': 'admin',
+        # 'PASSWORD': 'admin',
+
         # 'ALTERNATES_ONLY': True,
     }
 }
@@ -270,7 +283,7 @@ PYCSW = {
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
 DEFAULT_MAP_CRS = os.environ.get('DEFAULT_MAP_CRS', "EPSG:3857")
 
-DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
+DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png8")
 
 # Where should newly created maps be focused?
 DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
@@ -289,7 +302,92 @@ GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_L
 MAP_BASELAYERS = [{}]
 
 """
-MapStore2 REACT based Client parameters
+To enable the REACT based Client:
+1. pip install pip install django-geonode-client==1.0.9
+2. enable those:
+"""
+
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'react':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.ReactHookSet')
+    if 'geonode-client' not in INSTALLED_APPS:
+        INSTALLED_APPS += ('geonode-client', )
+
+"""
+To enable the Leaflet based Client:
+1. enable those:
+"""
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'leaflet':
+    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode.client.hooksets.LeafletHookSet')
+
+    CORS_ORIGIN_WHITELIST = (SITEURL, )
+
+    LEAFLET_CONFIG = {
+        'TILES': [
+            # Find tiles at:
+            # http://leaflet-extras.github.io/leaflet-providers/preview/
+
+            # Stamen toner lite.
+            ('Watercolor',
+                'http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png',
+                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+                <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+                &mdash; Map data &copy; \
+                <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+                <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+                CC-BY-SA</a>'),
+            ('Toner Lite',
+                'http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png',
+                'Map tiles by <a href="http://stamen.com">Stamen Design</a>, \
+                <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> \
+                &mdash; Map data &copy; \
+                <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, \
+                <a href="http://creativecommons.org/licenses/by-sa/2.0/"> \
+                CC-BY-SA</a>'),
+        ],
+        'PLUGINS': {
+            'esri-leaflet': {
+                'js': 'lib/js/leaflet.js',
+                'auto-include': True,
+            },
+            'leaflet-fullscreen': {
+                'css': 'lib/css/leaflet.fullscreen.css',
+                'js': 'lib/js/Leaflet.fullscreen.min.js',
+                'auto-include': True,
+            },
+            'leaflet-opacity': {
+                'css': 'lib/css/L.Control.Opacity.css',
+                'js': 'lib/js/L.Control.Opacity.js',
+                'auto-include': True,
+            },
+            'leaflet-navbar': {
+                'css': 'lib/css/Leaflet.NavBar.css',
+                'js': 'lib/js/index.js',
+                'auto-include': True,
+            },
+            'leaflet-measure': {
+                'css': 'lib/css/leaflet-measure.css',
+                'js': 'lib/js/leaflet-measure.js',
+                'auto-include': True,
+            },
+        },
+        'SRID': 3857,
+        'RESET_VIEW': False
+    }
+
+    if not DEBUG_STATIC:
+        # if not DEBUG_STATIC, use minified css and js
+        LEAFLET_CONFIG['PLUGINS'] = {
+            'leaflet-plugins': {
+                'js': 'lib/js/leaflet-plugins.min.js',
+                'css': 'lib/css/leaflet-plugins.min.css',
+                'auto-include': True,
+            }
+        }
+
+"""
+To enable the MapStore2 REACT based Client:
+1. pip install pip install django-geonode-mapstore-client==1.0
+2. enable those:
 """
 if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode_mapstore_client.hooksets.MapStoreHookSet')
@@ -489,7 +587,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -504,6 +602,8 @@ LOGGING = {
             "handlers": ["console"], "level": "ERROR", },
         "geonode": {
             "handlers": ["console"], "level": "INFO", },
+        "geonode.qgis_server": {
+            "handlers": ["console"], "level": "ERROR", },
         "geoserver-restconfig.catalog": {
             "handlers": ["console"], "level": "ERROR", },
         "owslib": {
