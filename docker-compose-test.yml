@@ -92,9 +92,9 @@ services:
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: curl --fail -s http://127.0.0.1:8080/geoserver/index.html || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 10
+      interval: 1m30s
+      timeout: 30s
+      retries: 3
     env_file:
       - .env_test
     volumes:
