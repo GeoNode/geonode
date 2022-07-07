@@ -154,13 +154,7 @@ def resouce_service_dispatcher(self, execution_id: str):
                                 )
                                 _request.refresh_from_db()
                         else:
-                            _exec_request.update(
-                                status=ExecutionRequest.STATUS_FAILED,
-                                finished=datetime.now(),
-                                output_params={
-                                    "error": _(f"Could not find the operation name: '{_request.func_name}'")
-                                }
-                            )
+                            logger.warning(_(f"Could not find the operation name: '{_request.func_name}'"))
                             _request.refresh_from_db()
             finally:
                 lock.release()

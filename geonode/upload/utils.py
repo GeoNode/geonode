@@ -34,11 +34,12 @@ from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 from django.http import HttpResponse, HttpResponseRedirect
+from django.template.defaultfilters import filesizeformat
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
 
-from geonode.upload.api.exceptions import GeneralUploadException
-from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
+from geonode.upload.api.exceptions import FileUploadLimitException, GeneralUploadException, UploadParallelismLimitException
+from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
 from geonode.utils import json_response as do_json_response, unzip_file, mkdtemp
 from geonode.geoserver.helpers import (
     gs_catalog,
@@ -883,3 +884,57 @@ max\ connections={db_conn_max}"""
         cat.reset()
         # cat.reload()
         return append_to_mosaic_name, files_to_upload
+
+
+class UploadLimitValidator:
+    def __init__(self, user) -> None:
+        self.user = user
+
+    def validate_parallelism_limit_per_user(self):
+        max_parallel_uploads = self._get_max_parallel_uploads()
+        parallel_uploads_count = self._get_parallel_uploads_count()
+        if parallel_uploads_count >= max_parallel_uploads:
+            raise UploadParallelismLimitException(_(
+                f"The number of active parallel uploads exceeds {max_parallel_uploads}. Wait for the pending ones to finish."
+            ))
+
+    def validate_files_sum_of_sizes(self, file_dict):
+        max_size = self._get_uploads_max_size()
+        total_size = self._get_uploaded_files_total_size(file_dict)
+        if total_size > max_size:
+            raise FileUploadLimitException(_(
+                f'Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.'
+            ))
+
+    def _get_uploads_max_size(self):
+        try:
+            max_size_db_obj = UploadSizeLimit.objects.get(slug="dataset_upload_size")
+        except UploadSizeLimit.DoesNotExist:
+            max_size_db_obj = UploadSizeLimit.objects.create_default_limit()
+        return max_size_db_obj.max_size
+
+    def _get_uploaded_files(self):
+        """Return a list with all of the uploaded files"""
+        return [django_file for field_name, django_file in self.files.items()
+                if field_name != "base_file"]
+
+    def _get_uploaded_files_total_size(self, file_dict):
+        """Return a list with all of the uploaded files"""
+        excluded_files = ("zip_file", "shp_file", )
+        _iterate_files = file_dict.data_items if hasattr(file_dict, 'data_items') else file_dict
+        uploaded_files_sizes = [
+            file_obj.size for field_name, file_obj in _iterate_files.items()
+            if field_name not in excluded_files
+        ]
+        total_size = sum(uploaded_files_sizes)
+        return total_size
+
+    def _get_max_parallel_uploads(self):
+        try:
+            parallelism_limit = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
+        except UploadParallelismLimit.DoesNotExist:
+            parallelism_limit = UploadParallelismLimit.objects.create_default_limit()
+        return parallelism_limit.max_number
+
+    def _get_parallel_uploads_count(self):
+        return Upload.objects.get_incomplete_uploads(self.user).count()

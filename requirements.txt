@@ -1,8 +1,8 @@
 # native dependencies
 Pillow==9.1.1
-lxml==4.9.0
+lxml==4.9.1
 psycopg2==2.9.3
-Django==3.2.13
+Django==3.2.14
 
 # Other
 amqp==5.1.1
@@ -20,20 +20,20 @@ vine==5.0.0
 tqdm==4.64.0
 Deprecated==1.2.13
 wrapt==1.14.1
-jsonschema==4.6.0
+jsonschema==4.6.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
 smart_open==6.0.0
 
 # Django Apps
-django-allauth==0.50.0
+django-allauth==0.51.0
 django-appconf==1.0.5
-django-celery-results==2.3.1
-django-filter==21.1
+django-celery-results==2.4.0
+django-filter==22.1
 django-imagekit==4.1.0
 django-taggit==1.5.1
-django-markdownify==0.9.1
+django-markdownify==0.9.2
 django-mptt==0.13.4
 django-modeltranslation>=0.11,<0.19.0
 django-treebeard==4.5.1
@@ -50,14 +50,14 @@ oauthlib==3.2.0
 pyopenssl==22.0.0
 
 # geopython dependencies
-pyproj==3.3.1
-OWSLib==0.25.0
+pyproj<3.3.0
+OWSLib==0.26.0
 pycsw==2.6.1
-SQLAlchemy==1.4.37 # required by PyCSW
+SQLAlchemy==1.4.39 # required by PyCSW
 Shapely==1.8.2
 mercantile==1.2.1
-geoip2==4.5.0
-numpy==1.22.*
+geoip2==4.6.0
+numpy==1.23.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
@@ -91,7 +91,7 @@ geonode-oauth-toolkit==2.2.2
 geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
-gn-arcrest==10.5.4
+gn-arcrest==10.5.5
 geonode-dialogos==3.0.1
 geoserver-restconfig==2.0.7
 gn-gsimporter==2.0.4
@@ -106,10 +106,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.12.3
-dropbox==11.31.0
-google-cloud-storage==2.3.0
-google-cloud-core==2.3.0
-boto3==1.24.2
+dropbox==11.32.0
+google-cloud-storage==2.4.0
+google-cloud-core==2.3.1
+boto3==1.24.22
 
 # Django Caches
 python-memcached<=1.59
@@ -123,7 +123,7 @@ jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.2
 pytz==2022.1
-requests==2.27.1
+requests==2.28.1
 timeout-decorator==0.5.0
 pylibmc==1.6.1
 sherlock==0.3.2
@@ -151,15 +151,15 @@ requests-toolbelt==0.9.1
 flake8==4.0.1
 pytest==7.1.2
 pytest-bdd==5.0.0
-splinter==0.17.0
+splinter==0.18.1
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<62.4.0
+setuptools>=59.1.1,<63.2.0
 pip==22.1.2
 Twisted==22.4.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
-selenium-requests==1.4.1
-webdriver_manager==3.7.0
+selenium-requests==2.0.0
+webdriver_manager==3.7.1

@@ -198,7 +198,7 @@ class Upload(models.Model):
         elif self.state == enumerations.STATE_WAITING:
             return 50.0
         elif self.state == enumerations.STATE_PROCESSED:
-            if self.resource and self.resource.processed:
+            if (self.resource and self.resource.processed) or self.complete:
                 return 100.0
             return 80.0
         elif self.state in (enumerations.STATE_COMPLETE, enumerations.STATE_RUNNING):
@@ -233,7 +233,7 @@ class Upload(models.Model):
                 session = gs_uploader.get_session(self.import_id)
         except (NotFound, Exception):
             if not session and self.state not in (enumerations.STATE_COMPLETE, enumerations.STATE_PROCESSED):
-                self.set_processing_state(enumerations.STATE_INVALID)
+                logger.warning(f"Import session was not found for upload with ID: {self.pk}")
         if session and self.state != enumerations.STATE_INVALID:
             return f"{ogc_server_settings.LOCATION}rest/imports/{session.id}"
         else:
