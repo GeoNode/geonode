@@ -42,6 +42,8 @@ from django_auth_ldap import config as ldap_config
 from geonode_ldap.config import GeonodeNestedGroupOfNamesType
 import ldap
 
+
+from . import serializer
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
     'fields.W340',
@@ -796,8 +798,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_IN
 AUTHENTICATION_BACKENDS = (
     # 'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
-    'guardian.backends.ObjectPermissionBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    # 'guardian.backends.ObjectPermissionBackend',
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 if 'announcements' in INSTALLED_APPS:
@@ -816,18 +818,11 @@ if LDAP_ENABLED:
 AUTH_LDAP_SERVER_URI = os.getenv("LDAP_SERVER_URL")
 AUTH_LDAP_BIND_DN = os.getenv("LDAP_BIND_DN")
 AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD")
-AUTH_LDAP_USER_SEARCH = ldap_config.LDAPSearch(
-    os.getenv("LDAP_USER_SEARCH_DN"),
-    ldap.SCOPE_SUBTREE,
-    os.getenv("LDAP_USER_SEARCH_FILTERSTR")
-)
+AUTH_LDAP_USER_SEARCH = ldap_config.LDAPSearch(os.getenv("LDAP_USER_SEARCH_DN"), ldap.SCOPE_SUBTREE, os.getenv("LDAP_USER_SEARCH_FILTERSTR"))
+
 # should LDAP groups be used to spawn groups in GeoNode?
 AUTH_LDAP_MIRROR_GROUPS = strtobool(os.getenv("LDAP_MIRROR_GROUPS", 'True'))
-AUTH_LDAP_GROUP_SEARCH = ldap_config.LDAPSearch(
-    os.getenv("LDAP_GROUP_SEARCH_DN"),
-    ldap.SCOPE_SUBTREE,
-    os.getenv("LDAP_GROUP_SEARCH_FILTERSTR")
-)
+AUTH_LDAP_GROUP_SEARCH = ldap_config.LDAPSearch(os.getenv("LDAP_GROUP_SEARCH_DN"), ldap.SCOPE_SUBTREE, os.getenv("LDAP_GROUP_SEARCH_FILTERSTR"))
 
 AUTH_LDAP_GROUP_TYPE = GeonodeNestedGroupOfNamesType()
 AUTH_LDAP_USER_ATTR_MAP = {
@@ -840,14 +835,15 @@ AUTH_LDAP_MIRROR_GROUPS_EXCEPT = [
     "test_group"
 ]
 
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+AUTH_LDAP_FIND_GROUP_PERMS = True
+AUTH_LDAP_CACHE_TIMEOUT = 3600
+
 # these are not needed by django_auth_ldap - we use them to find and match
 # GroupProfiles and GroupCategories
-GEONODE_LDAP_GROUP_NAME_ATTRIBUTE = os.getenv("LDAP_GROUP_NAME_ATTRIBUTE", default="cn")
-GEONODE_LDAP_GROUP_PROFILE_FILTERSTR = os.getenv("LDAP_GROUP_SEARCH_FILTERSTR", default='(ou=research group)')
-GEONODE_LDAP_GROUP_PROFILE_MEMBER_ATTR = os.getenv("LDAP_GROUP_PROFILE_MEMBER_ATTR", default='member')
-
-
-
+# GEONODE_LDAP_GROUP_NAME_ATTRIBUTE = os.getenv("LDAP_GROUP_NAME_ATTRIBUTE", default="cn")
+# GEONODE_LDAP_GROUP_PROFILE_FILTERSTR = os.getenv("LDAP_GROUP_SEARCH_FILTERSTR", default='(ou=research group)')
+# GEONODE_LDAP_GROUP_PROFILE_MEMBER_ATTR = os.getenv("LDAP_GROUP_PROFILE_MEMBER_ATTR", default='member')
 
 OAUTH2_PROVIDER = {
     'SCOPES': {
@@ -942,7 +938,6 @@ DEFAULT_SEARCH_SIZE = int(os.getenv('DEFAULT_SEARCH_SIZE', '10'))
 #
 # Settings for third party apps
 #
-
 # Pinax Ratings
 PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {
