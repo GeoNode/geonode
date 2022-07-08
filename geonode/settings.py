@@ -42,6 +42,8 @@ from django_auth_ldap import config as ldap_config
 from geonode_ldap.config import GeonodeNestedGroupOfNamesType
 import ldap
 
+
+from . import serializer
 SILENCED_SYSTEM_CHECKS = [
     '1_8.W001',
     'fields.W340',
