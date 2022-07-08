@@ -573,8 +573,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
-            request_body = request.body
-            request_params = QueryDict(request_body, mutable=True, encoding="UTF-8")
+            request_params = self._get_query_params(request, encode=True)
             if request.method == 'GET':
                 return Response(perms_spec.compact)
             elif request.method == 'DELETE':
@@ -750,7 +749,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 or not request.user.has_perm('base.add_resourcebase'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+
+            request_params = self._get_query_params(request)
             uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
@@ -846,7 +846,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 or not request.user.has_perm('base.add_resourcebase'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_query_params(request)
             uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
 
@@ -1137,7 +1137,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         if not resource.is_copyable:
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_query_params(request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='copy',
@@ -1366,3 +1366,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _obj.metadata.add(new_m)
             _obj.refresh_from_db()
             return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)
+
+    def _get_query_params(self, request, encode=False):
+        try:
+            return QueryDict(request.body, mutable=True, encoding="UTF-8") if encode else QueryDict(request.body, mutable=True)
+        except:
+            return request.data
