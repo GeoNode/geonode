@@ -55,7 +55,7 @@
     "moment": "2.29.2",
     "node-sass": "^4.14.1",
     "numeral": "2.0.6",
-    "radium": "0.25.2",
+    "radium": "0.26.2",
     "react": "16.9.0",
     "react-calendar-heatmap": "1.8.1",
     "react-dom": "16.9.0",
