@@ -44,7 +44,7 @@
     "axios": "0.21.2",
     "babel-polyfill": "6.26.0",
     "chroma-js": "2.0.4",
-    "clsx": "1.0.4",
+    "clsx": "1.1.1",
     "d3": "5.16.0",
     "datamaps": "0.5.9",
     "flag-icon-css": "3.3.0",
