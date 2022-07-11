@@ -1370,5 +1370,11 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     def _get_request_params(self, request, encode=False):
         try:
             return QueryDict(request.body, mutable=True, encoding="UTF-8") if encode else QueryDict(request.body, mutable=True)
-        except:
+        except Exception as e:
+            '''
+            The request with the barer token access to the request.data during the token verification
+            so in this case if the request.body cannot not access, we just re-access to the
+            request.data to get the params needed
+            '''
+            logger.info(e)
             return request.data
