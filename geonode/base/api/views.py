@@ -1037,7 +1037,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request=request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='update',
