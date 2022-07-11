@@ -2205,19 +2205,3 @@ SUPPORTED_DATASET_FILE_TYPES = [
             "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "xml"]
         }
     ]
-
-INSTALLED_APPS += ('importer', 'dynamic_models',)
-
-CELERY_TASK_QUEUES += (
-    Queue('importer.import_orchestrator', GEONODE_EXCHANGE, routing_key='importer.import_orchestrator'),
-    Queue('importer.import_resource', GEONODE_EXCHANGE, routing_key='importer.import_resource', max_priority=8),
-    Queue('importer.publish_resource', GEONODE_EXCHANGE, routing_key='importer.publish_resource', max_priority=8),
-    Queue('importer.create_gn_resource', GEONODE_EXCHANGE, routing_key='importer.create_gn_resource', max_priority=8),
-    Queue('importer.gpkg_ogr2ogr', GEONODE_EXCHANGE, routing_key='importer.gpkg_ogr2ogr', max_priority=10),
-    Queue('importer.gpkg_next_step', GEONODE_EXCHANGE, routing_key='importer.gpkg_next_step', max_priority=3),
-    Queue('importer.gpkg_handler', GEONODE_EXCHANGE, routing_key='importer.gpkg_handler', max_priority=10),
-)
-
-DATABASE_ROUTERS = ["importer.db_router.DatastoreRouter"]
-
-SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES += ('importer_upload',)
