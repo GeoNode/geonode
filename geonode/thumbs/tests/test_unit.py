@@ -41,7 +41,7 @@ FIXTURES_DIR = "geonode/thumbs/tests/fixtures/"
 class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
 
     def test_create_getmap_request(self):
-        request = utils.__build_getmap_request(layers=["geonode:Foo"], size=[512, 512], srs="epsg:4326", bbox=[-180, -90, 180, 90], bgcolor="fff")
+        request = utils._build_getmap_request(layers=["geonode:Foo"], size=[512, 512], srs="epsg:4326", bbox=[-180, -90, 180, 90], bgcolor="fff")
         self.assertDictEqual(
             request,
             {

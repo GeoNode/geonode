@@ -247,10 +247,10 @@ def get_map(
     return image.read()
 
 
-def __build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, bbox=None,
-                           format=None, size=None, time=None, dimensions={},
-                           elevation=None, transparent=False,
-                           bgcolor=None, exceptions=None, **kwargs):
+def _build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, bbox=None,
+                          format=None, size=None, time=None, dimensions={},
+                          elevation=None, transparent=False,
+                          bgcolor=None, exceptions=None, **kwargs):
     from owslib.crs import Crs
 
     request = {'service': 'WMS', 'version': version, 'request': 'GetMap'}
@@ -384,7 +384,7 @@ def getmap(base_url,
 
     n = Namespaces()
 
-    request = __build_getmap_request(
+    request = _build_getmap_request(
         version=version,
         layers=layers,
         styles=styles,
