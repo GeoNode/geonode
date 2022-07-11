@@ -402,8 +402,6 @@ def getmap(base_url,
 
     data = urlencode(request)
 
-    request = bind_url(base_url) + data
-
     u = openURL(base_url, data, method, timeout=timeout, auth=None, headers=headers)
 
     # need to handle casing in the header keys

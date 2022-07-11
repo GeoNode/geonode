@@ -40,6 +40,27 @@ FIXTURES_DIR = "geonode/thumbs/tests/fixtures/"
 
 class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
 
+    def test_create_getmap_request(self):
+        request = utils.__build_getmap_request(layers=["geonode:Foo"], size=[512, 512], srs="epsg:4326", bbox=[-180, -90, 180, 90], bgcolor="fff")
+        self.assertDictEqual(
+            request,
+            {
+                'service': 'WMS',
+                'version': '1.3.0',
+                'request': 'GetMap',
+                'layers': 'geonode:Foo',
+                'styles': '',
+                'width': '512',
+                'height': '512',
+                'crs': 'epsg:4326',
+                'bbox': '-90,-180,90,180',
+                'format': 'None',
+                'transparent': 'FALSE',
+                'bgcolor': '0xff',
+                'exceptions': 'None'
+            }
+        )
+
     def test_make_bbox_to_pixels_transf_same(self):
 
         src_bbox = [0, 0, 1, 1]
