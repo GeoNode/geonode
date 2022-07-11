@@ -271,7 +271,7 @@ def __build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, 
     # remap srs to crs for the actual request
     if srs.upper() == 'EPSG:0':
         # if it's esri's unknown spatial ref code, bail
-        raise Exception('Undefined spatial reference (%s).' % srs)
+        raise Exception(f'Undefined spatial reference ({srs}).')
 
     sref = Crs(srs)
     if sref.axisorder == 'yx':
@@ -283,7 +283,7 @@ def __build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, 
     request['bbox'] = ','.join([repr(x) for x in bbox])
     request['format'] = str(format)
     request['transparent'] = str(transparent).upper()
-    request['bgcolor'] = '0x' + bgcolor[1:7]
+    request['bgcolor'] = f"0x{bgcolor[1:7]}"
     request['exceptions'] = str(exceptions)
 
     if time is not None:
@@ -294,7 +294,7 @@ def __build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, 
 
     # any other specified dimension, prefixed with "dim_"
     for k, v in list(dimensions.items()):
-        request['dim_' + k] = str(v)
+        request[f"dim_{k}"] = str(v)
 
     if kwargs:
         for kw in kwargs:
