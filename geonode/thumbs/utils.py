@@ -380,7 +380,7 @@ def getmap(base_url,
     """
     from owslib.etree import etree
     from owslib.namespaces import Namespaces
-    from owslib.util import openURL, ServiceException, bind_url, nspath
+    from owslib.util import openURL, ServiceException, nspath
 
     n = Namespaces()
 
