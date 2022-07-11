@@ -541,29 +541,25 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resources/<id>/permissions
 
         - Changes the owner of a Resource:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' http://localhost:8000/api/v2/resources/<id>/permissions
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1001,"permissions": "owner"}]}'
 
         - Assigns View permissions to some users:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
-
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1000,"permissions": "view"}]}'
 
         - Assigns View permissions to anyone:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [],"organizations": [],"users": [{"id": -1,"permissions": "view"}]}'
 
-        - Assigns View permissions to anyone and edit (style and data) permissions to a Group on a Dataset:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
-            -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_dataset_style", "change_dataset_data"]}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
+        - Assigns View permissions to anyone and edit permissions to a Group on a Dataset:
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [{"id": 1,"permissions": "manage"}],"organizations": [],"users": [{"id": -1,"permissions": "view"}]}'
 
-        - Assigns View permissions to anyone and edit permissions to a Group on a Document:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
-            -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_resourcebase"]}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
         """
         config = Configuration.load()
         resource = self.get_object()
@@ -573,8 +569,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
-            request_body = request.body
-            request_params = QueryDict(request_body, mutable=True, encoding="UTF-8")
+            request_params = request.data
             if request.method == 'GET':
                 return Response(perms_spec.compact)
             elif request.method == 'DELETE':
@@ -587,8 +582,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     }
                 )
             elif request.method == 'PUT':
-                perms_spec_compact = PermSpecCompact(
-                    json.loads(request_params.get('permissions', '{}')), resource)
+                perms_spec_compact = PermSpecCompact(request.data, resource)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
@@ -601,8 +595,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     }
                 )
             elif request.method == 'PATCH':
-                perms_spec_compact_patch = PermSpecCompact(
-                    json.loads(request_params.get('permissions', '{}')), resource)
+                perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
                 _exec_request = ExecutionRequest.objects.create(
