@@ -90,6 +90,7 @@ else:
     EMAIL_BACKEND = os.getenv('DJANGO_EMAIL_BACKEND',
                               default='django.core.mail.backends.console.EmailBackend')
 
+
 # Make this unique, and don't share it with anybody.
 _DEFAULT_SECRET_KEY = 'myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a'
 SECRET_KEY = os.getenv('SECRET_KEY', _DEFAULT_SECRET_KEY)
@@ -798,7 +799,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get('SECURE_HSTS_IN
 AUTHENTICATION_BACKENDS = (
     # 'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
-    # 'guardian.backends.ObjectPermissionBackend',
+    'guardian.backends.ObjectPermissionBackend',
     # 'allauth.account.auth_backends.AuthenticationBackend',
 )
 
@@ -825,17 +826,17 @@ AUTH_LDAP_MIRROR_GROUPS = strtobool(os.getenv("LDAP_MIRROR_GROUPS", 'True'))
 AUTH_LDAP_GROUP_SEARCH = ldap_config.LDAPSearch(os.getenv("LDAP_GROUP_SEARCH_DN"), ldap.SCOPE_SUBTREE, os.getenv("LDAP_GROUP_SEARCH_FILTERSTR"))
 
 AUTH_LDAP_GROUP_TYPE = GeonodeNestedGroupOfNamesType()
+AUTH_LDAP_USER_ATTR_MAP_FIRST_NAME = os.getenv("LDAP_USER_ATTR_MAP_FIRST_NAME", "givenName")
+AUTH_LDAP_USER_ATTR_MAP_LAST_NAME = os.getenv("LDAP_USER_ATTR_MAP_LAST_NAME", "sn")
+AUTH_LDAP_USER_ATTR_MAP_EMAIL_ADDR = os.getenv("LDAP_USER_ATTR_MAP_EMAIL_ADDR", "mailPrimaryAddress")
 AUTH_LDAP_USER_ATTR_MAP = {
-    "first_name": "givenName",
-    "last_name": "sn",
-    "email": "mailPrimaryAddress"
+    "first_name": AUTH_LDAP_USER_ATTR_MAP_FIRST_NAME,
+    "last_name": AUTH_LDAP_USER_ATTR_MAP_LAST_NAME,
+    "email": AUTH_LDAP_USER_ATTR_MAP_EMAIL_ADDR
 }
 AUTH_LDAP_FIND_GROUP_PERMS = True
-AUTH_LDAP_MIRROR_GROUPS_EXCEPT = [
-    "test_group"
-]
 
-AUTH_LDAP_ALWAYS_UPDATE_USER = True
+AUTH_LDAP_ALWAYS_UPDATE_USER = os.getenv("LDAP_ALWAYS_UPDATE_USER", 'True')
 AUTH_LDAP_FIND_GROUP_PERMS = True
 AUTH_LDAP_CACHE_TIMEOUT = 3600
 
