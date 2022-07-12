@@ -2,9 +2,9 @@
 set -e
 
 do_npx=0
-do_update=1
-do_npm_install=1
-do_yarn_install=0
+do_update=0
+do_npm_install=0
+do_yarn_install=1
 do_lint=0
 while getopts "xuny" opt
 do
@@ -20,5 +20,5 @@ done
 (( do_npx )) && printf " - Cleaning node_modules...\n" && npx rimraf package-lock.json npm-shrinkwrap.json node_modules
 (( do_update )) && printf " - Executing npm update...\n" && npm update
 (( do_npm_install )) && printf " - Executing npm install...\n" && npm install
-(( do_yarn_install )) && printf " - Executing yarn update...\n" && yarn install
-printf " - Compiling the client...\n" && npm run compile
+(( do_yarn_install )) && printf " - Executing yarn install...\n" && yarn install
+printf " - Compiling the client...\n" && yarn run compile
