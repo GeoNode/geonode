@@ -306,11 +306,6 @@ STATIC_ROOT = os.getenv('STATIC_ROOT',
 # ref: http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support
 CACHE_BUSTING_STATIC_ENABLED = ast.literal_eval(os.environ.get('CACHE_BUSTING_STATIC_ENABLED', 'False'))
 
-if not DEBUG and CACHE_BUSTING_STATIC_ENABLED:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-else:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
 # Optionally Use a Content-Delivery Network
 # ref: http://whitenoise.evans.io/en/stable/django.html#use-a-content-delivery-network
 STATIC_HOST = os.environ.get('STATIC_URL', '')
@@ -380,6 +375,12 @@ CACHES = {
     }
 }
 
+# Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
+WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv('WHITENOISE_MANIFEST_STRICT', 'False'))
+WHITENOISE_ALLOW_ALL_ORIGINS = ast.literal_eval(os.getenv('WHITENOISE_ALLOW_ALL_ORIGINS', 'True'))
+WHITENOISE_COMPRESS_STATIC_FILES = ast.literal_eval(os.getenv('WHITENOISE_COMPRESS_STATIC_FILES', 'False'))
+WHITENOISE_KEEP_ONLY_HASHED_FILES = ast.literal_eval(os.getenv('WHITENOISE_KEEP_ONLY_HASHED_FILES', 'False'))
+
 MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
 MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.PyMemcacheCache')
 MEMCACHED_LOCATION = os.getenv('MEMCACHED_LOCATION', '127.0.0.1:11211')
@@ -391,6 +392,14 @@ if MEMCACHED_ENABLED:
         'BACKEND': MEMCACHED_BACKEND,
         'LOCATION': MEMCACHED_LOCATION,
     }
+
+# Define the STATICFILES_STORAGE accordingly
+if not DEBUG and CACHE_BUSTING_STATIC_ENABLED:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+elif WHITENOISE_COMPRESS_STATIC_FILES:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 GEONODE_CORE_APPS = (
     # GeoNode internal apps
@@ -463,6 +472,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.sitemaps',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.messages',
     'django.contrib.humanize',
