@@ -878,6 +878,7 @@ class BaseApiTests(APITestCase):
 
         # Add perms to Norman
         resource_perm_spec_patch = {
+            "uuid": resource.uuid,
             'users': [
                 {
                     'id': norman.id,
@@ -891,8 +892,7 @@ class BaseApiTests(APITestCase):
                 }
             ]
         }
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
-        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+        response = self.client.patch(set_perms_url, data=resource_perm_spec_patch, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data.get('status'))
         self.assertIsNotNone(response.data.get('status_url'))
@@ -974,6 +974,7 @@ class BaseApiTests(APITestCase):
 
         # Remove perms to Norman
         resource_perm_spec = {
+            "uuid": resource.uuid,
             'users': [
                 {
                     'id': bobby.id,
@@ -1012,8 +1013,8 @@ class BaseApiTests(APITestCase):
                 }
             ]
         }
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
-        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data.get('status'))
         self.assertIsNotNone(response.data.get('status_url'))
@@ -1090,8 +1091,8 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 403)
         # set perms
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
-        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+        resource_perm_spec['uuid'] = resource.uuid
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format="json")
         self.assertEqual(response.status_code, 403)
         # login resourse owner
         # get perms
@@ -1099,8 +1100,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format='json')
         self.assertEqual(response.status_code, 200)
         # set perms
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec)}"
-        response = self.client.put(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+        response = self.client.put(set_perms_url, data=resource_perm_spec, format="json")
         self.assertEqual(response.status_code, 200)
 
     def test_featured_and_published_resources(self):
@@ -2064,6 +2064,7 @@ class BaseApiTests(APITestCase):
 
         # Add perms to Bobby
         resource_perm_spec_patch = {
+            'uuid': resource.uuid,
             'users': [
                 {
                     'id': bobby.id,
@@ -2078,9 +2079,8 @@ class BaseApiTests(APITestCase):
 
         # Patch the resource perms
         self.assertTrue(self.client.login(username='admin', password='admin'))
-        data = f"uuid={resource.uuid}&permissions={json.dumps(resource_perm_spec_patch)}"
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
-        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+        response = self.client.patch(set_perms_url, data=resource_perm_spec_patch, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data.get('status'))
         self.assertIsNotNone(response.data.get('status_url'))
@@ -2268,6 +2268,7 @@ class BaseApiTests(APITestCase):
         # set perms to enable user clone resource
         self.assertTrue(self.client.login(username="admin", password="admin"))
         perm_spec = {
+            "uuid": resource.uuid,
             'users': [
                 {
                     'id': bobby.id,
@@ -2280,8 +2281,8 @@ class BaseApiTests(APITestCase):
             ]
         }
         set_perms_url = urljoin(f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}/", 'permissions')
-        data = f"uuid={resource.uuid}&permissions={json.dumps(perm_spec)}"
-        response = self.client.patch(set_perms_url, data=data, content_type='application/x-www-form-urlencoded')
+
+        response = self.client.patch(set_perms_url, data=perm_spec, format="json")
         self.assertEqual(response.status_code, 200)
         # clone resource
         self.assertTrue(self.client.login(username="admin", password="admin"))
