@@ -52,7 +52,7 @@
     "isomorphic-fetch": "2.2.1",
     "material-ui": "0.20.2",
     "mkdirp": "^1.0.4",
-    "moment": "2.29.2",
+    "moment": "2.29.3",
     "node-sass": "^4.14.1",
     "numeral": "2.0.6",
     "radium": "0.25.2",
