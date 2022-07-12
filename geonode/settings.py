@@ -377,9 +377,7 @@ CACHES = {
 
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
 WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv('WHITENOISE_MANIFEST_STRICT', 'False'))
-WHITENOISE_ALLOW_ALL_ORIGINS = ast.literal_eval(os.getenv('WHITENOISE_ALLOW_ALL_ORIGINS', 'True'))
-WHITENOISE_COMPRESS_STATIC_FILES = ast.literal_eval(os.getenv('WHITENOISE_COMPRESS_STATIC_FILES', 'False'))
-WHITENOISE_KEEP_ONLY_HASHED_FILES = ast.literal_eval(os.getenv('WHITENOISE_KEEP_ONLY_HASHED_FILES', 'False'))
+COMPRESS_STATIC_FILES = ast.literal_eval(os.getenv('COMPRESS_STATIC_FILES', 'False'))
 
 MEMCACHED_ENABLED = ast.literal_eval(os.getenv('MEMCACHED_ENABLED', 'False'))
 MEMCACHED_BACKEND = os.getenv('MEMCACHED_BACKEND', 'django.core.cache.backends.memcached.PyMemcacheCache')
@@ -396,7 +394,7 @@ if MEMCACHED_ENABLED:
 # Define the STATICFILES_STORAGE accordingly
 if not DEBUG and CACHE_BUSTING_STATIC_ENABLED:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-elif WHITENOISE_COMPRESS_STATIC_FILES:
+elif COMPRESS_STATIC_FILES:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 else:
     STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
