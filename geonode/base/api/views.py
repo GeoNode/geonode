@@ -1370,5 +1370,5 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             so in this case if the request.body cannot not access, we just re-access to the
             request.data to get the params needed
             '''
-            logger.info(e)
+            logger.debug(e)
             return request.data
