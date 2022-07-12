@@ -20,5 +20,5 @@ done
 (( do_npx )) && printf " - Cleaning node_modules...\n" && npx rimraf package-lock.json npm-shrinkwrap.json node_modules
 (( do_update )) && printf " - Executing npm update...\n" && npm update
 (( do_npm_install )) && printf " - Executing npm install...\n" && npm install
-(( do_yarn_install )) && printf " - Executing yarn update...\n" && yarn install
+(( do_yarn_install )) && printf " - Executing yarn install...\n" && yarn install
 printf " - Executing grunt...\n" && grunt development && grunt production

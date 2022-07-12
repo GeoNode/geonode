@@ -544,7 +544,7 @@ def start_django(options):
     bind = options.get('bind', '0.0.0.0:8000')
     port = bind.split(":")[1]
     foreground = '' if options.get('foreground', False) else '&'
-    sh(f'{settings} python -W ignore manage.py runserver {bind} {foreground}')
+    sh(f'{settings} python -W ignore manage.py runserver --nostatic {bind} {foreground}')
 
     if ASYNC_SIGNALS:
         sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
@@ -805,7 +805,7 @@ def test_integration(options):
                 bind = options.get('bind', '0.0.0.0:8000')
                 foreground = '' if options.get('foreground', False) else '&'
                 sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runmessaging {foreground}')
-                sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver {bind} {foreground}')
+                sh(f'DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver --nostatic {bind} {foreground}')
                 sh('sleep 30')
                 settings = f'REUSE_DB=1 DJANGO_SETTINGS_MODULE={settings}'
             else:
