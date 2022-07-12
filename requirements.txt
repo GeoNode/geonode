@@ -150,7 +150,7 @@ coverage==6.4.1
 requests-toolbelt==0.9.1
 flake8==4.0.1
 pytest==7.1.2
-pytest-bdd==5.0.0
+pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.1
 pytest-django==4.5.2
