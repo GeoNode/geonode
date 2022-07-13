@@ -743,7 +743,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 or not request.user.has_perm('base.add_resourcebase'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+
+            request_params = self._get_request_params(request)
             uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
@@ -839,7 +840,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 or not request.user.has_perm('base.add_resourcebase'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request)
             uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
 
@@ -1030,7 +1031,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request=request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='update',
@@ -1130,7 +1131,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         if not resource.is_copyable:
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='copy',
@@ -1359,3 +1360,15 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _obj.metadata.add(new_m)
             _obj.refresh_from_db()
             return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)
+
+    def _get_request_params(self, request, encode=False):
+        try:
+            return QueryDict(request.body, mutable=True, encoding="UTF-8") if encode else QueryDict(request.body, mutable=True)
+        except Exception as e:
+            '''
+            The request with the barer token access to the request.data during the token verification
+            so in this case if the request.body cannot not access, we just re-access to the
+            request.data to get the params needed
+            '''
+            logger.debug(e)
+            return request.data
