@@ -781,7 +781,8 @@ def gs_slurp(
 
         except Exception as e:
             # Hide the resource until finished
-            layer.set_processing_state("FAILED")
+            if layer:
+                layer.set_processing_state("FAILED")
             if ignore_errors:
                 status = 'failed'
                 exception_type, error, traceback = sys.exc_info()
@@ -790,6 +791,15 @@ def gs_slurp(
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
                 raise Exception(f"Failed to process {resource.name}") from e
+        if layer is None:
+            if ignore_errors:
+                status = 'failed'
+                exception_type, error, traceback = sys.exc_info()
+            else:
+                if verbosity > 0:
+                    msg = "Stopping process because --ignore-errors was not set and an error was found."
+                    print(msg, file=sys.stderr)
+                raise Exception(f"Failed to process {resource.name}")
         else:
             if created:
                 if not permissions:
