@@ -71,8 +71,9 @@ def proxy(request, url=None, response_callback=None,
           sec_chk_hosts=True, sec_chk_rules=True, timeout=None,
           allowed_hosts=[], **kwargs):
     # Request default timeout
+    from geonode.geoserver.helpers import ogc_server_settings
     if not timeout:
-        timeout = TIMEOUT
+        timeout = getattr(ogc_server_settings, "TIMEOUT", TIMEOUT)
 
     # Security rules and settings
     PROXY_ALLOWED_HOSTS = getattr(settings, 'PROXY_ALLOWED_HOSTS', ())
@@ -105,13 +106,11 @@ def proxy(request, url=None, response_callback=None,
             PROXY_ALLOWED_HOSTS += (site_url.hostname, )
 
         # Attach current hostname
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            from geonode.geoserver.helpers import ogc_server_settings
-            hostname = (
-                ogc_server_settings.hostname,
-            ) if ogc_server_settings else ()
-            if hostname not in PROXY_ALLOWED_HOSTS:
-                PROXY_ALLOWED_HOSTS += hostname
+        hostname = (
+            ogc_server_settings.hostname,
+        ) if ogc_server_settings else ()
+        if hostname not in PROXY_ALLOWED_HOSTS:
+            PROXY_ALLOWED_HOSTS += hostname
 
         # Check OWS regexp
         if url.query and ows_regexp.match(url.query):
