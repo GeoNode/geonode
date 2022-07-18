@@ -79,7 +79,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         """
         self.client.logout()
         response = self.client.get(reverse('set_user_dataset_permissions'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
 
     @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_user_dataset_permissions(self):
