@@ -153,7 +153,7 @@ def ident_json(request):
 
     json_data['services'] = {
         'csw': settings.CATALOGUE['default']['URL'],
-        'ows': settings.OGC_SERVER['default']['LOCATION']
+        'ows': settings.OGC_SERVER['default']['PUBLIC_LOCATION']
     }
 
     json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
