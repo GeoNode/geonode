@@ -191,12 +191,6 @@ urlpatterns += [  # '',
         include('geonode.catalogue.metadataxsl.urls')),
 ]
 
-if settings.FAVORITE_ENABLED:
-    urlpatterns += [  # '',
-        url(r'^favorite/',
-            include('geonode.favorite.urls')),
-    ]
-
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     if settings.CREATE_LAYER:
         urlpatterns += [  # '',

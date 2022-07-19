@@ -205,9 +205,6 @@
 
 {% block extra_script %}
 {{ block.super }}
-  {% if GEONODE_SECURITY_ENABLED %}
-    {% include "_permissions_form_js.html" %}
-  {% endif %}
   <script type="text/javascript">
       {% if HAYSTACK_SEARCH %}
           SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?owner__username={{profile.username}}'
