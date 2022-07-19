@@ -23,7 +23,6 @@
 """
 import logging
 from collections import defaultdict
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
@@ -164,8 +163,6 @@ def relationship_post_save(instance, sender, created, **kwargs):
 
 
 if activity:
-    signals.post_save.connect(activity_post_modify_object, sender=Comment)
-
     signals.post_save.connect(activity_post_modify_object, sender=Dataset)
     signals.post_delete.connect(activity_post_modify_object, sender=Dataset)
 
@@ -201,11 +198,6 @@ def comment_post_save(instance, sender, created, **kwargs):
     send_notification(recipients,
                       notice_type_label,
                       {'resource': instance.content_object, 'author': instance.author})
-
-
-# signals
-# comments notifications
-signals.post_save.connect(comment_post_save, sender=Comment)
 
 # rating notifications
 if ratings and has_notifications:

@@ -35,8 +35,6 @@ from django.utils.translation import ugettext as _
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
-from dialogos.models import Comment
-
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.social.templatetags.social_tags import activity_item
@@ -72,7 +70,6 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         super(RecentActivityTest, self).setUp()
 
         registry.register(Dataset)
-        registry.register(Comment)
         registry.register(get_user_model())
         create_dataset_data()
         self.user = get_user_model().objects.filter(username='admin')[0]
@@ -137,12 +134,6 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
 
         content_type = ContentType.objects.get_for_model(Dataset)
         dataset = Dataset.objects.first()
-        comment = Comment(
-            author=self.user,
-            content_type=content_type,
-            object_id=dataset.id,
-            comment="This is a cool layer.")
-        comment.save()
 
         action = Action.objects.first()
         data = action.data

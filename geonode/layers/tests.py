@@ -1575,19 +1575,8 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.assertTrue(self.check_notification_out('dataset_updated', self.u))
 
             self.clear_notifications_queue()
-            from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_l)
-            comment = Comment(
-                author=self.norman,
-                name=self.u.username,
-                content_type=lct,
-                object_id=_l.id,
-                content_object=_l,
-                comment='test comment')
-            comment.save()
-            self.assertTrue(self.check_notification_out('dataset_comment', self.u))
-
-            self.clear_notifications_queue()
+            
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()
                 from pinax.ratings.models import Rating

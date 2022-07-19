@@ -503,7 +503,6 @@ INSTALLED_APPS = (
 
     # Social
     'avatar',
-    'dialogos',
     'pinax.ratings',
     'announcements',
     'actstream',
