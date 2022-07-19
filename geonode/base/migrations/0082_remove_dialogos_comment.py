@@ -10,5 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL("DROP TABLE dialogos_comment;"),
+        migrations.RunSQL("DROP TABLE IF EXISTS dialogos_comment CASCADE;"),
     ]
