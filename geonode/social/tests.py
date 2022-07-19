@@ -28,11 +28,10 @@ import json
 from rest_framework import status
 
 from actstream import registry
-from actstream.models import Action, actor_stream
+from actstream.models import Action
 
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
-from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -132,30 +131,6 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         self.assertEqual(template_tag.get('object_name'), dataset_name)
         self.assertEqual(template_tag.get('verb'), _('deleted'))
 
-        content_type = ContentType.objects.get_for_model(Dataset)
-        dataset = Dataset.objects.first()
-
-        action = Action.objects.first()
-        data = action.data
-        if isinstance(data, (str, bytes)):
-            data = json.loads(data)
-        self.assertEqual(action.actor, self.user)
-        self.assertEqual(data.get('raw_action'), 'created')
-        self.assertEqual(action.target, dataset)
-
-        template_tag = activity_item(action)
-
-        # <user> added a comment on <target>
-        self.assertEqual(template_tag.get('verb'), _('added a comment'))
-        self.assertEqual(template_tag.get('activity_class'), 'comment')
-        self.assertEqual(template_tag.get('target'), action.target)
-        self.assertEqual(template_tag.get('preposition'), _('on'))
-        self.assertIsNone(template_tag.get('object'))
-        self.assertEqual(template_tag.get('target'), dataset)
-
-        # Pre-fecthing actstream breaks the actor stream
-        self.assertIn(action, actor_stream(self.user))
-
     def test_get_recent_activities(self):
         url = reverse('recent-activity')
         response = self.client.get(url)
@@ -164,4 +139,3 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         self.assertIsNotNone(response.context_data['action_list_datasets'])
         self.assertIsNotNone(response.context_data['action_list_maps'])
         self.assertIsNotNone(response.context_data['action_list_documents'])
-        self.assertIsNotNone(response.context_data['action_list_comments'])
