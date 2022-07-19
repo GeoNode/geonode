@@ -20,12 +20,9 @@
 from geonode.base.models import ResourceBase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import json
-
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-from django.db.models import Max
 
 from .models import Favorite
 from geonode.documents.models import Document
@@ -53,7 +50,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+        remove_models(cls.get_obj_ids, type=cls.get_type,
+                      integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -82,11 +80,13 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(favorites_for_user.count(), 2)
 
         # test document favorites for user.
-        document_favorites = Favorite.objects.favorite_documents_for_user(test_user)
+        document_favorites = Favorite.objects.favorite_documents_for_user(
+            test_user)
         self.assertEqual(document_favorites.count(), 2)
 
         # test layer favorites for user.
-        dataset_favorites = Favorite.objects.favorite_datasets_for_user(test_user)
+        dataset_favorites = Favorite.objects.favorite_datasets_for_user(
+            test_user)
         self.assertEqual(dataset_favorites.count(), 0)
 
         # test map favorites for user.
@@ -98,7 +98,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(user_favorites.count(), 0)
 
         # test favorite for user and a specific content object.
-        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(test_user, test_document_1)
+        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(
+            test_user, test_document_1)
         self.assertEqual(user_content_favorite.object_id, test_document_1.id)
 
         # test bulk favorites.
@@ -127,7 +128,6 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         fav = Favorite.objects.last()
         ct = ContentType.objects.get_for_model(test_document_1)
         self.assertEqual(fav.content_type, ct)
-
 
     def _get_response(self, input_url, input_args):
         return self.client.post(
