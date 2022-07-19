@@ -477,7 +477,7 @@ msgid "Responsible, Point of Contact, Metadata Author"
 msgstr "Responsabile, Punto di contatto, Autore di metadati"
 
 msgid "Responsible"
-msgstr "Responabile"
+msgstr "Responsabile"
 
 msgid "Title"
 msgstr "Titolo"
