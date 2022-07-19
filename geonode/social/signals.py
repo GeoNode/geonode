@@ -43,11 +43,6 @@ if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
 
-relationships = None
-if "relationships" in settings.INSTALLED_APPS:
-    relationships = True
-    from relationships.models import Relationship
-
 ratings = None
 if "pinax.ratings" in settings.INSTALLED_APPS:
     ratings = True
@@ -202,8 +197,3 @@ def comment_post_save(instance, sender, created, **kwargs):
 # rating notifications
 if ratings and has_notifications:
     signals.post_save.connect(rating_post_save, sender=Rating)
-if relationships and activity:
-    signals.post_save.connect(relationship_post_save_actstream, sender=Relationship)
-    signals.pre_delete.connect(relationship_pre_delete_actstream, sender=Relationship)
-if relationships and has_notifications:
-    signals.post_save.connect(relationship_post_save, sender=Relationship)

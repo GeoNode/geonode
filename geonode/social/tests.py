@@ -141,7 +141,6 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
             data = json.loads(data)
         self.assertEqual(action.actor, self.user)
         self.assertEqual(data.get('raw_action'), 'created')
-        self.assertEqual(action.action_object, comment)
         self.assertEqual(action.target, dataset)
 
         template_tag = activity_item(action)

@@ -890,9 +890,6 @@ def gs_slurp(
                 OverallRating.objects.filter(
                     content_type=ct,
                     object_id=layer.id).delete()
-                Comment.objects.filter(
-                    content_type=ct,
-                    object_id=layer.id).delete()
                 layer.keywords.clear()
 
                 layer.delete()
