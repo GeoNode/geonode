@@ -57,7 +57,7 @@
     "numeral": "2.0.6",
     "radium": "0.25.2",
     "react": "16.9.0",
-    "react-calendar-heatmap": "1.8.1",
+    "react-calendar-heatmap": "1.9.0",
     "react-dom": "16.9.0",
     "react-hot-loader": "4.13.0",
     "react-intl": "3.12.1",
