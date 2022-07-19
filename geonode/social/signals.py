@@ -194,6 +194,7 @@ def comment_post_save(instance, sender, created, **kwargs):
                       notice_type_label,
                       {'resource': instance.content_object, 'author': instance.author})
 
+
 # rating notifications
 if ratings and has_notifications:
     signals.post_save.connect(rating_post_save, sender=Rating)

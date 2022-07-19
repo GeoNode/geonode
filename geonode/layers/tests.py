@@ -1576,7 +1576,7 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
 
             self.clear_notifications_queue()
             lct = ContentType.objects.get_for_model(_l)
-            
+
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()
                 from pinax.ratings.models import Rating
