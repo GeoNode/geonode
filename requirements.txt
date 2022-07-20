@@ -78,7 +78,7 @@ drf-extensions==0.7.1
 drf-writable-nested==0.6.4
 drf-spectacular==0.22.1
 dynamic-rest==2.1.2
-Markdown==3.3.7
+Markdown==3.4.1
 
 pinax-notifications==6.0.0
 pinax-ratings==4.0.0
@@ -106,10 +106,10 @@ django-bootstrap3-datetimepicker-2==2.8.2
 
 # storage manager dependencies
 django-storages==1.12.3
-dropbox==11.32.0
+dropbox==11.33.0
 google-cloud-storage==2.4.0
 google-cloud-core==2.3.1
-boto3==1.24.27
+boto3==1.24.33
 
 # Django Caches
 python-memcached<=1.59
@@ -146,7 +146,7 @@ docker==5.0.3
 invoke==1.7.1
 
 # tests
-coverage==6.4.1
+coverage==6.4.2
 requests-toolbelt==0.9.1
 flake8==4.0.1
 pytest==7.1.2
