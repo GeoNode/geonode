@@ -23,6 +23,7 @@ import base64
 import logging
 import requests
 import importlib
+import mock
 
 from gisdata import GOOD_DATA
 from requests.auth import HTTPBasicAuth
@@ -2001,6 +2002,36 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             },
             _p.compact
         )
+
+    def test_admin_whitelisted_access(self):
+        from geonode.security.middleware import AdminAllowedMiddleware
+
+        get_response = mock.MagicMock()
+        middleware = AdminAllowedMiddleware(get_response)
+
+        admin = get_user_model().objects.filter(is_superuser=True).first()
+
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            middleware.process_request(request)
+            self.assertEqual(request.user, get_anonymous_user())
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        with self.settings(ADMIN_IP_WHITELIST=['127.0.0.1']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
 
 
 class SecurityRulesTests(TestCase):

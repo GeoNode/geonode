@@ -27,7 +27,13 @@ from django.utils.deprecation import MiddlewareMixin
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import extract_user_from_headers, get_token_object_from_session
+from geonode.base.auth import (
+    extract_user_from_headers,
+    get_token_object_from_session,
+    visitor_ip_address
+)
+
+from guardian.shortcuts import get_anonymous_user
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
@@ -150,3 +156,36 @@ class SessionControlMiddleware(MiddlewareMixin):
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
                     f'{self.redirect_to}?next={request.path}')
+
+
+class AdminAllowedMiddleware(MiddlewareMixin):
+    """
+    Middleware that checks if admin is making requests from allowed IPs.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def process_request(self, request):
+        whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
+        user = None
+        if request.user:
+            user = request.user
+        else:
+            user = extract_user_from_headers(request)
+        if user and user.is_superuser and len(whitelist) > 0:
+            visitor_ip = visitor_ip_address(request)
+            if visitor_ip not in whitelist:
+                try:
+                    try:
+                        logout(request)
+                    except Exception:
+                        request.user = get_anonymous_user()
+                finally:
+                    try:
+                        from django.contrib import messages
+                        from django.utils.translation import ugettext_noop as _
+                        messages.warning(request, _("Admin access forbidden from {visitor_ip}"))
+                    except Exception:
+                        pass
+        return self.get_response(request)
