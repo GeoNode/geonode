@@ -208,8 +208,8 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
 class ResourceManager(ResourceManagerInterface):
 
-    def __init__(self):
-        self._concrete_resource_manager = self._get_concrete_manager()
+    def __init__(self, concrete_manager):
+        self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
     def _get_concrete_manager(self):
         module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -456,7 +456,7 @@ class ResourceManager(ResourceManagerInterface):
                 instance.clear_dirty_state()
         return instance
 
-    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}, use_concrete_manager: bool = True) -> ResourceBase:
+    def copy(self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}) -> ResourceBase:
         _resource = None
         if instance:
             try:
@@ -500,8 +500,7 @@ class ResourceManager(ResourceManagerInterface):
                     except Exception as e:
                         logger.exception(e)
 
-                    if use_concrete_manager:
-                        _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
 
             except Exception as e:
                 logger.exception(e)
