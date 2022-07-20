@@ -208,7 +208,7 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
 class ResourceManager(ResourceManagerInterface):
 
-    def __init__(self, concrete_manager):
+    def __init__(self, concrete_manager=None):
         self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
     def _get_concrete_manager(self):
