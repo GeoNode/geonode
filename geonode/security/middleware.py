@@ -169,7 +169,7 @@ class AdminAllowedMiddleware(MiddlewareMixin):
     def process_request(self, request):
         whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
         user = None
-        if request.user:
+        if getattr(request, "user", None):
             user = request.user
         else:
             user = extract_user_from_headers(request)
@@ -177,10 +177,14 @@ class AdminAllowedMiddleware(MiddlewareMixin):
             visitor_ip = visitor_ip_address(request)
             if visitor_ip not in whitelist:
                 try:
-                    try:
+                    if getattr(request, "session", None):
                         logout(request)
-                    except Exception:
+                    if getattr(request, "user", None):
                         request.user = get_anonymous_user()
+                    if "HTTP_AUTHORIZATION" in request.META:
+                        del request.META["HTTP_AUTHORIZATION"]
+                    if "apikey" in request.GET:
+                        del request.GET["apikey"]
                 finally:
                     try:
                         from django.contrib import messages

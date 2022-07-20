@@ -55,6 +55,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
+from geonode.base.auth import create_auth_token
 
 from geonode.base.models import (
     Configuration,
@@ -2017,6 +2018,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request.path = reverse('home')
             middleware.process_request(request)
             self.assertEqual(request.user, get_anonymous_user())
+
+            request = HttpRequest()
+            basic_auth = base64.b64encode(b"admin:admin").decode()
+            request.META['HTTP_AUTHORIZATION'] = f"Basic {basic_auth}"
+            request.path = reverse('home')
+            middleware.process_request(request)
+            self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
+
+            token = create_auth_token(admin)
+            request.META['HTTP_AUTHORIZATION'] = f"Bearer {token}"
+            middleware.process_request(request)
+            self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
 
         with self.settings(ADMIN_IP_WHITELIST=[]):
             request = HttpRequest()
