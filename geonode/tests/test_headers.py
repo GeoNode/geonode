@@ -18,29 +18,28 @@
 #########################################################################
 
 from django.shortcuts import reverse
-from django.test.utils import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from corsheaders.middleware import ACCESS_CONTROL_ALLOW_ORIGIN
 
+
 class TestHeaders(GeoNodeBaseTestSupport):
-    
+
     def test_cors_headers(self):
         categories_url = reverse('categories-list')
-        with self.settings(CORS_ALLOW_ALL_ORIGINS=True,CORS_ALLOW_CREDENTIALS=False):
-            response = self.client.get(
-                categories_url,
-                **{
+        headers = {
                     'HTTP_ORIGIN': "http://127.0.0.1"
                 }
+        with self.settings(CORS_ALLOW_ALL_ORIGINS=True, CORS_ALLOW_CREDENTIALS=False):
+            response = self.client.get(
+                categories_url,
+                **headers
             )
-            self.assertEqual(response[ACCESS_CONTROL_ALLOW_ORIGIN],'*')
+            self.assertEqual(response[ACCESS_CONTROL_ALLOW_ORIGIN], '*')
 
         with self.settings(CORS_ALLOW_ALL_ORIGINS=False):
             response = self.client.get(
                 categories_url,
-                **{
-                    'HTTP_ORIGIN': "http://127.0.0.1"
-                }
+                **headers
             )
             self.assertIsNone(getattr(response, 'ACCESS_CONTROL_ALLOW_ORIGIN', None))
