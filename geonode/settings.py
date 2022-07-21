@@ -1263,7 +1263,7 @@ AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('A
 #
 # ADMIN_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
 ADMIN_IP_WHITELIST = [] if os.getenv('ADMIN_IP_WHITELIST') is None \
-    else re.split(r' *[,|:|;] *', os.getenv('ADMIN_IP_WHITELIST'))
+    else re.split(r' *[,|:;] *', os.getenv('ADMIN_IP_WHITELIST'))
 if len(ADMIN_IP_WHITELIST) > 0:
     MIDDLEWARE += ('geonode.security.middleware.AdminAllowedMiddleware',)
 
