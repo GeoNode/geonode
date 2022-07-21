@@ -86,7 +86,7 @@ class Command(BaseCommand):
         
         thesaurus_entries = Thesaurus.objects.values_list('identifier', flat=True)
         if len(thesaurus_entries) == 0:
-          self.stderr.write(self.style.SUCCESS('NO ENTRIES FOUND ...'))
+          self.stderr.write(self.style.WARNING('NO ENTRIES FOUND ...'))
           return
         max_id_len = len(max(thesaurus_entries, key=len))
         
