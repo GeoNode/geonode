@@ -621,7 +621,7 @@ except ValueError:
         'zip', 'aif', 'aifc', 'aiff', 'au', 'mp3', 'mpga', 'wav', 'afl', 'avi', 'avs',
         'fli', 'mp2', 'mp4', 'mpg', 'ogg', 'webm', '3gp', 'flv', 'vdo', 'glb', 'pcd', 'gltf'
     ] if os.getenv('ALLOWED_DOCUMENT_TYPES') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
+        else re.split(r' *[,|:;] *', os.getenv('ALLOWED_DOCUMENT_TYPES'))
 
 MAX_DOCUMENT_SIZE = int(os.getenv('MAX_DOCUMENT_SIZE ', '2'))  # MB
 
@@ -1238,7 +1238,7 @@ try:
 except ValueError:
     # fallback to regular list of values separated with misc chars
     ALLOWED_HOSTS = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('ALLOWED_HOSTS') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('ALLOWED_HOSTS'))
+        else re.split(r' *[,|:;] *', os.getenv('ALLOWED_HOSTS'))
 
 # AUTH_IP_WHITELIST property limits access to users/groups REST endpoints
 # to only whitelisted IP addresses.
@@ -1250,7 +1250,7 @@ except ValueError:
 #
 # AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
 AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('AUTH_IP_WHITELIST') is None \
-    else re.split(r' *[,|:|;] *', os.getenv('AUTH_IP_WHITELIST'))
+    else re.split(r' *[,|:;] *', os.getenv('AUTH_IP_WHITELIST'))
 
 
 # ADMIN_IP_WHITELIST property limits access as admin
@@ -1277,7 +1277,7 @@ except ValueError:
         HOSTNAME, 'localhost', 'django', 'geonode',
         'spatialreference.org', 'nominatim.openstreetmap.org', 'dev.openlayers.org'] \
         if os.getenv('PROXY_ALLOWED_HOSTS') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
+        else re.split(r' *[,|:;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get('PROXY_URL', '/proxy/?url=')
@@ -1357,7 +1357,7 @@ except ValueError:
         'avatar.providers.GravatarAvatarProvider',
         'avatar.providers.DefaultAvatarProvider'
     ) if os.getenv('AVATAR_PROVIDERS') is None \
-        else re.split(r' *[,|:|;] *', os.getenv('AVATAR_PROVIDERS'))
+        else re.split(r' *[,|:;] *', os.getenv('AVATAR_PROVIDERS'))
 
 # Number of results per page listed in the GeoNode search pages
 CLIENT_RESULTS_LIMIT = int(os.getenv('CLIENT_RESULTS_LIMIT', '5'))
