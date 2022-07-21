@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import ipaddress
 from re import compile
 
 from django.conf import settings
@@ -168,28 +168,39 @@ class AdminAllowedMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
-        user = None
-        if getattr(request, "user", None):
-            user = request.user
-        else:
-            user = extract_user_from_headers(request)
-        if user and user.is_superuser and len(whitelist) > 0:
-            visitor_ip = visitor_ip_address(request)
-            if visitor_ip not in whitelist:
-                try:
-                    if getattr(request, "session", None):
-                        logout(request)
-                    if getattr(request, "user", None):
-                        request.user = get_anonymous_user()
-                    if "HTTP_AUTHORIZATION" in request.META:
-                        del request.META["HTTP_AUTHORIZATION"]
-                    if "apikey" in request.GET:
-                        del request.GET["apikey"]
-                finally:
+        if len(whitelist) > 0:
+            user = None
+            if getattr(request, "user", None):
+                user = request.user
+            else:
+                user = extract_user_from_headers(request)
+            if user and user.is_superuser:
+                visitor_ip = visitor_ip_address(request)
+                in_whitelist = False
+                if visitor_ip:
+                    visitor_ipaddress = ipaddress.ip_address(visitor_ip)
+                    for wip in whitelist:
+                        try:
+                            if visitor_ipaddress in ipaddress.ip_network(wip):
+                                in_whitelist = True
+                                break
+                        except Exception:
+                            pass
+                if not visitor_ip or not in_whitelist:
                     try:
-                        from django.contrib import messages
-                        from django.utils.translation import ugettext_noop as _
-                        messages.warning(request, _("Admin access forbidden from {visitor_ip}"))
-                    except Exception:
-                        pass
+                        if getattr(request, "session", None):
+                            logout(request)
+                        if getattr(request, "user", None):
+                            request.user = get_anonymous_user()
+                        if "HTTP_AUTHORIZATION" in request.META:
+                            del request.META["HTTP_AUTHORIZATION"]
+                        if "apikey" in request.GET:
+                            del request.GET["apikey"]
+                    finally:
+                        try:
+                            from django.contrib import messages
+                            from django.utils.translation import ugettext_noop as _
+                            messages.warning(request, _("Admin access forbidden from {visitor_ip}"))
+                        except Exception:
+                            pass
         return self.get_response(request)

@@ -2012,6 +2012,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         admin = get_user_model().objects.filter(is_superuser=True).first()
 
+        # Test invalid IP
         with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
             request = HttpRequest()
             request.user = admin
@@ -2038,7 +2039,17 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 
+        # Test valid IP
         with self.settings(ADMIN_IP_WHITELIST=['127.0.0.1']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        # Test range of whitelisted IPs
+        with self.settings(ADMIN_IP_WHITELIST=['127.0.0.0/24']):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
