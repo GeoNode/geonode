@@ -208,8 +208,8 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
 class ResourceManager(ResourceManagerInterface):
 
-    def __init__(self):
-        self._concrete_resource_manager = self._get_concrete_manager()
+    def __init__(self, concrete_manager=None):
+        self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
     def _get_concrete_manager(self):
         module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -499,7 +499,9 @@ class ResourceManager(ResourceManagerInterface):
                         to_update = storage_manager.copy(_resource).copy()
                     except Exception as e:
                         logger.exception(e)
+
                     _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+
             except Exception as e:
                 logger.exception(e)
                 _resource = None
