@@ -60,12 +60,12 @@ class ExecutionRequest(models.Model):
     name = models.CharField(
         max_length=250,
         null=True,
-        default=None, 
+        default=None,
         help_text="Human readable name for the execution request"
     )
     action = models.CharField(
         max_length=50,
-        choices=ACTION_CHOICES, 
-        default=ExecutionRequestAction.unknown.value, 
+        choices=ACTION_CHOICES,
+        default=ExecutionRequestAction.unknown.value,
         null=True
     )

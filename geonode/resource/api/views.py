@@ -18,7 +18,6 @@
 #########################################################################
 import json
 import logging
-from django.conf import settings
 
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import WithDynamicViewSetMixin
@@ -27,8 +26,7 @@ from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
 from geonode.resource.api.serializer import ExecutionRequestSerializer
 from geonode.resource.manager import resource_manager
-from geonode.resource.models import ExecutionRequest
-from geonode.security.utils import get_resources_with_perms, get_visible_resources
+from geonode.security.utils import get_resources_with_perms
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.authentication import (BasicAuthentication,

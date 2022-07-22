@@ -933,7 +933,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='delete',
-                action="delete",                
+                action="delete",
                 geonode_resource=resource,
                 input_params={
                     "uuid": resource.uuid
@@ -1143,7 +1143,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='copy',
                 geonode_resource=resource,
-                action="copy",                
+                action="copy",
                 input_params={
                     "instance": resource.id,
                     "owner": request_params.get('owner', request.user.username),

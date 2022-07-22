@@ -5,7 +5,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 
 class ExecutionRequestApi(GeoNodeBaseTestSupport):
-        #  loading test thesausuri and initial data
+    #  loading test thesausuri and initial data
     fixtures = [
         'initial_data.json',
         'group_test_data.json',
@@ -19,13 +19,13 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
         cls.superuser, _ = get_user_model().objects.get_or_create(
             username='superuser',
             password="secret",
-            is_active=True, 
+            is_active=True,
             is_superuser=True
         )
         cls.emmett_brown, _ = get_user_model().objects.get_or_create(
             username='emmett_brown',
             password="secret",
-            is_active=True, 
+            is_active=True,
         )
 
         cls.superuser_request_delete = ExecutionRequest.objects.create(
@@ -106,6 +106,3 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
         response = self.client.get(self.filtered_url)
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.json().get("total", 0))
-
-
-    
