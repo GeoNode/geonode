@@ -169,17 +169,23 @@ class AdminAllowedMiddleware(MiddlewareMixin):
     def process_request(self, request):
         whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
         if len(whitelist) > 0:
-            user = None
+            user_is_an_admin = False
+            potential_admins = []
+
+            potential_admins.append(extract_user_from_headers(request))
             if request.method == 'POST':
                 login_username = request.POST.get('login', None)
                 login_password = request.POST.get('password', None)
-                user = authenticate(username=login_username, password=login_password)
-            if not user:
-                user = extract_user_from_headers(request)
-            if not user and getattr(request, "user", None):
-                user = request.user
+                potential_admins.append(authenticate(username=login_username, password=login_password))
 
-            if user and user.is_superuser:
+            if getattr(request, "user", None):
+                potential_admins.append(request.user)
+
+            for potential_admin in potential_admins:
+                if potential_admin and potential_admin.is_superuser:
+                    user_is_an_admin = True
+
+            if user_is_an_admin:
                 visitor_ip = visitor_ip_address(request)
                 in_whitelist = False
                 if visitor_ip:
