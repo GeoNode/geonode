@@ -83,13 +83,13 @@ class Command(BaseCommand):
 
     def list_thesauri(self):
         self.stderr.write(self.style.SUCCESS('LISTING THESAURI'))
-        
+
         thesaurus_entries = Thesaurus.objects.values_list('identifier', flat=True)
         if len(thesaurus_entries) == 0:
-          self.stderr.write(self.style.WARNING('NO ENTRIES FOUND ...'))
-          return
+            self.stderr.write(self.style.WARNING('NO ENTRIES FOUND ...'))
+            return
         max_id_len = len(max(thesaurus_entries, key=len))
-        
+
         for t in Thesaurus.objects.order_by('order').all():
             if t.card_max == 0:
                 card = 'DISABLED'
