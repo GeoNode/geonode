@@ -17,9 +17,12 @@
 #
 #########################################################################
 from django.urls import path
+from geonode.api.urls import router
 
 from . import views
 
 urlpatterns = [
     path('resource-service/execution-status/<str:execution_id>', views.resource_service_execution_status, name='rs-execution-status')
 ]
+
+router.register(r'executionrequest', views.ExecutionRequestViewset, 'executionrequest')

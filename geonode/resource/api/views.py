@@ -18,19 +18,29 @@
 #########################################################################
 import json
 import logging
+from django.conf import settings
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
+from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
+from dynamic_rest.viewsets import WithDynamicViewSetMixin
+from geonode.base.api.filters import DynamicSearchFilter
+from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.resource.api.serializer import ExecutionRequestSerializer
 from geonode.resource.manager import resource_manager
-from geonode.security.utils import get_resources_with_perms
-
-from .utils import (
-    filtered,
-    resolve_type_serializer)
+from geonode.resource.models import ExecutionRequest
+from geonode.security.utils import get_resources_with_perms, get_visible_resources
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework import status
+from rest_framework.authentication import (BasicAuthentication,
+                                           SessionAuthentication)
+from rest_framework.decorators import api_view
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from ..models import ExecutionRequest
+from .utils import filtered, resolve_type_serializer
 
 logger = logging.getLogger(__name__)
 
@@ -113,3 +123,20 @@ def resource_service_execution_status(request, execution_id: str):
     except Exception as e:
         logger.exception(e)
         return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+
+class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticated, IsSelfOrAdminOrReadOnly, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
+    serializer_class = ExecutionRequestSerializer
+    pagination_class = GeoNodeApiPagination
+    http_method_names = ['get']
+
+    def get_queryset(self, queryset=None):
+        return ExecutionRequest.objects.filter(user=self.request.user).order_by('pk')

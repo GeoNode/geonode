@@ -22,6 +22,8 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
+from geonode.resource.enumerator import ExecutionRequestAction
+
 
 class ExecutionRequest(models.Model):
     STATUS_READY = "ready"
@@ -34,6 +36,9 @@ class ExecutionRequest(models.Model):
         (STATUS_RUNNING, _("running")),
         (STATUS_FINISHED, _("finished")),
     ]
+
+    ACTION_CHOICES = [(v.value, v.value) for v in ExecutionRequestAction]
+
     exec_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
@@ -52,3 +57,15 @@ class ExecutionRequest(models.Model):
 
     step = models.CharField(max_length=250, null=True, default=None)
     log = models.TextField(null=True, default=None)
+    name = models.CharField(
+        max_length=250,
+        null=True,
+        default=None, 
+        help_text="Human readable name for the execution request"
+    )
+    action = models.CharField(
+        max_length=50,
+        choices=ACTION_CHOICES, 
+        default=ExecutionRequestAction.unknown.value, 
+        null=True
+    )
