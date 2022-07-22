@@ -20,7 +20,7 @@ import ipaddress
 from re import compile
 
 from django.conf import settings
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
@@ -170,10 +170,15 @@ class AdminAllowedMiddleware(MiddlewareMixin):
         whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
         if len(whitelist) > 0:
             user = None
-            if getattr(request, "user", None):
-                user = request.user
-            else:
+            if request.method == 'POST':
+                login_username = request.POST.get('login', None)
+                login_password = request.POST.get('password', None)
+                user = authenticate(username=login_username, password=login_password)
+            if not user:
                 user = extract_user_from_headers(request)
+            if not user and getattr(request, "user", None):
+                user = request.user
+
             if user and user.is_superuser:
                 visitor_ip = visitor_ip_address(request)
                 in_whitelist = False
