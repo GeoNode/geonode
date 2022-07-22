@@ -23,6 +23,7 @@ import base64
 import logging
 import requests
 import importlib
+import mock
 
 from gisdata import GOOD_DATA
 from requests.auth import HTTPBasicAuth
@@ -54,6 +55,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
+from geonode.base.auth import create_auth_token
 
 from geonode.base.models import (
     Configuration,
@@ -2001,6 +2003,59 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             },
             _p.compact
         )
+
+    def test_admin_whitelisted_access(self):
+        from geonode.security.middleware import AdminAllowedMiddleware
+
+        get_response = mock.MagicMock()
+        middleware = AdminAllowedMiddleware(get_response)
+
+        admin = get_user_model().objects.filter(is_superuser=True).first()
+
+        # Test invalid IP
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            middleware.process_request(request)
+            self.assertEqual(request.user, get_anonymous_user())
+
+            request = HttpRequest()
+            basic_auth = base64.b64encode(b"admin:admin").decode()
+            request.META['HTTP_AUTHORIZATION'] = f"Basic {basic_auth}"
+            request.path = reverse('home')
+            middleware.process_request(request)
+            self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
+
+            token = create_auth_token(admin)
+            request.META['HTTP_AUTHORIZATION'] = f"Bearer {token}"
+            middleware.process_request(request)
+            self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        # Test valid IP
+        with self.settings(ADMIN_IP_WHITELIST=['127.0.0.1']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        # Test range of whitelisted IPs
+        with self.settings(ADMIN_IP_WHITELIST=['127.0.0.0/24']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
 
 
 class SecurityRulesTests(TestCase):
