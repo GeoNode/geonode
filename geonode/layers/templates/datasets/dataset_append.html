@@ -1,7 +1,6 @@
 {% extends "upload/dataset_upload_base.html" %}
 {% load i18n %}
 {% load static %}
-{% load dialogos_tags %}
 {% load pinax_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
@@ -104,9 +103,4 @@
 {% endautoescape %}
 
 </script>
-{% if GEONODE_SECURITY_ENABLED %}
-{% with resource=layer %}
-{% include "_permissions_form_js.html" %}
-{% endwith %}
-{% endif %}
 {% endblock extra_script %}

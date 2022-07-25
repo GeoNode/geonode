@@ -503,7 +503,6 @@ INSTALLED_APPS = (
 
     # Social
     'avatar',
-    'dialogos',
     'pinax.ratings',
     'announcements',
     'actstream',
@@ -1386,9 +1385,6 @@ CREATE_LAYER = ast.literal_eval(os.getenv('CREATE_LAYER', 'False'))
 if CREATE_LAYER:
     if 'geonode.geoserver.createlayer' not in INSTALLED_APPS:
         INSTALLED_APPS += ('geonode.geoserver.createlayer',)
-
-# Settings for FAVORITE plugin
-FAVORITE_ENABLED = ast.literal_eval(os.getenv('FAVORITE_ENABLED', 'True'))
 
 # Settings for RECAPTCHA plugin
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get('RECAPTCHA_ENABLED', 'False'))
