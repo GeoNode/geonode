@@ -20,12 +20,9 @@
 from geonode.base.models import ResourceBase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-import json
-
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-from django.db.models import Max
 
 from .models import Favorite
 from geonode.documents.models import Document
@@ -53,7 +50,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+        remove_models(cls.get_obj_ids, type=cls.get_type,
+                      integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -82,11 +80,13 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(favorites_for_user.count(), 2)
 
         # test document favorites for user.
-        document_favorites = Favorite.objects.favorite_documents_for_user(test_user)
+        document_favorites = Favorite.objects.favorite_documents_for_user(
+            test_user)
         self.assertEqual(document_favorites.count(), 2)
 
         # test layer favorites for user.
-        dataset_favorites = Favorite.objects.favorite_datasets_for_user(test_user)
+        dataset_favorites = Favorite.objects.favorite_datasets_for_user(
+            test_user)
         self.assertEqual(dataset_favorites.count(), 0)
 
         # test map favorites for user.
@@ -98,7 +98,8 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(user_favorites.count(), 0)
 
         # test favorite for user and a specific content object.
-        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(test_user, test_document_1)
+        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(
+            test_user, test_document_1)
         self.assertEqual(user_content_favorite.object_id, test_document_1.id)
 
         # test bulk favorites.
@@ -127,125 +128,6 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         fav = Favorite.objects.last()
         ct = ContentType.objects.get_for_model(test_document_1)
         self.assertEqual(fav.content_type, ct)
-
-    # tests of view methods.
-    def test_create_favorite_view(self):
-        """
-        call create view with valid user and content.
-        then call again to check for idempotent.
-        """
-        self.client.login(username=self.adm_un, password=self.adm_pw)
-
-        document = Document.objects.first()
-        self.assertIsNotNone(document)
-        document_pk = document.pk
-        response = self._get_response("add_favorite_document", (document_pk,))
-
-        # check persisted.
-        self.assertEqual(Favorite.objects.count(), 1)
-        ct = ContentType.objects.get_for_model(Document)
-        self.assertEqual(Favorite.objects.first().content_type, ct)
-        favorite_pk = Favorite.objects.first().pk
-
-        # check response.
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        json_content = json.loads(content)
-        self.assertEqual(json_content["has_favorite"], "true")
-        expected_delete_url = reverse("delete_favorite", args=[favorite_pk])
-        self.assertEqual(json_content["delete_url"], expected_delete_url)
-
-        # call method again, check for idempotent.
-        document = Document.objects.first()
-        self.assertIsNotNone(document)
-        document_pk = document.pk
-        response2 = self._get_response("add_favorite_document", (document_pk,))
-
-        # check still one only persisted, same as before second call.
-        self.assertEqual(Favorite.objects.count(), 1)
-        self.assertEqual(Favorite.objects.first().content_type, ct)
-
-        # check second response.
-        self.assertEqual(response2.status_code, 200)
-        json_content2 = json.loads(response2.content)
-        self.assertEqual(json_content2["has_favorite"], "true")
-        self.assertEqual(json_content2["delete_url"], expected_delete_url)
-
-    def test_create_favorite_view_login_required(self):
-        """
-        call create view, not logged in.
-        expect a redirect to login page.
-        """
-        response = self._get_response("add_favorite_document", ("1",))
-        self.assertEqual(response.status_code, 302)
-
-    def test_create_favorite_view_id_not_found(self):
-        """
-        call create view with object id that does not exist.
-        expect not found.
-        """
-        # get a pk that is not in the db for Document object.
-        max_document_pk = Document.objects.aggregate(Max("pk"))
-        self.assertIsNotNone(max_document_pk)
-        pk_not_in_db = str(max_document_pk["pk__max"] + 1)
-
-        self.client.login(username=self.adm_un, password=self.adm_pw)
-        response = self._get_response("add_favorite_document", (pk_not_in_db,))
-        self.assertEqual(response.status_code, 404)
-
-    def test_delete_favorite_view(self):
-        """
-        call delete view with valid user and favorite id.
-        then call again to check for idempotent.
-        """
-        self.client.login(username=self.adm_un, password=self.adm_pw)
-
-        # first, add one to delete.
-        document = Document.objects.first()
-        self.assertIsNotNone(document)
-        document_pk = document.pk
-        response = self._get_response("add_favorite_document", (document_pk,))
-
-        # check persisted.
-        self.assertEqual(Favorite.objects.count(), 1)
-        ct = ContentType.objects.get_for_model(Document)
-        self.assertEqual(Favorite.objects.first().content_type, ct)
-        favorite_pk = Favorite.objects.first().pk
-
-        # call delete method.
-        response = self._get_response("delete_favorite", (favorite_pk,))
-
-        # check no longer persisted.
-        self.assertEqual(Favorite.objects.count(), 0)
-
-        # check response.
-        self.assertEqual(response.status_code, 200)
-        content = response.content
-        if isinstance(content, bytes):
-            content = content.decode('UTF-8')
-        json_content = json.loads(content)
-        self.assertEqual(json_content["has_favorite"], "false")
-
-        # call method again, check for idempotent.
-        response2 = self._get_response("delete_favorite", (favorite_pk,))
-
-        # check still none persisted, same as before second call.
-        self.assertEqual(Favorite.objects.count(), 0)
-
-        # check second response.
-        self.assertEqual(response2.status_code, 200)
-        json_content2 = json.loads(response2.content)
-        self.assertEqual(json_content2["has_favorite"], "false")
-
-    def test_delete_favorite_view_login_required(self):
-        """
-        call delete view, not logged in.
-        expect a redirect to login page.
-        """
-        response = self._get_response("delete_favorite", ("1",))
-        self.assertEqual(response.status_code, 302)
 
     def _get_response(self, input_url, input_args):
         return self.client.post(

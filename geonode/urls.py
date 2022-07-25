@@ -134,7 +134,6 @@ urlpatterns += [
         'geonode.invitations.urls', namespace='geonode.invitations')),
     url(r'^people/', include('geonode.people.urls')),
     url(r'^avatar/', include('avatar.urls')),
-    url(r'^comments/', include('dialogos.urls')),
     url(r'^ratings/', include('pinax.ratings.urls', namespace='pinax_ratings')),
     url(r'^activity/', include('actstream.urls')),
     url(r'^announcements/', include('announcements.urls')),
@@ -191,12 +190,6 @@ urlpatterns += [  # '',
     url(r'^showmetadata/',
         include('geonode.catalogue.metadataxsl.urls')),
 ]
-
-if settings.FAVORITE_ENABLED:
-    urlpatterns += [  # '',
-        url(r'^favorite/',
-            include('geonode.favorite.urls')),
-    ]
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     if settings.CREATE_LAYER:
