@@ -2004,7 +2004,23 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _p.compact
         )
 
-    def test_admin_whitelisted_access(self):
+    def test_admin_whitelisted_access_backend(self):
+        from geonode.security.backends import AdminRestrictedAccessBackend
+        from django.core.exceptions import PermissionDenied
+
+        backend = AdminRestrictedAccessBackend()
+
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            with self.assertRaises(PermissionDenied):
+                backend.authenticate(HttpRequest(), username='admin', password='admin')
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            user = backend.authenticate(request, username='admin', password='admin')
+            self.assertIsNone(user)
+
+    def test_admin_whitelisted_access_middleware(self):
         from geonode.security.middleware import AdminAllowedMiddleware
 
         get_response = mock.MagicMock()

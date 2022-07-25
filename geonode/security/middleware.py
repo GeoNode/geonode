@@ -16,11 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import ipaddress
 from re import compile
 
 from django.conf import settings
-from django.contrib.auth import logout, authenticate
+from django.contrib.auth import logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
@@ -30,7 +29,8 @@ from geonode.utils import check_ogc_backend
 from geonode.base.auth import (
     extract_user_from_headers,
     get_token_object_from_session,
-    visitor_ip_address
+    visitor_ip_address,
+    is_ipaddress_in_whitelist
 )
 
 from guardian.shortcuts import get_anonymous_user
@@ -169,39 +169,20 @@ class AdminAllowedMiddleware(MiddlewareMixin):
     def process_request(self, request):
         whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
         if len(whitelist) > 0:
-            user_is_an_admin = False
             potential_admins = []
-
             potential_admins.append(extract_user_from_headers(request))
-            if request.method == 'POST':
-                login_username = request.POST.get('login', None)
-                login_password = request.POST.get('password', None)
-                potential_admins.append(authenticate(username=login_username, password=login_password))
-
-            if getattr(request, "user", None):
+            if hasattr(request, "user"):
                 potential_admins.append(request.user)
 
-            for potential_admin in potential_admins:
-                if potential_admin and potential_admin.is_superuser:
-                    user_is_an_admin = True
+            is_admin = any([u.is_superuser for u in potential_admins])
 
-            if user_is_an_admin:
+            if is_admin:
                 visitor_ip = visitor_ip_address(request)
-                in_whitelist = False
-                if visitor_ip:
-                    visitor_ipaddress = ipaddress.ip_address(visitor_ip)
-                    for wip in whitelist:
-                        try:
-                            if visitor_ipaddress in ipaddress.ip_network(wip):
-                                in_whitelist = True
-                                break
-                        except Exception:
-                            pass
-                if not visitor_ip or not in_whitelist:
+                if not is_ipaddress_in_whitelist(visitor_ip, whitelist):
                     try:
-                        if getattr(request, "session", None):
+                        if hasattr(request, "session"):
                             logout(request)
-                        if getattr(request, "user", None):
+                        if hasattr(request, "user"):
                             request.user = get_anonymous_user()
                         if "HTTP_AUTHORIZATION" in request.META:
                             del request.META["HTTP_AUTHORIZATION"]

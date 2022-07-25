@@ -21,6 +21,7 @@ import base64
 import datetime
 import logging
 import traceback
+import ipaddress
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -261,3 +262,21 @@ def visitor_ip_address(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def is_ipaddress_in_whitelist(visitor_ip, whitelist):
+    # Chech if an IP is in the whitelisted IP ranges
+    if visitor_ip and whitelist and len(whitelist) > 0:
+        in_whitelist = False
+        if visitor_ip:
+            visitor_ipaddress = ipaddress.ip_address(visitor_ip)
+            for wip in whitelist:
+                try:
+                    if visitor_ipaddress in ipaddress.ip_network(wip):
+                        in_whitelist = True
+                        break
+                except Exception:
+                    pass
+        if visitor_ip and in_whitelist:
+            return True
+    return False
