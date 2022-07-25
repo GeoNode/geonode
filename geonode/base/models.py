@@ -70,6 +70,7 @@ from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
     bbox_to_projection,
+    get_allowed_extensions,
     is_monochromatic_image)
 from geonode.thumbs.utils import (
     MISSING_THUMB,
@@ -91,7 +92,7 @@ from geonode.people.enumerations import ROLE_VALUES
 
 from urllib.parse import urlsplit, urljoin
 from geonode.storage.manager import storage_manager
-from geonode.upload.files import ALLOWED_EXTENSIONS
+
 
 logger = logging.getLogger(__name__)
 
@@ -1457,7 +1458,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def is_copyable(self):
         from geonode.geoserver.helpers import select_relevant_files
         if self.resource_type == 'dataset':
-            allowed_file = select_relevant_files(ALLOWED_EXTENSIONS, self.files)
+            allowed_file = select_relevant_files(get_allowed_extensions(), self.files)
             return len(allowed_file) != 0
         return True
 
