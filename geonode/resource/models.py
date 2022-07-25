@@ -66,6 +66,6 @@ class ExecutionRequest(models.Model):
     action = models.CharField(
         max_length=50,
         choices=ACTION_CHOICES,
-        default=ExecutionRequestAction.unknown.value,
+        default=ExecutionRequestAction.UNKNOWN.value,
         null=True
     )
