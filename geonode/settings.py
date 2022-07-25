@@ -1265,6 +1265,7 @@ AUTH_IP_WHITELIST = [HOSTNAME, 'localhost', 'django', 'geonode'] if os.getenv('A
 ADMIN_IP_WHITELIST = [] if os.getenv('ADMIN_IP_WHITELIST') is None \
     else re.split(r' *[,|:;] *', os.getenv('ADMIN_IP_WHITELIST'))
 if len(ADMIN_IP_WHITELIST) > 0:
+    AUTHENTICATION_BACKENDS = ('geonode.security.backends.AdminRestrictedAccessBackend',) + AUTHENTICATION_BACKENDS
     MIDDLEWARE += ('geonode.security.middleware.AdminAllowedMiddleware',)
 
 # A tuple of hosts the proxy can send requests to.
