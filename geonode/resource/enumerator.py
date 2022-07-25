@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2021 OSGeo
+# Copyright (C) 2022 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +16,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.urls import path
-from geonode.api.urls import router
+import enum
+from django.utils.translation import gettext_lazy as _
 
-from . import views
 
-urlpatterns = [
-    path('resource-service/execution-status/<str:execution_id>', views.resource_service_execution_status, name='rs-execution-status')
-]
-
-router.register(r'executionrequest', views.ExecutionRequestViewset, 'executionrequest')
+class ExecutionRequestAction(enum.Enum):
+    upload = _("upload")  # import will be better, but it will clash with the python import statement
+    create = _("create")
+    copy = _("copy")
+    delete = _("delete")
+    permissions = _("permissions")
+    update = _("update")
+    ingest = _("ingest")
+    unknown = _("unknown")
