@@ -169,6 +169,10 @@ class AdminAllowedMiddleware(MiddlewareMixin):
     def process_request(self, request):
         whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
         if len(whitelist) > 0:
+            # When the request reaches the middleware the user attached to it (directly or through a session)
+            # might differ from the user from the headers. E.g. userX might have a an active session
+            # and a request with admin's headers could be issues. For this reason we check both to find out if
+            # an admin is trying a request somehow.
             potential_admins = []
             potential_admins.append(extract_user_from_headers(request))
             if hasattr(request, "user"):
