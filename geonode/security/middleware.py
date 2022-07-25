@@ -19,6 +19,7 @@
 from re import compile
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -32,8 +33,6 @@ from geonode.base.auth import (
     visitor_ip_address,
     is_ipaddress_in_whitelist
 )
-
-from guardian.shortcuts import get_anonymous_user
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
@@ -187,7 +186,7 @@ class AdminAllowedMiddleware(MiddlewareMixin):
                         if hasattr(request, "session"):
                             logout(request)
                         if hasattr(request, "user"):
-                            request.user = get_anonymous_user()
+                            request.user = AnonymousUser()
                         if "HTTP_AUTHORIZATION" in request.META:
                             del request.META["HTTP_AUTHORIZATION"]
                         if "apikey" in request.GET:

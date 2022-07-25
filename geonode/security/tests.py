@@ -2035,7 +2035,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request.path = reverse('home')
             request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
-            self.assertEqual(request.user, get_anonymous_user())
+            self.assertEqual(request.user, AnonymousUser())
 
             request = HttpRequest()
             basic_auth = base64.b64encode(b"admin:admin").decode()
