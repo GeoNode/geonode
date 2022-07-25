@@ -2033,6 +2033,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertEqual(request.user, get_anonymous_user())
 
@@ -2040,6 +2041,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             basic_auth = base64.b64encode(b"admin:admin").decode()
             request.META['HTTP_AUTHORIZATION'] = f"Basic {basic_auth}"
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
 
@@ -2052,6 +2054,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 
