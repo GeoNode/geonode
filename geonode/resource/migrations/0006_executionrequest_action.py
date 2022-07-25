@@ -24,13 +24,13 @@ from geonode.resource.enumerator import ExecutionRequestAction
 def fixup_action(apps, _):
     execution_requests = apps.get_model('resource', 'ExecutionRequest')
     for _req in execution_requests.objects.all():
-        if not _req.action or _req.action == ExecutionRequestAction.unknown.value:
+        if not _req.action or _req.action == ExecutionRequestAction.UNKNOWN.value:
             if getattr(ExecutionRequestAction, _req.func_name, None):
                 _req.action = getattr(ExecutionRequestAction, _req.func_name).value
             elif _req.action in ['remove_permissions', "set_permissions"]:
-                _req.action = ExecutionRequestAction.permissions.value
+                _req.action = ExecutionRequestAction.PERMISSIONS.value
             else:
-                _req.action = ExecutionRequestAction.unknown.value
+                _req.action = ExecutionRequestAction.UNKNOWN.value
             _req.save()
 
 
