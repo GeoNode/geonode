@@ -38,7 +38,6 @@ from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.utils import timezone
@@ -889,9 +888,6 @@ def gs_slurp(
                 # delete ratings, comments, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(
-                    content_type=ct,
-                    object_id=layer.id).delete()
-                Comment.objects.filter(
                     content_type=ct,
                     object_id=layer.id).delete()
                 layer.keywords.clear()

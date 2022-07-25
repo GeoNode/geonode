@@ -53,10 +53,6 @@
 
 {{ block.super }}
 
-{% if GEONODE_SECURITY_ENABLED %}
-  {% include "_permissions_form_js.html" %}
-{% endif %}
-
 <script type="text/javascript">
 
     // code inspired by https://www.sanwebe.com/2013/03/addremove-input-fields-dynamically-with-jquery

@@ -290,7 +290,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         admin = get_user_model().objects.get(username='admin')
         self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('favorite_list')
+        request.path = reverse('account_email')
         middleware.process_request(request)
         response = self.client.get(request.path)
         self.assertEqual(response.status_code, 200)
@@ -2004,7 +2004,23 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _p.compact
         )
 
-    def test_admin_whitelisted_access(self):
+    def test_admin_whitelisted_access_backend(self):
+        from geonode.security.backends import AdminRestrictedAccessBackend
+        from django.core.exceptions import PermissionDenied
+
+        backend = AdminRestrictedAccessBackend()
+
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            with self.assertRaises(PermissionDenied):
+                backend.authenticate(HttpRequest(), username='admin', password='admin')
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            user = backend.authenticate(request, username='admin', password='admin')
+            self.assertIsNone(user)
+
+    def test_admin_whitelisted_access_middleware(self):
         from geonode.security.middleware import AdminAllowedMiddleware
 
         get_response = mock.MagicMock()
@@ -2017,13 +2033,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
-            self.assertEqual(request.user, get_anonymous_user())
+            self.assertEqual(request.user, AnonymousUser())
 
             request = HttpRequest()
             basic_auth = base64.b64encode(b"admin:admin").decode()
             request.META['HTTP_AUTHORIZATION'] = f"Basic {basic_auth}"
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
 
@@ -2036,6 +2054,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 

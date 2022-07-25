@@ -577,6 +577,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='remove_permissions',
                     geonode_resource=resource,
+                    action="permissions",
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid)
                     }
@@ -587,6 +588,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='set_permissions',
                     geonode_resource=resource,
+                    action="permissions",
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
@@ -602,6 +604,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='set_permissions',
                     geonode_resource=resource,
+                    action="permissions",
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
@@ -751,6 +754,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='ingest',
                 geonode_resource=resource_filter.get() if resource_filter.exists() else None,
+                action="ingest",
                 input_params={
                     "uuid": uuid,
                     "files": request_params.get('files', '[]'),
@@ -848,6 +852,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='create',
                 geonode_resource=resource_filter.get() if resource_filter.exists() else None,
+                action="create",
                 input_params={
                     "uuid": uuid,
                     "resource_type": resource_type,
@@ -928,6 +933,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='delete',
+                action="delete",
                 geonode_resource=resource,
                 input_params={
                     "uuid": resource.uuid
@@ -1036,6 +1042,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='update',
                 geonode_resource=resource,
+                action="update",
                 input_params={
                     "uuid": request_params.get('uuid', resource.uuid),
                     "xml_file": request_params.get('xml_file', None),
@@ -1136,6 +1143,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='copy',
                 geonode_resource=resource,
+                action="copy",
                 input_params={
                     "instance": resource.id,
                     "owner": request_params.get('owner', request.user.username),
