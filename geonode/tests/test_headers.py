@@ -30,7 +30,7 @@ class TestHeaders(GeoNodeBaseTestSupport):
         headers = {
                     'HTTP_ORIGIN': "http://127.0.0.1"
                 }
-        with self.settings(CORS_ALLOW_ALL_ORIGINS=True, CORS_ALLOW_CREDENTIALS=False):
+        with self.settings(CORS_ALLOW_ALL_ORIGINS=True):
             response = self.client.get(
                 categories_url,
                 **headers
