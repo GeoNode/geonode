@@ -39,7 +39,7 @@ from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
 
-LOCAL_TEST_CATALOG_URL = 'http://localhost/'
+LOCAL_TEST_CATALOG_URL = 'http://localhost:8001/'
 
 
 class GeoNodeCSWTest(GeoNodeBaseTestSupport):
