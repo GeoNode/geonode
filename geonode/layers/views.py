@@ -1158,7 +1158,7 @@ def dataset_embed(
         layername):
     context = get_dataset_detail_context(request, layername)
     if isinstance(context, HttpResponse):
-        return context 
+        return context
     return TemplateResponse(request, 'datasets/dataset_embed.html', context=context)
 
 
