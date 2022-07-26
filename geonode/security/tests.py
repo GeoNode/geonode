@@ -303,10 +303,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertTrue(request.session.is_empty())
 
         # Test the full cycle through the client
-        request = HttpRequest()
+        path = reverse('account_email')
         self.client.login(username='admin', password='admin')
-        request.path = reverse('account_email')
-        response = self.client.get(request.path)
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 200)
 
         # Simulating Token expired (or not set)
@@ -314,7 +313,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         session = engine.SessionStore(session_id.value)
         session['access_token'] = None
         session.save()
-        response = self.client.get(reverse('account_email'))
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 302)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
