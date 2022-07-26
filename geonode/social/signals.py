@@ -23,7 +23,6 @@
 """
 import logging
 from collections import defaultdict
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
@@ -43,11 +42,6 @@ activity = None
 if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
-
-relationships = None
-if "relationships" in settings.INSTALLED_APPS:
-    relationships = True
-    from relationships.models import Relationship
 
 ratings = None
 if "pinax.ratings" in settings.INSTALLED_APPS:
@@ -164,8 +158,6 @@ def relationship_post_save(instance, sender, created, **kwargs):
 
 
 if activity:
-    signals.post_save.connect(activity_post_modify_object, sender=Comment)
-
     signals.post_save.connect(activity_post_modify_object, sender=Dataset)
     signals.post_delete.connect(activity_post_modify_object, sender=Dataset)
 
@@ -203,15 +195,6 @@ def comment_post_save(instance, sender, created, **kwargs):
                       {'resource': instance.content_object, 'author': instance.author})
 
 
-# signals
-# comments notifications
-signals.post_save.connect(comment_post_save, sender=Comment)
-
 # rating notifications
 if ratings and has_notifications:
     signals.post_save.connect(rating_post_save, sender=Rating)
-if relationships and activity:
-    signals.post_save.connect(relationship_post_save_actstream, sender=Relationship)
-    signals.pre_delete.connect(relationship_pre_delete_actstream, sender=Relationship)
-if relationships and has_notifications:
-    signals.post_save.connect(relationship_post_save, sender=Relationship)

@@ -8,14 +8,8 @@ module.exports = function(grunt) {
   let assetsMinifiedJs = fileHandling["assets.min.js"].map (
     fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
   );
-  let openlayersPluginsMinifiedJs = fileHandling["openlayers-plugins.min.js"].map(
-    fileSegment => 'lib/js/' + fileSegment.substring(fileSegment.lastIndexOf('/') + 1)
-  );
   let assetsMinifiedCss = fileHandling["assets.min.css"].map (
     fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/')+1)
-  );
-  let openlayersMinifiedCss = fileHandling["openlayers.plugins.min.css"].map(
-    fileSegment => 'lib/css/' + fileSegment.substring(fileSegment.lastIndexOf('/') + 1)
   );
 
   grunt.initConfig({
@@ -217,7 +211,6 @@ module.exports = function(grunt) {
         },
         files: {
           'lib/css/assets.min.css': assetsMinifiedCss,
-          'lib/css/openlayers-plugins.min.css': openlayersMinifiedCss,
           'geonode/css/geonode-rtl.min.css': ['geonode/css/geonode-rtl.css']
         }
       }
@@ -248,8 +241,7 @@ module.exports = function(grunt) {
           mangle: false
         },
         files: {
-          'lib/js/assets.min.js': assetsMinifiedJs,
-          'lib/js/openlayers-plugins.min.js': openlayersPluginsMinifiedJs
+          'lib/js/assets.min.js': assetsMinifiedJs
         }
       },
       production: {
@@ -259,8 +251,7 @@ module.exports = function(grunt) {
           mangle: false
         },
         files: {
-          'lib/js/assets.min.js': assetsMinifiedJs,
-          'lib/js/openlayers-plugins.min.js': openlayersPluginsMinifiedJs
+          'lib/js/assets.min.js': assetsMinifiedJs
         }
       }
     },
