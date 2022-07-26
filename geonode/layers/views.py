@@ -1156,8 +1156,10 @@ def dataset_sld_upload(
 def dataset_embed(
         request,
         layername):
-    context_dict = get_dataset_detail_context(request, layername)
-    return TemplateResponse(request, 'datasets/dataset_embed.html', context=context_dict)
+    context = get_dataset_detail_context(request, layername)
+    if isinstance(context, HttpResponse):
+        return context 
+    return TemplateResponse(request, 'datasets/dataset_embed.html', context=context)
 
 
 @login_required
