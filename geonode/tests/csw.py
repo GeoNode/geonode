@@ -25,12 +25,12 @@ import logging
 
 from lxml import etree
 from owslib import fes
-from urllib.parse import urljoin
 from owslib.etree import etree as dlxml
 from owslib.fes import PropertyIsLike
 # ref.: https://geopython.github.io/OWSLib/_sources/index.txt
 
 from django.conf import settings
+from django.test import override_settings
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -45,6 +45,12 @@ LOCAL_TEST_CATALOG_URL = 'http://localhost:8001/catalogue/csw'
 class GeoNodeCSWTest(GeoNodeBaseTestSupport):
     """Tests geonode.catalogue app/module"""
 
+    @override_settings(CATALOGUE={
+            'default': {
+            'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+            'URL': LOCAL_TEST_CATALOG_URL
+        }
+    })
     def test_csw_base(self):
         """Verify that GeoNode works against any CSW"""
         csw = get_catalogue(
@@ -63,7 +69,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         for op in csw.catalogue.operations:
             for method in op.methods:
                 self.assertEqual(
-                    csw.catalogue.url,
+                    'http://localhost/catalogue/csw',
                     method['url'],
                     'Expected GeoNode URL to be equal to all CSW URLs')
 
@@ -95,6 +101,12 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             'http://www.isotc211.org/2005/gmd' in outputschemas,
             'Expected "http://www.isotc211.org/2005/gmd" to be a supported outputSchema value')
 
+    @override_settings(CATALOGUE={
+            'default': {
+            'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+            'URL': LOCAL_TEST_CATALOG_URL
+        }
+    })
     def test_csw_search_count(self):
         """Verify that GeoNode CSW can handle search counting"""
         csw = get_catalogue(
