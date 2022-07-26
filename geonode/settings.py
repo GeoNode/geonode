@@ -2176,52 +2176,52 @@ to evaluate if the file is greater than the limit size defined
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = ("data_upload", "uploads-upload", "document_upload",)
 
 SUPPORTED_DATASET_FILE_TYPES = [
-        {
-            "id": "shp",
-            "label": "ESRI Shapefile",
-            "format": "vector",
-            "ext": ["shp"],
-            "requires": ["shp", "prj", "dbf", "shx"],
-            "optional": ["xml", "sld"]
-        },
-        {
-            "id": "tiff",
-            "label": "GeoTIFF",
-            "format": "raster",
-            "ext": ["tiff", "tif"],
-            "mimeType": ["image/tiff"],
-            "optional": ["xml", "sld"]
-        },
-        {
-            "id": "csv",
-            "label": "Comma Separated Value (CSV)",
-            "format": "vector",
-            "ext": ["csv"],
-            "mimeType": ["text/csv"],
-            "optional": ["xml", "sld"]
-        },
-        {
-            "id": "zip",
-            "label": "Zip Archive",
-            "format": "archive",
-            "ext": ["zip"],
-            "mimeType": ["application/zip"],
-            "optional": ["xml", "sld"]
-        },
-        {
-            "id": "xml",
-            "label": "XML Metadata File",
-            "format": "metadata",
-            "ext": ["xml"],
-            "mimeType": ["application/json"],
-            "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "sld"]
-        },
-        {
-            "id": "sld",
-            "label": "Styled Layer Descriptor (SLD)",
-            "format": "metadata",
-            "ext": ["sld"],
-            "mimeType": ["application/json"],
-            "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "xml"]
-        }
-    ]
+    {
+        "id": "shp",
+        "label": "ESRI Shapefile",
+        "format": "vector",
+        "ext": ["shp"],
+        "requires": ["shp", "prj", "dbf", "shx"],
+        "optional": ["xml", "sld"]
+    },
+    {
+        "id": "tiff",
+        "label": "GeoTIFF",
+        "format": "raster",
+        "ext": ["tiff", "tif"],
+        "mimeType": ["image/tiff"],
+        "optional": ["xml", "sld"]
+    },
+    {
+        "id": "csv",
+        "label": "Comma Separated Value (CSV)",
+        "format": "vector",
+        "ext": ["csv"],
+        "mimeType": ["text/csv"],
+        "optional": ["xml", "sld"]
+    },
+    {
+        "id": "zip",
+        "label": "Zip Archive",
+        "format": "archive",
+        "ext": ["zip"],
+        "mimeType": ["application/zip"],
+        "optional": ["xml", "sld"]
+    },
+    {
+        "id": "xml",
+        "label": "XML Metadata File",
+        "format": "metadata",
+        "ext": ["xml"],
+        "mimeType": ["application/json"],
+        "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "sld"]
+    },
+    {
+        "id": "sld",
+        "label": "Styled Layer Descriptor (SLD)",
+        "format": "metadata",
+        "ext": ["sld"],
+        "mimeType": ["application/json"],
+        "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "xml"]
+    }
+]

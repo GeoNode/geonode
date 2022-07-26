@@ -46,7 +46,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
     """Tests geonode.catalogue app/module"""
 
     @override_settings(CATALOGUE={
-            'default': {
+        'default': {
             'ENGINE': 'geonode.catalogue.backends.pycsw_local',
             'URL': LOCAL_TEST_CATALOG_URL
         }
@@ -102,7 +102,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             'Expected "http://www.isotc211.org/2005/gmd" to be a supported outputSchema value')
 
     @override_settings(CATALOGUE={
-            'default': {
+        'default': {
             'ENGINE': 'geonode.catalogue.backends.pycsw_local',
             'URL': LOCAL_TEST_CATALOG_URL
         }
