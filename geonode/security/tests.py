@@ -55,7 +55,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
-from geonode.base.auth import create_auth_token
+from geonode.base.auth import create_auth_token, get_or_create_token
 
 from geonode.base.models import (
     Configuration,
@@ -283,22 +283,37 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         Tests the Geonode session control authentication middleware.
         """
         from geonode.security.middleware import SessionControlMiddleware
+        from importlib import import_module
+
+        engine = import_module(settings.SESSION_ENGINE)
         middleware = SessionControlMiddleware(None)
 
+        admin = get_user_model().objects.filter(is_superuser=True).first()
         request = HttpRequest()
-        self.client.login(username='admin', password='admin')
-        admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('favorite_list')
+        request.session = engine.SessionStore()
+        request.session['access_token'] = get_or_create_token(admin)
+        request.session.save()
         middleware.process_request(request)
-        response = self.client.get(request.path)
-        self.assertEqual(response.status_code, 200)
-        # Simulating Token expired (or not set)
-        request.session = {}
+        self.assertFalse(request.session.is_empty())
+
         request.session['access_token'] = None
+        request.session.save()
         middleware.process_request(request)
-        response = self.client.get('/admin')
+        self.assertTrue(request.session.is_empty())
+
+        # Test the full cycle through the client
+        path = reverse('account_email')
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+
+        # Simulating Token expired (or not set)
+        session_id = self.client.cookies.get(settings.SESSION_COOKIE_NAME)
+        session = engine.SessionStore(session_id.value)
+        session['access_token'] = None
+        session.save()
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 302)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
