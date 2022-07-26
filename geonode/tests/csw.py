@@ -50,7 +50,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue(
             backend={
                 'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-                'URL': urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw'),
+                'URL': 'http://localhost:8001/catalogue/csw',
             },
             skip_caps=False)
 
@@ -100,7 +100,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue(
             backend={
                 'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-                'URL': urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw'),
+                'URL': 'http://localhost:8001/catalogue/csw',
             },
             skip_caps=False)
 
