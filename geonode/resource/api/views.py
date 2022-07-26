@@ -24,11 +24,14 @@ from dynamic_rest.viewsets import WithDynamicViewSetMixin
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.resource.api.exceptions import ExecutionRequestException
 from geonode.resource.api.serializer import ExecutionRequestSerializer
 from geonode.resource.manager import resource_manager
 from geonode.security.utils import get_resources_with_perms
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
+from rest_framework.exceptions import NotFound
+from django.core.exceptions import ValidationError
 from rest_framework.authentication import (BasicAuthentication,
                                            SessionAuthentication)
 from rest_framework.decorators import api_view
@@ -134,7 +137,25 @@ class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     ]
     serializer_class = ExecutionRequestSerializer
     pagination_class = GeoNodeApiPagination
-    http_method_names = ['get']
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self, queryset=None):
         return ExecutionRequest.objects.filter(user=self.request.user).order_by('pk')
+
+    def delete(self, *args, **kwargs):
+        try:
+            _pk = kwargs.get("pk")
+            if not _pk:
+                raise ExecutionRequestException("UUID was not provided")
+
+            _entry = self.get_queryset().filter(exec_id=_pk)
+            if not _entry.exists():
+                raise NotFound(detail=f"uuid provided does not exists: {_pk}")
+
+            _entry.delete()
+
+            return Response(status=200)
+        except ValidationError as e:
+            raise ExecutionRequestException(detail=e.messages[0] if e.messages else e)
+        except Exception as e:
+            raise e
