@@ -1091,13 +1091,13 @@ CATALOGUE = {
     'default': {
         # The underlying CSW implementation
         # default is pycsw in local mode (tied directly to GeoNode Django DB)
-        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        'ENGINE': os.getenv('CATALOGUE_ENGINE', 'geonode.catalogue.backends.pycsw_local'),
         # pycsw in non-local mode
         # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
         # deegree and others
         # 'ENGINE': 'geonode.catalogue.backends.generic',
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': urljoin(SITEURL, '/catalogue/csw'),
+        'URL': os.getenv('CATALOGUE_URL', urljoin(SITEURL, '/catalogue/csw')),
         # 'URL': 'http://localhost:8080/geonetwork/srv/en/csw',
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
         # 'ALTERNATES_ONLY': True,

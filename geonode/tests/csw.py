@@ -30,7 +30,6 @@ from owslib.fes import PropertyIsLike
 # ref.: https://geopython.github.io/OWSLib/_sources/index.txt
 
 from django.conf import settings
-from django.test import override_settings
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
@@ -39,88 +38,12 @@ from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
 
-LOCAL_TEST_CATALOG_URL = 'http://localhost:8001/catalogue/csw'
-
-CATALOGUE = {
-    'default': {
-        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-        'URL': LOCAL_TEST_CATALOG_URL
-    }
-}
-
-PYCSW = {
-    # pycsw configuration
-    'CONFIGURATION': {
-        # uncomment / adjust to override server config system defaults
-        # 'server': {
-        #    'maxrecords': '10',
-        #    'pretty_print': 'true',
-        #    'federatedcatalogues': 'http://catalog.data.gov/csw'
-        # },
-        'server': {
-            'home': '.',
-            'url': CATALOGUE['default']['URL'],
-            'encoding': 'UTF-8',
-            'language': settings.LANGUAGE_CODE,
-            'maxrecords': '20',
-            'pretty_print': 'true',
-            # 'domainquerytype': 'range',
-            'domaincounts': 'true',
-            'profiles': 'apiso,ebrim',
-        },
-        'manager': {
-            # authentication/authorization is handled by Django
-            'transactions': 'false',
-            'allowed_ips': '*',
-            # 'csw_harvest_pagesize': '10',
-        },
-        'metadata:main': {
-            'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform' \
-            ' that facilitates the creation, sharing, and collaborative use' \
-            ' of geospatial data',
-            'identification_keywords': 'sdi, catalogue, discovery, metadata,' \
-            ' GeoNode',
-            'identification_keywords_type': 'theme',
-            'identification_fees': 'None',
-            'identification_accessconstraints': 'None',
-            'provider_name': 'Organization Name',
-            'provider_url': settings.SITEURL,
-            'contact_name': 'Lastname, Firstname',
-            'contact_position': 'Position Title',
-            'contact_address': 'Mailing Address',
-            'contact_city': 'City',
-            'contact_stateorprovince': 'Administrative Area',
-            'contact_postalcode': 'Zip or Postal Code',
-            'contact_country': 'Country',
-            'contact_phone': '+xx-xxx-xxx-xxxx',
-            'contact_fax': '+xx-xxx-xxx-xxxx',
-            'contact_email': 'Email Address',
-            'contact_url': 'Contact URL',
-            'contact_hours': 'Hours of Service',
-            'contact_instructions': 'During hours of service. Off on ' \
-            'weekends.',
-            'contact_role': 'pointOfContact',
-        },
-        'metadata:inspire': {
-            'enabled': 'true',
-            'languages_supported': 'eng,gre',
-            'default_language': 'eng',
-            'date': 'YYYY-MM-DD',
-            'gemet_keywords': 'Utility and governmental services',
-            'conformity_service': 'notEvaluated',
-            'contact_name': 'Organization Name',
-            'contact_email': 'Email Address',
-            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
-        }
-    }
-}
+LOCAL_TEST_CATALOG_URL = settings.CATALOGUE['default']['URL']
 
 
 class GeoNodeCSWTest(GeoNodeBaseTestSupport):
     """Tests geonode.catalogue app/module"""
 
-    @override_settings(CATALOGUE=CATALOGUE, PYCSW=PYCSW)
     def test_csw_base(self):
         """Verify that GeoNode works against any CSW"""
         csw = get_catalogue(
@@ -171,7 +94,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             'http://www.isotc211.org/2005/gmd' in outputschemas,
             'Expected "http://www.isotc211.org/2005/gmd" to be a supported outputSchema value')
 
-    @override_settings(CATALOGUE=CATALOGUE, PYCSW=PYCSW)
     def test_csw_search_count(self):
         """Verify that GeoNode CSW can handle search counting"""
         csw = get_catalogue(
