@@ -127,12 +127,7 @@ workflows:
           name: geonode_test_csw
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh geonode.catalogue.backends.tests
-      - build:
-          name: geonode_test_csw_integration
-          load_docker_cache: false
-          save_docker_cache: false
-          test_suite: ./test.sh geonode.tests.csw
+          test_suite: ./test.sh geonode.tests.csw geonode.catalogue.backends.tests
 
       # TODO
       # - build:
