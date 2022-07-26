@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import itertools
 import os
 import gc
 import re
@@ -1899,3 +1900,7 @@ def get_supported_datasets_file_types():
         else:
             supported_types.extend([_type])
     return supported_types
+
+
+def get_allowed_extensions():
+    return list(itertools.chain.from_iterable([_type['ext'] for _type in get_supported_datasets_file_types()]))
