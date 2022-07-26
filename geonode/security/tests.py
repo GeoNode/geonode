@@ -295,7 +295,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         request.session['access_token'] = get_or_create_token(admin)
         request.session.save()
         middleware.process_request(request)
-        self.assertIsNotNone(request.session)
+        self.assertFalse(request.session.is_empty())
 
         request.session['access_token'] = None
         request.session.save()
