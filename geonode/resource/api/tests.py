@@ -70,7 +70,7 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
             name="ReadableName"
         )
         cls.url = reverse('executionrequest-list')
-        cls.filtered_url = reverse('executionrequest-list') + "?filter{action}=delete"
+        cls.filtered_url = f"{reverse('executionrequest-list')}?filter{{action}}=delete"
 
     @classmethod
     def tearDownClass(cls) -> None:

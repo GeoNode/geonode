@@ -69,7 +69,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         for op in csw.catalogue.operations:
             for method in op.methods:
                 self.assertEqual(
-                    'http://localhost/catalogue/csw',
+                    csw.catalogue.url,
                     method['url'],
                     'Expected GeoNode URL to be equal to all CSW URLs')
 
