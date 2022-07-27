@@ -1,4 +1,4 @@
-# Letsencrypt service for SPCGeonode
+# Letsencrypt service for Geonode
 
 This service generates SSL certificates to be used by Nginx.
 
