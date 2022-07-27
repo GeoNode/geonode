@@ -25,7 +25,6 @@ import logging
 
 from lxml import etree
 from owslib import fes
-from urllib.parse import urljoin
 from owslib.etree import etree as dlxml
 from owslib.fes import PropertyIsLike
 # ref.: https://geopython.github.io/OWSLib/_sources/index.txt
@@ -39,7 +38,7 @@ from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
 
-LOCAL_TEST_CATALOG_URL = 'http://localhost:8001/'
+LOCAL_TEST_CATALOG_URL = settings.CATALOGUE['default']['URL']
 
 
 class GeoNodeCSWTest(GeoNodeBaseTestSupport):
@@ -50,13 +49,13 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue(
             backend={
                 'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-                'URL': urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw'),
+                'URL': LOCAL_TEST_CATALOG_URL,
             },
             skip_caps=False)
 
         self.assertEqual(
             csw.catalogue.url,
-            urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw')
+            LOCAL_TEST_CATALOG_URL
         )
 
         # test that OGC:CSW URLs are identical to what is defined in GeoNode
@@ -100,13 +99,13 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         csw = get_catalogue(
             backend={
                 'ENGINE': 'geonode.catalogue.backends.pycsw_local',
-                'URL': urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw'),
+                'URL': LOCAL_TEST_CATALOG_URL,
             },
             skip_caps=False)
 
         self.assertEqual(
             csw.catalogue.url,
-            urljoin(LOCAL_TEST_CATALOG_URL, '/catalogue/csw')
+            LOCAL_TEST_CATALOG_URL
         )
 
         # get all records
