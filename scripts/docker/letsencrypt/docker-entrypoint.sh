@@ -17,10 +17,13 @@ set +e
 # We run the command
 if [ "$LETSENCRYPT_MODE" == "staging" ]; then
     printf "\nTrying to get STAGING certificate\n"
-    certbot --config-dir "/geonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/geonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --staging
+    certbot --config-dir "/geonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/geonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --test-cert
 elif [ "$LETSENCRYPT_MODE" == "production" ]; then
     printf "\nTrying to get PRODUCTION certificate\n"
     certbot --config-dir "/geonode-certificates/$LETSENCRYPT_MODE" certonly --webroot -w "/geonode-certificates" -d "$HTTPS_HOST" -m "$ADMIN_EMAIL" --agree-tos --non-interactive --server https://acme-v02.api.letsencrypt.org/directory
+elif [ "$LETSENCRYPT_MODE" == "disabled" ]; then
+    printf "\nNot trying to get certificate (because LETSENCRYPT_MODE variable is set to disabled) - and stop container\n"
+    exit 0
 else
     printf "\nNot trying to get certificate (simulating failure, because LETSENCRYPT_MODE variable was neither staging nor production\n"
     /bin/false
