@@ -44,7 +44,7 @@ http://master.demo.geonode.org. After your registration you will be able
 to test all basic functionalities like uploading layers, creation of
 maps, editing metadata, styles and much more. To get an overview what
 GeoNode can do we recommend to have a look at the [Users
-Workshop](https://docs.geonode.org/en/3.x/usage/index.html).
+Workshop](https://docs.geonode.org/en/4.x/usage/index.html).
 
 Install
 -------
@@ -63,9 +63,9 @@ Learn GeoNode
 
 After you´ve finished the setup process make yourself familiar with the
 general usage and settings of your GeoNodes instance. - the [User
-Training](https://docs.geonode.org/en/3.x/usage/index.html)
+Training](https://docs.geonode.org/en/4.x/usage/index.html)
 is going in depth into what we can do. - the [Administrators
-Workshop](https://docs.geonode.org/en/3.x/admin/index.html)
+Workshop](https://docs.geonode.org/en/4.x/admin/index.html)
 will guide you to the most important parts regarding management commands
 and configuration settings.
 
@@ -84,7 +84,7 @@ lightweight components to speed up things.
 To get you started have a look at the [Install
 instructions](#install) which cover all what is needed to run GeoNode
 for development. Further visit the the [Developer
-workshop](https://docs.geonode.org/en/3.x/devel/index.html)
+workshop](https://docs.geonode.org/en/4.x/devel/index.html)
 for a basic overview.
 
 If you're planning of customizing your GeoNode instance, or to extend
