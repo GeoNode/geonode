@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2021 OSGeo
+# Copyright (C) 2022 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,13 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.urls import path
-from geonode.api.urls import router
+from rest_framework.exceptions import APIException
 
-from . import views
 
-urlpatterns = [
-    path('resource-service/execution-status/<str:execution_id>', views.resource_service_execution_status, name='rs-execution-status')
-]
-
-router.register(r'executionrequest', views.ExecutionRequestViewset, 'executionrequest')
+class ExecutionRequestException(APIException):
+    status_code = 500
+    default_detail = "error during handling the execution request"
+    default_code = "executionrequest_exception"
+    category = "executionrequest"

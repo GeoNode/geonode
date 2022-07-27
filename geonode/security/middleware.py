@@ -16,10 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 from re import compile
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -27,7 +27,12 @@ from django.utils.deprecation import MiddlewareMixin
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
-from geonode.base.auth import extract_user_from_headers, get_token_object_from_session
+from geonode.base.auth import (
+    extract_user_from_headers,
+    get_token_object_from_session,
+    visitor_ip_address,
+    is_ipaddress_in_whitelist
+)
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
@@ -150,3 +155,47 @@ class SessionControlMiddleware(MiddlewareMixin):
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(
                     f'{self.redirect_to}?next={request.path}')
+
+
+class AdminAllowedMiddleware(MiddlewareMixin):
+    """
+    Middleware that checks if admin is making requests from allowed IPs.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def process_request(self, request):
+        whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
+        if len(whitelist) > 0:
+            # When the request reaches the middleware the user attached to it (directly or through a session)
+            # might differ from the user from the headers. E.g. userX might have a an active session
+            # and a request with admin's headers could be issues. For this reason we check both to find out if
+            # an admin is trying a request somehow.
+            potential_admins = []
+            potential_admins.append(extract_user_from_headers(request))
+            if hasattr(request, "user"):
+                potential_admins.append(request.user)
+
+            is_admin = any([u.is_superuser for u in potential_admins])
+
+            if is_admin:
+                visitor_ip = visitor_ip_address(request)
+                if not is_ipaddress_in_whitelist(visitor_ip, whitelist):
+                    try:
+                        if hasattr(request, "session"):
+                            logout(request)
+                        if hasattr(request, "user"):
+                            request.user = AnonymousUser()
+                        if "HTTP_AUTHORIZATION" in request.META:
+                            del request.META["HTTP_AUTHORIZATION"]
+                        if "apikey" in request.GET:
+                            del request.GET["apikey"]
+                    finally:
+                        try:
+                            from django.contrib import messages
+                            from django.utils.translation import ugettext_noop as _
+                            messages.warning(request, _("Admin access forbidden from {visitor_ip}"))
+                        except Exception:
+                            pass
+        return self.get_response(request)

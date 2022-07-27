@@ -312,7 +312,7 @@ def dataset_style_upload(request):
         status=500)
 
 
-def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
+def get_dataset_detail_context(request, layername):
     try:
         layer = _resolve_dataset(
             request,
@@ -342,13 +342,12 @@ def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
         'access_token': access_token,
         'resource': layer,
     }
-    register_event(request, 'view', layer)
-    return TemplateResponse(request, template, context=context_dict)
+    return context_dict
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it"
 # button is clicked.
-def load_dataset_data(request, template='datasets/dataset_detail.html'):
+def load_dataset_data(request):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['dataset_name']
@@ -1156,9 +1155,11 @@ def dataset_sld_upload(
 @xframe_options_exempt
 def dataset_embed(
         request,
-        layername,
-        template='datasets/dataset_embed.html'):
-    return dataset_detail(request, layername, template)
+        layername):
+    context = get_dataset_detail_context(request, layername)
+    if isinstance(context, HttpResponse):
+        return context
+    return TemplateResponse(request, 'datasets/dataset_embed.html', context=context)
 
 
 @login_required

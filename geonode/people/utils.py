@@ -125,7 +125,7 @@ def get_available_users(user):
     member_ids = list(GroupMember.objects.filter(
         group__in=GroupProfile.objects.filter(
             Q(access='public') | Q(group__in=user.groups.all()))
-        ).select_related('user').values_list('user__id', flat=True))
+    ).select_related('user').values_list('user__id', flat=True))
     if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():
         # Retrieve all members in Registered member's group
         rm_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)

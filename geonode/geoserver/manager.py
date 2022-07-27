@@ -285,7 +285,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def _execute_resource_import(self, instance, files: list, user, action_type: str, importer_session_opts: typing.Optional[typing.Dict] = None):
-        from geonode.upload.files import ALLOWED_EXTENSIONS
+        from geonode.utils import get_allowed_extensions
+
+        ALLOWED_EXTENSIONS = get_allowed_extensions()
+
         session_opts = dict(importer_session_opts) if importer_session_opts is not None else {}
 
         spatial_files_type = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, files)
