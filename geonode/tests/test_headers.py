@@ -28,8 +28,8 @@ class TestHeaders(GeoNodeBaseTestSupport):
     def test_cors_headers(self):
         categories_url = reverse('categories-list')
         headers = {
-                    'HTTP_ORIGIN': "http://127.0.0.1"
-                }
+            'HTTP_ORIGIN': "http://127.0.0.1"
+        }
         with self.settings(CORS_ALLOW_ALL_ORIGINS=True):
             response = self.client.get(
                 categories_url,
