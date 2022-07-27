@@ -124,3 +124,69 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
         response = self.client.get(self.filtered_url)
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, response.json().get("total", 0))
+
+    def test_endpoint_should_delete_the_instance(self):
+        _available = ExecutionRequest.objects.create(
+            user=self.superuser,
+            func_name='foo',
+            action="copy",
+            input_params={},
+            name="ReadableName"
+        )
+
+        self.client.force_login(self.superuser)
+        _url = f"{reverse('executionrequest-list')}/{str(_available.exec_id)}"
+
+        response = self.client.delete(_url)
+
+        self.assertEqual(200, response.status_code)
+
+        self.assertFalse(
+            ExecutionRequest.objects.filter(exec_id=_available.exec_id).exists()
+        )
+
+    def test_endpoint_should_raise_exception_if_the_uuid_is_not_valid(self):
+        self.client.force_login(self.superuser)
+        _url = f"{reverse('executionrequest-list')}/random_uuid"
+        response = self.client.delete(_url)
+
+        expected = {
+            "success": False,
+            "errors": [
+                '“random_uuid” is not a valid UUID.'
+            ],
+            "code": "executionrequest_exception"
+        }
+        self.assertEqual(500, response.status_code)
+        self.assertDictEqual(expected, response.json())
+
+    def test_endpoint_should_raise_exception_if_the_uuid_is_not_present(self):
+        self.client.force_login(self.superuser)
+        _url = f"{reverse('executionrequest-list')}/400f433c-3e44-42bd-8b5b-67847c9294b7"
+        response = self.client.delete(_url)
+
+        expected = {
+            "success": False,
+            "errors": [
+                "uuid provided does not exists: 400f433c-3e44-42bd-8b5b-67847c9294b7"
+            ],
+            "code": "not_found"
+        }
+        self.assertEqual(404, response.status_code)
+        self.assertDictEqual(expected, response.json())
+
+    def test_endpoint_should_raise_error_if_pk_is_not_passed(self):
+        self.client.force_login(self.superuser)
+        _url = reverse('executionrequest-list')
+        response = self.client.delete(_url)
+
+        expected = {
+            "success": False,
+            "errors": [
+                "UUID was not provided"
+            ],
+            "code": "executionrequest_exception"
+        }
+
+        self.assertEqual(500, response.status_code)
+        self.assertDictEqual(expected, response.json())
