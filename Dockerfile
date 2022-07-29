@@ -26,9 +26,9 @@ RUN apt-get install -y --no-install-recommends \
     gcc zip gettext geoip-bin cron \
     postgresql-client-13 \
     sqlite3 spatialite-bin libsqlite3-mod-spatialite \
-    python3-all-dev python3-dev \
-    python3-gdal python3-psycopg2 python3-ldap \
-    python3-pip python3-pil python3-lxml python3-pylibmc \
+    py3-all-dev py3-dev \
+    py3-gdal py3-psycopg2 py3-ldap \
+    py3-pip py3-pil py3-lxml py3-pylibmc \
     uwsgi uwsgi-plugin-python3 \
     firefox-esr
 
