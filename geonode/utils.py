@@ -1359,10 +1359,10 @@ def get_legend_url(
     _service_url = service_url or f"{ogc_server_settings.PUBLIC_LOCATION}ows"
     _dataset_name = dataset_name or instance.alternate
     _params = f"&{params}" if params else ""
-    return(f"{_service_url}?"
-           f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
-           f"LAYER={_dataset_name}&STYLE={style_name}&version={version}&"
-           f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
+    return (f"{_service_url}?"
+            f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
+            f"LAYER={_dataset_name}&STYLE={style_name}&version={version}&"
+            f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
 
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):

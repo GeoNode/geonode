@@ -525,7 +525,7 @@ def set_datasets_permissions(permissions_name, resources_names=None, users_usern
                                     else:
                                         if _user.username in perm_spec["users"]:
                                             u_perms_list = perm_spec["users"][_user.username]
-                                            del(perm_spec["users"][_user.username])
+                                            del (perm_spec["users"][_user.username])
                                             perm_spec["users"][_user] = u_perms_list
 
                                         try:
@@ -569,7 +569,7 @@ def set_datasets_permissions(permissions_name, resources_names=None, users_usern
                                     else:
                                         if _group.name in perm_spec["groups"]:
                                             g_perms_list = perm_spec["groups"][_group.name]
-                                            del(perm_spec["groups"][_group.name])
+                                            del (perm_spec["groups"][_group.name])
                                             perm_spec["groups"][_group] = g_perms_list
 
                                         try:
