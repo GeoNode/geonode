@@ -1483,7 +1483,6 @@ class BaseApiTests(APITestCase):
         resource_have_tag = ['favorite' in r.keys() for r in response.json().get("resources", {})]
         self.assertTrue(all(resource_have_tag))
 
-
     def test_create_and_delete_favorites(self):
         """
         Ensure we can add and remove resources to user's favorite.
