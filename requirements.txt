@@ -10,7 +10,7 @@ beautifulsoup4==4.11.1
 httplib2<0.20.5
 hyperlink==21.0.0
 idna>=2.5,<2.11
-urllib3==1.26.10
+urllib3==1.26.11
 Paver==1.3.4
 python-slugify==6.1.2
 decorator==5.1.1
@@ -20,10 +20,10 @@ vine==5.0.0
 tqdm==4.64.0
 Deprecated==1.2.13
 wrapt==1.14.1
-jsonschema==4.7.2
+jsonschema==4.9.0
 zipstream-new==1.1.8
 schema==0.7.5
-rdflib==6.1.1
+rdflib==6.2.0
 smart_open==6.0.0
 
 # Django Apps
@@ -62,7 +62,7 @@ numpy==1.23.*
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
-dj-database-url==0.5.0
+dj-database-url==1.0.0
 dj-pagination==2.5.0
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
@@ -76,7 +76,7 @@ djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.6.4
-drf-spectacular==0.22.1
+drf-spectacular==0.23.1
 dynamic-rest==2.1.2
 Markdown==3.4.1
 
@@ -108,7 +108,7 @@ django-storages==1.12.3
 dropbox==11.33.0
 google-cloud-storage==2.4.0
 google-cloud-core==2.3.2
-boto3==1.24.36
+boto3==1.24.42
 
 # Django Caches
 python-memcached<=1.59
@@ -147,18 +147,18 @@ invoke==1.7.1
 # tests
 coverage==6.4.2
 requests-toolbelt==0.9.1
-flake8==4.0.1
+flake8==5.0.1
 pytest==7.1.2
 pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.1
 pytest-django==4.5.2
 setuptools>=59.1.1,<63.3.0
-pip==22.2
+pip==22.2.1
 Twisted==22.4.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
 selenium-requests==2.0.0
-webdriver_manager==3.8.2
+webdriver_manager==3.8.3
