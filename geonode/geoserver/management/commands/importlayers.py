@@ -27,6 +27,7 @@ from urllib.parse import urljoin
 from io import BufferedReader, IOBase
 from requests.auth import HTTPBasicAuth
 
+from django.conf import settings
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 
@@ -55,9 +56,9 @@ class Command(BaseCommand):
             self.print_help('manage.py', 'importlayers')
             return
 
-        host = options.get("host") or "http://localhost:8000"
-        username = options.get("username") or "admin"
-        password = options.get("password") or "admin"
+        host = options.get("host") or getattr(settings, "SITEURL", "http://localhost:8000")
+        username = options.get("username") or os.getenv("ADMIN_USERNAME", "admin")
+        password = options.get("password") or os.getenv("ADMIN_PASSWORD", "admin")
 
         start = datetime.datetime.now(timezone.get_current_timezone())
         for path in options["path"]:
@@ -102,7 +103,7 @@ class GeoNodeUploader:
                 if not os.path.exists(_file):
                     print(f"The selected file path does not exist: {_file}")
                     continue
-                spatial_files = ("dbf_file", "shx_file", "prj_file")
+                spatial_files = ("dbf_file", "shx_file", "prj_file", "xml_file", "sld_file")
                 base, ext = os.path.splitext(_file)
                 params = {
                     # make public since wms client doesn't do authentication
@@ -120,7 +121,7 @@ class GeoNodeUploader:
                         # allow for that
                         if os.path.exists(file_path):
                             params[spatial_file] = open(file_path, "rb")
-                elif ext.lower() == ".tif":
+                elif ext.lower() in (".tif", ".zip"):
                     file_path = base + ext
                     params["tif_file"] = open(file_path, "rb")
                 else:
