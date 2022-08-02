@@ -321,7 +321,10 @@ class FavoriteField(DynamicComputedField):
         super().__init__(**kwargs)
 
     def get_attribute(self, instance):
-        return Favorite.objects.filter(object_id=instance.pk).exists()
+        _user = self.context.get('request')
+        if _user and not _user.user.is_anonymous:
+            return Favorite.objects.filter(object_id=instance.pk, user=_user.user).exists()
+        return False
 
 
 class UserSerializer(BaseDynamicModelSerializer):
