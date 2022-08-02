@@ -1470,6 +1470,25 @@ class BaseApiTests(APITestCase):
         # clean up
         favorite.delete()
 
+    def test_get_favorites_is_returned_in_the_base_endpoint(self):
+        """
+        Ensure we get user's favorite resources.
+        """
+        dataset = Dataset.objects.first()
+        url = reverse('base-resources-list')
+
+        bobby = get_user_model().objects.get(username='bobby')
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        favorite = Favorite.objects.create_favorite(dataset, bobby)
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        resource_have_tag = ['favorite' in r.keys() for r in response.json().get("resources", {})]
+        self.assertTrue(all(resource_have_tag))
+
+        # clean up
+        favorite.delete()
+
     def test_create_and_delete_favorites(self):
         """
         Ensure we can add and remove resources to user's favorite.
