@@ -35,6 +35,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
+from django.utils.translation import get_language_from_request, get_supported_language_variant
 
 # Geonode dependencies
 from geonode.maps.models import Map
@@ -301,23 +302,28 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
 
 class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-        tid = self.request.GET.get("sysid")
-        lang = self.request.GET.get("lang")
-        qs_local = []
-        qs_non_local = []
-        for key in ThesaurusKeyword.objects.filter(thesaurus_id=tid):
-            label = ThesaurusKeywordLabel.objects.filter(keyword=key).filter(lang=lang)
-            if self.q:
-                label = label.filter(label__icontains=self.q)
-            if label.exists():
-                qs_local.append(label.get())
-            else:
-                if self.q in key.alt_label:
-                    qs_non_local.append(key)
-                elif not self.q:
-                    qs_non_local.append(key)
 
-        return qs_non_local + qs_local
+        tid = self.request.GET.get("sysid")
+
+        # help to get real language string
+        requested_lang = get_language_from_request(self.request)
+        supported_lang = get_supported_language_variant(requested_lang, strict=True)
+        if "_" in supported_lang:
+            supported_lang = supported_lang.split("_")[0]
+        elif "-" in supported_lang:
+            supported_lang = supported_lang.split("-")[0]
+
+        keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=tid)
+        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=supported_lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+        not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")
+
+        qs = ThesaurusKeywordLabel.objects.filter(lang=supported_lang, keyword_id__in=keyword_id_for_given_thesaurus)
+        if self.q:
+            qs = qs.filter(label__istartswith=self.q)
+
+        qs_local = list(qs)
+        qs_non_local = list(keyword_id_for_given_thesaurus.filter(id__in=not_qs_ids))
+        return qs_local + qs_non_local
 
     def get_results(self, context):
         return [
