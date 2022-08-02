@@ -18,8 +18,7 @@ def set_null_thumbnail(apps, _):
         # Remove thumbnail links
         link_model.objects.filter(resource__thumbnail_url__isnull=True, name='Thumbnail').delete()
     except Exception as e:
-        logger.error(f'Error during cleanup of missing thumbnails and links: {e.args[0]}')
-        pass
+        logger.exception(e)
 
 
 class Migration(migrations.Migration):
