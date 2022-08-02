@@ -24,6 +24,7 @@ from modeltranslation.forms import TranslationModelForm
 
 from django.contrib.auth import get_user_model
 
+from django_select2.forms import Select2MultipleWidget
 from geonode.groups.models import GroupProfile
 
 
@@ -86,29 +87,27 @@ class GroupUpdateForm(forms.ModelForm):
 
 
 class GroupMemberForm(forms.Form):
-    user_identifiers = forms.CharField(
+
+    user_identifiers = forms.ModelMultipleChoiceField(
         label=_("User Identifiers"),
-        widget=forms.SelectMultiple(
-            attrs={
-                'class': 'user-select',
-                'style': 'width:300px'
-            }
-        )
+        required=True,
+        queryset=get_user_model().objects.all().exclude(username='AnonymousUser'),
+        widget=Select2MultipleWidget()
     )
+
     manager_role = forms.BooleanField(
         required=False,
         label=_("Assign manager role")
     )
 
     def clean_user_identifiers(self):
-        values = self.cleaned_data['user_identifiers'].strip('][').split(', ')
         new_members = []
         errors = []
-        for name in (v.strip('\'') for v in values):
+        for user in self.cleaned_data['user_identifiers']:
             try:
-                new_members.append(get_user_model().objects.get(username=name))
+                new_members.append(user)
             except get_user_model().DoesNotExist:
-                errors.append(name)
+                errors.append(user)
         if errors:
             raise forms.ValidationError(
                 _("The following are not valid usernames: %(errors)s; "
