@@ -312,43 +312,9 @@ def dataset_style_upload(request):
         status=500)
 
 
-def dataset_detail(request, layername, template='datasets/dataset_detail.html'):
-    try:
-        layer = _resolve_dataset(
-            request,
-            layername,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW)
-    except PermissionDenied:
-        return HttpResponse(_("Not allowed"), status=403)
-    except Exception:
-        raise Http404(_("Not found"))
-    if not layer:
-        raise Http404(_("Not found"))
-
-    # Update count for popularity ranking,
-    # but do not includes admins or resource owners
-    layer.view_count_up(request.user)
-
-    access_token = None
-    if request and request.user:
-        access_token = get_or_create_token(request.user)
-        if access_token and not access_token.is_expired():
-            access_token = access_token.token
-        else:
-            access_token = None
-
-    context_dict = {
-        'access_token': access_token,
-        'resource': layer,
-    }
-    register_event(request, 'view', layer)
-    return TemplateResponse(request, template, context=context_dict)
-
-
 # Loads the data using the OWS lib when the "Do you want to filter it"
 # button is clicked.
-def load_dataset_data(request, template='datasets/dataset_detail.html'):
+def load_dataset_data(request):
     context_dict = {}
     data_dict = json.loads(request.POST.get('json_data'))
     layername = data_dict['dataset_name']
@@ -1156,9 +1122,37 @@ def dataset_sld_upload(
 @xframe_options_exempt
 def dataset_embed(
         request,
-        layername,
-        template='datasets/dataset_embed.html'):
-    return dataset_detail(request, layername, template)
+        layername):
+    try:
+        layer = _resolve_dataset(
+            request,
+            layername,
+            'base.view_resourcebase',
+            _PERMISSION_MSG_VIEW)
+    except PermissionDenied:
+        return HttpResponse(_("Not allowed"), status=403)
+    except Exception:
+        raise Http404(_("Not found"))
+    if not layer:
+        raise Http404(_("Not found"))
+
+    # Update count for popularity ranking,
+    # but do not includes admins or resource owners
+    layer.view_count_up(request.user)
+
+    access_token = None
+    if request and request.user:
+        access_token = get_or_create_token(request.user)
+        if access_token and not access_token.is_expired():
+            access_token = access_token.token
+        else:
+            access_token = None
+
+    context_dict = {
+        'access_token': access_token,
+        'resource': layer,
+    }
+    return TemplateResponse(request, 'datasets/dataset_embed.html', context=context_dict)
 
 
 @login_required

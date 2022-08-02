@@ -18,7 +18,6 @@
 #########################################################################
 
 from pinax.ratings.models import OverallRating
-from dialogos.models import Comment
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from haystack import indexes
@@ -81,7 +80,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
     rating = indexes.IntegerField(null=True)
     num_ratings = indexes.IntegerField(stored=False)
-    num_comments = indexes.IntegerField(stored=False)
 
     def get_model(self):
         return Dataset
@@ -119,15 +117,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
                 content_type=ct
             ).all().count()
         except OverallRating.DoesNotExist:
-            return 0
-
-    def prepare_num_comments(self, obj):
-        try:
-            return Comment.objects.filter(
-                object_id=obj.pk,
-                content_type=ContentType.objects.get_for_model(obj)
-            ).all().count()
-        except Exception:
             return 0
 
     def prepare_title_sortable(self, obj):

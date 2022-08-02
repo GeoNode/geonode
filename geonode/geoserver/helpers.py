@@ -38,7 +38,6 @@ from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.utils import timezone
@@ -891,9 +890,6 @@ def gs_slurp(
                 OverallRating.objects.filter(
                     content_type=ct,
                     object_id=layer.id).delete()
-                Comment.objects.filter(
-                    content_type=ct,
-                    object_id=layer.id).delete()
                 layer.keywords.clear()
 
                 layer.delete()
@@ -1091,7 +1087,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 req, body = http_client.get(dft_url, user=_user)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll('th'):
-                    if(field.string is None):
+                    if field.string is None:
                         field_name = field.contents[0].string
                     else:
                         field_name = field.string

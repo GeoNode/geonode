@@ -118,7 +118,6 @@ class FileType:
 
 
 TYPE_UNKNOWN = FileType("unknown", None, None)
-ALLOWED_EXTENSIONS = ['zip', 'shp', 'asc', 'ascii', 'csv', 'json', 'geojson', 'tif', 'tiff', 'geotif', 'geotiff']
 
 _keep_original_data = ('kmz', 'zip-mosaic')
 _tif_extensions = ("tif", "tiff", "geotif", "geotiff")
