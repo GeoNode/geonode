@@ -757,6 +757,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             dataset_uuid, vals, regions, keywords, custom = parse_metadata(
                                 open(xml_file).read())
                             metadata_uploaded = True
+                            _vals.update(vals)
                     except Exception as e:
                         Upload.objects.invalidate_from_session(upload_session)
                         logger.exception(e)
@@ -909,9 +910,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 # Update the state from session...
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
-
-                if not created:
-                    return saved_dataset
 
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications
