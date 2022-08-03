@@ -721,9 +721,17 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
 
                 dataset_uuid = None
 
-                regions = []
-                keywords = []
-                custom = {}
+                if saved_dataset:
+                    _vals['name'] = saved_dataset.get_real_instance().name
+                    _log(f'Django record for [{saved_dataset.get_real_instance().name}] already exists, updating with vals: {_vals}')
+                    return resource_manager.update(
+                        saved_dataset.uuid,
+                        instance=saved_dataset,
+                        vals=_vals)
+                else:
+                    _log(f'Django record for [{name}] does not exist, creating with vals: {_vals}')
+
+                metadata_uploaded = False
                 xml_file = upload_session.base_file[0].xml_files
                 if xml_file and os.path.exists(xml_file[0]):
                     try:
@@ -748,6 +756,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         if xml_file and os.path.exists(xml_file[0]) and os.access(xml_file, os.R_OK):
                             dataset_uuid, vals, regions, keywords, custom = parse_metadata(
                                 open(xml_file).read())
+                            metadata_uploaded = True
                             _vals.update(vals)
                     except Exception as e:
                         Upload.objects.invalidate_from_session(upload_session)
@@ -788,16 +797,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         sld_file = base_file[0].sld_files[0]
                     sld_uploaded = False
                 _log(f'[sld_uploaded: {sld_uploaded}] sld_file: {sld_file}')
-
-                if saved_dataset:
-                    _vals['name'] = saved_dataset.get_real_instance().name
-                    _log(f'Django record for [{saved_dataset.get_real_instance().name}] already exists, updating with vals: {_vals}')
-                    return resource_manager.update(
-                        saved_dataset.uuid,
-                        instance=saved_dataset,
-                        vals=_vals, regions=regions, keywords=keywords, custom=custom)
-                else:
-                    _log(f'Django record for [{name}] does not exist, creating with vals: {_vals}')
 
                 # Make sure the layer does not exists already
                 if dataset_uuid and Dataset.objects.filter(uuid=dataset_uuid).count():
@@ -912,9 +911,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 # Update the state from session...
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
-                if not created:
-                    return saved_dataset
-
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications
                 permissions = upload_session.permissions
@@ -925,8 +921,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                         resource_manager.set_permissions(
                             None, instance=saved_dataset, permissions=permissions, created=created)
                         resource_manager.update(
-                            None, instance=saved_dataset,
-                            vals=_vals, regions=regions, keywords=keywords, custom=custom)
+                            None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
                         resource_manager.exec(
                             'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
                         resource_manager.exec(
