@@ -24,7 +24,7 @@ def set_null_thumbnail(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0081_alter_resourcebase_alternate'),
+        ('base', '0082_remove_dialogos_comment'),
     ]
 
     operations = [
