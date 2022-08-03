@@ -175,7 +175,7 @@ def group_members(request, slug):
         context={
             "group": group,
             "members": group.member_queryset(),
-            "member_form": forms.GroupMemberForm() if is_manager else None
+            "member_form": forms.GroupMemberForm(request.user) if is_manager else None
         }
     )
 
@@ -186,7 +186,7 @@ def group_members_add(request, slug):
     group = get_object_or_404(models.GroupProfile, slug=slug)
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
-    form = forms.GroupMemberForm(request.POST)
+    form = forms.GroupMemberForm(request.user, request.POST)
     if form.is_valid():
         for user in form.cleaned_data["user_identifiers"]:
             try:

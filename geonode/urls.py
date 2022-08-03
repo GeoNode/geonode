@@ -18,6 +18,7 @@
 #########################################################################
 
 import django
+from django.urls import path
 from django.conf.urls import include, url
 from django.conf import settings
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -170,10 +171,15 @@ urlpatterns += [
     url(r'^api/v2/', include('geonode.management_commands_http.urls')),
     url(r'^api/v2/api-auth/', include('rest_framework.urls', namespace='geonode_rest_framework')),
     url(r'', include(api.urls)),
-
-    # tinymce WYSIWYG HTML Editor
-    url(r'^tinymce/', include('tinymce.urls')),
 ]
+
+# tinymce WYSIWYG HTML Editor
+if 'tinymce' in settings.INSTALLED_APPS:
+    urlpatterns += [url(r'^tinymce/', include('tinymce.urls')), ]
+
+# django-select2 Widgets
+if 'django_select2' in settings.INSTALLED_APPS:
+    urlpatterns += [path("select2/", include("django_select2.urls")), ]
 
 urlpatterns += i18n_patterns(
     url(r'^grappelli/', include('grappelli.urls')),
