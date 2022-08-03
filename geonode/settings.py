@@ -499,6 +499,7 @@ INSTALLED_APPS = (
     'drf_spectacular',
 
     # Theme
+    'django_select2',
     'django_forms_bootstrap',
 
     # Social
