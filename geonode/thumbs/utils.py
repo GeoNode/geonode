@@ -138,7 +138,7 @@ def expand_bbox_to_ratio(
 
 def assign_missing_thumbnail(instance) -> None:
     """
-    Function assigning 'geonode.thumbs.utils.MISSING_THUMB' to a provided instance
+    Function assigning None in thumbnail_url to a provided instance
 
     :param instance: instance of Dataset or Map models
     """
