@@ -2841,7 +2841,7 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             _case["resource"].set_permissions(
                 {'users': {self.marty.username: ['base.view_resourcebase', 'base.change_resourcebase']}}
             )
-            # the user cannot patch the resource
+            # the user can patch the resource
             result = self.client.patch(url)
-            # checking that the user cannot call the url in patch due the lack of permissions
+            # checking that the user can call the url in patch since now it has the permissions
             self.assertEqual(200, result.status_code, _case)
