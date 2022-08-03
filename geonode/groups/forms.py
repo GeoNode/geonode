@@ -23,9 +23,10 @@ from django.utils.translation import ugettext as _
 from modeltranslation.forms import TranslationModelForm
 
 from django.contrib.auth import get_user_model
-
 from django_select2.forms import Select2MultipleWidget
+
 from geonode.groups.models import GroupProfile
+from geonode.people.utils import get_available_users
 
 
 class GroupForm(TranslationModelForm):
@@ -88,11 +89,24 @@ class GroupUpdateForm(forms.ModelForm):
 
 class GroupMemberForm(forms.Form):
 
+    def __init__(self, *args, **kwargs):
+        """ Grants access to the request object so that only members of the current user
+        are given as options"""
+        _user = None
+        if isinstance(args[0], get_user_model()):
+            _user = args[0]
+            args = args[1:]
+        super(forms.Form, self).__init__(*args, **kwargs)
+        if _user:
+            self.fields['user_identifiers'].queryset = get_available_users(_user).order_by('username')
+        else:
+            self.fields['user_identifiers'].queryset = None
+
     user_identifiers = forms.ModelMultipleChoiceField(
-        label=_("User Identifiers"),
         required=True,
-        queryset=get_user_model().objects.all().exclude(username='AnonymousUser'),
-        widget=Select2MultipleWidget()
+        queryset=None,
+        label=_("User Identifiers"),
+        widget=Select2MultipleWidget
     )
 
     manager_role = forms.BooleanField(
