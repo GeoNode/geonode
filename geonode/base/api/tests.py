@@ -641,7 +641,7 @@ class BaseApiTests(APITestCase):
             self.assertEqual('Foo Abstract', response.data['resource']['abstract'], response.data['resource']['abstract'])
             self.assertEqual('Foo Attribution', response.data['resource']['attribution'], response.data['resource']['attribution'])
             self.assertEqual('321-12345-987654321', response.data['resource']['doi'], response.data['resource']['doi'])
-            self.assertEqual(False, response.data['resource']['is_published'], response.data['resource']['is_published'])
+            self.assertEqual(True, response.data['resource']['is_published'], response.data['resource']['is_published'])
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
