@@ -122,17 +122,17 @@ def get_users_with_perms(obj):
     Override of the Guardian get_users_with_perms
     """
     ctype = ContentType.objects.get_for_model(obj)
-    ctype_real_instance = ContentType.objects.get_for_model(obj.get_self_resource())
+    ctype_resource_base = ContentType.objects.get_for_model(obj.get_self_resource())
     permissions = {}
     PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
     # include explicit permissions appliable to "subtype == 'vector'"
     if obj.subtype == 'vector':
         PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
-        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_real_instance.id]):
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]):
             permissions[perm.id] = perm.codename
     elif obj.subtype == 'raster':
         PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
-        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_real_instance.id]):
+        for perm in Permission.objects.filter(codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]):
             permissions[perm.id] = perm.codename
     else:
         PERMISSIONS_TO_FETCH += DATASET_EDIT_DATA_PERMISSIONS
