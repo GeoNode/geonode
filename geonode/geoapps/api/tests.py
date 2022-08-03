@@ -28,6 +28,7 @@ from geonode.geoapps.api.serializers import GeoAppSerializer
 
 from geonode.geoapps.models import GeoApp
 from geonode.base.populate_test_data import create_models
+from geonode.tasks.tasks import set_permissions
 
 logger = logging.getLogger(__name__)
 
@@ -163,6 +164,12 @@ class GeoAppsApiTests(APITestCase):
                 ]
             }
         }
+
+        _app = GeoApp.objects.first()
+        _app.set_permissions(
+            {'users': {self.bobby: ['base.add_resourcebase', 'base.delete_resourcebase']}}
+        )
+
         response = self.client.post(url, data=json.dumps(data), format='json')
         self.assertEqual(response.status_code, 405)  # 405 – Method not allowed
 
