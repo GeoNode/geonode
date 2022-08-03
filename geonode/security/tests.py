@@ -2845,3 +2845,28 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             result = self.client.patch(url)
             # checking that the user can call the url in patch since now it has the permissions
             self.assertEqual(200, result.status_code, _case)
+
+    def test_user_with_view_listing(self):
+        use_cases = [
+            {"resource": self.dataset, "url": "base-resources-list"},
+            {"resource": self.dataset, "url": "datasets-list"},
+            {"resource": self.document, "url": "documents-list"},
+            {"resource": self.map, "url": "maps-list"}
+        ]
+        for _case in use_cases:
+            # setting the view permissions
+            url = reverse(_case['url'])
+
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase']}}
+            )
+            # calling the api
+            self.client.force_login(self.marty)
+            result = self.client.get(url)
+            # checking that the user can call the url in get
+            self.assertEqual(200, result.status_code, _case)
+
+            # the user cannot patch the resource
+            result = self.client.patch(url)
+            # checking that the user cannot call the url in patch due the lack of permissions
+            self.assertEqual(403, result.status_code, _case)
