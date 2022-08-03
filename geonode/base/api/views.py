@@ -355,7 +355,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
     @extend_schema(methods=['post', 'delete'], responses={200: FavoriteSerializer(many=True)},
                    description="API endpoint allowing to retrieve the favorite Resources.")
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated, ])
+    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated, UserHasPerms])
     def favorite(self, request, pk=None):
         resource = self.get_object()
         user = request.user
@@ -633,7 +633,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def set_thumbnail_from_bbox(self, request, resource_id):
         import traceback
@@ -684,7 +684,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-ingest",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_ingest(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'INGEST' operation
@@ -783,7 +783,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-create",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_create(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
@@ -880,7 +880,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-delete",
         methods=["delete"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_delete(self, request, pk=None):
         """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
@@ -960,7 +960,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-update",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_update(self, request, pk=None):
         """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
@@ -1075,7 +1075,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-copy",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_copy(self, request, pk=None):
         """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'pk'
@@ -1172,7 +1172,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="ratings",
         methods=['post', 'get'],
         permission_classes=[
-            IsAuthenticatedOrReadOnly,
+            IsAuthenticatedOrReadOnly, UserHasPerms
         ])
     def ratings(self, request, pk=None):
         resource = self.get_object()
@@ -1229,7 +1229,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set_thumbnail",
         methods=['put'],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ],
         parser_classes=[JSONParser, MultiPartParser]
     )
@@ -1291,7 +1291,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         detail=True,
         methods=["get", "put", "delete", "post"],
         permission_classes=[
-            IsOwnerOrAdmin,
+            IsOwnerOrAdmin, UserHasPerms
         ],
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
