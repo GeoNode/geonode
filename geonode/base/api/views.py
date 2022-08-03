@@ -89,7 +89,8 @@ from .permissions import (
     IsOwnerOrAdmin,
     IsOwnerOrReadOnly,
     IsManagerEditOrAdmin,
-    ResourceBasePermissionsFilter
+    ResourceBasePermissionsFilter,
+    UserHavePerms
 )
 from .serializers import (
     FavoriteSerializer,
@@ -311,7 +312,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     API endpoint that allows base resources to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHavePerms, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, ResourceBasePermissionsFilter, FavoriteFilter

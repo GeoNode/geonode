@@ -21,11 +21,15 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
+from geonode.base.models import ResourceBase
+from geonode.layers.utils import DOWNLOAD_PERMISSIONS
+from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
 
 from geonode.security.utils import (
     get_users_with_perms,
     get_resources_with_perms)
 from geonode.groups.models import GroupProfile
+from guardian.shortcuts import get_objects_for_user
 
 logger = logging.getLogger(__name__)
 
@@ -181,6 +185,39 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
             return True
 
         return False
+
+
+class UserHavePerms(permissions.DjangoModelPermissions):
+    perms_map = {
+        'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
+        'POST': ['base.add_resourcebase'],
+        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
+        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
+        'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
+    }
+
+    def has_permission(self, request, view):
+        # check if the user is authenticated
+        if not request.user or not request.user.is_authenticated:
+            return False
+
+        queryset = self._queryset(view)
+        perms = self.get_required_permissions(request.method, queryset.model)
+
+        if view.kwargs.get('pk'):
+            # if a single resource is called, we check the perms for that resource
+            res = ResourceBase.objects.filter(pk=view.kwargs.get('pk')).first()
+            if not res:
+                return False
+            # getting the user permission for that resource
+            resource_perms = res.get_user_perms(request.user)
+            # fixup the permissions name
+            perms_without_base = [x.replace('base.', '') for x in perms]
+            # if at least one of the permissions is available the request is True
+            return resource_perms.filter(codename__in=perms_without_base).exists()
+
+        # check if the user have one of the perms in all the resource available
+        return get_objects_for_user(request.user, perms).exists()
 
 
 class ResourceBasePermissionsFilter(BaseFilterBackend):
