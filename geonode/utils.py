@@ -1597,21 +1597,22 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
         # Thumbnail link
-        logger.debug(" -- Resource Links[Thumbnail link]...")
-        if (Link.objects.filter(resource=instance.resourcebase_ptr,
-                                url=instance.get_thumbnail_url(),
-                                name='Thumbnail').count() < 2):
-            Link.objects.update_or_create(
-                resource=instance.resourcebase_ptr,
-                url=instance.get_thumbnail_url(),
-                name='Thumbnail',
-                defaults=dict(
-                    extension='png',
-                    mime='image/png',
-                    link_type='image',
+        if instance.get_thumbnail_url():
+            logger.debug(" -- Resource Links[Thumbnail link]...")
+            if (Link.objects.filter(resource=instance.resourcebase_ptr,
+                                    url=instance.get_thumbnail_url(),
+                                    name='Thumbnail').count() < 2):
+                Link.objects.update_or_create(
+                    resource=instance.resourcebase_ptr,
+                    url=instance.get_thumbnail_url(),
+                    name='Thumbnail',
+                    defaults=dict(
+                        extension='png',
+                        mime='image/png',
+                        link_type='image',
+                    )
                 )
-            )
-        logger.debug(" -- Resource Links[Thumbnail link]...done!")
+            logger.debug(" -- Resource Links[Thumbnail link]...done!")
 
         logger.debug(" -- Resource Links[OWS Links]...")
         try:
