@@ -29,9 +29,10 @@ from guardian.shortcuts import get_group_perms, get_anonymous_user
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-
+from rest_framework.permissions import DjangoModelPermissions
 from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
+from guardian.shortcuts import get_objects_for_user
 
 """
 Permissions will be managed according to a "compact" set:
@@ -748,3 +749,34 @@ def get_compact_perms_list(perms: list,
     if is_none_allowed and NONE_RIGHTS not in _perms_list:
         _perms_list.insert(0, _get_labeled_compact_perm(NONE_RIGHTS))
     return _perms_list
+
+
+class UserHasPerms(DjangoModelPermissions):
+    perms_map = {
+        'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
+        'POST': ['base.add_resourcebase'],
+        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
+        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
+        'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
+    }
+
+    def has_permission(self, request, view):
+        from geonode.base.models import ResourceBase
+
+        queryset = self._queryset(view)
+        perms = self.get_required_permissions(request.method, queryset.model)
+
+        if view.kwargs.get('pk'):
+            # if a single resource is called, we check the perms for that resource
+            res = ResourceBase.objects.filter(pk=view.kwargs.get('pk')).first()
+            if not res:
+                return False
+            # getting the user permission for that resource
+            resource_perms = res.get_user_perms(request.user)
+            # fixup the permissions name
+            perms_without_base = [x.replace('base.', '') for x in perms]
+            # if at least one of the permissions is available the request is True
+            return any([_perm in list(resource_perms) for _perm in perms_without_base])
+
+        # check if the user have one of the perms in all the resource available
+        return get_objects_for_user(request.user, perms).exists()

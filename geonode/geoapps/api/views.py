@@ -24,9 +24,9 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.permissions import IsOwnerOrReadOnly, UserHavePerms
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.geoapps.models import GeoApp
+from geonode.security.permissions import UserHasPerms
 
 from .serializers import GeoAppSerializer
 from .permissions import GeoAppPermissionsFilter
@@ -42,7 +42,7 @@ class GeoAppViewSet(DynamicModelViewSet):
     """
     http_method_names = ['get', 'patch', 'post', 'put']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHavePerms, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, GeoAppPermissionsFilter
