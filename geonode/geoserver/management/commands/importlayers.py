@@ -124,6 +124,9 @@ class GeoNodeUploader:
                 elif ext.lower() in (".tif", ".zip"):
                     file_path = base + ext
                     params["tif_file"] = open(file_path, "rb")
+                    if os.path.exists(f'{base}.xml'):
+                        params["xml_file"] = open(f'{base}.xml', "rb")
+
                 else:
                     continue
 
