@@ -632,7 +632,7 @@ class BaseApiTests(APITestCase):
                 "abstract": "Foo Abstract",
                 "attribution": "Foo Attribution",
                 "doi": "321-12345-987654321",
-                "is_published": False
+                "is_published": False  # this is a read-only field so should not updated
             }
             response = self.client.patch(f"{url}/{resource.id}/", data=data, format='json')
             self.assertEqual(response.status_code, 200, response.status_code)
@@ -641,7 +641,7 @@ class BaseApiTests(APITestCase):
             self.assertEqual('Foo Abstract', response.data['resource']['abstract'], response.data['resource']['abstract'])
             self.assertEqual('Foo Attribution', response.data['resource']['attribution'], response.data['resource']['attribution'])
             self.assertEqual('321-12345-987654321', response.data['resource']['doi'], response.data['resource']['doi'])
-            self.assertEqual(False, response.data['resource']['is_published'], response.data['resource']['is_published'])
+            self.assertEqual(True, response.data['resource']['is_published'], response.data['resource']['is_published'])
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username='delet-owner')
@@ -1469,6 +1469,48 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         # clean up
         favorite.delete()
+
+    def test_get_favorites_is_returned_in_the_base_endpoint_per_user(self):
+        """
+        Ensure we get user's favorite resources.
+        """
+        dataset = Dataset.objects.order_by('-last_updated').first()
+        url = reverse('base-resources-list')
+        bobby = get_user_model().objects.get(username='bobby')
+
+        self.client.login(username='bobby', password='bob')
+
+        favorite = Favorite.objects.create_favorite(dataset, bobby)
+
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        resource_have_tag = [r.get('favorite', False) for r in response.json().get("resources", {})]
+
+        # check that there is at last 1 favorite for the user
+        self.assertTrue(any(resource_have_tag))
+        # clean up
+        favorite.delete()
+
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        resource_have_tag = [r.get('favorite', False) for r in response.json().get("resources", {})]
+        # the admin should not have any favorite assigned to him
+        self.assertFalse(all(resource_have_tag))
+
+    def test_get_favorites_is_returned_in_the_base_endpoint(self):
+        """
+        Ensure we get user's favorite resources.
+        """
+        url = reverse('base-resources-list')
+
+        self.assertTrue(self.client.login(username='bobby', password='bob'))
+        response = self.client.get(url, format='json')
+
+        self.assertEqual(response.status_code, 200)
+        resource_have_tag = ['favorite' in r.keys() for r in response.json().get("resources", {})]
+        self.assertTrue(all(resource_have_tag))
 
     def test_create_and_delete_favorites(self):
         """
