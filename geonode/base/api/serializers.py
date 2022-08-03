@@ -316,6 +316,17 @@ class DownloadLinkField(DynamicComputedField):
             return None
 
 
+class FavoriteField(DynamicComputedField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        _user = self.context.get('request')
+        if _user and not _user.user.is_anonymous:
+            return Favorite.objects.filter(object_id=instance.pk, user=_user.user).exists()
+        return False
+
+
 class UserSerializer(BaseDynamicModelSerializer):
 
     class Meta:
@@ -463,8 +474,8 @@ class ResourceBaseSerializer(
         self.fields['share_count'] = serializers.CharField(required=False)
         self.fields['rating'] = serializers.CharField(required=False)
         self.fields['featured'] = serializers.BooleanField(required=False)
-        self.fields['is_published'] = serializers.BooleanField(required=False)
-        self.fields['is_approved'] = serializers.BooleanField(required=False)
+        self.fields['is_published'] = serializers.BooleanField(required=False, read_only=True)
+        self.fields['is_approved'] = serializers.BooleanField(required=False, read_only=True)
         self.fields['detail_url'] = DetailUrlField(read_only=True)
         self.fields['created'] = serializers.DateTimeField(read_only=True)
         self.fields['last_updated'] = serializers.DateTimeField(read_only=True)
@@ -498,6 +509,8 @@ class ResourceBaseSerializer(
         self.fields['is_copyable'] = serializers.BooleanField(read_only=True)
 
         self.fields['download_url'] = DownloadLinkField(read_only=True)
+
+        self.fields['favorite'] = FavoriteField(read_only=True)
 
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
