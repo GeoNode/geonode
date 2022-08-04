@@ -1517,6 +1517,12 @@ class BaseApiTests(APITestCase):
         """
         bobby = get_user_model().objects.get(username='bobby')
         dataset = create_single_dataset(name="test_dataset_for_fav", owner=bobby)
+        dataset.set_permissions(
+            {'users': {
+                    "bobby": ['base.add_resourcebase']
+                }
+            }
+        )
         url = urljoin(f"{reverse('base-resources-list')}/", f"{dataset.pk}/favorite/")
         # Anonymous
         response = self.client.post(url, format='json')
