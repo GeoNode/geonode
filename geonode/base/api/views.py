@@ -69,7 +69,7 @@ from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, Topic
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
-from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact, UserHasPerms
+from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -86,6 +86,7 @@ from .permissions import (
     IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
+    UserHasPerms,
 )
 from .serializers import (
     FavoriteSerializer,

@@ -31,12 +31,12 @@ from rest_framework.response import Response
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.base.api.permissions import UserHasPerms
 from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import validate_input_source
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
 from rest_framework.exceptions import NotFound
-from geonode.security.permissions import UserHasPerms
 
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager

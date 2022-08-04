@@ -25,8 +25,8 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.base.api.permissions import UserHasPerms
 from geonode.geoapps.models import GeoApp
-from geonode.security.permissions import UserHasPerms
 
 from .serializers import GeoAppSerializer
 from .permissions import GeoAppPermissionsFilter
