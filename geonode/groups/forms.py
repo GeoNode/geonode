@@ -23,8 +23,10 @@ from django.utils.translation import ugettext as _
 from modeltranslation.forms import TranslationModelForm
 
 from django.contrib.auth import get_user_model
+from django_select2.forms import Select2MultipleWidget
 
 from geonode.groups.models import GroupProfile
+from geonode.people.utils import get_available_users
 
 
 class GroupForm(TranslationModelForm):
@@ -86,29 +88,40 @@ class GroupUpdateForm(forms.ModelForm):
 
 
 class GroupMemberForm(forms.Form):
-    user_identifiers = forms.CharField(
+
+    def __init__(self, *args, **kwargs):
+        """ Grants access to the request object so that only members of the current user
+        are given as options"""
+        _user = None
+        if isinstance(args[0], get_user_model()):
+            _user = args[0]
+            args = args[1:]
+        super(forms.Form, self).__init__(*args, **kwargs)
+        if _user:
+            self.fields['user_identifiers'].queryset = get_available_users(_user).order_by('username')
+        else:
+            self.fields['user_identifiers'].queryset = None
+
+    user_identifiers = forms.ModelMultipleChoiceField(
+        required=True,
+        queryset=None,
         label=_("User Identifiers"),
-        widget=forms.SelectMultiple(
-            attrs={
-                'class': 'user-select',
-                'style': 'width:300px'
-            }
-        )
+        widget=Select2MultipleWidget
     )
+
     manager_role = forms.BooleanField(
         required=False,
         label=_("Assign manager role")
     )
 
     def clean_user_identifiers(self):
-        values = self.cleaned_data['user_identifiers'].strip('][').split(', ')
         new_members = []
         errors = []
-        for name in (v.strip('\'') for v in values):
+        for user in self.cleaned_data['user_identifiers']:
             try:
-                new_members.append(get_user_model().objects.get(username=name))
+                new_members.append(user)
             except get_user_model().DoesNotExist:
-                errors.append(name)
+                errors.append(user)
         if errors:
             raise forms.ValidationError(
                 _("The following are not valid usernames: %(errors)s; "

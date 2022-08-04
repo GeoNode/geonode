@@ -77,9 +77,6 @@
       userLookup = "{% url "account_ajax_lookup" %}"
     {% endautoescape %}
     </script>
-    {% if GEONODE_SECURITY_ENABLED %}
-        {% include "_permissions_form_js.html" %}
-    {% endif %}
 
     <script type="text/javascript">
         $('#id_doc_file').on('change', function(){

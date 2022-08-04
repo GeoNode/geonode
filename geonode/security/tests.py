@@ -55,7 +55,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
-from geonode.base.auth import create_auth_token
+from geonode.base.auth import create_auth_token, get_or_create_token
 
 from geonode.base.models import (
     Configuration,
@@ -283,22 +283,37 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         Tests the Geonode session control authentication middleware.
         """
         from geonode.security.middleware import SessionControlMiddleware
+        from importlib import import_module
+
+        engine = import_module(settings.SESSION_ENGINE)
         middleware = SessionControlMiddleware(None)
 
+        admin = get_user_model().objects.filter(is_superuser=True).first()
         request = HttpRequest()
-        self.client.login(username='admin', password='admin')
-        admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('favorite_list')
+        request.session = engine.SessionStore()
+        request.session['access_token'] = get_or_create_token(admin)
+        request.session.save()
         middleware.process_request(request)
-        response = self.client.get(request.path)
-        self.assertEqual(response.status_code, 200)
-        # Simulating Token expired (or not set)
-        request.session = {}
+        self.assertFalse(request.session.is_empty())
+
         request.session['access_token'] = None
+        request.session.save()
         middleware.process_request(request)
-        response = self.client.get('/admin')
+        self.assertTrue(request.session.is_empty())
+
+        # Test the full cycle through the client
+        path = reverse('account_email')
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+
+        # Simulating Token expired (or not set)
+        session_id = self.client.cookies.get(settings.SESSION_COOKIE_NAME)
+        session = engine.SessionStore(session_id.value)
+        session['access_token'] = None
+        session.save()
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 302)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1235,7 +1250,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 args=(
                     valid_dataset_typename,
                 )))
-        assert('permissions' in ensure_string(response.content))
+        assert ('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have maps.change_dataset_permissions
 
@@ -2004,7 +2019,23 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _p.compact
         )
 
-    def test_admin_whitelisted_access(self):
+    def test_admin_whitelisted_access_backend(self):
+        from geonode.security.backends import AdminRestrictedAccessBackend
+        from django.core.exceptions import PermissionDenied
+
+        backend = AdminRestrictedAccessBackend()
+
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            with self.assertRaises(PermissionDenied):
+                backend.authenticate(HttpRequest(), username='admin', password='admin')
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            user = backend.authenticate(request, username='admin', password='admin')
+            self.assertIsNone(user)
+
+    def test_admin_whitelisted_access_middleware(self):
         from geonode.security.middleware import AdminAllowedMiddleware
 
         get_response = mock.MagicMock()
@@ -2017,13 +2048,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
-            self.assertEqual(request.user, get_anonymous_user())
+            self.assertEqual(request.user, AnonymousUser())
 
             request = HttpRequest()
             basic_auth = base64.b64encode(b"admin:admin").decode()
             request.META['HTTP_AUTHORIZATION'] = f"Basic {basic_auth}"
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
 
@@ -2036,6 +2069,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 

@@ -239,13 +239,13 @@ class TestSupportedTypes(TestCase):
         ]
 
     @override_settings(ADDITIONAL_DATASET_FILE_TYPES=[
-            {
-                "id": "dummy_type",
-                "label": "Dummy Type",
-                "format": "dummy",
-                "ext": ["dummy"]
-            },
-        ])
+        {
+            "id": "dummy_type",
+            "label": "Dummy Type",
+            "format": "dummy",
+            "ext": ["dummy"]
+        },
+    ])
     def test_should_append_additional_type_if_config_is_provided(self):
         prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
         supported_types = get_supported_datasets_file_types()
@@ -254,15 +254,15 @@ class TestSupportedTypes(TestCase):
         self.assertEqual(len(supported_keys), prev_count + 1)
 
     @override_settings(ADDITIONAL_DATASET_FILE_TYPES=[
-            {
-                "id": "shp",
-                "label": "Replaced type",
-                "format": "vector",
-                "ext": ["shp"],
-                "requires": ["shp", "prj", "dbf", "shx"],
-                "optional": ["xml", "sld"]
-            },
-        ])
+        {
+            "id": "shp",
+            "label": "Replaced type",
+            "format": "vector",
+            "ext": ["shp"],
+            "requires": ["shp", "prj", "dbf", "shx"],
+            "optional": ["xml", "sld"]
+        },
+    ])
     def test_should_replace_the_type_id_if_already_exists(self):
         prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
         supported_types = get_supported_datasets_file_types()

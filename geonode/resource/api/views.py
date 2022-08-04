@@ -19,18 +19,29 @@
 import json
 import logging
 
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
+from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
+from dynamic_rest.viewsets import WithDynamicViewSetMixin
+from geonode.base.api.filters import DynamicSearchFilter
+from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.resource.api.exceptions import ExecutionRequestException
+from geonode.resource.api.serializer import ExecutionRequestSerializer
 from geonode.resource.manager import resource_manager
 from geonode.security.utils import get_resources_with_perms
-
-from .utils import (
-    filtered,
-    resolve_type_serializer)
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework import status
+from rest_framework.exceptions import NotFound
+from django.core.exceptions import ValidationError
+from rest_framework.authentication import (BasicAuthentication,
+                                           SessionAuthentication)
+from rest_framework.decorators import api_view
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from ..models import ExecutionRequest
+from .utils import filtered, resolve_type_serializer
 
 logger = logging.getLogger(__name__)
 
@@ -113,3 +124,38 @@ def resource_service_execution_status(request, execution_id: str):
     except Exception as e:
         logger.exception(e)
         return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
+
+
+class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticated, IsSelfOrAdminOrReadOnly, ]
+    filter_backends = [
+        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    ]
+    serializer_class = ExecutionRequestSerializer
+    pagination_class = GeoNodeApiPagination
+    http_method_names = ['get', 'delete']
+
+    def get_queryset(self, queryset=None):
+        return ExecutionRequest.objects.filter(user=self.request.user).order_by('pk')
+
+    def delete(self, *args, **kwargs):
+        try:
+            _pk = kwargs.get("pk")
+            if not _pk:
+                raise ExecutionRequestException("UUID was not provided")
+
+            _entry = self.get_queryset().filter(exec_id=_pk)
+            if not _entry.exists():
+                raise NotFound(detail=f"uuid provided does not exists: {_pk}")
+
+            _entry.delete()
+
+            return Response(status=200)
+        except ValidationError as e:
+            raise ExecutionRequestException(detail=e.messages[0] if e.messages else e)
+        except Exception as e:
+            raise e

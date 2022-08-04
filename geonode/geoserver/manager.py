@@ -28,7 +28,6 @@ from gsimporter.api import Session
 from django.conf import settings
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
@@ -36,7 +35,6 @@ from geonode.base import enumerations
 from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
-from geonode.thumbs.utils import MISSING_THUMB
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
 from geonode.security.utils import skip_registered_members_common_group
@@ -285,7 +283,10 @@ class GeoServerResourceManager(ResourceManagerInterface):
         return instance
 
     def _execute_resource_import(self, instance, files: list, user, action_type: str, importer_session_opts: typing.Optional[typing.Dict] = None):
-        from geonode.upload.files import ALLOWED_EXTENSIONS
+        from geonode.utils import get_allowed_extensions
+
+        ALLOWED_EXTENSIONS = get_allowed_extensions()
+
         session_opts = dict(importer_session_opts) if importer_session_opts is not None else {}
 
         spatial_files_type = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, files)
@@ -475,7 +476,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
         if instance and (isinstance(instance.get_real_instance(), Dataset) or isinstance(instance.get_real_instance(), Map)):
-            if overwrite or instance.thumbnail_url == static(MISSING_THUMB):
+            if overwrite or not instance.thumbnail_url:
                 create_gs_thumbnail(instance.get_real_instance(), overwrite=overwrite, check_bbox=check_bbox)
             return True
         return False
