@@ -756,7 +756,7 @@ def get_compact_perms_list(perms: list,
 class UserHasPerms(DjangoModelPermissions):
     perms_map = {
         'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
-        'POST': ['base.add_resourcebase'] + [f'base.{x}' for x in ADMIN_PERMISSIONS],
+        'POST': ['base.add_resourcebase'],
         'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
         'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
         'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
