@@ -38,12 +38,10 @@ from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
@@ -65,7 +63,6 @@ from owslib.wcs import WebCoverageService
 from geonode import GeoNodeException
 from geonode.base.models import Link
 from geonode.base.models import ResourceBase
-from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
@@ -891,9 +888,6 @@ def gs_slurp(
                 OverallRating.objects.filter(
                     content_type=ct,
                     object_id=layer.id).delete()
-                Comment.objects.filter(
-                    content_type=ct,
-                    object_id=layer.id).delete()
                 layer.keywords.clear()
 
                 layer.delete()
@@ -1091,7 +1085,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 req, body = http_client.get(dft_url, user=_user)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll('th'):
-                    if(field.string is None):
+                    if field.string is None:
                         field_name = field.contents[0].string
                     else:
                         field_name = field.string
@@ -2146,7 +2140,7 @@ def sync_instance_with_geoserver(
                     }
 
                 if updatebbox and is_monochromatic_image(instance.thumbnail_url):
-                    to_update['thumbnail_url'] = static(MISSING_THUMB)
+                    to_update['thumbnail_url'] = None
 
                 # Save all the modified information in the instance without triggering signals.
                 with transaction.atomic():

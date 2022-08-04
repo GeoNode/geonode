@@ -385,7 +385,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         # Test that GET returns permissions
         response = self.client.get(reverse('resource_permissions', args=(document_id,)))
-        assert('permissions' in ensure_string(response.content))
+        assert ('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have
         # documents.change_dataset_permissions
@@ -569,16 +569,7 @@ class DocumentsNotificationsTestCase(NotificationsTestsHelper):
             self.assertTrue(self.check_notification_out('document_updated', self.u))
 
             self.clear_notifications_queue()
-            from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_d)
-            comment = Comment(author=self.norman,
-                              name=self.norman.username,
-                              content_type=lct,
-                              object_id=_d.id,
-                              content_object=_d,
-                              comment='test comment')
-            comment.save()
-            self.assertTrue(self.check_notification_out('document_comment', self.u))
 
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()

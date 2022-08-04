@@ -152,9 +152,6 @@
     </ul>
     <ul class="list-group">
       <li class="list-group-item"><a href="{% url "user-activity" profile.username %}"><i class="fa fa-fire"></i> {% trans "My Activities" %}</a></li>
-      {% if FAVORITE_ENABLED %}
-      <li class="list-group-item"><a href="{% url "favorite_list" %}"><i class="fa fa-star"></i> {% trans "Favorites" %}</a></li>
-      {% endif %}
     </ul>
     <ul class="list-group">
       {% if USE_NOTIFICATIONS %}
@@ -205,9 +202,6 @@
 
 {% block extra_script %}
 {{ block.super }}
-  {% if GEONODE_SECURITY_ENABLED %}
-    {% include "_permissions_form_js.html" %}
-  {% endif %}
   <script type="text/javascript">
       {% if HAYSTACK_SEARCH %}
           SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?owner__username={{profile.username}}'
