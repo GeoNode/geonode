@@ -163,6 +163,12 @@ class GeoAppsApiTests(APITestCase):
                 ]
             }
         }
+
+        _app = GeoApp.objects.first()
+        _app.set_permissions(
+            {'users': {self.bobby: ['base.add_resourcebase', 'base.delete_resourcebase']}}
+        )
+
         response = self.client.post(url, data=json.dumps(data), format='json')
         self.assertEqual(response.status_code, 405)  # 405 – Method not allowed
 
