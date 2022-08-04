@@ -25,12 +25,13 @@ from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERM
 
 from geonode.security.utils import (
     get_users_with_perms,
-    get_resources_with_perms, get_groups_with_perms)
+    get_resources_with_perms)
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.exceptions import NotFound
 from guardian.shortcuts import get_objects_for_user
 from itertools import chain
+from guardian.shortcuts import get_groups_with_perms
 
 logger = logging.getLogger(__name__)
 
