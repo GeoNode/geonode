@@ -63,7 +63,6 @@ from geonode.geoapps.models import GeoApp
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
 from geonode.base.populate_test_data import create_models, create_single_dataset
-from geonode.security.utils import get_resources_with_perms
 from geonode.resource.api.tasks import resouce_service_dispatcher
 
 logger = logging.getLogger(__name__)
@@ -1516,7 +1515,14 @@ class BaseApiTests(APITestCase):
         """
         Ensure we can add and remove resources to user's favorite.
         """
-        dataset = get_resources_with_perms(get_user_model().objects.get(pk=-1)).first()
+        bobby = get_user_model().objects.get(username='bobby')
+        dataset = create_single_dataset(name="test_dataset_for_fav", owner=bobby)
+        dataset.set_permissions(
+            {'users': {
+                    "bobby": ['base.add_resourcebase']
+                }
+            }
+        )
         url = urljoin(f"{reverse('base-resources-list')}/", f"{dataset.pk}/favorite/")
         # Anonymous
         response = self.client.post(url, format='json')
@@ -1538,6 +1544,7 @@ class BaseApiTests(APITestCase):
         response = self.client.delete(url, format="json")
         self.assertEqual(response.data["message"], "Resource not in favorites")
         self.assertEqual(response.status_code, 404)
+        dataset.delete()
 
     def test_search_resources_with_favorite_true_and_no_favorite_should_return_0(self):
         """
@@ -1889,6 +1896,13 @@ class BaseApiTests(APITestCase):
     def test_rating_resource(self):
         resource = Dataset.objects.first()
         url = reverse('base-resources-ratings', args=[resource.pk])
+        resource.set_permissions(
+            {'users': {
+                    get_anonymous_user().username: ['base.view_resourcebase'],
+                    "bobby": ['base.add_resourcebase']
+                }
+            }
+        )
         data = {
             "rating": 3
         }

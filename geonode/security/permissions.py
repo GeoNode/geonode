@@ -29,7 +29,6 @@ from guardian.shortcuts import get_group_perms, get_anonymous_user
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-
 from geonode.utils import build_absolute_uri
 from geonode.groups.conf import settings as groups_settings
 
