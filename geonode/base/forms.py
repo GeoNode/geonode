@@ -40,6 +40,8 @@ from modeltranslation.forms import TranslationModelForm
 from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
 from django.contrib.admin.utils import flatten
+from django.utils.translation import get_language_info
+
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
@@ -337,6 +339,9 @@ class ThesaurusAvailableForm(forms.Form):
 
     @staticmethod
     def _get_thesauro_keyword_label(item, lang):
+        # clean language string comming from thesaurus database
+        lang = get_language_info(lang)['code']
+
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=item)
         qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
         not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")

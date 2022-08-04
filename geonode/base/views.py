@@ -35,7 +35,7 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.utils.translation import get_language_from_request, get_supported_language_variant
+from django.utils.translation import get_language_info, get_language_from_request
 
 # Geonode dependencies
 from geonode.maps.models import Map
@@ -304,20 +304,15 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
         tid = self.request.GET.get("sysid")
-
-        # help to get real language string
-        requested_lang = get_language_from_request(self.request)
-        supported_lang = get_supported_language_variant(requested_lang, strict=True)
-        if "_" in supported_lang:
-            supported_lang = supported_lang.split("_")[0]
-        elif "-" in supported_lang:
-            supported_lang = supported_lang.split("-")[0]
+        # clean language string comming from thesaurus database
+        lang = get_language_from_request(self.request)
+        lang = get_language_info(lang)['code']
 
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=tid)
-        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=supported_lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
         not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")
 
-        qs = ThesaurusKeywordLabel.objects.filter(lang=supported_lang, keyword_id__in=keyword_id_for_given_thesaurus)
+        qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus)
         if self.q:
             qs = qs.filter(label__istartswith=self.q)
 
