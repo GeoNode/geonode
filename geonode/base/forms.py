@@ -344,7 +344,7 @@ class ThesaurusAvailableForm(forms.Form):
         qs_local = list(ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values_list("keyword_id", "label"))
         qs_non_local = list(keyword_id_for_given_thesaurus.filter(id__in=not_qs_ids).values_list("id", "alt_label"))
 
-        return qs_local + [("", "-------")] + qs_non_local
+        return [("", "-------")] + qs_local + [("", "-------")] + qs_non_local
 
     @staticmethod
     def _get_thesauro_title_label(item, lang):
