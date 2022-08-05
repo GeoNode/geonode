@@ -720,6 +720,26 @@ span.grippy::after {
             </div>
         </div>
     </div>
+    <div class="col-xs-12 col-lg-4" id="settings_time_series">
+      <div class="panel-group">
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="panel panel-default" >
+                  <div class="panel-heading">{% trans "Time series settings" %}</div>
+                  <div class="panel-body">
+                    <div>
+                      {{timeseries_form.as_p}}
+
+                      {% for attr in timeseries_form.attributes %}
+                        <span><label for="{{ attr.attribute }}">{{ attr.attribute }}</label></span> {{attr.attribute_type}}<br>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 

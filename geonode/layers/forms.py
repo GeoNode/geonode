@@ -18,6 +18,7 @@
 #########################################################################
 import os
 import zipfile
+from attr import fields
 
 from django import forms
 
@@ -281,3 +282,10 @@ class LayerStyleUploadForm(forms.Form):
     name = forms.CharField(required=False)
     update = forms.BooleanField(required=False)
     sld = forms.FileField()
+
+
+class DatasetTimeSerieForm(forms.ModelForm):
+    
+    class Meta:
+        model = Attribute
+        fields = ('dataset', 'attribute', 'attribute_type')

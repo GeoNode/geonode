@@ -65,6 +65,7 @@ from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import (
     DatasetForm,
+    DatasetTimeSerieForm,
     LayerAttributeForm,
     NewLayerUploadForm)
 from geonode.layers.models import (
@@ -485,6 +486,9 @@ def dataset_metadata(
 
         thumbnail_url = layer.thumbnail_url
         dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource", user=request.user)
+
+        timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries")
+
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
             out = {
@@ -552,6 +556,8 @@ def dataset_metadata(
         category_form = CategoryForm(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
+
+        timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries")
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
@@ -736,6 +742,7 @@ def dataset_metadata(
         "poc_form": poc_form,
         "author_form": author_form,
         "attribute_form": attribute_form,
+        "timeseries_form": timeseries_form,
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
