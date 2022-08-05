@@ -22,6 +22,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
 from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
+from django.contrib.auth.models import Group
+from geonode.groups.conf import settings as groups_settings
 
 from geonode.security.utils import (
     get_users_with_perms,
@@ -239,9 +241,16 @@ class UserHasPerms(DjangoModelPermissions):
             res = ResourceBase.objects.filter(pk=view.kwargs.get('pk')).first()
             if not res:
                 raise NotFound
+            general_groups = {}
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
-            groups = get_groups_with_perms(res, attach_perms=True)
+            resource_groups = get_groups_with_perms(res, attach_perms=True)
+
+            common_groups = Group.objects.filter(name__in=[groups_settings.REGISTERED_MEMBERS_GROUP_NAME, 'contributors'])\
+                .filter(user=request.user)
+            general_groups = {gr: list(gr.permissions.values_list('codename', flat=True)) for gr in common_groups}
+
+            groups = {**resource_groups, **general_groups}
             # we are making this because the request.user.groups sometimes returns empty si is not fully reliable
             for group, perm in groups.items():
                 # checking if the user is in that group
