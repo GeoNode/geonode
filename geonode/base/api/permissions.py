@@ -219,9 +219,9 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
 class UserHasPerms(DjangoModelPermissions):
     perms_map = {
         'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
-        'POST': ['base.add_resourcebase'],
-        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
-        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
+        'POST': ['base.add_resourcebase'] + [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS],
         'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
     }
 
@@ -255,4 +255,4 @@ class UserHasPerms(DjangoModelPermissions):
             return any([_perm in available_perms for _perm in perms_without_base])
 
         # check if the user have one of the perms in all the resource available
-        return get_objects_for_user(request.user, perms, any_perm=True).exists()
+        return get_objects_for_user(request.user, perms).exists()
