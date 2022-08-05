@@ -22,8 +22,6 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
 from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
-from django.contrib.auth.models import Group
-from geonode.groups.conf import settings as groups_settings
 
 from geonode.security.utils import (
     get_users_with_perms,
