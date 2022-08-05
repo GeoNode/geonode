@@ -2858,7 +2858,7 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             url = reverse(_case['url'])
 
             _case["resource"].set_permissions(
-                {'users': {self.marty.username: ['base.view_resourcebase']}}
+                {'users': {self.marty.username: ['base.view_resourcebase', 'base.download_resourcebase']}}
             )
             # calling the api
             self.client.force_login(self.marty)
