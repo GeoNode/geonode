@@ -356,7 +356,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
     @extend_schema(methods=['post', 'delete'], responses={200: FavoriteSerializer(many=True)},
                    description="API endpoint allowing to retrieve the favorite Resources.")
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated, UserHasPerms])
+    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         resource = self.get_object()
         user = request.user
@@ -685,7 +685,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-ingest",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated, UserHasPerms
+            IsAuthenticated
         ])
     def resource_service_ingest(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'INGEST' operation

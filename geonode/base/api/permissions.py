@@ -221,9 +221,9 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
 class UserHasPerms(DjangoModelPermissions):
     perms_map = {
         'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
-        'POST': ['base.add_resourcebase'],
-        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
-        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS + BASIC_MANAGE_PERMISSIONS],
+        'POST': ['base.add_resourcebase'] + [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS],
         'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
     }
 
@@ -241,16 +241,9 @@ class UserHasPerms(DjangoModelPermissions):
             res = ResourceBase.objects.filter(pk=view.kwargs.get('pk')).first()
             if not res:
                 raise NotFound
-            general_groups = {}
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
-            resource_groups = get_groups_with_perms(res, attach_perms=True)
-
-            common_groups = Group.objects.filter(name__in=[groups_settings.REGISTERED_MEMBERS_GROUP_NAME, 'contributors'])\
-                .filter(user=request.user)
-            general_groups = {gr: list(gr.permissions.values_list('codename', flat=True)) for gr in common_groups}
-
-            groups = {**resource_groups, **general_groups}
+            groups = get_groups_with_perms(res, attach_perms=True)
             # we are making this because the request.user.groups sometimes returns empty si is not fully reliable
             for group, perm in groups.items():
                 # checking if the user is in that group
@@ -264,4 +257,4 @@ class UserHasPerms(DjangoModelPermissions):
             return any([_perm in available_perms for _perm in perms_without_base])
 
         # check if the user have one of the perms in all the resource available
-        return get_objects_for_user(request.user, perms, any_perm=True).exists()
+        return get_objects_for_user(request.user, perms).exists()
