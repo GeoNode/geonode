@@ -926,7 +926,6 @@ class TestThesaurusAvailableForm(TestCase):
     def test_get_thesuro_key_label_with_cmd_language_code(self):
         # in python test language code look like 'en' this test checks if key label result function
         # returns correct results
-        t = Thesaurus.objects.get(identifier='inspire-theme')
         tid = 1
         translation.activate("en")
         t_available_form = ThesaurusAvailableForm(data={"1": tid})
