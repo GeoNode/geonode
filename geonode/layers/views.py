@@ -487,7 +487,11 @@ def dataset_metadata(
         thumbnail_url = layer.thumbnail_url
         dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource", user=request.user)
 
-        timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries")
+        timeseries_form = DatasetTimeSerieForm(
+            instance=layer,
+            prefix="timeseries",
+            initial=layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
+        )
 
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
@@ -557,7 +561,12 @@ def dataset_metadata(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
 
-        timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries")
+        timeseries_form = DatasetTimeSerieForm(
+            instance=layer,
+            prefix="timeseries",
+        )
+        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
+        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'

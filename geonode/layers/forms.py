@@ -289,3 +289,21 @@ class DatasetTimeSerieForm(forms.ModelForm):
     class Meta:
         model = Attribute
         fields = ('dataset', 'attribute', 'attribute_type')
+
+    dataset = forms.CharField(required=False)
+    attribute = forms.ModelChoiceField(
+            required=False,
+            queryset=Attribute.objects.none()
+        )
+    end_attribute = forms.ModelChoiceField(
+            required=False,
+            queryset=Attribute.objects.none()
+        )    
+    options = forms.ChoiceField(
+        required=False,
+        choices=[
+            ('LIST', 'List of all the distinct time values'),
+            ('DISCRETE_INTERVAL', 'Intervals defined by the resolution'),
+            ('CONTINUOUS_INTERVAL', 'Continuous Intervals for data that is frequently updated, resolution describes the frequency of updates')
+        ]
+    )
