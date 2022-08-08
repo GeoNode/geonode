@@ -40,7 +40,7 @@ from modeltranslation.forms import TranslationModelForm
 from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
 from django.contrib.admin.utils import flatten
-from django.utils.translation import get_language_info
+from django.utils.translation import get_language
 
 from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (HierarchicalKeyword,
@@ -48,11 +48,10 @@ from geonode.base.models import (HierarchicalKeyword,
                                  ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
                                  TopicCategory)
 from geonode.base.widgets import TaggitSelect2Custom
+from geonode.base.fields import MultiThesauriField
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
-from django.utils.translation import get_language
-from .fields import MultiThesauriField
-from geonode.base.utils import validate_extra_metadata
+from geonode.base.utils import validate_extra_metadata, remove_country_from_lanugecode
 
 logger = logging.getLogger(__name__)
 
@@ -292,7 +291,14 @@ class TKeywordForm(forms.ModelForm):
     )
 
 
+THESAURUS_RESULT_LIST_SEPERATOR = ("", "-------")
+
+
 class ThesaurusAvailableForm(forms.Form):
+
+    # seperator at beginning of thesaurus search result and between
+    # results found in local language and alt label
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         lang = get_language()
@@ -339,17 +345,21 @@ class ThesaurusAvailableForm(forms.Form):
 
     @staticmethod
     def _get_thesauro_keyword_label(item, lang):
-        # clean language string comming from thesaurus database
-        lang = get_language_info(lang)['code']
 
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=item)
+
+        # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
         qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+        if len(qs_keyword_ids) == 0:
+            lang = remove_country_from_lanugecode(lang)
+            qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+
         not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")
 
         qs_local = list(ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values_list("keyword_id", "label"))
         qs_non_local = list(keyword_id_for_given_thesaurus.filter(id__in=not_qs_ids).values_list("id", "alt_label"))
 
-        return [("", "-------")] + qs_local + [("", "-------")] + qs_non_local
+        return [THESAURUS_RESULT_LIST_SEPERATOR] + qs_local + [THESAURUS_RESULT_LIST_SEPERATOR] + qs_non_local
 
     @staticmethod
     def _get_thesauro_title_label(item, lang):
