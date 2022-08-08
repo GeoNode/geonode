@@ -30,8 +30,8 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.response import Response
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
-from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.base.api.pagination import GeoNodeApiPagination
+from geonode.base.api.permissions import UserHasPerms
 from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException
 from geonode.layers.models import Dataset
 from geonode.layers.utils import validate_input_source
@@ -55,7 +55,7 @@ class DatasetViewSet(DynamicModelViewSet):
     """
     http_method_names = ['get', 'patch', 'put']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,

@@ -63,7 +63,7 @@ class MapsApiTests(APITestCase):
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data["total"], 9)
         # Check: No overfetching for maplayers
-        self.assertFalse(any([map.get("maplayers", []) for map in response.data["maps"]]))
+        self.assertTrue(any([map.get("maplayers", []) for map in response.data["maps"]]))
 
         # Pagination
         self.assertEqual(len(response.data["maps"]), 9)
