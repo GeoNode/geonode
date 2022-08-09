@@ -293,9 +293,8 @@ class DatasetTimeSerieForm(forms.ModelForm):
 
     class Meta:
         model = Attribute
-        fields = ('dataset', 'attribute')
+        fields = ('attribute',)
 
-    dataset = forms.CharField(required=False)
     attribute = forms.ChoiceField(
             required=False,
         )
