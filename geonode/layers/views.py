@@ -52,7 +52,7 @@ from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
 from geonode.proxy.views import fetch_response_headers
 from geonode.resource.manager import resource_manager
-from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
+from geonode.geoserver.helpers import set_dataset_style, set_time_dimension, wps_format_is_supported
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
@@ -487,12 +487,6 @@ def dataset_metadata(
         thumbnail_url = layer.thumbnail_url
         dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource", user=request.user)
 
-        timeseries_form = DatasetTimeSerieForm(
-            instance=layer,
-            prefix="timeseries",
-            initial=layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
-        )
-
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
             out = {
@@ -550,6 +544,18 @@ def dataset_metadata(
                 json.dumps(out),
                 content_type='application/json',
                 status=400)
+
+        timeseries_form = DatasetTimeSerieForm(request.POST, instance=layer, prefix='timeseries')
+        if not timeseries_form.is_valid():
+            out = {
+                'success': False,
+                'errors': [f"{x}: {y[0].messages[0]}" for x, y in timeseries_form.errors.as_data().items()]
+            }
+            logger.error(f"{out.get('errors')}")
+            return HttpResponse(
+                json.dumps(out),
+                content_type='application/json',
+                status=400)
     else:
         dataset_form = DatasetForm(instance=layer, prefix="resource", user=request.user)
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)
@@ -560,10 +566,29 @@ def dataset_metadata(
         category_form = CategoryForm(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
+        
+        gs_layer = gs_catalog.get_layer(name=layer.name)
+        if gs_layer is not None and layer.has_time:
+            initial = {}
+            gs_time_info = gs_layer.resource.metadata.get("time")
+            initial["attribute"] = layer.attributes.get(attribute=gs_time_info.attribute).pk
+            if gs_time_info.end_attribute is not None:
+                initial["end_attribute"] = layer.attributes.get(attribute=gs_time_info.end_attribute).pk
+            initial["presentation"] = gs_time_info.presentation
+            lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
+            for el in lookup_value:
+                if gs_time_info.resolution % el[1] == 0:
+                    initial["precision_value"] = gs_time_info.resolution//el[1]
+                    initial["precision_step"] = el[0]
+                    break
+            else:
+                initial["precision_value"] = gs_time_info.resolution
+                initial["precision_step"] = "seconds"
 
         timeseries_form = DatasetTimeSerieForm(
             instance=layer,
             prefix="timeseries",
+            initial=initial
         )
         timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
         timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
@@ -602,7 +627,7 @@ def dataset_metadata(
                 tkeywords_form.fields[tid].initial = values
 
     if request.method == "POST" and dataset_form.is_valid() and attribute_form.is_valid(
-    ) and category_form.is_valid() and tkeywords_form.is_valid():
+    ) and category_form.is_valid() and tkeywords_form.is_valid() and timeseries_form.is_valid():
         new_poc = dataset_form.cleaned_data['poc']
         new_author = dataset_form.cleaned_data['metadata_author']
 
@@ -718,6 +743,23 @@ def dataset_metadata(
             vals=vals,
             extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
         )
+        
+        if timeseries_form.cleaned_data and dataset_form.cleaned_data.get('has_time'):
+            ts = timeseries_form.cleaned_data
+            end_attr = Attribute.objects.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
+            resource_manager.exec(
+                'set_time_info',
+                None, 
+                instance=layer,
+                time_info={
+                    "attribute": Attribute.objects.get(pk=ts.get('attribute')).attribute,
+                    "end_attribute": end_attr,
+                    "presentation": ts.get('presentation') or None,
+                    "precision_value": ts.get('precision_value') or None,
+                    "precision_step": ts.get('precision_step') or None
+                }
+            )
+
         return HttpResponse(json.dumps({'message': message}))
 
     if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, layer):

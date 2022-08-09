@@ -286,20 +286,25 @@ class LayerStyleUploadForm(forms.Form):
 
 class DatasetTimeSerieForm(forms.ModelForm):
     
+    def __init__(self, *args, **kwargs):
+        _choises = [(None, '-----')] + [(_a.pk, _a.attribute) for _a in kwargs.get('instance').attributes if _a.attribute_type in ['xsd:dateTime']]
+        self.base_fields.get('attribute').choices = _choises
+        self.base_fields.get('end_attribute').choices = _choises
+        super().__init__(*args, **kwargs)
+
+    
     class Meta:
         model = Attribute
-        fields = ('dataset', 'attribute', 'attribute_type')
+        fields = ('dataset', 'attribute')
 
     dataset = forms.CharField(required=False)
-    attribute = forms.ModelChoiceField(
+    attribute = forms.ChoiceField(
             required=False,
-            queryset=Attribute.objects.none()
         )
-    end_attribute = forms.ModelChoiceField(
+    end_attribute = forms.ChoiceField(
             required=False,
-            queryset=Attribute.objects.none()
         )    
-    options = forms.ChoiceField(
+    presentation = forms.ChoiceField(
         required=False,
         choices=[
             ('LIST', 'List of all the distinct time values'),
@@ -307,3 +312,12 @@ class DatasetTimeSerieForm(forms.ModelForm):
             ('CONTINUOUS_INTERVAL', 'Continuous Intervals for data that is frequently updated, resolution describes the frequency of updates')
         ]
     )
+    precision_value = forms.IntegerField(required=False)
+    precision_step = forms.ChoiceField(required=False, choices=[
+        ('years',) * 2,
+        ('months',) * 2,
+        ('days',) * 2,
+        ('hours',) * 2,
+        ('minutes',) * 2,
+        ('seconds',) * 2
+    ])
