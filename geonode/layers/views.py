@@ -52,7 +52,7 @@ from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
 from geonode.proxy.views import fetch_response_headers
 from geonode.resource.manager import resource_manager
-from geonode.geoserver.helpers import set_dataset_style, set_time_dimension, wps_format_is_supported
+from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
@@ -566,21 +566,23 @@ def dataset_metadata(
         category_form = CategoryForm(
             prefix="category_choice_field",
             initial=topic_category.id if topic_category else None)
-        
+
         gs_layer = gs_catalog.get_layer(name=layer.name)
+        initial = {}
         if gs_layer is not None and layer.has_time:
-            initial = {}
             gs_time_info = gs_layer.resource.metadata.get("time")
             initial["attribute"] = layer.attributes.get(attribute=gs_time_info.attribute).pk
             if gs_time_info.end_attribute is not None:
                 initial["end_attribute"] = layer.attributes.get(attribute=gs_time_info.end_attribute).pk
             initial["presentation"] = gs_time_info.presentation
             lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
-            for el in lookup_value:
-                if gs_time_info.resolution % el[1] == 0:
-                    initial["precision_value"] = gs_time_info.resolution//el[1]
-                    initial["precision_step"] = el[0]
-                    break
+            if gs_time_info.resolution is not None:
+                res = gs_time_info.resolution // 1000
+                for el in lookup_value:
+                    if res % el[1] == 0:
+                        initial["precision_value"] = res // el[1]
+                        initial["precision_step"] = el[0]
+                        break
             else:
                 initial["precision_value"] = gs_time_info.resolution
                 initial["precision_step"] = "seconds"
@@ -743,20 +745,21 @@ def dataset_metadata(
             vals=vals,
             extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
         )
-        
-        if timeseries_form.cleaned_data and dataset_form.cleaned_data.get('has_time'):
+
+        if timeseries_form.cleaned_data and 'has_time' in dataset_form.changed_data:
             ts = timeseries_form.cleaned_data
             end_attr = Attribute.objects.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
             resource_manager.exec(
                 'set_time_info',
-                None, 
+                None
                 instance=layer,
                 time_info={
                     "attribute": Attribute.objects.get(pk=ts.get('attribute')).attribute,
                     "end_attribute": end_attr,
                     "presentation": ts.get('presentation') or None,
                     "precision_value": ts.get('precision_value') or None,
-                    "precision_step": ts.get('precision_step') or None
+                    "precision_step": ts.get('precision_step') or None,
+                    "enabled": dataset_form.cleaned_data.get('has_time', False)
                 }
             )
 

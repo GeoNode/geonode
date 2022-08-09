@@ -738,11 +738,13 @@ span.grippy::after {
                       {{timeseries_form.end_attribute}}
                     </div>
                     <span><label for="dataset_presentation">Presentation</label></span>
-                    {{timeseries_form.presentation}}
-                    <span><label for="dataset_precision_value">Precision Value</label></span>
-                    {{timeseries_form.precision_value}}
-                    <span><label for="dataset_precision_step">Precision Step</label></span>
-                    {{timeseries_form.precision_step}}
+                      {{timeseries_form.presentation}}
+                      <div id='precision_value'>                      
+                      <span><label for="dataset_precision_value">Precision Value</label></span>
+                      {{timeseries_form.precision_value}}
+                      <span><label for="dataset_precision_step">Precision Step</label></span>
+                      {{timeseries_form.precision_step}}
+                    </div>
                   </div>
                   </div>
                 </div>

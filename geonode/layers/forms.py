@@ -18,7 +18,6 @@
 #########################################################################
 import os
 import zipfile
-from attr import fields
 
 from django import forms
 
@@ -285,14 +284,13 @@ class LayerStyleUploadForm(forms.Form):
 
 
 class DatasetTimeSerieForm(forms.ModelForm):
-    
+
     def __init__(self, *args, **kwargs):
         _choises = [(None, '-----')] + [(_a.pk, _a.attribute) for _a in kwargs.get('instance').attributes if _a.attribute_type in ['xsd:dateTime']]
         self.base_fields.get('attribute').choices = _choises
         self.base_fields.get('end_attribute').choices = _choises
         super().__init__(*args, **kwargs)
 
-    
     class Meta:
         model = Attribute
         fields = ('dataset', 'attribute')
@@ -303,7 +301,7 @@ class DatasetTimeSerieForm(forms.ModelForm):
         )
     end_attribute = forms.ChoiceField(
             required=False,
-        )    
+        )
     presentation = forms.ChoiceField(
         required=False,
         choices=[
