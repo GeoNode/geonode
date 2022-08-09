@@ -751,7 +751,7 @@ def dataset_metadata(
             end_attr = Attribute.objects.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
             resource_manager.exec(
                 'set_time_info',
-                None
+                None,
                 instance=layer,
                 time_info={
                     "attribute": Attribute.objects.get(pk=ts.get('attribute')).attribute,
