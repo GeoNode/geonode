@@ -754,8 +754,8 @@ def dataset_metadata(
         if timeseries_form.cleaned_data and ('has_time' in dataset_form.changed_data or timeseries_form.changed_data):
 
             ts = timeseries_form.cleaned_data
-            end_attr = Attribute.objects.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
-            start_attr = Attribute.objects.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
+            end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
+            start_attr = layer.attributes.attributests.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
             resource_manager.exec(
                 'set_time_info',
                 None,
