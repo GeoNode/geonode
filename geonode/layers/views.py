@@ -749,16 +749,17 @@ def dataset_metadata(
         if timeseries_form.cleaned_data and 'has_time' in dataset_form.changed_data:
             ts = timeseries_form.cleaned_data
             end_attr = Attribute.objects.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
+            start_attr = Attribute.objects.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
             resource_manager.exec(
                 'set_time_info',
                 None,
                 instance=layer,
                 time_info={
-                    "attribute": Attribute.objects.get(pk=ts.get('attribute')).attribute,
+                    "attribute": start_attr,
                     "end_attribute": end_attr,
-                    "presentation": ts.get('presentation') or None,
-                    "precision_value": ts.get('precision_value') or None,
-                    "precision_step": ts.get('precision_step') or None,
+                    "presentation": ts.get('presentation', None),
+                    "precision_value": ts.get('precision_value', None),
+                    "precision_step": ts.get('precision_step', None),
                     "enabled": dataset_form.cleaned_data.get('has_time', False)
                 }
             )
