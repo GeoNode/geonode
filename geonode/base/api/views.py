@@ -48,7 +48,7 @@ from pinax.ratings.models import OverallRating, Rating
 from pinax.ratings.views import NUM_OF_RATINGS
 
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser
@@ -358,7 +358,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                    description="API endpoint allowing to retrieve the favorite Resources.")
     @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
-        resource = self.get_object()
+        resource = ResourceBase.objects.filter(pk=pk)
+        if not resource.exists():
+            raise NotFound
+        resource = resource.first()
         user = request.user
 
         if request.method == 'POST':
@@ -559,7 +562,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = ResourceBase.objects.filter(pk=pk)
+        if not resource.exists():
+            raise NotFound
+        resource = resource.first()
         _user_can_manage = request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not _user_can_manage:
@@ -1176,7 +1182,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             IsAuthenticatedOrReadOnly, UserHasPerms
         ])
     def ratings(self, request, pk=None):
-        resource = self.get_object()
+        resource = ResourceBase.objects.filter(pk=pk)
+        if not resource.exists():
+            raise NotFound
+        resource = resource.first()
         resource = resource.get_real_instance()
         ct = ContentType.objects.get_for_model(resource)
         if request.method == 'POST':
@@ -1298,7 +1307,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="extra-metadata",
     )
     def extra_metadata(self, request, pk=None):
-        _obj = self.get_object()
+        _obj = ResourceBase.objects.filter(pk=pk)
+        if not _obj.exists():
+            raise NotFound
+        _obj = _obj.first()
         if request.method == "GET":
             # get list of available metadata
             queryset = _obj.metadata.all()
