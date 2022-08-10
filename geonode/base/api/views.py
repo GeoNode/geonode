@@ -48,7 +48,7 @@ from pinax.ratings.models import OverallRating, Rating
 from pinax.ratings.views import NUM_OF_RATINGS
 
 from rest_framework import status
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser
