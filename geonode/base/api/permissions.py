@@ -255,4 +255,4 @@ class UserHasPerms(DjangoModelPermissions):
             return any([_perm in available_perms for _perm in perms_without_base])
 
         # check if the user have one of the perms in all the resource available
-        return get_objects_for_user(request.user, perms).exists()
+        return get_objects_for_user(request.user, perms).exists() or request.method in permissions.SAFE_METHODS
