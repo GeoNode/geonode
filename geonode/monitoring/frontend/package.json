@@ -68,7 +68,7 @@
     "react-simple-maps": "0.12.1",
     "react-tap-event-plugin": "3.0.3",
     "react-tooltip": "3.10.0",
-    "reactjs-calendar-heatmap": "0.0.10",
+    "reactjs-calendar-heatmap": "0.2.3",
     "recharts": "1.6.2",
     "redux": "4.0.4",
     "redux-actions": "2.6.5",
