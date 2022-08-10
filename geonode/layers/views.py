@@ -571,9 +571,11 @@ def dataset_metadata(
         initial = {}
         if gs_layer is not None and layer.has_time:
             gs_time_info = gs_layer.resource.metadata.get("time")
-            initial["attribute"] = layer.attributes.get(attribute=gs_time_info.attribute).pk
+            _attr = layer.attributes.filter(attribute=gs_time_info.attribute).first()
+            initial["attribute"] = _attr.pk if _attr else None
             if gs_time_info.end_attribute is not None:
-                initial["end_attribute"] = layer.attributes.get(attribute=gs_time_info.end_attribute).pk
+                end_attr = layer.attributes.filter(attribute=gs_time_info.end_attribute).first()
+                initial["end_attribute"] = end_attr.pk if end_attr else None
             initial["presentation"] = gs_time_info.presentation
             lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
             if gs_time_info.resolution is not None:
@@ -738,6 +740,9 @@ def dataset_metadata(
         if any([x in dataset_form.changed_data for x in ['is_approved', 'is_published']]):
             vals['is_approved'] = dataset_form.cleaned_data.get('is_approved', layer.is_approved)
             vals['is_published'] = dataset_form.cleaned_data.get('is_published', layer.is_published)
+
+        vals['subtype'] = 'vector_time' if dataset_form.cleaned_data.get('has_time') else 'vector'
+
         resource_manager.update(
             layer.uuid,
             instance=layer,
@@ -747,6 +752,7 @@ def dataset_metadata(
         )
 
         if timeseries_form.cleaned_data and 'has_time' in dataset_form.changed_data:
+
             ts = timeseries_form.cleaned_data
             end_attr = Attribute.objects.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
             start_attr = Attribute.objects.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
