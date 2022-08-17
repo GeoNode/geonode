@@ -88,6 +88,7 @@ from geonode.geoserver.helpers import (
     select_relevant_files,
     write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
+from geonode.layers.populate_datasets_data import attributes
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -487,7 +488,7 @@ def dataset_metadata(
         thumbnail_url = layer.thumbnail_url
         dataset_form = DatasetForm(request.POST, instance=layer, prefix="resource", user=request.user)
 
-        timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries")
+        timeseries_form = DatasetTimeSerieForm(request.POST)
 
         if not dataset_form.is_valid():
             logger.error(f"Dataset Metadata form is not valid: {dataset_form.errors}")
@@ -558,7 +559,8 @@ def dataset_metadata(
             initial=topic_category.id if topic_category else None)
 
         timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries")
-
+        timeseries_form.dataset = layer
+        timeseries_form.attributes = [attr for attr in layer.attributes.filter(attribute_type__in=['xsd:dateTime'])]
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
