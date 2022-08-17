@@ -191,8 +191,7 @@ def validate_extra_metadata(data, instance):
     return data
 
 
-@staticmethod
-def remove_country_from_lanugecode(language: str):
+def remove_country_from_languagecode(language: str):
     """ Remove country code (us) from language name (en-us)
     >>> remove_country_from_lanugecode("en-us")
     'en'
