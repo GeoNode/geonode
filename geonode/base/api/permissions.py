@@ -254,5 +254,8 @@ class UserHasPerms(DjangoModelPermissions):
             # if at least one of the permissions is available the request is True
             return any([_perm in available_perms for _perm in perms_without_base])
 
+        if not ResourceBase.objects.exists():
+            # there are not resource in the db, needed usually for fresh installations
+            return request.method in permissions.SAFE_METHODS
         # check if the user have one of the perms in all the resource available
         return get_objects_for_user(request.user, perms).exists()
