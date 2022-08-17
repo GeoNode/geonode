@@ -2471,3 +2471,18 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         response = self.client.delete(url, data=[self.mdata.id], content_type='application/json')
         self.assertTrue(200, response.status_code)
         self.assertEqual([], response.json())
+
+    def test_user_without_view_perms_cannot_see_the_endpoint(self):
+        from geonode.resource.manager import resource_manager
+
+        self.client.login(username='bobby', password='bob')
+        resource_manager.remove_permissions(self.layer.uuid, instance=self.layer.get_self_resource())
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        response = self.client.get(url, content_type='application/json')
+        self.assertTrue(403, response.status_code)
+
+        perm_spec = {"users": {"bobby": ['view_resourcebase']}, "groups": {}}
+        self.layer.set_permissions(perm_spec)
+        url = reverse('base-resources-extra-metadata', args=[self.layer.id])
+        response = self.client.get(url, content_type='application/json')
+        self.assertTrue(200, response.status_code)
