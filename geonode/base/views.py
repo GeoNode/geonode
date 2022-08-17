@@ -48,7 +48,7 @@ from geonode.tasks.tasks import set_permissions
 from geonode.resource.manager import resource_manager
 from geonode.security.utils import get_visible_resources
 from geonode.notifications_helper import send_notification
-from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_lanugecode
+from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_languagecode
 from geonode.base.forms import UserAndGroupPermissionsForm
 
 from geonode.base.forms import (
@@ -310,7 +310,7 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
         # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
         qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
         if len(qs_keyword_ids) == 0:
-            lang = remove_country_from_lanugecode(lang)
+            lang = remove_country_from_languagecode(lang)
             qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
 
         not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")
