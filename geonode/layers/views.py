@@ -88,7 +88,6 @@ from geonode.geoserver.helpers import (
     select_relevant_files,
     write_uploaded_files_to_disk)
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
-from geonode.layers.populate_datasets_data import attributes
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -595,8 +594,8 @@ def dataset_metadata(
             prefix="timeseries",
             initial=initial
         )
-        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
-        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
+        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double'])
+        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double'])
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
@@ -687,6 +686,8 @@ def dataset_metadata(
             la.featureinfo_type = form["featureinfo_type"]
             la.save()
 
+        layer.refresh_from_db()
+
         if new_poc is not None or new_author is not None:
             if new_poc is not None:
                 layer.poc = new_poc
@@ -742,7 +743,7 @@ def dataset_metadata(
             vals['is_approved'] = dataset_form.cleaned_data.get('is_approved', layer.is_approved)
             vals['is_published'] = dataset_form.cleaned_data.get('is_published', layer.is_published)
 
-        vals['subtype'] = 'vector_time' if dataset_form.cleaned_data.get('has_time') else 'vector'
+        #vals['subtype'] = 'vector_time' if dataset_form.cleaned_data.get('has_time') else 'vector'
 
         resource_manager.update(
             layer.uuid,
@@ -752,24 +753,24 @@ def dataset_metadata(
             extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
         )
 
-        if timeseries_form.cleaned_data and ('has_time' in dataset_form.changed_data or timeseries_form.changed_data):
+        #if timeseries_form.cleaned_data and ('has_time' in dataset_form.changed_data or timeseries_form.changed_data):
 
-            ts = timeseries_form.cleaned_data
-            end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
-            start_attr = layer.attributes.attributests.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
-            resource_manager.exec(
-                'set_time_info',
-                None,
-                instance=layer,
-                time_info={
-                    "attribute": start_attr,
-                    "end_attribute": end_attr,
-                    "presentation": ts.get('presentation', None),
-                    "precision_value": ts.get('precision_value', None),
-                    "precision_step": ts.get('precision_step', None),
-                    "enabled": dataset_form.cleaned_data.get('has_time', False)
-                }
-            )
+        #    ts = timeseries_form.cleaned_data
+        #    end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
+        #    start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
+        #    resource_manager.exec(
+        #        'set_time_info',
+        #        None,
+        #        instance=layer,
+        #        time_info={
+        #            "attribute": start_attr,
+        #            "end_attribute": end_attr,
+        #            "presentation": ts.get('presentation', None),
+        #            "precision_value": ts.get('precision_value', None),
+        #            "precision_step": ts.get('precision_step', None),
+        #            "enabled": dataset_form.cleaned_data.get('has_time', False)
+        #        }
+        #    )
 
         return HttpResponse(json.dumps({'message': message}))
 
