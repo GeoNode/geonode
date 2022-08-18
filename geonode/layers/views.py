@@ -82,6 +82,7 @@ from geonode.security.utils import (
     get_user_visible_groups,
     AdvancedSecurityWorkflowManager)
 from geonode.people.forms import ProfileForm
+from geonode.upload.utils import dataset_eligible_for_time_dimension
 from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import (
     ogc_server_settings,
@@ -594,8 +595,8 @@ def dataset_metadata(
             prefix="timeseries",
             initial=initial
         )
-        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double'])
-        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double'])
+        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double', 'xsd:int'])
+        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double', 'xsd:int'])
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
@@ -753,24 +754,23 @@ def dataset_metadata(
             extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
         )
 
-        #if timeseries_form.cleaned_data and ('has_time' in dataset_form.changed_data or timeseries_form.changed_data):
-
-        #    ts = timeseries_form.cleaned_data
-        #    end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
-        #    start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
-        #    resource_manager.exec(
-        #        'set_time_info',
-        #        None,
-        #        instance=layer,
-        #        time_info={
-        #            "attribute": start_attr,
-        #            "end_attribute": end_attr,
-        #            "presentation": ts.get('presentation', None),
-        #            "precision_value": ts.get('precision_value', None),
-        #            "precision_step": ts.get('precision_step', None),
-        #            "enabled": dataset_form.cleaned_data.get('has_time', False)
-        #        }
-        #    )
+        if timeseries_form.cleaned_data and ('has_time' in dataset_form.changed_data or timeseries_form.changed_data):
+            ts = timeseries_form.cleaned_data
+            end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
+            start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
+            resource_manager.exec(
+                'set_time_info',
+                None,
+                instance=layer,
+                time_info={
+                    "attribute": start_attr,
+                    "end_attribute": end_attr,
+                    "presentation": ts.get('presentation', None),
+                    "precision_value": ts.get('precision_value', None),
+                    "precision_step": ts.get('precision_step', None),
+                    "enabled": dataset_form.cleaned_data.get('has_time', False)
+                }
+            )
 
         return HttpResponse(json.dumps({'message': message}))
 
