@@ -1,5 +1,14 @@
 # Change Log
 
+## [4.0.0post1](https://github.com/GeoNode/geonode/tree/4.0.0post1) (2022-08-22)
+
+<li> Mon Aug 22 11:14:29 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/3d8e6ed5b3a154a3fe10bffa154deb2abed2d6f3 target=blank>Bump to version 4.0.0post1</a></li>
+<li> Wed Aug 17 12:51:54 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/db972f1ca53b847acac2fcca8dc9278c28dd6963 target=blank>Add test on extra metadta (#9859) (#9860)</a></li>
+<li> Tue Aug 16 14:33:44 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/d118168d69f04d01ae65c8f864acb5c52a69152b target=blank>[Fixes #9838] forever loading state on index site (API returns 403) (#9841) (#9857)</a></li>
+<li> Wed Aug 10 17:59:38 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ccd30256b5e914d590d2bf01f1a846b40b82094a target=blank>[Fixes #9842] Extra metadata endpoint return 403 even if the user has… (#9843) (#9844)</a></li>
+<li> Tue Aug 9 12:29:52 2022 +0200: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/ef898669d489a9d1bfcec271cda8c60e02b2aa85 target=blank>[Fixes #9799] Thesaurus selectbox performance in metadata editor is very slow (#9800) (#9836)</a></li>
+<li> Fri Aug 5 19:46:48 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/7244bdc5f0404c0f7cf903bef8bae74c535c5e7d target=blank>Bump to version 4.0.1dev</a></li>
+<li> Fri Aug 5 19:46:32 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/6fbc9e2f18a3cbb822b67221fb86a892429f2fbb target=blank>"Bump django-geonode-mapstore-client to version 4.x"</a></li>
 
 ## [4.0.0](https://github.com/GeoNode/geonode/tree/4.0.0) (2022-08-05)
 
