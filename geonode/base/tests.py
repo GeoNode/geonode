@@ -21,7 +21,6 @@ import os
 import requests
 
 from uuid import uuid4
-from urllib.parse import urlparse
 from unittest.mock import patch, Mock
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -91,11 +90,11 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def test_initial_behavior(self):
         """
-        Tests that an empty resource has a missing image as default thumbnail.
+        Tests that an empty resource has a missing image as null.
         """
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
-        self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
+        self.assertIsNone(missing)
 
     def test_empty_image(self):
         """
@@ -103,7 +102,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         """
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail('test-thumb', None)
-        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+        self.assertEqual(current, self.rb.get_thumbnail_url())
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_monochromatic_image(self, image):
@@ -114,7 +113,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail(filename, image)
-        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+        self.assertEqual(current, self.rb.get_thumbnail_url())
 
         # cleanup: remove saved thumbnail
         thumb_utils.remove_thumbs(filename)

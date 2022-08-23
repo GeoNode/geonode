@@ -27,7 +27,6 @@ from rest_framework.test import APITestCase
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
-from geonode.thumbs.utils import MISSING_THUMB
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +191,7 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
-        self.assertNotIn(MISSING_THUMB, response.data["map"]['thumbnail_url'])
+        self.assertIsNotNone(response.data["map"]['thumbnail_url'])
 
 
 DUMMY_MAPDATA = {
