@@ -54,7 +54,7 @@ pyproj<3.3.0
 OWSLib==0.26.0
 pycsw==2.6.1
 SQLAlchemy==1.4.40 # required by PyCSW
-Shapely==1.8.2
+Shapely==1.8.4
 mercantile==1.2.1
 geoip2==4.6.0
 numpy==1.23.*
@@ -154,7 +154,7 @@ pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<63.3.0
+setuptools>=59.1.1,<65.3.0
 pip==22.2.2
 Twisted==22.4.0
 pixelmatch==0.3.0
