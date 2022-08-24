@@ -44,7 +44,6 @@
 
 [https://github.com/GeoNode/geonode/compare/3.3.1...4.0.0](https://github.com/GeoNode/geonode/compare/3.3.1...4.0.0)
 
-
 ## [4.0.0rc1](https://github.com/GeoNode/geonode/tree/4.0rc1) (2022-07-01)
 
 ### Breaking Changes
