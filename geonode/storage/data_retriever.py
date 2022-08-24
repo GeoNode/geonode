@@ -191,6 +191,8 @@ class DataRetriever(object):
         return self.data_items.items()
 
     def _unzip(self, zip_name: str) -> Mapping:
+        from geonode.utils import get_allowed_extensions
+
         '''
         Function to unzip the file. If is a shp or a tiff
         is assigned as base_file otherwise will create the expected payloads
@@ -199,8 +201,11 @@ class DataRetriever(object):
         zip_file = self.file_paths['base_file']
         the_zip = zipfile.ZipFile(zip_file, allowZip64=True)
         the_zip.extractall(self.temporary_folder)
+        available_choices = get_allowed_extensions()
+        not_main_files = ['xml', 'sld', 'zip']
+        base_file_choices = [x for x in available_choices if x not in not_main_files]
         for _file in Path(self.temporary_folder).iterdir():
-            if _file.name.endswith('.shp') or _file.name.endswith('.tif'):
+            if any([_file.name.endswith(_ext) for _ext in base_file_choices]):
                 self.file_paths['base_file'] = Path(str(_file))
             elif not zipfile.is_zipfile(str(_file)):
                 ext = _file.name.split(".")[-1]

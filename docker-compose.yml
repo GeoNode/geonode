@@ -135,7 +135,7 @@ services:
       - dbbackups:/pg_backups
     restart: on-failure
     healthcheck:
-      test: "pg_isready -d gis"
+      test: "pg_isready -d postgres -U postgres"
     # uncomment to enable remote connections to postgres
     #ports:
     #  - "5432:5432"
