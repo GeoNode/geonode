@@ -28,7 +28,6 @@ class DocumentsAppConfig(NotificationsAppConfigBase):
                      ("document_approved", _("Document Approved"), _("A Document was approved by a Manager"),),
                      ("document_published", _("Document Published"), _("A Document was published"),),
                      ("document_deleted", _("Document Deleted"), _("A Document was deleted"),),
-                     ("document_comment", _("Comment on Document"), _("A Document was commented on"),),
                      ("document_rated", _("Rating for Document"), _("A rating was given to a document"),),
                      )
 
