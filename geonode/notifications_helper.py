@@ -21,7 +21,7 @@ from importlib import import_module
 
 from django.apps import AppConfig
 from django.conf import settings
-from django.db.models import signals, Q
+from django.db.models import signals
 from django.contrib.auth import get_user_model
 
 from geonode.tasks.tasks import send_queued_notifications

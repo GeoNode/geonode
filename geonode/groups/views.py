@@ -302,7 +302,6 @@ class GroupActivityView(ListView):
 
         context = super().get_context_data(**kwargs)
         context['group'] = self.group
-        members = ([(member.user.id) for member in self.group.member_queryset()])
         # Additional Filtered Lists Below
         action_list = []
         actions = Action.objects.filter(
