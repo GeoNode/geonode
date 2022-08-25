@@ -687,8 +687,6 @@ def dataset_metadata(
             la.featureinfo_type = form["featureinfo_type"]
             la.save()
 
-        layer.refresh_from_db()
-
         if new_poc is not None or new_author is not None:
             if new_poc is not None:
                 layer.poc = new_poc
