@@ -82,7 +82,6 @@ from geonode.security.utils import (
     get_user_visible_groups,
     AdvancedSecurityWorkflowManager)
 from geonode.people.forms import ProfileForm
-from geonode.upload.utils import dataset_eligible_for_time_dimension
 from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import (
     ogc_server_settings,
@@ -572,31 +571,32 @@ def dataset_metadata(
         initial = {}
         if gs_layer is not None and layer.has_time:
             gs_time_info = gs_layer.resource.metadata.get("time")
-            _attr = layer.attributes.filter(attribute=gs_time_info.attribute).first()
-            initial["attribute"] = _attr.pk if _attr else None
-            if gs_time_info.end_attribute is not None:
-                end_attr = layer.attributes.filter(attribute=gs_time_info.end_attribute).first()
-                initial["end_attribute"] = end_attr.pk if end_attr else None
-            initial["presentation"] = gs_time_info.presentation
-            lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
-            if gs_time_info.resolution is not None:
-                res = gs_time_info.resolution // 1000
-                for el in lookup_value:
-                    if res % el[1] == 0:
-                        initial["precision_value"] = res // el[1]
-                        initial["precision_step"] = el[0]
-                        break
-            else:
-                initial["precision_value"] = gs_time_info.resolution
-                initial["precision_step"] = "seconds"
+            if gs_time_info.enabled:
+                _attr = layer.attributes.filter(attribute=gs_time_info.attribute).first()
+                initial["attribute"] = _attr.pk if _attr else None
+                if gs_time_info.end_attribute is not None:
+                    end_attr = layer.attributes.filter(attribute=gs_time_info.end_attribute).first()
+                    initial["end_attribute"] = end_attr.pk if end_attr else None
+                initial["presentation"] = gs_time_info.presentation
+                lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
+                if gs_time_info.resolution is not None:
+                    res = gs_time_info.resolution // 1000
+                    for el in lookup_value:
+                        if res % el[1] == 0:
+                            initial["precision_value"] = res // el[1]
+                            initial["precision_step"] = el[0]
+                            break
+                else:
+                    initial["precision_value"] = gs_time_info.resolution
+                    initial["precision_step"] = "seconds"
 
         timeseries_form = DatasetTimeSerieForm(
             instance=layer,
             prefix="timeseries",
             initial=initial
         )
-        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double', 'xsd:int'])
-        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime', 'xsd:double', 'xsd:int'])
+        timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
+        timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
@@ -744,15 +744,7 @@ def dataset_metadata(
             vals['is_approved'] = dataset_form.cleaned_data.get('is_approved', layer.is_approved)
             vals['is_published'] = dataset_form.cleaned_data.get('is_published', layer.is_published)
 
-        #vals['subtype'] = 'vector_time' if dataset_form.cleaned_data.get('has_time') else 'vector'
-
-        resource_manager.update(
-            layer.uuid,
-            instance=layer,
-            notify=True,
-            vals=vals,
-            extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
-        )
+        layer.has_time = dataset_form.cleaned_data.get('has_time', layer.has_time)
 
         if timeseries_form.cleaned_data and ('has_time' in dataset_form.changed_data or timeseries_form.changed_data):
             ts = timeseries_form.cleaned_data
@@ -771,6 +763,14 @@ def dataset_metadata(
                     "enabled": dataset_form.cleaned_data.get('has_time', False)
                 }
             )
+
+        resource_manager.update(
+            layer.uuid,
+            instance=layer,
+            notify=True,
+            vals=vals,
+            extra_metadata=json.loads(dataset_form.cleaned_data['extra_metadata'])
+        )
 
         return HttpResponse(json.dumps({'message': message}))
 
