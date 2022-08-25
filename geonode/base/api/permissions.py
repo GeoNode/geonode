@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from rest_framework import permissions
@@ -25,7 +26,8 @@ from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERM
 
 from geonode.security.utils import (
     get_users_with_perms,
-    get_resources_with_perms)
+    get_resources_with_perms,
+    get_visible_resources)
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from rest_framework.exceptions import NotFound
@@ -254,7 +256,12 @@ class UserHasPerms(DjangoModelPermissions):
             # if at least one of the permissions is available the request is True
             return any([_perm in available_perms for _perm in perms_without_base])
 
-        if not ResourceBase.objects.exists():
+        if not get_visible_resources(
+                queryset,
+                request.user if request else None,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES):
             # there are not resource in the db, needed usually for fresh installations
             return request.method in permissions.SAFE_METHODS
         # check if the user have one of the perms in all the resource available
