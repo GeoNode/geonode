@@ -61,7 +61,6 @@ def set_resource_links(*args, **kwargs):
 class GeoserverAppConfig(NotificationsAppConfigBase):
     name = 'geonode.geoserver'
     NOTIFICATIONS = (("dataset_uploaded", _("Dataset Uploaded"), _("A layer was uploaded"),),
-                     ("dataset_comment", _("Comment on Dataset"), _("A layer was commented on"),),
                      ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),
                      )
 
