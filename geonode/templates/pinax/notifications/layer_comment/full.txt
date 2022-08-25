@@ -1,3 +1,0 @@
-{% load i18n %}
-{% trans "A comment has been posted for the dataset" %} {{ resource.title }} {% trans "by the user" %} {{ author.username }}<br/>
-{% trans "You can visit the dataset's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}

@@ -883,7 +883,7 @@ def gs_slurp(
                 layer.workspace,
                 layer.store)
             try:
-                # delete ratings, comments, and taggit tags:
+                # delete ratings, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(
                     content_type=ct,

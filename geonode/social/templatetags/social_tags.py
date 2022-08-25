@@ -77,12 +77,6 @@ def activity_item(action, **kwargs):
         if object_type in geoapps:
             activity_class = object_type
 
-        if object_type == 'comment':
-            activity_class = 'comment'
-            preposition = _("on")
-            object = None
-            fragment = "comments"
-
         if object_type == 'map':
             activity_class = 'map'
 
