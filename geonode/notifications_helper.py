@@ -128,16 +128,10 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
                         not user.has_perm('view_resourcebase', resource.get_self_resource()):
                     exclude_users_ids.append(user.id)
                 if user.pk == resource.owner.pk and \
-                        not notice_type_label.split("_")[-1] in ("updated", "rated", "comment", "approved", "published"):
+                        not notice_type_label.split("_")[-1] in ("updated", "rated", "approved", "published"):
                     exclude_users_ids.append(user.id)
             except Exception as e:
                 # fallback which wont send mails
                 logger.exception(f"Could not send notifications: {e}")
                 return []
     return profiles.exclude(id__in=exclude_users_ids)
-
-
-def get_comment_notification_recipients(notice_type_label, instance_owner, exclude_user=None, resource=None):
-    profiles = get_notification_recipients(notice_type_label, exclude_user, resource=resource)
-    profiles = profiles.filter(Q(pk=resource.owner.pk) | Q(is_superuser=True))
-    return profiles

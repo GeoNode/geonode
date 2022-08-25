@@ -333,11 +333,6 @@ class GroupActivityView(ListView):
             action.action_object and action.action_object.group == self.group.group][
             :15]
         action_list.extend(context['action_list_documents'])
-        context['action_list_comments'] = Action.objects.filter(
-            public=True,
-            actor_object_id__in=members,
-            action_object_content_type__model='comment')[:15]
-        action_list.extend(context['action_list_comments'])
         context['action_list'] = sorted(action_list, key=getKey, reverse=True)
         return context
 
