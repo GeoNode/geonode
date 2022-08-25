@@ -77,8 +77,6 @@ class RecentActivity(ListView):
             id__in=_filter_actions('map', self.request))[:15]
         context['action_list_documents'] = Action.objects.filter(
             id__in=_filter_actions('document', self.request))[:15]
-        context['action_list_comments'] = Action.objects.filter(
-            id__in=_filter_actions('comment', self.request))[:15]
         context['action_list_geoapps'] = self.get_geoapp_actions(
             _filter_actions('geoapp', self.request))
         return context

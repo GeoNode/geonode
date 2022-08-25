@@ -31,7 +31,6 @@ class DatasetAppConfig(NotificationsAppConfigBase):
         ("dataset_approved", _("Dataset Approved"), _("A Dataset was approved by a Manager"),),
         ("dataset_published", _("Dataset Published"), _("A Dataset was published"),),
         ("dataset_deleted", _("Dataset Deleted"), _("A Dataset was deleted"),),
-        ("dataset_comment", _("Comment on Dataset"), _("A layer was commented on"),),
         ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),)
 
 

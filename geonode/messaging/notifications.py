@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 def message_received_notification(**kwargs):
-    """ Send a notification when a comment to a layer, map or document has
+    """ Send a notification when a request to a layer, map or document has
     been submitted
     """
     notice_type_label = 'message_received'
