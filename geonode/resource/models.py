@@ -37,7 +37,7 @@ class ExecutionRequest(models.Model):
         (STATUS_FINISHED, _("finished")),
     ]
 
-    ACTION_CHOICES = [(v.value, v.value) for v in ExecutionRequestAction]
+    ACTION_CHOICES = [(str(v.value), str(v.value)) for v in ExecutionRequestAction]
 
     exec_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
