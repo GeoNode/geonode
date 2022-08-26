@@ -396,8 +396,7 @@ def _geonode_public_port():
     return gn_pub_port
 
 
-def _geoserver_info_provision(url):
-    from django.conf import settings
+def _geoserver_info_provision(url):    
     from geoserver.catalog import Catalog
     print("Setting GeoServer Admin Password...")
     cat = Catalog(
