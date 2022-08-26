@@ -351,7 +351,7 @@ class PermissionLevelMixin:
 
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
         # include explicit permissions appliable to "subtype == 'vector'"
-        if self.subtype == 'vector':
+        if self.subtype in ['vector', 'vector_time']:
             PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
         elif self.subtype == 'raster':
             PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS

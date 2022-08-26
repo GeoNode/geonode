@@ -182,7 +182,7 @@ class Dataset(ResourceBase):
         null=True)
 
     def is_vector(self):
-        return self.subtype == 'vector'
+        return self.subtype in ['vector', 'vector_time']
 
     @property
     def is_raster(self):
@@ -190,7 +190,7 @@ class Dataset(ResourceBase):
 
     @property
     def display_type(self):
-        if self.subtype == "vector":
+        if self.subtype in ["vector", "vector_time"]:
             return "Vector Data"
         elif self.subtype == "raster":
             return "Raster Data"
@@ -264,7 +264,7 @@ class Dataset(ResourceBase):
 
         # we need to check, for shapefile, if column names are valid
         list_col = None
-        if self.subtype == 'vector':
+        if self.subtype in ['vector', 'vector_time']:
             valid_shp, wrong_column_name, list_col = check_shp_columnnames(
                 self)
             if wrong_column_name:
@@ -332,7 +332,7 @@ class Dataset(ResourceBase):
 
     @property
     def download_url(self):
-        if self.subtype not in ['vector', 'raster']:
+        if self.subtype not in ['vector', 'raster', 'vector_time']:
             logger.error("Download URL is available only for datasets that have been harvested and copied locally")
             return None
         return build_absolute_uri(reverse('dataset_download', args=(self.alternate,)))
