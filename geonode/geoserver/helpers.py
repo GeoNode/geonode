@@ -1041,7 +1041,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore"}:
+    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
@@ -1548,8 +1548,13 @@ def fetch_gs_resource(instance, values, tries):
             gs_resource.abstract = values.get('abstract', '')
         else:
             values = {}
+
+        _subtype = gs_resource.store.resource_type
+        if gs_resource.metadata and gs_resource.metadata.get('time', False) and gs_resource.metadata.get('time').enabled:
+            _subtype = "vectorTimeSeries"
+
         values.update(dict(store=gs_resource.store.name,
-                           subtype=gs_resource.store.resource_type,
+                           subtype=_subtype,
                            alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',

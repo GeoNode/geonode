@@ -415,15 +415,42 @@
         {% endblock onInputChange %}
 
     $(document).ready(function() {
+
+        if($("#id_resource-has_time").is(":checked")) {
+            $("#settings_time_series").show();
+            if ($("#id_timeseries-presentation").val() == 'LIST') {
+                $("#precision_value").hide();
+            }
+        } else {
+            $("#settings_time_series").hide();
+        };
+
+        $("#id_resource-has_time").click(function() {
+            if($(this).is(":checked")) {
+                $("#settings_time_series").show();
+                if ($("#id_timeseries-presentation").val() == 'LIST') {
+                    $("#precision_value").hide();
+                }
+            } else {
+                $("#settings_time_series").hide();
+            }
+        });
+        
+        $("#id_timeseries-presentation").change(function() {
+            if(this.value != 'LIST') {
+                $("#precision_value").show();
+            } else {
+                $("#precision_value").hide();
+            }
+        });
+
         {% block hints %}
 
         $('#completeness-hints .mandatory-hint').click(getTab.bind(null, 1));
         $('#completeness-hints .advanced-hint').click(getTab.bind(null, 2));
         {% endblock hints %}
+        
 
-        
-        
-        
         {% block trigger_onInputChange %}
 
         {{UI_REQUIRED_FIELDS}}.forEach(element => $('#' + element).change(onInputChange).change());
