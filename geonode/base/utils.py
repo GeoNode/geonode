@@ -189,3 +189,15 @@ def validate_extra_metadata(data, instance):
             raise ValidationError(f"{e} at index {_index} for input json: {json.dumps(_metadata)}")
     # conerted because in this case, we can store a well formated json instead of the user input
     return data
+
+
+def remove_country_from_languagecode(language: str):
+    """ Remove country code (us) from language name (en-us)
+    >>> remove_country_from_lanugecode("en-us")
+    'en'
+    """
+    if "-" not in language:
+        return language
+
+    lang, _, _ = language.lower().partition("-")
+    return lang

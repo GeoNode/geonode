@@ -26,7 +26,6 @@
           {% trans app|title %}
         </a></li>
       {% endfor %}
-      <li><a href="#comments" data-toggle="tab"><i class="fa fa-comment-o"></i> {% trans "Comments" %}</a></li>
     </ul>
     <div class="tab-content">
       <article id="all" class="tab-pane active">
@@ -59,15 +58,6 @@
       <article id="documents" class="tab-pane">
         <ul class="no-style-list">
         {% for action in action_list_documents %}
-          {% activity_item action %}
-          {% empty %}
-          <p>{% trans "No actions yet" %}</p>
-        {% endfor %}
-        </ul>
-      </article>
-      <article id="comments" class="tab-pane">
-        <ul class="no-style-list">
-        {% for action in action_list_comments %}
           {% activity_item action %}
           {% empty %}
           <p>{% trans "No actions yet" %}</p>

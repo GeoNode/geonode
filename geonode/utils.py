@@ -1359,10 +1359,10 @@ def get_legend_url(
     _service_url = service_url or f"{ogc_server_settings.PUBLIC_LOCATION}ows"
     _dataset_name = dataset_name or instance.alternate
     _params = f"&{params}" if params else ""
-    return(f"{_service_url}?"
-           f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
-           f"LAYER={_dataset_name}&STYLE={style_name}&version={version}&"
-           f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
+    return (f"{_service_url}?"
+            f"service=WMS&request=GetLegendGraphic&format=image/png&WIDTH={width}&HEIGHT={height}&"
+            f"LAYER={_dataset_name}&STYLE={style_name}&version={version}&"
+            f"sld_version={sld_version}&legend_options=fontAntiAliasing:true;fontSize:12;forceLabels:on{_params}")
 
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
@@ -1597,21 +1597,22 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
         # Thumbnail link
-        logger.debug(" -- Resource Links[Thumbnail link]...")
-        if (Link.objects.filter(resource=instance.resourcebase_ptr,
-                                url=instance.get_thumbnail_url(),
-                                name='Thumbnail').count() < 2):
-            Link.objects.update_or_create(
-                resource=instance.resourcebase_ptr,
-                url=instance.get_thumbnail_url(),
-                name='Thumbnail',
-                defaults=dict(
-                    extension='png',
-                    mime='image/png',
-                    link_type='image',
+        if instance.get_thumbnail_url():
+            logger.debug(" -- Resource Links[Thumbnail link]...")
+            if (Link.objects.filter(resource=instance.resourcebase_ptr,
+                                    url=instance.get_thumbnail_url(),
+                                    name='Thumbnail').count() < 2):
+                Link.objects.update_or_create(
+                    resource=instance.resourcebase_ptr,
+                    url=instance.get_thumbnail_url(),
+                    name='Thumbnail',
+                    defaults=dict(
+                        extension='png',
+                        mime='image/png',
+                        link_type='image',
+                    )
                 )
-            )
-        logger.debug(" -- Resource Links[Thumbnail link]...done!")
+            logger.debug(" -- Resource Links[Thumbnail link]...done!")
 
         logger.debug(" -- Resource Links[OWS Links]...")
         try:

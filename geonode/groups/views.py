@@ -175,7 +175,7 @@ def group_members(request, slug):
         context={
             "group": group,
             "members": group.member_queryset(),
-            "member_form": forms.GroupMemberForm() if is_manager else None
+            "member_form": forms.GroupMemberForm(request.user) if is_manager else None
         }
     )
 
@@ -186,7 +186,7 @@ def group_members_add(request, slug):
     group = get_object_or_404(models.GroupProfile, slug=slug)
     if not group.user_is_role(request.user, role="manager"):
         return HttpResponseForbidden()
-    form = forms.GroupMemberForm(request.POST)
+    form = forms.GroupMemberForm(request.user, request.POST)
     if form.is_valid():
         for user in form.cleaned_data["user_identifiers"]:
             try:
@@ -302,7 +302,6 @@ class GroupActivityView(ListView):
 
         context = super().get_context_data(**kwargs)
         context['group'] = self.group
-        members = ([(member.user.id) for member in self.group.member_queryset()])
         # Additional Filtered Lists Below
         action_list = []
         actions = Action.objects.filter(
@@ -333,11 +332,6 @@ class GroupActivityView(ListView):
             action.action_object and action.action_object.group == self.group.group][
             :15]
         action_list.extend(context['action_list_documents'])
-        context['action_list_comments'] = Action.objects.filter(
-            public=True,
-            actor_object_id__in=members,
-            action_object_content_type__model='comment')[:15]
-        action_list.extend(context['action_list_comments'])
         context['action_list'] = sorted(action_list, key=getKey, reverse=True)
         return context
 

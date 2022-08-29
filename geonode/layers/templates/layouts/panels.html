@@ -720,6 +720,38 @@ span.grippy::after {
             </div>
         </div>
     </div>
+    <div class="col-xs-12 col-lg-4" id="settings_time_series">
+      <div class="panel-group">
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="panel panel-default" >
+                  <div class="panel-heading">{% trans "Time series settings" %}     <button type="button" class="btn btn-link" data-toggle="modal" data-target="#exampleModal">
+                    <i class="fa fa-question-circle "></i>
+                  </button></div>
+                  <div class="panel-body">
+                    <div>
+                      <span><label for="dataset_attribute">Attribute</label></span>
+                      {{timeseries_form.attribute}}
+                    </div>
+                    <div>
+                    <span><label for="dataset_end_attribute">End attribute</label></span>
+                      {{timeseries_form.end_attribute}}
+                    </div>
+                    <span><label for="dataset_presentation">Presentation</label></span>
+                      {{timeseries_form.presentation}}
+                      <div id='precision_value'>                      
+                      <span><label for="dataset_precision_value">Precision Value</label></span><br>
+                      {{timeseries_form.precision_value}}<br>
+                      <span><label for="dataset_precision_step">Precision Step</label></span>
+                      {{timeseries_form.precision_step}}
+                    </div>
+                  </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
 </div>
 
@@ -737,3 +769,34 @@ span.grippy::after {
   });
 </script>
 {% endblock %}
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{% trans "Additional Help" %}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h4>{% trans "Enabling Time" %}</h4>
+        <p>{% blocktrans %}A dataset can support one or two time attributes. If a single
+                        attribute is used, the dataset is considered to contain data that is valid at single points in time. If two
+                        attributes are used, the second attribute represents the end of a valid period  hence the dataset is considered
+                        to contain data that is valid at certain periods in time.{% endblocktrans %}</p>
+        <h4>{% trans "Selecting an Attribute" %}</h4>
+        <p>{% trans "A time attribute can be" %}:</p>
+        <ul>
+          <li>{% trans "An existing date" %}</li>
+          <li>{% trans "Text that can be converted to a timestamp" %}</li>
+          <li>{% trans "A number representing a year" %}</li>
+        </ul>
+        <p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

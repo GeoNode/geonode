@@ -69,10 +69,7 @@ from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, Topic
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
-from geonode.security.permissions import (
-    PermSpec,
-    PermSpecCompact,
-    get_compact_perms_list)
+from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -87,9 +84,9 @@ from guardian.shortcuts import get_objects_for_user
 from .permissions import (
     IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
-    IsOwnerOrReadOnly,
     IsManagerEditOrAdmin,
-    ResourceBasePermissionsFilter
+    ResourceBasePermissionsFilter,
+    UserHasPerms,
 )
 from .serializers import (
     FavoriteSerializer,
@@ -311,7 +308,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     API endpoint that allows base resources to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, ResourceBasePermissionsFilter, FavoriteFilter
@@ -359,7 +356,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
     @extend_schema(methods=['post', 'delete'], responses={200: FavoriteSerializer(many=True)},
                    description="API endpoint allowing to retrieve the favorite Resources.")
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated, ])
+    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         resource = self.get_object()
         user = request.user
@@ -506,7 +503,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         permission_classes=[
             IsAuthenticated
         ])
-    def resource_service_permissions(self, request, pk=None):
+    def resource_service_permissions(self, request, pk):
         """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
 
         - GET input_params: {
@@ -562,7 +559,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         _user_can_manage = request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not _user_can_manage:
@@ -637,7 +634,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def set_thumbnail_from_bbox(self, request, resource_id):
         import traceback
@@ -688,7 +685,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-ingest",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated
         ])
     def resource_service_ingest(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'INGEST' operation
@@ -787,7 +784,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-create",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_create(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
@@ -884,9 +881,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-delete",
         methods=["delete"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
-    def resource_service_delete(self, request, pk=None):
+    def resource_service_delete(self, request, pk):
         """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
 
         - DELETE input_params: {
@@ -925,7 +922,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('delete_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -964,9 +961,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-update",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
-    def resource_service_update(self, request, pk=None):
+    def resource_service_update(self, request, pk):
         """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
 
         - PUT input_params: {
@@ -1032,7 +1029,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             http://localhost:8000/api/v2/resources/<id>/update
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -1079,9 +1076,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-copy",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
-    def resource_service_copy(self, request, pk=None):
+    def resource_service_copy(self, request, pk):
         """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'pk'
 
         - PUT input_params: {
@@ -1131,7 +1128,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -1176,10 +1173,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="ratings",
         methods=['post', 'get'],
         permission_classes=[
-            IsAuthenticatedOrReadOnly,
+            IsAuthenticatedOrReadOnly, UserHasPerms
         ])
-    def ratings(self, request, pk=None):
-        resource = self.get_object()
+    def ratings(self, request, pk):
+        resource = get_object_or_404(ResourceBase, pk=pk)
         resource = resource.get_real_instance()
         ct = ContentType.objects.get_for_model(resource)
         if request.method == 'POST':
@@ -1233,11 +1230,11 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set_thumbnail",
         methods=['put'],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ],
         parser_classes=[JSONParser, MultiPartParser]
     )
-    def set_thumbnail(self, request, pk=None):
+    def set_thumbnail(self, request, pk):
         resource = get_object_or_404(ResourceBase, pk=pk)
 
         if not request.data.get('file'):
@@ -1295,13 +1292,14 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         detail=True,
         methods=["get", "put", "delete", "post"],
         permission_classes=[
-            IsOwnerOrAdmin,
+            IsOwnerOrAdmin, UserHasPerms
         ],
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
     )
-    def extra_metadata(self, request, pk=None):
-        _obj = self.get_object()
+    def extra_metadata(self, request, pk):
+        _obj = get_object_or_404(ResourceBase, pk=pk)
+
         if request.method == "GET":
             # get list of available metadata
             queryset = _obj.metadata.all()

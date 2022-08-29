@@ -2,7 +2,7 @@
 Pillow==9.1.1
 lxml==4.9.1
 psycopg2==2.9.3
-Django==3.2.14
+Django==3.2.15
 
 # Other
 amqp==5.1.1
@@ -10,7 +10,7 @@ beautifulsoup4==4.11.1
 httplib2<0.20.5
 hyperlink==21.0.0
 idna>=2.5,<2.11
-urllib3==1.26.10
+urllib3==1.26.11
 Paver==1.3.4
 python-slugify==6.1.2
 decorator==5.1.1
@@ -20,11 +20,11 @@ vine==5.0.0
 tqdm==4.64.0
 Deprecated==1.2.13
 wrapt==1.14.1
-jsonschema==4.7.2
+jsonschema==4.14.0
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
-smart_open==6.0.0
+smart_open==6.1.0
 
 # Django Apps
 django-allauth==0.51.0
@@ -53,8 +53,8 @@ pyopenssl==22.0.0
 pyproj<3.3.0
 OWSLib==0.26.0
 pycsw==2.6.1
-SQLAlchemy==1.4.39 # required by PyCSW
-Shapely==1.8.2
+SQLAlchemy==1.4.40 # required by PyCSW
+Shapely==1.8.4
 mercantile==1.2.1
 geoip2==4.6.0
 numpy==1.23.*
@@ -62,8 +62,9 @@ numpy==1.23.*
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
-dj-database-url==0.5.0
+dj-database-url==1.0.0
 dj-pagination==2.5.0
+django-select2==7.10.0
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.5.1
@@ -75,8 +76,8 @@ djangorestframework<3.12.0,>=3.8.0
 djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
-drf-writable-nested==0.6.4
-drf-spectacular==0.22.1
+drf-writable-nested==0.7.0
+drf-spectacular==0.23.1
 dynamic-rest==2.1.2
 Markdown==3.4.1
 
@@ -84,7 +85,7 @@ pinax-notifications==6.0.0
 pinax-ratings==4.0.0
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client==4.0.1
+# django-geonode-mapstore-client==4.0.3
 -e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
 geonode-avatar==5.0.8
 geonode-oauth-toolkit==2.2.2
@@ -92,7 +93,7 @@ geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.5
-geoserver-restconfig==2.0.7
+geoserver-restconfig==2.0.8
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
@@ -101,14 +102,14 @@ django-haystack==3.2.1
 elasticsearch>=2.0.0,<9.0.0
 
 # datetimepicker widget
-django-bootstrap3-datetimepicker-2==2.8.2
+django-bootstrap3-datetimepicker-2==2.8.3
 
 # storage manager dependencies
-django-storages==1.12.3
+django-storages==1.13.1
 dropbox==11.33.0
-google-cloud-storage==2.4.0
+google-cloud-storage==2.5.0
 google-cloud-core==2.3.2
-boto3==1.24.36
+boto3==1.24.56
 
 # Django Caches
 python-memcached<=1.59
@@ -121,10 +122,10 @@ inflection>=0.4.0
 jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.2
-pytz==2022.1
+pytz==2022.2.1
 requests==2.28.1
 timeout-decorator==0.5.0
-pylibmc==1.6.1
+pylibmc==1.6.2
 sherlock==0.3.2
 
 # required by monitoring
@@ -141,24 +142,24 @@ pycountry
 uWSGI==2.0.20
 gunicorn==20.1.0
 ipython==8.4.0
-docker==5.0.3
+docker==6.0.0
 invoke==1.7.1
 
 # tests
-coverage==6.4.2
+coverage==6.4.4
 requests-toolbelt==0.9.1
-flake8==4.0.1
+flake8==5.0.4
 pytest==7.1.2
 pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<63.3.0
-pip==22.2
+setuptools>=59.1.1,<65.3.0
+pip==22.2.2
 Twisted==22.4.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
 selenium-requests==2.0.0
-webdriver_manager==3.8.2
+webdriver_manager==3.8.3

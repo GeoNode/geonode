@@ -21,7 +21,6 @@ import os
 import requests
 
 from uuid import uuid4
-from urllib.parse import urlparse
 from unittest.mock import patch, Mock
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -58,6 +57,7 @@ from django.contrib.auth import get_user_model
 from geonode.storage.manager import storage_manager
 from django.test import Client, TestCase, override_settings, SimpleTestCase
 from django.shortcuts import reverse
+from django.utils import translation
 
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
@@ -73,7 +73,7 @@ from geonode.decorators import on_ogc_backend
 from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from geonode.base.forms import ThesaurusAvailableForm
+from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
 
 
 test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
@@ -90,11 +90,11 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
     def test_initial_behavior(self):
         """
-        Tests that an empty resource has a missing image as default thumbnail.
+        Tests that an empty resource has a missing image as null.
         """
         self.assertFalse(self.rb.has_thumbnail())
         missing = self.rb.get_thumbnail_url()
-        self.assertTrue('missing_thumb' in os.path.splitext(missing)[0])
+        self.assertIsNone(missing)
 
     def test_empty_image(self):
         """
@@ -102,7 +102,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         """
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail('test-thumb', None)
-        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+        self.assertEqual(current, self.rb.get_thumbnail_url())
 
     @patch('PIL.Image.open', return_value=test_image)
     def test_monochromatic_image(self, image):
@@ -113,7 +113,7 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail(filename, image)
-        self.assertEqual(current, urlparse(self.rb.get_thumbnail_url()).path)
+        self.assertEqual(current, self.rb.get_thumbnail_url())
 
         # cleanup: remove saved thumbnail
         thumb_utils.remove_thumbs(filename)
@@ -922,6 +922,24 @@ class TestThesaurusAvailableForm(TestCase):
         self.assertEqual(fields[0][0], '1')
         #  will check if the second element of the tuple is the thesaurus_id = 1
         self.assertEqual(fields[1][0], '2')
+
+    def test_get_thesuro_key_label_with_cmd_language_code(self):
+        # in python test language code look like 'en' this test checks if key label result function
+        # returns correct results
+        tid = 1
+        translation.activate("en")
+        t_available_form = ThesaurusAvailableForm(data={"1": tid})
+        results = t_available_form._get_thesauro_keyword_label(tid, translation.get_language())
+        self.assertNotEqual(results[1], THESAURUS_RESULT_LIST_SEPERATOR)
+
+    def test_get_thesuro_key_label_with_browser_language_code(self):
+        # in browser scenario language does not look like "it", but rather include coutry code
+        # like "it-it" this test checks if _get_thesauro_keyword_label can handle this
+        tid = 1
+        translation.activate("en-us")
+        t_available_form = ThesaurusAvailableForm(data={"1": tid})
+        results = t_available_form._get_thesauro_keyword_label(tid, translation.get_language())
+        self.assertNotEqual(results[1], THESAURUS_RESULT_LIST_SEPERATOR)
 
 
 class TestFacets(TestCase):

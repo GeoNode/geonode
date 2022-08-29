@@ -17,15 +17,23 @@
 #
 #########################################################################
 import logging
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
+from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
 
 from geonode.security.utils import (
     get_users_with_perms,
-    get_resources_with_perms)
+    get_resources_with_perms,
+    get_visible_resources)
 from geonode.groups.models import GroupProfile
+from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.exceptions import NotFound
+from guardian.shortcuts import get_objects_for_user
+from itertools import chain
+from guardian.shortcuts import get_groups_with_perms
 
 logger = logging.getLogger(__name__)
 
@@ -208,3 +216,53 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
         logger.debug(f" user: {user} -- obj_with_perms: {obj_with_perms}")
 
         return queryset.filter(id__in=obj_with_perms.values('id'))
+
+
+class UserHasPerms(DjangoModelPermissions):
+    perms_map = {
+        'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
+        'POST': ['base.add_resourcebase'] + [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS],
+        'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
+    }
+
+    def has_permission(self, request, view):
+        from geonode.base.models import ResourceBase
+
+        queryset = self._queryset(view)
+        perms = self.get_required_permissions(request.method, queryset.model)
+
+        if request.user.is_superuser:
+            return True
+
+        if view.kwargs.get('pk'):
+            # if a single resource is called, we check the perms for that resource
+            res = ResourceBase.objects.filter(pk=view.kwargs.get('pk')).first()
+            if not res:
+                raise NotFound
+            # getting the user permission for that resource
+            resource_perms = list(res.get_user_perms(request.user))
+            groups = get_groups_with_perms(res, attach_perms=True)
+            # we are making this because the request.user.groups sometimes returns empty si is not fully reliable
+            for group, perm in groups.items():
+                # checking if the user is in that group
+                if group.user_set.filter(username=request.user).exists():
+                    resource_perms = list(chain(resource_perms, perm))
+            # merging all available permissions into a single list
+            available_perms = list(set(resource_perms))
+            # fixup the permissions name
+            perms_without_base = [x.replace('base.', '') for x in perms]
+            # if at least one of the permissions is available the request is True
+            return any([_perm in available_perms for _perm in perms_without_base])
+
+        if not get_visible_resources(
+                queryset,
+                request.user if request else None,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES):
+            # there are not resource in the db, needed usually for fresh installations
+            return request.method in permissions.SAFE_METHODS
+        # check if the user have one of the perms in all the resource available
+        return get_objects_for_user(request.user, perms).exists()

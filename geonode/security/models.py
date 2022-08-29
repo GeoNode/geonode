@@ -347,16 +347,18 @@ class PermissionLevelMixin:
 
         config = Configuration.load()
         ctype = ContentType.objects.get_for_model(self)
+        ctype_resource_base = ContentType.objects.get_for_model(self.get_self_resource())
+
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
         # include explicit permissions appliable to "subtype == 'vector'"
-        if self.subtype == 'vector':
+        if self.subtype in ['vector', 'vector_time']:
             PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
         elif self.subtype == 'raster':
             PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
             codename__in=PERMISSIONS_TO_FETCH,
-            content_type_id=ctype.id
+            content_type_id__in=[ctype.id, ctype_resource_base.id]
         ).values_list('codename', flat=True)
 
         # Don't filter for admin users
@@ -364,7 +366,7 @@ class PermissionLevelMixin:
             user_model = get_user_obj_perms_model(self)
             user_resource_perms = user_model.objects.filter(
                 object_pk=self.pk,
-                content_type_id=ctype.id,
+                content_type_id__in=[ctype.id, ctype_resource_base.id],
                 user__username=str(user),
                 permission__codename__in=resource_perms
             )

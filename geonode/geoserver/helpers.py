@@ -42,7 +42,6 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
@@ -64,7 +63,6 @@ from owslib.wcs import WebCoverageService
 from geonode import GeoNodeException
 from geonode.base.models import Link
 from geonode.base.models import ResourceBase
-from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
@@ -885,7 +883,7 @@ def gs_slurp(
                 layer.workspace,
                 layer.store)
             try:
-                # delete ratings, comments, and taggit tags:
+                # delete ratings, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(
                     content_type=ct,
@@ -1043,7 +1041,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore"}:
+    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
@@ -1087,7 +1085,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 req, body = http_client.get(dft_url, user=_user)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll('th'):
-                    if(field.string is None):
+                    if field.string is None:
                         field_name = field.contents[0].string
                     else:
                         field_name = field.string
@@ -1550,8 +1548,13 @@ def fetch_gs_resource(instance, values, tries):
             gs_resource.abstract = values.get('abstract', '')
         else:
             values = {}
+
+        _subtype = gs_resource.store.resource_type
+        if gs_resource.metadata and gs_resource.metadata.get('time', False) and gs_resource.metadata.get('time').enabled:
+            _subtype = "vectorTimeSeries"
+
         values.update(dict(store=gs_resource.store.name,
-                           subtype=gs_resource.store.resource_type,
+                           subtype=_subtype,
                            alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',
@@ -2142,7 +2145,7 @@ def sync_instance_with_geoserver(
                     }
 
                 if updatebbox and is_monochromatic_image(instance.thumbnail_url):
-                    to_update['thumbnail_url'] = static(MISSING_THUMB)
+                    to_update['thumbnail_url'] = None
 
                 # Save all the modified information in the instance without triggering signals.
                 with transaction.atomic():

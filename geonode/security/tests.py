@@ -65,6 +65,8 @@ from geonode.base.models import (
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
+    create_single_doc,
+    create_single_map,
     remove_models,
     create_single_dataset)
 from geonode.geoserver.security import (
@@ -1250,7 +1252,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 args=(
                     valid_dataset_typename,
                 )))
-        assert('permissions' in ensure_string(response.content))
+        assert ('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have maps.change_dataset_permissions
 
@@ -2788,3 +2790,83 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         response = self.client.post(self.url, data=self.data)
         self.resource.refresh_from_db()
         return response
+
+
+class TestUserHasPerms(GeoNodeBaseTestSupport):
+    '''
+    Ensure that the Permission classes behaves as expected
+    '''
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.dataset = create_single_dataset(name='test_permission_dataset')
+        cls.document = create_single_doc(name='test_permission_doc')
+        cls.map = create_single_map(name='test_permission_map')
+
+    @classmethod
+    def tearDownClass(self) -> None:
+        Dataset.objects.filter(name='test_permission_dataset').delete()
+        Document.objects.filter(title='test_permission_doc').delete()
+        Map.objects.filter(title='test_permission_map').delete()
+
+    def setUp(self):
+        self.marty, _ = get_user_model().objects.get_or_create(username='marty', password="mcfly")
+
+    def test_user_with_view_perms(self):
+        use_cases = [
+            {"resource": self.dataset, "url": "base-resources-detail"},
+            {"resource": self.dataset, "url": "datasets-detail"},
+            {"resource": self.document, "url": "documents-detail"},
+            {"resource": self.map, "url": "maps-detail"}
+        ]
+        for _case in use_cases:
+            # setting the view permissions
+            url = reverse(_case['url'], kwargs={'pk': _case["resource"].pk})
+
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase']}}
+            )
+            # calling the api
+            self.client.force_login(self.marty)
+            result = self.client.get(url)
+            # checking that the user can call the url in get
+            self.assertEqual(200, result.status_code, _case)
+
+            # the user cannot patch the resource
+            result = self.client.patch(url)
+            # checking that the user cannot call the url in patch due the lack of permissions
+            self.assertEqual(403, result.status_code, _case)
+
+            # after update the permissions list, the user can modify the resource
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase', 'base.change_resourcebase']}}
+            )
+            # the user can patch the resource
+            result = self.client.patch(url)
+            # checking that the user can call the url in patch since now it has the permissions
+            self.assertEqual(200, result.status_code, _case)
+
+    def test_user_with_view_listing(self):
+        use_cases = [
+            {"resource": self.dataset, "url": "base-resources-list"},
+            {"resource": self.dataset, "url": "datasets-list"},
+            {"resource": self.document, "url": "documents-list"},
+            {"resource": self.map, "url": "maps-list"}
+        ]
+        for _case in use_cases:
+            # setting the view permissions
+            url = reverse(_case['url'])
+
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase', 'base.download_resourcebase']}}
+            )
+            # calling the api
+            self.client.force_login(self.marty)
+            result = self.client.get(url)
+            # checking that the user can call the url in get
+            self.assertEqual(200, result.status_code, _case)
+
+            # the user cannot patch the resource
+            result = self.client.patch(url)
+            # checking that the user cannot call the url in patch due the lack of permissions
+            self.assertEqual(403, result.status_code, _case)

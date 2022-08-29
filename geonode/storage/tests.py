@@ -18,8 +18,8 @@
 #########################################################################
 import io
 import os
+import shutil
 import gisdata
-
 from unittest.mock import patch
 
 from django.test.testcases import SimpleTestCase, TestCase
@@ -401,6 +401,11 @@ class TestStorageManager(TestCase):
 
 
 class TestDataRetriever(TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.project_root = os.path.abspath(os.path.dirname(__file__))
+
     def setUp(self):
         self.sut = StorageManager
         self.local_files_paths = {
@@ -569,3 +574,26 @@ class TestDataRetriever(TestCase):
 
         self.sut().rmtree(_tmpdir)
         self.assertFalse(os.path.exists(_tmpdir))
+
+    def test_zip_file_should_correctly_recognize_main_extension_with_csv(self):
+        # reinitiate the storage manager with the zip file
+        storage_manager = self.sut(remote_files={"base_file": os.path.join(f"{self.project_root}", "tests/data/example.zip")})
+        storage_manager.clone_remote_files()
+
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        _files = storage_manager.get_retrieved_paths()
+        self.assertTrue("example.csv" in _files.get("base_file"))
+
+    def test_zip_file_should_correctly_recognize_main_extension_with_shp(self):
+        # zipping files
+        storage_manager = self.sut(remote_files=self.local_files_paths)
+        storage_manager.clone_remote_files()
+        storage_manager.data_retriever.temporary_folder
+        output = shutil.make_archive(f"{storage_manager.data_retriever.temporary_folder}/output", 'zip', storage_manager.data_retriever.temporary_folder)
+        # reinitiate the storage manager with the zip file
+        storage_manager = self.sut(remote_files={"base_file": output})
+        storage_manager.clone_remote_files()
+
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        _files = storage_manager.get_retrieved_paths()
+        self.assertTrue("single_point.shp" in _files.get("base_file"))
