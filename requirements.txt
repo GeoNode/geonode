@@ -154,7 +154,7 @@ pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.1
 pytest-django==4.5.2
-setuptools>=59.1.1,<65.3.0
+setuptools>=59.1.1,<65.4.0
 pip==22.2.2
 Twisted==22.4.0
 pixelmatch==0.3.0
