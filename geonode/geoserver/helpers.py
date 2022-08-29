@@ -1550,7 +1550,7 @@ def fetch_gs_resource(instance, values, tries):
             values = {}
 
         _subtype = gs_resource.store.resource_type
-        if hasattr(gs_resource, 'metadata') gs_resource.metadata.get('time', False) and gs_resource.metadata.get('time').enabled:
+        if hasattr(gs_resource, 'metadata') and gs_resource.metadata.get('time', False) and gs_resource.metadata.get('time').enabled:
             _subtype = "vectorTimeSeries"
 
         values.update(dict(store=gs_resource.store.name,
