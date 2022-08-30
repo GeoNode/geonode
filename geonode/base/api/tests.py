@@ -250,8 +250,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 10)
-        self.assertEqual(len(response.data['users']), 10)
+        self.assertEqual(response.data['total'], 9)
+        self.assertEqual(len(response.data['users']), 9)
         # response has link to the response
         self.assertTrue('link' in response.data['users'][0].keys())
 
