@@ -359,7 +359,7 @@
                         <br></br>
                       </div>
                         {% for link in links_download %}
-                          {% if link.name == 'Original Dataset' %}
+                          {% if link.name == 'Original Layer' %}
                             {% original_link_available resource.id link.url as original_dwn_link_available %}
                             {% if original_dwn_link_available %}
                               <a href="{{ link.url }}" target="_blank" id="{{ link.name | slugify }}" class="urls">{% trans "Download original files" %}</a>

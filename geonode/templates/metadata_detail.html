@@ -1,5 +1,6 @@
 {% extends "geonode_base.html" %}
 {% load i18n %}
+{% load proxy_lib_tags %}
 {% load bootstrap_tags %}
 {% load thesaurus %}
 
@@ -443,17 +444,20 @@
         {% endblock doc_file %}
 
         <hr>
-
         {% if "download_resourcebase" in perms_list %}
-
-
-            {% for link in resource.link_set.download %}
-            <dt>{{link.name}}</dt>
-            <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
-            {% endfor %}
-
-            <hr>
-
+          {% for link in resource.link_set.download %}
+            {% if link.name == 'Original Layer' %}
+              {% original_link_available resource.id link.url as original_dwn_link_available %}
+              {% if original_dwn_link_available %}
+                <dt>{{link.name}}</dt>
+                <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
+              {% endif %}
+            {% else %}
+              <dt>{{link.name}}</dt>
+              <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
+            {% endif %}
+          {% endfor %}
+          <hr>
         {% endif %}
 
         {% for link in resource.link_set.ows %}
