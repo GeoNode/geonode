@@ -45,7 +45,7 @@ from geonode.utils import get_legend_url
 logger = logging.getLogger('geonode.base.utils')
 
 _names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
-          'GeoJSON', 'Excel', 'Legend', 'GeoTIFF', 'GZIP', 'Original Dataset',
+          'GeoJSON', 'Excel', 'Legend', 'GeoTIFF', 'GZIP', 'Original Layer',
           'ESRI Shapefile', 'View in Google Earth', 'KML', 'KMZ', 'Atom', 'DIF',
           'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
 
