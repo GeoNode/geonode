@@ -323,6 +323,23 @@ class BaseApiTests(APITestCase):
         finally:
             user.delete()
 
+    def test_get_self_user_details_with_no_group(self):
+        try:
+            user = get_user_model().objects.create_user(
+                username='no_group_member',
+                email="no_group_member@geonode.org",
+                password='password')
+            # remove user from all groups
+            user.groups.clear()
+
+            url = reverse('users-detail', kwargs={'pk': user.pk})
+
+            self.assertTrue(self.client.login(username="no_group_member", password="password"))
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+        finally:
+            user.delete()
+
     def test_register_users(self):
         """
         Ensure users are created with default groups.
