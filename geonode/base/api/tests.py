@@ -250,8 +250,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         logger.debug(response.data)
-        self.assertEqual(response.data['total'], 9)
-        self.assertEqual(len(response.data['users']), 9)
+        self.assertEqual(response.data['total'], 10)
+        self.assertEqual(len(response.data['users']), 10)
         # response has link to the response
         self.assertTrue('link' in response.data['users'][0].keys())
 
@@ -304,6 +304,24 @@ class BaseApiTests(APITestCase):
         finally:
             group_user.delete()
             groupx.delete()
+
+    def test_get_self_user_details_outside_registered_member(self):
+        try:
+            user = get_user_model().objects.create_user(
+                username='non_registered_member',
+                email="non_registered_member@geonode.org",
+                password='password')
+            # remove user from registered members group
+            reg_mem_group = Group.objects.get(name='registered-members')
+            reg_mem_group.user_set.remove(user)
+
+            url = reverse('users-detail', kwargs={'pk': user.pk})
+
+            self.assertTrue(self.client.login(username="non_registered_member", password="password"))
+            response = self.client.get(url, format='json')
+            self.assertEqual(response.status_code, 200)
+        finally:
+            user.delete()
 
     def test_register_users(self):
         """
