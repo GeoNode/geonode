@@ -227,11 +227,17 @@ class UserHasPerms(DjangoModelPermissions):
         'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
     }
 
+    def __init__(self, perms_dict={}):
+        self.perms_dict = perms_dict
+
+    def __call__(self):
+        return self
+
     def has_permission(self, request, view):
         from geonode.base.models import ResourceBase
 
         queryset = self._queryset(view)
-        perms = self.get_required_permissions(request.method, queryset.model)
+        perms = self.perms_dict.get(request.method, None) or self.get_required_permissions(request.method, queryset.model)
 
         if request.user.is_superuser:
             return True
