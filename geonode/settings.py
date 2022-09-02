@@ -1463,14 +1463,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
-    MAPSTORE_CATALOGUE_SERVICES = {}
-
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
-
-    if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]  # noqa
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
-
     DEFAULT_MS2_BACKGROUNDS = [
         {
             "type": "osm",
@@ -1493,7 +1485,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "format": "image/jpeg",
             "id": "s2cloudless",
             "name": "s2cloudless:s2cloudless",
-            "url": "https://maps.geo-solutions.it/geoserver/wms",
+            "url": "https://maps.geosolutionsgroup.com/geoserver/wms",
             "group": "background",
             "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
             "visibility": False

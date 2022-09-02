@@ -27,7 +27,7 @@ from django.utils.translation import ugettext_noop as _
 
 logger = logging.getLogger(__name__)
 
-URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLite2-City.tar.gz'
+URL = 'https://build.geosolutionsgroup.com/geonode/geoserver/latest/GeoLite2-City.tar.gz'
 OLD_FORMAT = False
 
 
