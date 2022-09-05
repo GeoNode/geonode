@@ -1083,7 +1083,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     },
                     "document": {
                         "PUT": ['add_resourcebase', 'download_resourcebase'], "rule": all
-                    }
+                    },
                     "default": {
                         "PUT": ['add_resourcebase']
                     }
