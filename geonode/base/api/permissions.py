@@ -246,8 +246,8 @@ class UserHasPerms(DjangoModelPermissions):
             # if a single resource is called, we check the perms for that resource
             res = get_object_or_404(ResourceBase, pk=view.kwargs.get('pk'))
             # if the request is for a single resource, we take the specific or the default. If none is defined we keep the original one defined above
-            instance_perms = self.perms_dict.get(res.get_real_instance().resource_type, self.perms_dict.get('default', {})).get(request.method, [])
-            perms = instance_perms or perms
+            _specific_perms = self.perms_dict.get(res.get_real_instance().resource_type, self.perms_dict.get('default', {}))
+            perms = _specific_perms.get(request.method, []) or perms
 
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
@@ -265,7 +265,8 @@ class UserHasPerms(DjangoModelPermissions):
             # fixup the permissions name
             perms_without_base = [x.replace('base.', '') for x in perms]
             # if at least one of the permissions is available the request is True
-            return any([_perm in available_perms for _perm in perms_without_base])
+            rule = _specific_perms.get("rule", any)
+            return rule([_perm in available_perms for _perm in perms_without_base])
 
         if not get_visible_resources(
                 queryset,
