@@ -1079,7 +1079,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             IsAuthenticated, UserHasPerms(
                 perms_dict={
                     "dataset": {
-                        "PUT": ['add_resourcebase', 'download_resourcebase']
+                        "PUT": ['add_resourcebase', 'download_resourcebase'], "rule": all
                     },
                     "default": {
                         "PUT": ['add_resourcebase']
