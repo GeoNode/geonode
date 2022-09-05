@@ -1081,6 +1081,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "dataset": {
                         "PUT": ['add_resourcebase', 'download_resourcebase'], "rule": all
                     },
+                    "document": {
+                        "PUT": ['add_resourcebase', 'download_resourcebase'], "rule": all
+                    }
                     "default": {
                         "PUT": ['add_resourcebase']
                     }
