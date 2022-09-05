@@ -19,6 +19,7 @@
 import logging
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
@@ -30,7 +31,6 @@ from geonode.security.utils import (
     get_visible_resources)
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
-from rest_framework.exceptions import NotFound
 from guardian.shortcuts import get_objects_for_user
 from itertools import chain
 from guardian.shortcuts import get_groups_with_perms
@@ -244,9 +244,11 @@ class UserHasPerms(DjangoModelPermissions):
 
         if view.kwargs.get('pk'):
             # if a single resource is called, we check the perms for that resource
-            res = ResourceBase.objects.filter(pk=view.kwargs.get('pk')).first()
-            if not res:
-                raise NotFound
+            res = get_object_or_404(ResourceBase, pk=view.kwargs.get('pk'))
+            # if the request is for a single resource, we take the specific or the default. If none is defined we keep the original one defined above
+            instance_perms = self.perms_dict.get(res.get_real_instance().resource_type, self.perms_dict.get('default', {})).get(request.method, [])
+            perms = instance_perms or perms
+
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
             groups = get_groups_with_perms(res, attach_perms=True)
@@ -255,6 +257,9 @@ class UserHasPerms(DjangoModelPermissions):
                 # checking if the user is in that group
                 if group.user_set.filter(username=request.user).exists():
                     resource_perms = list(chain(resource_perms, perm))
+
+            if request.user.has_perm('base.add_resourcebase'):
+                resource_perms.append('add_resourcebase')
             # merging all available permissions into a single list
             available_perms = list(set(resource_perms))
             # fixup the permissions name
@@ -267,7 +272,7 @@ class UserHasPerms(DjangoModelPermissions):
                 request.user if request else None,
                 admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
                 unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES):
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES).exists():
             # there are not resource in the db, needed usually for fresh installations
             return request.method in permissions.SAFE_METHODS
         # check if the user have one of the perms in all the resource available
