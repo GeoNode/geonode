@@ -149,7 +149,7 @@ invoke==1.7.1
 coverage==6.4.4
 requests-toolbelt==0.9.1
 flake8==5.0.4
-pytest==7.1.2
+pytest==7.1.3
 pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.1
