@@ -23,6 +23,7 @@ from django.conf import settings
 from django.urls import reverse
 from mock import patch
 from rest_framework.test import APITestCase
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
@@ -74,6 +75,7 @@ class MapsApiTests(APITestCase):
 
         # Get Layers List (backgrounds)
         resource = Map.objects.first()
+        assign_perm("base.view_resourcebase", get_anonymous_user(), resource.get_self_resource())
 
         url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", "maplayers/")
         response = self.client.get(url, format="json")
