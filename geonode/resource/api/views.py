@@ -23,7 +23,7 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 from dynamic_rest.viewsets import WithDynamicViewSetMixin
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.resource.api.exceptions import ExecutionRequestException
 from geonode.resource.api.serializer import ExecutionRequestSerializer
 from geonode.resource.manager import resource_manager
@@ -131,7 +131,7 @@ class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     API endpoint that allows users to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticated, IsSelfOrAdminOrReadOnly, ]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
     ]
