@@ -19,6 +19,7 @@
 import os
 import re
 import sys
+import copy
 import time
 import uuid
 import json
@@ -1129,8 +1130,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     )
 
 
-def set_styles(layer, gs_catalog):
-    style_set = []
+def get_dataset(layer, gs_catalog):
+    gs_catalog.reset()
     gs_dataset = None
     try:
         gs_dataset = gs_catalog.get_layer(layer.name)
@@ -1145,26 +1146,56 @@ def set_styles(layer, gs_catalog):
             tb = traceback.format_exc()
             logger.error(tb)
             logger.exception("No GeoServer Dataset found!")
+    return gs_dataset
 
-    if gs_dataset:
-        default_style = None
-        if gs_dataset.default_style and gs_dataset.default_style.name:
-            default_style = gs_catalog.get_style(
+
+def clean_styles(layer, gs_catalog):
+    try:
+        # Cleanup Styles without a Workspace
+        gs_catalog.reset()
+        gs_dataset = get_dataset(layer, gs_catalog)
+        gs_catalog.delete(
+            gs_catalog.get_style(
                 name=gs_dataset.default_style.name,
-                workspace=gs_dataset.default_style.workspace)
+                workspace=None,
+                recursive=True),
+            purge=True,
+            recurse=False)
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
+
+
+def set_styles(layer, gs_catalog):
+    style_set = []
+    gs_dataset = get_dataset(layer, gs_catalog)
+    if gs_dataset:
+        default_style = gs_dataset.get_full_default_style()
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
-            layer.default_style = save_style(default_style, layer)
+            layer.default_style, _gs_default_style = save_style(default_style, layer)
+            try:
+                if default_style.name != _gs_default_style.name or default_style.workspace != _gs_default_style.workspace:
+                    gs_dataset.default_style = _gs_default_style
+                    gs_catalog.save(gs_dataset)
+                    gs_catalog.delete(
+                        gs_catalog.get_style(
+                            name=default_style.name,
+                            workspace=None,
+                            recursive=True),
+                        purge=True,
+                        recurse=False)
+            except Exception as e:
+                logger.exception(e)
             style_set.append(layer.default_style)
 
         try:
             if gs_dataset.styles:
                 alt_styles = gs_dataset.styles
                 for alt_style in alt_styles:
-                    if alt_style and alt_style:
-                        _s = save_style(alt_style, layer)
-                        if _s != layer.default_style:
-                            style_set.append(_s)
+                    if alt_style and alt_style.name and alt_style.name != layer.default_style.name and alt_style.workspace != layer.default_style.workspace:
+                        _s, _ = save_style(alt_style, layer)
+                        style_set.append(_s)
         except Exception as e:
             logger.exception(e)
 
@@ -1172,6 +1203,8 @@ def set_styles(layer, gs_catalog):
         # Remove duplicates
         style_set = list(dict.fromkeys(style_set))
         layer.styles.set(style_set)
+
+    clean_styles(layer, gs_catalog)
 
     # Update default style to database
     to_update = {
@@ -1217,27 +1250,33 @@ def set_styles(layer, gs_catalog):
 def save_style(gs_style, layer):
     style_name = os.path.basename(
         urlparse(gs_style.body_href).path).split('.')[0]
-    sld_name = gs_style.name
-    sld_body = gs_style.sld_body
+    sld_name = copy.copy(gs_style.name)
+    sld_body = copy.copy(gs_style.sld_body)
+    _gs_style = None
     if not gs_style.workspace:
-        gs_style = gs_catalog.create_style(
-            style_name, sld_body,
+        _gs_style = gs_catalog.create_style(
+            layer.name, sld_body,
             raw=True, overwrite=True,
             workspace=layer.workspace)
+    else:
+        _gs_style = gs_catalog.get_style(
+            name=sld_name,
+            workspace=layer.workspace
+        )
 
     style = None
     try:
-        style, created = Style.objects.get_or_create(name=style_name)
-        style.workspace = gs_style.workspace
-        style.sld_title = gs_style.sld_title if gs_style.style_format != 'css' and gs_style.sld_title else sld_name
-        style.sld_body = gs_style.sld_body
-        style.sld_url = gs_style.body_href
+        style, _ = Style.objects.get_or_create(name=style_name)
+        style.workspace = _gs_style.workspace
+        style.sld_title = _gs_style.sld_title if _gs_style.style_format != 'css' and _gs_style.sld_title else sld_name
+        style.sld_body = _gs_style.sld_body
+        style.sld_url = _gs_style.body_href
         style.save()
     except Exception as e:
         tb = traceback.format_exc()
         logger.debug(tb)
         raise e
-    return style
+    return (style, _gs_style)
 
 
 def is_dataset_attribute_aggregable(store_type, field_name, field_type):
