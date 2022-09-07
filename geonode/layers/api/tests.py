@@ -26,6 +26,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from geonode.geoserver.createlayer.utils import create_dataset
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode.layers.models import Dataset, Attribute
 from geonode.base.populate_test_data import create_models, create_single_dataset
@@ -70,6 +71,7 @@ class DatasetsApiTests(APITestCase):
         self.assertIsNone(response.data['datasets'][0].get('featureinfo_custom_template'))
 
         _dataset = Dataset.objects.first()
+        assign_perm("base.view_resourcebase", get_anonymous_user(), _dataset.get_self_resource())
 
         # Test detail response has attribute_set
         url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
@@ -122,6 +124,8 @@ class DatasetsApiTests(APITestCase):
 
     def test_get_dataset_related_maps_and_maplayers(self):
         dataset = Dataset.objects.first()
+        assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
+
         url = reverse('datasets-detail', kwargs={'pk': dataset.pk})
         response = self.client.get(f'{url}/maplayers', format='json')
         self.assertEqual(response.status_code, 200)
