@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
@@ -27,8 +26,7 @@ from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERM
 
 from geonode.security.utils import (
     get_users_with_perms,
-    get_resources_with_perms,
-    get_visible_resources)
+    get_resources_with_perms)
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
@@ -234,20 +232,17 @@ class UserHasPerms(DjangoModelPermissions):
         return self
 
     def has_permission(self, request, view):
-        from geonode.base.models import ResourceBase
-
         queryset = self._queryset(view)
-        perms = self.perms_dict.get(request.method, None) or self.get_required_permissions(request.method, queryset.model)
 
         if request.user.is_superuser:
             return True
 
         if view.kwargs.get('pk'):
             # if a single resource is called, we check the perms for that resource
-            res = get_object_or_404(ResourceBase, pk=view.kwargs.get('pk'))
+            res = get_object_or_404(queryset.model, pk=view.kwargs.get('pk'))
             # if the request is for a single resource, we take the specific or the default. If none is defined we keep the original one defined above
             resource_type_specific_perms = self.perms_dict.get(res.get_real_instance().resource_type, self.perms_dict.get('default', {}))
-            perms = resource_type_specific_perms.get(request.method, []) or perms
+            perms = resource_type_specific_perms.get(request.method, []) or self.get_required_permissions(request.method, queryset.model)
 
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
@@ -268,13 +263,16 @@ class UserHasPerms(DjangoModelPermissions):
             rule = resource_type_specific_perms.get("rule", any)
             return rule([_perm in available_perms for _perm in perms_without_base])
 
-        if not get_visible_resources(
-                queryset,
-                request.user if request else None,
-                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES).exists():
-            # there are not resource in the db, needed usually for fresh installations
-            return request.method in permissions.SAFE_METHODS
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        _default_defined_perms = self.perms_dict.get("default", {})
+        if _default_defined_perms.get(request.method):
+            _defined_perms = _default_defined_perms.get(request.method)
+            rule = _default_defined_perms.get("rule", any)
+            return rule([request.user.has_perm(_perm) for _perm in _defined_perms])
+
+        perms = self.perms_dict.get(request.method, None) or self.get_required_permissions(request.method, queryset.model)
+
         # check if the user have one of the perms in all the resource available
         return get_objects_for_user(request.user, perms).exists()
