@@ -1554,8 +1554,8 @@ class BaseApiTests(APITestCase):
         dataset = create_single_dataset(name="test_dataset_for_fav", owner=bobby)
         dataset.set_permissions(
             {'users': {
-                    "bobby": ['base.add_resourcebase']
-                }
+                "bobby": ['base.add_resourcebase']
+            }
             }
         )
         url = urljoin(f"{reverse('base-resources-list')}/", f"{dataset.pk}/favorite/")
@@ -1933,9 +1933,9 @@ class BaseApiTests(APITestCase):
         url = reverse('base-resources-ratings', args=[resource.pk])
         resource.set_permissions(
             {'users': {
-                    get_anonymous_user().username: ['base.view_resourcebase'],
-                    "bobby": ['base.add_resourcebase']
-                }
+                get_anonymous_user().username: ['base.view_resourcebase'],
+                "bobby": ['base.add_resourcebase']
+            }
             }
         )
         data = {
@@ -2445,7 +2445,7 @@ class BaseApiTests(APITestCase):
         # bobby cannot copy the resource since he doesnt have all the perms needed
         _perms = {
             'users': {
-                    "bobby": ['base.add_resourcebase']
+                "bobby": ['base.add_resourcebase']
             },
             "groups": {
                 "anonymous": []
@@ -2459,7 +2459,7 @@ class BaseApiTests(APITestCase):
         # bobby can copy the resource since he has all the perms needed
         _perms = {
             'users': {
-                    "bobby": ['base.add_resourcebase', 'base.download_resourcebase']
+                "bobby": ['base.add_resourcebase', 'base.download_resourcebase']
             },
             "groups": {
                 "anonymous": ["base.view_resourcebase", "base.download_resourcebae"]
