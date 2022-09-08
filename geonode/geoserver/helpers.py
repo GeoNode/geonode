@@ -19,6 +19,7 @@
 import os
 import re
 import sys
+import copy
 import time
 import uuid
 import json
@@ -38,12 +39,10 @@ from urllib.parse import urlparse, urlencode, urlsplit, urljoin
 from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
@@ -61,12 +60,10 @@ from gsimporter import Client
 from lxml import etree, objectify
 from owslib.etree import etree as dlxml
 from owslib.wcs import WebCoverageService
-from owslib.wms import WebMapService
 
 from geonode import GeoNodeException
 from geonode.base.models import Link
 from geonode.base.models import ResourceBase
-from geonode.thumbs.utils import MISSING_THUMB
 from geonode.security.views import _perms_info_json
 from geonode.catalogue.models import catalogue_post_save
 from geonode.layers.models import Dataset, Attribute, Style
@@ -782,7 +779,8 @@ def gs_slurp(
 
         except Exception as e:
             # Hide the resource until finished
-            layer.set_processing_state("FAILED")
+            if layer:
+                layer.set_processing_state("FAILED")
             if ignore_errors:
                 status = 'failed'
                 exception_type, error, traceback = sys.exc_info()
@@ -791,6 +789,15 @@ def gs_slurp(
                     msg = "Stopping process because --ignore-errors was not set and an error was found."
                     print(msg, file=sys.stderr)
                 raise Exception(f"Failed to process {resource.name}") from e
+        if layer is None:
+            if ignore_errors:
+                status = 'failed'
+                exception_type, error, traceback = sys.exc_info()
+            else:
+                if verbosity > 0:
+                    msg = "Stopping process because --ignore-errors was not set and an error was found."
+                    print(msg, file=sys.stderr)
+                raise Exception(f"Failed to process {resource.name}")
         else:
             if created:
                 if not permissions:
@@ -877,12 +884,9 @@ def gs_slurp(
                 layer.workspace,
                 layer.store)
             try:
-                # delete ratings, comments, and taggit tags:
+                # delete ratings, and taggit tags:
                 ct = ContentType.objects.get_for_model(layer)
                 OverallRating.objects.filter(
-                    content_type=ct,
-                    object_id=layer.id).delete()
-                Comment.objects.filter(
                     content_type=ct,
                     object_id=layer.id).delete()
                 layer.keywords.clear()
@@ -1038,7 +1042,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore"}:
+    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
@@ -1082,7 +1086,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
                 req, body = http_client.get(dft_url, user=_user)
                 soup = BeautifulSoup(body, features="lxml")
                 for field in soup.findAll('th'):
-                    if(field.string is None):
+                    if field.string is None:
                         field_name = field.contents[0].string
                     else:
                         field_name = field.string
@@ -1126,8 +1130,8 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     )
 
 
-def set_styles(layer, gs_catalog):
-    style_set = []
+def get_dataset(layer, gs_catalog):
+    gs_catalog.reset()
     gs_dataset = None
     try:
         gs_dataset = gs_catalog.get_layer(layer.name)
@@ -1142,26 +1146,56 @@ def set_styles(layer, gs_catalog):
             tb = traceback.format_exc()
             logger.error(tb)
             logger.exception("No GeoServer Dataset found!")
+    return gs_dataset
 
-    if gs_dataset:
-        default_style = None
-        if gs_dataset.default_style and gs_dataset.default_style.name:
-            default_style = gs_catalog.get_style(
+
+def clean_styles(layer, gs_catalog):
+    try:
+        # Cleanup Styles without a Workspace
+        gs_catalog.reset()
+        gs_dataset = get_dataset(layer, gs_catalog)
+        gs_catalog.delete(
+            gs_catalog.get_style(
                 name=gs_dataset.default_style.name,
-                workspace=gs_dataset.default_style.workspace)
+                workspace=None,
+                recursive=True),
+            purge=True,
+            recurse=False)
+    except Exception:
+        tb = traceback.format_exc()
+        logger.debug(tb)
+
+
+def set_styles(layer, gs_catalog):
+    style_set = []
+    gs_dataset = get_dataset(layer, gs_catalog)
+    if gs_dataset:
+        default_style = gs_dataset.get_full_default_style()
         if default_style:
             # make sure we are not using a default SLD (which won't be editable)
-            layer.default_style = save_style(default_style, layer)
+            layer.default_style, _gs_default_style = save_style(default_style, layer)
+            try:
+                if default_style.name != _gs_default_style.name or default_style.workspace != _gs_default_style.workspace:
+                    gs_dataset.default_style = _gs_default_style
+                    gs_catalog.save(gs_dataset)
+                    gs_catalog.delete(
+                        gs_catalog.get_style(
+                            name=default_style.name,
+                            workspace=None,
+                            recursive=True),
+                        purge=True,
+                        recurse=False)
+            except Exception as e:
+                logger.exception(e)
             style_set.append(layer.default_style)
 
         try:
             if gs_dataset.styles:
                 alt_styles = gs_dataset.styles
                 for alt_style in alt_styles:
-                    if alt_style and alt_style:
-                        _s = save_style(alt_style, layer)
-                        if _s != layer.default_style:
-                            style_set.append(_s)
+                    if alt_style and alt_style.name and alt_style.name != layer.default_style.name and alt_style.workspace != layer.default_style.workspace:
+                        _s, _ = save_style(alt_style, layer)
+                        style_set.append(_s)
         except Exception as e:
             logger.exception(e)
 
@@ -1169,6 +1203,8 @@ def set_styles(layer, gs_catalog):
         # Remove duplicates
         style_set = list(dict.fromkeys(style_set))
         layer.styles.set(style_set)
+
+    clean_styles(layer, gs_catalog)
 
     # Update default style to database
     to_update = {
@@ -1214,27 +1250,33 @@ def set_styles(layer, gs_catalog):
 def save_style(gs_style, layer):
     style_name = os.path.basename(
         urlparse(gs_style.body_href).path).split('.')[0]
-    sld_name = gs_style.name
-    sld_body = gs_style.sld_body
+    sld_name = copy.copy(gs_style.name)
+    sld_body = copy.copy(gs_style.sld_body)
+    _gs_style = None
     if not gs_style.workspace:
-        gs_style = gs_catalog.create_style(
-            style_name, sld_body,
+        _gs_style = gs_catalog.create_style(
+            layer.name, sld_body,
             raw=True, overwrite=True,
             workspace=layer.workspace)
+    else:
+        _gs_style = gs_catalog.get_style(
+            name=sld_name,
+            workspace=layer.workspace
+        )
 
     style = None
     try:
-        style, created = Style.objects.get_or_create(name=style_name)
-        style.workspace = gs_style.workspace
-        style.sld_title = gs_style.sld_title if gs_style.style_format != 'css' and gs_style.sld_title else sld_name
-        style.sld_body = gs_style.sld_body
-        style.sld_url = gs_style.body_href
+        style, _ = Style.objects.get_or_create(name=style_name)
+        style.workspace = _gs_style.workspace
+        style.sld_title = _gs_style.sld_title if _gs_style.style_format != 'css' and _gs_style.sld_title else sld_name
+        style.sld_body = _gs_style.sld_body
+        style.sld_url = _gs_style.body_href
         style.save()
     except Exception as e:
         tb = traceback.format_exc()
         logger.debug(tb)
         raise e
-    return style
+    return (style, _gs_style)
 
 
 def is_dataset_attribute_aggregable(store_type, field_name, field_type):
@@ -1545,8 +1587,13 @@ def fetch_gs_resource(instance, values, tries):
             gs_resource.abstract = values.get('abstract', '')
         else:
             values = {}
+
+        _subtype = gs_resource.store.resource_type
+        if getattr(gs_resource, 'metadata', None) and gs_resource.metadata.get('time', False) and gs_resource.metadata.get('time').enabled:
+            _subtype = "vectorTimeSeries"
+
         values.update(dict(store=gs_resource.store.name,
-                           subtype=gs_resource.store.resource_type,
+                           subtype=_subtype,
                            alternate=f"{gs_resource.store.workspace.name}:{gs_resource.name}",
                            title=gs_resource.title or gs_resource.store.name,
                            abstract=gs_resource.abstract or '',
@@ -1559,13 +1606,6 @@ def fetch_gs_resource(instance, values, tries):
             return (values, None)
         gs_resource = None
     return (values, gs_resource)
-
-
-def get_wms():
-    wms_url = f"{ogc_server_settings.internal_ows}?service=WMS&request=GetCapabilities&version=1.1.0"
-    req, body = http_client.get(wms_url, user=_user)
-    _wms = WebMapService(wms_url, xml=body)
-    return _wms
 
 
 def wps_execute_dataset_attribute_statistics(dataset_name, field):
@@ -2144,7 +2184,7 @@ def sync_instance_with_geoserver(
                     }
 
                 if updatebbox and is_monochromatic_image(instance.thumbnail_url):
-                    to_update['thumbnail_url'] = static(MISSING_THUMB)
+                    to_update['thumbnail_url'] = None
 
                 # Save all the modified information in the instance without triggering signals.
                 with transaction.atomic():

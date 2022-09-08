@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.9'
 
 # Common Django template for GeoNode and Celery services below
 x-common-django:
@@ -14,6 +14,11 @@ x-common-django:
     - backup-restore:/backup_restore
     - data:/data
     - tmp:/tmp
+  depends_on:
+    db:
+      condition: service_healthy
+    geoserver:
+      condition: service_healthy
 
 services:
 
@@ -26,10 +31,10 @@ services:
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
+      start_period: 60s
       interval: 60s
       timeout: 10s
-      retries: 1
-      start_period: 60s
+      retries: 10
     environment:
       - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
@@ -84,14 +89,14 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.19.6
+    image: geonode/geoserver:2.20.5
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/rest/workspaces/geonode.html"
+      start_period: 60s
       interval: 60s
       timeout: 10s
-      retries: 1
-      start_period: 60s
+      retries: 10
     env_file:
       - .env_test
     volumes:
@@ -101,19 +106,27 @@ services:
       - data:/data
       - tmp:/tmp
     restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      data-dir-conf:
+        condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.19.6
+    image: geonode/geoserver_data:2.20.5
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
-    command: /bin/true
+    entrypoint: sleep infinity
     volumes:
       - geoserver-data-dir:/geoserver_data/data
     restart: on-failure
+    healthcheck:
+      test: "ls -A '/geoserver_data/data' | wc -l"
 
   # PostGIS database.
   db:
     # use geonode official postgis 13 image
     image: geonode/postgis:13
+    command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS}"
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
       - .env_test
@@ -121,6 +134,8 @@ services:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
     restart: on-failure
+    healthcheck:
+      test: "pg_isready -d postgres -U postgres"
     # uncomment to enable remote connections to postgres
     #ports:
     #  - "5432:5432"

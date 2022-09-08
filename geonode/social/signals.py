@@ -23,7 +23,6 @@
 """
 import logging
 from collections import defaultdict
-from dialogos.models import Comment
 
 from django.conf import settings
 from django.db.models import signals
@@ -34,8 +33,7 @@ from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
 from geonode.notifications_helper import (send_notification, queue_notification,
-                                          has_notifications, get_notification_recipients,
-                                          get_comment_notification_recipients)
+                                          has_notifications, get_notification_recipients)
 
 logger = logging.getLogger(__name__)
 
@@ -43,11 +41,6 @@ activity = None
 if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
-
-relationships = None
-if "relationships" in settings.INSTALLED_APPS:
-    relationships = True
-    from relationships.models import Relationship
 
 ratings = None
 if "pinax.ratings" in settings.INSTALLED_APPS:
@@ -57,7 +50,7 @@ if "pinax.ratings" in settings.INSTALLED_APPS:
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """
-    Creates new activities after a Map, Dataset, Document, or Comment is  created/updated/deleted.
+    Creates new activities after a Map, Dataset, or Document is created/updated/deleted.
 
     action_settings:
     actor: the user who performed the activity
@@ -65,7 +58,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     created_verb: a translatable verb that is used when an object is created
     deleted_verb: a translatable verb that is used when an object is deleted
     object_name: the title of the object that is used to keep information about the object after it is deleted
-    target: the target of an action (if a comment is added to a map, the comment is the object the map is the target)
+    target: the target of an action
     updated_verb: a translatable verb that is used when an object is updated
 
     raw_action: a constant that describes the type of action performed (values should be: created, uploaded, deleted)
@@ -89,15 +82,6 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
         logger.exception(e)
 
     try:
-        action_settings['comment'].update(actor=getattr(instance, 'author', None),
-                                          created_verb=_("added a comment"),
-                                          target=getattr(instance, 'content_object', None),
-                                          updated_verb=_("updated a comment"),
-                                          )
-    except Exception as e:
-        logger.exception(e)
-
-    try:
         action_settings['dataset'].update(created_verb=_('uploaded'))
     except Exception as e:
         logger.exception(e)
@@ -107,7 +91,7 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
     except Exception as e:
         logger.exception(e)
 
-    if obj_type not in ['document', 'dataset', 'map', 'comment']:
+    if obj_type not in ['document', 'dataset', 'map']:
         try:
             action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
         except Exception as e:
@@ -164,8 +148,6 @@ def relationship_post_save(instance, sender, created, **kwargs):
 
 
 if activity:
-    signals.post_save.connect(activity_post_modify_object, sender=Comment)
-
     signals.post_save.connect(activity_post_modify_object, sender=Dataset)
     signals.post_delete.connect(activity_post_modify_object, sender=Dataset)
 
@@ -190,28 +172,6 @@ def rating_post_save(instance, sender, created, **kwargs):
                       {'resource': instance.content_object, 'user': instance.user, 'rating': instance.rating})
 
 
-def comment_post_save(instance, sender, created, **kwargs):
-    """ Send a notification when a comment to a layer, map or document has
-    been submitted
-    """
-    notice_type_label = f'{instance.content_type.model.lower()}_comment'
-    recipients = get_comment_notification_recipients(notice_type_label,
-                                                     instance.author,
-                                                     resource=instance.content_object)
-    send_notification(recipients,
-                      notice_type_label,
-                      {'resource': instance.content_object, 'author': instance.author})
-
-
-# signals
-# comments notifications
-signals.post_save.connect(comment_post_save, sender=Comment)
-
 # rating notifications
 if ratings and has_notifications:
     signals.post_save.connect(rating_post_save, sender=Rating)
-if relationships and activity:
-    signals.post_save.connect(relationship_post_save_actstream, sender=Relationship)
-    signals.pre_delete.connect(relationship_pre_delete_actstream, sender=Relationship)
-if relationships and has_notifications:
-    signals.post_save.connect(relationship_post_save, sender=Relationship)

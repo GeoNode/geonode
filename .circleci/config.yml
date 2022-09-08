@@ -4,9 +4,7 @@ jobs:
   build:
 
     docker:
-      - image: circleci/buildpack-deps:focal
-
-    # parallelism: 16
+      - image: cimg/base:current-22.04
 
     parameters:
       load_docker_cache:
@@ -20,38 +18,13 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          docker_layer_caching: true
-
-      - when:
-          condition: <<parameters.load_docker_cache>>
-          steps:
-            - restore_cache:
-                keys:
-                  - v2-docker-images-{{ .Branch }}
-            - run:
-                name: Load Docker layers cache
-                command: |
-                  docker load -i ~/docker-layers-cache.tar || true
+          docker_layer_caching: false
+          version: 20.10.12
 
       - run:
           name: Build the stack
           command: docker-compose -f docker-compose-test.yml build --no-cache
           working_directory: ./
-
-      - when:
-          condition: <<parameters.save_docker_cache>>
-          steps:
-            - run:
-                name: Save Docker layers cache
-                command: |
-                  rm -f ~/docker-layers-cache.tar
-                  docker save -o ~/docker-layers-cache.tar $(docker images -a --format "{{.ID}}")
-                when: always
-            - save_cache:
-                key: v2-docker-images-{{ .Branch }}-{{ epoch }}
-                paths:
-                  - ~/docker-layers-cache.tar
-                when: always
 
       - run:
           name: Start the stack
@@ -129,12 +102,12 @@ workflows:
           name: geonode_test_suite_smoke
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh geonode.tests.smoke geonode.tests.test_message_notifications geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils
+          test_suite: ./test.sh geonode.tests.smoke geonode.tests.test_message_notifications geonode.tests.test_rest_api geonode.tests.test_search geonode.tests.test_utils geonode.tests.test_headers
       - build:
           name: geonode_test_suite
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a]))") geonode.thumbs.tests
+          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a]))") geonode.thumbs.tests geonode.people.tests
       - build:
           name: geonode_test_security
           load_docker_cache: false
@@ -154,12 +127,7 @@ workflows:
           name: geonode_test_csw
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh geonode.catalogue.backends.tests
-      - build:
-          name: geonode_test_csw_integration
-          load_docker_cache: false
-          save_docker_cache: false
-          test_suite: ./test_csw.sh
+          test_suite: ./test.sh geonode.tests.csw geonode.catalogue.backends.tests
 
       # TODO
       # - build:

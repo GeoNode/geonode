@@ -121,11 +121,16 @@ def get_available_users(user):
     if user.is_superuser:
         return get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
 
+    member_ids = []
+    if not user.is_anonymous:
+        # Append current user profile in the list of users to be returned
+        member_ids.extend([user.id])
+
     # Only return user that are members of any group profile the current user is member of
-    member_ids = list(GroupMember.objects.filter(
+    member_ids.extend(list(GroupMember.objects.filter(
         group__in=GroupProfile.objects.filter(
             Q(access='public') | Q(group__in=user.groups.all()))
-        ).select_related('user').values_list('user__id', flat=True))
+    ).select_related('user').values_list('user__id', flat=True)))
     if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():
         # Retrieve all members in Registered member's group
         rm_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)

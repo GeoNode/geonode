@@ -69,10 +69,7 @@ from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, Topic
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
-from geonode.security.permissions import (
-    PermSpec,
-    PermSpecCompact,
-    get_compact_perms_list)
+from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
     get_resources_with_perms,
@@ -87,9 +84,9 @@ from guardian.shortcuts import get_objects_for_user
 from .permissions import (
     IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
-    IsOwnerOrReadOnly,
     IsManagerEditOrAdmin,
-    ResourceBasePermissionsFilter
+    ResourceBasePermissionsFilter,
+    UserHasPerms,
 )
 from .serializers import (
     FavoriteSerializer,
@@ -311,7 +308,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     API endpoint that allows base resources to be viewed or edited.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, ResourceBasePermissionsFilter, FavoriteFilter
@@ -359,7 +356,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
     @extend_schema(methods=['post', 'delete'], responses={200: FavoriteSerializer(many=True)},
                    description="API endpoint allowing to retrieve the favorite Resources.")
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated, ])
+    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         resource = self.get_object()
         user = request.user
@@ -506,7 +503,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         permission_classes=[
             IsAuthenticated
         ])
-    def resource_service_permissions(self, request, pk=None):
+    def resource_service_permissions(self, request, pk):
         """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
 
         - GET input_params: {
@@ -541,40 +538,35 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         curl -v -X DELETE -u admin:admin -H "Content-Type: application/json" http://localhost:8000/api/v2/resources/<id>/permissions
 
         - Changes the owner of a Resource:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' http://localhost:8000/api/v2/resources/<id>/permissions
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1001,"permissions": "owner"}]}'
 
         - Assigns View permissions to some users:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
-
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'owner=afabiani' -d 'permissions={"users": {"admin": ["view_resourcebase"]}, "groups": {}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [],"organizations": [],"users": [{"id": 1000,"permissions": "view"}]}'
 
         - Assigns View permissions to anyone:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json" -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [],"organizations": [],"users": [{"id": -1,"permissions": "view"}]}'
 
-        - Assigns View permissions to anyone and edit (style and data) permissions to a Group on a Dataset:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
-            -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_dataset_style", "change_dataset_data"]}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
+        - Assigns View permissions to anyone and edit permissions to a Group on a Dataset:
+            curl -u admin:admin --location --request PUT 'http://localhost:8000/api/v2/resources/<id>/permissions' \
+                --header 'Content-Type: application/json' \
+                --data-raw '{"groups": [{"id": 1,"permissions": "manage"}],"organizations": [],"users": [{"id": -1,"permissions": "view"}]}'
 
-        - Assigns View permissions to anyone and edit permissions to a Group on a Document:
-        curl -v -X PUT -u admin:admin -H "Content-Type: application/json"
-            -d 'permissions={"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": {"registered-members": ["view_resourcebase", "download_resourcebase", "change_resourcebase"]}}'
-            http://localhost:8000/api/v2/resources/<id>/permissions
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         _user_can_manage = request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not _user_can_manage:
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
-            request_body = request.body
-            request_params = QueryDict(request_body, mutable=True, encoding="UTF-8")
+            request_params = request.data
             if request.method == 'GET':
                 return Response(perms_spec.compact)
             elif request.method == 'DELETE':
@@ -582,17 +574,18 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     user=request.user,
                     func_name='remove_permissions',
                     geonode_resource=resource,
+                    action="permissions",
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid)
                     }
                 )
             elif request.method == 'PUT':
-                perms_spec_compact = PermSpecCompact(
-                    json.loads(request_params.get('permissions', '{}')), resource)
+                perms_spec_compact = PermSpecCompact(request.data, resource)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
                     geonode_resource=resource,
+                    action="permissions",
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
@@ -601,14 +594,14 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     }
                 )
             elif request.method == 'PATCH':
-                perms_spec_compact_patch = PermSpecCompact(
-                    json.loads(request_params.get('permissions', '{}')), resource)
+                perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
                     func_name='set_permissions',
                     geonode_resource=resource,
+                    action="permissions",
                     input_params={
                         "uuid": request_params.get('uuid', resource.uuid),
                         "owner": request_params.get('owner', resource.owner.username),
@@ -641,7 +634,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def set_thumbnail_from_bbox(self, request, resource_id):
         import traceback
@@ -692,7 +685,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-ingest",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated
         ])
     def resource_service_ingest(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'INGEST' operation
@@ -750,13 +743,15 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 or not request.user.has_perm('base.add_resourcebase'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+
+            request_params = self._get_request_params(request)
             uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='ingest',
                 geonode_resource=resource_filter.get() if resource_filter.exists() else None,
+                action="ingest",
                 input_params={
                     "uuid": uuid,
                     "files": request_params.get('files', '[]'),
@@ -789,7 +784,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-create",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
     def resource_service_create(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
@@ -846,7 +841,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 or not request.user.has_perm('base.add_resourcebase'):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request)
             uuid = request_params.get('uuid', str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
 
@@ -854,6 +849,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 user=request.user,
                 func_name='create',
                 geonode_resource=resource_filter.get() if resource_filter.exists() else None,
+                action="create",
                 input_params={
                     "uuid": uuid,
                     "resource_type": resource_type,
@@ -885,9 +881,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-delete",
         methods=["delete"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
-    def resource_service_delete(self, request, pk=None):
+    def resource_service_delete(self, request, pk):
         """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
 
         - DELETE input_params: {
@@ -926,7 +922,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('delete_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -934,6 +930,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='delete',
+                action="delete",
                 geonode_resource=resource,
                 input_params={
                     "uuid": resource.uuid
@@ -964,9 +961,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-update",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ])
-    def resource_service_update(self, request, pk=None):
+    def resource_service_update(self, request, pk):
         """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
 
         - PUT input_params: {
@@ -1032,16 +1029,17 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             http://localhost:8000/api/v2/resources/<id>/update
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request=request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='update',
                 geonode_resource=resource,
+                action="update",
                 input_params={
                     "uuid": request_params.get('uuid', resource.uuid),
                     "xml_file": request_params.get('xml_file', None),
@@ -1078,9 +1076,21 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-copy",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms(
+                perms_dict={
+                    "dataset": {
+                        "PUT": ['base.add_resourcebase', 'base.download_resourcebase'], "rule": all
+                    },
+                    "document": {
+                        "PUT": ['base.add_resourcebase', 'base.download_resourcebase'], "rule": all
+                    },
+                    "default": {
+                        "PUT": ['base.add_resourcebase']
+                    }
+                }
+            )
         ])
-    def resource_service_copy(self, request, pk=None):
+    def resource_service_copy(self, request, pk):
         """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'pk'
 
         - PUT input_params: {
@@ -1130,18 +1140,19 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         """
         config = Configuration.load()
-        resource = self.get_object()
+        resource = get_object_or_404(ResourceBase, pk=pk)
         if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
                 resource is None or not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
             return Response(status=status.HTTP_403_FORBIDDEN)
         if not resource.is_copyable:
             return Response({"message": "Resource can not be cloned."}, status=400)
         try:
-            request_params = QueryDict(request.body, mutable=True)
+            request_params = self._get_request_params(request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
                 func_name='copy',
                 geonode_resource=resource,
+                action="copy",
                 input_params={
                     "instance": resource.id,
                     "owner": request_params.get('owner', request.user.username),
@@ -1174,10 +1185,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="ratings",
         methods=['post', 'get'],
         permission_classes=[
-            IsAuthenticatedOrReadOnly,
+            IsAuthenticatedOrReadOnly, UserHasPerms
         ])
-    def ratings(self, request, pk=None):
-        resource = self.get_object()
+    def ratings(self, request, pk):
+        resource = get_object_or_404(ResourceBase, pk=pk)
         resource = resource.get_real_instance()
         ct = ContentType.objects.get_for_model(resource)
         if request.method == 'POST':
@@ -1231,11 +1242,11 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set_thumbnail",
         methods=['put'],
         permission_classes=[
-            IsAuthenticated,
+            IsAuthenticated, UserHasPerms
         ],
         parser_classes=[JSONParser, MultiPartParser]
     )
-    def set_thumbnail(self, request, pk=None):
+    def set_thumbnail(self, request, pk):
         resource = get_object_or_404(ResourceBase, pk=pk)
 
         if not request.data.get('file'):
@@ -1293,13 +1304,14 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         detail=True,
         methods=["get", "put", "delete", "post"],
         permission_classes=[
-            IsOwnerOrAdmin,
+            IsOwnerOrAdmin, UserHasPerms
         ],
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
     )
-    def extra_metadata(self, request, pk=None):
-        _obj = self.get_object()
+    def extra_metadata(self, request, pk):
+        _obj = get_object_or_404(ResourceBase, pk=pk)
+
         if request.method == "GET":
             # get list of available metadata
             queryset = _obj.metadata.all()
@@ -1366,3 +1378,15 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 _obj.metadata.add(new_m)
             _obj.refresh_from_db()
             return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()), status=201)
+
+    def _get_request_params(self, request, encode=False):
+        try:
+            return QueryDict(request.body, mutable=True, encoding="UTF-8") if encode else QueryDict(request.body, mutable=True)
+        except Exception as e:
+            '''
+            The request with the barer token access to the request.data during the token verification
+            so in this case if the request.body cannot not access, we just re-access to the
+            request.data to get the params needed
+            '''
+            logger.debug(e)
+            return request.data

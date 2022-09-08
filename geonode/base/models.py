@@ -45,7 +45,6 @@ from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from django.templatetags.static import static
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -70,9 +69,9 @@ from geonode.utils import (
     bbox_to_wkt,
     find_by_attr,
     bbox_to_projection,
+    get_allowed_extensions,
     is_monochromatic_image)
 from geonode.thumbs.utils import (
-    MISSING_THUMB,
     thumb_size,
     remove_thumbs,
     get_unique_upload_path)
@@ -91,7 +90,7 @@ from geonode.people.enumerations import ROLE_VALUES
 
 from urllib.parse import urlsplit, urljoin
 from geonode.storage.manager import storage_manager
-from geonode.upload.files import ALLOWED_EXTENSIONS
+
 
 logger = logging.getLogger(__name__)
 
@@ -1457,7 +1456,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def is_copyable(self):
         from geonode.geoserver.helpers import select_relevant_files
         if self.resource_type == 'dataset':
-            allowed_file = select_relevant_files(ALLOWED_EXTENSIONS, self.files)
+            allowed_file = select_relevant_files(get_allowed_extensions(), self.files)
             return len(allowed_file) != 0
         return True
 
@@ -1706,9 +1705,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """Return a thumbnail url.
 
            It could be a local one if it exists, a remote one (WMS GetImage) for example
-           or a 'Missing Thumbnail' one.
         """
-        _thumbnail_url = self.thumbnail_url or static(MISSING_THUMB)
+        _thumbnail_url = self.thumbnail_url
         local_thumbnails = self.link_set.filter(name='Thumbnail')
         remote_thumbnails = self.link_set.filter(name='Remote Thumbnail')
         if local_thumbnails.exists():
@@ -1788,7 +1786,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     )
                 )
                 # Cleaning up the old stuff
-                if self.thumbnail_path and MISSING_THUMB not in self.thumbnail_path and storage_manager.exists(self.thumbnail_path):
+                if self.thumbnail_path and storage_manager.exists(self.thumbnail_path):
                     storage_manager.delete(self.thumbnail_path)
                 # Store the new url and path
                 self.thumbnail_url = url
@@ -1805,23 +1803,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             )
             try:
                 Link.objects.filter(resource=self, name='Thumbnail').delete()
-                _thumbnail_url = static(MISSING_THUMB)
-                obj, _created = Link.objects.get_or_create(
-                    resource=self,
-                    name='Thumbnail',
-                    defaults=dict(
-                        url=_thumbnail_url,
-                        extension='png',
-                        mime='image/png',
-                        link_type='image',
-                    )
-                )
-                self.thumbnail_url = _thumbnail_url
-                obj.url = _thumbnail_url
-                obj.save()
-                ResourceBase.objects.filter(id=self.id).update(
-                    thumbnail_url=_thumbnail_url
-                )
             except Exception as e:
                 logger.error(
                     f'Error when generating the thumbnail for resource {self.id}. ({e})'

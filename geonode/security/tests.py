@@ -23,6 +23,7 @@ import base64
 import logging
 import requests
 import importlib
+import mock
 
 from gisdata import GOOD_DATA
 from requests.auth import HTTPBasicAuth
@@ -54,6 +55,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
+from geonode.base.auth import create_auth_token, get_or_create_token
 
 from geonode.base.models import (
     Configuration,
@@ -63,6 +65,8 @@ from geonode.base.models import (
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
+    create_single_doc,
+    create_single_map,
     remove_models,
     create_single_dataset)
 from geonode.geoserver.security import (
@@ -281,22 +285,37 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         Tests the Geonode session control authentication middleware.
         """
         from geonode.security.middleware import SessionControlMiddleware
+        from importlib import import_module
+
+        engine = import_module(settings.SESSION_ENGINE)
         middleware = SessionControlMiddleware(None)
 
+        admin = get_user_model().objects.filter(is_superuser=True).first()
         request = HttpRequest()
-        self.client.login(username='admin', password='admin')
-        admin = get_user_model().objects.get(username='admin')
-        self.assertTrue(admin.is_authenticated)
         request.user = admin
-        request.path = reverse('favorite_list')
+        request.session = engine.SessionStore()
+        request.session['access_token'] = get_or_create_token(admin)
+        request.session.save()
         middleware.process_request(request)
-        response = self.client.get(request.path)
-        self.assertEqual(response.status_code, 200)
-        # Simulating Token expired (or not set)
-        request.session = {}
+        self.assertFalse(request.session.is_empty())
+
         request.session['access_token'] = None
+        request.session.save()
         middleware.process_request(request)
-        response = self.client.get('/admin')
+        self.assertTrue(request.session.is_empty())
+
+        # Test the full cycle through the client
+        path = reverse('account_email')
+        self.client.login(username='admin', password='admin')
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 200)
+
+        # Simulating Token expired (or not set)
+        session_id = self.client.cookies.get(settings.SESSION_COOKIE_NAME)
+        session = engine.SessionStore(session_id.value)
+        session['access_token'] = None
+        session.save()
+        response = self.client.get(path)
         self.assertEqual(response.status_code, 302)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -1233,7 +1252,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 args=(
                     valid_dataset_typename,
                 )))
-        assert('permissions' in ensure_string(response.content))
+        assert ('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have maps.change_dataset_permissions
 
@@ -2002,6 +2021,78 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             _p.compact
         )
 
+    def test_admin_whitelisted_access_backend(self):
+        from geonode.security.backends import AdminRestrictedAccessBackend
+        from django.core.exceptions import PermissionDenied
+
+        backend = AdminRestrictedAccessBackend()
+
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            with self.assertRaises(PermissionDenied):
+                backend.authenticate(HttpRequest(), username='admin', password='admin')
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            user = backend.authenticate(request, username='admin', password='admin')
+            self.assertIsNone(user)
+
+    def test_admin_whitelisted_access_middleware(self):
+        from geonode.security.middleware import AdminAllowedMiddleware
+
+        get_response = mock.MagicMock()
+        middleware = AdminAllowedMiddleware(get_response)
+
+        admin = get_user_model().objects.filter(is_superuser=True).first()
+
+        # Test invalid IP
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertEqual(request.user, AnonymousUser())
+
+            request = HttpRequest()
+            basic_auth = base64.b64encode(b"admin:admin").decode()
+            request.META['HTTP_AUTHORIZATION'] = f"Basic {basic_auth}"
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
+
+            token = create_auth_token(admin)
+            request.META['HTTP_AUTHORIZATION'] = f"Bearer {token}"
+            middleware.process_request(request)
+            self.assertIsNone(request.META.get('HTTP_AUTHORIZATION'))
+
+        with self.settings(ADMIN_IP_WHITELIST=[]):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        # Test valid IP
+        with self.settings(ADMIN_IP_WHITELIST=['127.0.0.1']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        # Test range of whitelisted IPs
+        with self.settings(ADMIN_IP_WHITELIST=['127.0.0.0/24']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
 
 class SecurityRulesTests(TestCase):
     """
@@ -2699,3 +2790,83 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         response = self.client.post(self.url, data=self.data)
         self.resource.refresh_from_db()
         return response
+
+
+class TestUserHasPerms(GeoNodeBaseTestSupport):
+    '''
+    Ensure that the Permission classes behaves as expected
+    '''
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.dataset = create_single_dataset(name='test_permission_dataset')
+        cls.document = create_single_doc(name='test_permission_doc')
+        cls.map = create_single_map(name='test_permission_map')
+
+    @classmethod
+    def tearDownClass(self) -> None:
+        Dataset.objects.filter(name='test_permission_dataset').delete()
+        Document.objects.filter(title='test_permission_doc').delete()
+        Map.objects.filter(title='test_permission_map').delete()
+
+    def setUp(self):
+        self.marty, _ = get_user_model().objects.get_or_create(username='marty', password="mcfly")
+
+    def test_user_with_view_perms(self):
+        use_cases = [
+            {"resource": self.dataset, "url": "base-resources-detail"},
+            {"resource": self.dataset, "url": "datasets-detail"},
+            {"resource": self.document, "url": "documents-detail"},
+            {"resource": self.map, "url": "maps-detail"}
+        ]
+        for _case in use_cases:
+            # setting the view permissions
+            url = reverse(_case['url'], kwargs={'pk': _case["resource"].pk})
+
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase']}}
+            )
+            # calling the api
+            self.client.force_login(self.marty)
+            result = self.client.get(url)
+            # checking that the user can call the url in get
+            self.assertEqual(200, result.status_code, _case)
+
+            # the user cannot patch the resource
+            result = self.client.patch(url)
+            # checking that the user cannot call the url in patch due the lack of permissions
+            self.assertEqual(403, result.status_code, _case)
+
+            # after update the permissions list, the user can modify the resource
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase', 'base.change_resourcebase']}}
+            )
+            # the user can patch the resource
+            result = self.client.patch(url)
+            # checking that the user can call the url in patch since now it has the permissions
+            self.assertEqual(200, result.status_code, _case)
+
+    def test_user_with_view_listing(self):
+        use_cases = [
+            {"resource": self.dataset, "url": "base-resources-list"},
+            {"resource": self.dataset, "url": "datasets-list"},
+            {"resource": self.document, "url": "documents-list"},
+            {"resource": self.map, "url": "maps-list"}
+        ]
+        for _case in use_cases:
+            # setting the view permissions
+            url = reverse(_case['url'])
+
+            _case["resource"].set_permissions(
+                {'users': {self.marty.username: ['base.view_resourcebase', 'base.download_resourcebase']}}
+            )
+            # calling the api
+            self.client.force_login(self.marty)
+            result = self.client.get(url)
+            # checking that the user can call the url in get
+            self.assertEqual(200, result.status_code, _case)
+
+            # the user cannot patch the resource
+            result = self.client.patch(url)
+            # checking that the user cannot call the url in patch due the lack of permissions
+            self.assertEqual(403, result.status_code, _case)

@@ -1,3 +1,0 @@
-{% load i18n %}
-{% trans "A comment has been posted for the document" %} {{ resource.title }} {% trans "by the user" %} {{ author.username }}<br/>
-{% trans "You can visit the document's detail page here" %}: http://{{ current_site }}{{ resource.get_absolute_url }}

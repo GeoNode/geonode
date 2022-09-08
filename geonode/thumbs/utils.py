@@ -23,9 +23,9 @@ import base64
 import logging
 
 from pyproj import CRS
-from owslib.wms import WebMapService
 from typing import List, Tuple, Callable, Union
 from uuid import uuid4
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -138,7 +138,7 @@ def expand_bbox_to_ratio(
 
 def assign_missing_thumbnail(instance) -> None:
     """
-    Function assigning 'geonode.thumbs.utils.MISSING_THUMB' to a provided instance
+    Function assigning None in thumbnail_url to a provided instance
 
     :param instance: instance of Dataset or Map models
     """
@@ -211,16 +211,14 @@ def get_map(
         else:
             headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
 
-    wms = WebMapService(
-        f"{thumbnail_url}{wms_endpoint}",
-        version=wms_version,
-        headers=headers)
-
     image = None
     for retry in range(max_retries):
         try:
             # fetch data
-            image = wms.getmap(
+            image = getmap(
+                f"{thumbnail_url}{wms_endpoint}",
+                version=wms_version,
+                headers=headers,
                 layers=layers,
                 styles=styles,
                 srs=bbox[-1] if bbox else None,
@@ -247,6 +245,177 @@ def get_map(
             break
 
     return image.read()
+
+
+def _build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, bbox=None,
+                          format=None, size=None, time=None, dimensions={},
+                          elevation=None, transparent=False,
+                          bgcolor=None, exceptions=None, **kwargs):
+    from owslib.crs import Crs
+
+    request = {'service': 'WMS', 'version': version, 'request': 'GetMap'}
+
+    # check layers and styles
+    assert len(layers) > 0
+    request['layers'] = ','.join(layers)
+    if styles:
+        assert len(styles) == len(layers)
+        request['styles'] = ','.join(styles)
+    else:
+        request['styles'] = ''
+
+    # size
+    request['width'] = str(size[0])
+    request['height'] = str(size[1])
+
+    # remap srs to crs for the actual request
+    if srs.upper() == 'EPSG:0':
+        # if it's esri's unknown spatial ref code, bail
+        raise Exception(f'Undefined spatial reference ({srs}).')
+
+    sref = Crs(srs)
+    if sref.axisorder == 'yx':
+        # remap the given bbox
+        bbox = (bbox[1], bbox[0], bbox[3], bbox[2])
+
+    # remapping the srs to crs for the request
+    request['crs'] = str(srs)
+    request['bbox'] = ','.join([repr(x) for x in bbox])
+    request['format'] = str(format)
+    request['transparent'] = str(transparent).upper()
+    request['bgcolor'] = f"0x{bgcolor[1:7]}"
+    request['exceptions'] = str(exceptions)
+
+    if time is not None:
+        request['time'] = str(time)
+
+    if elevation is not None:
+        request['elevation'] = str(elevation)
+
+    # any other specified dimension, prefixed with "dim_"
+    for k, v in list(dimensions.items()):
+        request[f"dim_{k}"] = str(v)
+
+    if kwargs:
+        for kw in kwargs:
+            request[kw] = kwargs[kw]
+    return request
+
+
+def getmap(base_url,
+           version='1.3.0',
+           headers={},
+           layers=None,
+           styles=None,
+           srs=None,
+           bbox=None,
+           format=None,
+           size=None,
+           time=None,
+           elevation=None,
+           dimensions={},
+           transparent=False,
+           bgcolor='#FFFFFF',
+           exceptions='XML',
+           method='Get',
+           timeout=None,
+           **kwargs):
+    """Request and return an image from the WMS as a file-like object.
+
+    Parameters
+    ----------
+    layers : list
+        List of content layer names.
+    styles : list
+        Optional list of named styles, must be the same length as the
+        layers list.
+    srs : string
+        A spatial reference system identifier.
+        Note: this is an invalid query parameter key for 1.3.0 but is being
+                retained for standardization with 1.1.1.
+        Note: throws exception if the spatial ref is ESRI's "no reference"
+                code (EPSG:0)
+    bbox : tuple
+        (left, bottom, right, top) in srs units (note, this order does not
+            change depending on axis order of the crs).
+
+        CRS:84: (long, lat)
+        EPSG:4326: (lat, long)
+    format : string
+        Output image format such as 'image/jpeg'.
+    size : tuple
+        (width, height) in pixels.
+
+    time : string or list or range
+        Optional. Time value of the specified layer as ISO-8601 (per value)
+    elevation : string or list or range
+        Optional. Elevation value of the specified layer.
+    dimensions: dict (dimension : string or list or range)
+        Optional. Any other Dimension option, as specified in the GetCapabilities
+
+    transparent : bool
+        Optional. Transparent background if True.
+    bgcolor : string
+        Optional. Image background color.
+    method : string
+        Optional. HTTP DCP method name: Get or Post.
+    **kwargs : extra arguments
+        anything else e.g. vendor specific parameters
+
+    Example
+    -------
+        wms = WebMapService('http://webservices.nationalatlas.gov/wms/1million',\
+                                version='1.3.0')
+        img = wms.getmap(layers=['airports1m'],\
+                                styles=['default'],\
+                                srs='EPSG:4326',\
+                                bbox=(-176.646, 17.7016, -64.8017, 71.2854),\
+                                size=(300, 300),\
+                                format='image/jpeg',\
+                                transparent=True)
+        out = open('example.jpg.jpg', 'wb')
+        out.write(img.read())
+        out.close()
+
+    """
+    from owslib.etree import etree
+    from owslib.namespaces import Namespaces
+    from owslib.util import openURL, ServiceException, nspath
+
+    n = Namespaces()
+
+    request = _build_getmap_request(
+        version=version,
+        layers=layers,
+        styles=styles,
+        srs=srs,
+        bbox=bbox,
+        dimensions=dimensions,
+        elevation=elevation,
+        format=format,
+        size=size,
+        time=time,
+        transparent=transparent,
+        bgcolor=bgcolor,
+        exceptions=exceptions,
+        **kwargs)
+
+    data = urlencode(request)
+
+    u = openURL(base_url, data, method, timeout=timeout, auth=None, headers=headers)
+
+    # need to handle casing in the header keys
+    headers = {}
+    for k, v in list(u.info().items()):
+        headers[k.lower()] = v
+
+    # handle the potential charset def
+    if headers.get('content-type', '').split(';')[0] in ['application/vnd.ogc.se_xml', 'text/xml']:
+        se_xml = u.read()
+        se_tree = etree.fromstring(se_xml)
+        err_message = str(se_tree.find(nspath('ServiceException', n.get_namespace('ogc'))).text).strip()
+        raise ServiceException(err_message)
+    return u
 
 
 def epsg_3857_area_of_use():

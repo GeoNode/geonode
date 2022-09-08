@@ -60,7 +60,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
-from geonode.layers.forms import DatasetForm, JSONField, LayerUploadForm
+from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, JSONField, LayerUploadForm
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -1575,19 +1575,8 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.assertTrue(self.check_notification_out('dataset_updated', self.u))
 
             self.clear_notifications_queue()
-            from dialogos.models import Comment
             lct = ContentType.objects.get_for_model(_l)
-            comment = Comment(
-                author=self.norman,
-                name=self.u.username,
-                content_type=lct,
-                object_id=_l.id,
-                content_object=_l,
-                comment='test comment')
-            comment.save()
-            self.assertTrue(self.check_notification_out('dataset_comment', self.u))
 
-            self.clear_notifications_queue()
             if "pinax.ratings" in settings.INSTALLED_APPS:
                 self.clear_notifications_queue()
                 from pinax.ratings.models import Rating
@@ -1872,6 +1861,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.user = get_user_model().objects.get(username='admin')
         self.dataset = create_single_dataset("my_single_layer", owner=self.user)
         self.sut = DatasetForm
+        self.time_form = DatasetTimeSerieForm
 
     def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
         self.client.login(username="admin", password="admin")
@@ -1926,3 +1916,48 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
         })
         self.assertTrue(form.is_valid())
+
+    def test_dataset_time_form_should_work(self):
+
+        attr, _ = Attribute.objects.get_or_create(
+            dataset=self.dataset,
+            attribute="field_date",
+            attribute_type="xsd:dateTime"
+        )
+        self.dataset.attribute_set.add(attr)
+        self.dataset.save()
+        form = self.time_form(
+            instance=self.dataset,
+            data={
+                'attribute': self.dataset.attributes.first().id,
+                'end_attribute': '',
+                'presentation': 'DISCRETE_INTERVAL',
+                'precision_value': 12345,
+                'precision_step': 'seconds'
+            }
+        )
+        self.assertTrue(form.is_valid())
+        self.assertDictEqual({}, form.errors)
+
+    def test_dataset_time_form_should_raise_error_if_invalid_payload(self):
+
+        attr, _ = Attribute.objects.get_or_create(
+            dataset=self.dataset,
+            attribute="field_date",
+            attribute_type="xsd:dateTime"
+        )
+        self.dataset.attribute_set.add(attr)
+        self.dataset.save()
+        form = self.time_form(
+            instance=self.dataset,
+            data={
+                'attribute': self.dataset.attributes.first().id,
+                'end_attribute': '',
+                'presentation': 'INVALID_PRESENTATION_VALUE',
+                'precision_value': 12345,
+                'precision_step': 'seconds'
+            }
+        )
+        self.assertFalse(form.is_valid())
+        self.assertTrue('presentation' in form.errors)
+        self.assertEqual("Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.", form.errors['presentation'][0])

@@ -29,7 +29,6 @@ class GeoNodeAppsConfig(NotificationsAppConfigBase):
                      ("geoapp_approved", _("App Approved"), _("A App was approved by a Manager"),),
                      ("geoapp_published", _("App Published"), _("A App was published"),),
                      ("geoapp_deleted", _("App Deleted"), _("A App was deleted"),),
-                     ("geoapp_comment", _("Comment on App"), _("An App was commented on"),),
                      ("geoapp_rated", _("Rating for App"), _("A rating was given to an App"),),
                      )
 

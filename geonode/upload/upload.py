@@ -641,6 +641,9 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 # @todo see above in save_step, regarding computed unique name
                 name = task.layer.name
                 target = task.target
+                has_time = False
+                if upload_session.time and upload_session.time_info and upload_session.time_transforms:
+                    has_time = True
 
                 _vals = dict(
                     title=upload_session.dataset_title,
@@ -649,7 +652,8 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     store=target.name,
                     name=task.layer.name,
                     workspace=target.workspace_name,
-                    subtype=get_dataset_storetype(target.store_type))
+                    subtype=get_dataset_storetype(target.store_type) if not has_time else get_dataset_storetype('vectorTimeSeries')
+                )
 
                 if saved_dataset:
                     name = saved_dataset.get_real_instance().name
@@ -757,6 +761,7 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                             dataset_uuid, vals, regions, keywords, custom = parse_metadata(
                                 open(xml_file).read())
                             metadata_uploaded = True
+                            _vals.update(vals)
                     except Exception as e:
                         Upload.objects.invalidate_from_session(upload_session)
                         logger.exception(e)
@@ -910,9 +915,6 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                 # Update the state from session...
                 upload_session = Upload.objects.update_from_session(upload_session, resource=saved_dataset)
 
-                if not created:
-                    return saved_dataset
-
                 # Finalize the upload...
                 # Set default permissions on the newly created layer and send notifications
                 permissions = upload_session.permissions
@@ -922,12 +924,13 @@ def final_step(upload_session, user, charset="UTF-8", dataset_id=None):
                     with transaction.atomic():
                         resource_manager.set_permissions(
                             None, instance=saved_dataset, permissions=permissions, created=created)
+                        resource_manager.exec(
+                            'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
+                        saved_dataset.refresh_from_db()
                         resource_manager.update(
                             None, instance=saved_dataset, xml_file=xml_file, metadata_uploaded=metadata_uploaded)
                         resource_manager.exec(
                             'set_style', None, instance=saved_dataset, sld_uploaded=sld_uploaded, sld_file=sld_file, tempdir=upload_session.tempdir)
-                        resource_manager.exec(
-                            'set_time_info', None, instance=saved_dataset, time_info=upload_session.time_info)
                         resource_manager.set_thumbnail(
                             None, instance=saved_dataset)
 

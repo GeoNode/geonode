@@ -23,11 +23,11 @@ from django.conf import settings
 from django.urls import reverse
 from mock import patch
 from rest_framework.test import APITestCase
+from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
-from geonode.thumbs.utils import MISSING_THUMB
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class MapsApiTests(APITestCase):
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data["total"], 9)
         # Check: No overfetching for maplayers
-        self.assertFalse(any([map.get("maplayers", []) for map in response.data["maps"]]))
+        self.assertTrue(any([map.get("maplayers", []) for map in response.data["maps"]]))
 
         # Pagination
         self.assertEqual(len(response.data["maps"]), 9)
@@ -75,6 +75,7 @@ class MapsApiTests(APITestCase):
 
         # Get Layers List (backgrounds)
         resource = Map.objects.first()
+        assign_perm("base.view_resourcebase", get_anonymous_user(), resource.get_self_resource())
 
         url = urljoin(f"{reverse('maps-detail', kwargs={'pk': resource.pk})}/", "maplayers/")
         response = self.client.get(url, format="json")
@@ -192,7 +193,7 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
-        self.assertNotIn(MISSING_THUMB, response.data["map"]['thumbnail_url'])
+        self.assertIsNotNone(response.data["map"]['thumbnail_url'])
 
 
 DUMMY_MAPDATA = {

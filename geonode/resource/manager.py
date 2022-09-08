@@ -37,7 +37,6 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
-from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
@@ -48,7 +47,6 @@ from django.core.exceptions import (
 
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
-from geonode.thumbs import utils as thumb_utils
 from geonode.security.permissions import (
     PermSpecCompact,
     DATA_STYLABLE_RESOURCES_SUBTYPES)
@@ -208,8 +206,8 @@ class ResourceManagerInterface(metaclass=ABCMeta):
 
 class ResourceManager(ResourceManagerInterface):
 
-    def __init__(self):
-        self._concrete_resource_manager = self._get_concrete_manager()
+    def __init__(self, concrete_manager=None):
+        self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
     def _get_concrete_manager(self):
         module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
@@ -499,7 +497,9 @@ class ResourceManager(ResourceManagerInterface):
                         to_update = storage_manager.copy(_resource).copy()
                     except Exception as e:
                         logger.exception(e)
+
                     _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+
             except Exception as e:
                 logger.exception(e)
                 _resource = None
@@ -817,7 +817,7 @@ class ResourceManager(ResourceManagerInterface):
                         _resource.save_thumbnail(file_name, thumbnail)
                     else:
                         if instance and instance.files and isinstance(instance.get_real_instance(), Document):
-                            if overwrite or instance.thumbnail_url == static(thumb_utils.MISSING_THUMB):
+                            if overwrite or not instance.thumbnail_url:
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(uuid, instance=_resource, overwrite=overwrite, check_bbox=check_bbox)
                 return True

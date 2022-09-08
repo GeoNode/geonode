@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% trans "A comment has been posted for a document" %}

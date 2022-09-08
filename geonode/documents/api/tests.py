@@ -23,6 +23,7 @@ from urllib.parse import urljoin
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode.documents.models import Document
 from geonode.base.populate_test_data import create_models
 
@@ -63,6 +64,7 @@ class DocumentsApiTests(APITestCase):
         resource = Document.objects.first()
 
         url = urljoin(f"{reverse('documents-detail', kwargs={'pk': resource.pk})}/", 'linked_resources/')
+        assign_perm("base.view_resourcebase", get_anonymous_user(), resource.get_self_resource())
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         layers_data = response.data

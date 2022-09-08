@@ -4,6 +4,7 @@ LABEL GeoNode development team
 RUN mkdir -p /usr/src/geonode
 
 # Enable postgresql-client-13
+RUN apt-get update -y && apt-get install curl wget unzip -y
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list
 RUN echo "deb http://deb.debian.org/debian/ stable main contrib non-free" | tee /etc/apt/sources.list.d/debian.list
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
@@ -25,7 +26,8 @@ RUN apt-get install -y --no-install-recommends \
     gcc zip gettext geoip-bin cron \
     postgresql-client-13 \
     sqlite3 spatialite-bin libsqlite3-mod-spatialite \
-    python3-dev python3-gdal python3-psycopg2 python3-ldap \
+    python3-all-dev python3-dev \
+    python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-pil python3-lxml python3-pylibmc \
     uwsgi uwsgi-plugin-python3 \
     firefox-esr
@@ -35,14 +37,13 @@ RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharut
 # RUN cd /tmp/proj && debuild -i -us -uc -b && dpkg -i ../*.deb
 
 # Install pip packages
-RUN pip install pip --upgrade \
-    && pip install pygdal==$(gdal-config --version).* \
-        flower==0.9.4
+RUN pip3 install uwsgi \
+    && pip install pip --upgrade \
+    && pip install pygdal==$(gdal-config --version).* flower==0.9.4
 
 # Activate "memcached"
-RUN apt install -y memcached
-RUN pip install pylibmc \
-    && pip install sherlock
+RUN apt-get install -y memcached
+RUN pip install pylibmc sherlock
 
 # add bower and grunt command
 COPY . /usr/src/geonode/
