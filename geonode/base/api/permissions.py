@@ -232,6 +232,7 @@ class UserHasPerms(DjangoModelPermissions):
         return self
 
     def has_permission(self, request, view):
+        from geonode.base.models import ResourceBase
         queryset = self._queryset(view)
 
         if request.user.is_superuser:
@@ -239,13 +240,16 @@ class UserHasPerms(DjangoModelPermissions):
 
         if view.kwargs.get('pk'):
             # if a single resource is called, we check the perms for that resource
-            res = get_object_or_404(queryset.model, pk=view.kwargs.get('pk'))
+            res = get_object_or_404(ResourceBase, pk=view.kwargs.get('pk'))
             # if the request is for a single resource, we take the specific or the default. If none is defined we keep the original one defined above
             resource_type_specific_perms = self.perms_dict.get(res.get_real_instance().resource_type, self.perms_dict.get('default', {}))
             perms = resource_type_specific_perms.get(request.method, []) or self.get_required_permissions(request.method, queryset.model)
 
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
+            if getattr(res, 'get_real_instance', None):
+                resource_perms.extend(list(res.get_real_instance().get_user_perms(request.user)))
+
             groups = get_groups_with_perms(res, attach_perms=True)
             # we are making this because the request.user.groups sometimes returns empty si is not fully reliable
             for group, perm in groups.items():
