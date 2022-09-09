@@ -37,7 +37,7 @@
     "mime": "^2.4.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
-    "node-sass": "^4.9.0",
+    "node-sass": "^7.0.2",
     "openlayers": "^4.6.5",
     "patternfly-bootstrap-treeview": "2.1.10",
     "proj4": "^2.5.0",
