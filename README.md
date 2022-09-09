@@ -4,16 +4,17 @@
 Table of Contents
 =================
 
--  [What is GeoNode?](#what-is-geonode)
--  [Try out GeoNode](#try-out-geonode)
--  [Install](#install)
--  [Learn GeoNode](#learn-geonode)
--  [Development](#development)
--  [Contributing](#contributing)
--  [Roadmap](#roadmap)
--  [Showcase](#showcase)
--  [Most useful links](#most-useful-links)
--  [Licensing](#licensing)
+- [Table of Contents](#table-of-contents)
+  - [What is GeoNode?](#what-is-geonode)
+  - [Try out GeoNode](#try-out-geonode)
+  - [Install](#install)
+  - [Learn GeoNode](#learn-geonode)
+  - [Development](#development)
+  - [Contributing](#contributing)
+  - [Roadmap](#roadmap)
+  - [Showcase](#showcase)
+  - [Most useful links](#most-useful-links)
+  - [Licensing](#licensing)
 
 What is GeoNode?
 ----------------
