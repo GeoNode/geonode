@@ -101,6 +101,8 @@ WPS_ACCEPTABLE_FORMATS = [
     ('text/csv', 'vector')
 ]
 
+DEFAULT_STYLE_NAME = ['generic', 'line', 'point', 'polygon', 'raster']
+
 
 if not hasattr(settings, 'OGC_SERVER'):
     msg = (
@@ -1178,13 +1180,14 @@ def set_styles(layer, gs_catalog):
                 if default_style.name != _gs_default_style.name or default_style.workspace != _gs_default_style.workspace:
                     gs_dataset.default_style = _gs_default_style
                     gs_catalog.save(gs_dataset)
-                    gs_catalog.delete(
-                        gs_catalog.get_style(
-                            name=default_style.name,
-                            workspace=None,
-                            recursive=True),
-                        purge=True,
-                        recurse=False)
+                    if default_style.name not in DEFAULT_STYLE_NAME:
+                        gs_catalog.delete(
+                            gs_catalog.get_style(
+                                name=default_style.name,
+                                workspace=None,
+                                recursive=True),
+                            purge=True,
+                            recurse=False)
             except Exception as e:
                 logger.exception(e)
             style_set.append(layer.default_style)
