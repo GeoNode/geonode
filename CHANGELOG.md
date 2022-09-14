@@ -1,5 +1,25 @@
 # Change Log
 
+## [3.3.3](https://github.com/GeoNode/geonode/tree/3.3.3) (2022-09-14)
+
+<li> Wed Sep 7 18:15:34 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/5a9737a08b203198b5a30c03f390999379f436d4 target=blank>[Fixes #9972] SECURITY - Outdated requirements.txt for branch 3.3.x (#9984)</a></li>
+<li> Tue Aug 30 15:13:17 2022 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/97e378f8ef66272ad58131abbd11af18310e598e target=blank>-[Fixes #9921] Original Layer / Dataset not offered as Download on layer detail page (#9942)</a></li>
+<li> Fri Aug 26 12:17:21 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/37eb0e761257e40527b144803b856763e0745719 target=blank>[Fixes #9913] 3.3.X - Update django-markdownify package to 0.9.2 in requirements.txt (#9915)</a></li>
+<li> Wed Jul 27 13:12:59 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/4ccfb4750d0b18b4da719d25ad66217d15371d23 target=blank>Align letsencrypt docker container to geonode-project (#9717) (#9769)</a></li>
+<li> Thu Jul 21 15:26:34 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/3a69026dd36edce6826b117d860202c698a0a73d target=blank>fix: scripts/docker/nginx/Dockerfile to reduce vulnerabilities (#9712) (#9713)</a></li>
+<li> Thu Jul 21 15:25:38 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/150fbba53a0e241de3622335e11d31bb3c536a49 target=blank>[Fixes #9718] fix renaming of CORS_ORIGIN_ALLOW_ALL (#9719) (#9720)</a></li>
+<li> Fri Jul 15 12:26:49 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c2e0828dfe1676b090cdcec3fbc572ae9a3eca90 target=blank>[Fixes #9673] Proxy must use OGC_REQUEST_TIMEOUT instead of an hardcoded one (#9674) (#9675)</a></li>
+<li> Fri Jul 15 10:27:13 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a07d8e20dd1515e0ba033fbc54e9248ed9d6e1e2 target=blank>[Fixes #9669] Updatelayers unexpectedly fails if layer is 'None' (#9670) (#9671)</a></li>
+<li> Thu Jul 14 13:14:15 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/77eb339e91cf6c31dff558c536f7f4af0fbf9e42 target=blank>[Backport to 3.3.x][Fixes #9662][Docker] Wrong healthcheck on Django container (#9666)</a></li>
+<li> Tue Jul 12 11:00:13 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/fe9df21b439f75a14ed032d829399c5746c31af8 target=blank>[Backport to 3.3.x][Fixes #9637] Performance scalability issues with Thumbnail generation (#9641)</a></li>
+<li> Thu Jul 7 06:32:41 2022 +0000: David Quartey <a href=https://github.com/GeoNode/geonode/commit/af05de09737fed472f8e0168ab5715e4f4a80faa target=blank>Added mapstore timeline expanded setting (#9615)</a></li>
+<li> Tue Jul 5 16:03:12 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/9c69f975696bbee7f64ef0500cca6bd82861a846 target=blank>[Dependencies] Align "setup.cfg" to "requirements.txt" (#9589)</a></li>
+<li> Tue Jul 5 15:49:04 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c873b6eece2384a5708eabd0767e9be38f2749d9 target=blank>[Fixes https://github.com/GeoNode/geonode-project/issues/342] Geoserver Dockerfile, build failed (#9600) (#9602)</a></li>
+<li> Mon Jul 4 13:03:55 2022 +0300: NAGGINDA MARTHA <a href=https://github.com/GeoNode/geonode/commit/655ea44c2769664633f56e1aae94ee4163ebc6e6 target=blank>-[Fixes #9518] br/restore call to migrate always fails (#9586)</a></li>
+<li> Mon Jul 4 09:54:38 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9bdc14f995c87949650da5155fd2511bcc5e4254 target=blank>Bump gn-arcrest from 10.5.4 to 10.5.5 (#9571) (#9574)</a></li>
+<li> Fri Jul 1 12:03:45 2022 +0200: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/61248897ed00de6fa2074ca4709918ea07fe2847 target=blank>[Fixes #9562] Inconsistency information on layer upload along with an XML (#9563)</a></li>
+<li> Wed Jun 22 15:52:45 2022 +0200: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/3f216a8ea40bc1f38eca9bc3ecd298107ac5a84a target=blank>[Fixes #9531] Provide priority to _update_geofence_rule method (#9532)</a></li>
+
 ## [3.3.2.post2](https://github.com/GeoNode/geonode/tree/3.3.2.post2) (2022-06-12)
 
 <li> Fri Jun 10 17:58:47 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/af1e1114d444edb40d1b92da1d33322675a6e31c target=blank>[Fixes #9500] OWS Url wrong for INDEXED Remote Services (#9501)</a></li>
