@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 import os
 
 from django.conf import settings
@@ -46,6 +47,8 @@ from .helpers import (
 
 logger = get_task_logger(__name__)
 
+log_lock = logging.getLogger("geonode_lock_handler")
+
 
 @app.task(
     bind=True,
@@ -65,12 +68,16 @@ def geoserver_update_datasets(self, *args, **kwargs):
     Runs update layers.
     """
     lock_id = f'{self.request.id}'
+    log_lock.debug(f"geoserver_update_datasets: Creating lock {lock_id}")
     with AcquireLock(lock_id) as lock:
+        log_lock.debug(f"geoserver_update_datasets: Acquiring lock {lock_id}")
         if lock.acquire() is True:
+            log_lock.debug(f"geoserver_update_datasets: Acquired lock {lock_id}")
             try:
                 return gs_slurp(*args, **kwargs)
             finally:
                 lock.release()
+                log_lock.debug(f"geoserver_update_datasets: Released lock {lock_id}")
 
 
 @app.task(
@@ -100,9 +107,12 @@ def geoserver_set_style(
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}'
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    log_lock.debug(f"geoserver_set_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
+        log_lock.debug(f"geoserver_set_style: Acquiring lock {lock_id} for {instance.name}")
         if lock.acquire() is True:
+            log_lock.debug(f"geoserver_set_style: Acquired lock {lock_id} for {instance.name}")
             try:
                 sld = open(base_file, "rb").read()
                 set_dataset_style(
@@ -114,6 +124,7 @@ def geoserver_set_style(
                 logger.exception(e)
             finally:
                 lock.release()
+                log_lock.debug(f"geoserver_set_style: Released lock {lock_id} for {instance.name}")
 
 
 @app.task(
@@ -146,9 +157,12 @@ def geoserver_create_style(
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}'
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    log_lock.debug(f"geoserver_create_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
-        if lock.acquire() is True and instance:
+        log_lock.debug(f"geoserver_create_style: Acquiring lock {lock_id} for {instance.name}")
+        if lock.acquire() is True:
+            log_lock.debug(f"geoserver_create_style: Acquired lock {lock_id} for {instance.name}")
             try:
                 f = None
                 if sld_file and os.path.exists(sld_file) and os.access(sld_file, os.R_OK):
@@ -194,6 +208,7 @@ def geoserver_create_style(
                     geoserver_automatic_default_style_set.send_robust(sender=instance, instance=instance)
             finally:
                 lock.release()
+                log_lock.debug(f"geoserver_create_style: Released lock {lock_id} for {instance.name}")
 
 
 @app.task(
@@ -216,9 +231,19 @@ def geoserver_post_save_datasets(
     """
     Runs update layers.
     """
-    lock_id = f'{self.request.id}'
+    instance = None
+    try:
+        instance = Dataset.objects.get(id=instance_id)
+    except Dataset.DoesNotExist:
+        logger.debug(f"Dataset id {instance_id} does not exist yet!")
+        raise
+
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    log_lock.debug(f"geoserver_post_save_datasets: Creating lock {lock_id} for {instance_id}")
     with AcquireLock(lock_id) as lock:
+        log_lock.debug(f"geoserver_post_save_datasets: Acquiring lock {lock_id} for {instance_id}")
         if lock.acquire() is True:
+            log_lock.debug(f"geoserver_post_save_datasets: Acquired lock {lock_id} for {instance_id}")
             try:
                 sync_instance_with_geoserver(instance_id, *args, **kwargs)
 
@@ -227,6 +252,7 @@ def geoserver_post_save_datasets(
                     call_command('update_index')
             finally:
                 lock.release()
+                log_lock.debug(f"geoserver_post_save_datasets: Releasing lock {lock_id} for {instance_id}")
 
 
 @app.task(
@@ -253,9 +279,12 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
         logger.error(f"Resource id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}'
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    log_lock.debug(f"geoserver_create_thumbnail: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
+        log_lock.debug(f"geoserver_create_thumbnail: Acquiring lock {lock_id} for {instance.name}")
         if lock.acquire() is True:
+            log_lock.debug(f"geoserver_create_thumbnail: Acquired lock {lock_id} for {instance.name}")
             try:
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 try:
@@ -268,6 +297,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
                     instance.set_processing_state(enumerations.STATE_PROCESSED)
             finally:
                 lock.release()
+                log_lock.debug(f"geoserver_create_thumbnail: Released lock {lock_id} for {instance.name}")
 
 
 @app.task(
