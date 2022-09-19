@@ -1132,7 +1132,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
     )
 
 
-def get_dataset(layer, gs_catalog):
+def get_dataset(layer, gs_catalog: Catalog):
     gs_catalog.reset()
     gs_dataset = None
     try:
@@ -1151,24 +1151,27 @@ def get_dataset(layer, gs_catalog):
     return gs_dataset
 
 
-def clean_styles(layer, gs_catalog):
+def clean_styles(layer, gs_catalog: Catalog):
     try:
         # Cleanup Styles without a Workspace
         gs_catalog.reset()
         gs_dataset = get_dataset(layer, gs_catalog)
-        gs_catalog.delete(
-            gs_catalog.get_style(
-                name=gs_dataset.default_style.name,
-                workspace=None,
-                recursive=True),
-            purge=True,
-            recurse=False)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
+        logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
+        style = gs_catalog.get_style(
+            name=gs_dataset.default_style.name,
+            workspace=None,
+            recursive=True)
+        if style:
+            gs_catalog.delete(style, purge=True, recurse=False)
+            logger.debug(f'clean_styles: Style removed: {gs_dataset.default_style.name}')
+        else:
+            logger.debug(f'clean_styles: Style does not exist: {gs_dataset.default_style.name}')
+    except Exception as e:
+        logger.warning(f'Could not clean style for layer {layer.name}', exc_info=e)
+        logger.debug(f'Could not clean style for layer {layer.name} - STACK INFO', stack_info=True)
 
 
-def set_styles(layer, gs_catalog):
+def set_styles(layer, gs_catalog: Catalog):
     style_set = []
     gs_dataset = get_dataset(layer, gs_catalog)
     if gs_dataset:
@@ -1178,18 +1181,21 @@ def set_styles(layer, gs_catalog):
             layer.default_style, _gs_default_style = save_style(default_style, layer)
             try:
                 if default_style.name != _gs_default_style.name or default_style.workspace != _gs_default_style.workspace:
+                    logger.debug(f'set_style: Setting default style "{_gs_default_style.name}" for layer "{layer.name}')
+
                     gs_dataset.default_style = _gs_default_style
                     gs_catalog.save(gs_dataset)
                     if default_style.name not in DEFAULT_STYLE_NAME:
-                        gs_catalog.delete(
-                            gs_catalog.get_style(
-                                name=default_style.name,
-                                workspace=None,
-                                recursive=True),
-                            purge=True,
-                            recurse=False)
+                        logger.debug(f'set_style: Retrieving no-workspace default style "{default_style.name}" for deletion')
+                        style_to_delete = gs_catalog.get_style(name=default_style.name, workspace=None, recursive=True)
+                        if style_to_delete:
+                            gs_catalog.delete(style_to_delete, purge=True, recurse=False)
+                            logger.debug(f'set_style: No-ws default style deleted: {default_style.name}')
+                        else:
+                            logger.debug(f'set_style: No-ws default style does not exist: {default_style.name}')
             except Exception as e:
-                logger.exception(e)
+                logger.error(f'Error setting default style "{_gs_default_style.name}" for layer "{layer.name}', exc_info=e)
+
             style_set.append(layer.default_style)
 
         try:
@@ -1218,7 +1224,7 @@ def set_styles(layer, gs_catalog):
     layer.refresh_from_db()
 
     # Legend links
-    logger.debug(" -- Resource Links[Legend link]...")
+    logger.debug(f" -- Resource Links[Legend link] for layer {layer.name}...")
     try:
         from geonode.base.models import Link
         dataset_legends = Link.objects.filter(resource=layer.resourcebase_ptr, name='Legend')
@@ -1257,11 +1263,13 @@ def save_style(gs_style, layer):
     sld_body = copy.copy(gs_style.sld_body)
     _gs_style = None
     if not gs_style.workspace:
+        logger.debug(f'save_style: Copying style "{sld_name}" to "{layer.workspace}:{layer.name}')
         _gs_style = gs_catalog.create_style(
             layer.name, sld_body,
             raw=True, overwrite=True,
             workspace=layer.workspace)
     else:
+        logger.debug(f'save_style: Retrieving style "{layer.workspace}:{sld_name}" for layer "{layer.workspace}:{layer.name}')
         _gs_style = gs_catalog.get_style(
             name=sld_name,
             workspace=layer.workspace
