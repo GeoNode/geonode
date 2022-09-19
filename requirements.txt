@@ -48,7 +48,7 @@ django-widget-tweaks==1.4.12
 django-sequences==2.7
 oauthlib==3.2.1
 pyopenssl==22.0.0
-pyjwt==2.4.0
+pyjwt==2.5.0
 
 # geopython dependencies
 pyproj<3.5.0
