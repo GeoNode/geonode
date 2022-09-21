@@ -22,6 +22,7 @@ assignees: ''
 ## Specifications
 
   - GeoNode version:
-  - Installation method (manual, GeoNode Docker, SPCGeoNode Docker):
+  - Installation type (vanilla, geonode-project):
+  - Installation method (manual, docker):
   - Platform:
   - Additional details:
