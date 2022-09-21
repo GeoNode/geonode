@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
-
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
@@ -54,7 +52,6 @@ def create_document_thumbnail(self, object_id):
         logger.error(f"Document #{object_id} does not exist.")
         raise
 
-    image_path = None
     image_file = None
 
     if document.is_image:
@@ -71,9 +68,6 @@ def create_document_thumbnail(self, object_id):
         finally:
             if image_file is not None:
                 image_file.close()
-
-            if image_path is not None:
-                os.remove(image_path)
 
         if not thumbnail_content:
             logger.warning(f"Thumbnail for document #{object_id} empty.")
