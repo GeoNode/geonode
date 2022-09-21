@@ -23,11 +23,9 @@ from celery.utils.log import get_task_logger
 from geonode.celery_app import app
 from geonode.storage.manager import storage_manager
 
+from ..base.models import ResourceBase
 from .models import Document
-from .renderers import (
-    render_document,
-    generate_thumbnail_content,
-    ConversionError)
+from .renderers import (generate_thumbnail_content)
 
 logger = get_task_logger(__name__)
 
@@ -63,53 +61,27 @@ def create_document_thumbnail(self, object_id):
         dname = storage_manager.path(document.files[0])
         if storage_manager.exists(dname):
             image_file = storage_manager.open(dname, 'rb')
-    elif document.is_video or document.is_audio:
-        image_file = open(document.find_placeholder(), 'rb')
-    elif document.is_file:
-        dname = storage_manager.path(document.files[0])
-        try:
-            document_location = storage_manager.path(dname)
-        except NotImplementedError as e:
-            logger.debug(e)
 
-            document_location = storage_manager.url(dname)
-
-        try:
-            image_path = render_document(document_location)
-            if image_path is not None:
-                try:
-                    image_file = open(image_path, 'rb')
-                except Exception as e:
-                    logger.debug(f"Failed to render document #{object_id}: {e}")
-            else:
-                logger.debug(f"Failed to render document #{object_id}")
-        except ConversionError as e:
-            logger.debug(f"Could not convert document #{object_id}: {e}.")
-        except NotImplementedError as e:
-            logger.debug(f"Failed to render document #{object_id}: {e}")
-
-    thumbnail_content = None
-    try:
+        thumbnail_content = None
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
         except Exception as e:
-            logger.debug(f"Could not generate thumbnail, falling back to 'placeholder': {e}")
-            thumbnail_content = generate_thumbnail_content(document.find_placeholder())
-    except Exception as e:
-        logger.error(f"Could not generate thumbnail: {e}")
-        return
-    finally:
-        if image_file is not None:
-            image_file.close()
+            logger.debug(f"Could not generate thumbnail, setting thumbnail_url to None: {e}")
+            ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
+        finally:
+            if image_file is not None:
+                image_file.close()
 
-        if image_path is not None:
-            os.remove(image_path)
+            if image_path is not None:
+                os.remove(image_path)
 
-    if not thumbnail_content:
-        logger.warning(f"Thumbnail for document #{object_id} empty.")
-    filename = f'document-{document.uuid}-thumb.png'
-    document.save_thumbnail(filename, thumbnail_content)
-    logger.debug(f"Thumbnail for document #{object_id} created.")
+        if not thumbnail_content:
+            logger.warning(f"Thumbnail for document #{object_id} empty.")
+        filename = f'document-{document.uuid}-thumb.png'
+        document.save_thumbnail(filename, thumbnail_content)
+        logger.debug(f"Thumbnail for document #{object_id} created.")
+    else:
+        ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
 
 
 @app.task(
