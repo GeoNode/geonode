@@ -25,7 +25,7 @@ def set_null_to_non_image_docs_thumbnails(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('documents', '0035_auto_20190404_0820'),
+        ('documents', '0033_remove_document_doc_type'),
     ]
 
     operations = [
