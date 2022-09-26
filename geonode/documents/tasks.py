@@ -16,6 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import io
+
+from PIL import Image
+
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
@@ -23,7 +27,6 @@ from geonode.storage.manager import storage_manager
 
 from ..base.models import ResourceBase
 from .models import Document
-from .renderers import (generate_thumbnail_content)
 
 logger = get_task_logger(__name__)
 
@@ -61,9 +64,13 @@ def create_document_thumbnail(self, object_id):
             image_file = storage_manager.open(dname, 'rb')
 
         try:
-            thumbnail_content = generate_thumbnail_content(image_file)
+            image = Image.open(image_file)
+            with io.BytesIO() as output:
+                image.save(output, format='PNG')
+                thumbnail_content = output.getvalue()
+                output.close()
         except Exception as e:
-            logger.debug(f"Could not generate thumbnail, setting thumbnail_url to None: {e}")
+            logger.debug(f"Could not generate thumbnail: {e}")
         finally:
             if image_file is not None:
                 image_file.close()
