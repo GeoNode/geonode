@@ -1742,7 +1742,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 try:
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = getattr(
-                        settings, 'THUMBNAIL_GENERATOR_DEFAULT_SIZE', {'width': 240, 'height': 200})
+                        settings, 'THUMBNAIL_SIZE', {'width': 500, 'height': 200})
                     im = Image.open(storage_manager.open(actual_name))
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
