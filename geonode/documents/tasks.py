@@ -53,29 +53,28 @@ def create_document_thumbnail(self, object_id):
         raise
 
     image_file = None
+    thumbnail_content = None
 
     if document.is_image:
         dname = storage_manager.path(document.files[0])
         if storage_manager.exists(dname):
             image_file = storage_manager.open(dname, 'rb')
 
-        thumbnail_content = None
         try:
             thumbnail_content = generate_thumbnail_content(image_file)
         except Exception as e:
             logger.debug(f"Could not generate thumbnail, setting thumbnail_url to None: {e}")
-            ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
         finally:
             if image_file is not None:
                 image_file.close()
 
-        if not thumbnail_content:
-            logger.warning(f"Thumbnail for document #{object_id} empty.")
+    if not thumbnail_content:
+        logger.warning(f"Thumbnail for document #{object_id} empty.")
+        ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
+    else:
         filename = f'document-{document.uuid}-thumb.png'
         document.save_thumbnail(filename, thumbnail_content)
         logger.debug(f"Thumbnail for document #{object_id} created.")
-    else:
-        ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
 
 
 @app.task(
