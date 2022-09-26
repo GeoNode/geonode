@@ -23,7 +23,6 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.contrib.staticfiles import finders
 from django.utils.functional import classproperty
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -100,18 +99,6 @@ class Document(ResourceBase):
             return str(self.id)
         else:
             return f'{self.title} ({self.id})'
-
-    def find_placeholder(self):
-        placeholder = 'documents/{0}-placeholder.png'
-        if finders.find(placeholder.format(self.extension), False):
-            return finders.find(placeholder.format(self.extension), False)
-        elif self.is_audio:
-            return finders.find(placeholder.format('audio'), False)
-        elif self.is_image:
-            return finders.find(placeholder.format('image'), False)
-        elif self.is_video:
-            return finders.find(placeholder.format('video'), False)
-        return finders.find(placeholder.format('generic'), False)
 
     @property
     def href(self):
