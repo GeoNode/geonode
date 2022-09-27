@@ -85,7 +85,7 @@ djangorestframework-guardian==0.3.0
 drf-extensions==0.7.0
 drf-writable-nested==0.6.3
 drf-spectacular==0.17.2
-dynamic-rest==2.0.0
+dynamic-rest==2.1.2
 Markdown==3.3.4
 
 pinax-notifications==6.0.0
