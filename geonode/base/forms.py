@@ -484,7 +484,9 @@ class ResourceBaseForm(TranslationModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.fields['regions'].choices = get_tree_data()
-
+        self.can_change_perms = self.user.has_perm(
+            'change_resourcebase_permissions', self.instance.get_self_resource()
+        ) or self.user.is_superuser
         if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
 
@@ -500,6 +502,9 @@ class ResourceBaseForm(TranslationModelForm):
                         'data-placement': 'right',
                         'data-container': 'body',
                         'data-html': 'true'})
+
+            if field in ['poc', 'owner'] and not self.can_change_perms:
+                self.fields[field].disabled = True
 
     def disable_keywords_widget_for_non_superuser(self, user):
         if settings.FREETEXT_KEYWORDS_READONLY and not user.is_superuser:
