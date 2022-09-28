@@ -3,7 +3,7 @@ Pillow==9.0.1
 lxml==4.9.1
 defusedxml==0.7.1
 psycopg2==2.8.6
-Django==2.2.25
+Django==2.2.28
 
 # Other
 amqp>=5.0.9,<6.0.0
@@ -36,7 +36,7 @@ smart_open==5.2.1
 django-allauth==0.47.0
 django-appconf==1.0.4
 django-celery-beat==2.2.1
-django-celery-results==2.2.0
+django-celery-results==2.4.0
 django-filter==2.4.0
 django-imagekit==4.0.2
 django-jsonfield-backport>=1.0.2
@@ -49,7 +49,7 @@ django-guardian<2.4.1
 django-downloadview==2.1.1
 django-polymorphic==3.0.0
 django-tastypie<0.15.0
-django-tinymce==3.3.0
+django-tinymce==3.4.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
@@ -79,13 +79,13 @@ django-invitations<1.9.4
 django-recaptcha==2.0.6
 
 # REST
-djangorestframework<3.13,>=3.8.2
+djangorestframework<3.14,>=3.12
 djangorestframework-gis==0.17
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.0
 drf-writable-nested==0.6.3
 drf-spectacular==0.17.2
-dynamic-rest==2.0.0
+dynamic-rest==2.1.2
 Markdown==3.3.4
 
 pinax-notifications==6.0.0
@@ -120,7 +120,7 @@ python-memcached<=1.59
 
 # Contribs
 xmltodict<0.12.1
-inflection==0.3.1
+inflection==0.5.1
 jdcal==1.4.1
 mock<5.0.0
 python-dateutil==2.8.1
@@ -157,7 +157,7 @@ pytest-splinter==3.3.1
 pytest-django==4.4.0
 setuptools==65.3.0
 pip==22.2.2
-Twisted==22.4.0rc1
+Twisted==22.4.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
 flaky==3.7.0

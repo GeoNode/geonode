@@ -37,7 +37,7 @@ RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharut
 # Install pip packages
 RUN pip install pip --upgrade \
     && pip install pygdal==$(gdal-config --version).* \
-        flower==0.9.4
+        flower==1.2.0
 
 # Activate "memcached"
 RUN apt install -y memcached
