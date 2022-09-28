@@ -297,7 +297,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     d = Document.objects.get(title='img File Doc')
                     self.assertIsNotNone(d.thumbnail_url)
                     thumb = urlparse(d.thumbnail_url).path
-                    file = Image.open(f"geonode/{thumb}")
+                    file = Image.open(f"geonode{thumb}")
                     self.assertEqual(file.size, (400, 200))
         finally:
             Document.objects.filter(title='img File Doc').delete()
