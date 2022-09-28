@@ -1741,8 +1741,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 url = storage_manager.url(upload_path)
                 try:
                     # Optimize the Thumbnail size and resolution
-                    _default_thumb_size = getattr(
-                        settings, 'THUMBNAIL_SIZE', {'width': 500, 'height': 200})
+                    _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
                     im.thumbnail(
                         (_default_thumb_size['width'], _default_thumb_size['height']),
