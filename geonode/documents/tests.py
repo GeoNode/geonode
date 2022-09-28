@@ -296,8 +296,10 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     self.client.post(reverse('document_upload'), data=data)
                     d = Document.objects.get(title='img File Doc')
                     self.assertIsNotNone(d.thumbnail_url)
-                    thumb = urlparse(d.thumbnail_url).path
-                    file = Image.open(f"geonode{thumb}")
+                    thumb_file = os.path.join(
+                        settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
+                    )
+                    file = Image.open(thumb_file)
                     self.assertEqual(file.size, (400, 200))
         finally:
             Document.objects.filter(title='img File Doc').delete()
