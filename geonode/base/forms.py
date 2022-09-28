@@ -484,9 +484,9 @@ class ResourceBaseForm(TranslationModelForm):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         self.fields['regions'].choices = get_tree_data()
-        self.can_change_perms = self.user and (self.user.has_perm(
+        self.can_change_perms = self.user and self.user.has_perm(
             'change_resourcebase_permissions', self.instance.get_self_resource()
-        ) or self.user.is_superuser)
+        )
         if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
 
