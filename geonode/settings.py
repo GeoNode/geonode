@@ -1997,7 +1997,7 @@ THUMBNAIL_GENERATOR = os.environ.get(
     'THUMBNAIL_GENERATOR', 'geonode.thumbs.thumbnails.create_gs_thumbnail_geonode')
 
 THUMBNAIL_SIZE = {
-    'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 240)),
+    'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 500)),
     'height': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT', 200))
 }
 
