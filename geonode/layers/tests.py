@@ -1877,6 +1877,62 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         expected = {"success": False, "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"]}
         self.assertDictEqual(expected, response.json())
 
+    def test_change_owner_in_metadata(self):
+        try:
+            test_user = get_user_model().objects.create_user(
+                username='non_auth',
+                email="non_auth@geonode.org",
+                password='password')
+            norman = get_user_model().objects.get(username='norman')
+            dataset = Dataset.objects.first()
+            data = {
+                "resource-title": "geoapp_title",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng",
+                'dataset_attribute_set-TOTAL_FORMS': 0,
+                'dataset_attribute_set-INITIAL_FORMS': 0
+            }
+            perm_spec = {
+                "users": {
+                    "non_auth": [
+                        'change_resourcebase_metadata',
+                        'change_resourcebase',
+                    ],
+                    "norman": [
+                        'change_resourcebase_metadata',
+                        'change_resourcebase_permissions'
+                    ],
+                }
+            }
+            self.assertTrue(dataset.set_permissions(perm_spec))
+            self.assertFalse(test_user.has_perm('change_resourcebase_permissions', dataset.get_self_resource()))
+
+            url = reverse("dataset_metadata", args=(dataset.alternate,))
+            # post as non-authorised user
+            self.client.login(username="non_auth", password="password")
+            data["resource-owner"] = test_user.id
+            response = self.client.post(url, data=data)
+            self.assertEqual(response.status_code, 200)
+            self.assertNotEqual(dataset.owner, test_user)
+            # post as admin
+            self.client.login(username="admin", password="admin")
+            response = self.client.post(url, data=data)
+            dataset.refresh_from_db()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(dataset.owner, test_user)
+            # post as an authorised user
+            self.client.login(username="norman", password="norman")
+            self.assertTrue(norman.has_perm('change_resourcebase_permissions', dataset.get_self_resource()))
+            data["resource-owner"] = norman.id
+            response = self.client.post(url, data=data)
+            dataset.refresh_from_db()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(dataset.owner, norman)
+        finally:
+            get_user_model().objects.filter(username='non_auth').delete
+            Dataset.objects.filter(name='dataset_name').delete()
+
     @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
     def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
         self.client.login(username="admin", password="admin")
