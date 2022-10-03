@@ -1723,6 +1723,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # that indexing (or other listeners) are notified
     def save_thumbnail(self, filename, image):
         upload_path = get_unique_upload_path(filename)
+        # force convertion to JPEG output file
+        upload_path = f'{os.path.splitext(upload_path)[0]}.jpg'
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1743,7 +1745,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
-                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
+                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height'])).convert("RGB")
 
                     # Saving the thumb into a temporary directory on file system
                     tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
