@@ -1743,14 +1743,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
-                    im.thumbnail(
-                        (_default_thumb_size['width'], _default_thumb_size['height']),
-                        resample=Image.ANTIALIAS)
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']))
 
                     # Saving the thumb into a temporary directory on file system
                     tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
-                    cover.save(tmp_location, format='PNG')
+                    cover.save(tmp_location, quality="high")
 
                     with open(tmp_location, 'rb+') as img:
                         # Saving the img via storage manager

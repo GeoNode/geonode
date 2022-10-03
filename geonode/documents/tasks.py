@@ -79,7 +79,7 @@ def create_document_thumbnail(self, object_id):
         logger.warning(f"Thumbnail for document #{object_id} empty.")
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
     else:
-        filename = f'document-{document.uuid}-thumb.png'
+        filename = f'document-{document.uuid}-thumb.jpg'
         document.save_thumbnail(filename, thumbnail_content)
         logger.debug(f"Thumbnail for document #{object_id} created.")
 
