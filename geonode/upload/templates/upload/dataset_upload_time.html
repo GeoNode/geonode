@@ -6,7 +6,7 @@
 
 {% block body_class %}data data-list upload{% endblock %}
 
-{% block title %} {% trans "Upload Dataset Step: Time" %} - {{ block.super }} {% endblock %}
+{% block title %} {% trans "Time series configuration" %} - {{ block.super }} {% endblock %}
 
 {% block head %}
 {{ block.super }}
@@ -14,10 +14,19 @@
 
 {% block body %}
 <div class="span7">
-  <h2> {% trans "Inspect data for " %} "{{ dataset_name }}" </h2>
-
+  <h2> {% trans "Do you want to configure" %} {{ dataset_name }} {% trans "as a time series dataset?" %}
+  <span class="help-tip">
+    <p>{% blocktrans %}Toggling this selector allows you to configure (or not) this data as a time series; in this case you will also have to select an attribute
+        to drive the time dimension.
+        <br><br>
+        If GeoNode is not able to parse any of the values for the selected attribute red markers will appear to highlight the problems.
+        <br><br>
+        More information is provided at the bottom of the page in the "Additional Help" sections.
+        {% endblocktrans %}
+    </p>
+  </span>
+</h2>
   <form method="POST" id="timeForm" role="form" class="form-horizontal">
-
         {% csrf_token %}
 
         <div class="row">
@@ -25,20 +34,11 @@
             <div class="well inline-headers">
               <h4>{% trans "Configure as Time-Series" %}</h4>
               <input type="checkbox" id="time-series-toggle-choice" data-toggle="toggle">
-              <span class="help-tip">
-                  <p>{% blocktrans %}Toggling this selector allows you to configure (or not) this data as a time series; in this case you will also have to select an attribute
-                      to drive the time dimension.
-                      <br><br>
-                      If GeoNode is not able to parse any of the values for the selected attribute red markers will appear to highlight the problems.
-                      <br><br>
-                      More information is provided at the bottom of the page in the "Additional Help" sections.
-                      {% endblocktrans %}</p>
-              </span>
             </div>
           </div>
         </div>
-
-        <div class="form-group" style="padding-left: 45px;display: none;">
+        <div id="settings" style="display:none">
+          <div class="form-group" style="padding-left: 45px;display: none;">
             <!-- div class="radio" title="Map animations will not be enabled" -->
                 <input type="radio" name="timetype" checked="checked" id="notime">
                 <label for="notime">{% trans "No" %}</label>
@@ -59,28 +59,28 @@
                 <label for="convertnumber">{% trans "Yes: by converting a number as Year" %}</label>
             <!-- /div -->
             {% endif %}
-        </div>
+          </div>
             {% if time_form.time_attribute or time_form.text_attribute or time_form.year_attribute %}
             <div class="form-group" style="padding-left: 45px;">
                 <div class="radio" title="{% trans "Convert data to a timestamp using standard date/time representation or a custom format" %}">
                     <table id="bootstrap-text-att-table"
-                           data-toggle="table"
-                           data-toolbar="#toolbar"
-                           data-pagination="true"
-                           data-side-pagination="client"
-                           data-page-list="[5, 10, 20, 50, 100, 200]"
-                           data-search="true"
-                           data-height="500"
-                           data-classes="table table-hover table-condensed"
-                           data-striped="true"
-                           data-hover="true"
-                           data-click-to-select="true"
-                           data-single-select="true"
-                           data-sort-order="asc"
-                           data-show-export="false"
-                           data-show-refresh="true"
-                           data-show-toggle="false"
-                           data-show-columns="false">
+                        data-toggle="table"
+                        data-toolbar="#toolbar"
+                        data-pagination="true"
+                        data-side-pagination="client"
+                        data-page-list="[5, 10, 20, 50, 100, 200]"
+                        data-search="true"
+                        data-height="500"
+                        data-classes="table table-hover table-condensed"
+                        data-striped="true"
+                        data-hover="true"
+                        data-click-to-select="true"
+                        data-single-select="true"
+                        data-sort-order="asc"
+                        data-show-export="false"
+                        data-show-refresh="true"
+                        data-show-toggle="false"
+                        data-show-columns="false">
                         <thead>
                         <tr>
                             {% for att in dataset_attributes %}
@@ -116,154 +116,156 @@
                 </div>
             </div>
             {% endif %}
+          <div id="upload-status"></div>
 
-            <a href="{% dataset_upload_url %}" class="btn btn-primary pull-left">{% trans "Cancel" %}</a> &nbsp;
-            <button id='next' class="btn btn-default button-tip" type="submit" value="{% trans 'Next' %}"> Next
-                <i id="next-spinner" class="fa fa-spinner fa-spin hide"></i>
-                <p id="next-tooltip" style="height: 150px;">{% trans "Start Importer" %}</p>
-            </button>
-            <div id="upload-status"></div>
-
-        <div class="panel-group" id="accordion">
+          <div class="panel-group" id="accordion">
             <div class="faqHeader"><h5>{% trans "Advanced Options" %}</h5></div>
 
-            <div class="panel panel-default">
-                {% if time_form.text_attribute %}
-                <div class="panel-heading">
-                    <h4 class="panel-title" style="font-size:16px">
-                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_date_format">{% trans "Date Format" %}</a>
-                    </h4>
-                </div>
-                <div id="collapse_id_date_format" class="panel-collapse collapse">
-                    <div class="panel-body formSection left">
-                        <div class="form-group" style="padding-left: 45px;">
-                            <label for="format_select">{% trans "Text Attribute Date Format" %}  :</label>
-                            {{ time_form.text_attribute_format }}
-                            <select id="format_select">
-                                <option selected="true" value="0">{% trans "Best Guess" %}</option>
-                                <option value="1">{% trans "Custom" %}</option>
-                            </select>
-                        </div>
+                <div class="panel panel-default">
+                    {% if time_form.text_attribute %}
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="font-size:16px">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_date_format">{% trans "Date Format" %}</a>
+                        </h4>
                     </div>
-                </div>
-                {% endif %}
-
-                <div class="panel-heading">
-                    <h4 class="panel-title" style="font-size:16px">
-                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_end_time">{% trans "Optional End-Time attribute" %}</a>
-                    </h4>
-                </div>
-                <div id="collapse_id_end_time" class="panel-collapse collapse">
-                    <div class="panel-body formSection left">
-                        {% if time_form.time_attribute %}
-                        <div class="form-group" style="padding-left: 45px;">
-                            <div class="radio" title="{% trans "Use an existing timestamp attribute in the data" %}">
-                                <input type="radio" name="end_timetype" id="end_existing">
-                                <label for="end_existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.end_time_attribute }}
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% if time_form.text_attribute %}
-                        <div class="form-group" style="padding-left: 45px;">
-                            <div class="radio" title="Convert text in the data to a timestamp using standard date/time representation or a custom format">
-                                <input type="radio" name="end_timetype" id="end_textattribute">
-                                <label for="end_textattribute">{% trans "Convert Text Attribute" %}  :</label>{{ time_form.end_text_attribute }}
-                                <br/>
-                                <label for="end_format_select">{% trans "Date Format" %}  :</label>
-                                {{ time_form.end_text_attribute_format }}
-                                <select id="end_format_select">
+                    <div id="collapse_id_date_format" class="panel-collapse collapse">
+                        <div class="panel-body formSection left">
+                            <div class="form-group" style="padding-left: 45px;">
+                                <label for="format_select">{% trans "Text Attribute Date Format" %}  :</label>
+                                {{ time_form.text_attribute_format }}
+                                <select id="format_select">
                                     <option selected="true" value="0">{% trans "Best Guess" %}</option>
                                     <option value="1">{% trans "Custom" %}</option>
                                 </select>
                             </div>
                         </div>
-                        {% endif %}
-                        {% if time_form.year_attribute %}
-                        <div class="form-group" style="padding-left: 45px;">
-                            <div class="radio" title="{% trans "Convert a number field into a year" %}">
-                                <input type="radio" name="end_timetype" id="end_convertnumber">
-                                <label for="end_convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.end_year_attribute }}
+                    </div>
+                    {% endif %}
+
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="font-size:16px">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_end_time">{% trans "Optional End-Time attribute" %}</a>
+                        </h4>
+                    </div>
+                    <div id="collapse_id_end_time" class="panel-collapse collapse">
+                        <div class="panel-body formSection left">
+                            {% if time_form.time_attribute %}
+                            <div class="form-group" style="padding-left: 45px;">
+                                <div class="radio" title="{% trans "Use an existing timestamp attribute in the data" %}">
+                                    <input type="radio" name="end_timetype" id="end_existing">
+                                    <label for="end_existing">{% trans "Existing Time Attribute" %}  :</label>{{ time_form.end_time_attribute }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if time_form.text_attribute %}
+                            <div class="form-group" style="padding-left: 45px;">
+                                <div class="radio" title="Convert text in the data to a timestamp using standard date/time representation or a custom format">
+                                    <input type="radio" name="end_timetype" id="end_textattribute">
+                                    <label for="end_textattribute">{% trans "Convert Text Attribute" %}  :</label>{{ time_form.end_text_attribute }}
+                                    <br/>
+                                    <label for="end_format_select">{% trans "Date Format" %}  :</label>
+                                    {{ time_form.end_text_attribute_format }}
+                                    <select id="end_format_select">
+                                        <option selected="true" value="0">{% trans "Best Guess" %}</option>
+                                        <option value="1">{% trans "Custom" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if time_form.year_attribute %}
+                            <div class="form-group" style="padding-left: 45px;">
+                                <div class="radio" title="{% trans "Convert a number field into a year" %}">
+                                    <input type="radio" name="end_timetype" id="end_convertnumber">
+                                    <label for="end_convertnumber">{% trans "Convert Number (As Year)" %}  :</label>{{ time_form.end_year_attribute }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="font-size:16px">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_presentation">{% trans "Time attribute Presentation" %}</a>
+                        </h4>
+                    </div>
+                    <div id="collapse_id_presentation" class="panel-collapse collapse">
+                        <div id="presentation" class="panel-body formSection left">
+                            <div class="form-group" style="padding-left: 45px;">
+                                <div class="radio">
+                                    <input id="LIST" type='radio' value='LIST' checked='checked' name='presentation_strategy'/>
+                                    <label for="LIST"><strong>{% trans "List" %}</strong> {% trans "of all the distinct time values" %}</label>
+                                </div>
+                                <div class="radio">
+                                    <input id="DISCRETE_INTERVAL" type='radio' value='DISCRETE_INTERVAL' name='presentation_strategy'/>
+                                    <label for="DISCRETE_INTERVAL"><strong>{% trans "Intervals" %}</strong> {% trans "defined by the resolution" %}</label>
+                                </div>
+                                <div class="radio">
+                                    <input id="CONTINUOUS_INTERVAL" type='radio' value='CONTINUOUS_INTERVAL' name='presentation_strategy'/>
+                                    <label for="CONTINUOUS_INTERVAL"><strong>{% trans "Continuous Intervals" %}</strong> {% trans "for data that is frequently updated, resolution describes the frequency of updates" %}</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="padding-left: 45px;">
+                                <div id="precision" style="display:none">
+                                    <p><strong>{% trans "Resolution of time attribute" %}</strong>: <input type="text" name="precision_value" size="3"/>
+                                    {{ time_form.precision_step }}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        {% endif %}
                     </div>
-                </div>
 
-                <div class="panel-heading">
-                    <h4 class="panel-title" style="font-size:16px">
-                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_presentation">{% trans "Time attribute Presentation" %}</a>
-                    </h4>
-                </div>
-                <div id="collapse_id_presentation" class="panel-collapse collapse">
-                    <div id="presentation" class="panel-body formSection left">
-                        <div class="form-group" style="padding-left: 45px;">
-                            <div class="radio">
-                                <input id="LIST" type='radio' value='LIST' checked='checked' name='presentation_strategy'/>
-                                <label for="LIST"><strong>{% trans "List" %}</strong> {% trans "of all the distinct time values" %}</label>
-                            </div>
-                            <div class="radio">
-                                <input id="DISCRETE_INTERVAL" type='radio' value='DISCRETE_INTERVAL' name='presentation_strategy'/>
-                                <label for="DISCRETE_INTERVAL"><strong>{% trans "Intervals" %}</strong> {% trans "defined by the resolution" %}</label>
-                            </div>
-                            <div class="radio">
-                                <input id="CONTINUOUS_INTERVAL" type='radio' value='CONTINUOUS_INTERVAL' name='presentation_strategy'/>
-                                <label for="CONTINUOUS_INTERVAL"><strong>{% trans "Continuous Intervals" %}</strong> {% trans "for data that is frequently updated, resolution describes the frequency of updates" %}</label>
-                            </div>
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="font-size:16px">
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_help">{% trans "Additional Help" %}</a>
+                        </h4>
+                    </div>
+                    <div id="collapse_id_help" class="panel-collapse collapse">
+                        <div id="timehelp" class="panel-body">
+                            <h4>{% trans "Enabling Time" %}</h4>
+                            <p>{% blocktrans %}A dataset can support one or two time attributes. If a single
+                            attribute is used, the dataset is considered to contain data that is valid at single points in time. If two
+                            attributes are used, the second attribute represents the end of a valid period  hence the dataset is considered
+                            to contain data that is valid at certain periods in time.{% endblocktrans %}</p>
+                            <h4>{% trans "Selecting an Attribute" %}</h4>
+                            <p>{% trans "A time attribute can be" %}:</p>
+                            <ul>
+                                <li>{% trans "An existing date" %}</li>
+                                <li>{% trans "Text that can be converted to a timestamp" %}</li>
+                                <li>{% trans "A number representing a year" %}</li>
+                            </ul>
+                            <p>
+                            {% blocktrans %}
+                            For text attributes, one can specify a custom format (as part of the "Advanced Options") or use the 'best guess' approach which will try to
+                            automatically translate well-known recognized patterns into valid times.
+                            {% endblocktrans %}
+                            </p>
+                            {% trans "The 'best guess' will handle date and optional time variants of" %} <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.
+                            {% trans "In terms of the formatting flags noted above, these are" %}:
+                            <pre>
+                                yyyy-MM-dd'T'HH:mm:ss.SSS'Z' --> 2017-12-05T12:00:30.001Z
+                                yyyy-MM-dd'T'HH:mm:sss'Z' --> 2017-12-05T12:00:030Z
+                                yyyy-MM-dd'T'HH:mm:ss'Z' --> 2017-12-05T12:00:30Z
+                                yyyy-MM-dd'T'HH:mm'Z' --> 2017-12-05T12:00Z
+                                yyyy-MM-dd'T'HH'Z' --> 2017-12-05T12Z
+                                yyyy-MM-dd --> 2017-12-05
+                                yyyy-MM --> 2017-12
+                                yyyy --> 2017
+                            </pre>
                         </div>
-
-                        <div class="form-group" style="padding-left: 45px;">
-                            <div id="precision" style="display:none">
-                                <p><strong>{% trans "Resolution of time attribute" %}</strong>: <input type="text" name="precision_value" size="3"/>
-                                {{ time_form.precision_step }}
-                                </p>
-                            </div>
-                        </div>
                     </div>
-                </div>
 
-                <div class="panel-heading">
-                    <h4 class="panel-title" style="font-size:16px">
-                        <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_id_help">{% trans "Additional Help" %}</a>
-                    </h4>
                 </div>
-                <div id="collapse_id_help" class="panel-collapse collapse">
-                    <div id="timehelp" class="panel-body">
-                        <h4>{% trans "Enabling Time" %}</h4>
-                        <p>{% blocktrans %}A dataset can support one or two time attributes. If a single
-                        attribute is used, the dataset is considered to contain data that is valid at single points in time. If two
-                        attributes are used, the second attribute represents the end of a valid period  hence the dataset is considered
-                        to contain data that is valid at certain periods in time.{% endblocktrans %}</p>
-                        <h4>{% trans "Selecting an Attribute" %}</h4>
-                        <p>{% trans "A time attribute can be" %}:</p>
-                        <ul>
-                            <li>{% trans "An existing date" %}</li>
-                            <li>{% trans "Text that can be converted to a timestamp" %}</li>
-                            <li>{% trans "A number representing a year" %}</li>
-                        </ul>
-                        <p>
-                        {% blocktrans %}
-                        For text attributes, one can specify a custom format (as part of the "Advanced Options") or use the 'best guess' approach which will try to
-                        automatically translate well-known recognized patterns into valid times.
-                        {% endblocktrans %}
-                        </p>
-                        {% trans "The 'best guess' will handle date and optional time variants of" %} <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.
-                        {% trans "In terms of the formatting flags noted above, these are" %}:
-                        <pre>
-    yyyy-MM-dd'T'HH:mm:ss.SSS'Z' --> 2017-12-05T12:00:30.001Z
-    yyyy-MM-dd'T'HH:mm:sss'Z' --> 2017-12-05T12:00:030Z
-    yyyy-MM-dd'T'HH:mm:ss'Z' --> 2017-12-05T12:00:30Z
-    yyyy-MM-dd'T'HH:mm'Z' --> 2017-12-05T12:00Z
-    yyyy-MM-dd'T'HH'Z' --> 2017-12-05T12Z
-    yyyy-MM-dd --> 2017-12-05
-    yyyy-MM --> 2017-12
-    yyyy --> 2017
-                        </pre>
-                    </div>
-                </div>
-
-            </div>
+          </div>
         </div>
   </form>
+  <div style="margin-left:75%">
+    <a href="{% dataset_upload_url %}" class="btn btn-primary">{% trans "Cancel" %}</a> &nbsp;
+    <button id='next' class="btn btn-default button-tip" type="submit" value="{% trans 'Next' %}"> Next
+      <i id="next-spinner" class="fa fa-spinner fa-spin hide"></i>
+      <p id="next-tooltip" style="height: 150px;">{% trans "Start Importer" %}</p>
+    </button>
+  </div>
 </div>
 
 <!-- Modal -->
