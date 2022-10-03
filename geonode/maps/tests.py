@@ -710,7 +710,7 @@ class TestMapForm(GeoNodeBaseTestSupport):
         self.assertIn(expected, response.json()['errors'][0])
 
     def test_resource_form_is_valid_extra_metadata(self):
-        form = self.sut(data={
+        form = self.sut(user=self.user, data={
             "owner": self.map.owner.id,
             "title": "map_title",
             "date": "2022-01-24 16:38 pm",

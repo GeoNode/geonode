@@ -136,7 +136,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             "date_type": "creation",
             "language": "eng",
             "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
-        })
+        }, user=self.user)
         self.assertTrue(form.is_valid())
 
     def test_geoapp_category_is_correctly_assigned_in_metadata_upload(self):
