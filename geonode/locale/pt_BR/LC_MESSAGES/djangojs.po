@@ -25,13 +25,14 @@
 # Giovani Fronza <giovanifronza@gmail.com>, 2016
 # Luiz Fernando Barbosa Vital <luiz.vital@znc.com.br>, 2015
 # Pedro Romildo da Costa <p2pdao@gmail.com>, 2015
+# Edson Flavio de Souza <edson.flavio@gmail.com>, 2022
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-08 09:03+0300\n"
-"PO-Revision-Date: 2016-08-23 11:58+0000\n"
-"Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
+"PO-Revision-Date: 2022-10-03 11:09-0300\n"
+"Last-Translator: Edson Flavio de Souza <edson.flavio@ufpr.br>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/geonode/geonode/"
 "language/pt_BR/)\n"
 "Language: pt_BR\n"
@@ -39,9 +40,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.1.1\n"
 
 msgid "STORE_UPDATED"
-msgstr ""
+msgstr "STORED_UPATED"
 
 #, javascript-format
 msgid "Missing a %s file, which is required"
@@ -51,26 +53,22 @@ msgid "ESRI Shapefile"
 msgstr "Shapefile da ESRI"
 
 msgid "ASCII Text File"
-msgstr ""
+msgstr "Arquivo Texto ASCII"
 
 msgid "GeoTIFF"
 msgstr "GeoTIFF"
 
 msgid "Comma Separated Value"
-msgstr "CSV"
+msgstr "CSV - Valores Separados por Vírgulas"
 
 msgid "Google Earth KML"
 msgstr "KML do Google Earth"
 
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KML with a GroundOverlay"
-msgstr "KML do Google Earth"
+msgstr "Google Earth KML com um Overlay de Fundo"
 
-#, fuzzy
-#| msgid "Google Earth KML"
 msgid "Google Earth KMZ"
-msgstr "KML do Google Earth"
+msgstr "KMZ do Google Earth"
 
 msgid "GeoJSON"
 msgstr "GeoJSON"
@@ -85,135 +83,159 @@ msgid "National Imagery Transmission Format"
 msgstr "NITFS (National Imagery Transmission Format)"
 
 msgid "Controlled Image Base-1 Meter"
-msgstr ""
+msgstr "Controlled Image Base-1 Meter"
 
 msgid "Controlled Image Base-5 Meter"
-msgstr ""
+msgstr "Controlled Image Base-5 Meter"
 
 msgid "Controlled Image Base-10 Meter"
-msgstr ""
+msgstr "Controlled Image Base-10 Meter"
 
 msgid "CADRG-Global Navigation Chart"
-msgstr ""
+msgstr "CADRG-Global Navigation Chart"
 
 msgid "CADRG-Jet Navigation Chart"
-msgstr ""
+msgstr "CADRG-Jet Navigation Chart"
 
 msgid "CADRG-Operational Navigation Chart"
-msgstr ""
+msgstr "CADRG-Operational Navigation Chart"
 
 msgid "CADRG-Tactical Pilotage Chart"
-msgstr ""
+msgstr "CADRG-Tactical Pilotage Chart"
 
 msgid "CADRG-Joint Operations Graphic"
-msgstr ""
+msgstr "CADRG-Joint Operations Graphic"
 
 msgid "CADRG-Topographic Line Map 100K"
-msgstr ""
+msgstr "CADRG-Topographic Line Map 100K"
 
 msgid "CADRG-Topographic Line Map 50K"
-msgstr ""
+msgstr "CADRG-Topographic Line Map 50K"
 
 msgid "JPEG2000"
 msgstr "JPEG2000"
 
 msgid "MrSID-Multi-resolution Seamless Image Database"
-msgstr ""
+msgstr "MrSID-Multi-resolution Seamless Image Database"
 
-#, fuzzy
-#| msgid "Metadata Links:"
 msgid "XML Metadata File"
-msgstr "Links de metadados:"
+msgstr "XML do arquivo de Metadados"
 
 msgid "Style Layer Descriptor"
-msgstr ""
+msgstr "Descritor de Estilo da Camada"
 
-#, fuzzy
-#| msgid "JPEG2000"
 msgid "JPEG"
 msgstr "JPEG2000"
 
 msgid "PNG"
-msgstr ""
+msgstr "PNG"
 
-#, fuzzy
-#| msgid "GeoTIFF"
 msgid "GIF"
-msgstr "GeoTIFF"
+msgstr "GIF"
 
-#, fuzzy
-#| msgid "Unexpected Error"
 msgid "Unexpected error!"
-msgstr "Erro inesperado"
+msgstr "Erro inesperado!"
 
 msgid ""
 " - 400 Bad Request. Server cannot or will not process the request due to "
 "something that is perceived to be a client error (e.g., malformed request "
 "syntax, invalid request message framing, or deceptive request routing)."
 msgstr ""
+" - 400 Requisição Inválida. O servidor não pode ou não processará a "
+"solicitação devido a algo que é percebido como um erro do cliente (por "
+"exemplo, sintaxe de solicitação malformada, enquadramento de mensagem de "
+"solicitação inválida ou roteamento de solicitação enganoso)."
 
 msgid ""
 " - 401 Unauthorized. Request was not sent with the proper authentication "
 "credentials."
 msgstr ""
+" - 401 Não autorizado. A solicitação não foi enviada com as credenciais de "
+"autenticação adequadas."
 
 msgid ""
 " - 403 Forbidden. This is generally related to permission rules on your "
 "server. Contact the system administrator for more information regarding this "
 "error message."
 msgstr ""
+" - 403 Proibido. Isso geralmente está relacionado às regras de permissão em "
+"seu servidor. Entre em contato com o administrador do sistema para obter "
+"mais informações sobre essa mensagem de erro."
 
 msgid ""
 " - 404 Not Found. Origin server was unable or unwilling to find the resource "
 "requested."
 msgstr ""
+" - 404 Não encontrado. O servidor de origem não conseguiu ou não quis "
+"encontrar o recurso solicitado."
 
 msgid ""
 " - 405 Method Not Allowed. Origin server is aware of the requested resource, "
 "but the request method used is not supported."
 msgstr ""
+" - 405 Método não permitido. O servidor de origem está ciente do recurso "
+"solicitado, mas o método de solicitação usado não é suportado."
 
 msgid ""
 " - 406 Not Acceptable. Resource is not available at the origin that adheres "
 "to negotiation headers that were  set prior (e.g. via 'Accept-Charset' and "
 "'Accept-Language' headers)."
 msgstr ""
+" - 406 Não Aceitável. O recurso não está disponível na origem que adere aos "
+"cabeçalhos de negociação definidos anteriormente (por exemplo, por meio dos "
+"cabeçalhos 'Accept-Charset' e 'Accept-Language')."
 
 msgid ""
 " - 407 Authentication Required. The client did not send the required "
 "authentication with the request."
 msgstr ""
+" - 407 Autenticação Necessária. O cliente não enviou a autenticação "
+"necessária com a solicitação."
 
 msgid ""
 " - 408 Request Timeout. The origin server did not receive the complete "
 "request in what it considers a reasonable time."
 msgstr ""
+" - 408 Tempo limite da solicitação. O servidor de origem não recebeu a "
+"solicitação completa no que considera um tempo razoável."
 
 msgid ""
 " - 409 Conflict. The request did not complete because of a conflict with the "
 "current state of the resource. Typically happens on a PUT request where "
 "multiple clients are attempting to edit the same resource."
 msgstr ""
+" - 409 Conflito. A solicitação não foi concluída devido a um conflito com o "
+"estado atual do recurso. Normalmente acontece em uma solicitação PUT em que "
+"vários clientes estão tentando editar o mesmo recurso."
 
 msgid ""
 " - 410 Gone. The resource requested is permanently missing at the origin."
 msgstr ""
+" - 410 Desaparecido. O recurso solicitado está permanentemente ausente na "
+"origem."
 
 msgid ""
 " - 411 Length Required. Client did not define the 'Content-Length' of the "
 "request body in the headers and this is required to obtain the resource."
 msgstr ""
+" - 411 Comprimento Necessário. O cliente não definiu o 'Content-Length' do "
+"corpo da solicitação nos cabeçalhos e isso é necessário para obter o recurso."
 
 msgid ""
 " - 412 Precondition Failed. Server denies the request because the resource "
 "failed to meet the conditions specified by the client."
 msgstr ""
+" - 412 Falha na pré-condição. O servidor nega a solicitação porque o recurso "
+"não atendeu às condições especificadas pelo cliente."
 
 msgid ""
 " - 413 Payload Too Large. Refusal from the server to process the request "
 "because the payload sent from the client is larger than the server wished to "
 "accept. Server has the optional to close the connection."
 msgstr ""
+" - 413 Conteúdo Muito Grande. Recusa do servidor em processar a solicitação "
+"porque o conteúdo útil enviado do cliente é maior do que o servidor desejava "
+"aceitar. O servidor opcionalmente pode fechar a conexão."
 
 msgid ""
 " - 414 URI Too Long. Refusal from the server that the URI was too long to be "
@@ -221,6 +243,10 @@ msgid ""
 "unusually long URI after a POST, this could be seen as a security risk and a "
 "414 gets generated."
 msgstr ""
+" - 414 URI muito longo. Recusa do servidor porque o URI era muito longo para "
+"ser processado. Por exemplo, se um cliente está tentando uma solicitação GET "
+"com um URI incomumente longo após um POST, isso pode ser visto como um risco "
+"de segurança e um código 414 é gerado."
 
 msgid ""
 " - 415 Unsupported Media Type. Refusal from the server to process the format "
@@ -228,22 +254,34 @@ msgid ""
 "look at the 'Content-Type' or 'Content-Encoding' headers sent in the "
 "client’s request."
 msgstr ""
+" - 415 Tipo de Mídia Não Suportado. Recusa do servidor em processar o "
+"formato do conteúdo enviado. Uma maneira de identificar e corrigir esse "
+"problema é examinar os cabeçalhos 'Content-Type' ou 'Content-Encoding' "
+"enviados na solicitação do cliente."
 
 msgid ""
 " - 417 Expectation Failed. Failure of server to meet the requirements "
 "specified in the 'Expect' header of the client’s request."
 msgstr ""
+" - 417 Expectativa falhou. Falha do servidor em atender aos requisitos "
+"especificados no cabeçalho 'Esperar' da solicitação do cliente."
 
 msgid ""
 " - 429 Too Many Requests. Client has sent too many requests in the specified "
 "amount of time according to the server."
 msgstr ""
+" - 429 Excesso de Requisições. O cliente enviou muitas solicitações na "
+"quantidade de tempo especificada de acordo com o servidor."
 
 msgid ""
 " - 499 Client Close Request. Nginx specific response code to indicate when "
 "the connection has been closed by the client while the server is still "
 "processing its request, making server unable to send a status code back."
 msgstr ""
+" - 499 Solicitação de fechamento pelo cliente. Código de resposta específico "
+"do Nginx para indicar quando a conexão foi fechada pelo cliente enquanto o "
+"servidor ainda está processando sua solicitação, tornando o servidor incapaz "
+"de enviar um código de status de volta."
 
 msgid ""
 " - 500 Internal Server Error. This error indicates that the server has "
@@ -251,6 +289,10 @@ msgid ""
 "request cannot be fulfilled due to the application being configured "
 "incorrectly on the server."
 msgstr ""
+" - 500 Erro interno do servidor. Este erro indica que o servidor encontrou "
+"uma condição inesperada. Isso geralmente ocorre quando uma solicitação de "
+"aplicativo não pode ser atendida porque o aplicativo está configurado "
+"incorretamente no servidor."
 
 msgid ""
 " - 501 Not Implemented. This error indicates that the HTTP method sent by "
@@ -258,12 +300,19 @@ msgid ""
 "server being out of date. It is a very rare error and generally requires "
 "that the web server be updated."
 msgstr ""
+" - 501 Não implementado. Este erro indica que o método HTTP enviado pelo "
+"cliente não é suportado pelo servidor. Isso geralmente é causado pelo "
+"servidor quando está desatualizado. É um erro muito raro e geralmente requer "
+"que o servidor web seja atualizado."
 
 msgid ""
 " - 502 Bad Gateway. This error is usually due to improperly configured proxy "
 "servers. The first step in resolving the issue is to clear the client's "
 "cache."
 msgstr ""
+" - 502 Bad Gateway. Esse erro geralmente ocorre devido a servidores proxy "
+"configurados incorretamente. A primeira etapa para resolver o problema é "
+"limpar o cache do cliente."
 
 msgid ""
 " - 503 Service Unavailable. This error occurs when the server is unable to "
@@ -271,12 +320,19 @@ msgid ""
 "temporarily closed for maintenance. The error indicates that the server will "
 "only temporarily be down."
 msgstr ""
+" - 503 Serviço Indisponível. Este erro ocorre quando o servidor não consegue "
+"lidar com solicitações devido a uma sobrecarga temporária ou porque o "
+"servidor está temporariamente fechado para manutenção. O erro indica que o "
+"servidor ficará inativo apenas temporariamente."
 
 msgid ""
 " - 504 Gateway Timeout. GeoNode lost the connection with GeoServer or DB due "
 "to a connection timeout. Consider using the management commands to import "
 "data!"
 msgstr ""
+" - 504 Tempo limite do gateway. O GeoNode perdeu a conexão com o GeoServer "
+"ou DB devido a um tempo limite de conexão. Considere usar os comandos de "
+"gerenciamento para importar dados!"
 
 msgid ""
 " - 505 HTTP Version Not Supported. This error occurs when the server refuses "
@@ -285,11 +341,19 @@ msgid ""
 "client computer; for example, if an invalid version number has been "
 "specified."
 msgstr ""
+" - 505 Versão HTTP não suportada. Este erro ocorre quando o servidor se "
+"recusa a oferecer suporte ao protocolo HTTP especificado pelo computador "
+"cliente. Isso pode ser causado porque o protocolo não está sendo "
+"especificado corretamente pelo computador cliente; por exemplo, se um número "
+"de versão inválido foi especificado."
 
 msgid ""
 " - 506 Variant Also Negotiates. This error indicates that the server is not "
 "properly configured. Contact the system administrator to resolve this issue."
 msgstr ""
+" - 506 Variante Também Negocia. Este erro indica que o servidor não está "
+"configurado corretamente. Entre em contato com o administrador do sistema "
+"para resolver esse problema."
 
 msgid ""
 " - 507 Insufficient Storage. This error indicates that the server is out of "
@@ -300,6 +364,14 @@ msgid ""
 "expanded, or it may simply need to be restarted. Contact the system "
 "administrator for more information regarding this error message."
 msgstr ""
+" - 507 Armazenamento Insuficiente. Este erro indica que o servidor está sem "
+"memória livre. É mais provável que isso ocorra quando um aplicativo que está "
+"sendo solicitado não pode alocar os recursos de sistema necessários para "
+"execução. Para resolver o problema, o disco rígido do servidor pode precisar "
+"ser limpo de quaisquer documentos desnecessários para liberar mais espaço no "
+"disco rígido, sua memória pode precisar ser expandida ou pode simplesmente "
+"precisar ser reiniciado. Entre em contato com o administrador do sistema "
+"para obter mais informações sobre essa mensagem de erro."
 
 msgid ""
 " - 509 Bandwidth Limit Exceeded. This error occurs when the bandwidth limit "
@@ -307,56 +379,60 @@ msgid ""
 "issue is to wait until the limit is reset in the following cycle. Consult "
 "the system administrator for information about acquiring more bandwidth."
 msgstr ""
+" - 509 Limite de largura de banda excedido. Este erro ocorre quando o limite "
+"de largura de banda imposto pelo administrador do sistema foi atingido. A "
+"única correção para esse problema é aguardar até que o limite seja "
+"redefinido no ciclo seguinte. Consulte o administrador do sistema para obter "
+"informações sobre como adquirir mais largura de banda."
 
 msgid ""
 " - 510 Not Extended. This error occurs when an extension attached to the "
 "HTTP request is not supported by the web server. To resolve the issue, you "
 "may need to update the server."
 msgstr ""
+" - 510 Não Estendido. Este erro ocorre quando uma extensão anexada à "
+"solicitação HTTP não é suportada pelo servidor web. Para resolver o "
+"problema, talvez seja necessário atualizar o servidor."
 
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "Unknwon"
-msgstr "Mapa desconhecido"
+msgstr "Desconhecido"
 
 msgid ""
 " Error Code. Contact the system administrator for more information regarding "
 "this error message."
 msgstr ""
+" Erro de código. Entre em contato com o administrador do sistema para obter "
+"mais informações sobre essa mensagem de erro."
 
 msgid "Additional info: "
-msgstr ""
+msgstr "Informação adicional: "
 
 msgid "Finalizing"
-msgstr ""
+msgstr "Finalizando"
 
 msgid "Unexpected Error"
 msgstr "Erro inesperado"
 
 msgid "Your "
-msgstr ""
+msgstr "Seu "
 
-#, fuzzy
-#| msgid "Layer Info"
 msgid " Info"
-msgstr "Informações da camada"
+msgstr " Informações da camada"
 
 msgid "Edit Metadata"
 msgstr "Editar metadados"
 
-#, fuzzy
-#| msgid "Edit Metadata"
 msgid "Upload Metadata"
-msgstr "Editar metadados"
+msgstr "Carregar Metadados"
 
 msgid "Upload SLD"
-msgstr ""
+msgstr "Carregar SLD"
 
 msgid "Manage Styles"
 msgstr "Gerenciar estilos"
 
 msgid "Please wait until GeoNode finished configuring it!"
-msgstr ""
+msgstr "Por favor, espere até que o GeoNode termine de configurá-lo!"
 
 msgid "The column %1 was renamed to %2 <br/>"
 msgstr "A coluna %1 foi renomeada para %2 <br/>"
@@ -368,10 +444,10 @@ msgid "You need to specify more information in order to complete your upload"
 msgstr "Você precisa especificar mais informações a fim de completar o upload"
 
 msgid "Files are ready to be ingested!"
-msgstr ""
+msgstr "Os arquivos estão prontos para serem consumidos!"
 
 msgid "A temporal dimension may be added to this Layer."
-msgstr ""
+msgstr "Uma dimensão temporal pode ser adicionada a esta camada."
 
 msgid "Performing GeoServer Config Step"
 msgstr "Realizando passo de configuração do GeoServer"
@@ -380,17 +456,17 @@ msgid ""
 "<br>Please check your network connection. In case of Layer Upload make sure "
 "GeoServer is running and accepting connections."
 msgstr ""
+"<br>Verifique sua conexão de rede. No caso de Carregar Camada (Layer Upload) "
+"certifique-se de que o GeoServer esteja rodando e aceitando conexões."
 
 msgid "<br>"
-msgstr ""
+msgstr "<br>"
 
 msgid "<br>Bad request or URL not found."
-msgstr ""
+msgstr "<br>Solicitação incorreta ou URL não encontrado."
 
-#, fuzzy
-#| msgid "Unknown Map"
 msgid "<br>Unknown."
-msgstr "Mapa desconhecido"
+msgstr "<br>Desconhecido."
 
 msgid "Layer files uploaded, configuring in GeoServer"
 msgstr "Upload de arquivos de camada concluído, em configuração no GeoServer"
@@ -413,55 +489,55 @@ msgstr ""
 "Você está tentando fazer o upload de um conjunto incompleto de arquivos ou "
 "nem todas as opções obrigatórias foram validadas.\n"
 "\n"
-"Verifique se há erros no formulário."
+"Verifique se há erros no formulário!"
 
 #, javascript-format
 msgid "Available %s"
-msgstr "Available %s"
+msgstr "Disponível %s"
 
 #, javascript-format
 msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
-"This is the list of available %s. You may choose some by selecting them in "
-"the box below and then clicking the \"Choose\" arrow between the two boxes."
+"Esta é a lista de %s disponíveis. Você pode escolher alguns selecionando-os "
+"na caixa abaixo e clicando na seta \"Escolher\" entre as duas caixas."
 
 #, javascript-format
 msgid "Type into this box to filter down the list of available %s."
-msgstr "Type into this box to filter down the list of available %s."
+msgstr "Digite nesta caixa para filtrar a lista de %s disponíveis."
 
 msgid "Filter"
 msgstr "Filter"
 
 msgid "Choose all"
-msgstr "Choose all"
+msgstr "Escolher todas"
 
 #, javascript-format
 msgid "Click to choose all %s at once."
-msgstr "Click to choose all %s at once."
+msgstr "Clique para escolher todos os %s de uma vez."
 
 msgid "Choose"
-msgstr "Choose"
+msgstr "Escolher"
 
 #, javascript-format
 msgid "Chosen %s"
-msgstr "Chosen %s"
+msgstr "Escolhido %s"
 
 #, javascript-format
 msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
-"This is the list of chosen %s. You may remove some by selecting them in the "
-"box below and then clicking the \"Remove\" arrow between the two boxes."
+"Esta é a lista de %s escolhidos. Você pode remover alguns selecionando-os na "
+"caixa abaixo e clicando na seta \"Remover\" entre as duas caixas."
 
 msgid "Remove all"
-msgstr "Remove all"
+msgstr "Remover todos"
 
 #, javascript-format
 msgid "Click to remove all chosen %s at once."
-msgstr "Click to remove all chosen %s at once."
+msgstr "Clique para remover todos os %s escolhidos de uma vez."
 
 msgid "%(sel)s of %(cnt)s selected"
 msgid_plural "%(sel)s of %(cnt)s selected"
@@ -472,153 +548,148 @@ msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
 msgstr ""
-"You have unsaved changes on individual editable fields. If you run an "
-"action, your unsaved changes will be lost."
+"Você tem alterações não salvas em campos editáveis individuais. Se você "
+"executar uma ação, suas alterações não salvas serão perdidas."
 
 msgid ""
 "You have selected an action, but you haven't saved your changes to "
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
 msgstr ""
-"You have selected an action, but you haven't saved your changes to "
-"individual fields yet. Please click OK to save. You'll need to re-run the "
-"action."
+"Você selecionou uma ação, mas ainda não salvou suas alterações em campos "
+"individuais. Por favor, clique em OK para salvar. Você precisará executar "
+"novamente a ação."
 
 msgid ""
 "You have selected an action, and you haven't made any changes on individual "
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
 msgstr ""
-"You have selected an action, and you haven't made any changes on individual "
-"fields. You're probably looking for the Go button rather than the Save "
-"button."
+"Você selecionou uma ação e não fez nenhuma alteração em campos individuais. "
+"Você provavelmente está procurando o botão Ir em vez do botão Salvar."
 
 msgid "'"
-msgstr ""
+msgstr "'"
 
 msgid "-1"
-msgstr ""
+msgstr "-1"
 
 msgid "trailingComments"
-msgstr ""
+msgstr "trailingComments"
 
 msgid "leadingComments"
-msgstr ""
+msgstr "leadingComments"
 
-#, fuzzy
-#| msgid "Enter comments here."
 msgid "innerComments"
-msgstr "Insira comentários aqui."
+msgstr "innerComments"
 
 msgid "Multiselect"
-msgstr ""
+msgstr "Seleção Múltipla"
 
-#, fuzzy
-#| msgid "Select"
 msgid "SelectList"
-msgstr "Selecionar"
+msgstr "Selecionar da Lista"
 
 msgid "show:"
-msgstr ""
+msgstr "mostrar:"
 
 msgid "DraftEditor/root"
-msgstr ""
+msgstr "DraftEditor/root"
 
 msgid "DraftEditor/editorContainer"
-msgstr ""
+msgstr "DraftEditor/editorContainer"
 
 msgid "-"
-msgstr ""
+msgstr "-"
 
 msgid "uirevision"
-msgstr ""
+msgstr "uirevision"
 
 msgid "bgcolor"
-msgstr ""
+msgstr "bgcolor"
 
 msgid "bordercolor"
-msgstr ""
+msgstr "bordercolor"
 
 msgid "borderwidth"
-msgstr ""
+msgstr "borderwidth"
 
 msgid "orientation"
-msgstr ""
+msgstr "orientation"
 
 msgid "traceorder"
-msgstr ""
+msgstr "traceorder"
 
 msgid "tracegroupgap"
-msgstr ""
+msgstr "tracegroupgap"
 
 msgid "itemsizing"
-msgstr ""
+msgstr "itemsizing"
 
 msgid "itemclick"
-msgstr ""
+msgstr "itemclick"
 
 msgid "itemdoubleclick"
-msgstr ""
+msgstr "itemdoubleclick"
 
 msgid "x"
-msgstr ""
+msgstr "x"
 
 msgid "xanchor"
-msgstr ""
+msgstr "xanchor"
 
 msgid "y"
-msgstr ""
+msgstr "y"
 
 msgid "yanchor"
-msgstr ""
+msgstr "yanchor"
 
 msgid "valign"
-msgstr ""
+msgstr "valign"
 
 msgid "title.text"
-msgstr ""
+msgstr "title.text"
 
 msgid "title.side"
-msgstr ""
+msgstr "title.side"
 
 msgid "visible"
-msgstr ""
+msgstr "visível"
 
 msgid "thickness"
-msgstr ""
+msgstr "espessura"
 
 msgid "autorange"
-msgstr ""
+msgstr "faixa automática"
 
 msgid "range"
-msgstr ""
+msgstr "faixa"
 
 msgid "bingroup"
-msgstr ""
+msgstr "bingroup"
 
 msgid "Print configuration broken ("
-msgstr ""
+msgstr "Configuração de impressão quebrada ("
 
 msgid "Print configuration not available ("
-msgstr ""
+msgstr "Configuração de impressão não disponível ("
 
 msgid "go"
-msgstr ""
+msgstr "ir"
 
 msgid "goBack"
-msgstr ""
+msgstr "retornar"
 
 msgid "goForward"
-msgstr ""
+msgstr "adiantar"
 
 msgid "Abort"
-msgstr ""
+msgstr "Cancelar"
 
 msgid "As Sibling"
-msgstr ""
+msgstr "Como Irmão"
 
 msgid "As child"
-msgstr ""
+msgstr "Como Filho"
 
 #, fuzzy
 #~| msgid "Now"
