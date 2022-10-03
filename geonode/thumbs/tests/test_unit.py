@@ -128,7 +128,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         dataset_name = thumbnails._generate_thumbnail_name(Dataset.objects.first())
         self.assertIsNotNone(
-            re.match(f"dataset-{self.re_uuid}-thumb.jpg", dataset_name, re.I), "Dataset name should meet a provided pattern"
+            re.match(f"dataset-{self.re_uuid}-thumb.png", dataset_name, re.I), "Dataset name should meet a provided pattern"
         )
 
     def test_get_unique_upload_path(self):
@@ -154,7 +154,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         map_name = thumbnails._generate_thumbnail_name(Map.objects.first())
         self.assertIsNotNone(
-            re.match(f"map-{self.re_uuid}-thumb.jpg", map_name, re.I), "Map name should meet a provided pattern"
+            re.match(f"map-{self.re_uuid}-thumb.png", map_name, re.I), "Map name should meet a provided pattern"
         )
 
     def test_generate_thumbnail_name_document(self):
@@ -168,7 +168,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             ))
         name = thumbnails._generate_thumbnail_name(doc)
         self.assertIsNotNone(
-            re.match(f"document-{self.re_uuid}-thumb.jpg", name, re.I), "Document name should meet a provided pattern"
+            re.match(f"document-{self.re_uuid}-thumb.png", name, re.I), "Document name should meet a provided pattern"
         )
 
     def test_generate_thumbnail_name_geoapp(self):
@@ -184,7 +184,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
         name = thumbnails._generate_thumbnail_name(geo_app)
         self.assertIsNotNone(
-            re.match(f"geoapp-{self.re_uuid}-thumb.jpg", name, re.I), "GeoApp name should meet a provided pattern"
+            re.match(f"geoapp-{self.re_uuid}-thumb.png", name, re.I), "GeoApp name should meet a provided pattern"
         )
 
     def test_datasets_locations_dataset(self):
