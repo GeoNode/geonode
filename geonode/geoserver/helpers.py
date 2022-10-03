@@ -408,9 +408,10 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
             logger.exception(e)
     else:
         try:
+            _sld_format = _extract_style_version_from_sld(sld)
             style = gs_catalog.create_style(
                 saved_dataset.name, sld,
-                overwrite=True, raw=True,
+                overwrite=True, raw=True, style_format=_sld_format,
                 workspace=saved_dataset.workspace)
         except Exception as e:
             logger.exception(e)
