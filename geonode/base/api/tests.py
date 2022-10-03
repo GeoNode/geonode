@@ -2014,7 +2014,7 @@ class BaseApiTests(APITestCase):
             _mck.return_value = False
             response = self.client.put(url, data=data, format="json")
             self.assertEqual(response.status_code, 200)
-            self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
+            self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.jpg", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
             # File upload
             with patch('PIL.Image.open') as _mck:
                 _mck.return_value = test_image
@@ -2024,7 +2024,7 @@ class BaseApiTests(APITestCase):
                 self.assertEqual(Dataset.objects.get(pk=resource.pk).thumbnail_url, None)
                 f = SimpleUploadedFile('test_image.png', BytesIO(test_image.tobytes()).read(), 'image/png')
                 response = self.client.put(url, data={"file": f})
-                self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.png", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
+                self.assertIsNotNone(re.search(f"dataset-{re_uuid}-thumb-{re_uuid}.jpg", Dataset.objects.get(pk=resource.pk).thumbnail_url, re.I))
                 self.assertEqual(response.status_code, 200)
 
     def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):

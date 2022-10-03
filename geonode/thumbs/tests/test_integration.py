@@ -238,7 +238,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
     )
     def test_tile_background_generic_fetch_zoom(self):
 
-        width = 240
+        width = 500
         height = 200
 
         bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
