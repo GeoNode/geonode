@@ -114,12 +114,19 @@ def geoserver_set_style(
         if lock.acquire() is True:
             log_lock.debug(f"geoserver_set_style: Acquired lock {lock_id} for {instance.name}")
             try:
-                sld = open(base_file, "rb").read()
+                sld = None
+                if os.path.exists(base_file):
+                    sld = open(base_file, "rb").read()
+                else:
+                    sld = base_file
+                    base_file = None
+
                 set_dataset_style(
                     instance,
                     instance.alternate,
                     sld,
                     base_file=base_file)
+
             except Exception as e:
                 logger.exception(e)
             finally:
