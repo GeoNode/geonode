@@ -7,15 +7,17 @@
 {% block body_class %}data data-list upload{% endblock %}
 
 {% block title %} {% trans "Time series configuration" %} - {{ block.super }} {% endblock %}
+{% block page_title %}{% trans "Time series configuration" %}{% endblock page_title %}
 
 {% block head %}
 {{ block.super }}
 {% endblock %}
 
 {% block body %}
-<div class="span7">
-  <h2> {% trans "Do you want to configure" %} {{ dataset_name }} {% trans "as a time series dataset?" %}
-  <span class="help-tip">
+<div>
+   <div style="margin-bottom:1rem">
+   <span>{% trans "Date time fields were detected inside" %} "{{ dataset_name }}". {% trans "Do you want to configure it as a time series dataset?" %}</span>
+   <span class="help-tip">
     <p>{% blocktrans %}Toggling this selector allows you to configure (or not) this data as a time series; in this case you will also have to select an attribute
         to drive the time dimension.
         <br><br>
@@ -25,7 +27,7 @@
         {% endblocktrans %}
     </p>
   </span>
-</h2>
+</div>
   <form method="POST" id="timeForm" role="form" class="form-horizontal">
         {% csrf_token %}
 
@@ -260,10 +262,9 @@
         </div>
   </form>
   <div style="margin-left:75%">
-    <a href="{% dataset_upload_url %}" class="btn btn-primary">{% trans "Cancel" %}</a> &nbsp;
-    <button id='next' class="btn btn-default button-tip" type="submit" value="{% trans 'Next' %}"> Next
+    <a href="{% dataset_upload_url %}" class="btn btn-default">{% trans "Cancel" %}</a> &nbsp;
+    <button id='next' class="btn btn-default btn-primary" type="submit" value="{% trans 'Next' %}"> Next
       <i id="next-spinner" class="fa fa-spinner fa-spin hide"></i>
-      <p id="next-tooltip" style="height: 150px;">{% trans "Start Importer" %}</p>
     </button>
   </div>
 </div>
