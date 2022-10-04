@@ -1990,7 +1990,7 @@ SOCIALACCOUNT_PROFILE_EXTRACTORS = {
 }
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
-
+INVITATIONS_CONFIRMATION_URL_NAME = "geonode.invitations:accept-invite"
 
 # Choose thumbnail generator -- this is the default generator
 THUMBNAIL_GENERATOR = os.environ.get(
