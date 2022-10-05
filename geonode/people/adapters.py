@@ -131,8 +131,12 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         user_username(user, safe_username)
 
     def send_invitation_email(self, email_template, email, context):
+        self.send_mail(email_template, email, context)
+
+    def send_mail(self, template_prefix, email, context):
         enh_context = self.enhanced_invitation_context(context)
-        self.send_mail(email_template, email, enh_context)
+        msg = self.render_mail(template_prefix, email, enh_context)
+        msg.send()
 
     def enhanced_invitation_context(self, context):
         user = context.get("inviter") if context.get("inviter") else context.get("user")

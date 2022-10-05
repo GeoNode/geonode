@@ -407,17 +407,12 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
         except Exception as e:
             logger.exception(e)
     else:
-        style = gs_catalog.get_style(saved_dataset.name, workspace=saved_dataset.workspace) or \
-            gs_catalog.get_style(saved_dataset.name)
         try:
-            if not style:
-                style = gs_catalog.create_style(
-                    saved_dataset.name, sld,
-                    overwrite=True, raw=True,
-                    workspace=saved_dataset.workspace)
-            elif sld:
-                style.style_format = _extract_style_version_from_sld(sld)
-                style.update_body(sld)
+            _sld_format = _extract_style_version_from_sld(sld)
+            style = gs_catalog.create_style(
+                saved_dataset.name, sld,
+                overwrite=True, raw=True, style_format=_sld_format,
+                workspace=saved_dataset.workspace)
         except Exception as e:
             logger.exception(e)
 
