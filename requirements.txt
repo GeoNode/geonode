@@ -2,7 +2,7 @@
 Pillow==9.1.1
 lxml==4.9.1
 psycopg2==2.9.3
-Django==3.2.15
+Django==3.2.16
 
 # Other
 amqp==5.1.1
@@ -69,7 +69,7 @@ django-select2==7.10.1
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.5.1
-django-invitations<1.9.4
+django-invitations<2.0.1
 django-recaptcha==3.0.0
 
 # REST
@@ -78,7 +78,7 @@ djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
-drf-spectacular==0.24.1
+drf-spectacular==0.24.2
 dynamic-rest==2.1.2
 Markdown==3.4.1
 
