@@ -62,7 +62,7 @@ class MapViewSet(DynamicModelViewSet):
         ExtentFilter,
         MapPermissionsFilter,
     ]
-    queryset = Map.objects.all().order_by('-last_updated')
+    queryset = Map.objects.all().order_by('-created')
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 
