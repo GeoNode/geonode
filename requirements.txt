@@ -167,5 +167,5 @@ webdriver_manager==3.8.3
 
 # Security and audit
 mistune==2.0.3
-protobuf==4.21.6
+protobuf==4.21.7
 mako==1.2.3
