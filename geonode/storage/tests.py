@@ -591,7 +591,7 @@ class TestDataRetriever(TestCase):
 
         self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
         _files = storage_manager.get_retrieved_paths()
-        self.assertTrue("doc.kml" in _files.get("base_file"))
+        self.assertTrue("doc.kml" in _files.get("base_file"), msg=f"files available: {_files}")
 
     def test_zip_file_should_correctly_recognize_main_extension_with_shp(self):
         # zipping files
