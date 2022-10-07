@@ -19,6 +19,7 @@
 import io
 import os
 import shutil
+from django.test import override_settings
 import gisdata
 from unittest.mock import patch
 
@@ -584,6 +585,17 @@ class TestDataRetriever(TestCase):
         _files = storage_manager.get_retrieved_paths()
         self.assertTrue("example.csv" in _files.get("base_file"))
 
+    @override_settings(SUPPORTED_DATASET_FILE_TYPES=[{
+        "id": "kmz",
+        "label": "kmz",
+        "format": "vector",
+        "ext": ["kmz"]
+    }, {
+        "id": "kml",
+        "label": "kml",
+        "format": "vector",
+        "ext": ["kml"]
+    }])
     def test_zip_file_should_correctly_recognize_main_extension_with_kmz(self):
         # reinitiate the storage manager with the zip file
         storage_manager = self.sut(remote_files={"base_file": os.path.join(f"{self.project_root}", "tests/data/Italy.kmz")})
