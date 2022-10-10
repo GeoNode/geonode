@@ -63,7 +63,7 @@ class DatasetViewSet(DynamicModelViewSet):
         ExtentFilter,
         DatasetPermissionsFilter,
     ]
-    queryset = Dataset.objects.all().order_by("-last_updated")
+    queryset = Dataset.objects.all().order_by('-created')
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 

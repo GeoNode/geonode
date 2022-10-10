@@ -313,7 +313,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, ResourceBasePermissionsFilter, FavoriteFilter
     ]
-    queryset = ResourceBase.objects.all().order_by('-last_updated')
+    queryset = ResourceBase.objects.all().order_by('-created')
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
