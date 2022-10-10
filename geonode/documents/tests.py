@@ -31,6 +31,7 @@ from PIL import Image
 from io import BytesIO
 
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 from django.urls import reverse
 from django.conf import settings
@@ -95,6 +96,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
         create_models('map')
+        self.project_root = os.path.abspath(os.path.dirname(__file__))
         self.imgfile = io.BytesIO(
             b'GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00'
             b'\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;')
@@ -265,6 +267,44 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 302)
         # Remove document
         d.delete()
+
+    def test_non_image_documents_thumbnail(self):
+        self.client.login(username='admin', password='admin')
+        try:
+            with open(os.path.join(f"{self.project_root}", "tests/data/text.txt"), "rb") as f:
+                data = {
+                    'title': "Non img File Doc",
+                    'doc_file': f,
+                    'extension': 'txt'
+                }
+                self.client.post(reverse('document_upload'), data=data)
+            d = Document.objects.get(title='Non img File Doc')
+            self.assertIsNone(d.thumbnail_url)
+        finally:
+            Document.objects.filter(title='Non img File Doc').delete()
+
+    def test_image_documents_thumbnail(self):
+        self.client.login(username='admin', password='admin')
+        try:
+            with open(os.path.join(f"{self.project_root}", "tests/data/img.gif"), "rb") as f:
+                data = {
+                    'title': "img File Doc",
+                    'doc_file': f,
+                    'extension': 'gif',
+                }
+                with self.settings(THUMBNAIL_SIZE={'width': 400, 'height': 200}):
+                    self.client.post(reverse('document_upload'), data=data)
+                    d = Document.objects.get(title='img File Doc')
+                    self.assertIsNotNone(d.thumbnail_url)
+                    thumb_file = os.path.join(
+                        settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
+                    )
+                    file = Image.open(thumb_file)
+                    self.assertEqual(file.size, (400, 200))
+                    # check thumbnail qualty and extention
+                    self.assertEqual(file.format, 'JPEG')
+        finally:
+            Document.objects.filter(title='img File Doc').delete()
 
     def test_upload_document_form_size_limit(self):
         form_data = {

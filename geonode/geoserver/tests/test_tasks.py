@@ -1,7 +1,7 @@
 from unittest.mock import create_autospec, patch
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models
-from geonode.geoserver.tasks import geoserver_create_style
+from geonode.geoserver.tasks import geoserver_create_style, geoserver_set_style
 from geonode.geoserver.signals import geoserver_automatic_default_style_set
 from geonode.layers.models import Dataset
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -54,3 +54,40 @@ class TasksTest(GeoNodeBaseTestSupport):
         geoserver_automatic_default_style_set.connect(handler)
         geoserver_create_style(dataset.id, dataset.name, sld_file=None, tempdir=None)
         handler.assert_called_once_with(signal=geoserver_automatic_default_style_set, sender=dataset, instance=dataset)
+
+    @patch("geonode.geoserver.tasks.set_dataset_style")
+    def test_geoserver_set_style_with_real_file(self, mocked_set_dataset_style):
+        dataset = Dataset.objects.first()
+        sld_file = "geonode/base/fixtures/test_sld.sld"
+        geoserver_set_style(
+            instance_id=dataset.id,
+            base_file=sld_file
+        )
+        mocked_set_dataset_style.assert_called_once()
+
+        args_list = mocked_set_dataset_style.call_args_list[0].args
+        kwargs_list = mocked_set_dataset_style.call_args_list[0].kwargs
+        self.assertEqual(args_list[0].id, dataset.id)
+        self.assertEqual(args_list[1], dataset.alternate)
+        self.assertIsInstance(args_list[2], bytes)
+
+        self.assertDictEqual({"base_file": sld_file}, kwargs_list)
+
+    @patch("geonode.geoserver.tasks.set_dataset_style")
+    def test_geoserver_set_style_with_xml(self, mocked_set_dataset_style):
+        dataset = Dataset.objects.first()
+
+        with open("geonode/base/fixtures/test_sld.sld", 'r+') as _file:
+            geoserver_set_style(
+                instance_id=dataset.id,
+                base_file=_file.read()
+            )
+        mocked_set_dataset_style.assert_called_once()
+
+        args_list = mocked_set_dataset_style.call_args_list[0].args
+        kwargs_list = mocked_set_dataset_style.call_args_list[0].kwargs
+        self.assertEqual(args_list[0].id, dataset.id)
+        self.assertEqual(args_list[1], dataset.alternate)
+        self.assertIsInstance(args_list[2], str)
+
+        self.assertDictEqual({"base_file": None}, kwargs_list)
