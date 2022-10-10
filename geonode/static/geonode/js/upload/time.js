@@ -235,6 +235,7 @@ define(['upload/upload',
 
     $(function () {
         $("#next").on('click', doTime);
+        const settingsForm = document.getElementById("settings");
 
         $("#DISCRETE_INTERVAL,#CONTINUOUS_INTERVAL").on('change',function(ev) {
             $("#precision").show();
@@ -245,7 +246,15 @@ define(['upload/upload',
         });
 
         $('#time-series-toggle-choice').on('change',function(ev) {
+            // show time form and advamced options
+            if (settingsForm.style.display !== "none"){
+                settingsForm.style.display = "none";
+            }
+            else{
+                settingsForm.style.display = "block";
+            }
             if(ev.target.value === 'on' && ev.target.checked) {
+
                 if($('#existing').val()) {
                     $('input:radio[id="existing"]').prop("checked", true);
                     $('#existing').trigger("click");
