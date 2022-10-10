@@ -53,7 +53,7 @@ class DocumentViewSet(DynamicModelViewSet):
         DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
         ExtentFilter, DocumentPermissionsFilter
     ]
-    queryset = Document.objects.all().order_by('-last_updated')
+    queryset = Document.objects.all().order_by('-created')
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 

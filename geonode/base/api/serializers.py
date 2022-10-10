@@ -412,7 +412,7 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                      Q(output_params__output__uuid=_resource.uuid) |
                      Q(geonode_resource=_resource))
                 )
-            ).order_by('-last_updated')
+            ).order_by('-created')
 
             for execution in executions:
                 data.append({
