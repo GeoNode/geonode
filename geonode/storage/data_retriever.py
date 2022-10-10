@@ -202,7 +202,7 @@ class DataRetriever(object):
         the_zip = zipfile.ZipFile(zip_file, allowZip64=True)
         the_zip.extractall(self.temporary_folder)
         available_choices = get_allowed_extensions()
-        not_main_files = ['xml', 'sld', 'zip']
+        not_main_files = ['xml', 'sld', 'zip', 'kmz']
         base_file_choices = [x for x in available_choices if x not in not_main_files]
         for _file in Path(self.temporary_folder).iterdir():
             if any([_file.name.endswith(_ext) for _ext in base_file_choices]):

@@ -13,8 +13,7 @@
 
 {% block body_outer %}
 <div class="page-header">
-  <a href="{% dataset_list_url %}" class="btn btn-primary pull-right">{% trans "Explore Datasets" %}</a>
-  <h2 class="page-title">{% trans "Upload Datasets" %}</h2>
+  <h2 class="page-title">{% block page_title %}{% trans "Upload Datasets" %}{% endblock page_title %}</h2>
 </div>
 <div class="row">
   {% block body %}{% endblock body %}
