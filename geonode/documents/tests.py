@@ -301,6 +301,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     )
                     file = Image.open(thumb_file)
                     self.assertEqual(file.size, (400, 200))
+                    # check thumbnail qualty and extention
+                    self.assertEqual(file.format, 'JPEG')
         finally:
             Document.objects.filter(title='img File Doc').delete()
 
