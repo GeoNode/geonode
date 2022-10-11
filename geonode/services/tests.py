@@ -812,7 +812,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.client.logout()
         response = self.client.get(reverse('register_service'))
         self.assertEqual(response.status_code, 302)
-        url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+        url = 'https://maps.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         # url = "http://fake"
         service_type = enumerations.WMS
         form_data = {
@@ -858,14 +858,14 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
-            'url': 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
+            'url': 'https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
             'type': enumerations.WMS
         }
 
         self.client.login(username='serviceowner', password='somepassword')
 
         # Add the first resource
-        url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+        url = 'https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
         # url = "http://fake"
         service_type = enumerations.WMS
         form_data = {
@@ -911,7 +911,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
             reg_url = reverse('register_service')
             cls.client.get(reg_url)
 
-            url = 'https://demo.geo-solutions.it/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+            url = 'https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
             service_type = enumerations.WMS
             form_data = {
                 'url': url,

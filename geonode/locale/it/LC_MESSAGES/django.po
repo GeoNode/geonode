@@ -33,7 +33,7 @@
 # Antonio <anto.opro@gmail.com>, 2013
 # Paolo Corti <pcorti@gmail.com>, 2013
 # Stefano Menegon <ste.menegon@gmail.com>, 2015
-# Alessio Fabiani <alessio.fabiani@geo-solutions.it>, 2021
+# Alessio Fabiani <alessio.fabiani@geosolutionsgroup.com>, 2021
 msgid ""
 msgstr ""
 "Project-Id-Version: GeoNode\n"

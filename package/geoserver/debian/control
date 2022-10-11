@@ -2,7 +2,7 @@ Source: geoserver-geonode
 Section: science
 Priority: extra
 Build-Depends: debhelper (>= 7.0.50~), unzip
-Maintainer: Alessio Fabiani <alessio.fabiani@geo-solutions.it>
+Maintainer: Alessio Fabiani <alessio.fabiani@geosolutionsgroup.com>
 Homepage: http://geonode.org
 Vcs-Browser: https://github.com/GeoNode/geonode
 Vcs-git: git://github.com/geonode/geonode.git
