@@ -16,9 +16,12 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 import io
+import tempfile
 
 from PIL import Image
+import fitz
 
 from celery.utils.log import get_task_logger
 
@@ -29,6 +32,40 @@ from ..base.models import ResourceBase
 from .models import Document
 
 logger = get_task_logger(__name__)
+
+
+class DocumentRenderer():
+    FILETYPES = ['pdf']
+
+    def __init__(self) -> None:
+        pass
+
+    def supports(self, filename):
+        return self._get_filetype(filename) in self.FILETYPES
+
+    def render(self, filename):
+        content = None
+        if self.supports(filename):
+            filetype = self._get_filetype(filename)
+            output_path = tempfile.mkstemp(suffix=".png")[1]
+            render = getattr(self, f'render_{filetype}')
+            content = render(filename, output_path)
+        return content
+
+    def render_pdf(self, filename, output):
+        try:
+            doc = fitz.open(filename)
+            pix = doc[0].get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
+            return pix.pil_tobytes(format="PNG")
+        except Exception as e:
+            logger.warning(f'Cound not generate thumbnail for {filename}: {e}')
+            return None
+
+    def _get_filetype(self, filname):
+        return os.path.splitext(filname)[1][1:]
+
+
+doc_renderer = DocumentRenderer()
 
 
 @app.task(
@@ -75,6 +112,11 @@ def create_document_thumbnail(self, object_id):
             if image_file is not None:
                 image_file.close()
 
+    elif doc_renderer.supports(document.files[0]):
+        try:
+            thumbnail_content = doc_renderer.render(document.files[0])
+        except Exception as e:
+            print(e)
     if not thumbnail_content:
         logger.warning(f"Thumbnail for document #{object_id} empty.")
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
