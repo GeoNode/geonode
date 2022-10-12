@@ -293,7 +293,7 @@ DUMMY_MAPDATA = {
             },
             {
                 "id": "s2cloudless",
-                "url": "https://maps.geo-solutions.it/geoserver/wms",
+                "url": "https://maps.geosolutionsgroup.com.it/geoserver/wms",
                 "name": "s2cloudless:s2cloudless",
                 "type": "wms",
                 "group": "background",
