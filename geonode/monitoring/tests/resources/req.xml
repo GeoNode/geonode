@@ -21,7 +21,7 @@ Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
 </remoteUserAgent>
 <remoteLat>0.0</remoteLat>
 <remoteLon>0.0</remoteLon>
-<host>demo.geo-solutions.it</host>
+<host>demo.geosolutionsgroup.com</host>
 <internalHost>ks390295.kimsufi.com</internalHost>
 <service>WMS</service>
 <operation>GetMap</operation>
@@ -33,7 +33,7 @@ Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
 <responseContentType>image/png</responseContentType>
 <responseStatus>200</responseStatus>
 <httpReferer>
-http://dev.mapstore2.geo-solutions.it/mapstore/examples/api/?map=Prueba
+http://dev.mapstore2.geosolutionsgroup.com/mapstore/examples/api/?map=Prueba
 </httpReferer>
 <bbox class="org.geotools.geometry.jts.ReferencedEnvelope">
 <minx>-45.00000000000001</minx>

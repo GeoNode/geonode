@@ -17,7 +17,7 @@
   <remoteUserAgent>Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36</remoteUserAgent>
   <remoteLat>0.0</remoteLat>
   <remoteLon>0.0</remoteLon>
-  <host>demo.geo-solutions.it</host>
+  <host>demo.geosolutionsgroup.com</host>
   <internalHost>ks390295.kimsufi.com</internalHost>
   <service>WMS</service>
   <operation>GetMap</operation>
@@ -443,7 +443,7 @@
     <exceptionText/>
   </error>
   <responseStatus>200</responseStatus>
-  <httpReferer>http://mapstore2.geo-solutions.it/mapstore/</httpReferer>
+  <httpReferer>http://mapstore2.geosolutionsgroup.com/mapstore/</httpReferer>
   <bbox class="org.geotools.geometry.jts.ReferencedEnvelope">
     <minx>-56.25000000000001</minx>
     <maxx>-45.00000000000001</maxx>

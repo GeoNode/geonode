@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # A configurable celery command.
-# Luca Pasquali <luca.pasquali@geo-solutions.it>
+# Luca Pasquali <luca.pasquali@geosolutionsgroup.com>
 CELERY_BIN=${CELERY_BIN:-"$(which celery||echo celery)"}
 CELERY_APP=${CELERY_APP:-"geonode.celery_app:app"}
 CELERY__STATE_DB=${CELERY__STATE_DB:-"/mnt/volumes/statics/worker.state"}

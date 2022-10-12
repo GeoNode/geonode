@@ -34,7 +34,7 @@
          "map":1002,
          "name":"s2cloudless:s2cloudless",
          "store":null,
-         "ows_url":"https://maps.geo-solutions.it/geoserver/wms",
+         "ows_url":"https://maps.geosolutionsgroup.com/geoserver/wms",
          "extra_params":{
             "msId":"s2cloudless"
          },
@@ -105,7 +105,7 @@
          "map":1009,
          "name":"s2cloudless:s2cloudless",
          "store":null,
-         "ows_url":"https://maps.geo-solutions.it/geoserver/wms",
+         "ows_url":"https://maps.geosolutionsgroup.com/geoserver/wms",
          "extra_params":{
             "msId":"s2cloudless"
          },
