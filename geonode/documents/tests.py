@@ -286,6 +286,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     def test_image_documents_thumbnail(self):
         self.client.login(username='admin', password='admin')
         try:
+            # test image doc
             with open(os.path.join(f"{self.project_root}", "tests/data/img.gif"), "rb") as f:
                 data = {
                     'title': "img File Doc",
@@ -303,8 +304,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     self.assertEqual(file.size, (400, 200))
                     # check thumbnail qualty and extention
                     self.assertEqual(file.format, 'JPEG')
+            # test pdf doc
+            with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
+                data = {
+                    'title': "Pdf File Doc",
+                    'doc_file': f,
+                    'extension': 'pdf',
+                }
+                self.client.post(reverse('document_upload'), data=data)
+                d = Document.objects.get(title='Pdf File Doc')
+                self.assertIsNotNone(d.thumbnail_url)
+                thumb_file = os.path.join(
+                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
+                )
+                file = Image.open(thumb_file)
+                # check thumbnail qualty and extention
+                self.assertEqual(file.format, 'JPEG')
         finally:
             Document.objects.filter(title='img File Doc').delete()
+            Document.objects.filter(title='Pdf File Doc').delete()
 
     def test_upload_document_form_size_limit(self):
         form_data = {
