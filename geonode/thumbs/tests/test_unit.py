@@ -221,7 +221,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             map=map,
             name="Meteorite_Landings_from_NASA_Open_Data_Portal1",
             current_style="test_style",
-            ows_url="https://maps.geo-solutions.it/geoserver/wms",
+            ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
         ).save()
         locations, bbox = thumbnails._datasets_locations(map)
 
