@@ -28,12 +28,22 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = ("Create thumbnails for documents with an emtpy thumbnail.")
+    help = ("Update documents. For the moment only thumbnails can be updated")
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--updatethumbnails',
+            action='store_true',
+            dest="updatethumbnails",
+            default=False,
+            help="Update the document thumbnails.")
+    
     def handle(self, *args, **options):
-        docs_without_thumbnails = Document.objects.filter(Q(thumbnail_url__exact='') | Q(thumbnail_url__isnull=True))
-        for doc in docs_without_thumbnails:
-            try:
-                create_document_thumbnail(doc.id)
-            except Exception:
-                logger.error(f"[ERROR] Thumbnail for [{doc.name}] couldn't be created")
+        updatethumbnails = options.get('updatethumbnails')
+        for doc in Document.objects.all():
+            if updatethumbnails:
+                if doc.thumbnail_url is None or doc.thumbnail_url == '':
+                    try:
+                        create_document_thumbnail(doc.id)
+                    except Exception:
+                        logger.error(f"[ERROR] Thumbnail for [{doc.name}] couldn't be created")

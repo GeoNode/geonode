@@ -47,12 +47,11 @@ class DocumentRenderer():
         content = None
         if self.supports(filename):
             filetype = self._get_filetype(filename)
-            output_path = tempfile.mkstemp(suffix=".png")[1]
             render = getattr(self, f'render_{filetype}')
-            content = render(filename, output_path)
+            content = render(filename)
         return content
 
-    def render_pdf(self, filename, output):
+    def render_pdf(self, filename):
         try:
             doc = fitz.open(filename)
             pix = doc[0].get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
