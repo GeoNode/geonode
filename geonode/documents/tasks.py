@@ -18,7 +18,6 @@
 #########################################################################
 import os
 import io
-import tempfile
 
 from PIL import Image
 import fitz
