@@ -20,7 +20,6 @@
 import logging
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q
 from geonode.documents.models import Document
 from geonode.documents.tasks import create_document_thumbnail
 
@@ -37,7 +36,7 @@ class Command(BaseCommand):
             dest="updatethumbnails",
             default=False,
             help="Update the document thumbnails.")
-    
+
     def handle(self, *args, **options):
         updatethumbnails = options.get('updatethumbnails')
         for doc in Document.objects.all():
