@@ -1721,7 +1721,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
-    def save_thumbnail(self, filename, image):
+    def save_thumbnail(self, filename, image, **kwargs):
         upload_path = get_unique_upload_path(filename)
         # force convertion to JPEG output file
         upload_path = f'{os.path.splitext(upload_path)[0]}.jpg'
@@ -1745,7 +1745,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
-                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height'])).convert("RGB")
+                    centering = kwargs.get("centering", (0.5, 0.5))
+                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']), centering=centering).convert("RGB")
 
                     # Saving the thumb into a temporary directory on file system
                     tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
