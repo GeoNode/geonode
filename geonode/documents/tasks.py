@@ -35,6 +35,10 @@ logger = get_task_logger(__name__)
 
 class DocumentRenderer():
     FILETYPES = ['pdf']
+    # See https://pillow.readthedocs.io/en/stable/reference/ImageOps.html#PIL.ImageOps.fit
+    CROP_CENTERING = {
+        'pdf': (0.0, 0.0)
+    }
 
     def __init__(self) -> None:
         pass
@@ -58,6 +62,9 @@ class DocumentRenderer():
         except Exception as e:
             logger.warning(f'Cound not generate thumbnail for {filename}: {e}')
             return None
+
+    def preferred_crop_centering(self, filename):
+        return self.CROP_CENTERING.get(self._get_filetype(filename))
 
     def _get_filetype(self, filname):
         return os.path.splitext(filname)[1][1:]
@@ -92,6 +99,7 @@ def create_document_thumbnail(self, object_id):
 
     image_file = None
     thumbnail_content = None
+    centering = (0.5, 0.5)
 
     if document.is_image:
         dname = storage_manager.path(document.files[0])
@@ -113,6 +121,9 @@ def create_document_thumbnail(self, object_id):
     elif doc_renderer.supports(document.files[0]):
         try:
             thumbnail_content = doc_renderer.render(document.files[0])
+            preferred_centering = doc_renderer.preferred_crop_centering(document.files[0])
+            if preferred_centering is not None:
+                centering = preferred_centering
         except Exception as e:
             print(e)
     if not thumbnail_content:
@@ -120,7 +131,7 @@ def create_document_thumbnail(self, object_id):
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
     else:
         filename = f'document-{document.uuid}-thumb.jpg'
-        document.save_thumbnail(filename, thumbnail_content)
+        document.save_thumbnail(filename, thumbnail_content, centering=centering)
         logger.debug(f"Thumbnail for document #{object_id} created.")
 
 
