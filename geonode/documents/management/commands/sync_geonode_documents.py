@@ -35,13 +35,21 @@ class Command(BaseCommand):
             action='store_true',
             dest="updatethumbnails",
             default=False,
-            help="Update the document thumbnails.")
+            help="Generate thumbnails for documents. Only documents without a thumbnail will be considered, unless --force is used.")
+
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            dest="force",
+            default=False,
+            help="Force the update of thumbnails for all documents.")
 
     def handle(self, *args, **options):
         updatethumbnails = options.get('updatethumbnails')
+        force = options.get('force')
         for doc in Document.objects.all():
             if updatethumbnails:
-                if doc.thumbnail_url is None or doc.thumbnail_url == '':
+                if (doc.thumbnail_url is None or doc.thumbnail_url == '') or force:
                     try:
                         create_document_thumbnail(doc.id)
                     except Exception:
