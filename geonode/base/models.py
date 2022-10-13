@@ -1745,7 +1745,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     # Optimize the Thumbnail size and resolution
                     _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
-                    centering = kwargs.get("centering",(0.5,0.5))
+                    centering = kwargs.get("centering", (0.5, 0.5))
                     cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']), centering=centering).convert("RGB")
 
                     # Saving the thumb into a temporary directory on file system
