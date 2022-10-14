@@ -32,6 +32,7 @@ from geonode.storage.manager import StorageManager
 from geonode.storage.gcs import GoogleStorageManager
 from geonode.storage.dropbox import DropboxStorageManager
 from geonode.base.populate_test_data import create_single_dataset
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 
 class TestDropboxStorageManager(SimpleTestCase):
@@ -281,7 +282,7 @@ class TestAwsStorageManager(SimpleTestCase):
         aws.assert_called_once_with('name')
 
 
-class TestStorageManager(TestCase):
+class TestStorageManager(GeoNodeBaseTestSupport):
 
     def setUp(self):
         self.sut = StorageManager
@@ -400,6 +401,20 @@ class TestStorageManager(TestCase):
             output = self.sut().replace(dataset, new_file)
         self.assertListEqual([expected], output['files'])
 
+    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
+    def test_storage_manager_copy(self):
+        '''
+        Test that the copy works as expected and the permissions are corerct
+        '''
+        dataset = create_single_dataset(name="test_copy")
+        dataset.files = [os.path.join(f"{self.project_root}", "tests/data/test_sld.sld")]
+        dataset.save()
+        output = self.sut().copy(dataset)
+
+        self.assertTrue(os.path.exists(output.get("files")[0]))
+        self.assertEqual(os.stat('/opt/core/geonode/geonode/storage/tests/data/test_sld.sld').st_mode, 33279)
+        os.remove(output.get("files")[0])
+        self.assertFalse(os.path.exists(output.get("files")[0]))
 
 class TestDataRetriever(TestCase):
     @classmethod
