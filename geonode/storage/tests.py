@@ -416,6 +416,7 @@ class TestStorageManager(GeoNodeBaseTestSupport):
         os.remove(output.get("files")[0])
         self.assertFalse(os.path.exists(output.get("files")[0]))
 
+
 class TestDataRetriever(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
