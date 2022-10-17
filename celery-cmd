@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # A configurable celery command.
-# Luca Pasquali <luca.pasquali@geo-solutions.it>
+# Luca Pasquali <luca.pasquali@geosolutionsgroup.com>
 CELERY_BIN=${CELERY_BIN:-"$(which celery||echo celery)"}
 CELERY_APP=${CELERY_APP:-"geonode.celery_app:app"}
 CELERY__STATE_DB=${CELERY__STATE_DB:-"/mnt/volumes/statics/worker.state"}
 # expressed in KB
 CELERY__MAX_MEMORY_PER_CHILD=${CELERY__MAX_MEMORY_PER_CHILD:-"200000"}
-CELERY__AUTOSCALE_VALUES=${CELERY__AUTOSCALE_VALUES:-"2,4"}
+CELERY__AUTOSCALE_VALUES=${CELERY__AUTOSCALE_VALUES:-"15,10"}
 CELERY__MAX_TASKS_PER_CHILD=${CELERY__MAX_TASKS_PER_CHILD:-"10"}
 CELERY__OPTS=${CELERY__OPTS:-"--without-gossip --without-mingle -Ofair -B -E"}
 CELERY__BEAT_SCHEDULE=${CELERY__BEAT_SCHEDULE:-"celery.beat:PersistentScheduler"}

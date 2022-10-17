@@ -315,14 +315,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
-    MAPSTORE_CATALOGUE_SERVICES = {}
-
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
-
-    if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
-
     DEFAULT_MS2_BACKGROUNDS = [
         {
             "type": "tileprovider",
@@ -377,10 +369,20 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "format": "image/jpeg",
             "id": "s2cloudless",
             "name": "s2cloudless:s2cloudless",
-            "url": "https://maps.geo-solutions.it/geoserver/wms",
+            "url": [
+                "https://maps1.geosolutionsgroup.com/geoserver/wms",
+                "https://maps2.geosolutionsgroup.com/geoserver/wms",
+                "https://maps3.geosolutionsgroup.com/geoserver/wms",
+                "https://maps4.geosolutionsgroup.com/geoserver/wms",
+                "https://maps5.geosolutionsgroup.com/geoserver/wms",
+                "https://maps6.geosolutionsgroup.com/geoserver/wms"
+            ],
             "group": "background",
-            "thumbURL": "%sstatic/mapstorestyle/img/s2cloudless-s2cloudless.png" % SITEURL,
-            "visibility": False
+            "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
+            "visibility": False,
+            "credits": {
+            "title": "<a class=\"a-light\" xmlns:dct=\"http://purl.org/dc/terms/\" href=\"https://s2maps.eu\" property=\"dct:title\">Sentinel-2 cloudless 2016</a> by <a class=\"a-light\" xmlns:cc=\"http://creativecommons.org/ns#\" href=\"https://eox.at\" property=\"cc:attributionName\" rel=\"cc:attributionURL\">EOX IT Services GmbH</a>"
+            }
         },
         {
             "source": "ol",
