@@ -194,7 +194,7 @@ class StorageManager(StorageManagerInterface):
             # value is always set by default as None
             # https://docs.djangoproject.com/en/3.2/ref/settings/#file-upload-directory-permissions
             os.chmod(new_path, settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS)
-
+        _new_path = None
         for f in files:
             with self.open(f, 'rb+') as open_file:
                 old_file_name, _ = os.path.splitext(os.path.basename(f))
@@ -207,7 +207,8 @@ class StorageManager(StorageManagerInterface):
                     new_file = f"{new_path}/{old_file_name}_{random_suffix}{ext}"
                 _new_path = self.copy_single_file(open_file, new_file)
                 out.append(_new_path)
-            os.chmod(_new_path, settings.FILE_UPLOAD_PERMISSIONS)
+            if _new_path:
+                os.chmod(_new_path, settings.FILE_UPLOAD_PERMISSIONS)
         return out
 
     def copy_single_file(self, old_file: BinaryIO, new_file: str):
