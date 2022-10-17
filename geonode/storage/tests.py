@@ -402,6 +402,7 @@ class TestStorageManager(GeoNodeBaseTestSupport):
         self.assertListEqual([expected], output['files'])
 
     @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
+    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
     def test_storage_manager_copy(self):
         '''
         Test that the copy works as expected and the permissions are corerct
@@ -412,7 +413,7 @@ class TestStorageManager(GeoNodeBaseTestSupport):
         output = self.sut().copy(dataset)
 
         self.assertTrue(os.path.exists(output.get("files")[0]))
-        self.assertEqual(os.stat('/opt/core/geonode/geonode/storage/tests/data/test_sld.sld').st_mode, 33279)
+        self.assertEqual(os.stat(os.path.exists(output.get("files")[0])).st_mode, 8592)
         os.remove(output.get("files")[0])
         self.assertFalse(os.path.exists(output.get("files")[0]))
 
