@@ -169,5 +169,5 @@ webdriver_manager==3.8.3
 # Security and audit
 mistune==2.0.4
 wandb==0.12.17
-protobuf==3.20.3
+protobuf==4.21.7
 mako==1.2.3
