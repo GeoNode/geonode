@@ -50,6 +50,6 @@ def get_setting(setting_key: str) -> typing.Any:
         ),
         "HARVESTED_RESOURCE_FILE_MAX_MEMORY_SIZE": getattr(
             settings, "HARVESTED_RESOURCE_MAX_MEMORY_SIZE", settings.FILE_UPLOAD_MAX_MEMORY_SIZE),
-        "HARVESTER_SCHEDULER_FREQUENCY_MINUTES": getattr(settings, "HARVESTER_SCHEDULER_FREQUENCY_MINUTES", 0)
+        "HARVESTER_SCHEDULER_FREQUENCY_MINUTES": getattr(settings, "HARVESTER_SCHEDULER_FREQUENCY_MINUTES", 0.5)
     }.get(setting_key, getattr(settings, setting_key, None))
     return result
