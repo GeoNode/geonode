@@ -167,6 +167,7 @@ class MapSerializer(ResourceBaseSerializer):
             "featuredurl",
             "data",
             "maplayers",
+            'executions'
         )
 
 

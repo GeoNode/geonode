@@ -36,5 +36,6 @@ class DocumentSerializer(ResourceBaseSerializer):
         view_name = 'documents-list'
         fields = (
             'pk', 'uuid', 'name', 'href',
-            'subtype', 'extension', 'mime_type'
+            'subtype', 'extension', 'mime_type',
+            'executions'
         )
