@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0062_resourcebase_files'),
-        ('upload', '0032_auto_20210528_1556'),
+        ('upload', '0033_auto_20210528_1556'),
     ]
 
     operations = [
