@@ -15,7 +15,7 @@ def update_state_value(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('base', '0059_fill_empty_resource_type'),
+        ('base', '0064_resourcebase_metadata'),
     ]
 
     operations = [
