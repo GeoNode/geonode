@@ -40,6 +40,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         view_name = 'geoapps-list'
         fields = (
             'pk', 'uuid', 'data', 'name',
+            'executions'
         )
 
     def extra_update_checks(self, validated_data):
