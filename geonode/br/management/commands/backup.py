@@ -378,10 +378,13 @@ class Command(BaseCommand):
                 if gs_bk_exec_status == 'FAILED':
                     raise ValueError(error_backup.format(url, r.status_code, r.text))
                 _permissions = 0o777
-                os.chmod(geoserver_bk_file, _permissions)
-                status = os.stat(geoserver_bk_file)
-                if oct(status.st_mode & 0o777) != str(oct(_permissions)):
-                    raise Exception(f"Could not update permissions of {geoserver_bk_file}")
+                try:
+                    os.chmod(geoserver_bk_file, _permissions)
+                    status = os.stat(geoserver_bk_file)
+                    if oct(status.st_mode & 0o777) != str(oct(_permissions)):
+                        raise Exception(f"Could not update permissions of {geoserver_bk_file}")
+                except Exception as e:
+                    logger.warning(e)
             else:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
