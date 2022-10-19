@@ -1077,11 +1077,14 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # the layer should be not accessible
         response = requests.get(url, auth=HTTPBasicAuth(username='norman', password='norman'))
         self.assertTrue(response.status_code, 404)
-        self.assertEqual(
+        self.assertContains(
             response.headers.get('Content-Type'),
-            'text/html; charset=utf-8'
+            'text/html;'
         )
-
+        self.assertContains(
+            response.headers.get('Content-Type'),
+            'charset=utf-8'
+        )
         # test change_layer_style
         url = f'{settings.GEOSERVER_LOCATION}rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
         sld = """<?xml version="1.0" encoding="UTF-8"?>
