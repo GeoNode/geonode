@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+import geonode
+
 
 class Migration(migrations.Migration):
 
