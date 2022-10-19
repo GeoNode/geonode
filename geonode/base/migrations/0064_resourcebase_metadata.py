@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+import geonode
+
 
 class Migration(migrations.Migration):
 
@@ -14,5 +16,10 @@ class Migration(migrations.Migration):
             model_name='resourcebase',
             name='metadata',
             field=models.ManyToManyField(blank=True, null=True, to='base.ExtraMetadata', verbose_name='Extra Metadata'),
+        ),
+        migrations.AlterField(
+            model_name='resourcebase',
+            name='uuid',
+            field=models.CharField(max_length=36, unique=True, default=geonode.base.models.ResourceBase.gen_uuid),
         ),
     ]
