@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('services', '0045_auto_20210629_1355'),
-        ('upload', '0033_auto_20210531_1252'),
         ('auth', '0012_alter_user_first_name_max_length'),
         ('harvesting', '0026_harvestableresource_last_harvesting_succeeded'),
         ('base', '0068_rename_storetype_resourcebase_subtype'),
