@@ -684,7 +684,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                 self.assertTrue('limits' in rule)
                 rule_limits = rule['limits']
-                self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                 self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -724,7 +724,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
 
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
-                    self.assertEqual(rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
+                    self.assertEqual(rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, \
 146.7000276171853 -42.53655428642583, 146.7110139453067 -43.07256577359489, \
 145.9804231249952 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -760,7 +760,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                     self.assertTrue('limits' in rule)
                     rule_limits = rule['limits']
                     self.assertEqual(
-                        rule_limits['allowedArea'], 'SRID=4326;MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
+                        rule_limits['allowedArea'], 'MULTIPOLYGON (((145.8046418749977 -42.49606500060302, 146.7000276171853 \
 -42.53655428642583, 146.7110139453067 -43.07256577359489, 145.9804231249952 \
 -43.05651288026286, 145.8046418749977 -42.49606500060302)))')
                     self.assertEqual(rule_limits['catalogMode'], 'MIXED')
@@ -1077,11 +1077,8 @@ class PermissionsTest(GeoNodeBaseTestSupport):
         # the layer should be not accessible
         response = requests.get(url, auth=HTTPBasicAuth(username='norman', password='norman'))
         self.assertTrue(response.status_code, 404)
-        self.assertEqual(
-            response.headers.get('Content-Type'),
-            'text/html;charset=utf-8'
-        )
-
+        self.assertTrue('text/html;' in response.headers.get('Content-Type'))
+        self.assertTrue('charset=utf-8' in response.headers.get('Content-Type'))
         # test change_layer_style
         url = f'{settings.GEOSERVER_LOCATION}rest/workspaces/geonode/styles/san_andres_y_providencia_poi.xml'
         sld = """<?xml version="1.0" encoding="UTF-8"?>
