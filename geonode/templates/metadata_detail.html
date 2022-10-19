@@ -26,17 +26,6 @@
 
 
 <div class="page-header">
-    {% if resource.class_name == "Document" %}
-        {% if "download_resourcebase" in perms  %}
-            <a href="{% document_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Document" %}</a>
-        {% endif %}
-    {% elif resource.class_name == "Layer" %}
-    <a href="{% dataset_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Layer" %}</a>
-    {% elif resource.class_name == "Map" %}
-    <a href="{% map_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to Map" %}</a>
-    {% elif resource.class_name == "GeoApp" %}
-    <a href="{% geoapp_detail_url resource %}" class="btn btn-primary pull-right">{% trans "Return to" %} {{ resource.type }}</a>
-    {% endif %}
     <h2 class="page-title">{% trans "Metadata" %} : {{ resource.title }}</h2>
 </div>
 
