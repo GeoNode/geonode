@@ -22,7 +22,7 @@ def remove_upload_parallelism_limit_objects(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('upload', '0036_upload_store_spatial_files'),
+        ('upload', '0033_upload_store_spatial_files'),
     ]
 
     operations = [

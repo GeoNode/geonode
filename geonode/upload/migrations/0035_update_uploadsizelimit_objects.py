@@ -13,7 +13,7 @@ def update_upload_size_limit_objects(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('upload', '0034_uploadsizelimit'),
+        ('upload', '0032_uploadsizelimit'),
     ]
 
     operations = [
