@@ -53,8 +53,8 @@ django-tinymce==3.4.0
 django-grappelli==2.15.1
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.8
-oauthlib==3.2.0
-pyopenssl==22.0.0
+oauthlib==3.2.1
+pyopenssl==22.1.0
 
 # geopython dependencies
 pyproj==3.3.0
@@ -64,7 +64,7 @@ SQLAlchemy==1.4.32 # required by PyCSW
 Shapely==1.8.1.post1
 mercantile==1.2.1
 geoip2==4.5.0
-numpy==1.22.*
+numpy==1.23.4
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
@@ -101,7 +101,7 @@ geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.5
 geonode-dialogos==3.0.1
-geoserver-restconfig==2.0.7
+geoserver-restconfig==2.0.8
 gn-gsimporter==2.0.1
 gisdata==0.5.4
 
@@ -156,7 +156,7 @@ splinter==0.14.0
 pytest-splinter==3.3.1
 pytest-django==4.4.0
 setuptools==65.3.0
-pip==22.2.2
+pip==22.3
 Twisted==22.4.0
 pixelmatch==0.2.3
 factory-boy==3.2.0
