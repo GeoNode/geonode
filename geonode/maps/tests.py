@@ -390,7 +390,7 @@ community."
 
         # Test that GET returns permissions
         response = self.client.get(url(mapid))
-        assert('permissions' in ensure_string(response.content))
+        assert ('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have permissions
 

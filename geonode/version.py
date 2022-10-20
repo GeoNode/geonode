@@ -43,7 +43,7 @@ def get_version(version=None):
     if sub == 'rc':
         sub += sub_version
     elif sub in ['post', 'dev']:
-        sub = '.' + sub + sub_version
+        sub = f".{sub}{sub_version}"
     else:
         sub = ''
     return main + sub

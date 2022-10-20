@@ -56,11 +56,11 @@ class CleanEmailMixin(object):
             }
             try:
                 self.validate_invitation(email)
-            except(AlreadyInvited):
+            except (AlreadyInvited):
                 raise forms.ValidationError(errors["already_invited"])
-            except(AlreadyAccepted):
+            except (AlreadyAccepted):
                 raise forms.ValidationError(errors["already_accepted"])
-            except(UserRegisteredEmail):
+            except (UserRegisteredEmail):
                 raise forms.ValidationError(errors["email_in_use"])
 
         return emails

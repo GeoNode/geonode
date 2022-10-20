@@ -1464,7 +1464,7 @@ class PermissionsTest(GeoNodeBaseTestSupport):
                 args=(
                     valid_layer_typename,
                 )))
-        assert('permissions' in ensure_string(response.content))
+        assert ('permissions' in ensure_string(response.content))
 
         # Test that a user is required to have maps.change_layer_permissions
 
