@@ -63,7 +63,7 @@
     "react-intl": "3.12.1",
     "react-redux": "7.2.6",
     "react-router": "5.0.1",
-    "react-router-dom": "5.0.1",
+    "react-router-dom": "5.3.4",
     "react-select": "3.0.4",
     "react-simple-maps": "0.12.1",
     "react-tap-event-plugin": "3.0.3",
