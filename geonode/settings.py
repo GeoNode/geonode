@@ -1374,6 +1374,9 @@ DOWNLOAD_FORMATS_RASTER = [
 ]
 
 
+SLACK_ENALBED = ast.literal_eval(os.getenv('SLACK_ENABLED', 'True'))
+SLACK_WEBHOOK_URLS = eval(os.getenv('SLACK_WEBHOOK_URL', "[]"))
+
 DISPLAY_ORIGINAL_DATASET_LINK = ast.literal_eval(
     os.getenv('DISPLAY_ORIGINAL_DATASET_LINK', 'True'))
 
@@ -1931,6 +1934,7 @@ if os.name == 'nt':
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 # THESAURUS = {'name': 'inspire_themes', 'required': True, 'filter': True}
+THESAURUS_DEFAULT_LANG = os.environ.get('THESAURUS_DEFAULT_LANG', 'en')
 
 # ######################################################## #
 # Advanced Resource Publishing Worklow Settings - START    #
