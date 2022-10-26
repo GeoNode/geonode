@@ -30,7 +30,7 @@ def remove_upload_size_limit_objects(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('upload', '0033_auto_20210531_1252'),
+        ('upload', '0031_upload_resume_url'),
     ]
 
     operations = [

@@ -3,6 +3,8 @@ from django.db import migrations, connection
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
+import logging
+logger = logging.getLogger(__name__)
 
 
 def update_thumbnail_urls_and_delete_curated_thumbs_folder(apps, schema_editor):
@@ -23,8 +25,11 @@ def update_thumbnail_urls_and_delete_curated_thumbs_folder(apps, schema_editor):
             bytes_file = None
 
         if resource and bytes_file:
-            filename = _generate_thumbnail_name(resource.get_real_instance())
-            resource.save_thumbnail(filename, bytes_file)
+            try:
+                filename = _generate_thumbnail_name(resource.get_real_instance())
+                resource.save_thumbnail(filename, bytes_file)
+            except Exception as e:
+                logger.error(f'Error during updating resource: {e.args[0]}')
 
 
 class Migration(migrations.Migration):

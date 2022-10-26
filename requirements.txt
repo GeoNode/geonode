@@ -55,8 +55,8 @@ pyjwt==2.5.0
 pyproj<3.5.0
 OWSLib==0.27.2
 pycsw==2.6.1
-SQLAlchemy==1.4.41 # required by PyCSW
-Shapely==1.8.4
+SQLAlchemy==1.4.42 # required by PyCSW
+Shapely==1.8.5.post1
 mercantile==1.2.1
 geoip2==4.6.0
 numpy==1.23.*
@@ -108,10 +108,10 @@ django-bootstrap3-datetimepicker-2==2.8.3
 
 # storage manager dependencies
 django-storages==1.13.1
-dropbox==11.34.0
+dropbox==11.35.0
 google-cloud-storage==2.5.0
 google-cloud-core==2.3.2
-boto3==1.24.87
+boto3==1.24.91
 
 # Django Caches
 python-memcached<=1.59
@@ -156,8 +156,8 @@ pytest-bdd==6.0.1
 splinter==0.18.1
 pytest-splinter==3.3.2
 pytest-django==4.5.2
-setuptools>=59.1.1,<65.5.0
-pip==22.2.2
+setuptools>=59.1.1,<65.6.0
+pip==22.3
 Twisted==22.8.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
@@ -168,6 +168,6 @@ webdriver_manager==3.8.3
 
 # Security and audit
 mistune==2.0.4
-wandb==0.12.17
+wandb==0.13.4
 protobuf==3.20.3
 mako==1.2.3

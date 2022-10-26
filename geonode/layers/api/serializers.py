@@ -137,7 +137,8 @@ class DatasetSerializer(ResourceBaseSerializer):
         fields = (
             'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
             'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
-            'featureinfo_custom_template', 'ows_url', 'ptype', 'default_style', 'styles', 'attribute_set'
+            'featureinfo_custom_template', 'ows_url', 'ptype', 'default_style', 'styles', 'attribute_set',
+            'executions'
         )
 
     name = serializers.CharField(read_only=True)
