@@ -66,28 +66,17 @@ RUN chmod +x /usr/bin/celery-commands
 COPY celery-cmd /usr/bin/celery-cmd
 RUN chmod +x /usr/bin/celery-cmd
 
-# # Install "geonode-contribs" apps
-# RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b master
-# # Install logstash and centralized dashboard dependencies
-# RUN cd /usr/src/geonode-contribs/geonode-logstash; pip install --upgrade  -e . \
-#     cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
+# Install "geonode-contribs" apps
+RUN cd /usr/src; git clone https://github.com/GeoNode/geonode-contribs.git -b master
+# Install logstash and centralized dashboard dependencies
+RUN cd /usr/src/geonode-contribs/ldap; pip install --upgrade  -e .
 
 RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt
 RUN pip install --upgrade  -e .
 
 # Cleanup apt update lists
 RUN rm -rf /var/lib/apt/lists/*
-
-
-# LDAP ZALF EXTENDS
-WORKDIR /
-RUN apt install libldap2-dev libsasl2-dev
-RUN git clone https://github.com/GeoNode/geonode-contribs.git
-WORKDIR /geonode-contribs/ldap
-RUN pip install .
-
 WORKDIR /usr/src/geonode
-RUN rm -rf /geonode-contribs/*
 
 # Export ports
 EXPOSE 8000
