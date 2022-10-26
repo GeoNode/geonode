@@ -78,5 +78,11 @@ MD_CORE_MODEL = {
         'pycsw:Contributor': 'contributor',
         'pycsw:Relation': 'relation',
         'pycsw:Links': 'download_links',
+        'pycsw:Edition':'edition',
+        'pycsw:Platform':'platform',
+        'pycsw:Instrument':'instrument',
+        'pycsw:SensorType':'sensor_type',
+        'pycsw:CloudCover':'cloud_cover',
+        'pycsw:Bands':'bands',
     }
 }
