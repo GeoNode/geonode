@@ -1,0 +1,3 @@
+[submodule "geonode/base/management/commands/geonode-agrovoc-importer"]
+	path = geonode/base/management/commands/geonode-agrovoc-importer
+	url = git@github.com:zalf-rdm/geonode-agrovoc-importer.git
