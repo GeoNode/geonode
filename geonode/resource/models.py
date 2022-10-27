@@ -69,3 +69,5 @@ class ExecutionRequest(models.Model):
         default=ExecutionRequestAction.UNKNOWN.value,
         null=True
     )
+
+    source = models.CharField(max_length=250, null=True, default=None)
