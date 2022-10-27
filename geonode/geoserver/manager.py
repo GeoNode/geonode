@@ -46,7 +46,7 @@ from geonode.security.permissions import (
 from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
-from geonode.geoserver.signals import geofence_rule_assign
+from geonode.geoserver.signals import post_set_permissions
 from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
@@ -473,7 +473,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             logger.exception(e)
             return False
 
-        geofence_rule_assign.send_robust(sender=instance, instance=instance)
+        post_set_permissions.send_robust(sender=instance, instance=instance)
 
         return True
 

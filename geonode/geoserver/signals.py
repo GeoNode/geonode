@@ -42,7 +42,7 @@ logger = logging.getLogger("geonode.geoserver.signals")
 
 geoserver_automatic_default_style_set = Signal(providing_args=['instance'])
 
-geofence_rule_assign = Signal(providing_args=['instance'])
+post_set_permissions = Signal(providing_args=['instance'])
 
 
 def geoserver_delete(typename):
