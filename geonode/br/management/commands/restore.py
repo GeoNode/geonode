@@ -274,14 +274,20 @@ class Command(BaseCommand):
                     print(f"[Sanity Check] Full Write Access to '{static_root}' ...")
                     chmod_tree(static_root)
                     for static_files_folder in static_folders:
-                        print(f"[Sanity Check] Full Write Access to '{static_files_folder}' ...")
-                        chmod_tree(static_files_folder)
+                        if getattr(settings, 'PROJECT_ROOT', None) and \
+                                    static_files_folder.startswith(settings.PROJECT_ROOT):
+                            print(f"[Sanity Check] Full Write Access to '{static_files_folder}' ...")
+                            chmod_tree(static_files_folder)
                     for template_files_folder in template_folders:
-                        print(f"[Sanity Check] Full Write Access to '{template_files_folder}' ...")
-                        chmod_tree(template_files_folder)
+                        if getattr(settings, 'PROJECT_ROOT', None) and \
+                                    template_files_folder.startswith(settings.PROJECT_ROOT):
+                            print(f"[Sanity Check] Full Write Access to '{template_files_folder}' ...")
+                            chmod_tree(template_files_folder)
                     for locale_files_folder in locale_folders:
-                        print(f"[Sanity Check] Full Write Access to '{locale_files_folder}' ...")
-                        chmod_tree(locale_files_folder)
+                        if getattr(settings, 'PROJECT_ROOT', None) and \
+                                    locale_files_folder.startswith(settings.PROJECT_ROOT):
+                            print(f"[Sanity Check] Full Write Access to '{locale_files_folder}' ...")
+                            chmod_tree(locale_files_folder)
                 except Exception as exception:
                     if notify:
                         restore_notification.apply_async(
@@ -400,14 +406,14 @@ class Command(BaseCommand):
                         # Restore Static Folders
                         for static_files_folder in static_folders:
 
-                            # skip restoration of static files of apps not located under LOCAL_ROOT path
+                            # skip restoration of static files of apps not located under PROJECT_ROOT path
                             # (check to prevent overriding files from site-packages
                             #  in project-template based GeoNode projects)
-                            if getattr(settings, 'LOCAL_ROOT', None) and \
-                                    not static_files_folder.startswith(settings.LOCAL_ROOT):
+                            if getattr(settings, 'PROJECT_ROOT', None) and \
+                                    not static_files_folder.startswith(settings.PROJECT_ROOT):
                                 print(
                                     f"Skipping static directory: {static_files_folder}. "
-                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}.")
                                 continue
 
                             if config.gs_data_dt_filter[0] is None:
@@ -425,14 +431,14 @@ class Command(BaseCommand):
                         # Restore Template Folders
                         for template_files_folder in template_folders:
 
-                            # skip restoration of template files of apps not located under LOCAL_ROOT path
+                            # skip restoration of template files of apps not located under PROJECT_ROOT path
                             # (check to prevent overriding files from site-packages
                             #  in project-template based GeoNode projects)
-                            if getattr(settings, 'LOCAL_ROOT', None) and \
-                                    not template_files_folder.startswith(settings.LOCAL_ROOT):
+                            if getattr(settings, 'PROJECT_ROOT', None) and \
+                                    not template_files_folder.startswith(settings.PROJECT_ROOT):
                                 print(
                                     f"Skipping template directory: {template_files_folder}. "
-                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}.")
                                 continue
 
                             if config.gs_data_dt_filter[0] is None:
@@ -450,14 +456,14 @@ class Command(BaseCommand):
                         # Restore Locale Folders
                         for locale_files_folder in locale_folders:
 
-                            # skip restoration of locale files of apps not located under LOCAL_ROOT path
+                            # skip restoration of locale files of apps not located under PROJECT_ROOT path
                             # (check to prevent overriding files from site-packages
                             #  in project-template based GeoNode projects)
-                            if getattr(settings, 'LOCAL_ROOT', None) and \
-                                    not locale_files_folder.startswith(settings.LOCAL_ROOT):
+                            if getattr(settings, 'PROJECT_ROOT', None) and \
+                                    not locale_files_folder.startswith(settings.PROJECT_ROOT):
                                 print(
                                     f"Skipping locale directory: {locale_files_folder}. "
-                                    f"It's not located under LOCAL_ROOT path: {settings.LOCAL_ROOT}.")
+                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}.")
                                 continue
 
                             if config.gs_data_dt_filter[0] is None:
