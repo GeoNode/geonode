@@ -274,7 +274,7 @@ def is_ipaddress_in_whitelist(visitor_ip, whitelist):
         for wip in whitelist:
             try:
                 if visitor_ipaddress not in ipaddress.ip_network(wip):
-                    in_whitelist = False
+                    in_whitelist = True
                     break
             except Exception:
                 in_whitelist = False
