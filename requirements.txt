@@ -47,7 +47,7 @@ django-grappelli==3.0.3
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.12
 django-sequences==2.7
-oauthlib==3.2.1
+oauthlib==3.2.2
 pyopenssl==22.1.0
 pyjwt==2.5.0
 
