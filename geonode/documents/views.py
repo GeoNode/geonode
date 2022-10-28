@@ -141,7 +141,6 @@ def document_embed(request, docid):
 class DocumentUploadView(CreateView):
     http_method_names = ['post']
     form_class = DocumentCreateForm
-    from django.views.decorators.csrf import csrf_exempt
 
     def post(self, request, *args, **kwargs):
         self.object = None
