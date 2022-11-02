@@ -66,7 +66,7 @@ numpy==1.23.*
 # Django Apps
 dj-database-url==1.0.0
 dj-pagination==2.5.0
-django-select2==7.10.1
+django-select2==7.11.0
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.5.1
