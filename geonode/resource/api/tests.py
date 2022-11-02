@@ -190,3 +190,27 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
 
         self.assertEqual(500, response.status_code)
         self.assertDictEqual(expected, response.json())
+
+    def test_endpoint_should_return_the_source(self):
+        # creating dummy execution request
+        obj = ExecutionRequest.objects.create(
+            user=self.superuser,
+            func_name='import_new_resource',
+            action="import",
+            source="upload_workflow"
+        )
+        self.client.force_login(self.superuser)
+
+        _url = f"{reverse('executionrequest-list')}/{obj.exec_id}"
+
+        response = self.client.get(_url)
+        self.assertEqual(200, response.status_code)
+        self.assertIsNotNone(response.json())
+        payload = response.json()
+
+        source = payload.get("request", {}).get("source", None)
+        self.assertIsNotNone(source)
+        self.assertEqual('upload_workflow', source)
+
+        # cleanup
+        obj.delete()
