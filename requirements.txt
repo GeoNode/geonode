@@ -131,7 +131,7 @@ pylibmc==1.6.3
 sherlock==0.4.0
 
 # required by monitoring
-psutil==5.9.2
+psutil==5.9.3
 django-cors-headers==3.13.0
 user-agents
 django-user-agents
