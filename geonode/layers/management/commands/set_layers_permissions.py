@@ -62,11 +62,8 @@ class Command(BaseCommand):
             dest="resources",
             nargs="*",
             type=str,
-            default=None,
-            help="Resources names for which permissions will be assigned to. "
-            "Default value: None (all the layers will be considered). "
-            "Multiple choices can be typed with white space separator."
-            "A Note: names with white spaces must be typed inside quotation marks.",
+            default=[],
+            help="Resources IDs for which permissions will be assigned to. Default value: [] (all the layers will be considered). "
         )
         parser.add_argument(
             "-p",
@@ -74,7 +71,7 @@ class Command(BaseCommand):
             dest="permission",
             type=str,
             default=None,
-            help="Permissions to be assigned. " "Allowed values are: view (r), download (w), edit (d) and manage (m).",
+            help="Permissions to be assigned. " "Allowed values are: view, download, edit and manage.",
         )
         parser.add_argument(
             "-u",
@@ -84,7 +81,7 @@ class Command(BaseCommand):
             type=str,
             default=[],
             help="Users for which permissions will be assigned to. "
-            "Multiple choices can be typed with white space separator.",
+            "Multiple choices can be typed with comma separator.",
         )
         parser.add_argument(
             "-g",
@@ -94,7 +91,7 @@ class Command(BaseCommand):
             type=str,
             default=[],
             help="Groups for which permissions will be assigned to. "
-            "Multiple choices can be typed with white space separator.",
+            "Multiple choices can be typed with comma separator.",
         )
         parser.add_argument(
             "-d",
@@ -112,6 +109,9 @@ class Command(BaseCommand):
         resources_pk = [x.replace(" ", "") for x in options.get("resources", [])]
         if resources_pk:
             resources_pk = resources_pk[0].split(",")
+        else:
+            resources_pk = [x for x in Dataset.objects.values_list('pk', flat=True)]
+
         users_usernames = [x.replace(" ", "") for x in options.get("users", [])]
         if users_usernames:
             users_usernames = users_usernames[0].split(",")

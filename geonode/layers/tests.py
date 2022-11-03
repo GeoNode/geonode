@@ -18,6 +18,7 @@
 #########################################################################
 
 import io
+import itertools
 import os
 import shutil
 import gisdata
@@ -35,6 +36,7 @@ from django.forms import ValidationError
 from django.test.client import RequestFactory
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
 from django.db.models import Count
@@ -2017,3 +2019,36 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertFalse(form.is_valid())
         self.assertTrue('presentation' in form.errors)
         self.assertEqual("Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.", form.errors['presentation'][0])
+
+
+class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
+    '''
+    Unittest to ensure that the management command "set_layers_permissions"
+    behaves as expected
+    '''
+
+    def test_user_get_the_right_download_permissions_for_the_selected_layer(self):
+        '''
+        Given a user, the compact perms and the resource id, it shoul set the
+        permissions for the selected resource
+        '''
+        try:
+            expected_perms = ['view_resourcebase', 'download_resourcebase']
+            dataset = create_single_dataset('dataset_for_management_command')
+            args = []
+            opts = {
+                "permission": "download",
+                "users": [get_user_model().objects.exclude(username='admin').exclude(username='AnonymousUser').first().username],
+                "resources": str(dataset.id)
+            }
+            call_command('set_layers_permissions', *args, **opts)
+
+            dataset.refresh_from_db()
+
+            perms = dataset.get_all_level_info()
+            self.assertTrue('norman' in [user.username for user in perms['users']])
+            actual = list(itertools.chain.from_iterable([perms for user, perms in perms['users'].items() if user.username == 'norman']))
+            self.assertListEqual(expected_perms, actual)
+        finally:
+            if dataset:
+                dataset.delete()
