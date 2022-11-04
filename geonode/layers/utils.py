@@ -425,7 +425,7 @@ def set_datasets_permissions(permissions_name, resources_names=None, users_usern
     from geonode.resource.manager import resource_manager
     # Processing information
     resources_as_pk = []
-    for el in resources_names:
+    for el in resources_names or []:
         if isinstance(el, str) and not el.isnumeric():
             res = Dataset.objects.filter(Q(title=el) | Q(name=el))
             if res.exists():
