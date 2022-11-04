@@ -638,13 +638,13 @@ class UserAndGroupPermissionsForm(forms.Form):
     layers = forms.ModelMultipleChoiceField(
         queryset=Dataset.objects.all(),
         required=False)
-    permission_type = forms.MultipleChoiceField(
+    permission_type = forms.ChoiceField(
         required=True,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.RadioSelect,
         choices=(
-            ('r', 'Read'),
-            ('w', 'Write'),
-            ('d', 'Download'),
+            ('read', 'Read'),
+            ('edit', 'Edit'),
+            ('download', 'Download')
         ),
     )
     mode = forms.ChoiceField(
