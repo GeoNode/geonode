@@ -99,7 +99,7 @@ def user_and_group_permission(request, model):
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
         if form.is_valid():
-            resources_names = [layer.name for layer in form.cleaned_data.get('layers')]
+            resources_names = [layer.title for layer in form.cleaned_data.get('layers')]
             users_usernames = [user.username for user in model_class.objects.filter(
                 id__in=ids)] if model == 'profile' else None
             groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
@@ -121,13 +121,13 @@ def user_and_group_permission(request, model):
 
             if permissions_names:
                 set_permissions.apply_async(
-                    (permissions_names, resources_names, users_usernames, groups_names, delete_flag))
+                    ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
 
         return HttpResponseRedirect(
             get_url_for_app_model(model, model_class))
 
     form = UserAndGroupPermissionsForm({
-        'permission_type': ('r', ),
+        'permission_type': 'read',
         'mode': 'set',
     })
     return render(
