@@ -35,6 +35,6 @@ urlpatterns = [  # 'geonode.people.views',
     url(r'^forgotname', views.forgot_username, name='forgot_username'),
     url(r'^autocomplete/$',
         login_required(ProfileAutocomplete.as_view()), name='autocomplete_profile'),
-    url(r'^layer/permission/$',
+    url(r'^dataset/permission/$',
         SetUserLayerPermission.as_view(), name='set_user_dataset_permissions'),
 ]
