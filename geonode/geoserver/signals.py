@@ -42,6 +42,8 @@ geoserver_automatic_default_style_set = Signal(providing_args=["instance"])
 
 geofence_rule_assign = Signal(providing_args=["instance"])
 
+post_set_permissions = Signal(providing_args=['instance'])
+
 
 def geoserver_delete(typename):
     # cascading_delete should only be called if
