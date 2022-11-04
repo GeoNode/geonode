@@ -127,7 +127,7 @@ def user_and_group_permission(request, model):
             get_url_for_app_model(model, model_class))
 
     form = UserAndGroupPermissionsForm({
-        'permission_type': ('read', "Read" ),
+        'permission_type': 'read',
         'mode': 'set',
     })
     return render(
