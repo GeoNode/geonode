@@ -904,7 +904,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
 
-        utils.set_datasets_permissions("write", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
+        utils.set_datasets_permissions("edit", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
         perm_spec = layer.get_all_level_info()
         _c = 0
         if "users" in perm_spec:

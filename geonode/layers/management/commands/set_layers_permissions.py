@@ -17,16 +17,12 @@
 #
 #########################################################################
 
-import copy
 import logging
 from argparse import RawTextHelpFormatter
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 from geonode.layers.models import Dataset
-from geonode.resource.manager import resource_manager
-from geonode.security.permissions import PermSpec, PermSpecCompact
+from geonode.layers.utils import set_datasets_permissions
 
 logger = logging.getLogger("geonode.layers.management.set_layers_permissions")
 
@@ -129,69 +125,10 @@ class Command(BaseCommand):
         if not users_usernames and not groups_names:
             raise Exception("Groups or Usernames must be specified")
 
-        not_found = []
-        final_perms_payload = {}
-
-        for rpk in resources_pk:
-            resource = Dataset.objects.filter(pk=rpk)
-            if not resource.exists():
-                not_found.append(rpk)
-                logger.error(f"Resource named: {rpk} not found, skipping....")
-                continue
-            else:
-                # creating the payload from the CompactPermissions like we do in the UI.
-                # the result will be a payload with the compact permissions list required
-                # for the selected resource
-                resource = resource.first()
-                # getting the actual permissions available for the dataset
-                original_perms = PermSpec(resource.get_all_level_info(), resource)
-                new_perms_payload = {"organizations": [], "users": [], "groups": []}
-                # if the username is specified, we add them to the payload with the compact
-                # perm value
-                if users_usernames:
-                    User = get_user_model()
-                    for _user in users_usernames:
-                        try:
-                            new_perms_payload["users"].append(
-                                {"id": User.objects.get(username=_user).pk, "permissions": permissions_name}
-                            )
-                        except User.DoesNotExist:
-                            logger.warning(f"The user {_user} does not exists. " "It has been skipped.")
-                # GROUPS
-                # if the group is specified, we add them to the payload with the compact
-                # perm value
-                if groups_names:
-                    for group_name in groups_names:
-                        try:
-                            new_perms_payload["groups"].append(
-                                {"id": Group.objects.get(name=group_name).pk, "permissions": permissions_name}
-                            )
-                        except Group.DoesNotExist:
-                            logger.warning(f"The group {group_name} does not exists. " "It has been skipped.")
-                # Using the compact permissions payload to calculate the permissions
-                # that we want to give for each user/group
-                # This part is in common with the permissions API
-                new_compact_perms = PermSpecCompact(new_perms_payload, resource)
-                copy_compact_perms = copy.deepcopy(new_compact_perms)
-
-                perms_spec_compact_resource = PermSpecCompact(original_perms.compact, resource)
-                perms_spec_compact_resource.merge(new_compact_perms)
-
-                final_perms_payload = perms_spec_compact_resource.extended
-                # if the delete flag is set, we must delete the permissions for the input user/group
-                if delete_flag:
-                    # since is a delete operation, we must remove the users/group from the resource
-                    # so this will return the updated dict without the user/groups to be removed
-                    final_perms_payload["users"] = {
-                        _user: _perms
-                        for _user, _perms in perms_spec_compact_resource.extended["users"].items()
-                        if _user not in copy_compact_perms.extended["users"]
-                    }
-                    final_perms_payload["groups"] = {
-                        _group: _perms
-                        for _group, _perms in perms_spec_compact_resource.extended["groups"].items()
-                        if _user not in copy_compact_perms.extended["groups"]
-                    }
-
-                # calling the resource manager to set the permissions
-                resource_manager.set_permissions(resource.uuid, instance=resource, permissions=final_perms_payload)
+        set_datasets_permissions(
+            permissions_name,
+            resources_names=resources_pk,
+            users_usernames=users_usernames,
+            groups_names=groups_names,
+            delete_flag=delete_flag
+        )
