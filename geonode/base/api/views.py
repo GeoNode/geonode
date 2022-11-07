@@ -634,7 +634,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="set-thumb-from-bbox",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated, UserHasPerms
+            IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
         ])
     def set_thumbnail_from_bbox(self, request, resource_id):
         import traceback
@@ -784,7 +784,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-create",
         methods=["post"],
         permission_classes=[
-            IsAuthenticated, UserHasPerms
+            IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
         ])
     def resource_service_create(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
@@ -1185,7 +1185,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="ratings",
         methods=['post', 'get'],
         permission_classes=[
-            IsAuthenticatedOrReadOnly, UserHasPerms
+            IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
         ])
     def ratings(self, request, pk):
         resource = get_object_or_404(ResourceBase, pk=pk)
@@ -1304,7 +1304,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         detail=True,
         methods=["get", "put", "delete", "post"],
         permission_classes=[
-            IsOwnerOrAdmin, UserHasPerms
+            IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
         ],
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
