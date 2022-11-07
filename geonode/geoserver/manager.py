@@ -46,7 +46,7 @@ from geonode.security.permissions import (
 from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
-
+from geonode.geoserver.signals import geofence_rule_assign
 from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
@@ -472,6 +472,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
         except Exception as e:
             logger.exception(e)
             return False
+
+        geofence_rule_assign.send_robust(sender=instance, instance=instance)
+
         return True
 
     def set_thumbnail(self, uuid: str, /, instance: ResourceBase = None, overwrite: bool = True, check_bbox: bool = True) -> bool:
