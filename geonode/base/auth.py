@@ -270,4 +270,4 @@ def is_ipaddress_in_whitelist(visitor_ip, whitelist):
     if visitor_ip and whitelist and len(whitelist) > 0:
         visitor_ipaddress = ipaddress.ip_address(visitor_ip)
         _results = [visitor_ipaddress in ipaddress.ip_network(wip) for wip in whitelist]
-    return True if not _results else any(_results)
+    return False if not _results else any(_results)
