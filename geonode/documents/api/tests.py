@@ -21,17 +21,14 @@ from django.contrib.auth import get_user_model
 import logging
 
 from urllib.parse import urljoin
-from django.test import override_settings
 
 from django.urls import reverse
-from mock import patch
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
 from geonode.documents.models import Document
 from geonode.base.populate_test_data import create_models
-from geonode.documents.api.exceptions import DocumentException
 
 logger = logging.getLogger(__name__)
 
@@ -149,7 +146,6 @@ class DocumentsApiTests(APITestCase):
         self.assertTrue(os.path.exists(cloned_path))
         self.assertEqual('xml', extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
-        
+
         if cloned_path:
             os.remove(cloned_path)
-        

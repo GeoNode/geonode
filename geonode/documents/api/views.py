@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-from pkgutil import extend_path
 from drf_spectacular.utils import extend_schema
 from pathlib import Path
 from dynamic_rest.viewsets import DynamicModelViewSet
@@ -40,7 +39,6 @@ from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
-from geonode.documents.views import ALLOWED_DOC_TYPES
 from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
 
@@ -91,8 +89,8 @@ class DocumentViewSet(DynamicModelViewSet):
 
         if extension not in settings.ALLOWED_DOCUMENT_TYPES:
             raise DocumentException("The file provided is not in the supported extension file list")
-        
-        try:           
+
+        try:
             manager = StorageManager(remote_files={"base_file": _has_file})
             manager.clone_remote_files()
             files = manager.get_retrieved_paths()
