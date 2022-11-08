@@ -1748,6 +1748,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 
+        # Test valid IP in second element
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88', '127.0.0.1']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
 
 class SecurityRulesTests(TestCase):
     """
