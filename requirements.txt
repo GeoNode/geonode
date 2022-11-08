@@ -24,6 +24,8 @@ six==1.13.0
 tqdm==4.43.0
 Deprecated==1.2.9
 wrapt==1.12.0
+jwcrypto==0.9.1
+PyJWT==1.7.1
 
 # Django Apps
 django-allauth==0.40.0
@@ -39,7 +41,7 @@ django-treebeard==4.3.1
 django-guardian<=1.4.9
 django-downloadview<=1.9
 django-polymorphic==2.1.2
-django-tastypie<0.15.0
+django-tastypie==0.14.2
 oauthlib==3.1.0
 pyopenssl==19.1.0
 jsonfield==2.1.1
@@ -69,7 +71,7 @@ django-autocomplete-light<3.0.0
 django-basic-authentication-decorator==0.9
 django-leaflet==0.26.0
 django-invitations<1.9.4
-django-recaptcha==2.0.6
+django-recaptcha==1.5.0
 geonode-oauth-toolkit==1.1.4.6
 
 # GeoNode org maintained apps.
@@ -88,7 +90,7 @@ gn-gsimporter==1.0.17
 gisdata==0.5.4
 
 # haystack/elasticsearch
-django-haystack==2.8.1
+django-haystack==2.0.0
 elasticsearch>=2.0.0,<8.0.0
 
 # datetimepicker widget
