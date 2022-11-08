@@ -436,6 +436,13 @@ class BaseApiTests(APITestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
+        self.assertEqual(response.data['total'], 28)
+
+        url = "{base_url}?{params}".format(base_url=reverse('base-resources-list'), params="filter{metadata_only}=false")
+        # Anonymous
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 26)
         response.data['resources'][0].get('executions')
         # Pagination
@@ -494,7 +501,7 @@ class BaseApiTests(APITestCase):
         # Admin
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
-        response = self.client.get(f"{url}?page_size=17", format='json')
+        response = self.client.get(f"{url}&page_size=17", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 26)
@@ -505,25 +512,27 @@ class BaseApiTests(APITestCase):
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
         self.assertEqual(resource.owner.username, 'bobby')
         # Admin
-        response = self.client.get(f"{url}/{resource.id}/", format='json')
+        url_with_id = "{base_url}/{res_id}?{params}".format(base_url=reverse('base-resources-list'), res_id=resource.id, params="filter{metadata_only}=false")
+
+        response = self.client.get(f"{url_with_id}", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
         self.assertEqual(response.data['resource']['sourcetype'], enumerations.SOURCE_TYPE_LOCAL)
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # Annonymous
         self.assertIsNone(self.client.logout())
-        response = self.client.get(f"{url}/{resource.id}/", format='json')
+        response = self.client.get(f"{url_with_id}", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
         # user owner
         self.assertTrue(self.client.login(username='bobby', password='bob'))
-        response = self.client.get(f"{url}/{resource.id}/", format='json')
+        response = self.client.get(f"{url_with_id}", format='json')
         self.assertTrue('change_resourcebase' in list(response.data['resource']['perms']))
         # user not owner and not assigned
         self.assertTrue(self.client.login(username='norman', password='norman'))
-        response = self.client.get(f"{url}/{resource.id}/", format='json')
+        response = self.client.get(f"{url_with_id}", format='json')
         self.assertFalse('change_resourcebase' in list(response.data['resource']['perms']))
         # Check executions are returned when deffered
         # all resources
-        response = self.client.get(f'{url}?include[]=executions', format='json')
+        response = self.client.get(f'{url}&include[]=executions', format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data['resources'][0].get('executions'))
         # specific resource
@@ -555,7 +564,7 @@ class BaseApiTests(APITestCase):
                 )
         }]
         self.assertTrue(self.client.login(username='bobby', password='bob'))
-        response = self.client.get(f'{url}/{resource.id}?include[]=executions', format='json')
+        response = self.client.get(f'{url_with_id}&include[]=executions', format='json')
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(response.data['resource'].get('executions'))
         self.assertEqual(response.data['resource'].get('executions'), expected_executions_results)
@@ -567,7 +576,7 @@ class BaseApiTests(APITestCase):
             self.assertEqual(6, resource.tkeywords.count())
             # Admin
             self.assertTrue(self.client.login(username='admin', password='admin'))
-            response = self.client.get(f"{url}/{resource.id}/", format='json')
+            response = self.client.get(f"{url_with_id}", format='json')
             self.assertIsNotNone(response.data['resource']['tkeywords'])
             self.assertEqual(6, len(response.data['resource']['tkeywords']))
             self.assertListEqual(
@@ -721,7 +730,7 @@ class BaseApiTests(APITestCase):
         self.assertTrue(self.client.login(username='admin', password='admin'))
 
         # Filter by owner == bobby
-        response = self.client.get(f"{url}?filter{{owner.username}}=bobby", format='json')
+        response = self.client.get(f"{url}?filter{{owner.username}}=bobby&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 3)
@@ -729,7 +738,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(len(response.data['resources']), 3)
 
         # Filter by resource_type == document
-        response = self.client.get(f"{url}?filter{{resource_type}}=document", format='json')
+        response = self.client.get(f"{url}?filter{{resource_type}}=document&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 9)
@@ -738,7 +747,7 @@ class BaseApiTests(APITestCase):
 
         # Filter by resource_type == layer and title like 'common morx'
         response = self.client.get(
-            f"{url}?filter{{resource_type}}=dataset&filter{{title.icontains}}=common morx", format='json')
+            f"{url}?filter{{resource_type}}=dataset&filter{{title.icontains}}=common morx&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 1)
@@ -747,7 +756,7 @@ class BaseApiTests(APITestCase):
 
         # Filter by Keywords
         response = self.client.get(
-            f"{url}?filter{{keywords.name}}=here", format='json')
+            f"{url}?filter{{keywords.name}}=here&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 1)
@@ -756,7 +765,7 @@ class BaseApiTests(APITestCase):
 
         # Filter by Metadata Regions
         response = self.client.get(
-            f"{url}?filter{{regions.name.icontains}}=Italy", format='json')
+            f"{url}?filter{{regions.name.icontains}}=Italy&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 0)
@@ -765,7 +774,7 @@ class BaseApiTests(APITestCase):
 
         # Filter by Metadata Categories
         response = self.client.get(
-            f"{url}?filter{{category.identifier}}=elevation", format='json')
+            f"{url}?filter{{category.identifier}}=elevation&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 6)
@@ -773,21 +782,21 @@ class BaseApiTests(APITestCase):
         self.assertEqual(len(response.data['resources']), 6)
 
         # Extent Filter
-        response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90", format='json')
+        response = self.client.get(f"{url}?page_size=26&extent=-180,-90,180,90&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 26)
 
-        response = self.client.get(f"{url}?page_size=26&extent=0,0,100,100", format='json')
+        response = self.client.get(f"{url}?page_size=26&extent=0,0,100,100&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 26)
         # Pagination
         self.assertEqual(len(response.data['resources']), 26)
 
-        response = self.client.get(f"{url}?page_size=26&extent=-10,-10,-1,-1", format='json')
+        response = self.client.get(f"{url}?page_size=26&extent=-10,-10,-1,-1&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 12)
@@ -797,7 +806,7 @@ class BaseApiTests(APITestCase):
         # Extent Filter: Crossing Dateline
         extent = "-180.0000,56.9689,-162.5977,70.7435,155.9180,56.9689,180.0000,70.7435"
         response = self.client.get(
-            f"{url}?page_size=26&extent={extent}", format='json')
+            f"{url}?page_size=26&extent={extent}&filter{{metadata_only}}=false", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 12)
@@ -816,7 +825,7 @@ class BaseApiTests(APITestCase):
             f"{url}?sort[]=title", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 26)
+        self.assertEqual(response.data['total'], 28)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
 
@@ -830,7 +839,7 @@ class BaseApiTests(APITestCase):
             f"{url}?sort[]=-title", format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 26)
+        self.assertEqual(response.data['total'], 28)
         # Pagination
         self.assertEqual(len(response.data['resources']), 10)
 
@@ -1663,7 +1672,7 @@ class BaseApiTests(APITestCase):
 
         resources = ResourceBase.objects.all()
         for resource in resources:
-            url = reverse('base-resources-detail', kwargs={'pk': resource.pk})
+            url = "{base_url}?{params}".format(base_url=reverse('base-resources-detail', kwargs={'pk': resource.pk}), params="filter{metadata_only}=false")
             response = self.client.get(url, format='json')
             if resource.title.endswith('metadata true'):
                 self.assertEqual(response.status_code, 404)
