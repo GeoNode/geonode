@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('upload', '0035_update_uploadsizelimit_objects'),
+        ('upload', '0032_uploadsizelimit'),
     ]
 
     operations = [

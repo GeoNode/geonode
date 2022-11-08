@@ -19,7 +19,7 @@ def copy_uploaded_files(apps, _):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('upload', '0031_upload_resume_url'),
+        ('upload', '0033_upload_store_spatial_files'),
     ]
 
     operations = [

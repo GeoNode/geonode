@@ -1463,6 +1463,14 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
+    MAPSTORE_CATALOGUE_SERVICES = {}
+
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
+
+    if GEONODE_CATALOGUE_SERVICE:
+        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]]  # noqa
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
+
     DEFAULT_MS2_BACKGROUNDS = [
         {
             "type": "osm",
@@ -2115,6 +2123,7 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
     "sync_geonode_maps",
     "importlayers",
     "set_all_datasets_metadata",
+    "set_layers_permissions",
 ] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))
 
 
