@@ -17,16 +17,17 @@
 #
 #########################################################################
 import logging
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
 from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
-
+from distutils.util import strtobool
 from geonode.security.utils import (
     get_users_with_perms,
-    get_resources_with_perms)
+    get_visible_resources)
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
@@ -194,26 +195,22 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
-    shortcut_kwargs = {
-        'accept_global_perms': True,
-    }
 
     def filter_queryset(self, request, queryset, view):
-        # We want to defer this import until runtime, rather than import-time.
-        # See https://github.com/encode/django-rest-framework/issues/4608
-        # (Also see #1624 for why we need to make this import explicitly)
 
-        user = request.user
-        # perm_format = '%(app_label)s.view_%(model_name)s'
-        # permission = self.perm_format % {
-        #     'app_label': queryset.model._meta.app_label,
-        #     'model_name': queryset.model._meta.model_name,
-        # }
+        try:
+            metadata_only = strtobool(request.query_params.get("filter{metadata_only}", "None"))
+        except Exception:
+            metadata_only = None
 
-        obj_with_perms = get_resources_with_perms(user, shortcut_kwargs=self.shortcut_kwargs)
-        logger.debug(f" user: {user} -- obj_with_perms: {obj_with_perms}")
-
-        return queryset.filter(id__in=obj_with_perms.values('id'))
+        return get_visible_resources(
+            queryset,
+            request.user,
+            metadata_only=metadata_only,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES
+        )
 
 
 class UserHasPerms(DjangoModelPermissions):
