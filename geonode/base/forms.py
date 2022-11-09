@@ -630,13 +630,20 @@ class BatchEditForm(forms.Form):
     ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
+def get_user_choices():
+    try:
+        return [(x.pk, x.title) for x in Dataset.objects.all().order_by('id')]
+    except Exception:
+        return []
+
+
 class UserAndGroupPermissionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['layers'].label_from_instance = self.label_from_instance
 
     layers = MultipleChoiceField(
-        choices=[(x.pk, x.title) for x in Dataset.objects.all().order_by('id')],
+        choices=get_user_choices(),
         widget=autocomplete.Select2Multiple(
             url='datasets_autocomplete'
         ),
