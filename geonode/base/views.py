@@ -30,6 +30,7 @@ from django.http import HttpResponse
 from django.views.generic import FormView
 from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -99,7 +100,7 @@ def user_and_group_permission(request, model):
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
         if form.is_valid():
-            resources_names = [layer.title for layer in form.cleaned_data.get('layers')]
+            resources_names = form.cleaned_data.get('layers')
             users_usernames = [user.username for user in model_class.objects.filter(
                 id__in=ids)] if model == 'profile' else None
             groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
@@ -123,11 +124,17 @@ def user_and_group_permission(request, model):
                 set_permissions.apply_async(
                     ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
 
+        messages.add_message(
+            request,
+            messages.INFO,
+            f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
+        )
+
         return HttpResponseRedirect(
             get_url_for_app_model(model, model_class))
 
     form = UserAndGroupPermissionsForm({
-        'permission_type': 'read',
+        'permission_type': 'view',
         'mode': 'set',
     })
     return render(
@@ -232,7 +239,7 @@ class SimpleSelect2View(autocomplete.Select2QuerySetView):
             raise AttributeError("SimpleSelect2View missing required 'filter_arg' argument")
 
     def get_queryset(self):
-        qs = super(views.BaseQuerySetView, self).get_queryset()
+        qs = super(views.BaseQuerySetView, self).get_queryset().order_by('pk')
 
         if self.q:
             qs = qs.filter(**{self.filter_arg: self.q})
@@ -296,6 +303,20 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
                 'id': self.get_result_value(result.keyword),
                 'text': self.get_result_label(result),
                 'selected_text': self.get_selected_result_label(result),
+            } for result in context['object_list']
+        ]
+
+
+class DatasetsAutocomplete(SimpleSelect2View):
+    model = Dataset
+    filter_arg = 'title__icontains'
+
+    def get_results(self, context):
+        return [
+            {
+                'id': self.get_result_value(result),
+                'text': self.get_result_label(result.title),
+                'selected_text': self.get_selected_result_label(result.title),
             } for result in context['object_list']
         ]
 

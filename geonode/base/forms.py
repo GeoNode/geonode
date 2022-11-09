@@ -635,16 +635,22 @@ class UserAndGroupPermissionsForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['layers'].label_from_instance = self.label_from_instance
 
-    layers = forms.ModelMultipleChoiceField(
-        queryset=Dataset.objects.all(),
-        required=False)
+    layers = MultipleChoiceField(
+        choices=[(x.pk, x.title) for x in Dataset.objects.order_by('id')],
+        widget=autocomplete.Select2Multiple(
+            url='datasets_autocomplete'
+        ),
+        label="Datasets",
+        required=False,
+    )
+
     permission_type = forms.ChoiceField(
         required=True,
         widget=forms.RadioSelect,
         choices=(
-            ('read', 'Read'),
+            ('view', 'View'),
+            ('download', 'Download'),
             ('edit', 'Edit'),
-            ('download', 'Download')
         ),
     )
     mode = forms.ChoiceField(
