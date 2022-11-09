@@ -96,6 +96,9 @@ def user_and_group_permission(request, model):
         return HttpResponseRedirect(
             get_url_for_app_model(model, model_class))
 
+    users_usernames = None
+    groups_names = None
+
     if request.method == 'POST':
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
@@ -124,12 +127,17 @@ def user_and_group_permission(request, model):
                 set_permissions.apply_async(
                     ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
 
-        messages.add_message(
-            request,
-            messages.INFO,
-            f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
-        )
-
+            messages.add_message(
+                request,
+                messages.INFO,
+                f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
+            )
+        else:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                f'Some error has occured {form.errors}'
+            )
         return HttpResponseRedirect(
             get_url_for_app_model(model, model_class))
 

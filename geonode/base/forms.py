@@ -636,7 +636,7 @@ class UserAndGroupPermissionsForm(forms.Form):
         self.fields['layers'].label_from_instance = self.label_from_instance
 
     layers = MultipleChoiceField(
-        choices=[(x.pk, x.title) for x in Dataset.objects.order_by('id')],
+        choices=[(x.pk, x.title) for x in Dataset.objects.all().order_by('id')],
         widget=autocomplete.Select2Multiple(
             url='datasets_autocomplete'
         ),
