@@ -91,7 +91,7 @@ class DocumentsApiTests(APITestCase):
                 "metadata_only": True
             }
         }
-        expected = {'success': False, 'errors': ['This field is required.'], 'code': 'invalid'}
+        expected = {'success': False, 'errors': ['A file path or a file must be speficied'], 'code': 'document_exception'}
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
@@ -105,10 +105,11 @@ class DocumentsApiTests(APITestCase):
             "document": {
                 "title": "New document",
                 "metadata_only": True,
-                "file_path": None
+                "file_path": None,
+                "doc_file": None
             }
         }
-        expected = {'success': False, 'errors': ['This field may not be null.'], 'code': 'invalid'}
+        expected = {'success': False, 'errors': ['A file path or a file must be speficied'], 'code': 'document_exception'}
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
