@@ -65,6 +65,9 @@ class DocumentViewSet(DynamicModelViewSet):
     def perform_create(self, serializer):
         '''
         Function to create document via API v2.
+        file_path: path to the file
+        doc_file: the open file
+
         The API expect this kind of JSON:
         {
             "document": {
@@ -74,18 +77,24 @@ class DocumentViewSet(DynamicModelViewSet):
             }
         }
         File path rappresent the filepath where the file to upload is saved.
-        Is going to be cloned by the storage manager
+
+        or can be also a form-data:
+        curl --location --request POST 'http://localhost:8000/api/v2/documents' \
+        --form 'title="Super Title2"' \
+        --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
+        --form 'metadata_only="False"'
         '''
         manager = None
         serializer.is_valid(raise_exception=True)
-        _has_file = serializer.validated_data.pop("file_path", None)
+        _has_file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
         extension = serializer.validated_data.pop("extension", None)
 
         if not _has_file:
-            raise DocumentException(detail="A filepath must be speficied")
+            raise DocumentException(detail="A file path or a file must be speficied")
 
         if not extension:
-            extension = Path(_has_file).suffix.replace(".", "")
+            filename = _has_file if isinstance(_has_file, str) else _has_file.name
+            extension = Path(filename).suffix.replace(".", "")
 
         if extension not in settings.ALLOWED_DOCUMENT_TYPES:
             raise DocumentException("The file provided is not in the supported extension file list")
@@ -95,7 +104,14 @@ class DocumentViewSet(DynamicModelViewSet):
             manager.clone_remote_files()
             files = manager.get_retrieved_paths()
 
-            resource = serializer.save(**{"owner": self.request.user, "extension": extension, "files": [files.get("base_file")]})
+            resource = serializer.save(
+                **{
+                    "owner": self.request.user,
+                    "extension": extension,
+                    "files": [files.get("base_file")],
+                    "resource_type": "document"
+                }
+            )
 
             resource.handle_moderated_uploads()
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
