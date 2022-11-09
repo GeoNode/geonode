@@ -124,14 +124,27 @@ def user_and_group_permission(request, model):
             permissions_names = form.cleaned_data.get('permission_type')
 
             if permissions_names:
-                set_permissions.apply_async(
-                    ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
+                if 'edit' in permissions_names and 'AnonymousUser' in users_usernames:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        '"EDIT" permissions not allowed for the "AnonymousUser".'
+                    )
+                else:
+                    set_permissions.apply_async(
+                        ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
 
-            messages.add_message(
-                request,
-                messages.INFO,
-                f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
-            )
+                    messages.add_message(
+                        request,
+                        messages.INFO,
+                        f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
+                    )
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    'No permissions have been set.'
+                )
         else:
             messages.add_message(
                 request,

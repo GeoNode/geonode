@@ -2111,22 +2111,73 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             if dataset:
                 dataset.delete()
 
-    def _create_arguments(self, perms_type):
+    def test_anonymous_user_cannot_get_edit_permissions(self):
+        '''
+        Given the Anonymous user, we should get an error trying to set "edit" permissions.
+        '''
+        try:
+            expected_perms = {
+                'delete_resourcebase',
+                'change_resourcebase',
+                'view_resourcebase',
+                'change_resourcebase_permissions',
+                'change_dataset_style',
+                'change_resourcebase_metadata',
+                'publish_resourcebase',
+                'change_dataset_data',
+                'download_resourcebase'
+            }
+
+            dataset, args, username, opts = self._create_arguments(perms_type='edit')
+            username = 'AnonymousUser'
+            opts["users"] = ['AnonymousUser']
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username, assertion=False)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_unset_anonymous_view_permissions(self):
+        '''
+        Given the Anonymous user, we should be able to unset any paermission.
+        '''
+        try:
+            expected_perms = {
+            }
+
+            dataset, args, username, opts = self._create_arguments(perms_type='view', mode='unset')
+            username = 'AnonymousUser'
+            opts["users"] = ['AnonymousUser']
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username, assertion=False)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def _create_arguments(self, perms_type, mode='set'):
         dataset = create_single_dataset('dataset_for_management_command')
         args = []
         username = get_user_model().objects.exclude(username='admin').exclude(username='AnonymousUser').first().username
         opts = {
                 "permission": perms_type,
                 "users": [username],
-                "resources": str(dataset.id)
+                "resources": str(dataset.id),
+                "delete": True if mode == 'unset' else False
             }
 
         return dataset, args, username, opts
 
-    def _assert_perms(self, expected_perms, dataset, username):
+    def _assert_perms(self, expected_perms, dataset, username, assertion=True):
         dataset.refresh_from_db()
 
         perms = dataset.get_all_level_info()
-        self.assertTrue(username in [user.username for user in perms['users']])
-        actual = set(itertools.chain.from_iterable([perms for user, perms in perms['users'].items() if user.username == username]))
-        self.assertSetEqual(expected_perms, actual)
+        if assertion:
+            self.assertTrue(username in [user.username for user in perms['users']])
+            actual = set(itertools.chain.from_iterable([perms for user, perms in perms['users'].items() if user.username == username]))
+            self.assertSetEqual(expected_perms, actual)
+        else:
+            self.assertFalse(username in [user.username for user in perms['users']])
