@@ -19,6 +19,7 @@
 from django.conf.urls import url, include
 
 from .views import (
+    DatasetsAutocomplete,
     resource_clone,
     RegionAutocomplete,
     ThesaurusAvailable,
@@ -56,6 +57,11 @@ urlpatterns = [
         r'^thesaurus_autocomplete/$',
         ThesaurusKeywordLabelAutocomplete.as_view(),
         name='thesaurus_autocomplete',
+    ),
+    url(
+        r'^datasets_autocomplete/$',
+        DatasetsAutocomplete.as_view(),
+        name='datasets_autocomplete',
     ),
     url(
         r'^resource_rights/(?P<pk>\d+)$',
