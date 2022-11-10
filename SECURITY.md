@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-GeoNode ersions supported with security updates.
+GeoNode versions supported with security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
