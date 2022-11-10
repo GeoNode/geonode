@@ -36,6 +36,7 @@ from geonode.documents.models import Document
 
 from geonode.base.models import ResourceBase
 from geonode.base.api.serializers import ResourceBaseSerializer
+from geonode.resource.utils import resourcebase_post_save
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
@@ -112,7 +113,10 @@ class DocumentViewSet(DynamicModelViewSet):
                     "resource_type": "document"
                 }
             )
-
+            
+            resource.set_missing_info()
+            resourcebase_post_save(resource.get_real_instance())
+            resource_manager.set_permissions(None, instance=resource, permissions=None, created=True)
             resource.handle_moderated_uploads()
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource
