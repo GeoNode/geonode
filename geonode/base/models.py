@@ -711,6 +711,86 @@ class ResourceBaseManager(PolymorphicManager):
                     upload.delete()
 
 
+########################
+# ZALF MODEL ADDITIONS #
+########################
+
+class AlternateType(models.Model):
+    """ Available Alternate Types """
+
+    ALTERNATE_TYPE = (
+        ("Alternative", ""),
+        ("Subtitle", ""),
+        ("Translated", ""),
+        ("Other", ""),
+
+    )
+
+    alternate_type = models.CharField(
+        max_length=255,
+        choices=ALTERNATE_TYPE,
+        help_text=_('Alternate title type'))
+
+    def __str__(self):
+        return f"{self.alternate_type}"
+
+
+class DescriptionType(models.Model):
+    """ Descripion Type of abstract """
+
+    DESCRIPTION_TYPES = (
+        ("Methods", "The methodology employed for the study or research"),
+        ("SeriesInformation", "Information about a repeating series, such as volumne, issue, number"),
+        ("TableOfContents", "A listing of the Table of Contents"),
+        ("TechnicalInfo", "Detailed information that may be associated with design, implementation, operation, use, and/or maintenance of a process or system"),
+        ("other", "Other description information that does not fit into an existing category")
+    )
+
+    description_type = models.CharField(
+        max_length=255,
+        choices=DESCRIPTION_TYPES,
+        help_text=_('abstract description type'))
+
+    def __str__(self):
+        return f"{self.description_type}"
+
+
+class FundingReference(models.Model):
+    """ Funding Reference Identifiers """
+    funder_name = models.CharField(
+        max_length=255,
+        help_text=_('Name of the funding provider. (e.g. European Commission)'))
+    funder_identifier = models.CharField(
+        max_length=255,
+        help_text=_('Uniquely identifies a funding entity, according to various types. (e.g. http://doi.org/10.13039/501100000780)'))
+    funder_identifier_type = models.CharField(
+        max_length=255,
+        help_text=_('The type of the Identifier. (e.g. BMBF)'))
+    award_number = models.CharField(
+        max_length=255,
+        help_text=_('The code assigned by the funder to a sponsored award (grant). (e.g. 282625)'))
+    award_uri= models.CharField(
+        max_length=255,
+        help_text=_('The URI leading to a page provided by the funder for more information about the award (grant). (e.g. http://cordis.europa.eu/project/rcn/100180_en.html)'))
+    award_title = models.CharField(
+        max_length=255,
+        help_text=_('The human readable title of the award (grant). (e.g. MOTivational strength of ecosystem services)'))
+
+
+class RelatedIdentifier(models.Model):
+    related_identifier = models.CharField(
+        max_length=255,
+        help_text=_('Name of the funding provider. (e.g. European Commission)'))
+    related_identifier_type = models.CharField(
+        max_length=255,
+        help_text=_('The type of the Related identifier. If Related identifier is used Identifier type is mandatory. (e.g. bibcode)'))
+    relation_type = models.CharField(
+        max_length=500,
+        help_text=_('Description of the relationship of the resource being registered (A) and the related resource (B). If Related identifier is used Relation type is mandatory.'))
+
+############################################
+
+
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -732,7 +812,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     PERMISSIONS = {}
 
     VALID_DATE_TYPES = [(x.lower(), _(x))
-                        for x in ['Creation', 'Publication', 'Revision']]
+                        for x in ['Publication']]
 
     abstract_help_text = _(
         'brief narrative summary of the content of the resource(s)')
@@ -1077,6 +1157,60 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True,
         help_text=extra_metadata_help_text)
+
+    ###############################
+    # ZALF added GeoNode Metadata #
+    ###############################
+
+    title_de = models.CharField(_('title_de'), max_length=255, default="", help_text=_(
+        'german name by which the cited resource is known'))
+
+    abstract_de = models.TextField(
+        _('abstract_de'),
+        max_length=2000,
+        blank=True,
+        help_text=_('brief german narrative summary of the content of the resource(s)'))
+
+    alternate_type = models.ForeignKey(
+        AlternateType,
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL)
+
+    description_type = models.ForeignKey(
+        DescriptionType,
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL)
+
+    # project_leader = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL,
+    #     on_delete=models.PROTECT)
+
+    funding_reference = models.ForeignKey(
+        FundingReference,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
+
+    related_identifier = models.ForeignKey(
+        RelatedIdentifier,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
+
+    use_contraints = models.TextField(
+        _('use_constraints'),
+        max_length=2000,
+        blank=True,
+        help_text=_('This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)'))
+
+    parent_ressource = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        help_text=_('Parent Dataset, this dataset belongs to'),
+        on_delete=models.SET_NULL)
 
     objects = ResourceBaseManager()
 

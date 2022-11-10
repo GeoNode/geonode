@@ -46,7 +46,8 @@ from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
                                  ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
-                                 TopicCategory)
+                                 TopicCategory, AlternateType, DescriptionType, FundingReference,
+                                 RelatedIdentifier)
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.base.fields import MultiThesauriField
 from geonode.documents.models import Document
@@ -411,6 +412,30 @@ class ResourceBaseForm(TranslationModelForm):
         required=False,
         widget=TinyMCE())
 
+    ##################
+    # ZALF ADDITIONS #
+    ##################
+
+    abstract_de = forms.CharField(
+        label=_("Abstract German"),
+        required=False,
+        widget=TinyMCE())
+    
+    # Alternate = forms.CharField(
+    #     label=_("Alternate"),
+    #     required=False,
+    #     widget=TinyMCE())
+    
+    alternate_type = forms.ModelChoiceField(
+        label=_('Alternate Type'),
+        queryset=AlternateType.objects.all(),
+        required=False)
+    
+    description_type = forms.ModelChoiceField(
+        label=_('Description Type'),
+        queryset=DescriptionType.objects.all(),
+        required=False)
+    ##
     owner = forms.ModelChoiceField(
         empty_label=_("Owner"),
         label=_("Owner"),
@@ -614,6 +639,11 @@ class BatchEditForm(forms.Form):
         label=_('License'),
         queryset=License.objects.all(),
         required=False)
+    ##################
+    # ZALF ADDITIONS #
+    ##################
+ 
+    ##
     regions = forms.ModelChoiceField(
         label=_('Regions'),
         queryset=Region.objects.all(),

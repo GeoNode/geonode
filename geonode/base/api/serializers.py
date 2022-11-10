@@ -48,7 +48,13 @@ from geonode.base.models import (
     SpatialRepresentationType,
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
-    ExtraMetadata
+    ExtraMetadata,
+    # ZALF EXTRAS
+    AlternateType,
+    DescriptionType,
+    FundingReference,
+    RelatedIdentifier
+    ##
 )
 from geonode.groups.models import (
     GroupCategory,
@@ -433,6 +439,41 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                 )
         return data
 
+#############################
+# ZALF ADDITIONS SERIALIZER #
+#############################
+class AlternateTypeSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = AlternateType
+        name = 'AlternateType'
+        fields = ('alternate_type',)
+
+
+class DescriptionTypeSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = DescriptionType
+        name = 'DescriptionType'
+        fields = ('description_type',)
+
+
+class FundingReferenceSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = FundingReference
+        name = 'FundingReference'
+        fields = ('funder_name','funder_identifier','funder_identifier_type','award_number','award_uri','award_title',)
+
+
+class RelatedIdentifierSerializer(DynamicModelSerializer):
+
+    class Meta:
+        model = RelatedIdentifier
+        name = 'RelatedIdentifier'
+        fields = ('related_identifier',)
+##
+
 
 class ResourceBaseSerializer(
     ResourceBaseToRepresentationSerializerMixin,
@@ -488,8 +529,8 @@ class ResourceBaseSerializer(
         self.fields['processed'] = serializers.BooleanField(read_only=True)
         self.fields['state'] = serializers.CharField(read_only=True)
         self.fields['sourcetype'] = serializers.CharField(read_only=True)
-
         self.fields['embed_url'] = EmbedUrlField(required=False)
+
         self.fields['thumbnail_url'] = ThumbnailUrlField(read_only=True)
         self.fields['keywords'] = DynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True)
@@ -512,6 +553,20 @@ class ResourceBaseSerializer(
 
         self.fields['favorite'] = FavoriteField(read_only=True)
 
+        ##################
+        # ZALF ADDITIONS #
+        ##################
+        
+        self.fields['title_de'] = serializers.CharField(required=False)
+        self.fields['abstract_de'] = serializers.CharField(required=False)
+        self.fields['alternate_type'] = AlternateTypeSerializer(required=False)
+        self.fields['description_type'] = DescriptionTypeSerializer(required=False)
+        self.fields['funding_reference'] = FundingReferenceSerializer(required=False)
+        self.fields['related_identifier'] = RelatedIdentifierSerializer(required=False)
+        self.fields['use_contraints'] = serializers.CharField(read_only=True)
+        self.fields['parent_ressource'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True, required=False)
+        
+        ##
     metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:
@@ -519,6 +574,12 @@ class ResourceBaseSerializer(
         name = 'resource'
         view_name = 'base-resources-list'
         fields = (
+            ##################
+            # ZALF ADDITIONS #
+            ##################
+            'title_de', 'abstract_de', 'alternate_type', 'description_type','funding_reference',
+            'related_identifier', 'use_contraints', 'parent_ressource',
+            #
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
             'owner', 'poc', 'metadata_author',
             'keywords', 'tkeywords', 'regions', 'category',

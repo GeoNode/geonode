@@ -38,7 +38,7 @@ services:
       - "8000:8000"
       - "5678:5678"
 
-    entrypoint: ["/usr/src/geonode/entrypoint.sh"]
+    entrypoint: ["tail", "-f", "/dev/null"]
 
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     # cap_add:

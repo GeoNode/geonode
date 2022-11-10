@@ -67,6 +67,11 @@ class Command(BaseCommand):
         if not name:
             raise CommandError("Missing identifier name for the thesaurus (--name)")
 
+        t_query = Thesaurus.objects.filter(title=name)
+
+        if len(t_query) > 0:
+            raise CommandError("Thesaurus with title: {title} already exists ...") 
+
         if name.startswith('fake'):
             self.create_fake_thesaurus(name)
         else:
