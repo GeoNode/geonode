@@ -496,6 +496,8 @@ def set_datasets_permissions(permissions_name, resources_names=None, users_usern
                     for _group, _perms in perms_spec_compact_resource.extended["groups"].items()
                     if _user not in copy_compact_perms.extended["groups"]
                 }
+                if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get("anonymous"):
+                    final_perms_payload["groups"].pop("anonymous")
 
             # calling the resource manager to set the permissions
             resource_manager.set_permissions(resource.uuid, instance=resource, permissions=final_perms_payload)
