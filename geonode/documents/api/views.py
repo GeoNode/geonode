@@ -113,7 +113,7 @@ class DocumentViewSet(DynamicModelViewSet):
                     "resource_type": "document"
                 }
             )
-            
+
             resource.set_missing_info()
             resourcebase_post_save(resource.get_real_instance())
             resource_manager.set_permissions(None, instance=resource, permissions=None, created=True)
