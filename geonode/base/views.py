@@ -102,6 +102,8 @@ def user_and_group_permission(request, model):
     if request.method == 'POST':
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
+        _message = ''
+        _errors = False
         if form.is_valid():
             resources_names = form.cleaned_data.get('layers')
             users_usernames = [user.username for user in model_class.objects.filter(
@@ -123,8 +125,6 @@ def user_and_group_permission(request, model):
             delete_flag = form.cleaned_data.get('mode') == 'unset'
             permissions_names = form.cleaned_data.get('permission_type')
 
-            _message = ''
-            _errors = False
             if permissions_names:
                 if 'edit' in permissions_names and 'AnonymousUser' in users_usernames:
                     if not _errors:
