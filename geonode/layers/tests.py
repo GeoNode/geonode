@@ -2117,15 +2117,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
         '''
         try:
             expected_perms = {
-                'delete_resourcebase',
-                'change_resourcebase',
-                'view_resourcebase',
-                'change_resourcebase_permissions',
-                'change_dataset_style',
-                'change_resourcebase_metadata',
-                'publish_resourcebase',
-                'change_dataset_data',
-                'download_resourcebase'
             }
 
             dataset, args, username, opts = self._create_arguments(perms_type='edit')

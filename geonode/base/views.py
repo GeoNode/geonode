@@ -123,34 +123,31 @@ def user_and_group_permission(request, model):
             delete_flag = form.cleaned_data.get('mode') == 'unset'
             permissions_names = form.cleaned_data.get('permission_type')
 
+            _message = ''
+            _errors = False
             if permissions_names:
                 if 'edit' in permissions_names and 'AnonymousUser' in users_usernames:
-                    messages.add_message(
-                        request,
-                        messages.ERROR,
-                        '"EDIT" permissions not allowed for the "AnonymousUser".'
-                    )
+                    if not _errors:
+                        _message = '"EDIT" permissions not allowed for the "AnonymousUser".'
+                        _errors = True
                 else:
                     set_permissions.apply_async(
                         ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
-
-                    messages.add_message(
-                        request,
-                        messages.INFO,
-                        f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
-                    )
+                    if not _errors:
+                        _message = f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
             else:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    'No permissions have been set.'
-                )
+                if not _errors:
+                    _message = 'No permissions have been set.'
+                    _errors = True
         else:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                f'Some error has occured {form.errors}'
-            )
+            if not _errors:
+                _message = f'Some error has occured {form.errors}'
+                _errors = True
+        messages.add_message(
+            request,
+            (messages.INFO if not _errors else messages.ERROR),
+            _message
+        )
         return HttpResponseRedirect(
             get_url_for_app_model(model, model_class))
 
