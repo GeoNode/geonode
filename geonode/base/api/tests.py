@@ -2425,10 +2425,10 @@ class BaseApiTests(APITestCase):
         files_as_dict, _ = get_files(files)
         resource = Dataset.objects.create(
             owner=get_user_model().objects.get(username='admin'),
-            name='test_copy',
+            name='test_copy_with_perms',
             store='geonode_data',
             subtype="vector",
-            alternate="geonode:test_copy",
+            alternate="geonode:test_copy_with_perms",
             resource_type="dataset",
             uuid=str(uuid4()),
             files=list(files_as_dict.values())
@@ -2452,7 +2452,9 @@ class BaseApiTests(APITestCase):
 
         response = self.client.put(copy_url)
         self.assertEqual(response.status_code, 200)
-        _resource = Dataset.objects.last()
+        self.assertEqual('finished', self.client.get(response.json().get("status_url")).json().get("status"))
+        _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
+        self.assertIsNotNone(_resource)
         self.assertFalse('bobby' in 'bobby' in [x.username for x in _resource.get_all_level_info().get("users", [])])
         self.assertTrue('admin' in 'admin' in [x.username for x in _resource.get_all_level_info().get("users", [])])
 
