@@ -83,7 +83,7 @@ class UploadAppConfig(AppConfig):
         }
         settings.CELERY_BEAT_SCHEDULE['clean-up-old-task-result'] = {
             'task': 'geonode.upload.tasks.cleanup_celery_task_entries',
-            'schedule': timedelta(days=1),
+            'schedule': 86400.0,
         }
 
 
