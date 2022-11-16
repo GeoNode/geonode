@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from datetime import timedelta
 from django.conf import settings
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
@@ -54,12 +55,15 @@ def run_setup_hooks(sender, **kwargs):
                 start_time=timezone.now()
             )
         )
-
+        daily_interval, _ = IntervalSchedule.objects.get_or_create(
+            every=1,
+            period="days"
+        )
         PeriodicTask.objects.update_or_create(
             name="clean-up-old-task-result",
             defaults=dict(
                 task="geonode.upload.tasks.cleanup_celery_task_entries",
-                interval=check_interval,
+                interval=daily_interval,
                 args='',
                 start_time=timezone.now()
             )
@@ -79,7 +83,7 @@ class UploadAppConfig(AppConfig):
         }
         settings.CELERY_BEAT_SCHEDULE['clean-up-old-task-result'] = {
             'task': 'geonode.upload.tasks.cleanup_celery_task_entries',
-            'schedule': 10.0,
+            'schedule': timedelta(days=1),
         }
 
 
