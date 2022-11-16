@@ -55,6 +55,16 @@ def run_setup_hooks(sender, **kwargs):
             )
         )
 
+        PeriodicTask.objects.update_or_create(
+            name="clean-up-old-task-result",
+            defaults=dict(
+                task="geonode.upload.tasks.cleanup_celery_task_entries",
+                interval=check_interval,
+                args='',
+                start_time=timezone.now()
+            )
+        )
+
 
 class UploadAppConfig(AppConfig):
 
@@ -65,6 +75,10 @@ class UploadAppConfig(AppConfig):
         post_migrate.connect(run_setup_hooks, sender=self)
         settings.CELERY_BEAT_SCHEDULE['finalize-incomplete-session-resources'] = {
             'task': 'geonode.upload.tasks.finalize_incomplete_session_uploads',
+            'schedule': 10.0,
+        }
+        settings.CELERY_BEAT_SCHEDULE['clean-up-old-task-result'] = {
+            'task': 'geonode.upload.tasks.cleanup_celery_task_entries',
             'schedule': 10.0,
         }
 
