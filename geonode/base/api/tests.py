@@ -2420,6 +2420,42 @@ class BaseApiTests(APITestCase):
         )
         self._assertCloningWithPerms(resource)
 
+    def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
+        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files_as_dict, _ = get_files(files)
+        resource = Dataset.objects.create(
+            owner=get_user_model().objects.get(username='admin'),
+            name='test_copy',
+            store='geonode_data',
+            subtype="vector",
+            alternate="geonode:test_copy",
+            resource_type="dataset",
+            uuid=str(uuid4()),
+            files=list(files_as_dict.values())
+        )
+        _perms = {
+            'users': {
+                "bobby": ['base.add_resourcebase', 'base.download_resourcebase']
+            },
+            "groups": {
+                "anonymous": ["base.view_resourcebase", "base.download_resourcebae"]
+            }
+        }
+        resource.set_permissions(_perms)
+        # checking that bobby is in the original dataset perms list
+        self.assertTrue('bobby' in 'bobby' in [x.username for x in resource.get_all_level_info().get("users", [])])
+        # copying the resource, should remove the perms for bobby
+        # only the default perms should be available
+        copy_url = reverse('base-resources-resource-service-copy', kwargs={'pk': resource.pk})
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        response = self.client.put(copy_url)
+        self.assertEqual(response.status_code, 200)
+        _resource = Dataset.objects.last()
+        self.assertFalse('bobby' in 'bobby' in [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertTrue('admin' in 'admin' in [x.username for x in _resource.get_all_level_info().get("users", [])])
+
     def test_resource_service_copy_with_perms_doc(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
         files_as_dict, _ = get_files(files)
