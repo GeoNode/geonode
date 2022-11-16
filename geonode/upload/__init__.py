@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from datetime import timedelta
 from django.conf import settings
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
