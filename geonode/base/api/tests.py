@@ -17,11 +17,13 @@
 #
 #########################################################################
 
+import ast
 import os
 import re
 import sys
 import json
 import logging
+import time
 import gisdata
 
 from PIL import Image
@@ -2452,6 +2454,13 @@ class BaseApiTests(APITestCase):
 
         response = self.client.put(copy_url)
         self.assertEqual(response.status_code, 200)
+        
+        if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
+            tentative = 1
+            while ExecutionRequest.objects.get(exec_id=response.json().get("execution_id")).status != ExecutionRequest.STATUS_FINISHED and tentative <= 3:
+                time.sleep(10)
+                tentative +=1
+            
         self.assertEqual('finished', self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
