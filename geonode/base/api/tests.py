@@ -24,6 +24,7 @@ import sys
 import json
 import logging
 import time
+from django.test import override_settings
 import gisdata
 
 from PIL import Image
@@ -43,6 +44,7 @@ from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map
+from geonode.settings import LOCAL_SIGNALS_BROKER_URL
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base import enumerations
@@ -2422,45 +2424,50 @@ class BaseApiTests(APITestCase):
         )
         self._assertCloningWithPerms(resource)
 
+    @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
+    @override_settings(ASYNC_SIGNALS=False)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
-        files_as_dict, _ = get_files(files)
-        resource = Dataset.objects.create(
-            owner=get_user_model().objects.get(username='admin'),
-            name='test_copy_with_perms',
-            store='geonode_data',
-            subtype="vector",
-            alternate="geonode:test_copy_with_perms",
-            resource_type="dataset",
-            uuid=str(uuid4()),
-            files=list(files_as_dict.values())
-        )
-        _perms = {
-            'users': {
-                "bobby": ['base.add_resourcebase', 'base.download_resourcebase']
-            },
-            "groups": {
-                "anonymous": ["base.view_resourcebase", "base.download_resourcebae"]
+        with self.settings(
+            ASYNC_SIGNALS=False
+        ):
+            files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+            files_as_dict, _ = get_files(files)
+            resource = Dataset.objects.create(
+                owner=get_user_model().objects.get(username='admin'),
+                name='test_copy_with_perms',
+                store='geonode_data',
+                subtype="vector",
+                alternate="geonode:test_copy_with_perms",
+                resource_type="dataset",
+                uuid=str(uuid4()),
+                files=list(files_as_dict.values())
+            )
+            _perms = {
+                'users': {
+                    "bobby": ['base.add_resourcebase', 'base.download_resourcebase']
+                },
+                "groups": {
+                    "anonymous": ["base.view_resourcebase", "base.download_resourcebae"]
+                }
             }
-        }
-        resource.set_permissions(_perms)
-        # checking that bobby is in the original dataset perms list
-        self.assertTrue('bobby' in 'bobby' in [x.username for x in resource.get_all_level_info().get("users", [])])
-        # copying the resource, should remove the perms for bobby
-        # only the default perms should be available
-        copy_url = reverse('base-resources-resource-service-copy', kwargs={'pk': resource.pk})
+            resource.set_permissions(_perms)
+            # checking that bobby is in the original dataset perms list
+            self.assertTrue('bobby' in 'bobby' in [x.username for x in resource.get_all_level_info().get("users", [])])
+            # copying the resource, should remove the perms for bobby
+            # only the default perms should be available
+            copy_url = reverse('base-resources-resource-service-copy', kwargs={'pk': resource.pk})
 
-        self.assertTrue(self.client.login(username="admin", password="admin"))
+            self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        response = self.client.put(copy_url)
-        self.assertEqual(response.status_code, 200)
+            response = self.client.put(copy_url)
+            self.assertEqual(response.status_code, 200)
 
         if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
             tentative = 1
             while ExecutionRequest.objects.get(exec_id=response.json().get("execution_id")).status != ExecutionRequest.STATUS_FINISHED and tentative <= 3:
                 time.sleep(10)
                 tentative += 1
-
+        
         self.assertEqual('finished', self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
