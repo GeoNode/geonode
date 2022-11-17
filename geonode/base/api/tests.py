@@ -44,7 +44,6 @@ from rest_framework.test import APITestCase
 
 from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map
-from geonode.settings import LOCAL_SIGNALS_BROKER_URL
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base import enumerations
@@ -2467,7 +2466,7 @@ class BaseApiTests(APITestCase):
             while ExecutionRequest.objects.get(exec_id=response.json().get("execution_id")).status != ExecutionRequest.STATUS_FINISHED and tentative <= 3:
                 time.sleep(10)
                 tentative += 1
-        
+
         self.assertEqual('finished', self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
