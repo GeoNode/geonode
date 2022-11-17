@@ -108,7 +108,7 @@ django-bootstrap3-datetimepicker-2==2.8.3
 
 # storage manager dependencies
 django-storages==1.13.1
-dropbox==11.35.0
+dropbox==11.36.0
 google-cloud-storage==2.5.0
 google-cloud-core==2.3.2
 boto3==1.26.4
@@ -131,7 +131,7 @@ pylibmc==1.6.3
 sherlock==0.4.0
 
 # required by monitoring
-psutil==5.9.3
+psutil==5.9.4
 django-cors-headers==3.13.0
 user-agents
 django-user-agents
