@@ -1755,6 +1755,7 @@ CELERY_TASK_QUEUES = (
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
     Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
     Queue('management_commands_http', GEONODE_EXCHANGE, routing_key='management_commands_http', priority=0),
+    Queue('clery_cleanup', GEONODE_EXCHANGE, routing_key='clery_cleanup', priority=0)
 )
 
 if USE_GEOSERVER:
