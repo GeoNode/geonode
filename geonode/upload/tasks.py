@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from datetime import datetime
 import json
 import logging
 
@@ -238,3 +239,15 @@ def _upload_session_cleanup(self, upload_session_id: int):
         logger.debug(f"Upload {upload_session_id} deleted with state {_upload.state}.")
     except Exception as e:
         logger.error(f"Upload {upload_session_id} errored with exception {e}.")
+
+
+@app.task(
+    bind=False,
+    acks_late=False,
+    queue="clery_cleanup",
+    ignore_result=True)
+def cleanup_celery_task_entries():
+    from django_celery_results.models import TaskResult
+    result_obj = TaskResult.objects.filter(date_done__lte=(datetime.today() - timedelta(days=7)))
+    logger.error(f"Total celery task to be deleted: {result_obj.count()}")
+    result_obj.delete()
