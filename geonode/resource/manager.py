@@ -460,9 +460,8 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 instance.set_processing_state(enumerations.STATE_RUNNING)
                 with transaction.atomic():
-                    _owner = owner or instance.get_real_instance().owner
-                    _perms = copy.copy(instance.get_real_instance().get_all_level_info())
                     _resource = copy.copy(instance.get_real_instance())
+                    _resource.owner = owner or instance.get_real_instance().owner
                     _resource.pk = _resource.id = None
                     _resource.uuid = uuid or str(uuid4())
                     try:
@@ -509,16 +508,6 @@ class ResourceManager(ResourceManagerInterface):
             if _resource:
                 try:
                     to_update.update(defaults)
-                    if 'user' in to_update:
-                        to_update.pop('user')
-                    # We need to remove any public access to the cloned dataset here
-                    if 'users' in _perms and ("AnonymousUser" in _perms['users'] or get_anonymous_user() in _perms['users']):
-                        anonymous_user = "AnonymousUser" if "AnonymousUser" in _perms['users'] else get_anonymous_user()
-                        _perms['users'].pop(anonymous_user)
-                    if 'groups' in _perms and ("anonymous" in _perms['groups'] or Group.objects.get(name='anonymous') in _perms['groups']):
-                        anonymous_group = 'anonymous' if 'anonymous' in _perms['groups'] else Group.objects.get(name='anonymous')
-                        _perms['groups'].pop(anonymous_group)
-                    self.set_permissions(_resource.uuid, instance=_resource, owner=_owner, permissions=_perms)
                     # Refresh from DB
                     _resource.refresh_from_db()
                     return self.update(_resource.uuid, _resource, vals=to_update)
