@@ -17,13 +17,11 @@
 #
 #########################################################################
 
-import ast
 import os
 import re
 import sys
 import json
 import logging
-import time
 from django.test import override_settings
 import gisdata
 
