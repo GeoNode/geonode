@@ -24,6 +24,7 @@ import math
 import uuid
 import logging
 import traceback
+from typing import Union, List, Optional
 from sequences.models import Sequence
 
 from sequences import get_next_value
@@ -1279,14 +1280,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self.restriction_code_type.gn_description if self.restriction_code_type else None
 
     @property
-    def publisher(self):
-        return self.poc.get_full_name() or self.poc.username
-
-    @property
-    def contributor(self):
-        return self.metadata_author.get_full_name() or self.metadata_author.username
-
-    @property
     def topiccategory(self):
         return self.category.identifier if self.category else None
 
@@ -1847,54 +1840,105 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def language_title(self):
         return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
-    def _set_poc(self, poc):
-        # reset any poc assignation to this resource
-        ContactRole.objects.filter(
-            role='pointOfContact',
-            resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role='pointOfContact',
-            resource=self,
-            contact=poc)
-
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(
-                role='pointOfContact', resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
-
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author assignation to this resource
-        ContactRole.objects.filter(role='author', resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role='author',
-            resource=self,
-            contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(
-                role='author', resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
     def add_missing_metadata_author_or_poc(self):
         """
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing
         """
         if not self.metadata_author:
-            self.metadata_author = self.owner
+            self.metadata_author = [self.owner]
         if not self.poc:
-            self.poc = self.owner
+            self.poc = [self.owner]
 
+    def _get_contact_role_elements(self, role: str) -> List[Optional[ContactRole]]:
+        """
+        generell getter of for all contact roles except owner
+
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested 
+        return List(ContactRole): returns the requested contact role from the database
+        """
+        try:
+            contact_role = ContactRole.objects.filter(
+                role=role, resource=self)
+            contacts = [cr.contact for cr in contact_role]
+        except ContactRole.DoesNotExist:
+            contacts = None
+        return contacts
+
+    def _set_contact_role_element(self, user_profile, role: str):
+        """
+        generell setter for all contact roles except owner in resource base
+
+        param contact_role (ContactRole):
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set
+        """
+        if not isinstance(user_profile, get_user_model()) :
+            return None
+        ContactRole.objects.filter(role=role, resource=self).delete()
+        # create the new assignation
+        ContactRole.objects.create(
+            role=role,
+            resource=self,
+            contact=user_profile)
+
+    def _get_poc(self): return self._get_contact_role_elements(role="pointOfContact")
+    def _set_poc(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="pointOfContact")
+    poc = property(_get_poc, _set_poc)
+    @property
+    def poc_csv(self): return ','.join(p.get_full_name() or p.username for p in self.poc)
+
+    def _get_metadata_author(self): return self._get_contact_role_elements(role="author")
+    def _set_metadata_author(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="author")
     metadata_author = property(_get_metadata_author, _set_metadata_author)
+    @property
+    def metadata_author_csv(self): return ','.join(p.get_full_name() or p.username for p in self.metadata_author)
+
+    def _get_processor(self): return self._get_contact_role_elements(role="processor")
+    def _set_processor(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="processor")
+    processor = property(_get_processor, _set_processor)
+    @property
+    def processor_csv(self): return ','.join(p.get_full_name() or p.username for p in self.processor)
+
+    def _get_publisher(self): return self._get_contact_role_elements(role="publisher")
+    def _set_publisher(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="publisher")
+    publisher = property(_get_publisher, _set_publisher)
+    @property
+    def publisher_csv(self): return ','.join(p.get_full_name() or p.username for p in self.publisher)
+
+    def _get_custodian(self): return self._get_contact_role_elements(role="custodian")
+    def _set_custodian(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="custodian")
+    custodian = property(_get_custodian, _set_custodian)
+    @property
+    def custodian_csv(self): return ','.join(p.get_full_name() or p.username for p in self.custodian)
+
+    def _get_distributor(self): return self._get_contact_role_elements(role="distributor")
+    def _set_distributor(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="distributor")
+    distributor = property(_get_distributor, _set_distributor)
+    @property
+    def distributor_csv(self): return ','.join(p.get_full_name() or p.username for p in self.distributor)
+
+    def _get_resource_user(self): return self._get_contact_role_elements(role="resource_user")
+    def _set_resource_user(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="resource_user")
+    resource_user = property(_get_resource_user, _set_resource_user)
+    @property
+    def resource_user_csv(self): return ','.join(p.get_full_name() or p.username for p in self.resource_user)
+
+    def _get_resource_provider(self): return self._get_contact_role_elements(role="resource_provider")
+    def _set_resource_provider(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="resource_provider")
+    resource_provider = property(_get_resource_provider, _set_resource_provider)
+    @property
+    def resource_provider_csv(self): return ','.join(p.get_full_name() or p.username for p in self.resource_provider)
+
+    def _get_originator(self): return self._get_contact_role_elements(role="originator")
+    def _set_originator(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="originator")
+    originator = property(_get_originator, _set_originator)
+    @property
+    def originator_csv(self): return ','.join(p.get_full_name() or p.username for p in self.originator)
+
+    def _get_principal_investigator(self): return self._get_contact_role_elements(role="principal_investigator")
+    def _set_principal_investigator(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="principal_investigator")
+    principal_investigator = property(_get_principal_investigator, _set_principal_investigator)
+    @property
+    def principal_investigator_csv(self): return ','.join(p.get_full_name() or p.username for p in self.principal_investigator)
 
 
 class LinkManager(models.Manager):

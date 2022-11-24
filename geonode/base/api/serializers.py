@@ -368,7 +368,7 @@ class ContactRoleField(DynamicComputedField):
         return getattr(instance, self.contat_type)
 
     def to_representation(self, value):
-        return UserSerializer(embed=True, many=False).to_representation(value)
+        return [UserSerializer(embed=True, many=False).to_representation(v) for v in value]
 
 
 class DataBlobField(DynamicRelationField):
@@ -447,9 +447,17 @@ class ResourceBaseSerializer(
         self.fields['uuid'] = serializers.CharField(read_only=True)
         self.fields['resource_type'] = serializers.CharField(required=False)
         self.fields['polymorphic_ctype_id'] = serializers.CharField(read_only=True)
-        self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True, required=False)
-        self.fields['poc'] = ContactRoleField('poc', read_only=True)
-        self.fields['metadata_author'] = ContactRoleField('metadata_author', read_only=True)
+        self.fields['owner'] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
+        self.fields['metadata_author'] = ContactRoleField('metadata_author', read_only=True, required=False)
+        self.fields['processor'] = ContactRoleField('processor', read_only=True, required=False)
+        self.fields['publisher'] = ContactRoleField('publisher', read_only=True,  required=False)
+        self.fields['custodian'] = ContactRoleField('custodian', read_only=True,  required=False)
+        self.fields['poc'] = ContactRoleField('poc', read_only=True,  required=False)
+        self.fields['distributor'] = ContactRoleField('distributor', read_only=True,  required=False)
+        self.fields['resource_user'] = ContactRoleField('resource_user', read_only=True,  required=False)
+        self.fields['resource_provider'] = ContactRoleField('resource_provider', read_only=True,  required=False)
+        self.fields['originator'] = ContactRoleField('originator', read_only=True,  required=False)
+        self.fields['principal_investigator'] = ContactRoleField('principal_investigator', read_only=True, required=False)
         self.fields['title'] = serializers.CharField()
         self.fields['abstract'] = serializers.CharField(required=False)
         self.fields['attribution'] = serializers.CharField(required=False)
@@ -520,7 +528,7 @@ class ResourceBaseSerializer(
         view_name = 'base-resources-list'
         fields = (
             'pk', 'uuid', 'resource_type', 'polymorphic_ctype_id', 'perms',
-            'owner', 'poc', 'metadata_author',
+            'owner', 'poc', 'metadata_author', 'processor', 'publisher', 'custodian', 'distributor', 'resource_user', 'resource_provider', 'originator', 'principal_investigator',
             'keywords', 'tkeywords', 'regions', 'category',
             'title', 'abstract', 'attribution', 'alternate', 'doi', 'bbox_polygon', 'll_bbox_polygon', 'srid',
             'date', 'date_type', 'edition', 'purpose', 'maintenance_frequency',

@@ -2123,13 +2123,13 @@ def sync_instance_with_geoserver(
                     if instance.poc:
                         # gsconfig now utilizes an attribution dictionary
                         gs_resource.attribution = {
-                            'title': str(instance.poc),
+                            'title': str(instance.poc_csv),
                             'width': None,
                             'height': None,
                             'href': None,
                             'url': None,
                             'type': None}
-                        profile = get_user_model().objects.get(username=instance.poc.username)
+                        profile = get_user_model().objects.get(username=instance.poc[0].username)
                         site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
                         gs_resource.attribution_link = site_url + profile.get_absolute_url()
 

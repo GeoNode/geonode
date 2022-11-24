@@ -630,7 +630,6 @@ def dataset_metadata(
                 values = []
                 values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
                 tkeywords_form.fields[tid].initial = values
-
     if request.method == "POST" and dataset_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid() and timeseries_form.is_valid():
         new_poc = dataset_form.cleaned_data['poc']
@@ -778,7 +777,7 @@ def dataset_metadata(
         dataset_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
     if poc is not None:
-        dataset_form.fields['poc'].initial = poc.id
+        dataset_form.fields['poc'].initial = poc[0].id  # [ p.username for p in poc ]
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
     else:
@@ -786,7 +785,7 @@ def dataset_metadata(
         poc_form.hidden = False
 
     if metadata_author is not None:
-        dataset_form.fields['metadata_author'].initial = metadata_author.id
+        dataset_form.fields['metadata_author'].initial = [ma.username for ma in metadata_author]
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
     else:

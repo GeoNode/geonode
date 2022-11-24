@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+# based on https://github.com/geopython/pycsw/blob/master/pycsw/core/config.py
 MD_CORE_MODEL = {
     'typename': 'pycsw:CoreMetadata',
     'outputschema': 'http://pycsw.org/metadata',
@@ -74,8 +75,18 @@ MD_CORE_MODEL = {
         'pycsw:SpecificationDate': 'specificationdate',
         'pycsw:SpecificationDateType': 'specificationdatetype',
         'pycsw:Creator': 'creator',
-        'pycsw:Publisher': 'publisher',
-        'pycsw:Contributor': 'contributor',
+        'pycsw:Publisher': 'publisher_csv',
+        'pycsw:Contributor': 'contributor_csv',
+        'pycsw:Processor': 'processor_csw',
+
+        # 'pycsw:MetadataAuthor': 'metadata_author_csv',
+        # 'pycsw:Custodian': 'custodian_csv',
+        # 'pycsw:Distributor': 'distributor_csv',
+        # 'pycsw:ResourceUser': 'resource_user_csv',
+        # 'pycsw:ResourceProvider': 'resource_provider_csv',
+        # 'pycsw:Originator': 'originator_csv',
+        # 'pycsw:PrincipalInvestigator': 'principal_investigator_csv',
+
         'pycsw:Relation': 'relation',
         'pycsw:Links': 'download_links',
     }

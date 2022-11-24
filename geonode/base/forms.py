@@ -440,7 +440,6 @@ class ResourceBaseForm(TranslationModelForm):
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
-
     poc = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Point of Contact"),
@@ -449,13 +448,13 @@ class ResourceBaseForm(TranslationModelForm):
             username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
-    metadata_author = forms.ModelChoiceField(
-        empty_label=_("Person outside GeoNode (fill form)"),
+    metadata_author = forms.ModelMultipleChoiceField(
+        #empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Metadata Author"),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
-        widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
+        widget=TaggitSelect2Custom(url='autocomplete_profile'))
 
     keywords = TagField(
         label=_("Free-text Keywords"),
