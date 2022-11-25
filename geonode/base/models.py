@@ -24,7 +24,7 @@ import math
 import uuid
 import logging
 import traceback
-from typing import Union, List, Optional
+from typing import List, Optional
 from sequences.models import Sequence
 
 from sequences import get_next_value
@@ -39,6 +39,7 @@ from django.db.models import Q, signals
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
+from django.db.models.query import QuerySet
 from django.db.models.fields.json import JSONField
 from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import Polygon, Point
@@ -1845,9 +1846,41 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing
         """
         if not self.metadata_author:
-            self.metadata_author = [self.owner]
+            self.metadata_author = self.owner
         if not self.poc:
-            self.poc = [self.owner]
+            self.poc = self.owner
+
+    def get_multivalue_role_property_names(self) -> List[str]:
+        """ _summary_: returns list of property names for all contact roles able to
+            handle multiple profile_users
+
+        Returns:
+            _type_: List(str)
+            _description: list of names
+        """
+        return [
+            'metadata_author',
+            'publisher',
+            'custodian',
+            'poc',
+            'distributor',
+            'resource_user',
+            'resource_provider',
+            'originator',
+            'principal_investigator'
+        ]
+
+    def get_multivalue_required_role_property_names(self) -> List[str]:
+        """ _summary_: returns list of property names for all contact roles that are required
+
+      Returns:
+          _type_: List(str)
+          _description: list of names
+        """
+        return [
+            'metadata_author',
+            'poc',
+        ]
 
     def _get_contact_role_elements(self, role: str) -> List[Optional[ContactRole]]:
         """
@@ -1866,19 +1899,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def _set_contact_role_element(self, user_profile, role: str):
         """
-        generell setter for all contact roles except owner in resource base
+        general setter for all contact roles except owner in resource base
 
         param contact_role (ContactRole):
         param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set
         """
-        if not isinstance(user_profile, get_user_model()) :
-            return None
-        ContactRole.objects.filter(role=role, resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role=role,
-            resource=self,
-            contact=user_profile)
+
+        def __create_role__(resource, role, user_profile):
+            ContactRole.objects.create(
+                role=role,
+                resource=resource,
+                contact=user_profile)
+
+        if isinstance(user_profile, QuerySet):
+            ContactRole.objects.filter(role=role, resource=self).delete()
+            [__create_role__(self, role, user) for user in user_profile]
+        elif isinstance(user_profile, get_user_model()):
+            ContactRole.objects.filter(role=role, resource=self).delete()
+            __create_role__(self, role, user_profile)
+        else:
+            logger.error(f'Bad profile format for role: {role} ...')
 
     def _get_poc(self): return self._get_contact_role_elements(role="pointOfContact")
     def _set_poc(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="pointOfContact")

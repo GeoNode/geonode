@@ -433,7 +433,6 @@ def dataset_metadata(
         raise Http404(Exception(_("Not found"), e))
     if not layer:
         raise Http404(_("Not found"))
-
     dataset_attribute_set = inlineformset_factory(
         Dataset,
         Attribute,
@@ -445,10 +444,8 @@ def dataset_metadata(
 
     topic_thesaurus = layer.tkeywords.all()
     # Add metadata_author or poc if missing
-    layer.add_missing_metadata_author_or_poc()
 
-    poc = layer.poc
-    metadata_author = layer.metadata_author
+    layer.add_missing_metadata_author_or_poc()
 
     # assert False, str(dataset_bbox)
     config = layer.attribute_config()
@@ -597,7 +594,6 @@ def dataset_metadata(
         )
         timeseries_form.fields.get('attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
         timeseries_form.fields.get('end_attribute').queryset = layer.attributes.filter(attribute_type__in=['xsd:dateTime'])
-
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, 'THESAURUS_DEFAULT_LANG') else 'en'
         if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
@@ -632,44 +628,6 @@ def dataset_metadata(
                 tkeywords_form.fields[tid].initial = values
     if request.method == "POST" and dataset_form.is_valid() and attribute_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid() and timeseries_form.is_valid():
-        new_poc = dataset_form.cleaned_data['poc']
-        new_author = dataset_form.cleaned_data['metadata_author']
-
-        if new_poc is None:
-            if poc is None:
-                poc_form = ProfileForm(
-                    request.POST,
-                    prefix="poc",
-                    instance=poc)
-            else:
-                poc_form = ProfileForm(request.POST, prefix="poc")
-            if poc_form.is_valid():
-                if len(poc_form.cleaned_data['profile']) == 0:
-                    # FIXME use form.add_error in django > 1.7
-                    errors = poc_form._errors.setdefault(
-                        'profile', ErrorList())
-                    errors.append(
-                        _('You must set a point of contact for this resource'))
-                    poc = None
-            if poc_form.has_changed and poc_form.is_valid():
-                new_poc = poc_form.save()
-
-        if new_author is None:
-            if metadata_author is None:
-                author_form = ProfileForm(request.POST, prefix="author",
-                                          instance=metadata_author)
-            else:
-                author_form = ProfileForm(request.POST, prefix="author")
-            if author_form.is_valid():
-                if len(author_form.cleaned_data['profile']) == 0:
-                    # FIXME use form.add_error in django > 1.7
-                    errors = author_form._errors.setdefault(
-                        'profile', ErrorList())
-                    errors.append(
-                        _('You must set an author for this resource'))
-                    metadata_author = None
-            if author_form.has_changed and author_form.is_valid():
-                new_author = author_form.save()
 
         new_category = None
         if category_form and 'category_choice_field' in category_form.cleaned_data and\
@@ -686,11 +644,31 @@ def dataset_metadata(
             la.featureinfo_type = form["featureinfo_type"]
             la.save()
 
-        if new_poc is not None or new_author is not None:
-            if new_poc is not None:
-                layer.poc = new_poc
-            if new_author is not None:
-                layer.metadata_author = new_author
+        for role in layer.get_multivalue_role_property_names():
+            new_role = dataset_form.cleaned_data[role]
+            old_role = layer.__getattribute__(role)
+            if new_role is None or len(new_role) == 0:
+                if old_role is None:
+                    role_form = ProfileForm(
+                        request.POST,
+                        prefix=role,
+                        instance=old_role)
+                else:
+                    role_form = ProfileForm(request.POST, prefix=role)
+
+                # check if form is valid and required but empty
+                if role_form.is_valid() and\
+                  role in layer.get_multivalue_required_role_property_names() and\
+                  len(role_form.cleaned_data['profile']) == 0:
+                    pass
+                    # role_form.add_error(role,_('You must set a {} for this resource').format(role))
+                    old_role = None
+
+                # if values have changed and are valid
+                if role_form.has_changed and role_form.is_valid():
+                    print(new_role)
+                    #role_form.save()
+                    layer.__setattr__(role, new_role)
 
         new_keywords = current_keywords if request.keyword_readonly else dataset_form.cleaned_data['keywords']
         new_regions = [x.strip() for x in dataset_form.cleaned_data['regions']]
@@ -776,21 +754,13 @@ def dataset_metadata(
     if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, layer):
         dataset_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
 
-    if poc is not None:
-        dataset_form.fields['poc'].initial = poc[0].id  # [ p.username for p in poc ]
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden = True
-    else:
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden = False
-
-    if metadata_author is not None:
-        dataset_form.fields['metadata_author'].initial = [ma.username for ma in metadata_author]
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden = True
-    else:
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden = False
+    # define contact role forms
+    contact_role_forms_context = {}
+    for role in layer.get_multivalue_role_property_names():
+        dataset_form.fields[role].initial = [p.username for p in layer.__getattribute__(role)]
+        role_form = ProfileForm(prefix=role)
+        role_form.hidden = True
+        contact_role_forms_context[f"{role}_form"] = role_form
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
@@ -799,8 +769,6 @@ def dataset_metadata(
         "resource": layer,
         "dataset": layer,
         "dataset_form": dataset_form,
-        "poc_form": poc_form,
-        "author_form": author_form,
         "attribute_form": attribute_form,
         "timeseries_form": timeseries_form,
         "category_form": category_form,
@@ -820,7 +788,7 @@ def dataset_metadata(
             |
             set(getattr(settings, 'UI_REQUIRED_FIELDS', []))
         )
-    })
+    } | contact_role_forms_context)
 
 
 @login_required

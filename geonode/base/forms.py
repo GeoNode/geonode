@@ -47,7 +47,7 @@ from geonode.base.models import (HierarchicalKeyword,
                                  License, Region, ResourceBase, Thesaurus,
                                  ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
                                  TopicCategory)
-from geonode.base.widgets import TaggitSelect2Custom
+from geonode.base.widgets import TaggitSelect2Custom, TaggitProfileSelect2Custom
 from geonode.base.fields import MultiThesauriField
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
@@ -369,6 +369,18 @@ class ThesaurusAvailableForm(forms.Form):
         return tname.first()
 
 
+class ContactRoleMultipleChoiceField(forms.ModelMultipleChoiceField):
+    # TODO ERROR HANDLING
+    def clean(self, value):
+        # try:
+        users = get_user_model().objects.filter(username__in=value)
+        # except:
+        #     raise forms.ValidationError(_("Something went wrong in finding the profiles"))
+        # if len(users) < len(value):
+        #     raise forms.ValidationError(_("not alle given profiles are found, maybe a typo?"))
+        return users
+
+
 class ResourceBaseDateTimePicker(DateTimePicker):
 
     def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
@@ -440,21 +452,76 @@ class ResourceBaseForm(TranslationModelForm):
         input_formats=['%Y-%m-%d %H:%M %p'],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
     )
-    poc = forms.ModelChoiceField(
-        empty_label=_("Person outside GeoNode (fill form)"),
-        label=_("Point of Contact"),
-        required=False,
-        queryset=get_user_model().objects.exclude(
-            username='AnonymousUser'),
-        widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
 
-    metadata_author = forms.ModelMultipleChoiceField(
-        #empty_label=_("Person outside GeoNode (fill form)"),
+    metadata_author = ContactRoleMultipleChoiceField(
         label=_("Metadata Author"),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
-        widget=TaggitSelect2Custom(url='autocomplete_profile'))
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    processor = ContactRoleMultipleChoiceField(
+        label=_("Processor"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    publisher = ContactRoleMultipleChoiceField(
+        label=_("Publisher"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    custodian = ContactRoleMultipleChoiceField(
+        label=_("Custodian"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    poc = ContactRoleMultipleChoiceField(
+        label=_("Person of Contact"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    distributor = ContactRoleMultipleChoiceField(
+        label=_("Distributor"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    resource_user = ContactRoleMultipleChoiceField(
+        label=_("Resource User"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    resource_provider = ContactRoleMultipleChoiceField(
+        label=_("Resource Provider"),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    originator = ContactRoleMultipleChoiceField(
+        label=_('Originator'),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
+
+    principal_investigator = ContactRoleMultipleChoiceField(
+        label=_('Principal Investigator'),
+        required=False,
+        queryset=get_user_model().objects.exclude(
+            username='AnonymousUser'),
+        widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     keywords = TagField(
         label=_("Free-text Keywords"),

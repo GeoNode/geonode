@@ -20,3 +20,19 @@ class TaggitSelect2Custom(TaggitSelect2):
             return value
         except TypeError:
             return ""
+
+
+class TaggitProfileSelect2Custom(TaggitSelect2):
+    """Overriding Select2 tag widget for ContactRoleField.
+    """
+
+    def value_from_datadict(self, data, files, name):
+        """Handle multi-profiles.
+
+        returns list of selected elements
+        """
+        try:
+            ret_list = data.getlist(name)
+            return ret_list
+        except TypeError:
+            return []

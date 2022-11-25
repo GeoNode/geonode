@@ -472,7 +472,6 @@ span.grippy::after {
                                 {% endblock dataset_constraints %}
                             </div>
                             <div class="row">
-
                             </div>
                         </div>
                     </div>
@@ -557,8 +556,8 @@ span.grippy::after {
                     {% endblock layer_extra_metadata %}
                 </div>
             </div>
-            <div class="col-xs-12 col-lg-3">
-              <div class="panel panel-default" style="margin-top: 5px">
+            <div class="col-xs-12 col-lg-3" >
+              <div class="panel panel-default" class="collapse" style="margin-top: 5px">
                   <div class="panel-heading">{% trans "Responsible Parties" %}</div>
                     {% block dataset_poc %}
                     <div class="panel-body check-select">
@@ -573,22 +572,94 @@ span.grippy::after {
                     {% block dataset_owner %}
                       <div>
                           <span><label for="{{ dataset_form.owner|id }}">{{ dataset_form.owner.label }}</label></span>
-                          <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
                           {{ dataset_form.owner }}
                       </div>
                     {% endblock dataset_owner %}
+                  </div>
+                </div>
+                
+              <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+                  <div class="panel-heading">{% trans "more Metadata Contact Roles" %}</div>
+                  <div class="panel-body">
                     {% block dataset_metadata_author %}
                       <div>
                           <span><label for="{{ dataset_form.metadata_author|id }}">{{ dataset_form.metadata_author.label }}</label></span>
-                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
                           {{ dataset_form.metadata_author }}
                       </div>
                     {% endblock dataset_metadata_author %}
                   </div>
+
+                  <div class="panel-body">
+                    {% block dataset_processor %}
+                      <div>
+                          <span><label for="{{ dataset_form.processor|id }}">{{ dataset_form.processor.label }}</label></span>
+                          {{ dataset_form.processor }}
+                      </div>
+                    {% endblock dataset_processor %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_publisher %}
+                      <div>
+                          <span><label for="{{ dataset_form.publisher|id }}">{{ dataset_form.publisher.label }}</label></span>
+                          {{ dataset_form.publisher }}
+                      </div>
+                    {% endblock dataset_publisher %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_custodian %}
+                      <div>
+                          <span><label for="{{ dataset_form.custodian|id }}">{{ dataset_form.custodian.label }}</label></span>
+                          {{ dataset_form.custodian }}
+                      </div>
+                    {% endblock dataset_custodian %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_distributor %}
+                      <div>
+                          <span><label for="{{ dataset_form.distributor|id }}">{{ dataset_form.distributor.label }}</label></span>
+                          {{ dataset_form.distributor }}
+                      </div>
+                    {% endblock dataset_distributor %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_resource_user %}
+                      <div>
+                          <span><label for="{{ dataset_form.resource_user|id }}">{{ dataset_form.resource_user.label }}</label></span>
+                          {{ dataset_form.resource_user }}
+                      </div>
+                    {% endblock dataset_resource_user %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_resource_provider %}
+                      <div>
+                          <span><label for="{{ dataset_form.resource_provider|id }}">{{ dataset_form.resource_provider.label }}</label></span>
+                          {{ dataset_form.resource_provider }}
+                      </div>
+                    {% endblock dataset_resource_provider %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_originator %}
+                      <div>
+                          <span><label for="{{ dataset_form.originator|id }}">{{ dataset_form.originator.label }}</label></span>
+                          {{ dataset_form.originator }}
+                      </div>
+                    {% endblock dataset_originator %}
+                    </div>
+                    <div class="panel-body">
+                    {% block dataset_principal_investigator %}
+                      <div>
+                          <span><label for="{{ dataset_form.principal_investigator|id }}">{{ dataset_form.principal_investigator.label }}</label></span>
+                          {{ dataset_form.principal_investigator }}
+                      </div>
+                    {% endblock dataset_principal_investigator %}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
         </div>
-      </div></div></div>
+      </div>
     </div>
     {% endblock %}
     {% block dataset %}
