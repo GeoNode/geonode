@@ -455,7 +455,7 @@ class ResourceBaseForm(TranslationModelForm):
 
     metadata_author = ContactRoleMultipleChoiceField(
         label=_("Metadata Author"),
-        required=False,
+        required=True,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
@@ -483,7 +483,7 @@ class ResourceBaseForm(TranslationModelForm):
 
     poc = ContactRoleMultipleChoiceField(
         label=_("Person of Contact"),
-        required=False,
+        required=True,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))

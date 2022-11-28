@@ -35,7 +35,6 @@ from django.http import Http404, JsonResponse
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
-from django.forms.utils import ErrorList
 from django.contrib.auth import get_user_model
 from django.template.loader import get_template
 from django.utils.translation import ugettext as _
@@ -644,31 +643,25 @@ def dataset_metadata(
             la.featureinfo_type = form["featureinfo_type"]
             la.save()
 
+        profile_errors = []
         for role in layer.get_multivalue_role_property_names():
-            new_role = dataset_form.cleaned_data[role]
-            old_role = layer.__getattribute__(role)
-            if new_role is None or len(new_role) == 0:
-                if old_role is None:
-                    role_form = ProfileForm(
-                        request.POST,
-                        prefix=role,
-                        instance=old_role)
-                else:
-                    role_form = ProfileForm(request.POST, prefix=role)
+            new_profiles = dataset_form.cleaned_data[role]
 
-                # check if form is valid and required but empty
-                if role_form.is_valid() and\
-                  role in layer.get_multivalue_required_role_property_names() and\
-                  len(role_form.cleaned_data['profile']) == 0:
-                    pass
-                    # role_form.add_error(role,_('You must set a {} for this resource').format(role))
-                    old_role = None
+            # if new defined profile is None|empty and required set previous profiles
+            if (new_profiles is None or len(new_profiles) == 0) and role in layer.get_multivalue_required_role_property_names():
+                new_profiles = layer.__getattribute__(role)
 
-                # if values have changed and are valid
-                if role_form.has_changed and role_form.is_valid():
-                    print(new_role)
-                    #role_form.save()
-                    layer.__setattr__(role, new_role)
+            for profile in new_profiles:
+                role_form  = ProfileForm(request.POST,prefix=role,instance=profile)
+                if not role_form.is_valid():
+                    profile_errors.append(role_form.errors)
+
+            if len(profile_errors) == 0:
+                layer.__setattr__(role, new_profiles)
+            else:
+                return HttpResponse(json.dumps({'message': profile_errors}, status_code=400))
+
+        layer.save()
 
         new_keywords = current_keywords if request.keyword_readonly else dataset_form.cleaned_data['keywords']
         new_regions = [x.strip() for x in dataset_form.cleaned_data['regions']]

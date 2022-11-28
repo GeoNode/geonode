@@ -1860,6 +1860,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         return [
             'metadata_author',
+            'processor',
             'publisher',
             'custodian',
             'poc',
