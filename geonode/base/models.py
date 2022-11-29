@@ -110,43 +110,6 @@ class ContactRole(models.Model):
             'function performed by the responsible '
             'party'))
 
-    def clean(self):
-        """
-        Make sure there is only one poc and author per resource
-        """
-
-        if not hasattr(self, 'resource'):
-            # The ModelForm will already raise a Validation error for a missing resource.
-            # Re-raising an empty error here ensures the rest of this method isn't
-            # executed.
-            raise ValidationError('')
-
-        if (self.role == self.resource.poc) or (
-                self.role == self.resource.metadata_author):
-            contacts = self.resource.contacts.filter(
-                contactrole__role=self.role)
-            if contacts.count() == 1:
-                # only allow this if we are updating the same contact
-                if self.contact != contacts.get():
-                    raise ValidationError(
-                        f'There can be only one {self.role} for a given resource')
-        if self.contact is None:
-            # verify that any unbound contact is only associated to one
-            # resource
-            bounds = ContactRole.objects.filter(contact=self.contact).count()
-            if bounds > 1:
-                raise ValidationError(
-                    'There can be one and only one resource linked to an unbound contact' %
-                    self.role)
-            elif bounds == 1:
-                # verify that if there was one already, it corresponds to this
-                # instance
-                if ContactRole.objects.filter(
-                        contact=self.contact).get().id != self.id:
-                    raise ValidationError(
-                        'There can be one and only one resource linked to an unbound contact' %
-                        self.role)
-
     class Meta:
         unique_together = (("contact", "resource", "role"),)
 
@@ -1850,7 +1813,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if not self.poc:
             self.poc = self.owner
 
-    def get_multivalue_role_property_names(self) -> List[str]:
+    @staticmethod
+    def get_multivalue_role_property_names() -> List[str]:
         """ _summary_: returns list of property names for all contact roles able to
             handle multiple profile_users
 
@@ -1871,7 +1835,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             'principal_investigator'
         ]
 
-    def get_multivalue_required_role_property_names(self) -> List[str]:
+    @staticmethod
+    def get_multivalue_required_role_property_names() -> List[str]:
         """ _summary_: returns list of property names for all contact roles that are required
 
       Returns:
@@ -1882,6 +1847,23 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             'metadata_author',
             'poc',
         ]
+    # from geonode.base.forms import ResourceBaseForm; unable due to circular ...
+
+    def set_contact_roles_from_metadata_edit(self, resource_base_form) -> bool:
+        """ gets a ResourceBaseForm and extracts the Contact Role elements from it
+
+        Args:
+            resource_base_form (ResourceBaseForm): ResourceBaseForm with contact roles set
+            return (bool): returns true if all contact roles could be set, else false
+        """
+        failed = False
+        for role in self.get_multivalue_role_property_names():
+            try:
+                self.__setattr__(role, resource_base_form.cleaned_data[role])
+            except:
+                logger.warning(f"unable to set contact role {role} for {self} ...")
+                failed = True
+        return failed
 
     def _get_contact_role_elements(self, role: str) -> List[Optional[ContactRole]]:
         """
@@ -1906,20 +1888,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set
         """
 
-        def __create_role__(resource, role, user_profile):
-            ContactRole.objects.create(
+        def __create_role__(resource, role: str, user_profile):
+            return ContactRole.objects.create(
                 role=role,
                 resource=resource,
                 contact=user_profile)
 
         if isinstance(user_profile, QuerySet):
             ContactRole.objects.filter(role=role, resource=self).delete()
-            [__create_role__(self, role, user) for user in user_profile]
+            return [__create_role__(self, role, user) for user in user_profile]
         elif isinstance(user_profile, get_user_model()):
             ContactRole.objects.filter(role=role, resource=self).delete()
-            __create_role__(self, role, user_profile)
+            return [__create_role__(self, role, user_profile)]
         else:
-            logger.error(f'Bad profile format for role: {role} ...')
+            logger.error(f"Bad profile format for role: {role} ...")
 
     def _get_poc(self): return self._get_contact_role_elements(role="pointOfContact")
     def _set_poc(self, user_profile): return self._set_contact_role_element(user_profile=user_profile, role="pointOfContact")

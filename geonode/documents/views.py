@@ -342,8 +342,7 @@ def document_metadata(
 
     # Add metadata_author or poc if missing
     document.add_missing_metadata_author_or_poc()
-    poc = document.poc
-    metadata_author = document.metadata_author
+
     topic_category = document.category
     current_keywords = [keyword.name for keyword in document.keywords.all()]
 
@@ -405,8 +404,6 @@ def document_metadata(
 
     if request.method == "POST" and document_form.is_valid(
     ) and category_form.is_valid() and tkeywords_form.is_valid():
-        new_poc = document_form.cleaned_data['poc']
-        new_author = document_form.cleaned_data['metadata_author']
         new_keywords = current_keywords if request.keyword_readonly else document_form.cleaned_data['keywords']
         new_regions = document_form.cleaned_data['regions']
 
@@ -416,39 +413,9 @@ def document_metadata(
             new_category = TopicCategory.objects.get(
                 id=int(category_form.cleaned_data['category_choice_field']))
 
-        if new_poc is None:
-            if poc is None:
-                poc_form = ProfileForm(
-                    request.POST,
-                    prefix="poc",
-                    instance=poc)
-            else:
-                poc_form = ProfileForm(request.POST, prefix="poc")
-            if poc_form.is_valid():
-                if len(poc_form.cleaned_data['profile']) == 0:
-                    # FIXME use form.add_error in django > 1.7
-                    errors = poc_form._errors.setdefault(
-                        'profile', ErrorList())
-                    errors.append(
-                        _('You must set a point of contact for this resource'))
-            if poc_form.has_changed and poc_form.is_valid():
-                new_poc = poc_form.save()
-
-        if new_author is None:
-            if metadata_author is None:
-                author_form = ProfileForm(request.POST, prefix="author",
-                                          instance=metadata_author)
-            else:
-                author_form = ProfileForm(request.POST, prefix="author")
-            if author_form.is_valid():
-                if len(author_form.cleaned_data['profile']) == 0:
-                    # FIXME use form.add_error in django > 1.7
-                    errors = author_form._errors.setdefault(
-                        'profile', ErrorList())
-                    errors.append(
-                        _('You must set an author for this resource'))
-            if author_form.has_changed and author_form.is_valid():
-                new_author = author_form.save()
+        # update contact roles
+        document.set_contact_roles_from_metadata_edit(document_form)
+        document.save()
 
         document = document_form.instance
         resource_manager.update(
@@ -457,8 +424,6 @@ def document_metadata(
             keywords=new_keywords,
             regions=new_regions,
             vals=dict(
-                poc=new_poc or document.poc,
-                metadata_author=new_author or document.metadata_author,
                 category=new_category
             ),
             notify=True,
@@ -524,15 +489,13 @@ def document_metadata(
     # - POST Request Ends here -
 
     # Request.GET
-    if poc is not None:
-        document_form.fields['poc'].initial = poc.id
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden = True
-
-    if metadata_author is not None:
-        document_form.fields['metadata_author'].initial = metadata_author.id
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden = True
+    # define contact role forms
+    contact_role_forms_context = {}
+    for role in document.get_multivalue_role_property_names():
+        document.fields[role].initial = [p.username for p in document.__getattribute__(role)]
+        role_form = ProfileForm(prefix=role)
+        role_form.hidden = True
+        contact_role_forms_context[f"{role}_form"] = role_form
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
@@ -546,8 +509,6 @@ def document_metadata(
         "resource": document,
         "document": document,
         "document_form": document_form,
-        "poc_form": poc_form,
-        "author_form": author_form,
         "category_form": category_form,
         "tkeywords_form": tkeywords_form,
         "metadata_author_groups": metadata_author_groups,
@@ -558,7 +519,7 @@ def document_metadata(
             |
             set(getattr(settings, 'UI_REQUIRED_FIELDS', []))
         )
-    })
+    } | contact_role_forms_context)
 
 
 @login_required

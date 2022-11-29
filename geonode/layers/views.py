@@ -442,8 +442,8 @@ def dataset_metadata(
     topic_category = layer.category
 
     topic_thesaurus = layer.tkeywords.all()
-    # Add metadata_author or poc if missing
 
+    # Add metadata_author or poc if missing
     layer.add_missing_metadata_author_or_poc()
 
     # assert False, str(dataset_bbox)
@@ -620,7 +620,7 @@ def dataset_metadata(
             tkeywords_form = TKeywordForm(instance=layer)
         else:
             tkeywords_form = ThesaurusAvailableForm(prefix='tkeywords')
-            #  set initial values for thesaurus form
+            # set initial values for thesaurus form
             for tid in tkeywords_form.fields:
                 values = []
                 values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
@@ -643,24 +643,8 @@ def dataset_metadata(
             la.featureinfo_type = form["featureinfo_type"]
             la.save()
 
-        profile_errors = []
-        for role in layer.get_multivalue_role_property_names():
-            new_profiles = dataset_form.cleaned_data[role]
-
-            # if new defined profile is None|empty and required set previous profiles
-            if (new_profiles is None or len(new_profiles) == 0) and role in layer.get_multivalue_required_role_property_names():
-                new_profiles = layer.__getattribute__(role)
-
-            for profile in new_profiles:
-                role_form  = ProfileForm(request.POST,prefix=role,instance=profile)
-                if not role_form.is_valid():
-                    profile_errors.append(role_form.errors)
-
-            if len(profile_errors) == 0:
-                layer.__setattr__(role, new_profiles)
-            else:
-                return HttpResponse(json.dumps({'message': profile_errors}, status_code=400))
-
+        # update contact roles
+        layer.set_contact_roles_from_metadata_edit(dataset_form)
         layer.save()
 
         new_keywords = current_keywords if request.keyword_readonly else dataset_form.cleaned_data['keywords']

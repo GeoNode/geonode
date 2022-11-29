@@ -109,8 +109,10 @@
     {% endif %}
 
     {% if resource.poc.user %}
+    {% for poc in resource.poc  %}
     <dt>{% trans "Point of Contact" %}</dt>
-    <dd><a href="{{ resource.poc.user.get_absolute_url }}">{{ resource.poc.user.username }}</a></dd>
+    <dd><a href="{{ poc.user.get_absolute_url }}">{{ poc.user.username }}</a></dd>
+    {% endfor%}
     {% endif %}
 
     {% if resource.group %}

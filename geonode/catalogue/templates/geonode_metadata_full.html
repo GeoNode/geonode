@@ -73,9 +73,10 @@
 							<dd>{{resource.owner}}</dd>
 
 						<dt>{% trans "Point of Contact" %}</dt>
-							<dd>{{extra_res_md.poc_last_name}}</dd>
-							<dd><a href="mailto:{{extra_res_md.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_md.poc_email}}</a></dd>
-
+              {% for poc in  extra_res_md.poc %}
+							<dd>{{poc.last_name}}</dd>
+							<dd><a href="mailto:{{ poc.email}}"><i class="fa fa-envelope"></i>{{ poc.email}}</a></dd>
+              {% endfor %}
 
 						<dt>{% trans "Purpose" %}</dt>
 								{% if resource.purpose %}
