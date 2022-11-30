@@ -10,9 +10,9 @@ beautifulsoup4==4.11.1
 httplib2<0.21.1
 hyperlink==21.0.0
 idna>=2.5,<3.5
-urllib3==1.26.12
+urllib3==1.26.13
 Paver==1.3.4
-python-slugify==6.1.2
+python-slugify==7.0.0
 decorator==5.1.1
 celery==5.2.7
 kombu==5.2.4
@@ -20,12 +20,12 @@ vine==5.0.0
 tqdm==4.64.1
 Deprecated==1.2.13
 wrapt==1.14.1
-jsonschema==4.17.0
+jsonschema==4.17.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
 smart_open==6.2.0
-PyMuPDF==1.20.2
+PyMuPDF==1.21.0
 
 # Django Apps
 django-allauth==0.51.0
@@ -43,7 +43,7 @@ django-downloadview==2.3.0
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
 django-tinymce==3.5.0
-django-grappelli==3.0.3
+django-grappelli==3.0.4
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.12
 django-sequences==2.7
@@ -55,7 +55,7 @@ pyjwt==2.6.0
 pyproj<3.5.0
 OWSLib==0.27.2
 pycsw==2.6.1
-SQLAlchemy==1.4.43 # required by PyCSW
+SQLAlchemy==1.4.44 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 geoip2==4.6.0
@@ -108,10 +108,10 @@ django-bootstrap3-datetimepicker-2==2.8.3
 
 # storage manager dependencies
 django-storages==1.13.1
-dropbox==11.35.0
-google-cloud-storage==2.5.0
+dropbox==11.36.0
+google-cloud-storage==2.6.0
 google-cloud-core==2.3.2
-boto3==1.26.4
+boto3==1.26.17
 
 # Django Caches
 python-memcached<=1.59
@@ -131,7 +131,7 @@ pylibmc==1.6.3
 sherlock==0.4.0
 
 # required by monitoring
-psutil==5.9.3
+psutil==5.9.4
 django-cors-headers==3.13.0
 user-agents
 django-user-agents
@@ -150,24 +150,24 @@ invoke==1.7.3
 # tests
 coverage==6.5.0
 requests-toolbelt==0.10.1
-flake8==5.0.4
+flake8==6.0.0
 pytest==7.2.0
-pytest-bdd==6.1.0
+pytest-bdd==6.1.1
 splinter==0.18.1
 pytest-splinter==3.3.2
 pytest-django==4.5.2
-setuptools>=59.1.1,<65.6.0
+setuptools>=59.1.1,<65.7.0
 pip==22.3.1
 Twisted==22.10.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
-selenium-requests==2.0.0
-webdriver_manager==3.8.4
+selenium-requests==2.0.1
+webdriver_manager==3.8.5
 
 # Security and audit
 mistune==2.0.4
 wandb==0.13.5
 protobuf==3.20.3
-mako==1.2.3
+mako==1.2.4
