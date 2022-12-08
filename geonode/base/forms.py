@@ -482,7 +482,7 @@ class ResourceBaseForm(TranslationModelForm):
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     poc = ContactRoleMultipleChoiceField(
-        label=_("Person of Contact"),
+        label=_("Point of Contact"),
         required=True,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
