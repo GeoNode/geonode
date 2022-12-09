@@ -59,7 +59,7 @@
     "react": "16.9.0",
     "react-calendar-heatmap": "1.8.1",
     "react-dom": "16.9.0",
-    "react-hot-loader": "4.13.0",
+    "react-hot-loader": "4.13.1",
     "react-intl": "3.12.1",
     "react-redux": "7.2.6",
     "react-router": "5.0.1",
