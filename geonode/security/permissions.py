@@ -71,12 +71,14 @@ DOWNLOADABLE_RESOURCES = [
 ]
 
 DATA_EDITABLE_RESOURCES_SUBTYPES = [
-    'vector'
+    'vector',
+    'vector_time'
 ]
 
 DATA_STYLABLE_RESOURCES_SUBTYPES = [
     'raster',
-    'vector'
+    'vector',
+    'vector_time'
 ]
 
 # The following permissions will be filtered out when READ_ONLY mode is active
