@@ -360,12 +360,12 @@ class UserSerializer(BaseDynamicModelSerializer):
 
 class ContactRoleField(DynamicComputedField):
 
-    def __init__(self, contat_type, **kwargs):
-        self.contat_type = contat_type
+    def __init__(self, contact_type, **kwargs):
+        self.contact_type = contact_type
         super().__init__(**kwargs)
 
     def get_attribute(self, instance):
-        return getattr(instance, self.contat_type)
+        return getattr(instance, self.contact_type)
 
     def to_representation(self, value):
         return [UserSerializer(embed=True, many=False).to_representation(v) for v in value]
