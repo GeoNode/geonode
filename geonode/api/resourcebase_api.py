@@ -741,7 +741,8 @@ class LayerResource(CommonModelApi):
             # includes other values
             values = self.VALUES + [
                 'alternate',
-                'name'
+                'name',
+                'resource_type'
             ]
             formatted_obj = model_to_dict(obj, fields=values)
             username = obj.owner.get_username()
