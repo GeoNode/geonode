@@ -20,7 +20,7 @@ import os
 import logging
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
 from pycsw import server
@@ -31,6 +31,7 @@ from geonode.layers.models import Dataset
 from geonode.base.auth import get_or_create_token
 from geonode.base.models import ContactRole, SpatialRepresentationType
 from geonode.groups.models import GroupProfile
+from geonode.utils import resolve_object
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -330,3 +331,8 @@ def csw_render_extra_format_html(request, layeruuid, resname):
     extra_res_md['poc_email'] = pocp.email
     return render(request, "geonode_metadata_full.html", context={"resource": resource,
                                                                   "extra_res_md": extra_res_md})
+
+
+def resolve_uuid(request, uuid):
+    resource = resolve_object(request, ResourceBase, {"uuid": uuid})
+    return redirect(resource)
