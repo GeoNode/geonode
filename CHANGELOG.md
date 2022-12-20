@@ -1,5 +1,176 @@
 # Change Log
 
+## [4.0.2](https://github.com/GeoNode/geonode/tree/4.0.2) (2022-12-20)
+
+### Breaking Changes
+
+ - Based on MapStore client [4.0.5](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/4.0.5)
+ - MapStore client is no more compatible with 3.x train
+ - GeoNode 4.0.0 architecture is slightly different from the previous versions; please refer to:
+   - [GNIP 89: Architecture Design - Resource and Storage Manager Modules](https://github.com/GeoNode/geonode/issues/7664)
+
+### Features
+
+ - Python upgrade 3.9/3.10/3.11
+ - Django upgrade 3.2.16
+ - GeoServer upgrade 2.20.5
+ - GDAL 3.3.2/3.4.1
+
+ - Highlights GeoNode 4.0.2:
+   - [Features](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Afeature)
+   - [Enhancements](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Aenhancement)
+   - [Security Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Asecurity)
+   - [Severe Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Ablocker)
+   - [Regressions](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Aregression)
+   - [Bug Fixes](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Amajor)
+   - [Minor Issues](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Aminor)
+   - [Performance](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Aperformance)
+   - [Translations](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Atranslations)
+   - [Translations](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.2+label%3Atranslations)
+   - [Dependencies](https://github.com/GeoNode/geonode/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0.2+label%3Adependencies)
+   - [Dependencies](https://github.com/GeoNode/geonode/pulls?q=is%3Apr+is%3Aclosed+milestone%3A4.0.2+label%3Adependencies)
+
+### Full Changelog
+
+[https://github.com/GeoNode/geonode/compare/4.0.1...4.0.2](https://github.com/GeoNode/geonode/compare/4.0.1...4.0.2)
+
+<li> Tue Dec 20 10:09:23 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/c77e0aa553b247948445d601d81f7705c4440160 target=blank>[Dependencies] Align setup.cfg to requirements.txt (#10417) (#10418)</a></li>
+<li> Tue Dec 20 10:05:54 2022 +0100: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/a4b37f6e374467a3add978c9f3a849032652e29f target=blank>[Dependencies] Bump django-geonode-mapstore-client to version 4.0.5 (#10446)</a></li>
+<li> Wed Dec 14 12:25:01 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b2b9925666365fac743487bd218010321031f6a6 target=blank>[Dependencies] Align setup.cfg to requirements.txt (#10417) (#10418)</a></li>
+<li> Tue Dec 13 17:40:58 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/7f938abf70053981f24c627c14b80ca429a37ec3 target=blank>Bump sqlalchemy from 1.4.44 to 1.4.45 (#10402) (#10405)</a></li>
+<li> Tue Dec 13 17:40:21 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9caa5cfbd80cb22a47e342c70b53a90797914c5c target=blank>Bump wandb from 0.13.5 to 0.13.6 (#10399) (#10409)</a></li>
+<li> Tue Dec 13 17:39:41 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/e3d6a9fce3f7e1271cf62dc483ca16eb2c90bb0d target=blank>Bump google-cloud-storage from 2.6.0 to 2.7.0 (#10398) (#10411)</a></li>
+<li> Tue Dec 13 17:38:45 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f837924abc6b46a6dfae183bf55ecb2e824669c2 target=blank>Bump selenium-requests from 2.0.1 to 2.0.2 (#10401) (#10414)</a></li>
+<li> Tue Dec 13 17:38:25 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/925c068e284105af1cb83b9f7f6e773790e4ab35 target=blank>Bump boto3 from 1.26.26 to 1.26.28 (#10407) (#10415)</a></li>
+<li> Mon Dec 12 11:13:27 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/552831d6299fb91bd162eff455e4363bf42cbb1f target=blank>[Dependencies] Align setup.cfg to requirements.txt (#10397) (#10403)</a></li>
+<li> Sat Dec 10 09:46:08 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c431db23eaf26846383bd98b6a50c8adca650aed target=blank>Bump jsonschema from 4.17.1 to 4.17.3 (#10372) (#10384)</a></li>
+<li> Sat Dec 10 09:45:37 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/6376f69690897707999e7e212c25d4e5c4aefcc7 target=blank>Bump ipython from 8.6.0 to 8.7.0 (#10371) (#10387)</a></li>
+<li> Sat Dec 10 09:45:08 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a463d1980617c8e0b82e9a89ab5e86c00d99ddc7 target=blank>Bump boto3 from 1.26.17 to 1.26.26 (#10386) (#10389)</a></li>
+<li> Sat Dec 10 09:44:39 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ee501902d85526f0e2be994f724d1c644ab42626 target=blank>[Fixes #10376] Time serie dataset, missing permissions (#10377) (#10391)</a></li>
+<li> Sat Dec 10 09:44:08 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b08eae5b0de93a95f7bbaf9b026dce60cbbfee3b target=blank>fix: requirements_dev.txt to reduce vulnerabilities (#10369) (#10393)</a></li>
+<li> Sat Dec 10 09:43:38 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c3b4ad99ace009d63dc3897b80c8c6ddb3626095 target=blank>fix: upgrade react-hot-loader from 4.13.0 to 4.13.1 (#10370) (#10395)</a></li>
+<li> Sat Dec 10 09:41:14 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/07e03d42046ec414d06172cd71bfda1b5cd4d398 target=blank>[CLA] Add MalteIwanicki to clabot (#10381) (#10382)</a></li>
+<li> Tue Nov 29 10:07:23 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/bf9b289e6efc068f29354a8e64ee1c61beab7011 target=blank>[Dependencies] Align "setup.cfg" to "requirements.txt" (#10363) (#10364)</a></li>
+<li> Mon Nov 28 17:07:17 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/de95098e925c520c5477a3be6c456f5b187ac2f4 target=blank>fix: requirements_dev.txt to reduce vulnerabilities (#10300) (#10355)</a></li>
+<li> Mon Nov 28 17:06:37 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/4d809193a2dcdca6d4b28ea3204a2b06270c6f09 target=blank>Bump jsonschema from 4.17.0 to 4.17.1 (#10349) (#10357)</a></li>
+<li> Mon Nov 28 17:05:55 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/511ec32934fafbccb2d33dcf4cb23f638bc03970 target=blank>Bump boto3 from 1.26.14 to 1.26.17 (#10354) (#10359)</a></li>
+<li> Mon Nov 28 17:05:18 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f7c7fbafc627a1541e2dab7207800e3108c821de target=blank>Bump flake8 from 5.0.4 to 6.0.0 (#10348) (#10361)</a></li>
+<li> Mon Nov 28 17:04:40 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c51eaea915915c5bccacb71c6443228ed0a83461 target=blank>Bump django-grappelli from 3.0.3 to 3.0.4 (#10351) (#10352)</a></li>
+<li> Wed Nov 23 10:47:38 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f60dcf7e72530536096ac7bd0cfde65f1ce9a557 target=blank>[Dependencies] Align setup.cfg with requirements.txt (#10339) (#10341)</a></li>
+<li> Wed Nov 23 10:47:14 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ed06660689570e698cb74a5ae859a690546a0162 target=blank>[Fixes #9041] Docker NGINX listen on ports 80/443 (#10338) (#10340)</a></li>
+<li> Tue Nov 22 13:36:27 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/14fd4610877315611e3989bd93107c3236d0a82a target=blank>Bump webdriver-manager from 3.8.4 to 3.8.5 (#10323) (#10337)</a></li>
+<li> Tue Nov 22 11:34:16 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/bf3643e493e2897f534c99857757cb6bc827d7b6 target=blank>Bump selenium-requests from 2.0.0 to 2.0.1 (#10324) (#10336)</a></li>
+<li> Tue Nov 22 11:13:35 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9d533dc841e02d19747d4f789e6f2210f6ee0528 target=blank>Bump mako from 1.2.3 to 1.2.4 (#10325) (#10335)</a></li>
+<li> Tue Nov 22 10:56:17 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/6b25e32092896e2726b2a780e567ded8bbe0673b target=blank>Bump boto3 from 1.26.11 to 1.26.14 (#10330) (#10334)</a></li>
+<li> Tue Nov 22 10:40:22 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f309cab6b07c555c74f0c3c85453768e82de19f2 target=blank>Bump python-slugify from 6.1.2 to 7.0.0 (#10322) (#10333)</a></li>
+<li> Tue Nov 22 10:25:56 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/2d2df7056bc557dea6a1da0193ee05c403e6f633 target=blank>Update setuptools requirement from <65.6.0,>=59.1.1 to >=59.1.1,<65.7.0 (#10327) (#10332)</a></li>
+<li> Tue Nov 22 10:19:17 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/1a80f83e1e0cacb50282c1949445efa341bd7342 target=blank>Create SECURITY.md (#10285) (#10329)</a></li>
+<li> Tue Nov 22 10:17:14 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c527b3e5d8084dd63aa582d3da99729a72071bd8 target=blank>[Fixes #10302] Incorrect permissions assigned on cloning a resource (#10309) (#10328)</a></li>
+<li> Mon Nov 21 17:33:14 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/1f25962d787863480d9b5c480e3972e233b3b9c1 target=blank>[Fixes #10303] automatic periodic TaskResult removal (#10306) (#10319)</a></li>
+<li> Fri Nov 18 17:28:51 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ba0795327e94de530a78e43192b25a3e83145e39 target=blank>[Dependencies] Align setup.cfg with requirements.txt (#10315) (#10318)</a></li>
+<li> Thu Nov 17 17:41:51 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/828e0a2df5b0df45a16dbc5ac5cea4589f8c6366 target=blank>Bump google-cloud-storage from 2.5.0 to 2.6.0 (#10291) (#10314)</a></li>
+<li> Thu Nov 17 17:41:28 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/8f62b33226713af661ff95a8043d449c65c52d81 target=blank>Bump boto3 from 1.26.4 to 1.26.11 (#10312) (#10313)</a></li>
+<li> Thu Nov 17 17:00:27 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/bd0e278bc001a06278eebcf8dc344c3698b9721f target=blank>Bump pytest-bdd from 6.1.0 to 6.1.1 (#10297) (#10305)</a></li>
+<li> Thu Nov 17 16:59:52 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/47ffbc1a6816d46baba8e730db2d795e357739ed target=blank>Bump pymupdf from 1.20.2 to 1.21.0 (#10296) (#10307)</a></li>
+<li> Thu Nov 17 16:59:31 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c39e820afba1b3c4a8920c1f63e194e1d6f0a4ef target=blank>Bump sqlalchemy from 1.4.43 to 1.4.44 (#10294) (#10308)</a></li>
+<li> Thu Nov 17 16:59:11 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/d073b05d466b5c7d41e11b8d7c5a40a835997903 target=blank>Bump psutil from 5.9.3 to 5.9.4 (#10293) (#10310)</a></li>
+<li> Thu Nov 17 16:58:50 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/d329948cc64563af9ada190aa04d3573ec6eb978 target=blank>Bump dropbox from 11.35.0 to 11.36.0 (#10292) (#10311)</a></li>
+<li> Mon Nov 14 22:05:05 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/8e6029c1d59b9d3f4c324ff542b3ff6aba143e87 target=blank>[Fixes #10270] Document creation via API v2 (#10271) (#10298)</a></li>
+<li> Thu Nov 10 12:01:41 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/1d751ad95ac199a0af483639c01441798a9455c7 target=blank>[Fixes #10287] The "set_layer_permissions" management command does not behave correctly with "AnonyousUser" (#10288) (#10289)</a></li>
+<li> Wed Nov 9 17:10:36 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/40d07f90dca4e5550c41362bd6fb8df4f449a8f3 target=blank>[Dependencies] Align setup.cfg to requirements.txt (#10284) (#10286)</a></li>
+<li> Wed Nov 9 15:58:31 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a19c0144005f4b13b5a69ea734a2a39cba57a997 target=blank>Bump jsonschema from 4.16.0 to 4.17.0 (#10262) (#10272)</a></li>
+<li> Wed Nov 9 15:57:42 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/5c05f1db2efa05c8a68c937d8984a824b4e661b0 target=blank>Bump pip from 22.3 to 22.3.1 (#10261) (#10274)</a></li>
+<li> Wed Nov 9 15:57:20 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/967ba63d39eee097c9844521275dbd9e3c52a764 target=blank>Bump pytest-bdd from 6.0.1 to 6.1.0 (#10260) (#10275)</a></li>
+<li> Wed Nov 9 15:56:48 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9763deabf44f75b62abc1240e0fd4ce0101d3808 target=blank>Bump django-select2 from 7.11.0 to 8.0.0 (#10259) (#10276)</a></li>
+<li> Wed Nov 9 15:56:28 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f7c60f38102888e94342f215cdd513e2fb3f959a target=blank>Bump sqlalchemy from 1.4.42 to 1.4.43 (#10258) (#10277)</a></li>
+<li> Wed Nov 9 15:56:09 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/004d53aac84281fe8523bb2c57c065d957de9f5c target=blank>Bump docker from 6.0.0 to 6.0.1 (#10256) (#10278)</a></li>
+<li> Wed Nov 9 15:55:46 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/73d98e69c0a295503d42e07adb016a55cd7da2e8 target=blank>Bump wandb from 0.13.4 to 0.13.5 (#10255) (#10279)</a></li>
+<li> Wed Nov 9 15:55:26 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/7374e941f5fb5df3c7b45623eff61ad70e15fc7b target=blank>Bump boto3 from 1.26.0 to 1.26.4 (#10273) (#10283)</a></li>
+<li> Wed Nov 9 15:04:09 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/05745a8599047a4249fc0166e5ea8fff823decbc target=blank>[Fixes #10251] improve feedback to the user and UI experience of batch permisisons assignment (#10281) (#10282)</a></li>
+<li> Tue Nov 8 13:47:37 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ed9e56b9393624ef500f9fda67d7820118b08122 target=blank>[Fixes #10214] metadata_only filter not working properly (#10215) (#10269)</a></li>
+<li> Tue Nov 8 10:04:04 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/e707b6adce90223354433476373c247cc5484ddc target=blank>Fix broken test (#10266) (#10267)</a></li>
+<li> Tue Nov 8 09:59:36 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/917928dcbd5e364ebc85afdeba112b01103a39b7 target=blank>fix ip whitelisting (#10218) (#10230)</a></li>
+<li> Mon Nov 7 15:34:15 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f67f63e4463127050702888f81df9163eff01655 target=blank>[Fixes #10263] non admin user in fresh instance cannot create resources_ (#10264) (#10265)</a></li>
+<li> Fri Nov 4 17:51:51 2022 +0100: afabiani <a href=https://github.com/GeoNode/geonode/commit/98a807ac533cafdd260a5c9f224470a94792036a target=blank>[Hardening] Prevent migration 0034_maplayer_extra_params_and_current_style to fail abruptly in the case the maplayer has no styles associated with it</a></li>
+<li> Fri Nov 4 16:55:34 2022 +0100: mattiagiupponi <a href=https://github.com/GeoNode/geonode/commit/81f378e55c6d15c65e5157a738fd4967a5719a28 target=blank>[4.0.x][Fixes #10208] Add a custom hook at the end of the permissions assign (#10212)</a></li>
+<li> Fri Nov 4 13:43:04 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/caff2f549403c101cdd78eef6b4622655f5ef553 target=blank>[Fixes #10251] Review geonode management command set_layers_permissions (#10252) (#10253)</a></li>
+<li> Thu Nov 3 10:49:19 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/70f9ccfe5d72e57f802d032644b69b1ac3c4ca12 target=blank>[Dependencies] Align "setup.cfg" to "requirements.txt" (#10242) (#10250)</a></li>
+<li> Wed Nov 2 19:30:28 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/7ad1630fec1e12521bffc194ecba972ffd2de1fa target=blank>Update httplib2 requirement from <0.20.5 to <0.21.1 (#10227) (#10232)</a></li>
+<li> Wed Nov 2 19:29:48 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/baaec7d6266b77ca3d72c0b518b6caea8462a6ef target=blank>Bump pillow from 9.1.1 to 9.3.0 (#10229) (#10236)</a></li>
+<li> Wed Nov 2 19:29:31 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/2be491e92a928ba6f1fcf6e0fb68de5e7aed02b8 target=blank>Bump twisted from 22.8.0 to 22.10.0 (#10233) (#10237)</a></li>
+<li> Wed Nov 2 19:29:14 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/69b0d9ef0cdeb04165d96903f2e3ea5dddbb87ee target=blank>Bump boto3 from 1.24.91 to 1.26.0 (#10235) (#10238)</a></li>
+<li> Wed Nov 2 19:28:56 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f59dead58b36f6a6975978ad7f1121b77b103615 target=blank>Bump pytz from 2022.4 to 2022.6 (#10234) (#10239)</a></li>
+<li> Wed Nov 2 19:28:39 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/4641a7e28e6721fa07986f73cfb028d7dc7e39ef target=blank>Bump ipython from 8.5.0 to 8.6.0 (#10228) (#10240)</a></li>
+<li> Wed Nov 2 19:27:58 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/628fe5c2bbb35a337b832cbee0ccb89580eacae7 target=blank>Bump requests-toolbelt from 0.10.0 to 0.10.1 (#10225) (#10241)</a></li>
+<li> Wed Nov 2 19:27:22 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/054f293294af66e21ac81d5b3b1acbf4417006b0 target=blank>Bump pytest from 7.1.3 to 7.2.0 (#10224) (#10243)</a></li>
+<li> Wed Nov 2 19:27:00 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/24ea6785755162525c6372fb4ea2d74bcf605f94 target=blank>Bump django-select2 from 7.10.1 to 7.11.0 (#10223) (#10244)</a></li>
+<li> Wed Nov 2 19:26:42 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/e764ae9935f6054cbbac39186c8fe47185b54fd5 target=blank>Bump psycopg2 from 2.9.4 to 2.9.5 (#10222) (#10245)</a></li>
+<li> Wed Nov 2 19:26:25 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/0d5540c87330118e40b158a8538d543720b2e289 target=blank>Bump pyjwt from 2.5.0 to 2.6.0 (#10186) (#10246)</a></li>
+<li> Wed Nov 2 19:26:07 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9094a08de17e1ee696392b388c2434b10604fba4 target=blank>Bump psutil from 5.9.2 to 5.9.3 (#10185) (#10247)</a></li>
+<li> Wed Nov 2 19:25:47 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ccd88c5d40d8689db5e78ab3478b460f3cffbf6a target=blank>Bump webdriver-manager from 3.8.3 to 3.8.4 (#10184) (#10248)</a></li>
+<li> Wed Nov 2 19:25:28 2022 +0100: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/3ea9e53817753da02815f5cabd8ae468e8a3fe59 target=blank>fix: scripts/docker/nginx/Dockerfile to reduce vulnerabilities (#10180) (#10249)</a></li>
+<li> Fri Oct 28 10:24:30 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/058c447fd64b4bc188dd9f3169c937421fa29169 target=blank>Bump oauthlib from 3.2.1 to 3.2.2 (#10189) (#10209)</a></li>
+<li> Thu Oct 27 15:43:13 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/5dec78d2d735502a58f1421b2cac7d981d63da48 target=blank>[Fixes #10192] Include source into the ExecutionRequest model (#10193) (#10207)</a></li>
+<li> Thu Oct 27 15:19:18 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/1fcbaff9f8ec8c730f3c420752026f83c64391ee target=blank>[Fixes #10204] restore mapstore catalog settings (#10205) (#10206)</a></li>
+<li> Thu Oct 27 15:12:33 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/c97b0588f711ee1f74dab79172e6135c2bc0bec4 target=blank>[Fixes #10195] Backup and restore procedure is not successful (#10196) (#10203)</a></li>
+<li> Thu Oct 27 11:23:39 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9469b5d55b17a4da29037596e5cf081b6a2f7cb2 target=blank>[Fixes #10198] uwsgi library update (#10199) (#10200)</a></li>
+<li> Tue Oct 25 12:38:11 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/704b9af9c6e6212e6797163c6da37b79bdaa6b3f target=blank>[Hardening] Make the migration '0074_drop_curated_thumbs' more robust</a></li>
+<li> Wed Oct 19 16:40:52 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a5c1b54855b64e29bfc4f2142a43b831db8e827e target=blank>Fix migrations 4x (#10176) (#10177)</a></li>
+<li> Wed Oct 19 16:11:05 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/afa06383f692fb5f347f895774a5cf0e2c49f53d target=blank>[Hardening] Avoid "backup.py" failing while trying to set "w" perms on the GeoServer catalog file</a></li>
+<li> Wed Oct 19 14:38:44 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/df73651e402c9959f851e5462e6e4c62380e468f target=blank>[Fixes #10171] Dynamic rendering of document_detail view template (#10172) (#10173)</a></li>
+<li> Wed Oct 19 14:29:48 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/3d9c94a776f862f6b3f73065b6af786ff57266b0 target=blank>[Fixes #10168] Add 'executions' field to concrete instance endpoints (#10169) (#10170)</a></li>
+<li> Tue Oct 18 11:44:16 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/6dbfe518e4c1977779680f5b8739a34c51a28625 target=blank>Align requirements.txt comments with 4.x (#10162) (#10163)</a></li>
+<li> Mon Oct 17 18:33:01 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/2601149910d06785ae7f6efbb0657e30fc47e705 target=blank>Bump sqlalchemy from 1.4.41 to 1.4.42 (#10145) (#10161)</a></li>
+<li> Mon Oct 17 18:31:33 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/db13a28e469fd13a8e4d17bcedbcfbd7e2e6ffce target=blank>Bump pip from 22.2.2 to 22.3 (#10149) (#10160)</a></li>
+<li> Mon Oct 17 18:31:03 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b2cd0e331ac5b8367f5e2c35fed5a6d7acd53154 target=blank>Bump boto3 from 1.24.87 to 1.24.91 (#10151) (#10159)</a></li>
+<li> Mon Oct 17 18:30:47 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f259990ccc08643a82308aa9483b1b10a52d0db7 target=blank>Bump dropbox from 11.34.0 to 11.35.0 (#10146) (#10158)</a></li>
+<li> Mon Oct 17 18:30:28 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ecc432a1c7c3ab71014206c953dcad4dd68bdc4c target=blank>Bump shapely from 1.8.4 to 1.8.5.post1 (#10147) (#10157)</a></li>
+<li> Mon Oct 17 18:29:26 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b136c6f9fcc0da2b0c40dbc2cf45ec1e2551ccd8 target=blank>Update setuptools requirement from <65.5.0,>=59.1.1 to >=59.1.1,<65.6.0 (#10150) (#10156)</a></li>
+<li> Mon Oct 17 18:28:24 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ef1e49169e9e84f6253c4f13d780a8a9ef090d5c target=blank>Bump wandb from 0.12.17 to 0.13.4 (#10152) (#10155)</a></li>
+<li> Mon Oct 17 12:54:00 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/237437dc497bd28a461edf9273d46f4b50a6dd66 target=blank>[Fixes #10142] storage_manager copy dont assign the folder/file permi… (#10143) (#10154)</a></li>
+<li> Thu Oct 13 18:46:20 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/3fc43a71b57f46efe6cf1eb603e18c0e75960b9e target=blank>[Fixes #10138] Render pdf thumbnails from top margin (#10139) (#10141)</a></li>
+<li> Wed Oct 12 17:03:38 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/57b84fc50398d7eb92f1db59de1e7854212015e0 target=blank>[Fixes #10134] New simple renderer to generate thumbnails for PDFs (#10135) (#10136)</a></li>
+<li> Wed Oct 12 10:25:28 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/b17f801b2bc68a4c30cad2490e2345044c0fcb4c target=blank>Complete Translate pt_BR (#10056) (#10132)</a></li>
+<li> Wed Oct 12 10:25:15 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/058277359241f6f621acba5dec937fff26dad8a1 target=blank>[Fixes #10130] Data retriever dont assign the folder/file permissions correcly (#10131) (#10133)</a></li>
+<li> Wed Oct 12 09:27:35 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/4df71f6eeb11c7a3c5ce7f3efee8a78c42dfa3a7 target=blank>[Fixes #7852] Update catalog and background layers url configuration in settings.py and related files (#9950) (#10129)</a></li>
+<li> Mon Oct 10 16:08:20 2022 +0200: Alessio Fabiani <a href=https://github.com/GeoNode/geonode/commit/0773bb9e5911f5c1c1d7f79d7c5143f38b3d88b3 target=blank>[Dependencies] Align setup.cfg to requirements.txt (#10124) (#10128)</a></li>
+<li> Mon Oct 10 12:45:21 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/049718b69971ac64b454aa63ec6d062d617cbaba target=blank>[Fixes #10120] Celery autoscale values are too low and wrongly positioned (#10121) (#10126)</a></li>
+<li> Mon Oct 10 12:43:01 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a2c13b6f32755e4472ef9663c16c8af1fc1af92f target=blank>Bump django-mptt from 0.13.4 to 0.14.0 (#10081) (#10090)</a></li>
+<li> Mon Oct 10 12:42:44 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/92253225fc70c4445c97996aac445495d3a10b9a target=blank>Update django-invitations requirement from <1.9.4 to <2.0.1 (#10084) (#10097)</a></li>
+<li> Mon Oct 10 12:42:26 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/d2001921070a89a490e233284e5f4a4ecf87ea81 target=blank>fix: requirements.txt to reduce vulnerabilities (#10099) (#10100)</a></li>
+<li> Mon Oct 10 12:42:05 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/f14be3284694b4af700a9bc6fcf29721a9bca328 target=blank>Bump drf-spectacular from 0.24.1 to 0.24.2 (#10088) (#10101)</a></li>
+<li> Mon Oct 10 12:41:47 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/0bf98ce2d001dac46c92f49eeec7dbf8ce961daa target=blank>Bump invoke from 1.7.1 to 1.7.3 (#10086) (#10103)</a></li>
+<li> Mon Oct 10 12:41:32 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/388b9753c89382ffe69907b329c8cb586ae31563 target=blank>Bump protobuf from 4.21.6 to 4.21.7 (#10085) (#10106)</a></li>
+<li> Mon Oct 10 12:41:14 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/76fa90eaef2316faa45ce783b5df2feb009f38c3 target=blank>Bump pytz from 2022.2.1 to 2022.4 (#10083) (#10108)</a></li>
+<li> Mon Oct 10 12:40:57 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/71b6947ec7eedb786a077a4443c27bd6ceda5eb0 target=blank>Bump coverage from 6.4.4 to 6.5.0 (#10079) (#10112)</a></li>
+<li> Mon Oct 10 12:40:36 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/965d3bde10404926dbaa82efca4676b31e6c676c target=blank>Bump sherlock from 0.3.2 to 0.4.0 (#10116) (#10119)</a></li>
+<li> Mon Oct 10 12:40:16 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/d6ab48638cc6cf98c88940050e0d51947cb2412a target=blank>Bump boto3 from 1.24.80 to 1.24.87 (#10107) (#10123)</a></li>
+<li> Mon Oct 10 12:14:37 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a4c8ce14ec7831d0d0097da754217e0dd863449e target=blank>-[Fixes #10073] Unable to view Maps tab in Recent activities (#10074) (#10109)</a></li>
+<li> Mon Oct 10 12:14:19 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b938dc03235d8e4266134a09b706b18b2ac0360f target=blank>[Fixes #10091] improve thumbnails quality (#10092) (#10110)</a></li>
+<li> Mon Oct 10 12:14:00 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/82c2bc6bb82d29a602fee7e4c7fb42832233531c target=blank>[Fixes #10075] Improvements to the upload time step UI (#10094) (#10111)</a></li>
+<li> Mon Oct 10 12:13:39 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/baad56d1b409a9469731a0d50664ef5c68450f76 target=blank>-[Fixes #10104] Sort resource APIs with created date (#10105) (#10122)</a></li>
+<li> Mon Oct 10 09:29:08 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/a3cf8b2118c35751b6b5ae15eb9782e861d89ca4 target=blank>[Fixes #10113] Data retriver keep kmz files even if is unzipped (#10114) (#10115)</a></li>
+<li> Tue Oct 4 15:34:27 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9e9513305ab6804df5a4f45630d930a97e5cf353 target=blank>[Fixes #10070] Let the resource manager handle also raw sld (#10071) (#10095)</a></li>
+<li> Mon Oct 3 10:10:12 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/4391987da08535c216c17644c39b1f577ad846a7 target=blank>[Fixes #10055] Modify Metadata form with permissions check (#10057) (#10076)</a></li>
+<li> Thu Sep 29 14:22:48 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/5a53e2a41af890d114a3cfd9ae3501e1ee7be7a1 target=blank>[Fixes #10066][Depencendies] Security audit and checks (#10067) (#10072)</a></li>
+<li> Thu Sep 29 13:52:36 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/b7836dd435ace600acad015fce627c7f9f57a2b1 target=blank>[Fixes #10041] Review the thumbnail scaling process (#10046) (#10069)</a></li>
+<li> Wed Sep 28 10:29:59 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/eac7b940cdeaaaac2d71ba43211f2de489408654 target=blank>[Dependencies] Align setup.cfg with requirements.txt (#10061) (#10064)</a></li>
+<li> Wed Sep 28 10:29:25 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/2fdb24fc13df564fb61a05a006565b673c1789b1 target=blank>Bump drf-spectacular from 0.24.0 to 0.24.1 (#10051) (#10053)</a></li>
+<li> Wed Sep 28 10:29:00 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/fdec79af265a0586c4ff7aa0b852796b77057276 target=blank>Update setuptools requirement from <65.4.0,>=59.1.1 to >=59.1.1,<65.5.0 (#10047) (#10054)</a></li>
+<li> Wed Sep 28 10:28:26 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9ab5d53d2dcd9ab8140a972ed96b47384a1ed347 target=blank>Bump boto3 from 1.24.75 to 1.24.80 (#10050) (#10058)</a></li>
+<li> Wed Sep 28 10:27:59 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/dbdf2f8d52c4795b489f58cbafe63f923810ba9b target=blank>Bump pyopenssl from 22.0.0 to 22.1.0 (#10049) (#10059)</a></li>
+<li> Wed Sep 28 10:24:17 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/ad788e838afefb071b38c69c69db00dd9f2ff4de target=blank>[CLA] Add "edsonflavio" to .clabot</a></li>
+<li> Tue Sep 27 15:08:18 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/423ecc2d57d36ffffa79e5c1ce3ea702dc934387 target=blank>[Fixes #10040] Remove auto-generated thumbnail for documents (#10045) (#10052)</a></li>
+<li> Wed Sep 21 11:33:32 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/3211ab15acad8837bebe346e717d190b9d9a944d target=blank>add installation type to issue template (#10042) (#10043)</a></li>
+<li> Wed Sep 21 11:33:07 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/0330a9074db216898fc4a18fb136772899f3b499 target=blank>[Dependencies] Align setup.cfg with requirements.txt (#10038) (#10044)</a></li>
+<li> Wed Sep 21 11:32:39 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/9739f7803991b2e37fff74d43a9fed7c27c6577d target=blank>Bump pyjwt from 2.4.0 to 2.5.0 (#10027) (#10037)</a></li>
+<li> Wed Sep 21 11:32:20 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/ae30c2947ff47e49ebf34044218bfbe2dec1b70f target=blank>Update idna requirement from <2.11,>=2.5 to >=2.5,<3.5 (#10028) (#10036)</a></li>
+<li> Wed Sep 21 11:32:01 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/15f328b58d4eeea3840ae3042937dceff74398d7 target=blank>Bump drf-spectacular from 0.23.1 to 0.24.0 (#10029) (#10034)</a></li>
+<li> Wed Sep 21 11:31:41 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/5f5419312ca4a46211bbd222633c49ed323ef311 target=blank>Bump smart-open from 6.1.0 to 6.2.0 (#10030) (#10033)</a></li>
+<li> Wed Sep 21 11:31:18 2022 +0200: github-actions[bot] <a href=https://github.com/GeoNode/geonode/commit/6c546dd187792b155d6d841af708ef749602e75f target=blank>Bump boto3 from 1.24.70 to 1.24.75 (#10031) (#10032)</a></li>
+<li> Mon Sep 19 10:29:55 2022 +0200: Emanuele Tajariol <a href=https://github.com/GeoNode/geonode/commit/40fae5b3240ddf5b033688ce1891d7e7f1cfc304 target=blank>#10024 Wrong default style when creating layer (#10025)</a></li>
+<li> Wed Sep 14 10:02:03 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/c4bd604e1aa453cd9c6b718792e156e8bdf86e3b target=blank>Bump to version 4.0.2 dev 0</a></li>
+
 ## [4.0.1](https://github.com/GeoNode/geonode/tree/4.0.1) (2022-09-14)
 
 <li> Wed Sep 14 08:53:37 2022 +0200: afabiani <a href=https://github.com/GeoNode/geonode/commit/4465a94bbe8cf905d01b2110aa249107118a7f33 target=blank>[Dependencies] Bump django-geonode-mapstore-client to version 4.0.4</a></li>
