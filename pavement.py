@@ -547,9 +547,9 @@ def start_django(options):
     sh(f'{settings} python -W ignore manage.py runserver --nostatic {bind} {foreground}')
 
     if ASYNC_SIGNALS:
-        sh(f"{settings} celery -A geonode.celery_app:app worker --without-gossip --without-mingle -Ofair -B -E \
-            --statedb=worker.state --scheduler={CELERY_BEAT_SCHEDULER} --loglevel=DEBUG \
-            --concurrency=2 -n worker1@%h -f celery.log {foreground}")
+        sh(f"{settings} celery -A geonode.celery_app:app worker --autoscale=20,10 --without-gossip --without-mingle -Ofair -B -E \
+            --statedb=/tmp/worker.state --scheduler={CELERY_BEAT_SCHEDULER} --loglevel=DEBUG \
+            --concurrency=10 --max-tasks-per-child=10 -n worker1@%h -f celery.log {foreground}")
         sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
 
     # wait for Django to start
