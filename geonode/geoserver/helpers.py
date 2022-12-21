@@ -238,7 +238,7 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
                     sld = sld_file.read()
             if isinstance(sld, str):
                 sld = sld.encode('utf-8')
-            dom = etree.XML(sld)
+            dom = etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
         elif sld_file and isfile(sld_file):
             with open(sld_file, "rb") as sld_file:
                 sld = sld_file.read()
@@ -378,7 +378,7 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
             elif isinstance(sld, str):
                 sld = sld.strip('b\'\n')
                 sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
-            etree.XML(sld)
+            etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
         elif base_file and isfile(base_file):
             with open(base_file, "rb") as sld_file:
                 sld = sld_file.read()
