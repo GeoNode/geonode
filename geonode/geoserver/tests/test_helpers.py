@@ -28,7 +28,10 @@ from geonode import geoserver
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
-from geonode.geoserver.helpers import get_dataset_storetype
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    get_dataset_storetype,
+    extract_name_from_sld)
 from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.geoserver.ows import (
@@ -70,6 +73,19 @@ class HelperTest(GeoNodeBaseTestSupport):
         self.user = 'admin'
         self.passwd = 'admin'
         create_dataset_data()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_extract_name_from_sld(self):
+        content = """<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE foo [ <!ENTITY ent SYSTEM "/etc/passwd" > ]>
+<foo xmlns="http://www.opengis.net/sld">
+<NamedLayer>
+    <UserStyle>
+        <Name>&ent;</Name>
+    </UserStyle>
+</NamedLayer>
+</foo>"""
+        self.assertIsNone(extract_name_from_sld(gs_catalog, content))
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_replace_callback(self):
