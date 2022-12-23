@@ -77,6 +77,7 @@ from .helpers import (
     set_styles,
     style_update,
     set_dataset_style,
+    ows_endpoint_in_path,
     temp_style_name_regex,
     _stylefilterparams_geowebcache_dataset,
     _invalidate_geowebcache_dataset)
@@ -446,10 +447,7 @@ def check_geoserver_access(request,
                                     path]))
             raw_url = _url
 
-    if downstream_path in 'ows' and (
-        re.match(r'/(rest).*$', path, re.IGNORECASE) or
-            re.match(r'/(w.*s).*$', path, re.IGNORECASE) or
-            re.match(r'/(ows).*$', path, re.IGNORECASE)):
+    if downstream_path in 'ows' and ows_endpoint_in_path(path):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
     url = urlsplit(raw_url)
@@ -485,7 +483,7 @@ def geoserver_proxy(request,
         allowed_hosts=allowed_hosts)
     url = urlsplit(raw_url)
 
-    if re.match(r'^.*/rest/', url.path) and request.method in ("POST", "PUT", "DELETE"):
+    if re.match(r'^.*(?<!/rest/)/rest/', url.path) and request.method in ("POST", "PUT", "DELETE"):
         if re.match(r'^.*(?<!/rest/)/rest/.*/?styles.*', url.path):
             logger.debug(
                 f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
