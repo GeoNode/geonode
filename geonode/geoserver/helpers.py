@@ -2324,3 +2324,10 @@ def get_dataset_type(spatial_files):
 
 def wps_format_is_supported(_format, dataset_type):
     return (_format, dataset_type) in WPS_ACCEPTABLE_FORMATS
+
+
+def ows_endpoint_in_path(path):
+    return (
+        re.match(r'.*(?<!rest)/(rest)/.*$', path, re.IGNORECASE) or
+        re.match(r'.*(?<!w[a-z]s)/(w.*s)/.*$', path, re.IGNORECASE) or
+        re.match(r'.*(?<!ows)/(ows)/.*$', path, re.IGNORECASE))
