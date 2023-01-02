@@ -179,3 +179,16 @@ class DatasetReplaceAppendSerializer(serializers.Serializer):
     xml_file = serializers.CharField(required=False)
     sld_file = serializers.CharField(required=False)
     store_spatial_files = serializers.BooleanField(required=False, default=True)
+
+class MetadataFileField(DynamicComputedField):
+
+    def get_attribute(self, instance):
+        return instance.get('metadata_file')
+
+class DatasetMetadataSerializer(serializers.Serializer):
+    metadata_file = MetadataFileField(required=True)
+
+    class Meta:
+        fields = (
+            "metadata_file"
+        )

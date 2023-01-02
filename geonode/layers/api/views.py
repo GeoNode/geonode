@@ -32,16 +32,20 @@ from rest_framework.response import Response
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
-from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException
+from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException \
+    , InvalidMetadataException
+from geonode.layers.metadata import parse_metadata
 from geonode.layers.models import Dataset
 from geonode.layers.utils import validate_input_source
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
+from geonode.resource.utils import update_resource
 from rest_framework.exceptions import NotFound
 
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
-from .serializers import DatasetReplaceAppendSerializer, DatasetSerializer, DatasetListSerializer
+from .serializers import DatasetReplaceAppendSerializer, DatasetSerializer, DatasetListSerializer \
+    , DatasetMetadataSerializer
 from .permissions import DatasetPermissionsFilter
 
 import logging
@@ -71,6 +75,78 @@ class DatasetViewSet(DynamicModelViewSet):
         if self.action == "list":
             return DatasetListSerializer
         return DatasetSerializer
+
+    @extend_schema(
+        request=DatasetMetadataSerializer,
+        methods=["put"],
+        responses={200},
+        description="API endpoint to upload metadata file.",
+    )
+    @action(
+        detail=False,
+        url_path="(?P<dataset_id>\d+)/metadata",  # noqa
+        url_name="replace-metadata",
+        methods=["put"],
+        serializer_class=DatasetMetadataSerializer,
+    )
+    def metadata(self, request, dataset_id=None):
+        """
+        Endpoint to upload ISO metadata
+        Usage Example:
+
+        import requests
+
+        dataset_id = 1
+        url = f"http://localhost:8080/api/v2/datasets/{dataset_id}/metadata"
+        files=[
+            ('metadata_file',('metadata.xml',open('/home/user/metadata.xml','rb'),'text/xml'))
+        ]
+        headers = {
+            'Authorization': 'Basic dXNlcjpwYXNzd29yZA=='
+        }
+        response = requests.request("PUT", url, payload={}, files=files)
+
+        cURL example:
+        curl --location --request PUT 'http://localhost:8000/api/v2/datasets/{dataset_id}/metadata' \
+        --form 'metadata_file=@/home/user/metadata.xml'
+        """
+        out = {}
+        storage_manager = None
+        if not self.queryset.filter(id=dataset_id).exists():
+            raise NotFound(detail=f"Dataset with ID {dataset_id} is not available")
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid(raise_exception=False):
+            raise InvalidDatasetException(detail=serializer.errors)
+        try:
+            data = serializer.data.copy()
+            if not data["metadata_file"]:
+                raise InvalidMetadataException(detail=f"A valid metadata file must be specified")
+            storage_manager = StorageManager(remote_files=data)
+            storage_manager.clone_remote_files()
+            file = storage_manager.get_retrieved_paths()
+            metadata_file = file["metadata_file"]
+            dataset = self.queryset.get(id=dataset_id)
+            try:
+                dataset_uuid, vals, regions, keywords, _ = parse_metadata(
+                    open(metadata_file).read())
+            except Exception as e:
+                raise InvalidMetadataException(detail=f"Unsupported metadata format")
+            if dataset_uuid and dataset.uuid != dataset_uuid:
+                raise InvalidMetadataException(detail=f"The UUID identifier from the XML Metadata, is different from the one saved")
+            try:
+                updated_dataset = update_resource(dataset, metadata_file, regions, keywords, vals)
+                updated_dataset.save() # This also triggers the recreation of the XML metadata file according to the updated values
+            except Exception as e:
+                raise GeneralDatasetException(detail=f"Failed to update metadata")
+            out['success'] = True
+            out['message'] = ['Metadata successfully updated']
+            return Response(out)
+        except Exception as e:
+            raise
+        finally:
+            if storage_manager:
+                storage_manager.delete_retrieved_paths()
+        
 
     @extend_schema(
         methods=["get"],

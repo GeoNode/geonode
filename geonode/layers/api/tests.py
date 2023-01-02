@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from io import BytesIO
 import logging
 
 from unittest.mock import patch
@@ -23,6 +24,7 @@ from django.contrib.auth import get_user_model
 
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from geonode.geoserver.createlayer.utils import create_dataset
@@ -44,6 +46,7 @@ class DatasetsApiTests(APITestCase):
     ]
 
     def setUp(self):
+        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
         create_models(b'document')
         create_models(b'map')
         create_models(b'dataset')
@@ -312,3 +315,57 @@ class DatasetsApiTests(APITestCase):
         layer.refresh_from_db()
         # evaluate that the number of available layer is not changed
         self.assertEqual(Dataset.objects.count(), cnt)
+
+    def test_metadata_update_for_not_supported_method(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+        self.client.login(username="admin", password="admin")
+
+        response = self.client.post(url)
+        self.assertEqual(405, response.status_code)
+
+        response = self.client.get(url)
+        self.assertEqual(405, response.status_code)
+
+    def test_metadata_update_for_not_authorized_user(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+
+        response = self.client.put(url)
+        self.assertEqual(403, response.status_code)
+
+    def test_unsupported_file_throws_error(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+        self.client.login(username="admin", password="admin")
+
+        data = '<?xml version="1.0" encoding="UTF-8"?><invalid></invalid>'
+        f = BytesIO(bytes(data, encoding='utf-8'))
+        f.name = 'metadata.xml'
+        put_data = {'metadata_file': f}
+        response = self.client.put(url, data=put_data)
+        self.assertEqual(500, response.status_code)
+
+    def test_valid_metadata_file_with_different_uuid(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+        self.client.login(username="admin", password="admin")
+
+        f = open(self.exml_path, 'r')
+        put_data = {'metadata_file': f}
+        response = self.client.put(url, data=put_data)
+        self.assertEqual(500, response.status_code)
+
+    def test_valid_metadata_file(self):
+        layer = Dataset.objects.first()
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+        self.client.login(username="admin", password="admin")
+
+        uuid = layer.uuid
+        data = open(self.exml_path).read()
+        data = data.replace('7cfbc42c-efa7-431c-8daa-1399dff4cd19', uuid)
+        f = BytesIO(bytes(data, encoding='utf-8'))
+        f.name = 'metadata.xml'
+        put_data = {'metadata_file': f}
+        response = self.client.put(url, data=put_data)
+        self.assertEqual(200, response.status_code)
