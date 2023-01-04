@@ -32,8 +32,10 @@ from rest_framework.response import Response
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
-from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException \
-    , InvalidMetadataException
+from geonode.layers.api.exceptions import (
+    GeneralDatasetException,
+    InvalidDatasetException,
+    InvalidMetadataException)
 from geonode.layers.metadata import parse_metadata
 from geonode.layers.models import Dataset
 from geonode.layers.utils import validate_input_source
@@ -44,8 +46,11 @@ from rest_framework.exceptions import NotFound
 from geonode.storage.manager import StorageManager
 from geonode.resource.manager import resource_manager
 
-from .serializers import DatasetReplaceAppendSerializer, DatasetSerializer, DatasetListSerializer \
-    , DatasetMetadataSerializer
+from .serializers import (
+    DatasetReplaceAppendSerializer,
+    DatasetSerializer,
+    DatasetListSerializer,
+    DatasetMetadataSerializer)
 from .permissions import DatasetPermissionsFilter
 
 import logging
@@ -120,7 +125,7 @@ class DatasetViewSet(DynamicModelViewSet):
         try:
             data = serializer.data.copy()
             if not data["metadata_file"]:
-                raise InvalidMetadataException(detail=f"A valid metadata file must be specified")
+                raise InvalidMetadataException(detail="A valid metadata file must be specified")
             storage_manager = StorageManager(remote_files=data)
             storage_manager.clone_remote_files()
             file = storage_manager.get_retrieved_paths()
@@ -129,24 +134,23 @@ class DatasetViewSet(DynamicModelViewSet):
             try:
                 dataset_uuid, vals, regions, keywords, _ = parse_metadata(
                     open(metadata_file).read())
-            except Exception as e:
-                raise InvalidMetadataException(detail=f"Unsupported metadata format")
+            except Exception:
+                raise InvalidMetadataException(detail="Unsupported metadata format")
             if dataset_uuid and dataset.uuid != dataset_uuid:
-                raise InvalidMetadataException(detail=f"The UUID identifier from the XML Metadata, is different from the one saved")
+                raise InvalidMetadataException(detail="The UUID identifier from the XML Metadata, is different from the one saved")
             try:
                 updated_dataset = update_resource(dataset, metadata_file, regions, keywords, vals)
-                updated_dataset.save() # This also triggers the recreation of the XML metadata file according to the updated values
-            except Exception as e:
-                raise GeneralDatasetException(detail=f"Failed to update metadata")
+                updated_dataset.save()  # This also triggers the recreation of the XML metadata file according to the updated values
+            except Exception:
+                raise GeneralDatasetException(detail="Failed to update metadata")
             out['success'] = True
             out['message'] = ['Metadata successfully updated']
             return Response(out)
         except Exception as e:
-            raise
+            raise e
         finally:
             if storage_manager:
                 storage_manager.delete_retrieved_paths()
-        
 
     @extend_schema(
         methods=["get"],
