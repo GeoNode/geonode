@@ -33,7 +33,7 @@ from geonode.base.models import ContactRole, SpatialRepresentationType
 from geonode.groups.models import GroupProfile
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
-
+from geonode.people import Roles
 
 @csrf_exempt
 def csw_global_dispatch(request, dataset_filter=None, config_updater=None):
@@ -290,24 +290,16 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
 
     @staticmethod
     def __append_contact_role__(content, cr_attr_name, title_in_txt):
-        cr = resource.__getattribute(cr_attr_name)
+        cr = resource.__getattribute__(cr_attr_name)
         if cr is not None or (isinstance(list, cr) and len(0)):
             content += f"{title_in_txt}{sc}"
-            for user in cr.contacts:
+            for user in cr:
                 content += f"name{s}{fst(user.last_name)}{sc}"
                 content += f"e-mail{s}{fst(user.email)}{sc}"
         return content
-
-    content = __append_contact_role__(content, "metadata_author", "Metadata Author")
-    content = __append_contact_role__(content, "processor", "Processor")
-    content = __append_contact_role__(content, "publisher", "Publisher")
-    content = __append_contact_role__(content, "custodian", "Custodian")
-    content = __append_contact_role__(content, "poc", "Point of Contact")
-    content = __append_contact_role__(content, "distributor", "Distributor")
-    content = __append_contact_role__(content, "resource_user", "User")
-    content = __append_contact_role__(content, "resource_provider", "Resource Provider")
-    content = __append_contact_role__(content, "originator", "Originator")
-    content = __append_contact_role__(content, "principal_investigator", "Principal Investigator")
+    
+    for role in set(Roles).difference([Roles.OWNER]):
+        content = __append_contact_role__(content, role.name, role.label)
 
     logger = logging.getLogger(__name__)
     logger.error(content)
@@ -337,12 +329,13 @@ def csw_render_extra_format_html(request, layeruuid, resname):
             s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"
             extra_res_md['atrributes'] += s
 
-    for role in resource.get_multivalue_role_property_names():
-        cr = resource.__getattribute__(role)
-        for user in cr.contacts:
-            extra_res_md[role][user.id] = {}
-            extra_res_md[role][user.id]['last_name'] = user.last_name
-            extra_res_md[role][user.id]['email'] = user.email
-
-    return render(request, "geonode_metadata_full.html", context={"resource": resource,
-                                                                  "extra_res_md": extra_res_md})
+    extra_res_md["roles"] = []
+    for role in Roles:
+        cr = resource.__getattribute__(role.name)
+        if not type(cr)==list:
+            cr = [cr]
+        users=[{"pk":user.id, 'last_name': user.last_name, 'email': user.email} for user in cr]
+        if users:
+            extra_res_md["roles"].append({"label":role.label, "users":users})
+        
+    return render(request, "geonode_metadata_full.html", context={"resource": resource, "extra_res_md": extra_res_md})

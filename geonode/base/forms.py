@@ -52,6 +52,7 @@ from geonode.base.fields import MultiThesauriField
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.base.utils import validate_extra_metadata, remove_country_from_languagecode
+from geonode.people import Roles
 
 logger = logging.getLogger(__name__)
 
@@ -424,8 +425,8 @@ class ResourceBaseForm(TranslationModelForm):
         widget=TinyMCE())
 
     owner = forms.ModelChoiceField(
-        empty_label=_("Owner"),
-        label=_("Owner"),
+        empty_label=_(Roles.OWNER.label),
+        label=_(Roles.OWNER.label),
         required=True,
         queryset=get_user_model().objects.exclude(username='AnonymousUser'),
         widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
@@ -454,70 +455,70 @@ class ResourceBaseForm(TranslationModelForm):
     )
 
     metadata_author = ContactRoleMultipleChoiceField(
-        label=_("Metadata Author"),
+        label=_(Roles.METADATA_AUTHOR.label),
         required=True,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     processor = ContactRoleMultipleChoiceField(
-        label=_("Processor"),
+        label=_(Roles.PROCESSOR.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     publisher = ContactRoleMultipleChoiceField(
-        label=_("Publisher"),
+        label=_(Roles.PUBLISHER.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     custodian = ContactRoleMultipleChoiceField(
-        label=_("Custodian"),
+        label=_(Roles.CUSTODIAN.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     poc = ContactRoleMultipleChoiceField(
-        label=_("Person of Contact"),
+        label=_(Roles.POC.label),
         required=True,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     distributor = ContactRoleMultipleChoiceField(
-        label=_("Distributor"),
+        label=_(Roles.DISTRIBUTOR.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     resource_user = ContactRoleMultipleChoiceField(
-        label=_("Resource User"),
+        label=_(Roles.RESOURCE_USER.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     resource_provider = ContactRoleMultipleChoiceField(
-        label=_("Resource Provider"),
+        label=_(Roles.RESOURCE_PROVIDER.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     originator = ContactRoleMultipleChoiceField(
-        label=_('Originator'),
+        label=_(Roles.ORIGINATOR.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
         widget=TaggitProfileSelect2Custom(url='autocomplete_profile'))
 
     principal_investigator = ContactRoleMultipleChoiceField(
-        label=_('Principal Investigator'),
+        label=_(Roles.PRINCIPAL_INVESTIGATOR.label),
         required=False,
         queryset=get_user_model().objects.exclude(
             username='AnonymousUser'),
