@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==9.3.0
-lxml==4.9.1
+lxml==4.9.2
 psycopg2==2.9.5
 Django==3.2.16
 
@@ -20,12 +20,13 @@ vine==5.0.0
 tqdm==4.64.1
 Deprecated==1.2.13
 wrapt==1.14.1
-jsonschema==4.17.1
+jsonschema==4.17.3
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.1.1
-smart_open==6.2.0
-PyMuPDF==1.21.0
+smart_open==6.3.0
+PyMuPDF==1.21.1
+pathvalidate==2.5.2
 
 # Django Apps
 django-allauth==0.51.0
@@ -55,16 +56,16 @@ pyjwt==2.6.0
 pyproj<3.5.0
 OWSLib==0.27.2
 pycsw==2.6.1
-SQLAlchemy==1.4.44 # required by PyCSW
+SQLAlchemy==1.4.45 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 geoip2==4.6.0
-numpy==1.23.*
+numpy==1.24.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
-dj-database-url==1.0.0
+dj-database-url==1.2.0
 dj-pagination==2.5.0
 django-select2==8.0.0
 django-floppyforms<1.10.0
@@ -79,7 +80,7 @@ djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
-drf-spectacular==0.24.2
+drf-spectacular==0.25.1
 dynamic-rest==2.1.2
 Markdown==3.4.1
 
@@ -109,9 +110,9 @@ django-bootstrap3-datetimepicker-2==2.8.3
 # storage manager dependencies
 django-storages==1.13.1
 dropbox==11.36.0
-google-cloud-storage==2.6.0
+google-cloud-storage==2.7.0
 google-cloud-core==2.3.2
-boto3==1.26.17
+boto3==1.26.32
 
 # Django Caches
 python-memcached<=1.59
@@ -122,9 +123,9 @@ Brotli==1.0.9
 xmltodict<0.13.1
 inflection>=0.4.0
 jdcal==1.4.1
-mock<5.0.0
+mock<6.0.0
 python-dateutil==2.8.2
-pytz==2022.6
+pytz==2022.7
 requests==2.28.1
 timeout-decorator==0.5.0
 pylibmc==1.6.3
@@ -143,12 +144,12 @@ pycountry
 # production
 uWSGI==2.0.21
 gunicorn==20.1.0
-ipython==8.6.0
+ipython==8.7.0
 docker==6.0.1
 invoke==1.7.3
 
 # tests
-coverage==6.5.0
+coverage==7.0.0
 requests-toolbelt==0.10.1
 flake8==6.0.0
 pytest==7.2.0
@@ -163,11 +164,11 @@ pixelmatch==0.3.0
 factory-boy==3.2.1
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
-selenium-requests==2.0.1
+selenium-requests==2.0.2
 webdriver_manager==3.8.5
 
 # Security and audit
 mistune==2.0.4
-wandb==0.13.5
+wandb==0.13.7
 protobuf==3.20.3
 mako==1.2.4
