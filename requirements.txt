@@ -54,7 +54,8 @@ pyjwt==2.6.0
 # geopython dependencies
 pyproj<3.5.0
 OWSLib==0.27.2
-pycsw==2.6.1
+#TODO below: change to stable pycsw=3.x once released
+git+https://github.com/geopython/pycsw.git@master
 SQLAlchemy==1.4.45 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
