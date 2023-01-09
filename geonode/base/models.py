@@ -723,7 +723,6 @@ class AlternateType(models.Model):
         ("Subtitle", ""),
         ("Translated", ""),
         ("Other", ""),
-
     )
 
     alternate_type = models.CharField(
@@ -769,7 +768,7 @@ class FundingReference(models.Model):
     award_number = models.CharField(
         max_length=255,
         help_text=_('The code assigned by the funder to a sponsored award (grant). (e.g. 282625)'))
-    award_uri= models.CharField(
+    award_uri = models.CharField(
         max_length=255,
         help_text=_('The URI leading to a page provided by the funder for more information about the award (grant). (e.g. http://cordis.europa.eu/project/rcn/100180_en.html)'))
     award_title = models.CharField(
@@ -780,7 +779,7 @@ class FundingReference(models.Model):
 class RelatedIdentifier(models.Model):
     related_identifier = models.CharField(
         max_length=255,
-        help_text=_('Name of the funding provider. (e.g. European Commission)'))
+        help_text=_('Identifiers of related resources. These must be globally unique identifiers.'))
     related_identifier_type = models.CharField(
         max_length=255,
         help_text=_('The type of the Related identifier. If Related identifier is used Identifier type is mandatory. (e.g. bibcode)'))
@@ -1175,13 +1174,15 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         AlternateType,
         null=True,
         blank=False,
-        on_delete=models.SET_NULL)
+        on_delete=models.SET_NULL,
+        help_text=_('Type of the alternate field'))
 
     description_type = models.ForeignKey(
         DescriptionType,
         null=True,
         blank=False,
-        on_delete=models.SET_NULL)
+        on_delete=models.SET_NULL,
+        help_text=_('Descripion Type of abstract.'))
 
     # project_leader = models.ForeignKey(
     #     settings.AUTH_USER_MODEL,
@@ -1981,44 +1982,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def language_title(self):
         return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
-    def _set_poc(self, poc):
-        # reset any poc assignation to this resource
-        ContactRole.objects.filter(
-            role='pointOfContact',
-            resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role='pointOfContact',
-            resource=self,
-            contact=poc)
-
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(
-                role='pointOfContact', resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
-
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author assignation to this resource
-        ContactRole.objects.filter(role='author', resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role='author',
-            resource=self,
-            contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(
-                role='author', resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
     def add_missing_metadata_author_or_poc(self):
         """
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing
@@ -2028,7 +1991,65 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if not self.poc:
             self.poc = self.owner
 
+    def _get_contact_role_element(self, role: str) -> ContactRole:
+        """
+        generell getter of for all contact roles except owner
+
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested 
+        return (ContactRole): returns the requested contact role from the database
+        """
+        try:
+            cr = ContactRole.objects.get(
+                role=role, resource=self).contact
+        except ContactRole.DoesNotExist:
+            cr = None
+        return cr
+
+    def _set_contact_role_element(self, contact_role: ContactRole, role: str) -> ContactRole:
+        """
+        generell setter for all contact roles except owner in resource base
+        
+        param contact_role (ContactRole): 
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set 
+        return (ContactRole): returns the requested contact role from the database
+        """
+        ContactRole.objects.filter(role=role, resource=self).delete()
+        # create the new assignation
+        ContactRole.objects.create(
+            role=role,
+            resource=self,
+            contact=contact_role)
+
+    def _get_poc(self): return self._get_contact_role_element(role="pointOfContact")
+    def _set_poc(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="pointOfContact")
+    poc = property(_get_poc, _set_poc)
+    def _get_metadata_author(self): return self._get_contact_role_element(role="author")
+    def _set_metadata_author(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="author")
     metadata_author = property(_get_metadata_author, _set_metadata_author)
+    def _get_processor(self): return self._get_contact_role_element(role="processor")
+    def _set_processor(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="processor")
+    processor = property(_get_processor, _set_processor)
+    def _get_publisher(self): return self._get_contact_role_element(role="publisher")
+    def _set_publisher(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="publisher")
+    publisher = property(_get_publisher, _set_publisher)
+    def _get_custodian(self): return self._get_contact_role_element(role="custodian")
+    def _set_custodian(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="custodian")
+    custodian = property(_get_custodian, _set_custodian)
+    def _get_distributor(self): return self._get_contact_role_element(role="distributor")
+    def _set_distributor(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="distributor")
+    distributor = property(_get_distributor, _set_distributor)
+    def _get_resource_user(self): return self._get_contact_role_element(role="resource_user")
+    def _set_resource_user(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="resource_user")
+    resource_user = property(_get_resource_user, _set_resource_user)
+    def _get_resource_provider(self): return self._get_contact_role_element(role="resource_provider")
+    def _set_resource_provider(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="resource_provider")
+    resource_provider = property(_get_resource_provider, _set_resource_provider)
+    def _get_originator(self): return self._get_contact_role_element(role="originator")
+    def _set_originator(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="originator")
+    originator = property(_get_originator, _set_originator)
+    def _get_principal_investigator(self): return self._get_contact_role_element(role="principal_investigator")
+    def _set_principal_investigator(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="principal_investigator")
+    principal_investigator = property(_get_principal_investigator, _set_principal_investigator)
 
 
 class LinkManager(models.Manager):
