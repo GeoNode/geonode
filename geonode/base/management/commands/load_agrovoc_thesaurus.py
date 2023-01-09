@@ -97,7 +97,6 @@ class Command(BaseCommand):
             raise CommandError("Missing identifier name for the thesaurus (--name)")
         
         t_query = Thesaurus.objects.filter(title=title)
-        breakpoint()
         if len(t_query) > 0:
             raise CommandError("Thesaurus with title: {title} already exists ...") 
         
