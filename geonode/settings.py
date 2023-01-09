@@ -42,6 +42,8 @@ from django_auth_ldap import config as ldap_config
 from geonode_ldap.config import GeonodeNestedGroupOfNamesType
 import ldap
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 from . import serializer
 SILENCED_SYSTEM_CHECKS = [
@@ -55,6 +57,37 @@ SILENCED_SYSTEM_CHECKS = [
 
 # GeoNode Version
 VERSION = get_version()
+BUILD_NUMBER = os.environ.get("BUILD_NUMBER", "0")
+
+
+# ZALF SENTRY ADDITIONS
+SENTRY_ENABLED = ast.literal_eval(os.getenv('SENTRY_ENABLED', 'False'))
+if SENTRY_ENABLED:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    print("sentry enabled ...")
+    SENTRY_DSN = os.getenv("SENTRY_DSN")
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(),
+        ],
+        release="geonodex@{}.{}".format(VERSION, BUILD_NUMBER),
+        environment=os.getenv("SENTRY_ENVIRONMENT", "testing"),
+
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=1.0,
+        _experiments={
+            "profiles_sample_rate": 1.0,
+        },
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True
+    )
+
+
 
 DEFAULT_CHARSET = "utf-8"
 
@@ -1323,7 +1356,7 @@ except ValueError:
         else re.split(r' *[,|:;] *', os.getenv('PROXY_ALLOWED_HOSTS'))
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = os.environ.get('PROXY_URL', '/proxy/?url=')
+PROXY_URL = '/?url='
 
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
