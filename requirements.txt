@@ -29,7 +29,7 @@ PyMuPDF==1.21.1
 pathvalidate==2.5.2
 
 # Django Apps
-django-allauth==0.51.0
+django-allauth==0.52.0
 django-appconf==1.0.5
 django-celery-results==2.4.0
 django-filter==22.1
