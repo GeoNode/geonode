@@ -99,7 +99,7 @@ def set_user_and_group_dataset_permission(modeladmin, request, queryset):
     }
 
     form = UserAndGroupPermissionsForm({
-        'permission_type': ('r', ),
+        'permission_type': 'view',
         'mode': 'set',
         'ids': ids,
     })
@@ -189,16 +189,16 @@ class RestrictionCodeTypeAdmin(TabbedTranslationAdmin):
 class ContactRoleAdmin(admin.ModelAdmin):
     model = ContactRole
     list_display_links = ('id',)
-    list_display = ('id', 'contact', 'resource', 'role')
-    list_editable = ('contact', 'resource', 'role')
+    list_display = ('id', 'contact', 'role')
+    list_editable = ('contact', 'role')
     form = forms.modelform_factory(ContactRole, fields='__all__')
 
 
 class LinkAdmin(admin.ModelAdmin):
     model = Link
     list_display_links = ('id',)
-    list_display = ('id', 'resource', 'extension', 'link_type', 'name', 'mime')
-    list_filter = ('resource', 'extension', 'link_type', 'mime')
+    list_display = ('id', 'extension', 'link_type', 'name', 'mime')
+    list_filter = ('extension', 'link_type', 'mime')
     search_fields = ('name', 'resource__title',)
     form = forms.modelform_factory(Link, fields='__all__')
 

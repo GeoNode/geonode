@@ -711,6 +711,85 @@ class ResourceBaseManager(PolymorphicManager):
                     upload.delete()
 
 
+########################
+# ZALF MODEL ADDITIONS #
+########################
+
+class AlternateType(models.Model):
+    """ Available Alternate Types """
+
+    ALTERNATE_TYPE = (
+        ("Alternative", ""),
+        ("Subtitle", ""),
+        ("Translated", ""),
+        ("Other", ""),
+    )
+
+    alternate_type = models.CharField(
+        max_length=255,
+        choices=ALTERNATE_TYPE,
+        help_text=_('Alternate title type'))
+
+    def __str__(self):
+        return f"{self.alternate_type}"
+
+
+class DescriptionType(models.Model):
+    """ Descripion Type of abstract """
+
+    DESCRIPTION_TYPES = (
+        ("Methods", "The methodology employed for the study or research"),
+        ("SeriesInformation", "Information about a repeating series, such as volumne, issue, number"),
+        ("TableOfContents", "A listing of the Table of Contents"),
+        ("TechnicalInfo", "Detailed information that may be associated with design, implementation, operation, use, and/or maintenance of a process or system"),
+        ("other", "Other description information that does not fit into an existing category")
+    )
+
+    description_type = models.CharField(
+        max_length=255,
+        choices=DESCRIPTION_TYPES,
+        help_text=_('abstract description type'))
+
+    def __str__(self):
+        return f"{self.description_type}"
+
+
+class FundingReference(models.Model):
+    """ Funding Reference Identifiers """
+    funder_name = models.CharField(
+        max_length=255,
+        help_text=_('Name of the funding provider. (e.g. European Commission)'))
+    funder_identifier = models.CharField(
+        max_length=255,
+        help_text=_('Uniquely identifies a funding entity, according to various types. (e.g. http://doi.org/10.13039/501100000780)'))
+    funder_identifier_type = models.CharField(
+        max_length=255,
+        help_text=_('The type of the Identifier. (e.g. BMBF)'))
+    award_number = models.CharField(
+        max_length=255,
+        help_text=_('The code assigned by the funder to a sponsored award (grant). (e.g. 282625)'))
+    award_uri = models.CharField(
+        max_length=255,
+        help_text=_('The URI leading to a page provided by the funder for more information about the award (grant). (e.g. http://cordis.europa.eu/project/rcn/100180_en.html)'))
+    award_title = models.CharField(
+        max_length=255,
+        help_text=_('The human readable title of the award (grant). (e.g. MOTivational strength of ecosystem services)'))
+
+
+class RelatedIdentifier(models.Model):
+    related_identifier = models.CharField(
+        max_length=255,
+        help_text=_('Identifiers of related resources. These must be globally unique identifiers.'))
+    related_identifier_type = models.CharField(
+        max_length=255,
+        help_text=_('The type of the Related identifier. If Related identifier is used Identifier type is mandatory. (e.g. bibcode)'))
+    relation_type = models.CharField(
+        max_length=500,
+        help_text=_('Description of the relationship of the resource being registered (A) and the related resource (B). If Related identifier is used Relation type is mandatory.'))
+
+############################################
+
+
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
@@ -732,7 +811,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     PERMISSIONS = {}
 
     VALID_DATE_TYPES = [(x.lower(), _(x))
-                        for x in ['Creation', 'Publication', 'Revision']]
+                        for x in ['Publication']]
 
     abstract_help_text = _(
         'brief narrative summary of the content of the resource(s)')
@@ -777,7 +856,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     extra_metadata_help_text = _(
         'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]')
     # internal fields
-    uuid = models.CharField(max_length=36, unique=True, default=str(uuid.uuid4))
+    uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
     title = models.CharField(_('title'), max_length=255, help_text=_(
         'name by which the cited resource is known'))
     abstract = models.TextField(
@@ -1078,6 +1157,62 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         help_text=extra_metadata_help_text)
 
+    ###############################
+    # ZALF added GeoNode Metadata #
+    ###############################
+
+    title_de = models.CharField(_('title_de'), max_length=255, default="", help_text=_(
+        'german name by which the cited resource is known'))
+
+    abstract_de = models.TextField(
+        _('abstract_de'),
+        max_length=2000,
+        blank=True,
+        help_text=_('brief german narrative summary of the content of the resource(s)'))
+
+    alternate_type = models.ForeignKey(
+        AlternateType,
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        help_text=_('Type of the alternate field'))
+
+    description_type = models.ForeignKey(
+        DescriptionType,
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        help_text=_('Descripion Type of abstract.'))
+
+    # project_leader = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL,
+    #     on_delete=models.PROTECT)
+
+    funding_reference = models.ForeignKey(
+        FundingReference,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
+
+    related_identifier = models.ForeignKey(
+        RelatedIdentifier,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL)
+
+    use_contraints = models.TextField(
+        _('use_constraints'),
+        max_length=2000,
+        blank=True,
+        help_text=_('This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)'))
+
+    parent_ressource = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        help_text=_('Parent Dataset, this dataset belongs to'),
+        on_delete=models.SET_NULL)
+
     objects = ResourceBaseManager()
 
     class Meta:
@@ -1233,7 +1368,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
             self.pk = self.id = _next_value
 
-        if not self.uuid or len(self.uuid) == 0 or callable(self.uuid):
+        if isinstance(self.uuid, uuid.UUID):
+            self.uuid = str(self.uuid)
+        elif not self.uuid or callable(self.uuid) or len(self.uuid) == 0:
             self.uuid = str(uuid.uuid4())
         super().save(*args, **kwargs)
 
@@ -1847,44 +1984,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def language_title(self):
         return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
-    def _set_poc(self, poc):
-        # reset any poc assignation to this resource
-        ContactRole.objects.filter(
-            role='pointOfContact',
-            resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role='pointOfContact',
-            resource=self,
-            contact=poc)
-
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(
-                role='pointOfContact', resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
-
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author assignation to this resource
-        ContactRole.objects.filter(role='author', resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(
-            role='author',
-            resource=self,
-            contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(
-                role='author', resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
     def add_missing_metadata_author_or_poc(self):
         """
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing
@@ -1894,7 +1993,65 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         if not self.poc:
             self.poc = self.owner
 
+    def _get_contact_role_element(self, role: str) -> ContactRole:
+        """
+        generell getter of for all contact roles except owner
+
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested 
+        return (ContactRole): returns the requested contact role from the database
+        """
+        try:
+            cr = ContactRole.objects.get(
+                role=role, resource=self).contact
+        except ContactRole.DoesNotExist:
+            cr = None
+        return cr
+
+    def _set_contact_role_element(self, contact_role: ContactRole, role: str) -> ContactRole:
+        """
+        generell setter for all contact roles except owner in resource base
+        
+        param contact_role (ContactRole): 
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set 
+        return (ContactRole): returns the requested contact role from the database
+        """
+        ContactRole.objects.filter(role=role, resource=self).delete()
+        # create the new assignation
+        ContactRole.objects.create(
+            role=role,
+            resource=self,
+            contact=contact_role)
+
+    def _get_poc(self): return self._get_contact_role_element(role="pointOfContact")
+    def _set_poc(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="pointOfContact")
+    poc = property(_get_poc, _set_poc)
+    def _get_metadata_author(self): return self._get_contact_role_element(role="author")
+    def _set_metadata_author(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="author")
     metadata_author = property(_get_metadata_author, _set_metadata_author)
+    def _get_processor(self): return self._get_contact_role_element(role="processor")
+    def _set_processor(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="processor")
+    processor = property(_get_processor, _set_processor)
+    def _get_publisher(self): return self._get_contact_role_element(role="publisher")
+    def _set_publisher(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="publisher")
+    publisher = property(_get_publisher, _set_publisher)
+    def _get_custodian(self): return self._get_contact_role_element(role="custodian")
+    def _set_custodian(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="custodian")
+    custodian = property(_get_custodian, _set_custodian)
+    def _get_distributor(self): return self._get_contact_role_element(role="distributor")
+    def _set_distributor(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="distributor")
+    distributor = property(_get_distributor, _set_distributor)
+    def _get_resource_user(self): return self._get_contact_role_element(role="resource_user")
+    def _set_resource_user(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="resource_user")
+    resource_user = property(_get_resource_user, _set_resource_user)
+    def _get_resource_provider(self): return self._get_contact_role_element(role="resource_provider")
+    def _set_resource_provider(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="resource_provider")
+    resource_provider = property(_get_resource_provider, _set_resource_provider)
+    def _get_originator(self): return self._get_contact_role_element(role="originator")
+    def _set_originator(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="originator")
+    originator = property(_get_originator, _set_originator)
+    def _get_principal_investigator(self): return self._get_contact_role_element(role="principal_investigator")
+    def _set_principal_investigator(self, contact_role: ContactRole): return self._set_contact_role_element(contact_role=contact_role, role="principal_investigator")
+    principal_investigator = property(_get_principal_investigator, _set_principal_investigator)
 
 
 class LinkManager(models.Manager):

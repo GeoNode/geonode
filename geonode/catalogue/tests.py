@@ -21,6 +21,8 @@ import xml.etree.ElementTree as ET
 
 from django.db.models import Q
 from django.test import RequestFactory
+from django.http.response import Http404
+from django.core.exceptions import PermissionDenied
 from geonode.layers.models import Dataset
 from geonode.catalogue import get_catalogue
 from django.contrib.auth import get_user_model
@@ -28,13 +30,14 @@ from django.contrib.auth.models import AnonymousUser
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.catalogue.models import catalogue_post_save
 
-from geonode.catalogue.views import csw_global_dispatch
+from geonode.catalogue.views import csw_global_dispatch, resolve_uuid
 from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.base.populate_test_data import (
     all_public,
     create_models,
-    remove_models)
+    remove_models,
+    create_single_dataset)
 
 logger = logging.getLogger(__name__)
 
@@ -144,3 +147,46 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         request = factory.get(url)
         request.user = get_user_model().objects.first()
         return request
+
+
+class UUIDResolverTest(GeoNodeBaseTestSupport):
+
+    def setUp(self):
+        self.dataset = create_single_dataset(name='test_uuid_resolver_dataset')
+
+    def tearDown(self):
+        Dataset.objects.filter(name='test_uuid_resolver_dataset').delete()
+
+    def test_uuid_resolver_existing_dataset(self):
+        user = get_user_model().objects.first()
+        self.dataset.set_default_permissions(owner=user)
+        request = RequestFactory().get(f"http://localhost:8000/catalogue/uuid/{self.dataset.uuid}")
+        request.user = user
+        response = resolve_uuid(request, self.dataset.uuid)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}",
+                         response.headers["Location"])
+
+    def test_uuid_resolver_non_existing_dataset(self):
+        user = get_user_model().objects.first()
+        self.dataset.set_default_permissions(owner=user)
+        request = RequestFactory().get("http://localhost:8000/catalogue/uuid/asdfasdf")
+        request.user = user
+        with self.assertRaises(Http404) as context:
+            resolve_uuid(request, "asdfasdf")
+        self.assertTrue("No ResourceBase matches the given query." in str(context.exception))
+
+    def test_uuid_resolver_missing_permissions(self):
+        self.dataset.set_permissions({
+            "groups": {
+                "registered-members": [
+                    "base.view_resourcebase",
+                    "base.download_resourcebase"
+                ]
+            }
+        })
+        request = RequestFactory().get(f"http://localhost:8000/catalogue/uuid/{self.dataset.uuid}")
+        request.user = AnonymousUser()
+        with self.assertRaises(PermissionDenied) as context:
+            resolve_uuid(request, self.dataset.uuid)
+        self.assertTrue("Permission Denied" in str(context.exception))

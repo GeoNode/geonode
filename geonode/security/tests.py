@@ -1505,6 +1505,38 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
         self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
+    def test_get_visible_resources_should_return_resource_with_metadata_only_true(self):
+        '''
+        If metadata only is provided, it should return only the metadata resources
+        '''
+        try:
+            dataset = create_single_dataset("dataset_with_metadata_only_True")
+            dataset.metadata_only = True
+            dataset.save()
+
+            layers = Dataset.objects.all()
+            actual = get_visible_resources(queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user))
+            self.assertEqual(1, actual.count())
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_get_visible_resources_should_return_resource_with_metadata_only_none(self):
+        '''
+        If metadata only is provided, it should return only the metadata resources
+        '''
+        try:
+            dataset = create_single_dataset("dataset_with_metadata_only_True")
+            dataset.metadata_only = True
+            dataset.save()
+
+            layers = Dataset.objects.all()
+            actual = get_visible_resources(queryset=layers, metadata_only=None, user=get_user_model().objects.get(username=self.user))
+            self.assertEqual(layers.count(), actual.count())
+        finally:
+            if dataset:
+                dataset.delete()
+
     @override_settings(
         ADMIN_MODERATE_UPLOADS=True,
         RESOURCE_PUBLISHING=True,
@@ -2086,6 +2118,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # Test range of whitelisted IPs
         with self.settings(ADMIN_IP_WHITELIST=['127.0.0.0/24']):
+            request = HttpRequest()
+            request.user = admin
+            request.path = reverse('home')
+            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            middleware.process_request(request)
+            self.assertTrue(request.user.is_superuser)
+
+        # Test valid IP in second element
+        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88', '127.0.0.1']):
             request = HttpRequest()
             request.user = admin
             request.path = reverse('home')

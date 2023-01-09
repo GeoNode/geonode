@@ -78,9 +78,11 @@ def get_visible_resources(queryset,
     except Exception:
         pass
 
-    # Hide Dirty State Resources
-    filter_set = queryset.filter(
-        Q(dirty_state=False) & Q(metadata_only=metadata_only))
+    filter_set = queryset.filter(dirty_state=False)
+
+    if metadata_only is not None:
+        # Hide Dirty State Resources
+        filter_set = filter_set.filter(metadata_only=metadata_only)
 
     if not is_admin:
         if user:

@@ -54,7 +54,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.layers = Dataset.objects.all()[:3]
         self.dataset_ids = [layer.pk for layer in self.layers]
         self.user_ids = ",".join(str(element.pk) for element in get_user_model().objects.all()[:3])
-        self.permission_type = ("r", "w", "d")
+        self.permission_type = ("view", "download", "edit")
         self.groups = Group.objects.all()[:3]
         self.group_ids = ",".join(str(element.pk) for element in self.groups)
 

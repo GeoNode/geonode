@@ -37,8 +37,9 @@
 		"ms-python.python",
 		"batisteo.vscode-django",
 		"mrorz.language-gettext",
-		"eamodio.gitlens", // Note: User preference
-		"bigonesystems.django" // Note: User preference
+		"eamodio.gitlens",
+		"bigonesystems.django",
+		"monosans.djlint"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

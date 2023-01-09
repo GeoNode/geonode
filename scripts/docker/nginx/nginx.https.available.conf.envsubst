@@ -7,7 +7,7 @@ ssl_session_timeout 10m;
 
 # this is the actual HTTPS host
 server {
-    listen              $HTTPS_PORT ssl;
+    listen              443 ssl;
     server_name         $HTTPS_HOST;
     keepalive_timeout   70;
 

@@ -18,6 +18,7 @@
 #########################################################################
 
 import io
+import itertools
 import os
 import shutil
 import gisdata
@@ -35,6 +36,7 @@ from django.forms import ValidationError
 from django.test.client import RequestFactory
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
 from django.db.models import Count
@@ -902,7 +904,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
 
-        utils.set_datasets_permissions("write", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
+        utils.set_datasets_permissions("edit", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
         perm_spec = layer.get_all_level_info()
         _c = 0
         if "users" in perm_spec:
@@ -2017,3 +2019,156 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertFalse(form.is_valid())
         self.assertTrue('presentation' in form.errors)
         self.assertEqual("Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.", form.errors['presentation'][0])
+
+
+class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
+    '''
+    Unittest to ensure that the management command "set_layers_permissions"
+    behaves as expected
+    '''
+
+    def test_user_get_the_download_permissions_for_the_selected_dataset(self):
+        '''
+        Given a user, the compact perms and the resource id, it shoul set the
+        permissions for the selected resource
+        '''
+        try:
+            expected_perms = {'view_resourcebase', 'download_resourcebase'}
+
+            dataset, args, username, opts = self._create_arguments(perms_type='download')
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_user_get_the_view_permissions_for_the_selected_dataset(self):
+        '''
+        Given a user, the compact perms and the resource id, it shoul set the
+        permissions for the selected resource
+        '''
+        try:
+            expected_perms = {'view_resourcebase'}
+            dataset, args, username, opts = self._create_arguments(perms_type='view')
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username)
+
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_user_get_the_edit_permissions_for_the_selected_dataset(self):
+        '''
+        Given a user, the compact perms and the resource id, it shoul set the
+        permissions for the selected resource
+        '''
+        try:
+            expected_perms = {
+                'view_resourcebase',
+                'change_dataset_style',
+                'download_resourcebase',
+                'change_resourcebase_metadata',
+                'change_dataset_data',
+                'change_resourcebase'
+            }
+
+            dataset, args, username, opts = self._create_arguments(perms_type='edit')
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_user_get_the_manage_permissions_for_the_selected_dataset(self):
+        '''
+        Given a user, the compact perms and the resource id, it shoul set the
+        permissions for the selected resource
+        '''
+        try:
+            expected_perms = {
+                'delete_resourcebase',
+                'change_resourcebase',
+                'view_resourcebase',
+                'change_resourcebase_permissions',
+                'change_dataset_style',
+                'change_resourcebase_metadata',
+                'publish_resourcebase',
+                'change_dataset_data',
+                'download_resourcebase'
+            }
+
+            dataset, args, username, opts = self._create_arguments(perms_type='manage')
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_anonymous_user_cannot_get_edit_permissions(self):
+        '''
+        Given the Anonymous user, we should get an error trying to set "edit" permissions.
+        '''
+        try:
+            expected_perms = {
+            }
+
+            dataset, args, username, opts = self._create_arguments(perms_type='edit')
+            username = 'AnonymousUser'
+            opts["users"] = ['AnonymousUser']
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username, assertion=False)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_unset_anonymous_view_permissions(self):
+        '''
+        Given the Anonymous user, we should be able to unset any paermission.
+        '''
+        try:
+            expected_perms = {
+            }
+
+            dataset, args, username, opts = self._create_arguments(perms_type='view', mode='unset')
+            username = 'AnonymousUser'
+            opts["users"] = ['AnonymousUser']
+
+            call_command('set_layers_permissions', *args, **opts)
+
+            self._assert_perms(expected_perms, dataset, username, assertion=False)
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def _create_arguments(self, perms_type, mode='set'):
+        dataset = create_single_dataset('dataset_for_management_command')
+        args = []
+        username = get_user_model().objects.exclude(username='admin').exclude(username='AnonymousUser').first().username
+        opts = {
+                "permission": perms_type,
+                "users": [username],
+                "resources": str(dataset.id),
+                "delete": True if mode == 'unset' else False
+            }
+
+        return dataset, args, username, opts
+
+    def _assert_perms(self, expected_perms, dataset, username, assertion=True):
+        dataset.refresh_from_db()
+
+        perms = dataset.get_all_level_info()
+        if assertion:
+            self.assertTrue(username in [user.username for user in perms['users']])
+            actual = set(itertools.chain.from_iterable([perms for user, perms in perms['users'].items() if user.username == username]))
+            self.assertSetEqual(expected_perms, actual)
+        else:
+            self.assertFalse(username in [user.username for user in perms['users']])

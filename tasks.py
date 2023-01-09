@@ -83,6 +83,8 @@ def update(ctx):
         siteurl = f'{pub_protocol}://{pub_ip}/'
         gs_pub_loc = f'http://{pub_ip}/geoserver/'
     envs = {
+        "agrovoc_download_url": os.environ.get("GEONODE_AGROVOC_URL", "https://agrovoc.fao.org/latestAgrovoc/agrovoc_core.nt.zip"),
+        "inspire_download_url": os.environ.get("GEONODE_INSPIRE_URL", "https://raw.githubusercontent.com/geonetwork/core-geonetwork/master/web/src/test/resources/thesaurus/external/thesauri/theme/httpinspireeceuropaeutheme-theme.rdf"),
         "local_settings": str(_localsettings()),
         "siteurl": os.environ.get('SITEURL', siteurl),
         "geonode_docker_host": str(socket.gethostbyname('geonode')),
@@ -120,6 +122,10 @@ def update(ctx):
     current_allowed.extend([str(pub_ip), f'{pub_ip}:{pub_port}'])
     allowed_hosts = [str(c) for c in current_allowed] + ['"geonode"', '"django"']
 
+    ctx.run("echo export GEONODE_INSPIRE_URL=\
+{inspire_download_url} >> {override_fn}".format(**envs), pty=True)
+    ctx.run("echo export GEONODE_AGROVOC_URL=\
+{agrovoc_download_url} >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export DJANGO_SETTINGS_MODULE=\
 {local_settings} >> {override_fn}".format(**envs), pty=True)
     ctx.run("echo export MONITORING_ENABLED=\
@@ -297,6 +303,30 @@ def initialized(ctx):
     print("**************************init file********************************")
     ctx.run('date > /mnt/volumes/statics/geonode_init.lock')
 
+
+@task
+def initzalf(ctx):
+    print("************************** init ZALF additions ********************************")
+    
+    print("adding agrovoc thesauri ...")
+    geonode_agrovoc_url = os.environ.get("GEONODE_AGROVOC_URL")
+    agrovoc_zip_path = "/tmp/agrovoc.zip"
+    ctx.run(f'wget -q { geonode_agrovoc_url } -O {agrovoc_zip_path}')
+    ctx.run(f'unzip -o {agrovoc_zip_path} -d /tmp')
+    ctx.run(f"python manage.py load_agrovoc_thesaurus --name AGROVOC --file `ls /tmp/agrovoc*.nt` || true")
+
+    print("adding inspire thesauri ...")
+    geonode_inspire_url = os.environ.get("GEONODE_INSPIRE_URL")
+    inspire_path = "/tmp/inspire-theme.rdf"
+    ctx.run(f'wget -q { geonode_inspire_url } -O {inspire_path}')
+    ctx.run(f"python manage.py load_thesaurus --name INSPIRE --file { inspire_path } || true")
+
+    print("deleting thesauri files from disk...")
+    ctx.run(f"rm -f {agrovoc_zip_path} {inspire_path} `ls /tmp/agrovoc*.nt`")
+
+    print("load zalf fixtures ...")
+    ctx.run(f"python manage.py loaddata geonode/base/fixtures/zalfinit.json \
+    --settings={_localsettings()}", pty=True)
 
 def _docker_host_ip():
     try:

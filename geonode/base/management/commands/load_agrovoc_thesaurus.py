@@ -95,7 +95,11 @@ class Command(BaseCommand):
 
         if not name:
             raise CommandError("Missing identifier name for the thesaurus (--name)")
-
+        
+        t_query = Thesaurus.objects.filter(title=title)
+        if len(t_query) > 0:
+            raise CommandError("Thesaurus with title: {title} already exists ...") 
+        
         self.load_thesaurus(input_file=input_file,
                             name=name,
                             store=not dryrun,
@@ -125,8 +129,8 @@ class Command(BaseCommand):
         # define Thesaurus metadata for AGROVOC
         thesaurus = Thesaurus()
         thesaurus.identifier = name
-        thesaurus.description = title
-        thesaurus.title = description
+        thesaurus.description = description
+        thesaurus.title = title
         thesaurus.about = AGROVOC_ConceptSchemeURI
         thesaurus.date = thesaurus_date
 
@@ -174,7 +178,7 @@ class Command(BaseCommand):
                     except:
                         self.stderr.write(self.style.ERROR(f'could not add label: {label} with language: {lang}) to database, skipping entry ...'))
 
-            self.stderr.write(self.style.SUCCESS(f' set alt_label: {alt_label}: ({i})'))
+            #self.stderr.write(self.style.SUCCESS(f' set alt_label: {alt_label}: ({i})'))
 
 
 def get_default_language_preflabel(g: Graph, concept: URIRef, default_lang: str) -> str:

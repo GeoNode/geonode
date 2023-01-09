@@ -81,6 +81,12 @@ class Profile(AbstractUser):
         blank=True,
         null=True,
         help_text=_('role or position of the responsible person'))
+    # orcid = models.CharField(
+    #     _('orcid'),
+    #     max_length=20,
+    #     blank=True,
+    #     null=True,
+    #     help_text=_('Uniquely identifies an individual or legal entity, according to various schemes. (e.g. 0000-0001-5000-0007)'))
     voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True, help_text=_(
         'telephone number by which individuals can speak to the responsible organization or individual'))
     fax = models.CharField(_('Facsimile'), max_length=255, blank=True, null=True, help_text=_(

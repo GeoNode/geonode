@@ -1,0 +1,65 @@
+[
+  {
+    "pk": 1,
+    "model": "base.DescriptionType",
+    "fields": {
+      "description_type": "Methods"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "base.DescriptionType",
+    "fields": {
+      "description_type": "SeriesInformation"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "base.DescriptionType",
+    "fields": {
+      "description_type": "TableOfContents"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "base.DescriptionType",
+    "fields": {
+      "description_type": "TechnicalInfo"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "base.DescriptionType",
+    "fields": {
+      "description_type": "TechnicotheralInfo"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "base.AlternateType",
+    "fields": {
+      "alternate_type": "Alternative"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "base.AlternateType",
+    "fields": {
+      "alternate_type": "Subtitle"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "base.AlternateType",
+    "fields": {
+      "alternate_type": "Translated"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "base.AlternateType",
+    "fields": {
+      "alternate_type": "Other"
+    }
+  }
+]

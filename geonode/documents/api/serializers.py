@@ -16,26 +16,37 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.documents.models import Document
-from geonode.base.api.serializers import ResourceBaseSerializer
-
 import logging
+
+from dynamic_rest.fields.fields import DynamicComputedField
+from geonode.base.api.serializers import ResourceBaseSerializer
+from geonode.documents.models import Document
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentSerializer(ResourceBaseSerializer):
+class GeonodeFilePathField(DynamicComputedField):
 
+    def get_attribute(self, instance):
+        return instance.files
+
+
+class DocumentFieldField(DynamicComputedField):
+
+    def get_attribute(self, instance):
+        return instance.files
+
+
+class DocumentSerializer(ResourceBaseSerializer):
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super().__init__(*args, **kwargs)
 
+    file_path = GeonodeFilePathField(required=False)
+    doc_file = DocumentFieldField(required=False)
+
     class Meta:
         model = Document
-        name = 'document'
-        view_name = 'documents-list'
-        fields = (
-            'pk', 'uuid', 'name', 'href',
-            'subtype', 'extension', 'mime_type',
-            'executions'
-        )
+        name = "document"
+        view_name = "documents-list"
+        fields = ("pk", "uuid", "name", "href", "subtype", "extension", "mime_type", "executions", "file_path", "doc_file")

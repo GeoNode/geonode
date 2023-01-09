@@ -8,12 +8,42 @@
 {% block body_class %}batch edit{% endblock %}
 
 {% block body %}
+<!-- Required to make select2 fields work for autocomplete -->
+<link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/i18n/en.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/autocomplete.init.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/forward.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
+
+<script src="{% static "geonode/js/crop_widget/crop_widget_es5.js" %}"></script>
+<link rel="stylesheet" href="{% static "geonode/css/crop_widget.css" %}">
+
 <div class="page-header">
   <h2 class="page-title">{% trans "Batch Edit" %}</h2>
 </div>
-<form action="/{{ model|lower }}/layer/permission/" method="post">
+<form action="/{{ model|lower }}/dataset/permission/" method="post">
   {% csrf_token %}
-  {{ form|as_bootstrap }}
+  <div id="layers_multi_select">                                  
+    <span><label for="{{ form.layers.label }}">{{ form.layers.label }}</label></span>
+    {{ form.layers }}
+  </div>
+  <br>
+  <div id="perms_multi_select">
+    <span><label for="{{ form.permission_type.label }}">{{ form.permission_type.label }}</label></span>
+    {{ form.permission_type }}
+  </div>
+  <div id="set_multi_select">
+    <span><label for="{{ form.mode.label }}">{{ form.mode.label }}</label></span>
+    {{ form.mode }}
+  </div>
+  <div id="id_multi_select">
+    {{ form.ids }}
+  </div>
   <div>
     <input class="btn" type="submit" name="cancel" value="{% trans "Cancel" %}" />
     <input class="btn btn-primary" type="submit" value="{% trans "Submit" %}" />
