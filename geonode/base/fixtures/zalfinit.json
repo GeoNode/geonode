@@ -1,4 +1,4 @@
-geonode/base/fixtures/zalfinit.json[
+[
   {
     "pk": 1,
     "model": "base.DescriptionType",
