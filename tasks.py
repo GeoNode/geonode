@@ -313,17 +313,20 @@ def initzalf(ctx):
     agrovoc_zip_path = "/tmp/agrovoc.zip"
     ctx.run(f'wget -q { geonode_agrovoc_url } -O {agrovoc_zip_path}')
     ctx.run(f'unzip -o {agrovoc_zip_path} -d /tmp')
-    ctx.run(f"python manage.py load_agrovoc_thesaurus --name AGROVOC --file `ls /tmp/agrovoc*.nt`")
+    ctx.run(f"python manage.py load_agrovoc_thesaurus --name AGROVOC --file `ls /tmp/agrovoc*.nt` || true")
 
     print("adding inspire thesauri ...")
     geonode_inspire_url = os.environ.get("GEONODE_INSPIRE_URL")
     inspire_path = "/tmp/inspire-theme.rdf"
     ctx.run(f'wget -q { geonode_inspire_url } -O {inspire_path}')
-    ctx.run(f"python manage.py load_thesaurus --name INSPIRE --file { inspire_path }")
+    ctx.run(f"python manage.py load_thesaurus --name INSPIRE --file { inspire_path } || true")
 
     print("deleting thesauri files from disk...")
     ctx.run(f"rm -f {agrovoc_zip_path} {inspire_path} `ls /tmp/agrovoc*.nt`")
 
+    print("load zalf fixtures ...")
+    ctx.run(f"python manage.py loaddata geonode/base/fixtures/zalfinit.json \
+    --settings={_localsettings()}", pty=True)
 
 def _docker_host_ip():
     try:
