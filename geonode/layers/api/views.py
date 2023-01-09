@@ -55,7 +55,7 @@ class DatasetViewSet(DynamicModelViewSet):
     """
     http_method_names = ['get', 'patch', 'put']
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,

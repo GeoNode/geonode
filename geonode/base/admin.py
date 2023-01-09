@@ -99,7 +99,7 @@ def set_user_and_group_dataset_permission(modeladmin, request, queryset):
     }
 
     form = UserAndGroupPermissionsForm({
-        'permission_type': ('r', ),
+        'permission_type': 'view',
         'mode': 'set',
         'ids': ids,
     })

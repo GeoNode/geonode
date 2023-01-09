@@ -41,9 +41,7 @@ from kombu.serialization import register
 from django_auth_ldap import config as ldap_config
 from geonode_ldap.config import GeonodeNestedGroupOfNamesType
 import ldap
-
 import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 
 from . import serializer
 SILENCED_SYSTEM_CHECKS = [
@@ -1533,7 +1531,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             }
         }
         return pycsw_catalogue
-    return None
+      return None
 
   GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
@@ -1820,6 +1818,7 @@ CELERY_TASK_QUEUES = (
     Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
     Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
     Queue('management_commands_http', GEONODE_EXCHANGE, routing_key='management_commands_http', priority=0),
+    Queue('clery_cleanup', GEONODE_EXCHANGE, routing_key='clery_cleanup', priority=0)
 )
 
 if USE_GEOSERVER:
@@ -2189,6 +2188,7 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
     "sync_geonode_maps",
     "importlayers",
     "set_all_datasets_metadata",
+    "set_layers_permissions",
 ] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))
 
 

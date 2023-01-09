@@ -1,4 +1,4 @@
-FROM nginx:1.23.0-alpine
+FROM nginx:1.23.2-alpine
 
 RUN apk add --no-cache openssl inotify-tools
 

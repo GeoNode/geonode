@@ -21,6 +21,7 @@
 """
 
 # Standard Modules
+import copy
 import re
 import os
 import glob
@@ -41,6 +42,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from geonode.layers.api.exceptions import InvalidDatasetException
+from geonode.security.permissions import PermSpec, PermSpecCompact
 from geonode.storage.manager import storage_manager
 # Geonode functionality
 from geonode.base.models import Region
@@ -419,195 +421,86 @@ def surrogate_escape_string(input_string, source_character_set):
 
 
 def set_datasets_permissions(permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False):
+    # here to avoid circular import
+    from geonode.resource.manager import resource_manager
     # Processing information
-    if not resources_names:
-        # If resources is None we consider all the existing layer
-        resources = Dataset.objects.all()
-    else:
-        try:
-            resources = Dataset.objects.filter(Q(title__in=resources_names) | Q(name__in=resources_names))
-        except Dataset.DoesNotExist:
-            logger.warning(
-                f'No resources have been found with these names: {", ".join(resources_names)}.'
-            )
-    if not resources:
-        logger.warning("No resources have been found. No update operations have been executed.")
-    else:
-        # PERMISSIONS
-        if not permissions_name:
-            logger.error("No permissions have been provided.")
+    resources_as_pk = []
+    for el in resources_names or []:
+        if isinstance(el, str) and not el.isnumeric():
+            res = Dataset.objects.filter(Q(title=el) | Q(name=el))
+            if res.exists():
+                resources_as_pk.append(res.first().pk)
         else:
-            permissions = []
-            if permissions_name.lower() in ('read', 'r'):
-                if not delete_flag:
-                    permissions = READ_PERMISSIONS
-                else:
-                    permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
-            elif permissions_name.lower() in ('write', 'w'):
-                if not delete_flag:
-                    permissions = READ_PERMISSIONS + WRITE_PERMISSIONS
-                else:
-                    permissions = WRITE_PERMISSIONS
-            elif permissions_name.lower() in ('download', 'd'):
-                if not delete_flag:
-                    permissions = READ_PERMISSIONS + DOWNLOAD_PERMISSIONS
-                else:
-                    permissions = DOWNLOAD_PERMISSIONS
-            elif permissions_name.lower() in ('owner', 'o'):
-                if not delete_flag:
-                    permissions = READ_PERMISSIONS + WRITE_PERMISSIONS \
-                        + DOWNLOAD_PERMISSIONS + OWNER_PERMISSIONS
-                else:
-                    permissions = OWNER_PERMISSIONS
-            if not permissions:
-                logger.error(
-                    "Permission must match one of these values: read (r), write (w), download (d), owner (o)."
-                )
-            else:
-                if not users_usernames and not groups_names:
-                    logger.error(
-                        "At least one user or one group must be provided."
-                    )
-                else:
-                    # USERS
-                    users = []
-                    if users_usernames:
-                        User = get_user_model()
-                        for _user in users_usernames:
-                            try:
-                                if isinstance(_user, str):
-                                    user = User.objects.get(username=_user)
-                                else:
-                                    user = User.objects.get(username=_user.username)
-                                users.append(user)
-                            except User.DoesNotExist:
-                                logger.warning(
-                                    f'The user {_user} does not exists. '
-                                    'It has been skipped.'
-                                )
-                    # GROUPS
-                    groups = []
-                    if groups_names:
-                        for group_name in groups_names:
-                            try:
-                                group = Group.objects.get(name=group_name)
-                                groups.append(group)
-                            except Group.DoesNotExist:
-                                logger.warning(
-                                    f'The group {group_name} does not exists. '
-                                    'It has been skipped.'
-                                )
-                    if not users and not groups:
-                        logger.error(
-                            'Neither users nor groups corresponding to the typed names have been found. '
-                            'No update operations have been executed.'
+            resources_as_pk.append(el)
+
+    not_found = []
+    final_perms_payload = {}
+
+    for rpk in resources_as_pk:
+        resource = Dataset.objects.filter(pk=rpk)
+        if not resource.exists():
+            not_found.append(rpk)
+            logger.error(f"Resource named: {rpk} not found, skipping....")
+            continue
+        else:
+            # creating the payload from the CompactPermissions like we do in the UI.
+            # the result will be a payload with the compact permissions list required
+            # for the selected resource
+            resource = resource.first()
+            # getting the actual permissions available for the dataset
+            original_perms = PermSpec(resource.get_all_level_info(), resource)
+            new_perms_payload = {"organizations": [], "users": [], "groups": []}
+            # if the username is specified, we add them to the payload with the compact
+            # perm value
+            if users_usernames:
+                User = get_user_model()
+                for _user in users_usernames:
+                    try:
+                        new_perms_payload["users"].append(
+                            {"id": User.objects.get(username=_user).pk, "permissions": permissions_name}
                         )
-                    else:
-                        # RESOURCES
-                        for resource in resources:
-                            # Existing permissions on the resource
-                            perm_spec = resource.get_all_level_info()
-                            if verbose:
-                                logger.info(
-                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
-                                )
-                                print(
-                                    f"Initial permissions info for the resource {resource.title}: {perm_spec}"
-                                )
-                            for u in users:
-                                _user = u
-                                # Add permissions
-                                if not delete_flag:
-                                    # Check the permission already exists
-                                    if _user not in perm_spec["users"] and _user.username not in perm_spec["users"]:
-                                        perm_spec["users"][_user] = permissions
-                                    else:
-                                        if _user.username in perm_spec["users"]:
-                                            u_perms_list = perm_spec["users"][_user.username]
-                                            del (perm_spec["users"][_user.username])
-                                            perm_spec["users"][_user] = u_perms_list
+                    except User.DoesNotExist:
+                        logger.warning(f"The user {_user} does not exists. " "It has been skipped.")
+            # GROUPS
+            # if the group is specified, we add them to the payload with the compact
+            # perm value
+            if groups_names:
+                for group_name in groups_names:
+                    try:
+                        new_perms_payload["groups"].append(
+                            {"id": Group.objects.get(name=group_name).pk, "permissions": permissions_name}
+                        )
+                    except Group.DoesNotExist:
+                        logger.warning(f"The group {group_name} does not exists. " "It has been skipped.")
+            # Using the compact permissions payload to calculate the permissions
+            # that we want to give for each user/group
+            # This part is in common with the permissions API
+            new_compact_perms = PermSpecCompact(new_perms_payload, resource)
+            copy_compact_perms = copy.deepcopy(new_compact_perms)
 
-                                        try:
-                                            u_perms_list = perm_spec["users"][_user]
-                                            base_set = set(u_perms_list)
-                                            target_set = set(permissions)
-                                            perm_spec["users"][_user] = list(base_set | target_set)
-                                        except KeyError:
-                                            perm_spec["users"][_user] = permissions
+            perms_spec_compact_resource = PermSpecCompact(original_perms.compact, resource)
+            perms_spec_compact_resource.merge(new_compact_perms)
 
-                                # Delete permissions
-                                else:
-                                    # Skip resource owner
-                                    if _user != resource.owner:
-                                        if _user in perm_spec["users"]:
-                                            u_perms_set = set()
-                                            for up in perm_spec["users"][_user]:
-                                                if up not in permissions:
-                                                    u_perms_set.add(up)
-                                            perm_spec["users"][_user] = list(u_perms_set)
-                                        else:
-                                            logger.warning(
-                                                f"The user {_user.username} does not have "
-                                                f"any permission on the dataset {resource.title}. "
-                                                "It has been skipped."
-                                            )
-                                    else:
-                                        logger.warning(
-                                            f"Warning! - The user {_user.username} is the "
-                                            f"layer {resource.title} owner, "
-                                            "so its permissions can't be changed. "
-                                            "It has been skipped."
-                                        )
-                            for g in groups:
-                                _group = g
-                                # Add permissions
-                                if not delete_flag:
-                                    # Check the permission already exists
-                                    if _group not in perm_spec["groups"] and _group.name not in perm_spec["groups"]:
-                                        perm_spec["groups"][_group] = permissions
-                                    else:
-                                        if _group.name in perm_spec["groups"]:
-                                            g_perms_list = perm_spec["groups"][_group.name]
-                                            del (perm_spec["groups"][_group.name])
-                                            perm_spec["groups"][_group] = g_perms_list
+            final_perms_payload = perms_spec_compact_resource.extended
+            # if the delete flag is set, we must delete the permissions for the input user/group
+            if delete_flag:
+                # since is a delete operation, we must remove the users/group from the resource
+                # so this will return the updated dict without the user/groups to be removed
+                final_perms_payload["users"] = {
+                    _user: _perms
+                    for _user, _perms in perms_spec_compact_resource.extended["users"].items()
+                    if _user not in copy_compact_perms.extended["users"]
+                }
+                final_perms_payload["groups"] = {
+                    _group: _perms
+                    for _group, _perms in perms_spec_compact_resource.extended["groups"].items()
+                    if _user not in copy_compact_perms.extended["groups"]
+                }
+                if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get("anonymous"):
+                    final_perms_payload["groups"].pop("anonymous")
 
-                                        try:
-                                            g_perms_list = perm_spec["groups"][_group]
-                                            base_set = set(g_perms_list)
-                                            target_set = set(permissions)
-                                            perm_spec["groups"][_group] = list(base_set | target_set)
-                                        except KeyError:
-                                            perm_spec["groups"][_group] = permissions
-
-                                # Delete permissions
-                                else:
-                                    if g in perm_spec["groups"]:
-                                        g_perms_set = set()
-                                        for gp in perm_spec["groups"][g]:
-                                            if gp not in permissions:
-                                                g_perms_set.add(gp)
-                                        perm_spec["groups"][g] = list(g_perms_set)
-                                    else:
-                                        logger.warning(
-                                            f"The group {g.name} does not have any permission "
-                                            f"on the dataset {resource.title}. "
-                                            "It has been skipped."
-                                        )
-                            # Set final permissions
-                            from geonode.resource.manager import resource_manager
-                            resource_manager.set_permissions(resource.uuid, instance=resource, permissions=perm_spec)
-
-                            if verbose:
-                                logger.info(
-                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
-                                )
-                                print(
-                                    f"Final permissions info for the resource {resource.title}: {perm_spec}"
-                                )
-                        if verbose:
-                            logger.info("Permissions successfully updated!")
-                            print("Permissions successfully updated!")
+            # calling the resource manager to set the permissions
+            resource_manager.set_permissions(resource.uuid, instance=resource, permissions=final_perms_payload)
 
 
 def get_uuid_handler():
