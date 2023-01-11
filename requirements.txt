@@ -97,6 +97,7 @@ geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.5
 geoserver-restconfig==2.0.8
+cryptography==38.0.4
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
