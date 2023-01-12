@@ -78,15 +78,6 @@ MD_CORE_MODEL = {
         'pycsw:Publisher': 'publisher_csv',
         'pycsw:Contributor': 'contributor_csv',
         'pycsw:Processor': 'processor_csw',
-
-        # 'pycsw:MetadataAuthor': 'metadata_author_csv',
-        # 'pycsw:Custodian': 'custodian_csv',
-        # 'pycsw:Distributor': 'distributor_csv',
-        # 'pycsw:ResourceUser': 'resource_user_csv',
-        # 'pycsw:ResourceProvider': 'resource_provider_csv',
-        # 'pycsw:Originator': 'originator_csv',
-        # 'pycsw:PrincipalInvestigator': 'principal_investigator_csv',
-
         'pycsw:Relation': 'relation',
         'pycsw:Links': 'download_links',
     }
