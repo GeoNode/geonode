@@ -63,6 +63,7 @@ from geonode.utils import (
     json_response,
     _get_basic_auth_info,
     http_client,
+    safe_path_leaf,
     get_headers,
     get_dataset_workspace)
 from geoserver.catalog import FailedRequestError
@@ -76,6 +77,7 @@ from .helpers import (
     set_styles,
     style_update,
     set_dataset_style,
+    ows_endpoint_in_path,
     temp_style_name_regex,
     _stylefilterparams_geowebcache_dataset,
     _invalidate_geowebcache_dataset)
@@ -175,11 +177,12 @@ def dataset_style_upload(request, layername):
     try:
         # Check SLD is valid
         try:
-            if sld:
+            _allowed_sld_extensions = ['.sld', '.xml', '.css', '.txt', '.yml']
+            if sld and os.path.splitext(safe_path_leaf(sld))[1].lower() in _allowed_sld_extensions:
                 if isfile(sld):
                     with open(sld) as sld_file:
                         sld = sld_file.read()
-                etree.XML(sld)
+                etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
         except Exception:
             logger.exception("The uploaded SLD file is not valid XML")
             raise Exception(
@@ -444,10 +447,7 @@ def check_geoserver_access(request,
                                     path]))
             raw_url = _url
 
-    if downstream_path in 'ows' and (
-        re.match(r'/(rest).*$', path, re.IGNORECASE) or
-            re.match(r'/(w.*s).*$', path, re.IGNORECASE) or
-            re.match(r'/(ows).*$', path, re.IGNORECASE)):
+    if downstream_path in 'ows' and ows_endpoint_in_path(path):
         _url = str("".join([ogc_server_settings.LOCATION, '', path[1:]]))
         raw_url = _url
     url = urlsplit(raw_url)
@@ -483,7 +483,7 @@ def geoserver_proxy(request,
         allowed_hosts=allowed_hosts)
     url = urlsplit(raw_url)
 
-    if re.match(r'^.*/rest/', url.path) and request.method in ("POST", "PUT", "DELETE"):
+    if re.match(r'^.*(?<!/rest/)/rest/', url.path) and request.method in ("POST", "PUT", "DELETE"):
         if re.match(r'^.*(?<!/rest/)/rest/.*/?styles.*', url.path):
             logger.debug(
                 f"[geoserver_proxy] Updating Style ---> url {url.geturl()}")
@@ -799,7 +799,7 @@ def get_capabilities(request, layerid=None, user=None,
                     }
                     gc_str = tpl.render(ctx)
                     gc_str = gc_str.encode("utf-8", "replace")
-                    layerelem = etree.XML(gc_str)
+                    layerelem = etree.XML(gc_str, parser=etree.XMLParser(resolve_entities=False))
                     rootdoc = etree.ElementTree(layerelem)
             except Exception as e:
                 import traceback
