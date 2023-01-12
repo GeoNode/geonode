@@ -463,9 +463,7 @@ span.grippy::after {
                                     {% endblock map_constraints_other %}
                                 </div>
                             </div>
-                            <div class="row">
-
-                            </div>
+                            <div class="row"></div>
                         </div>
                     </div>
                 </div>
@@ -541,33 +539,111 @@ span.grippy::after {
                     {% endblock map_extra_metadata %}
                 </div>
             </div>
-            <div class="col-xs-12 col-lg-3">
-              <div class="panel panel-default" style="margin-top: 5px">
-                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                  <div class="panel-body">
+            <!-- Contact Roles -->
+            <div class="col-xs-12 col-lg-3" >
+              <div class="panel panel-default" class="collapse" style="margin-top: 5px">
+                <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                  {% block map_poc %}
+                  <div class="panel-body check-select">
                       <span><label for="{{ map_form.poc|id }}">{{ map_form.poc.label }}</label></span>
                       {{ map_form.poc }}
                   </div>
+                  {% endblock map_poc %}
               </div>
-              <div class="panel panel-default">
-                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
-                  <div class="panel-body">
-                      <div>
+            <div class="panel panel-default">
+                <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                <div class="panel-body">
+                  {% block map_owner %}
+                    <div>
                         <span><label for="{{ map_form.owner|id }}">{{ map_form.owner.label }}</label></span>
-                        <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
                         {{ map_form.owner }}
-                      </div>
-                      <div>
-                          <span><label for="{{ map_form.metadata_author|id }}">{{ map_form.metadata_author.label }}</label></span>
-                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
-                          {{ map_form.metadata_author }}
-                      </div>
+                    </div>
+                  {% endblock map_owner %}
+                </div>
+              </div>
+            <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+            <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                <div class="panel-body">
+                  {% block map_metadata_author %}
+                    <div>
+                        <span><label for="{{ map_form.metadata_author|id }}">{{ map_form.metadata_author.label }}</label></span>
+                        {{ map_form.metadata_author }}
+                    </div>
+                  {% endblock map_metadata_author %}
+                </div>
+                <div class="panel-body">
+                  {% block map_processor %}
+                    <div>
+                        <span><label for="{{ map_form.processor|id }}">{{ map_form.processor.label }}</label></span>
+                        {{ map_form.processor }}
+                    </div>
+                  {% endblock map_processor %}
                   </div>
+                  <div class="panel-body">
+                  {% block map_publisher %}
+                    <div>
+                        <span><label for="{{ map_form.publisher|id }}">{{ map_form.publisher.label }}</label></span>
+                        {{ map_form.publisher }}
+                    </div>
+                  {% endblock map_publisher %}
+                  </div>
+                  <div class="panel-body">
+                  {% block map_custodian %}
+                    <div>
+                        <span><label for="{{ map_form.custodian|id }}">{{ map_form.custodian.label }}</label></span>
+                        {{ map_form.custodian }}
+                    </div>
+                  {% endblock map_custodian %}
+                  </div>
+                  <div class="panel-body">
+                  {% block map_distributor %}
+                    <div>
+                        <span><label for="{{ map_form.distributor|id }}">{{ map_form.distributor.label }}</label></span>
+                        {{ map_form.distributor }}
+                    </div>
+                  {% endblock map_distributor %}
+                  </div>
+                  <div class="panel-body">
+                  {% block map_resource_user %}
+                    <div>
+                        <span><label for="{{ map_form.resource_user|id }}">{{ map_form.resource_user.label }}</label></span>
+                        {{ map_form.resource_user }}
+                    </div>
+                  {% endblock map_resource_user %}
+                  </div>
+                  <div class="panel-body">
+                  {% block map_resource_provider %}
+                    <div>
+                        <span><label for="{{ map_form.resource_provider|id }}">{{ map_form.resource_provider.label }}</label></span>
+                        {{ map_form.resource_provider }}
+                    </div>
+                  {% endblock map_resource_provider %}
+                  </div>
+                  <div class="panel-body">
+                  {% block map_originator %}
+                    <div>
+                        <span><label for="{{ map_form.originator|id }}">{{ map_form.originator.label }}</label></span>
+                        {{ map_form.originator }}
+                    </div>
+                  {% endblock map_originator %}
+                  </div>
+                  <div class="panel-body">
+                  {% block map_principal_investigator %}
+                    <div>
+                        <span><label for="{{ map_form.principal_investigator|id }}">{{ map_form.principal_investigator.label }}</label></span>
+                        {{ map_form.principal_investigator }}
+                    </div>
+                  {% endblock map_principal_investigator %}
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
         </div>
-      </div></div></div>
+      </div>
     </div>
+  </div>
 </div>
 <div id="settings" class="tab-pane fade" style="overflow: hidden;">
   <!--<br />-->

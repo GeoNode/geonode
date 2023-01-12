@@ -492,7 +492,7 @@ def document_metadata(
     # define contact role forms
     contact_role_forms_context = {}
     for role in document.get_multivalue_role_property_names():
-        document.fields[role].initial = [p.username for p in document.__getattribute__(role)]
+        document_form.fields[role].initial = [p.username for p in document.__getattribute__(role)]
         role_form = ProfileForm(prefix=role)
         role_form.hidden = True
         contact_role_forms_context[f"{role}_form"] = role_form

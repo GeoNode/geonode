@@ -168,7 +168,7 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
                 id=int(category_form.cleaned_data['category_choice_field']))
 
         # update contact roles
-        map_obj.store_contact_roles_from_metadata_edit(request)
+        map_obj.set_contact_roles_from_metadata_edit(request)
         map_obj.save()
 
         map_obj.set_contact_roles_from_metadata_edit(map_form)

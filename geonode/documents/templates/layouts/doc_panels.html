@@ -553,32 +553,110 @@ span.grippy::after {
                     {% endblock doc_extra_metadata %}
                 </div>
             </div>
-            <div class="col-xs-12 col-lg-3">
-              <div class="panel panel-default" style="margin-top: 5px">
-                <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                <div class="panel-body">
-                  <span><label for="{{ document_form.poc|id }}">{{ document_form.poc.label }}</label></span>
-                  {{ document_form.poc }}
-                </div>
+            <!-- Contact Roles -->
+            <div class="col-xs-12 col-lg-3" >
+              <div class="panel panel-default" class="collapse" style="margin-top: 5px">
+                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                    {% block document_poc %}
+                    <div class="panel-body check-select">
+                        <span><label for="{{ document_form.poc|id }}">{{ document_form.poc.label }}</label></span>
+                        {{ document_form.poc }}
+                    </div>
+                    {% endblock document_poc %}
               </div>
               <div class="panel panel-default">
-                <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
-                <div class="panel-body">
-                    <div>
-                        <span><label for="{{ document_form.owner|id }}">{{ document_form.owner.label }}</label></span>
-                        <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
-                        {{ document_form.owner }}
-                    </div>
-                    <div>
-                        <span><label for="{{ document_form.metadata_author|id }}">{{ document_form.metadata_author.label }}</label></span>
-                        <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
-                        {{ document_form.metadata_author }}
-                    </div>
+                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  <div class="panel-body">
+                    {% block document_owner %}
+                      <div>
+                          <span><label for="{{ document_form.owner|id }}">{{ document_form.owner.label }}</label></span>
+                          {{ document_form.owner }}
+                      </div>
+                    {% endblock document_owner %}
+                  </div>
                 </div>
+              <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+                  <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                  <div class="panel-body">
+                    {% block document_metadata_author %}
+                      <div>
+                          <span><label for="{{ document_form.metadata_author|id }}">{{ document_form.metadata_author.label }}</label></span>
+                          {{ document_form.metadata_author }}
+                      </div>
+                    {% endblock document_metadata_author %}
+                  </div>
+                  <div class="panel-body">
+                    {% block document_processor %}
+                      <div>
+                          <span><label for="{{ document_form.processor|id }}">{{ document_form.processor.label }}</label></span>
+                          {{ document_form.processor }}
+                      </div>
+                    {% endblock document_processor %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_publisher %}
+                      <div>
+                          <span><label for="{{ document_form.publisher|id }}">{{ document_form.publisher.label }}</label></span>
+                          {{ document_form.publisher }}
+                      </div>
+                    {% endblock document_publisher %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_custodian %}
+                      <div>
+                          <span><label for="{{ document_form.custodian|id }}">{{ document_form.custodian.label }}</label></span>
+                          {{ document_form.custodian }}
+                      </div>
+                    {% endblock document_custodian %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_distributor %}
+                      <div>
+                          <span><label for="{{ document_form.distributor|id }}">{{ document_form.distributor.label }}</label></span>
+                          {{ document_form.distributor }}
+                      </div>
+                    {% endblock document_distributor %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_resource_user %}
+                      <div>
+                          <span><label for="{{ document_form.resource_user|id }}">{{ document_form.resource_user.label }}</label></span>
+                          {{ document_form.resource_user }}
+                      </div>
+                    {% endblock document_resource_user %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_resource_provider %}
+                      <div>
+                          <span><label for="{{ document_form.resource_provider|id }}">{{ document_form.resource_provider.label }}</label></span>
+                          {{ document_form.resource_provider }}
+                      </div>
+                    {% endblock document_resource_provider %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_originator %}
+                      <div>
+                          <span><label for="{{ document_form.originator|id }}">{{ document_form.originator.label }}</label></span>
+                          {{ document_form.originator }}
+                      </div>
+                    {% endblock document_originator %}
+                    </div>
+                    <div class="panel-body">
+                    {% block document_principal_investigator %}
+                      <div>
+                          <span><label for="{{ document_form.principal_investigator|id }}">{{ document_form.principal_investigator.label }}</label></span>
+                          {{ document_form.principal_investigator }}
+                      </div>
+                    {% endblock document_principal_investigator %}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div></div></div>
+      </div>
     </div>
   </div>
   {% endblock ownership %}

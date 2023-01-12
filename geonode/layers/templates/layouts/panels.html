@@ -556,6 +556,7 @@ span.grippy::after {
                     {% endblock layer_extra_metadata %}
                 </div>
             </div>
+            <!-- Contact Roles -->
             <div class="col-xs-12 col-lg-3" >
               <div class="panel panel-default" class="collapse" style="margin-top: 5px">
                   <div class="panel-heading">{% trans "Responsible Parties" %}</div>
@@ -577,10 +578,9 @@ span.grippy::after {
                     {% endblock dataset_owner %}
                   </div>
                 </div>
-                
               <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
               <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
-                  <div class="panel-heading">{% trans "more Metadata Contact Roles" %}</div>
+                  <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
                   <div class="panel-body">
                     {% block dataset_metadata_author %}
                       <div>
@@ -589,7 +589,6 @@ span.grippy::after {
                       </div>
                     {% endblock dataset_metadata_author %}
                   </div>
-
                   <div class="panel-body">
                     {% block dataset_processor %}
                       <div>
