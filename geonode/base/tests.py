@@ -198,7 +198,7 @@ class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
     Test that contact roles can be set as list of people profiles
     """
 
-    def test_set_contact_role_as_querysert(self):
+    def test_set_contact_role_as_list_of_people(self):
         user = get_user_model().objects.create(username='zlatan_i')
         user2 = get_user_model().objects.create(username='zlatan_i')
 
@@ -231,9 +231,9 @@ class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
     Test that contact roles can be set as queryset
     """
 
-    def test_set_contact_role_as_querysert(self):
+    def test_set_contact_role_as_queryset(self):
         user = get_user_model().objects.create(username='zlatan_i')
-        user2 = get_user_model().objects.create(username='zlatan_i')
+        get_user_model().objects.create(username='zlatan_i')
 
         query = get_user_model().objects.filter(username__in=["zlatan_i", "sven_z"])
 
