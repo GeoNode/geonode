@@ -29,7 +29,7 @@ from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
 from geonode.base.auth import get_or_create_token
-from geonode.base.models import ContactRole, SpatialRepresentationType
+from geonode.base.models import SpatialRepresentationType
 from geonode.groups.models import GroupProfile
 from geonode.utils import resolve_object
 from django.db import connection

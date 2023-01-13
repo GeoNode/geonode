@@ -1858,7 +1858,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         for role in self.get_multivalue_role_property_names():
             try:
                 self.__setattr__(role, resource_base_form.cleaned_data[role])
-            except:
+            except AttributeError:
                 logger.warning(f"unable to set contact role {role} for {self} ...")
                 failed = True
         return failed
