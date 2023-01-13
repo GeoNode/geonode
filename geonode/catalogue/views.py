@@ -36,6 +36,7 @@ from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from geonode.people import Roles
 
+
 @csrf_exempt
 def csw_global_dispatch(request, dataset_filter=None, config_updater=None):
     """pycsw wrapper"""
@@ -298,7 +299,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
                 content += f"name{s}{fst(user.last_name)}{sc}"
                 content += f"e-mail{s}{fst(user.email)}{sc}"
         return content
-    
+
     for role in set(Roles).difference([Roles.OWNER]):
         content = __append_contact_role__(content, role.name, role.label)
 
@@ -333,12 +334,12 @@ def csw_render_extra_format_html(request, layeruuid, resname):
     extra_res_md["roles"] = []
     for role in Roles:
         cr = resource.__getattribute__(role.name)
-        if not type(cr)==list:
+        if not type(cr) == list:
             cr = [cr]
-        users=[{"pk":user.id, 'last_name': user.last_name, 'email': user.email} for user in cr]
+        users = [{"pk": user.id, 'last_name': user.last_name, 'email': user.email} for user in cr]
         if users:
-            extra_res_md["roles"].append({"label":role.label, "users":users})
-        
+            extra_res_md["roles"].append({"label": role.label, "users": users})
+
     return render(request, "geonode_metadata_full.html", context={"resource": resource, "extra_res_md": extra_res_md})
 
 

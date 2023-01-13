@@ -1867,7 +1867,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         generell getter of for all contact roles except owner
 
-        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested 
+        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested
         return List(ContactRole): returns the requested contact role from the database
         """
         try:
@@ -1962,13 +1962,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def principal_investigator_csv(self): return ','.join(p.get_full_name() or p.username for p in self.principal_investigator)
 
     def get_defined_multivalue_contact_roles(self) -> List[Tuple[List[settings.AUTH_USER_MODEL], str]]:
-      """ _summary_: Returns all set contact roles of the ressource with additional ROLE_VALUES from geonode.people.enumarations.ROLE_VALUES. Mainly used to generate output xml more easy.
+        """ _summary_: Returns all set contact roles of the ressource with additional ROLE_VALUES from geonode.people.enumarations.ROLE_VALUES. Mainly used to generate output xml more easy.
 
-      Returns:
-            _type_: List[Tuple[List[people object], roles_label_name]]
-            _description: list tuples including two elements: 1. list of people have a certain role. 2. role label
-      """
-      return [ (self.__getattribute__(role.name),role.label) for role in Roles.get_multivalue_ones() if self.__getattribute__(role.name) ]
+        Returns:
+              _type_: List[Tuple[List[people object], roles_label_name]]
+              _description: list tuples including two elements: 1. list of people have a certain role. 2. role label
+        """
+        return [(self.__getattribute__(role.name), role.label) for role in Roles.get_multivalue_ones() if self.__getattribute__(role.name)]
 
 
 class LinkManager(models.Manager):

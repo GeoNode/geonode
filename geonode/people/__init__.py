@@ -20,6 +20,7 @@ from django.utils.translation import ugettext_noop as _
 from geonode.notifications_helper import NotificationsAppConfigBase
 import enum
 
+
 class PeopleAppConfig(NotificationsAppConfigBase):
     name = 'geonode.people'
     NOTIFICATIONS = (("user_follow", _("User following you"), _("Another user has started following you"),),
@@ -34,6 +35,7 @@ class PeopleAppConfig(NotificationsAppConfigBase):
 
 
 default_app_config = 'geonode.people.PeopleAppConfig'
+
 
 class Role:
     def __init__(self, label, is_required, is_multivalue):
@@ -63,7 +65,7 @@ class Roles(enum.Enum):
     @property
     def name(self):
         return super().name.lower()
-    
+
     @property
     def label(self):
         return self.value.label
