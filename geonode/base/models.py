@@ -1903,9 +1903,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return [__create_role__(self, role, user) for user in user_profile]
         elif isinstance(user_profile, get_user_model()):
             ContactRole.objects.filter(role=role, resource=self).delete()
-            return [__create_role__(self, role, user_profile)]
+            return __create_role__(self, role, user_profile)
         elif isinstance(user_profile, list) and all(isinstance(x, get_user_model()) for x in user_profile):
-            return [__create_role__(self, role, user_profile)]
+            ContactRole.objects.filter(role=role, resource=self).delete()
+            return [__create_role__(self, role, profile) for profile in user_profile]
         else:
             logger.error(f"Bad profile format for role: {role} ...")
 
