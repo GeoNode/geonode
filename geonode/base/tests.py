@@ -155,7 +155,7 @@ class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
         Test that calling add_missing_metadata_author_or_poc resource method sets
         a missing metadata_author and/or point of contact (poc) to resource owner
         """
-        user = get_user_model().objects.create(username='zlatan_i')
+        user = get_user_model().objects.get_or_create(username='zlatan_i')
         self.rb.owner = user
         self.rb.add_missing_metadata_author_or_poc()
         self.assertTrue('zlatan_i' in [author.username for author in self.rb.metadata_author])
@@ -169,7 +169,7 @@ class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
     """
 
     def test_set_contact_role_as_people_profile(self):
-        user = get_user_model().objects.create(username='zlatan_i')
+        user = get_user_model().objects.get_or_create(username='zlatan_i')
 
         self.rb.owner = user
         self.rb.metadata_author = user
@@ -199,8 +199,8 @@ class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
     """
 
     def test_set_contact_role_as_list_of_people(self):
-        user = get_user_model().objects.create(username='zlatan_i')
-        user2 = get_user_model().objects.create(username='zlatan_i')
+        user = get_user_model().objects.get_or_create(username='zlatan_i')
+        user2 = get_user_model().objects.get_or_create(username='zlatan_i')
 
         profile_list = [user, user2]
 
@@ -232,8 +232,8 @@ class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
     """
 
     def test_set_contact_role_as_queryset(self):
-        user = get_user_model().objects.create(username='zlatan_i')
-        get_user_model().objects.create(username='zlatan_i')
+        user = get_user_model().objects.get_or_create(username='zlatan_i')
+        get_user_model().objects.get_or_create(username='zlatan_i')
 
         query = get_user_model().objects.filter(username__in=["zlatan_i", "sven_z"])
 
