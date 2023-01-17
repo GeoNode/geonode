@@ -18,6 +18,7 @@
 #########################################################################
 import re
 import os
+import time
 import logging
 
 from urllib.parse import urljoin
@@ -33,6 +34,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
 from geonode.geoserver.helpers import (
     gs_catalog,
+    ows_endpoint_in_path,
     get_dataset_storetype,
     extract_name_from_sld)
 from geonode.layers.populate_datasets_data import create_dataset_data
@@ -292,3 +294,20 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
             srid='4326',
             bbox=[min_x, min_y, max_x, max_y])
         self.assertEqual(download_url, expected_url, download_url)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_ows_endpoint_in_path(self):
+        path = "http://localhost:8080ows/rest/rest/"
+
+        self.assertIsNotNone(ows_endpoint_in_path(path))
+        self.assertEqual(len(ows_endpoint_in_path(path).groups()), 1)
+
+        start_time = time.time()
+        ows_endpoint_in_path(path)
+        end_time_1 = time.time() - start_time
+
+        start_time = time.time()
+        re.match(r'.*/(rest)/.*$', path, re.IGNORECASE)
+        end_time_2 = time.time() - start_time
+
+        self.assertLess(end_time_1, end_time_2)
