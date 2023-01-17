@@ -30,6 +30,7 @@ from django.test.utils import override_settings
 from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
+from geonode.geoserver.security import create_geofence_client, create_geofence_rules
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
@@ -180,7 +181,10 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         with self.settings(DELAYED_SECURITY_SIGNALS=True):
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
                 from geonode.geoserver.security import sync_geofence_with_guardian
-                sync_geofence_with_guardian(layer, self.perm_spec)
+                # sync_geofence_with_guardian(layer, self.perm_spec)
+                batch = create_geofence_rules(layer, self.perm_spec)
+                client = create_geofence_client()
+                client.run_batch(batch)
                 self.assertTrue(layer.dirty_state)
 
                 self.client.login(username=self.user, password=self.passwd)

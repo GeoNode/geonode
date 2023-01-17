@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import itertools
 import json
 import logging
 import requests
@@ -38,7 +39,8 @@ class Rule:
 
     CM_MIXED = "MIXED"
 
-    def __init__(self, priority, workspace, layer, access: (str, bool),
+    def __init__(self, access: (str, bool),
+                 priority=None, workspace=None, layer=None,
                  user=None, group=None,
                  service=None, request=None, subfield=None,
                  geo_limit=None, catalog_mode=None) -> None:
@@ -79,6 +81,9 @@ class Rule:
         if limits:
             self.fields['limits'] = limits
 
+    def set_priority(self, pri:int):
+        self.fields['priority'] = pri
+
     def get_object(self):
         logger.debug(f"Creating Rule object: {self.fields}")
         return {'Rule': self.fields}
@@ -111,7 +116,6 @@ class Batch:
         return len(self.operations)
 
     def get_object(self):
-        logger.debug(f"Creating Batch object {self.log_name} with {len(self.operations)} operations")
         return {
             'Batch': {
                 'operations': self.operations
@@ -119,12 +123,29 @@ class Batch:
         }
 
 
+class AutoPriorityBatch(Batch):
+    def __init__(self, start_rule_pri: int, log_name=None) -> None:
+        super().__init__(log_name)
+        self.pri = itertools.count(start_rule_pri)
+
+    def add_insert_rule(self, rule: Rule):
+        rule.set_priority(self.pri.__next__())
+        super().add_insert_rule(rule)
+
+
 class GeofenceClient:
 
     def __init__(self, baseurl: str, username: str, pw: str) -> None:
+        if not baseurl.endswith('/'):
+            baseurl += '/'
+
         self.baseurl = baseurl
         self.username = username
         self.pw = pw
+        self.timeout = 60
+
+    def set_timeout(self, timeout:int):
+        self.timeout = timeout
 
     def invalidate_cache(self):
         r = requests.put(
@@ -135,9 +156,9 @@ class GeofenceClient:
             logger.warning("Could not invalidate cache")
             raise GeofenceException("Could not invalidate cache")
 
-    def get_rules(self, page=None, entries=None,
-                  workspace=None, workspace_any=None,
-                  layer=None, layer_any=None):
+    def get_rules(self, page: int = None, entries: int = None,
+                  workspace: str = None, workspace_any: bool = None,
+                  layer: str = None, layer_any: bool = None):
         if (page is None and entries is not None) or (page is not None and entries is None):
             raise GeofenceException(f"Bad page/entries combination {page}/{entries}")
 
@@ -166,14 +187,14 @@ class GeofenceClient:
                 url,
                 headers={'Content-type': 'application/json'},
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=10,
+                timeout=self.timeout,
                 verify=False)
 
             if r.status_code != 200:
                 logger.warning(f"Could not retrieve GeoFence Rules from {url} -- code:{r.status_code} - {r.text}")
                 raise GeofenceException(f"Could not retrieve GeoFence Rules: [{r.status_code}]")
 
-            return json.loads(r.text)
+            return r.json()
         except Exception as e:
             logger.warning("Error while retrieving GeoFence rules", exc_info=e)
             raise GeofenceException(f"Error while retrieving GeoFence rules: {e}")
@@ -189,7 +210,7 @@ class GeofenceClient:
                 f'{self.baseurl}rest/geofence/rules/count.json',
                 headers={'Content-type': 'application/json'},
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=10,
+                timeout=self.timeout,
                 verify=False)
 
             if r.status_code != 200:
@@ -215,7 +236,7 @@ class GeofenceClient:
                 # headers={'Content-type': 'application/json'},
                 json=rule.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=60,
+                timeout=self.timeout,
                 verify=False)
 
             if r.status_code not in (200, 201):
@@ -226,11 +247,12 @@ class GeofenceClient:
             logger.warning("Error while inserting rule", exc_info=e)
             raise GeofenceException(f"Error while inserting rule: {e}")
 
-    def run_batch(self, batch: Batch):
+    def run_batch(self, batch: Batch, timeout: int = None):
         if batch.get_batch_length() == 0:
             logger.debug(f'Skipping batch execution {batch.log_name}')
             return
 
+        logger.debug(f"Running batch {batch.log_name} with {batch.get_batch_length()} operations")
         try:
             """
             curl -X GET -u admin:geoserver \
@@ -240,7 +262,7 @@ class GeofenceClient:
                 f'{self.baseurl}rest/geofence/batch/exec',
                 json=batch.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=60,
+                timeout=timeout or self.timeout,
                 verify=False)
 
             if r.status_code != 200:

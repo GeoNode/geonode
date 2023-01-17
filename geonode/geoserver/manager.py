@@ -47,6 +47,7 @@ from geonode.resource.manager import (
     ResourceManager,
     ResourceManagerInterface)
 from geonode.geoserver.signals import geofence_rule_assign
+from .geofence import AutoPriorityBatch
 from .tasks import (
     geoserver_set_style,
     geoserver_delete_map,
@@ -68,8 +69,12 @@ from .security import (
     _get_gwc_filters_and_formats,
     toggle_dataset_cache,
     purge_geofence_dataset_rules,
-    set_geofence_invalidate_cache,
-    sync_permissions_and_disable_cache)
+    invalidate_geofence_cache,
+    has_geolimits, get_first_available_priority,
+    create_geofence_client,
+    create_geofence_rules,
+    create_geofence_purge_dataset_rules,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -383,7 +388,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
                     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
                         purge_geofence_dataset_rules(instance.get_real_instance())
-                        set_geofence_invalidate_cache()
+                        invalidate_geofence_cache()
                     else:
                         instance.set_dirty_state()
         except Exception as e:
@@ -391,82 +396,95 @@ class GeoServerResourceManager(ResourceManagerInterface):
             return False
         return True
 
-    def set_permissions(self, uuid: str, /, instance: ResourceBase = None, owner: settings.AUTH_USER_MODEL = None, permissions: dict = {}, created: bool = False,
-                        approval_status_changed: bool = False, group_status_changed: bool = False) -> bool:
+    def set_permissions(self, uuid: str, /, instance: ResourceBase = None,
+                        owner: settings.AUTH_USER_MODEL = None,
+                        permissions: dict = {},
+                        created: bool = False,
+                        approval_status_changed: bool = False,
+                        group_status_changed: bool = False) -> bool:
+
         _resource = instance or ResourceManager._get_instance(uuid)
 
         try:
             if _resource:
                 _resource = _resource.get_real_instance()
-                logger.error(f'Fixup GIS Backend Security Rules Accordingly on resource {instance} {isinstance(_resource, Dataset)}')
+                logger.info(f'Fixup GIS Backend Security Rules Accordingly on resource {instance} {isinstance(_resource, Dataset)}')
                 if isinstance(_resource, Dataset):
                     if settings.OGC_SERVER['default'].get("GEOFENCE_SECURITY_ENABLED", False):
                         if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-                            _disable_cache = []
-                            _owner = owner or _resource.owner
-                            if permissions is not None and len(permissions):
-                                if not created:
-                                    purge_geofence_dataset_rules(_resource)
+                            batch = AutoPriorityBatch(get_first_available_priority(), f"Set permission for resource {_resource}")
 
+                            if not created:
+                                create_geofence_purge_dataset_rules(_resource, batch)
+
+                            exist_geolimits = None
+                            _owner = owner or _resource.owner
+
+                            if permissions is not None and len(permissions):
                                 # Owner
                                 perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
-                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
+                                create_geofence_rules(_resource, perms, _owner, None, batch)
+                                exist_geolimits = exist_geolimits or has_geolimits(_resource, _owner, None)
 
                                 # All the other users
                                 if 'users' in permissions and len(permissions['users']) > 0:
-                                    for user, perms in permissions['users'].items():
+                                    for user, user_perms in permissions['users'].items():
                                         _user = get_user_model().objects.get(username=user)
                                         if _user != _owner:
-                                            # Set the GeoFence Rules
-                                            group_perms = None
-                                            if 'groups' in permissions and len(permissions['groups']) > 0:
-                                                group_perms = permissions['groups']
                                             if user == "AnonymousUser":
                                                 _user = None
-                                            _group = list(group_perms.keys())[0] if group_perms else None
-                                            _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _user, _group, group_perms)
+                                            create_geofence_rules(_resource, user_perms, _user, None, batch)
+                                            exist_geolimits = exist_geolimits or has_geolimits(_resource, _user, None)
 
                                 # All the other groups
                                 if 'groups' in permissions and len(permissions['groups']) > 0:
                                     for group, perms in permissions['groups'].items():
                                         _group = Group.objects.get(name=group)
-                                        # Set the GeoFence Rules
                                         if _group and _group.name and _group.name == 'anonymous':
                                             _group = None
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, _group, None)
+                                        create_geofence_rules(_resource, perms, None, _group, batch)
+                                        exist_geolimits = exist_geolimits or has_geolimits(_resource, None, _group)
                             else:
-                                anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
-                                anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
-
-                                if not created:
-                                    purge_geofence_dataset_rules(_resource.get_self_resource())
-
                                 # Owner & Managers
                                 perms = OWNER_PERMISSIONS.copy() + DATASET_ADMIN_PERMISSIONS.copy() + DOWNLOAD_PERMISSIONS.copy()
-                                _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _owner, None, None)
+                                create_geofence_rules(_resource, perms, _owner, None, batch)
+                                exist_geolimits = exist_geolimits or has_geolimits(_resource, _owner, None)
 
                                 _resource_groups, _group_managers = _resource.get_group_managers(group=_resource.group)
                                 for _group_manager in _group_managers:
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, _group_manager, None, None)
+                                    create_geofence_rules(_resource, perms, _group_manager, None, batch)
+                                    exist_geolimits = exist_geolimits or has_geolimits(_resource, _group_manager, None)
 
                                 for user_group in _resource_groups:
                                     if not skip_registered_members_common_group(user_group):
-                                        _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, perms, None, user_group, None)
+                                        create_geofence_rules(_resource, perms, None, user_group, batch)
+                                        exist_geolimits = exist_geolimits or has_geolimits(_resource, None, user_group)
 
                                 # Anonymous
-                                if anonymous_can_view:
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, VIEW_PERMISSIONS, None, None, None)
+                                if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
+                                    create_geofence_rules(_resource, VIEW_PERMISSIONS, None, None, batch)
+                                    exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                                if anonymous_can_download:
-                                    _disable_cache = sync_permissions_and_disable_cache(_disable_cache, _resource, DOWNLOAD_PERMISSIONS, None, None, None)
+                                if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
+                                    create_geofence_rules(_resource, DOWNLOAD_PERMISSIONS, None, None, batch)
+                                    exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                            if _disable_cache:
-                                filters, formats = _get_gwc_filters_and_formats(_disable_cache)
+                            if exist_geolimits is not None:
+                                filters, formats = _get_gwc_filters_and_formats(exist_geolimits)
                                 try:
                                     _dataset_workspace = get_dataset_workspace(_resource)
                                     toggle_dataset_cache(f'{_dataset_workspace}:{_resource.name}', filters=filters, formats=formats)
                                 except Dataset.DoesNotExist:
                                     pass
+
+                            try:
+                                client = create_geofence_client()
+                                logger.info(f'Pushing {batch.get_batch_length()} '
+                                            f'changes into GeoFence for resource {_resource.name}')
+                                client.run_batch(batch)
+                            except Exception as e:
+                                logger.warning(f'Could not sync GeoFence for resource {_resource}. Retrying async.')
+                                _resource.set_dirty_state()
                         else:
                             _resource.set_dirty_state()
         except Exception as e:
