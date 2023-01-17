@@ -17,18 +17,24 @@
 #
 #########################################################################
 import re
+import os
 import logging
 
 from urllib.parse import urljoin
+from pathvalidate import ValidationError
 
 from django.conf import settings
 from django.urls import reverse
 
-from geonode import geoserver
+from geonode import geoserver, GeoNodeException
+from geonode.utils import safe_path_leaf
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
-from geonode.geoserver.helpers import get_dataset_storetype
+from geonode.geoserver.helpers import (
+    gs_catalog,
+    get_dataset_storetype,
+    extract_name_from_sld)
 from geonode.layers.populate_datasets_data import create_dataset_data
 
 from geonode.geoserver.ows import (
@@ -70,6 +76,49 @@ class HelperTest(GeoNodeBaseTestSupport):
         self.user = 'admin'
         self.passwd = 'admin'
         create_dataset_data()
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_extract_name_from_sld(self):
+        content = """<?xml version="1.0" standalone="yes"?>
+<!DOCTYPE foo [ <!ENTITY ent SYSTEM "/etc/passwd" > ]>
+<foo xmlns="http://www.opengis.net/sld">
+<NamedLayer>
+    <UserStyle>
+        <Name>&ent;</Name>
+    </UserStyle>
+</NamedLayer>
+</foo>"""
+        self.assertIsNone(extract_name_from_sld(gs_catalog, content))
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_safe_path_leaf(self):
+        base_path = settings.MEDIA_ROOT
+
+        malformed_paths = [
+            'c:/etc/passwd',
+            'c:\\etc\\passwd',
+            '\0_a*b:c<d>e%f/(g)h+i_0.txt'
+        ]
+        for _path in malformed_paths:
+            with self.assertRaises(ValidationError):
+                safe_path_leaf(_path)
+
+        unsafe_paths = [
+            '/root/',
+            '~/.ssh',
+            '$HOME/.ssh',
+            '/etc/passwd',
+            '.../style.sld',
+            'fi:l*e/p"a?t>h|.t<xt',
+            os.path.join('/tmp/uploaded/', 'style.sld'),
+            os.path.join(base_path, '../etc/passwd', 'style.sld')
+        ]
+        for _path in unsafe_paths:
+            with self.assertRaisesMessage(GeoNodeException, f"The provided path '{_path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"):
+                safe_path_leaf(_path)
+
+        safe_path = os.path.join(base_path, 'style.sld')
+        self.assertEqual(safe_path_leaf(safe_path), safe_path)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_replace_callback(self):

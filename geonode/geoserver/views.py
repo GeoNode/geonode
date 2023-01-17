@@ -63,6 +63,7 @@ from geonode.utils import (
     json_response,
     _get_basic_auth_info,
     http_client,
+    safe_path_leaf,
     get_headers,
     get_dataset_workspace)
 from geoserver.catalog import FailedRequestError
@@ -175,11 +176,12 @@ def dataset_style_upload(request, layername):
     try:
         # Check SLD is valid
         try:
-            if sld:
+            _allowed_sld_extensions = ['.sld', '.xml', '.css', '.txt', '.yml']
+            if sld and os.path.splitext(safe_path_leaf(sld))[1].lower() in _allowed_sld_extensions:
                 if isfile(sld):
                     with open(sld) as sld_file:
                         sld = sld_file.read()
-                etree.XML(sld)
+                etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
         except Exception:
             logger.exception("The uploaded SLD file is not valid XML")
             raise Exception(
@@ -799,7 +801,7 @@ def get_capabilities(request, layerid=None, user=None,
                     }
                     gc_str = tpl.render(ctx)
                     gc_str = gc_str.encode("utf-8", "replace")
-                    layerelem = etree.XML(gc_str)
+                    layerelem = etree.XML(gc_str, parser=etree.XMLParser(resolve_entities=False))
                     rootdoc = etree.ElementTree(layerelem)
             except Exception as e:
                 import traceback

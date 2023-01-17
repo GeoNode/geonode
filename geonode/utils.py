@@ -24,6 +24,7 @@ import re
 import json
 import time
 import base64
+import ntpath
 import select
 import shutil
 import string
@@ -50,6 +51,7 @@ from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
+from pathvalidate import ValidationError, validate_filepath, validate_filename
 from geonode.upload.api.exceptions import GeneralUploadException
 
 from django.conf import settings
@@ -1905,3 +1907,22 @@ def get_supported_datasets_file_types():
 
 def get_allowed_extensions():
     return list(itertools.chain.from_iterable([_type['ext'] for _type in get_supported_datasets_file_types()]))
+
+
+def safe_path_leaf(path):
+    """A view that is not vulnerable to malicious file access."""
+    base_path = settings.MEDIA_ROOT
+    try:
+        validate_filepath(path, platform='auto')
+        head, tail = ntpath.split(path)
+        filename = tail or ntpath.basename(head)
+        validate_filename(filename, platform='auto')
+    except ValidationError as e:
+        logger.error(f"{e}")
+        raise e
+    # GOOD -- Verify with normalised version of path
+    fullpath = os.path.normpath(os.path.join(head, filename))
+    if not fullpath.startswith(base_path) or path != fullpath:
+        raise GeoNodeException(
+            f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!")
+    return fullpath
