@@ -24,12 +24,12 @@ from django.contrib.auth import get_user_model
 
 from urllib.parse import urljoin
 
-from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from geonode.geoserver.createlayer.utils import create_dataset
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
+from django.conf import settings
 from geonode.layers.models import Dataset, Attribute
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.maps.models import Map, MapLayer
@@ -355,6 +355,45 @@ class DatasetsApiTests(APITestCase):
         put_data = {'metadata_file': f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(500, response.status_code)
+
+    def test_permissions_for_not_permitted_user(self):
+        get_user_model().objects.create_user(
+            username="some_user",
+            password="some_password",
+            email="some_user@geonode.org",
+        )
+        layer = Dataset.objects.first()
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+        self.client.login(username="some_user", password="some_password")
+
+        uuid = layer.uuid
+        data = open(self.exml_path).read()
+        data = data.replace('7cfbc42c-efa7-431c-8daa-1399dff4cd19', uuid)
+        f = BytesIO(bytes(data, encoding='utf-8'))
+        f.name = 'metadata.xml'
+        put_data = {'metadata_file': f}
+        response = self.client.put(url, data=put_data)
+        self.assertEqual(403, response.status_code)
+
+    def test_permissions_for_permitted_user(self):
+        another_non_admin_user = get_user_model().objects.create_user(
+            username="some_other_user",
+            password="some_other_password",
+            email="some_other_user@geonode.org",
+        )
+        layer = Dataset.objects.first()
+        assign_perm("base.change_resourcebase_metadata", another_non_admin_user, layer.get_self_resource())
+        url = reverse("datasets-replace-metadata", args=(layer.id,))
+        self.client.login(username="some_other_user", password="some_other_password")
+
+        uuid = layer.uuid
+        data = open(self.exml_path).read()
+        data = data.replace('7cfbc42c-efa7-431c-8daa-1399dff4cd19', uuid)
+        f = BytesIO(bytes(data, encoding='utf-8'))
+        f.name = 'metadata.xml'
+        put_data = {'metadata_file': f}
+        response = self.client.put(url, data=put_data)
+        self.assertEqual(200, response.status_code)
 
     def test_valid_metadata_file(self):
         layer = Dataset.objects.first()

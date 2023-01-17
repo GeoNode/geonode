@@ -23,7 +23,7 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
@@ -89,12 +89,19 @@ class DatasetViewSet(DynamicModelViewSet):
     )
     @action(
         detail=False,
-        url_path="(?P<dataset_id>\d+)/metadata",  # noqa
+        url_path="(?P<pk>\d+)/metadata",  # noqa
         url_name="replace-metadata",
         methods=["put"],
         serializer_class=DatasetMetadataSerializer,
+        permission_classes=[IsAuthenticated, UserHasPerms(
+            perms_dict={
+                "default": {
+                    "PUT": ['base.change_resourcebase_metadata']
+                }
+            }
+        )]
     )
-    def metadata(self, request, dataset_id=None):
+    def metadata(self, request, pk=None):
         """
         Endpoint to upload ISO metadata
         Usage Example:
@@ -117,8 +124,8 @@ class DatasetViewSet(DynamicModelViewSet):
         """
         out = {}
         storage_manager = None
-        if not self.queryset.filter(id=dataset_id).exists():
-            raise NotFound(detail=f"Dataset with ID {dataset_id} is not available")
+        if not self.queryset.filter(id=pk).exists():
+            raise NotFound(detail=f"Dataset with ID {pk} is not available")
         serializer = self.serializer_class(data=request.data)
         if not serializer.is_valid(raise_exception=False):
             raise InvalidDatasetException(detail=serializer.errors)
@@ -130,7 +137,7 @@ class DatasetViewSet(DynamicModelViewSet):
             storage_manager.clone_remote_files()
             file = storage_manager.get_retrieved_paths()
             metadata_file = file["metadata_file"]
-            dataset = self.queryset.get(id=dataset_id)
+            dataset = self.queryset.get(id=pk)
             try:
                 dataset_uuid, vals, regions, keywords, _ = parse_metadata(
                     open(metadata_file).read())
