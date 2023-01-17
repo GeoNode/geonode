@@ -54,6 +54,7 @@ from ..documents.enumerations import (
     DOCUMENT_TYPE_MAP,
     DOCUMENT_MIMETYPE_MAP)
 from ..people.utils import get_valid_user
+from geonode.people import Roles
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
@@ -136,7 +137,6 @@ class KeywordHandler:
 
 
 def update_resource(instance: ResourceBase, xml_file: str = None, regions: list = [], keywords: list = [], vals: dict = {}, extra_metadata: list = []):
-
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
 
@@ -177,8 +177,8 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
             else:
                 defaults[key] = value
 
-    poc = defaults.pop('poc', None)
-    metadata_author = defaults.pop('metadata_author', None)
+    # get contact roles from instance defaults object
+    contact_roles = {contact_role.name: defaults.pop(contact_role.name, None) for contact_role in Roles.get_multivalue_ones()}
 
     to_update = {}
     for _key in ('name', ):
@@ -238,6 +238,9 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
         _default_ows_url = urljoin(ogc_settings.PUBLIC_LOCATION, 'ows')
         to_update['ows_url'] = defaults.pop('ows_url', getattr(instance, 'ows_url', None)) or _default_ows_url
 
+    # update contact roles in instance
+    [instance.__setattr__(contact_role_name, contact_role_value) for contact_role_name, contact_role_value in contact_roles.items()]
+
     to_update.update(defaults)
     try:
         ResourceBase.objects.filter(id=instance.resourcebase_ptr.id).update(**defaults)
@@ -269,10 +272,6 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
 
     # Refresh from DB
     instance.refresh_from_db()
-    if poc:
-        instance.poc = poc
-    if metadata_author:
-        instance.metadata_author = metadata_author
 
     if extra_metadata:
         instance.metadata.all().delete()

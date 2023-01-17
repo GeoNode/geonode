@@ -316,6 +316,7 @@ def geoapp_metadata(request, geoappid, template='apps/app_metadata.html', ajax=T
             instance=geoapp_obj,
             keywords=new_keywords,
             regions=new_regions,
+            vals=_vals,
             notify=True,
             extra_metadata=json.loads(extra_metadata)
         )
