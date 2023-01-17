@@ -43,10 +43,7 @@ def waitfordbs(ctx):
 
 @task
 def waitforgeoserver(ctx):
-    print("****************************geoserver********************************")
-    while not _rest_api_availability(f"{os.environ['GEOSERVER_LOCATION']}rest"):
-        print("Wait for GeoServer API availability...")
-    print("GeoServer is available for HTTP calls!")
+    _waitforgeoserver()
 
 
 @task
@@ -251,6 +248,7 @@ def collectstatic(ctx):
 
 @task
 def geoserverfixture(ctx):
+    _waitforgeoserver()
     print("********************geoserver fixture********************************")
     _geoserver_info_provision(f"{os.environ['GEOSERVER_LOCATION']}rest/")
 
@@ -398,14 +396,13 @@ def _geonode_public_port():
     return gn_pub_port
 
 
-def _geoserver_info_provision(url):
-    from django.conf import settings
+def _geoserver_info_provision(url):    
     from geoserver.catalog import Catalog
     print("Setting GeoServer Admin Password...")
     cat = Catalog(
         url,
-        username=settings.OGC_SERVER_DEFAULT_USER,
-        password=settings.OGC_SERVER_DEFAULT_PASSWORD
+        username="admin",
+        password="geoserver"
     )
     headers = {
         "Content-type": "application/xml",
@@ -596,3 +593,9 @@ def _prepare_admin_fixture(admin_password, admin_email):
     ]
     with open('/tmp/django_admin_docker.json', 'w') as fixturefile:
         json.dump(default_fixture, fixturefile)
+
+def _waitforgeoserver():
+    print("****************************geoserver********************************")
+    while not _rest_api_availability(f"{os.environ['GEOSERVER_LOCATION']}rest"):
+        print("Wait for GeoServer API availability...")
+    print("GeoServer is available for HTTP calls!")
