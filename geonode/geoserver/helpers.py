@@ -76,7 +76,7 @@ from geonode.utils import (
     is_monochromatic_image,
     set_resource_default_links)
 
-from .security import set_geowebcache_invalidate_cache
+from .geofence import GeofenceClient
 
 logger = logging.getLogger(__name__)
 
@@ -1245,6 +1245,7 @@ def set_styles(layer, gs_catalog: Catalog):
         logger.debug(f" -- Resource Links[Legend link]...error: {e}")
 
     try:
+        from .security import set_geowebcache_invalidate_cache
         set_geowebcache_invalidate_cache(layer.alternate or layer.typename, cat=gs_catalog)
     except Exception:
         tb = traceback.format_exc()
@@ -1918,6 +1919,7 @@ gs_catalog = Catalog(url, _user, _password,
                      retries=ogc_server_settings.MAX_RETRIES,
                      backoff_factor=ogc_server_settings.BACKOFF_FACTOR)
 gs_uploader = Client(url, _user, _password)
+gf_client = GeofenceClient(url, _user, _password)
 
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig
 _foregrounds = [

@@ -32,27 +32,19 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
-from geonode.geoserver.geofence import GeofenceClient, Batch, Rule
-from geonode.utils import get_dataset_workspace
 from geonode.groups.models import GroupProfile
+from geonode.utils import get_dataset_workspace
+from geonode.geoserver.helpers import gf_client
+from geonode.geoserver.geofence import Batch, Rule
 
 logger = logging.getLogger(__name__)
-
-
-def create_geofence_client():
-    url = settings.OGC_SERVER['default']['LOCATION']
-    user = settings.OGC_SERVER['default']['USER']
-    passwd = settings.OGC_SERVER['default']['PASSWORD']
-
-    return GeofenceClient(url, user, passwd)
 
 
 def get_highest_priority():
     """Get the highest Rules priority"""
     try:
-        client = create_geofence_client()
-        rules_count = client.get_rules_count()
-        rules_objs = client.get_rules(page=rules_count - 1, entries=1)
+        rules_count = gf_client.get_rules_count()
+        rules_objs = gf_client.get_rules(page=rules_count - 1, entries=1)
         if len(rules_objs['rules']) > 0:
             highest_priority = rules_objs['rules'][0]['priority']
         else:
@@ -67,17 +59,7 @@ def get_highest_priority():
 def purge_geofence_all():
     """purge all existing GeoFence Cache Rules"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
-        client = create_geofence_client()
-
-        rules_objs = client.get_rules()
-        rules = rules_objs['rules']
-
-        batch = Batch('Purge All')
-        for rule in rules:
-            batch.add_delete_rule(rule['id'])
-
-        logger.debug(f"Going to remove all {len(rules)} rules in geofence")
-        client.run_batch(batch)
+        gf_client.purge_all_rules()
 
 
 def purge_geofence_dataset_rules(resource):
@@ -87,28 +69,11 @@ def purge_geofence_dataset_rules(resource):
     curl -u admin:geoserver
     http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
     """
-    client = create_geofence_client()
-
     workspace = get_dataset_workspace(resource.dataset)
     dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
         else resource.dataset.alternate
     try:
-        gs_rules = client.get_rules(
-            workspace=workspace, workspace_any=False,
-            layer=dataset_name, layer_any=False)
-
-        batch = Batch(f'Purge {workspace}:{dataset_name}')
-
-        if gs_rules and gs_rules['rules']:
-            logger.debug(f"Going to remove {len(gs_rules['rules'])} rules for layer '{dataset_name}'")
-            for r in gs_rules['rules']:
-                if r['layer'] and r['layer'] == dataset_name:
-                    batch.add_delete_rule(r['id'])
-                else:
-                    logger.warning(f"Bad rule retrieved for dataset '{dataset_name}': {r}")
-
-        client.run_batch(batch)
-
+        gf_client.purge_layer_rules(dataset_name, workspace=workspace)
     except Exception as e:
         logger.error(f"Error removing rules for {workspace}:{dataset_name}", exc_info=e)
         tb = traceback.format_exc()
@@ -119,8 +84,7 @@ def set_geofence_invalidate_cache():
     """invalidate GeoFence Cache Rules"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
-            client = create_geofence_client()
-            client.invalidate_cache()
+            gf_client.invalidate_cache()
             return True
         except Exception:
             tb = traceback.format_exc()
@@ -262,7 +226,7 @@ def set_geowebcache_invalidate_cache(dataset_alternate, cat=None):
                 headers = {'Content-type': 'text/xml'}
                 payload = f"<truncateLayer><layerName>{dataset_alternate}</layerName></truncateLayer>"
                 r = requests.post(
-                    f"{url}gwc/rest/masstruncate",
+                    f"{url.rstrip('/')}/gwc/rest/masstruncate",
                     headers=headers,
                     data=payload,
                     auth=HTTPBasicAuth(user, passwd))
@@ -292,11 +256,8 @@ def set_geofence_all(instance):
         else resource.dataset.alternate
     logger.debug(f"going to work in workspace {workspace}")
     try:
-
-        client = create_geofence_client()
         priority = get_highest_priority() + 1
-
-        client.insert_rule(Rule(priority, workspace, dataset_name, Rule.ALLOW))
+        gf_client.insert_rule(Rule(priority, workspace, dataset_name, Rule.ALLOW))
     except Exception as e:
         tb = traceback.format_exc()
         logger.debug(tb)
@@ -401,8 +362,7 @@ def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_per
                 batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.ALLOW,
                                            service=service, group=_group))
 
-    client = create_geofence_client()
-    client.run_batch(batch)
+    gf_client.run_batch(batch)
 
     if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
         set_geofence_invalidate_cache()

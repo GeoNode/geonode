@@ -80,7 +80,6 @@ from geonode.geoserver.security import (
     sync_geofence_with_guardian,
     sync_resources_with_guardian,
     _get_gwc_filters_and_formats,
-    create_geofence_client,
 )
 
 from .utils import (
@@ -100,13 +99,13 @@ def _log(msg, *args):
 
 
 def get_geofence_rules_count():
-    client = create_geofence_client()
-    return client.get_rules_count()
+    from geonode.geoserver.helpers import gf_client
+    return gf_client.get_rules_count()
 
 
 def get_geofence_rules():
-    client = create_geofence_client()
-    return client.get_rules()
+    from geonode.geoserver.helpers import gf_client
+    return gf_client.get_rules()
 
 
 class StreamToLogger:
@@ -160,8 +159,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.bulk_perms_url = reverse('bulk_permissions')
         self.perm_spec = {
             "users": {"admin": ["view_resourcebase"]}, "groups": []}
-
-        self.geofence_client = create_geofence_client()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_login_middleware(self):

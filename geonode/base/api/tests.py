@@ -484,7 +484,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data['total'], 28)
 
-        url = "{base_url}?{params}".format(base_url=reverse('base-resources-list'), params="filter{metadata_only}=false")
+        url = f"{reverse('base-resources-list')}?filter{{metadata_only}}=false"
         # Anonymous
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, 200)
@@ -558,7 +558,7 @@ class BaseApiTests(APITestCase):
         resource = ResourceBase.objects.filter(owner__username='bobby').first()
         self.assertEqual(resource.owner.username, 'bobby')
         # Admin
-        url_with_id = "{base_url}/{res_id}?{params}".format(base_url=reverse('base-resources-list'), res_id=resource.id, params="filter{metadata_only}=false")
+        url_with_id = f"{reverse('base-resources-list')}/{resource.id}?filter{{metadata_only}}=false"
 
         response = self.client.get(f"{url_with_id}", format='json')
         self.assertEqual(response.data['resource']['state'], enumerations.STATE_PROCESSED)
@@ -1718,7 +1718,7 @@ class BaseApiTests(APITestCase):
 
         resources = ResourceBase.objects.all()
         for resource in resources:
-            url = "{base_url}?{params}".format(base_url=reverse('base-resources-detail', kwargs={'pk': resource.pk}), params="filter{metadata_only}=false")
+            url = f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}?filter{{metadata_only}}=false"
             response = self.client.get(url, format='json')
             if resource.title.endswith('metadata true'):
                 self.assertEqual(response.status_code, 404)

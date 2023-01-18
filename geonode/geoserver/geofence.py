@@ -17,13 +17,16 @@
 #
 #########################################################################
 
-import json
 import logging
-import requests
-from requests.auth import HTTPBasicAuth
 import urllib
+import requests
+
+from django.conf import settings
+from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
+
+ogc_server_settings = settings.OGC_SERVER['default']
 
 
 class GeofenceException(Exception):
@@ -31,11 +34,28 @@ class GeofenceException(Exception):
 
 
 class Rule:
+    """_summary_
+    JSON representation of a GeoFence Rule
+
+    e.g.:
+      {"Rule":
+        {
+          "priority": 0,
+          "userName": "admin",
+          "service": "WMS",
+          "workspace": "geonode",
+          "layer": "san_andres_y_providencia_administrative",
+          "access": "ALLOW"
+        }
+      }
+
+    Returns:
+        _type_: Rule
+    """
 
     ALLOW = "ALLOW"
     DENY = "DENY"
     LIMIT = "LIMIT"
-
     CM_MIXED = "MIXED"
 
     def __init__(self, priority, workspace, layer, access: (str, bool),
@@ -85,6 +105,80 @@ class Rule:
 
 
 class Batch:
+    """_summary_
+    Returns a list of Operations that GeoFence can execute in a batch
+
+    e.g.:
+    {
+      "Batch": {
+         "operations": [
+            {
+                "@service": "rules",
+                "@type": "insert",
+                "Rule": {
+                    "priority": 0,
+                    "userName": "admin",
+                    "service": "WMS",
+                    "workspace": "geonode",
+                    "layer": "san_andres_y_providencia_administrative",
+                    "access": "ALLOW"
+                }
+            },
+            {
+                "@service": "rules",
+                "@type": "insert",
+                "Rule": {
+                    "priority": 1,
+                    "userName": "admin",
+                    "service": "GWC",
+                    "workspace": "geonode",
+                    "layer": "san_andres_y_providencia_administrative",
+                    "access": "ALLOW"
+                }
+            },
+            {
+                "@service": "rules",
+                "@type": "insert",
+                "Rule": {
+                    "priority": 2,
+                    "userName": "admin",
+                    "service": "WFS",
+                    "workspace": "geonode",
+                    "layer": "san_andres_y_providencia_administrative",
+                    "access": "ALLOW"
+                }
+            },
+            {
+                "@service": "rules",
+                "@type": "insert",
+                "Rule": {
+                    "priority": 3,
+                    "userName": "admin",
+                    "service": "WPS",
+                    "workspace": "geonode",
+                    "layer": "san_andres_y_providencia_administrative",
+                    "access": "ALLOW"
+                }
+            },
+            {
+                "@service": "rules",
+                "@type": "insert",
+                "Rule": {
+                    "priority": 4,
+                    "userName": "admin",
+                    "workspace": "geonode",
+                    "layer": "san_andres_y_providencia_administrative",
+                    "access": "ALLOW"
+                }
+            }
+        ]
+      }
+    }
+
+    Returns:
+        _type_: Batch
+    """
+
     def __init__(self, log_name=None) -> None:
         self.operations = []
         self.log_name = f'"{log_name}"' if log_name else ''
@@ -120,6 +214,13 @@ class Batch:
 
 
 class GeofenceClient:
+    """_summary_
+    Instance of a simple GeoFence REST client allowing to interact with the GeoServer APIs.
+    Exposes few utility methods to insert or purge the rules and run batches of operations.
+
+    Returns:
+        _type_: Rule
+    """
 
     def __init__(self, baseurl: str, username: str, pw: str) -> None:
         self.baseurl = baseurl
@@ -128,11 +229,11 @@ class GeofenceClient:
 
     def invalidate_cache(self):
         r = requests.put(
-            f'{self.baseurl}rest/geofence/ruleCache/invalidate',
+            f'{self.baseurl.rstrip("/")}/rest/geofence/ruleCache/invalidate',
             auth=HTTPBasicAuth(self.username, self.pw))
 
         if r.status_code != 200:
-            logger.warning("Could not invalidate cache")
+            logger.debug("Could not invalidate cache")
             raise GeofenceException("Could not invalidate cache")
 
     def get_rules(self, page=None, entries=None,
@@ -160,22 +261,22 @@ class GeofenceClient:
                 if value is not None:
                     params[param] = value
 
-            url = f'{self.baseurl}rest/geofence/rules.json?{urllib.parse.urlencode(params)}'
+            url = f'{self.baseurl.rstrip("/")}/rest/geofence/rules.json?{urllib.parse.urlencode(params)}'
 
             r = requests.get(
                 url,
                 headers={'Content-type': 'application/json'},
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=10,
+                timeout=ogc_server_settings.get('TIMEOUT', 10),
                 verify=False)
 
             if r.status_code != 200:
-                logger.warning(f"Could not retrieve GeoFence Rules from {url} -- code:{r.status_code} - {r.text}")
+                logger.debug(f"Could not retrieve GeoFence Rules from {url} -- code:{r.status_code} - {r.text}")
                 raise GeofenceException(f"Could not retrieve GeoFence Rules: [{r.status_code}]")
 
-            return json.loads(r.text)
+            return r.json()
         except Exception as e:
-            logger.warning("Error while retrieving GeoFence rules", exc_info=e)
+            logger.debug("Error while retrieving GeoFence rules", exc_info=e)
             raise GeofenceException(f"Error while retrieving GeoFence rules: {e}")
 
     def get_rules_count(self):
@@ -186,21 +287,21 @@ class GeofenceClient:
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
             r = requests.get(
-                f'{self.baseurl}rest/geofence/rules/count.json',
+                f'{self.baseurl.rstrip("/")}/rest/geofence/rules/count.json',
                 headers={'Content-type': 'application/json'},
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=10,
+                timeout=ogc_server_settings.get('TIMEOUT', 10),
                 verify=False)
 
             if r.status_code != 200:
-                logger.warning(f"Could not retrieve GeoFence Rules count: [{r.status_code}] - {r.text}")
+                logger.debug(f"Could not retrieve GeoFence Rules count: [{r.status_code}] - {r.text}")
                 raise GeofenceException(f"Could not retrieve GeoFence Rules count: [{r.status_code}]")
 
-            response = json.loads(r.text)
+            response = r.json()
             return response['count']
 
         except Exception as e:
-            logger.warning("Error while retrieving GeoFence rules count", exc_info=e)
+            logger.debug("Error while retrieving GeoFence rules count", exc_info=e)
             raise GeofenceException(f"Error while retrieving GeoFence rules count: {e}")
 
     def insert_rule(self, rule: Rule):
@@ -211,19 +312,19 @@ class GeofenceClient:
             http://<host>:<port>/geoserver/rest/geofence/rules
             """
             r = requests.post(
-                f'{self.baseurl}rest/geofence/rules',
+                f'{self.baseurl.rstrip("/")}/rest/geofence/rules',
                 # headers={'Content-type': 'application/json'},
                 json=rule.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=60,
+                timeout=ogc_server_settings.get('TIMEOUT', 60),
                 verify=False)
 
             if r.status_code not in (200, 201):
-                logger.warning(f"Could not insert rule: [{r.status_code}] - {r.content}")
+                logger.debug(f"Could not insert rule: [{r.status_code}] - {r.content}")
                 raise GeofenceException(f"Could not insert rule: [{r.status_code}]")
 
         except Exception as e:
-            logger.warning("Error while inserting rule", exc_info=e)
+            logger.debug("Error while inserting rule", exc_info=e)
             raise GeofenceException(f"Error while inserting rule: {e}")
 
     def run_batch(self, batch: Batch):
@@ -237,18 +338,47 @@ class GeofenceClient:
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
             r = requests.post(
-                f'{self.baseurl}rest/geofence/batch/exec',
+                f'{self.baseurl.rstrip("/")}/rest/geofence/batch/exec',
                 json=batch.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=60,
+                timeout=ogc_server_settings.get('TIMEOUT', 60),
                 verify=False)
 
             if r.status_code != 200:
-                logger.warning(f"Error while running batch {batch.log_name}: [{r.status_code}] - {r.content}")
+                logger.debug(f"Error while running batch {batch.log_name}: [{r.status_code}] - {r.content}")
                 raise GeofenceException(f"Error while running batch {batch.log_name}: [{r.status_code}]")
 
             return
 
         except Exception as e:
-            logger.warning(f"Error while requesting batch execution {batch.log_name}", exc_info=e)
+            logger.debug(f"Error while requesting batch execution {batch.log_name}", exc_info=e)
             raise GeofenceException(f"Error while requesting batch execution {batch.log_name}: {e}")
+
+    def purge_all_rules(self):
+        """purge all existing GeoFence Cache Rules"""
+        rules_objs = self.get_rules()
+        rules = rules_objs['rules']
+
+        batch = Batch('Purge All')
+        for rule in rules:
+            batch.add_delete_rule(rule['id'])
+
+        logger.debug(f"Going to remove all {len(rules)} rules in geofence")
+        self.run_batch(batch)
+
+    def purge_layer_rules(self, layer_name: str, workspace: str = None):
+        """purge existing GeoFence Cache Rules related to a specific Layer"""
+        gs_rules = self.get_rules(
+            workspace=workspace, workspace_any=False,
+            layer=layer_name, layer_any=False)
+
+        batch = Batch(f'Purge {workspace}:{layer_name}')
+
+        if gs_rules and gs_rules['rules']:
+            logger.debug(f"Going to remove {len(gs_rules['rules'])} rules for layer '{layer_name}'")
+            for r in gs_rules['rules']:
+                if r['layer'] and r['layer'] == layer_name:
+                    batch.add_delete_rule(r['id'])
+                else:
+                    logger.debug(f"Bad rule retrieved for dataset '{layer_name}': {r}")
+        self.run_batch(batch)
