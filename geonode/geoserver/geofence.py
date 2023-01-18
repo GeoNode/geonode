@@ -229,7 +229,7 @@ class GeofenceClient:
 
     def invalidate_cache(self):
         r = requests.put(
-            f'{self.baseurl.rstrip("/")}/rest/geofence/ruleCache/invalidate',
+            f'{self.baseurl.rstrip("/")}/geofence/ruleCache/invalidate',
             auth=HTTPBasicAuth(self.username, self.pw))
 
         if r.status_code != 200:
@@ -261,7 +261,7 @@ class GeofenceClient:
                 if value is not None:
                     params[param] = value
 
-            url = f'{self.baseurl.rstrip("/")}/rest/geofence/rules.json?{urllib.parse.urlencode(params)}'
+            url = f'{self.baseurl.rstrip("/")}/geofence/rules.json?{urllib.parse.urlencode(params)}'
 
             r = requests.get(
                 url,
@@ -287,7 +287,7 @@ class GeofenceClient:
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
             r = requests.get(
-                f'{self.baseurl.rstrip("/")}/rest/geofence/rules/count.json',
+                f'{self.baseurl.rstrip("/")}/geofence/rules/count.json',
                 headers={'Content-type': 'application/json'},
                 auth=HTTPBasicAuth(self.username, self.pw),
                 timeout=ogc_server_settings.get('TIMEOUT', 10),
@@ -312,7 +312,7 @@ class GeofenceClient:
             http://<host>:<port>/geoserver/rest/geofence/rules
             """
             r = requests.post(
-                f'{self.baseurl.rstrip("/")}/rest/geofence/rules',
+                f'{self.baseurl.rstrip("/")}/geofence/rules',
                 # headers={'Content-type': 'application/json'},
                 json=rule.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
@@ -338,7 +338,7 @@ class GeofenceClient:
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
             r = requests.post(
-                f'{self.baseurl.rstrip("/")}/rest/geofence/batch/exec',
+                f'{self.baseurl.rstrip("/")}/geofence/batch/exec',
                 json=batch.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
                 timeout=ogc_server_settings.get('TIMEOUT', 60),
