@@ -248,25 +248,24 @@ def set_geofence_all(instance):
       geoserver
 
     """
-
     resource = instance.get_self_resource()
     logger.debug(f"Inside set_geofence_all for instance {instance}")
     workspace = get_dataset_workspace(resource.dataset)
     dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
         else resource.dataset.alternate
     logger.debug(f"going to work in workspace {workspace}")
-    try:
-        priority = get_highest_priority() + 1
-        gf_client.insert_rule(Rule(priority, workspace, dataset_name, Rule.ALLOW))
-    except Exception as e:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-        raise RuntimeError(f"Could not ADD GeoServer ANONYMOUS Rule for Dataset {dataset_name}: {e}")
-    finally:
-        if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+        try:
+            priority = get_highest_priority() + 1
+            gf_client.insert_rule(Rule(priority, workspace, dataset_name, Rule.ALLOW))
+        except Exception as e:
+            tb = traceback.format_exc()
+            logger.debug(tb)
+            raise RuntimeError(f"Could not ADD GeoServer ANONYMOUS Rule for Dataset {dataset_name}: {e}")
+        finally:
             set_geofence_invalidate_cache()
-        else:
-            resource.set_dirty_state()
+    else:
+        resource.set_dirty_state()
 
 
 def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_perms=None):
