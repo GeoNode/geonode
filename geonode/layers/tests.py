@@ -68,6 +68,7 @@ from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
+from geonode.groups.models import GroupProfile
 
 from geonode.layers.utils import (
     is_sld_upload_only,
@@ -925,6 +926,50 @@ class DatasetsTest(GeoNodeBaseTestSupport):
                     _c += 1
         # "norman" has no permissions
         self.assertEqual(_c, 0)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_assign_remove_permissions_for_groups(self):
+        # Assing
+        layer = Dataset.objects.all().first()
+        perm_spec = layer.get_all_level_info()
+        group_profile = GroupProfile.objects.create(slug="group1", title="group1", access="public")
+        self.assertNotIn(group_profile, perm_spec["groups"])
+
+        # giving manage permissions to the group
+        utils.set_datasets_permissions("manage", resources_names=[layer.name], groups_names=["group1"], delete_flag=False, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        expected = {
+            'change_dataset_data', 'change_dataset_style', 'change_resourcebase',
+            'change_resourcebase_metadata', 'change_resourcebase_permissions',
+            'delete_resourcebase', 'download_resourcebase', 'publish_resourcebase',
+            'view_resourcebase'
+        }
+        # checking the perms list
+        self.assertSetEqual(
+            expected,
+            set(perm_spec['groups'][group_profile.group])
+        )
+
+        # Chaning perms to the group from manage to read
+        utils.set_datasets_permissions("view", resources_names=[layer.name], groups_names=["group1"], delete_flag=False, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        expected = {
+            'view_resourcebase'
+        }
+        # checking the perms list
+        self.assertSetEqual(
+            expected,
+            set(perm_spec['groups'][group_profile.group])
+        )
+
+        # Chaning perms to the group from manage to read
+        utils.set_datasets_permissions("view", resources_names=[layer.name], groups_names=["group1"], delete_flag=True, verbose=True)
+        perm_spec = layer.get_all_level_info()
+        # checking the perms list
+        self.assertTrue(group_profile.group not in perm_spec['groups'])
+
+        if group_profile:
+            group_profile.delete()
 
     def test_xml_form_without_files_should_raise_500(self):
         files = dict()
