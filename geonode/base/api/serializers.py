@@ -371,6 +371,9 @@ class ContactRoleField(DynamicComputedField):
     def to_representation(self, value):
         return [UserSerializer(embed=True, many=False).to_representation(v) for v in value]
 
+    def to_internal_value(self, value):
+        return get_user_model().objects.filter(pk__in=[val.get('id') for val in value])
+
 
 class DataBlobField(DynamicRelationField):
 
