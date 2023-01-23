@@ -40,13 +40,20 @@ class GeoAppViewSet(DynamicModelViewSet):
     """
     API endpoint that allows geoapps to be viewed or edited.
     """
-    http_method_names = ['get', 'patch', 'post', 'put']
+
+    http_method_names = ["get", "patch", "post", "put"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, GeoAppPermissionsFilter
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
     ]
-    queryset = GeoApp.objects.all().order_by('-created')
+    filter_backends = [
+        DynamicFilterBackend,
+        DynamicSortingFilter,
+        DynamicSearchFilter,
+        ExtentFilter,
+        GeoAppPermissionsFilter,
+    ]
+    queryset = GeoApp.objects.all().order_by("-created")
     serializer_class = GeoAppSerializer
     pagination_class = GeoNodeApiPagination

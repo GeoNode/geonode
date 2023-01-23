@@ -28,7 +28,7 @@ def get_version(version=None):
         from geonode import __version__ as version
     else:
         assert len(version) == 5
-        assert version[3] in ('final', 'rc', 'post', 'dev')
+        assert version[3] in ("final", "rc", "post", "dev")
 
     # [N!]N(.N)*[{a|b|rc}N][.postN][.devN]
     # Epoch segment: N!
@@ -36,21 +36,22 @@ def get_version(version=None):
     # Pre-release segment: {a|b|rc}N
     # Post-release segment: .postN
     # Development release segment: .devN
-    main = '.'.join(str(x) for x in version[:3])
+    main = ".".join(str(x) for x in version[:3])
     sub = version[3]
     sub_version = str(version[4])
-    if sub == 'rc':
+    if sub == "rc":
         sub += sub_version
-    elif sub in ['post', 'dev']:
+    elif sub in ["post", "dev"]:
         sub = f".{sub}{sub_version}"
     else:
-        sub = ''
+        sub = ""
     return main + sub
 
 
 def version(request, version=None):
     from django.http import HttpResponse
     from django.utils.html import escape
+
     _v = get_version(version=version)
     return HttpResponse(escape(_v))
 
@@ -64,14 +65,19 @@ def get_git_changeset():
     """
     try:
         repo_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        git_show = subprocess.Popen('git show --pretty=format:%ct --quiet HEAD',
-                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                    shell=True, cwd=repo_dir, universal_newlines=True)
-        timestamp = git_show.communicate()[0].partition('\n')[0]
+        git_show = subprocess.Popen(
+            "git show --pretty=format:%ct --quiet HEAD",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            cwd=repo_dir,
+            universal_newlines=True,
+        )
+        timestamp = git_show.communicate()[0].partition("\n")[0]
         return timestamp
     except Exception:
         try:
             timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
-            return timestamp.strftime('%Y%m%d%H%M%S')
+            return timestamp.strftime("%Y%m%d%H%M%S")
         except ValueError:
             return None

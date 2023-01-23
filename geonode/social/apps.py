@@ -22,15 +22,16 @@ from django.apps import AppConfig
 
 
 class SocialConfig(AppConfig):
-    name = 'geonode.social'
+    name = "geonode.social"
 
     def ready(self):
         from django.apps import apps
         from actstream import registry
-        registry.register(apps.get_app_config('layers').get_model('Dataset'))
-        registry.register(apps.get_app_config('maps').get_model('Map'))
-        registry.register(apps.get_app_config('documents').get_model('Document'))
-        registry.register(apps.get_app_config('services').get_model('Service'))
-        registry.register(apps.get_app_config('geoapps').get_model('GeoApp'))
-        _auth_user_model = settings.AUTH_USER_MODEL.split('.')
+
+        registry.register(apps.get_app_config("layers").get_model("Dataset"))
+        registry.register(apps.get_app_config("maps").get_model("Map"))
+        registry.register(apps.get_app_config("documents").get_model("Document"))
+        registry.register(apps.get_app_config("services").get_model("Service"))
+        registry.register(apps.get_app_config("geoapps").get_model("GeoApp"))
+        _auth_user_model = settings.AUTH_USER_MODEL.split(".")
         registry.register(apps.get_app_config(_auth_user_model[0]).get_model(_auth_user_model[1]))

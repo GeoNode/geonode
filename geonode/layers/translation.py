@@ -23,12 +23,12 @@ from geonode.layers.models import Dataset
 
 class LayerTranslationOptions(TranslationOptions):
     fields = (
-        'title',
-        'abstract',
-        'purpose',
-        'constraints_other',
-        'supplemental_information',
-        'data_quality_statement',
+        "title",
+        "abstract",
+        "purpose",
+        "constraints_other",
+        "supplemental_information",
+        "data_quality_statement",
     )
 
 

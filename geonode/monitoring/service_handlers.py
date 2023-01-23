@@ -48,12 +48,12 @@ class BaseServiceExpose:
         if cls.NAME:
             return cls.NAME
         n = cls.__name__
-        return n[:len('serviceexpose')].lower()
+        return n[: len("serviceexpose")].lower()
 
 
 class HostGeoNodeServiceExpose(BaseServiceExpose):
 
-    NAME = 'hostgeonode'
+    NAME = "hostgeonode"
 
     def expose(self, *args, **kwargs):
         probe = get_probe()
@@ -64,19 +64,21 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
         uname = probe.get_uname()
         cpu = probe.get_cpu()
         network = probe.get_network()
-        data = {'uptime': uptime,
-                'uname': uname,
-                'load': load,
-                'cpu': cpu,
-                'disks': disks,
-                'network': network,
-                'memory': mem}
+        data = {
+            "uptime": uptime,
+            "uname": uname,
+            "load": load,
+            "cpu": cpu,
+            "disks": disks,
+            "network": network,
+            "memory": mem,
+        }
         return data
 
 
 class GeoNodeServiceExpose(BaseServiceExpose):
 
-    NAME = 'geonode'
+    NAME = "geonode"
 
     def expose(self, *args, **kwargs):
         utc = pytz.utc
@@ -85,12 +87,11 @@ class GeoNodeServiceExpose(BaseServiceExpose):
         since = datetime.utcnow().replace(tzinfo=utc) - timedelta(minutes=10)
         for e in ExceptionEvent.objects.filter(created__gte=since, service__service_type__name=self.NAME):
             exceptions.append(e.expose())
-        data['exceptions'] = exceptions
+        data["exceptions"] = exceptions
         return data
 
 
 class BaseServiceHandler:
-
     def __init__(self, service, force_check=False):
         utc = pytz.utc
         self.service = service
@@ -103,7 +104,7 @@ class BaseServiceHandler:
 
     def get_last_request(self):
         s = self.service
-        return RequestEvent.objects.filter(service=s).order_by('-created').first()
+        return RequestEvent.objects.filter(service=s).order_by("-created").first()
 
     def get_last_request_timestamp(self):
         r = self.get_last_request()
@@ -141,18 +142,17 @@ class BaseServiceHandler:
     @classmethod
     def get_name(cls):
         n = cls.__name__
-        return n[:-len('service')].lower()
+        return n[: -len("service")].lower()
 
 
 class GeoNodeService(BaseServiceHandler):
-
     def __init__(self, service, force_check=False):
         BaseServiceHandler.__init__(self, service, force_check)
 
     def _get_collected_set(self, since=None, until=None):
-        filter_kwargs = {'service': self.service}
+        filter_kwargs = {"service": self.service}
         if since:
-            filter_kwargs = {'created__gt': since}
+            filter_kwargs = {"created__gt": since}
         return RequestEvent.objects.filter(**filter_kwargs)
 
     def _collect(self, since=None, until=None, **kwargs):
@@ -163,7 +163,6 @@ class GeoNodeService(BaseServiceHandler):
 
 
 class GeoServerService(BaseServiceHandler):
-
     def __init__(self, service, force_check=False):
         BaseServiceHandler.__init__(self, service, force_check)
         self.setup()
@@ -174,7 +173,7 @@ class GeoServerService(BaseServiceHandler):
         self.gs_monitor = GeoServerMonitorClient(self.service.url)
 
     def _collect(self, since, until, format=None, **kwargs):
-        format = format or 'json'
+        format = format or "json"
         requests = list(self.gs_monitor.get_requests(format=format, since=since, until=until))
         return requests
 
@@ -188,7 +187,7 @@ class GeoServerService(BaseServiceHandler):
 
 class HostGeoServerService(BaseServiceHandler):
 
-    PATH = '/rest/about/system-status.json'
+    PATH = "/rest/about/system-status.json"
 
     def __init__(self, service, force_check=False):
         BaseServiceHandler.__init__(self, service, force_check)
@@ -201,7 +200,7 @@ class HostGeoServerService(BaseServiceHandler):
         rdata = requests.get(url, timeout=10, verify=False)
         if rdata.status_code != 200:
             raise ValueError(f"Error response from api: ({url}) {rdata}")
-        data = rdata.json()['metrics']['metric']
+        data = rdata.json()["metrics"]["metric"]
         return data
 
     def handle_collected(self, data, *args, **kwargs):
@@ -209,7 +208,6 @@ class HostGeoServerService(BaseServiceHandler):
 
 
 class HostGeoNodeService(BaseServiceHandler):
-
     def __init__(self, service, force_check=False):
         BaseServiceHandler.__init__(self, service, force_check)
 
@@ -234,14 +232,22 @@ services = {
         GeoNodeService,
         GeoServerService,
         HostGeoNodeService,
-        HostGeoServerService,)}
+        HostGeoServerService,
+    )
+}
 
 
 def get_for_service(sname):
     return services[sname]
 
 
-exposes = {c.get_name(): c for c in (GeoNodeServiceExpose, HostGeoNodeServiceExpose,)}
+exposes = {
+    c.get_name(): c
+    for c in (
+        GeoNodeServiceExpose,
+        HostGeoNodeServiceExpose,
+    )
+}
 
 
 def exposes_for_service(sname):

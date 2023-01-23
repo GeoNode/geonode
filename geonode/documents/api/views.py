@@ -52,19 +52,26 @@ class DocumentViewSet(DynamicModelViewSet):
     """
     API endpoint that allows documents to be viewed or edited.
     """
-    http_method_names = ['get', 'patch', 'put', 'post']
+
+    http_method_names = ["get", "patch", "put", "post"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, DocumentPermissionsFilter
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
     ]
-    queryset = Document.objects.all().order_by('-created')
+    filter_backends = [
+        DynamicFilterBackend,
+        DynamicSortingFilter,
+        DynamicSearchFilter,
+        ExtentFilter,
+        DocumentPermissionsFilter,
+    ]
+    queryset = Document.objects.all().order_by("-created")
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 
     def perform_create(self, serializer):
-        '''
+        """
         Function to create document via API v2.
         file_path: path to the file
         doc_file: the open file
@@ -84,7 +91,7 @@ class DocumentViewSet(DynamicModelViewSet):
         --form 'title="Super Title2"' \
         --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
         --form 'metadata_only="False"'
-        '''
+        """
         manager = None
         serializer.is_valid(raise_exception=True)
         _has_file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
@@ -110,7 +117,7 @@ class DocumentViewSet(DynamicModelViewSet):
                     "owner": self.request.user,
                     "extension": extension,
                     "files": [files.get("base_file")],
-                    "resource_type": "document"
+                    "resource_type": "document",
                 }
             )
 
@@ -125,21 +132,25 @@ class DocumentViewSet(DynamicModelViewSet):
                 manager.delete_retrieved_paths()
             raise e
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
-    @action(detail=True, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseSerializer(many=True)},
+        description="API endpoint allowing to retrieve the DocumentResourceLink(s).",
+    )
+    @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None):
         document = self.get_object()
-        resources_id = document.links.all().values('object_id')
+        resources_id = document.links.all().values("object_id")
         resources = ResourceBase.objects.filter(id__in=resources_id)
         exclude = []
         for resource in resources:
-            if not request.user.is_superuser and \
-                    not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+            if not request.user.is_superuser and not request.user.has_perm(
+                "view_resourcebase", resource.get_self_resource()
+            ):
                 exclude.append(resource.id)
         resources = resources.exclude(id__in=exclude)
         paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get('page_size', 10)
+        paginator.page_size = request.GET.get("page_size", 10)
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})

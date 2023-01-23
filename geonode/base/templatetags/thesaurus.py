@@ -49,9 +49,7 @@ def get_thesaurus_translation_by_id(id):
 def get_thesaurus_localized_label(tkeyword):
     lang = get_language()
     translation = (
-        ThesaurusKeywordLabel.objects.values_list("label", flat=True)
-        .filter(keyword__id=tkeyword.id)
-        .filter(lang=lang)
+        ThesaurusKeywordLabel.objects.values_list("label", flat=True).filter(keyword__id=tkeyword.id).filter(lang=lang)
     )
     if not translation:
         return tkeyword.alt_label

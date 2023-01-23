@@ -26,52 +26,50 @@ from .views import (
     OwnerRightsRequestView,
     ResourceBaseAutocomplete,
     HierarchicalKeywordAutocomplete,
-    ThesaurusKeywordLabelAutocomplete)
+    ThesaurusKeywordLabelAutocomplete,
+)
 
 
 urlpatterns = [
     url(
-        r'^autocomplete_response/$',
+        r"^autocomplete_response/$",
         ResourceBaseAutocomplete.as_view(),
-        name='autocomplete_base',
+        name="autocomplete_base",
     ),
-
     url(
-        r'^autocomplete_region/$',
+        r"^autocomplete_region/$",
         RegionAutocomplete.as_view(),
-        name='autocomplete_region',
+        name="autocomplete_region",
     ),
-
     url(
-        r'^autocomplete_hierachical_keyword/$',
+        r"^autocomplete_hierachical_keyword/$",
         HierarchicalKeywordAutocomplete.as_view(),
-        name='autocomplete_hierachical_keyword',
+        name="autocomplete_hierachical_keyword",
     ),
-
     url(
-        r'^thesaurus_available',
+        r"^thesaurus_available",
         ThesaurusAvailable.as_view(),
-        name='thesaurus_available',
+        name="thesaurus_available",
     ),
     url(
-        r'^thesaurus_autocomplete/$',
+        r"^thesaurus_autocomplete/$",
         ThesaurusKeywordLabelAutocomplete.as_view(),
-        name='thesaurus_autocomplete',
+        name="thesaurus_autocomplete",
     ),
     url(
-        r'^datasets_autocomplete/$',
+        r"^datasets_autocomplete/$",
         DatasetsAutocomplete.as_view(),
-        name='datasets_autocomplete',
+        name="datasets_autocomplete",
     ),
     url(
-        r'^resource_rights/(?P<pk>\d+)$',
+        r"^resource_rights/(?P<pk>\d+)$",
         OwnerRightsRequestView.as_view(),
-        name='owner_rights_request',
+        name="owner_rights_request",
     ),
     url(
-        r'^resource_clone/?$',
+        r"^resource_clone/?$",
         resource_clone,
-        name='resource_clone',
+        name="resource_clone",
     ),
-    url(r'^', include('geonode.base.api.urls')),
+    url(r"^", include("geonode.base.api.urls")),
 ]

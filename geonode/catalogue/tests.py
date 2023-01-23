@@ -33,17 +33,12 @@ from geonode.catalogue.models import catalogue_post_save
 from geonode.catalogue.views import csw_global_dispatch, resolve_uuid
 from geonode.layers.populate_datasets_data import create_dataset_data
 
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models,
-    create_single_dataset)
+from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 
 logger = logging.getLogger(__name__)
 
 
 class CatalogueTest(GeoNodeBaseTestSupport):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -150,12 +145,11 @@ class CatalogueTest(GeoNodeBaseTestSupport):
 
 
 class UUIDResolverTest(GeoNodeBaseTestSupport):
-
     def setUp(self):
-        self.dataset = create_single_dataset(name='test_uuid_resolver_dataset')
+        self.dataset = create_single_dataset(name="test_uuid_resolver_dataset")
 
     def tearDown(self):
-        Dataset.objects.filter(name='test_uuid_resolver_dataset').delete()
+        Dataset.objects.filter(name="test_uuid_resolver_dataset").delete()
 
     def test_uuid_resolver_existing_dataset(self):
         user = get_user_model().objects.first()
@@ -164,8 +158,7 @@ class UUIDResolverTest(GeoNodeBaseTestSupport):
         request.user = user
         response = resolve_uuid(request, self.dataset.uuid)
         self.assertEqual(302, response.status_code)
-        self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}",
-                         response.headers["Location"])
+        self.assertEqual(f"/catalogue/#/dataset/{self.dataset.pk}", response.headers["Location"])
 
     def test_uuid_resolver_non_existing_dataset(self):
         user = get_user_model().objects.first()
@@ -177,14 +170,9 @@ class UUIDResolverTest(GeoNodeBaseTestSupport):
         self.assertTrue("No ResourceBase matches the given query." in str(context.exception))
 
     def test_uuid_resolver_missing_permissions(self):
-        self.dataset.set_permissions({
-            "groups": {
-                "registered-members": [
-                    "base.view_resourcebase",
-                    "base.download_resourcebase"
-                ]
-            }
-        })
+        self.dataset.set_permissions(
+            {"groups": {"registered-members": ["base.view_resourcebase", "base.download_resourcebase"]}}
+        )
         request = RequestFactory().get(f"http://localhost:8000/catalogue/uuid/{self.dataset.uuid}")
         request.user = AnonymousUser()
         with self.assertRaises(PermissionDenied) as context:

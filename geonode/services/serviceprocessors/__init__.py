@@ -32,17 +32,27 @@ def get_available_service_types():
     from geonode.services.serviceprocessors.wms import GeoNodeServiceHandler, WmsServiceHandler
     from geonode.services.serviceprocessors.arcgis import ArcImageServiceHandler, ArcMapServiceHandler
 
-    default = OrderedDict({
-        enumerations.WMS: {"OWS": True, "handler": WmsServiceHandler, "label": _('Web Map Service')},
-        enumerations.GN_WMS: {"OWS": True, "handler": GeoNodeServiceHandler, "label": _('GeoNode (Web Map Service)')},
-        # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
-        # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
-        enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _('ArcGIS REST MapServer')},
-        enumerations.REST_IMG: {"OWS": False, "handler": ArcImageServiceHandler, "label": _('ArcGIS REST ImageServer')},
-        # enumerations.CSW: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Catalogue Service')},
-        # enumerations.OGP: {"OWS": True, "handler": ServiceHandlerBase, "label": _('OpenGeoPortal')},  # TODO: verify this
-        # enumerations.HGL: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Harvard Geospatial Library')},  # TODO: verify this
-    })
+    default = OrderedDict(
+        {
+            enumerations.WMS: {"OWS": True, "handler": WmsServiceHandler, "label": _("Web Map Service")},
+            enumerations.GN_WMS: {
+                "OWS": True,
+                "handler": GeoNodeServiceHandler,
+                "label": _("GeoNode (Web Map Service)"),
+            },
+            # enumerations.WFS: {"OWS": True, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+            # enumerations.TMS: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Paired WMS/WFS/WCS'},
+            enumerations.REST_MAP: {"OWS": False, "handler": ArcMapServiceHandler, "label": _("ArcGIS REST MapServer")},
+            enumerations.REST_IMG: {
+                "OWS": False,
+                "handler": ArcImageServiceHandler,
+                "label": _("ArcGIS REST ImageServer"),
+            },
+            # enumerations.CSW: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Catalogue Service')},
+            # enumerations.OGP: {"OWS": True, "handler": ServiceHandlerBase, "label": _('OpenGeoPortal')},  # TODO: verify this
+            # enumerations.HGL: {"OWS": False, "handler": ServiceHandlerBase, "label": _('Harvard Geospatial Library')},  # TODO: verify this
+        }
+    )
 
     return OrderedDict({**default, **parse_services_types()})
 
@@ -57,7 +67,6 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
     try:
         service = handler(base_url, service_id)
     except Exception:
-        logger.exception(
-            msg=f"Could not parse service {base_url}")
+        logger.exception(msg=f"Could not parse service {base_url}")
         raise
     return service

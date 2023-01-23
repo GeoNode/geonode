@@ -40,7 +40,7 @@ def catalogue_pre_delete(instance, sender, **kwargs):
 
 def catalogue_post_save(instance, sender, **kwargs):
     """Get information from catalogue"""
-    _id = instance.resourcebase_ptr.id if hasattr(instance, 'resourcebase_ptr') else instance.id
+    _id = instance.resourcebase_ptr.id if hasattr(instance, "resourcebase_ptr") else instance.id
     resources = ResourceBase.objects.filter(id=_id)
 
     # Update the Catalog
@@ -57,38 +57,28 @@ def catalogue_post_save(instance, sender, **kwargs):
             raise err
 
     if not record:
-        msg = f'Metadata record for {instance.title} does not exist, check the catalogue signals.'
+        msg = f"Metadata record for {instance.title} does not exist, check the catalogue signals."
         LOGGER.warning(msg)
         return
 
-    if not hasattr(record, 'links'):
-        msg = f'Metadata record for {instance.title} should contain links.'
+    if not hasattr(record, "links"):
+        msg = f"Metadata record for {instance.title} should contain links."
         raise Exception(msg)
 
     # Create the different metadata links with the available formats
     if resources.exists():
-        for mime, name, metadata_url in record.links['metadata']:
+        for mime, name, metadata_url in record.links["metadata"]:
             try:
                 Link.objects.get_or_create(
                     resource=resources.get(),
                     url=metadata_url,
-                    defaults=dict(
-                        name=name,
-                        extension='xml',
-                        mime=mime,
-                        link_type='metadata'
-                    )
+                    defaults=dict(name=name, extension="xml", mime=mime, link_type="metadata"),
                 )
             except Exception:
-                _d = dict(name=name,
-                          extension='xml',
-                          mime=mime,
-                          link_type='metadata')
+                _d = dict(name=name, extension="xml", mime=mime, link_type="metadata")
                 Link.objects.filter(
-                    resource=resources.get(),
-                    url=metadata_url,
-                    extension='xml',
-                    link_type='metadata').update(**_d)
+                    resource=resources.get(), url=metadata_url, extension="xml", link_type="metadata"
+                ).update(**_d)
 
     # generate an XML document (GeoNode's default is ISO)
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
@@ -99,15 +89,12 @@ def catalogue_post_save(instance, sender, **kwargs):
         csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
     except Exception as e:
         LOGGER.exception(e)
-        csw_anytext = ''
+        csw_anytext = ""
 
-    resources.update(
-        metadata_xml=md_doc,
-        csw_wkt_geometry=instance.geographic_bounding_box,
-        csw_anytext=csw_anytext)
+    resources.update(metadata_xml=md_doc, csw_wkt_geometry=instance.geographic_bounding_box, csw_anytext=csw_anytext)
 
 
-if 'geonode.catalogue' in settings.INSTALLED_APPS:
+if "geonode.catalogue" in settings.INSTALLED_APPS:
     signals.post_save.connect(catalogue_post_save, sender=Dataset)
     signals.pre_delete.connect(catalogue_pre_delete, sender=Dataset)
     signals.post_save.connect(catalogue_post_save, sender=Document)

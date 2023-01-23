@@ -28,9 +28,7 @@ from django.dispatch import Signal
 # use different name to avoid module clash
 from geonode.utils import is_monochromatic_image
 from geonode.decorators import on_ogc_backend
-from geonode.geoserver.helpers import (
-    gs_catalog,
-    ogc_server_settings)
+from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
 from geonode.geoserver.tasks import geoserver_create_thumbnail
 from geonode.layers.models import Dataset
 from geonode.services.enumerations import CASCADED
@@ -40,9 +38,9 @@ from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
-geoserver_automatic_default_style_set = Signal(providing_args=['instance'])
+geoserver_automatic_default_style_set = Signal(providing_args=["instance"])
 
-geofence_rule_assign = Signal(providing_args=['instance'])
+geofence_rule_assign = Signal(providing_args=["instance"])
 
 
 def geoserver_delete(typename):
@@ -54,12 +52,15 @@ def geoserver_delete(typename):
 
 @on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_pre_delete(instance, sender, **kwargs):
-    """Removes the layer from GeoServer
-    """
+    """Removes the layer from GeoServer"""
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        if not hasattr(instance, 'remote_service') or instance.remote_service is None or instance.remote_service.method == CASCADED:
+        if (
+            not hasattr(instance, "remote_service")
+            or instance.remote_service is None
+            or instance.remote_service.method == CASCADED
+        ):
             if instance.alternate:
                 geoserver_cascading_delete.apply_async((instance.alternate,))
 
@@ -68,34 +69,30 @@ def geoserver_pre_delete(instance, sender, **kwargs):
 def geoserver_post_save_local(instance, *args, **kwargs):
     """Send information to geoserver.
 
-       The attributes sent include:
+    The attributes sent include:
 
-        * Title
-        * Abstract
-        * Name
-        * Keywords
-        * Metadata Links,
-        * Point of Contact name and url
+     * Title
+     * Abstract
+     * Name
+     * Keywords
+     * Metadata Links,
+     * Point of Contact name and url
     """
-    geoserver_post_save_datasets.apply_async(
-        (instance.id, args, kwargs))
+    geoserver_post_save_datasets.apply_async((instance.id, args, kwargs))
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
 def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     # If this object was saved via fixtures,
     # do not do post processing.
-    if kwargs.get('raw', False):
+    if kwargs.get("raw", False):
         return
 
     try:
-        instance.local = isinstance(
-            gs_catalog.get_layer(
-                instance.name),
-            GsLayer)
+        instance.local = isinstance(gs_catalog.get_layer(instance.name), GsLayer)
     except OSError as e:
         if e.errno == errno.ECONNREFUSED:
-            msg = f'Could not connect to catalog to verify if layer {instance.name} was local'
+            msg = f"Could not connect to catalog to verify if layer {instance.name} was local"
             logger.warn(msg)
         else:
             raise e
@@ -113,16 +110,22 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
             pass
 
 
-@deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
+@deprecated(version="3.2.1", reason="Use direct calls to the ReourceManager.")
 def geoserver_post_save_map(instance, sender, created, **kwargs):
     instance.set_missing_info()
     if not created:
         if not instance.thumbnail_url:
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
-            geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
+            geoserver_create_thumbnail.apply_async(
+                (
+                    instance.id,
+                    False,
+                    True,
+                )
+            )
 
 
-@deprecated(version='3.2.1', reason="Use direct calls to the ReourceManager.")
+@deprecated(version="3.2.1", reason="Use direct calls to the ReourceManager.")
 def geoserver_set_thumbnail(instance, **kwargs):
     # Creating Dataset Thumbnail
     # some thumbnail generators will update thumbnail_url.  If so, don't
@@ -130,14 +133,22 @@ def geoserver_set_thumbnail(instance, **kwargs):
     try:
         logger.debug(f"... Creating Thumbnail for Dataset {instance.title}")
         _recreate_thumbnail = False
-        if 'update_fields' in kwargs and kwargs['update_fields'] is not None and \
-                'thumbnail_url' in kwargs['update_fields']:
+        if (
+            "update_fields" in kwargs
+            and kwargs["update_fields"] is not None
+            and "thumbnail_url" in kwargs["update_fields"]
+        ):
             _recreate_thumbnail = True
-        if not instance.thumbnail_url or \
-                is_monochromatic_image(instance.thumbnail_url):
+        if not instance.thumbnail_url or is_monochromatic_image(instance.thumbnail_url):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
-            geoserver_create_thumbnail.apply_async((instance.id, False, True, ))
+            geoserver_create_thumbnail.apply_async(
+                (
+                    instance.id,
+                    False,
+                    True,
+                )
+            )
         else:
             logger.debug(f"... Thumbnail for Dataset {instance.title} already exists: {instance.thumbnail_url}")
     except Exception as e:

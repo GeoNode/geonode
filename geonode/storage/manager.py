@@ -42,7 +42,6 @@ logger = logging.getLogger(__name__)
 
 
 class StorageManagerInterface(metaclass=ABCMeta):
-
     @abstractmethod
     def delete(self, name):
         pass
@@ -87,7 +86,7 @@ class StorageManagerInterface(metaclass=ABCMeta):
                     raise
 
     @abstractmethod
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         pass
 
     @abstractmethod
@@ -119,11 +118,11 @@ class StorageManagerInterface(metaclass=ABCMeta):
 
 @deconstructible
 class StorageManager(StorageManagerInterface):
-    '''
+    """
     Manage the files with different filestorages configured by default is the Filesystem one.
     If the file is not in the FileSystem, we try to transfer it on the local filesystem and then
     treat as a file_system file
-    '''
+    """
 
     def __init__(self, remote_files: Mapping = {}):
         self._concrete_storage_manager = self._get_concrete_manager()
@@ -147,14 +146,14 @@ class StorageManager(StorageManagerInterface):
     def rmtree(self, path, ignore_errors=False):
         return self._concrete_storage_manager.rmtree(path, ignore_errors=ignore_errors)
 
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         try:
             return self._concrete_storage_manager.open(name, mode=mode)
         except Exception:
-            '''
+            """
             If is not possible to retrieve the path with the normal manager
             we try to transfer it and open it
-            '''
+            """
             files_path = DataItemRetriever(_file=name).transfer_remote_file()
             return self._concrete_storage_manager.open(files_path, mode=mode)
 
@@ -173,21 +172,22 @@ class StorageManager(StorageManagerInterface):
     def replace(self, resource, files: Union[list, BinaryIO]):
         updated_files = {}
         if isinstance(files, list):
-            updated_files['files'] = self.replace_files_list(resource.files, files)
+            updated_files["files"] = self.replace_files_list(resource.files, files)
         elif len(resource.files):
-            updated_files['files'] = [self.replace_single_file(resource.files[0], files)]
+            updated_files["files"] = [self.replace_single_file(resource.files[0], files)]
         return updated_files
 
     def copy(self, resource):
         updated_files = {}
         if len(resource.files):
-            updated_files['files'] = self.copy_files_list(resource.files)
+            updated_files["files"] = self.copy_files_list(resource.files)
         return updated_files
 
     def copy_files_list(self, files: List[str]):
         from geonode.utils import mkdtemp
+
         out = []
-        random_suffix = f'{uuid1().hex[:8]}'
+        random_suffix = f"{uuid1().hex[:8]}"
         new_path = mkdtemp()
 
         if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
@@ -196,12 +196,12 @@ class StorageManager(StorageManagerInterface):
             os.chmod(new_path, settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS)
         _new_path = None
         for f in files:
-            with self.open(f, 'rb+') as open_file:
+            with self.open(f, "rb+") as open_file:
                 old_file_name, _ = os.path.splitext(os.path.basename(f))
                 _, ext = os.path.splitext(open_file.name)
                 # path = os.path.join(old_path, random_suffix)
-                if re.match(r'.*_\w{7}$', old_file_name):
-                    suffixed_name = re.sub(r'_\w{7}$', f'_{random_suffix}', old_file_name)
+                if re.match(r".*_\w{7}$", old_file_name):
+                    suffixed_name = re.sub(r"_\w{7}$", f"_{random_suffix}", old_file_name)
                     new_file = f"{new_path}/{suffixed_name}{ext}"
                 else:
                     new_file = f"{new_path}/{old_file_name}_{random_suffix}{ext}"
@@ -217,10 +217,10 @@ class StorageManager(StorageManagerInterface):
 
     def replace_files_list(self, old_files: List[str], new_files: List[str]):
         out = []
-        random_prefix = f'{uuid1().hex[:8]}'
+        random_prefix = f"{uuid1().hex[:8]}"
         if len(old_files) and old_files[0]:
             for f in new_files:
-                with self.open(f, 'rb+') as open_file:
+                with self.open(f, "rb+") as open_file:
                     out.append(self.replace_single_file(old_files[0], open_file, prefix=random_prefix))
         elif len(old_files) == 0:
             # if it comes from the DataRetriver, the list is made with Path objects and not strings
@@ -235,10 +235,10 @@ class StorageManager(StorageManagerInterface):
         try:
             filepath = self.save(f"{path}/{old_file_name}{ext}", new_file)
         except SuspiciousFileOperation:
-            '''
+            """
             If the previous file was in another localtion (due a different storage)
             We will save the file to the new location
-            '''
+            """
             filepath = self.save(f"{settings.MEDIA_ROOT}{path}/{old_file_name}{ext}", new_file)
         return self.path(filepath)
 
@@ -246,30 +246,29 @@ class StorageManager(StorageManagerInterface):
         return self._concrete_storage_manager.generate_filename(filename)
 
     def clone_remote_files(self) -> Mapping:
-        '''
+        """
         Using the data retriever object clone the remote path into a local temporary storage
-        '''
+        """
         self.data_retriever.get_paths(allow_transfer=True)
 
     def get_retrieved_paths(self) -> Mapping:
-        '''
+        """
         Return the path of the local objects in the temporary folder.
         We convert them as string instead of PosixPath
-        '''
+        """
         _files = self.data_retriever.get_paths(allow_transfer=False)
         return {_ext: str(_file) for _ext, _file in _files.items()}
 
     def delete_retrieved_paths(self, force=False) -> None:
-        '''
+        """
         Delete cloned object from the temporary folder.
         By default if the folder is under the MEDIA_ROOT the file is not deleted.
         In case should be deleted, the force=True is required
-        '''
+        """
         return self.data_retriever.delete_files(force=force)
 
 
 class DefaultStorageManager(StorageManagerInterface):
-
     def __init__(self):
         self._fsm = FileSystemStorage()
 
@@ -288,7 +287,7 @@ class DefaultStorageManager(StorageManagerInterface):
     def rmtree(self, path, ignore_errors=False):
         shutil.rmtree(path, ignore_errors=ignore_errors)
 
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         try:
             return self._fsm.open(name, mode=mode)
         except SuspiciousFileOperation:

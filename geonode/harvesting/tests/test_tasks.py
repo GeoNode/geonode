@@ -20,9 +20,7 @@ from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
-from geonode.tests.base import (
-    GeoNodeBaseTestSupport
-)
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 from .. import (
     models,
@@ -47,8 +45,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
             harvester_type=cls.harvester_type,
         )
         cls.harvesting_session = models.AsynchronousHarvestingSession.objects.create(
-            harvester=cls.harvester,
-            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
+            harvester=cls.harvester, session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
         )
         for index in range(3):
             models.HarvestableResource.objects.create(
@@ -56,7 +53,7 @@ class TasksTestCase(GeoNodeBaseTestSupport):
                 title=f"fake-title-{index}",
                 harvester=cls.harvester,
                 remote_resource_type="fake-remote-resource-type",
-                last_refreshed=now()
+                last_refreshed=now(),
             )
 
     @mock.patch("geonode.harvesting.tasks.update_asynchronous_session")
@@ -110,7 +107,9 @@ class TasksTestCase(GeoNodeBaseTestSupport):
         self.assertIsNotNone(self.harvesting_session.ended)
 
     def test_handle_harvesting_error_cleans_up_harvest_execution(self):
-        tasks._handle_harvesting_error(None, harvester_id=self.harvester.id, harvesting_session_id=self.harvesting_session.id)
+        tasks._handle_harvesting_error(
+            None, harvester_id=self.harvester.id, harvesting_session_id=self.harvesting_session.id
+        )
         self.harvester.refresh_from_db()
         self.harvesting_session.refresh_from_db()
         self.assertEqual(self.harvester.status, models.Harvester.STATUS_READY)
@@ -128,7 +127,9 @@ class TasksTestCase(GeoNodeBaseTestSupport):
     @mock.patch("geonode.harvesting.tasks._update_harvestable_resources_batch")
     @mock.patch("geonode.harvesting.tasks.chord")
     @mock.patch("geonode.harvesting.tasks.models")
-    def test_update_harvestable_resources_sends_batched_requests(self, mock_models, mock_chord, mock_batch, mock_finalizer, mock_error_handler):
+    def test_update_harvestable_resources_sends_batched_requests(
+        self, mock_models, mock_chord, mock_batch, mock_finalizer, mock_error_handler
+    ):
         """Verify that the `update_harvestable_resources` task creates a celery chord with the batched task, a finalizer and an error handler."""
         mock_worker = mock.MagicMock()
         mock_worker.get_num_available_resources.return_value = 1

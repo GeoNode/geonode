@@ -40,10 +40,8 @@ class ExecutionRequest(models.Model):
     ACTION_CHOICES = [(str(v.value), str(v.value)) for v in ExecutionRequestAction]
 
     exec_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
-    status = models.CharField(
-        max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     func_name = models.CharField(max_length=100)
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(null=True)
@@ -52,22 +50,15 @@ class ExecutionRequest(models.Model):
     input_params = models.JSONField(blank=True, default=dict)
     output_params = models.JSONField(blank=True, default=dict)
 
-    geonode_resource = models.ForeignKey(
-        "base.ResourceBase", null=True, on_delete=models.SET_NULL)
+    geonode_resource = models.ForeignKey("base.ResourceBase", null=True, on_delete=models.SET_NULL)
 
     step = models.CharField(max_length=250, null=True, default=None)
     log = models.TextField(null=True, default=None)
     name = models.CharField(
-        max_length=250,
-        null=True,
-        default=None,
-        help_text="Human readable name for the execution request"
+        max_length=250, null=True, default=None, help_text="Human readable name for the execution request"
     )
     action = models.CharField(
-        max_length=50,
-        choices=ACTION_CHOICES,
-        default=ExecutionRequestAction.UNKNOWN.value,
-        null=True
+        max_length=50, choices=ACTION_CHOICES, default=ExecutionRequestAction.UNKNOWN.value, null=True
     )
 
     source = models.CharField(max_length=250, null=True, default=None)

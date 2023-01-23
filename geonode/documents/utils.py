@@ -24,6 +24,7 @@
 import os
 import logging
 from geonode.storage.manager import storage_manager
+
 # Django functionality
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -51,12 +52,10 @@ def delete_orphaned_document_files():
         if Document.objects.filter(doc_file__contains=filename).count() == 0:
             logger.debug(f"Deleting orphaned document {filename}")
             try:
-                storage_manager.delete(os.path.join(
-                    os.path.join("documents", "document"), filename))
+                storage_manager.delete(os.path.join(os.path.join("documents", "document"), filename))
                 deleted.append(filename)
             except NotImplementedError as e:
-                logger.error(
-                    f"Failed to delete orphaned document '{filename}': {e}")
+                logger.error(f"Failed to delete orphaned document '{filename}': {e}")
 
     return deleted
 
@@ -68,13 +67,13 @@ def get_download_response(request, docid, attachment=False):
     """
     document = get_object_or_404(Document, pk=docid)
 
-    if not request.user.has_perm(
-            'base.download_resourcebase',
-            obj=document.get_self_resource()):
+    if not request.user.has_perm("base.download_resourcebase", obj=document.get_self_resource()):
         return HttpResponse(
             loader.render_to_string(
-                '401.html', context={
-                    'error_message': _("You are not allowed to view this document.")}, request=request), status=401)
+                "401.html", context={"error_message": _("You are not allowed to view this document.")}, request=request
+            ),
+            status=401,
+        )
     if attachment:
         register_event(request, EventType.EVENT_DOWNLOAD, document)
     filename = slugify(os.path.splitext(os.path.basename(document.title))[0])
@@ -82,10 +81,7 @@ def get_download_response(request, docid, attachment=False):
     if document.files and storage_manager.exists(document.files[0]):
         return DownloadResponse(
             storage_manager.open(document.files[0]).file,
-            basename=f'{filename}.{document.extension}',
-            attachment=attachment
+            basename=f"{filename}.{document.extension}",
+            attachment=attachment,
         )
-    return HttpResponse(
-        "File is not available",
-        status=404
-    )
+    return HttpResponse("File is not available", status=404)

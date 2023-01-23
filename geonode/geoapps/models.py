@@ -38,13 +38,13 @@ class GeoApp(ResourceBase):
     """
 
     PERMISSIONS = {
-        'write': [
-            'change_geoapp_data',
-            'change_geoapp_style',
+        "write": [
+            "change_geoapp_data",
+            "change_geoapp_style",
         ]
     }
 
-    name = models.TextField(_('Name'), null=False, blank=False)
+    name = models.TextField(_("Name"), null=False, blank=False)
 
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the geoapp was modified.
@@ -72,7 +72,7 @@ class GeoApp(ResourceBase):
     def type(self):
         _ct = self.polymorphic_ctype
         _child = _ct.model_class().objects.filter(pk=self.id).first()
-        if _child and hasattr(_child, 'app_type'):
+        if _child and hasattr(_child, "app_type"):
             return _child.app_type
         return None
 
@@ -82,9 +82,7 @@ class GeoApp(ResourceBase):
         Returns True if anonymous (public) user can view geoapp.
         """
         user = get_anonymous_user()
-        return user.has_perm(
-            'base.view_resourcebase',
-            obj=self.resourcebase_ptr)
+        return user.has_perm("base.view_resourcebase", obj=self.resourcebase_ptr)
 
     @property
     def keywords_list(self):
@@ -99,4 +97,4 @@ class GeoApp(ResourceBase):
 
     @property
     def embed_url(self):
-        return reverse('geoapp_embed', kwargs={'geoappid': self.pk})
+        return reverse("geoapp_embed", kwargs={"geoappid": self.pk})

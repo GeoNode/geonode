@@ -43,7 +43,7 @@ def extract_user_from_headers(request):
             user = token_header_authenticate_user(auth_header)
 
     if "apikey" in request.GET:
-        user = get_auth_user_from_token(request.GET.get('apikey'))
+        user = get_auth_user_from_token(request.GET.get("apikey"))
     return user
 
 
@@ -65,7 +65,7 @@ def extract_headers(request):
 
 
 def make_token_expiration(seconds=86400):
-    _expire_seconds = getattr(settings, 'ACCESS_TOKEN_EXPIRE_SECONDS', seconds)
+    _expire_seconds = getattr(settings, "ACCESS_TOKEN_EXPIRE_SECONDS", seconds)
     _expire_time = datetime.datetime.now(timezone.get_current_timezone())
     _expire_delta = datetime.timedelta(seconds=_expire_seconds)
     return _expire_time + _expire_delta
@@ -79,10 +79,8 @@ def create_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
         Application = get_application_model()
         app = Application.objects.get(name=client)
         (access_token, created) = AccessToken.objects.get_or_create(
-            user=user,
-            application=app,
-            expires=expires,
-            token=generate_token())
+            user=user, application=app, expires=expires, token=generate_token()
+        )
         return access_token
     except Exception:
         tb = traceback.format_exc()
@@ -108,7 +106,7 @@ def get_auth_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
     try:
         Application = get_application_model()
         app = Application.objects.get(name=client)
-        access_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
+        access_token = AccessToken.objects.filter(user=user, application=app).order_by("-expires").first()
         return access_token
     except Exception:
         tb = traceback.format_exc()
@@ -121,7 +119,7 @@ def get_auth_user(access_token, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NA
     try:
         Application = get_application_model()
         app = Application.objects.get(name=client)
-        user = AccessToken.objects.filter(token=access_token, application=app).order_by('-expires').first().user
+        user = AccessToken.objects.filter(token=access_token, application=app).order_by("-expires").first().user
         return user
     except Exception:
         tb = traceback.format_exc()
@@ -140,7 +138,7 @@ def get_or_create_token(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME
         # Let's create the new AUTH TOKEN
         existing_token = None
         try:
-            existing_token = AccessToken.objects.filter(user=user, application=app).order_by('-expires').first()
+            existing_token = AccessToken.objects.filter(user=user, application=app).order_by("-expires").first()
             if existing_token and existing_token.is_expired():
                 existing_token.delete()
                 existing_token = None
@@ -170,7 +168,7 @@ def delete_old_tokens(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
         app = application.objects.get(name=client)
 
         # Lets delete the old one
-        old_tokens = AccessToken.objects.filter(user=user, application=app).order_by('-expires')
+        old_tokens = AccessToken.objects.filter(user=user, application=app).order_by("-expires")
         for old in old_tokens:
             if old.is_expired():
                 old.delete()
@@ -181,40 +179,40 @@ def delete_old_tokens(user, client=settings.OAUTH2_DEFAULT_BACKEND_CLIENT_NAME):
 
 
 def get_token_from_auth_header(auth_header, create_if_not_exists=False):
-    if re.search('Basic', auth_header, re.IGNORECASE):
+    if re.search("Basic", auth_header, re.IGNORECASE):
         user = basic_auth_authenticate_user(auth_header)
         if user and user.is_active:
             return get_auth_token(user) if not create_if_not_exists else get_or_create_token(user)
-    elif re.search('Bearer', auth_header, re.IGNORECASE):
-        return re.compile(re.escape('Bearer '), re.IGNORECASE).sub('', auth_header)
+    elif re.search("Bearer", auth_header, re.IGNORECASE):
+        return re.compile(re.escape("Bearer "), re.IGNORECASE).sub("", auth_header)
     return None
 
 
 def set_session_token(session, token):
-    session['access_token'] = str(token)
+    session["access_token"] = str(token)
 
 
 def get_session_token(session):
-    return session.get('access_token', None)
+    return session.get("access_token", None)
 
 
 def get_token_object_from_session(session):
-    if 'access_token' in session:
+    if "access_token" in session:
         try:
             return AccessToken.objects.get(token=get_session_token(session))
         except Exception:
             tb = traceback.format_exc()
             if tb:
                 logger.debug(tb)
-            del session['access_token']
+            del session["access_token"]
             session.modified = True
             return None
     return None
 
 
 def remove_session_token(session):
-    if 'access_token' in session:
-        del session['access_token']
+    if "access_token" in session:
+        del session["access_token"]
 
 
 def basic_auth_authenticate_user(auth_header: str):
@@ -223,8 +221,8 @@ def basic_auth_authenticate_user(auth_header: str):
 
     :param auth_header: Authorization header of the request
     """
-    encoded_credentials = auth_header.split(' ')[1]  # Removes "Basic " to isolate credentials
-    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(':')
+    encoded_credentials = auth_header.split(" ")[1]  # Removes "Basic " to isolate credentials
+    decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8").split(":")
     username = decoded_credentials[0]
     password = decoded_credentials[1]
 
@@ -255,12 +253,12 @@ def token_header_authenticate_user(auth_header: str):
 
 
 def visitor_ip_address(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
 
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
+        ip = x_forwarded_for.split(",")[0]
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get("REMOTE_ADDR")
     return ip
 
 

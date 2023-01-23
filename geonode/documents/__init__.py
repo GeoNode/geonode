@@ -22,14 +22,39 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 
 class DocumentsAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.documents'
-    NOTIFICATIONS = (("document_created", _("Document Created"), _("A Document was created"),),
-                     ("document_updated", _("Document Updated"), _("A Document was updated"),),
-                     ("document_approved", _("Document Approved"), _("A Document was approved by a Manager"),),
-                     ("document_published", _("Document Published"), _("A Document was published"),),
-                     ("document_deleted", _("Document Deleted"), _("A Document was deleted"),),
-                     ("document_rated", _("Rating for Document"), _("A rating was given to a document"),),
-                     )
+    name = "geonode.documents"
+    NOTIFICATIONS = (
+        (
+            "document_created",
+            _("Document Created"),
+            _("A Document was created"),
+        ),
+        (
+            "document_updated",
+            _("Document Updated"),
+            _("A Document was updated"),
+        ),
+        (
+            "document_approved",
+            _("Document Approved"),
+            _("A Document was approved by a Manager"),
+        ),
+        (
+            "document_published",
+            _("Document Published"),
+            _("A Document was published"),
+        ),
+        (
+            "document_deleted",
+            _("Document Deleted"),
+            _("A Document was deleted"),
+        ),
+        (
+            "document_rated",
+            _("Rating for Document"),
+            _("A rating was given to a document"),
+        ),
+    )
 
 
-default_app_config = 'geonode.documents.DocumentsAppConfig'
+default_app_config = "geonode.documents.DocumentsAppConfig"

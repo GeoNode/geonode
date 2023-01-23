@@ -22,6 +22,7 @@ import signal
 from urllib.parse import urljoin
 
 import pytest
+
 # from geonode import settings as gn_settings
 from geonode.tests.bdd import __file__ as bdd_path
 from splinter import Browser
@@ -35,12 +36,12 @@ from splinter import Browser
 #     return True
 
 
-@pytest.yield_fixture(scope='function', autouse=True)
+@pytest.yield_fixture(scope="function", autouse=True)
 def en_browser(browser, bdd_server):
     """Browser login page from live server."""
-    browser = Browser('firefox', headless=True)
+    browser = Browser("firefox", headless=True)
     en_browser = browser
-    en_browser.visit(urljoin(bdd_server.url, '/account/login/'))
+    en_browser.visit(urljoin(bdd_server.url, "/account/login/"))
     yield en_browser
     try:
         en_browser.service.process.send_signal(signal.SIGTERM)
@@ -57,7 +58,4 @@ def en_browser(browser, bdd_server):
 def pytestbdd_feature_base_dir():
     """Feature files base directory."""
 
-    return os.path.join(
-        os.path.dirname(bdd_path),
-        'features'
-    )
+    return os.path.join(os.path.dirname(bdd_path), "features")

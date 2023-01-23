@@ -38,47 +38,37 @@ class GeoNodeAuthorization(DjangoAuthorization):
     def read_list(self, object_list, bundle):
         permitted_ids = []
         try:
-            permitted_ids = get_objects_for_user(
-                bundle.request.user,
-                'base.view_resourcebase').values('id')
+            permitted_ids = get_objects_for_user(bundle.request.user, "base.view_resourcebase").values("id")
         except Exception:
             pass
 
         return object_list.filter(id__in=permitted_ids)
 
     def read_detail(self, object_list, bundle):
-        if 'schema' in bundle.request.path:
+        if "schema" in bundle.request.path:
             return True
-        return bundle.request.user.has_perm(
-            'view_resourcebase',
-            bundle.obj.get_self_resource())
+        return bundle.request.user.has_perm("view_resourcebase", bundle.obj.get_self_resource())
 
     def create_list(self, object_list, bundle):
         # TODO implement if needed
         raise Unauthorized()
 
     def create_detail(self, object_list, bundle):
-        return bundle.request.user.has_perm(
-            'add_resourcebase',
-            bundle.obj.get_self_resource())
+        return bundle.request.user.has_perm("add_resourcebase", bundle.obj.get_self_resource())
 
     def update_list(self, object_list, bundle):
         # TODO implement if needed
         raise Unauthorized()
 
     def update_detail(self, object_list, bundle):
-        return bundle.request.user.has_perm(
-            'change_resourcebase',
-            bundle.obj.get_self_resource())
+        return bundle.request.user.has_perm("change_resourcebase", bundle.obj.get_self_resource())
 
     def delete_list(self, object_list, bundle):
         # TODO implement if needed
         raise Unauthorized()
 
     def delete_detail(self, object_list, bundle):
-        return bundle.request.user.has_perm(
-            'delete_resourcebase',
-            bundle.obj.get_self_resource())
+        return bundle.request.user.has_perm("delete_resourcebase", bundle.obj.get_self_resource())
 
 
 class GeonodeApiKeyAuthentication(ApiKeyAuthentication):
@@ -134,16 +124,12 @@ class GeoNodeStyleAuthorization(GeoNodeAuthorization):
             return object_list.filter(dataset_styles__id__in=permitted_ids)
 
     def read_list(self, object_list, bundle):
-        permitted_ids = get_objects_for_user(
-            bundle.request.user,
-            'base.view_resourcebase').values('id')
+        permitted_ids = get_objects_for_user(bundle.request.user, "base.view_resourcebase").values("id")
 
         return self.filter_by_resource_ids(object_list, permitted_ids)
 
     def delete_detail(self, object_list, bundle):
-        permitted_ids = get_objects_for_user(
-            bundle.request.user,
-            'layer.change_dataset_style').values('id')
+        permitted_ids = get_objects_for_user(bundle.request.user, "layer.change_dataset_style").values("id")
 
         resource_obj = bundle.obj.get_self_resource()
         return resource_obj in permitted_ids
@@ -165,8 +151,7 @@ class ApiLockdownAuthorization(DjangoAuthorization):
 
 
 class GeoNodePeopleAuthorization(DjangoAuthorization):
-    """API authorization that allows only authenticated users to view list of users
-    """
+    """API authorization that allows only authenticated users to view list of users"""
 
     def read_list(self, object_list, bundle):
         user = bundle.request.user
@@ -177,26 +162,24 @@ class GeoNodePeopleAuthorization(DjangoAuthorization):
 
 
 class GroupAuthorization(ApiLockdownAuthorization):
-
     def read_list(self, object_list, bundle):
         groups = super().read_list(object_list, bundle)
         user = bundle.request.user
         if groups:
             if not user.is_authenticated or user.is_anonymous:
-                return groups.exclude(groupprofile__access='private')
+                return groups.exclude(groupprofile__access="private")
             elif not user.is_superuser:
-                return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access='private'))
+                return groups.filter(Q(groupprofile__in=user.group_list_all()) | ~Q(groupprofile__access="private"))
         return groups
 
 
 class GroupProfileAuthorization(ApiLockdownAuthorization):
-
     def read_list(self, object_list, bundle):
         groups = super().read_list(object_list, bundle)
         user = bundle.request.user
         if groups:
             if not user.is_authenticated or user.is_anonymous:
-                return groups.exclude(access='private')
+                return groups.exclude(access="private")
             elif not user.is_superuser:
-                return groups.filter(Q(pk__in=user.group_list_all()) | ~Q(access='private'))
+                return groups.filter(Q(pk__in=user.group_list_all()) | ~Q(access="private"))
         return groups

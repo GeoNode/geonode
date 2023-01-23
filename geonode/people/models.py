@@ -44,12 +44,7 @@ from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
 
 from .utils import format_address
-from .signals import (
-    do_login,
-    do_logout,
-    profile_post_save,
-    update_user_email_addresses,
-    notify_admins_new_signup)
+from .signals import do_login, do_logout, profile_post_save, update_user_email_addresses, notify_admins_new_signup
 from .languages import LANGUAGES
 from .timezones import TIMEZONES
 
@@ -65,68 +60,67 @@ class Profile(AbstractUser):
     """Fully featured Geonode user"""
 
     organization = models.CharField(
-        _('Organization Name'),
+        _("Organization Name"),
         max_length=255,
         blank=True,
         null=True,
-        help_text=_('name of the responsible organization'))
-    profile = models.TextField(
-        _('Profile'),
-        null=True,
-        blank=True,
-        help_text=_('introduce yourself'))
+        help_text=_("name of the responsible organization"),
+    )
+    profile = models.TextField(_("Profile"), null=True, blank=True, help_text=_("introduce yourself"))
     position = models.CharField(
-        _('Position Name'),
+        _("Position Name"),
         max_length=255,
         blank=True,
         null=True,
-        help_text=_('role or position of the responsible person'))
-    voice = models.CharField(_('Voice'), max_length=255, blank=True, null=True, help_text=_(
-        'telephone number by which individuals can speak to the responsible organization or individual'))
-    fax = models.CharField(_('Facsimile'), max_length=255, blank=True, null=True, help_text=_(
-        'telephone number of a facsimile machine for the responsible organization or individual'))
+        help_text=_("role or position of the responsible person"),
+    )
+    voice = models.CharField(
+        _("Voice"),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=_("telephone number by which individuals can speak to the responsible organization or individual"),
+    )
+    fax = models.CharField(
+        _("Facsimile"),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=_("telephone number of a facsimile machine for the responsible organization or individual"),
+    )
     delivery = models.CharField(
-        _('Delivery Point'),
+        _("Delivery Point"),
         max_length=255,
         blank=True,
         null=True,
-        help_text=_('physical and email address at which the organization or individual may be contacted'))
-    city = models.CharField(
-        _('City'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('city of the location'))
+        help_text=_("physical and email address at which the organization or individual may be contacted"),
+    )
+    city = models.CharField(_("City"), max_length=255, blank=True, null=True, help_text=_("city of the location"))
     area = models.CharField(
-        _('Administrative Area'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('state, province of the location'))
+        _("Administrative Area"), max_length=255, blank=True, null=True, help_text=_("state, province of the location")
+    )
     zipcode = models.CharField(
-        _('Postal Code'),
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text=_('ZIP or other postal code'))
+        _("Postal Code"), max_length=255, blank=True, null=True, help_text=_("ZIP or other postal code")
+    )
     country = models.CharField(
-        _('Country'),
+        _("Country"),
         choices=COUNTRIES,
         max_length=3,
         blank=True,
         null=True,
-        help_text=_('country of the physical address'))
-    keywords = TaggableManager(_('keywords'), blank=True, help_text=_(
-        'commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
-            (space or comma-separated'))
-    language = models.CharField(
-        _("language"),
-        max_length=10,
-        choices=LANGUAGES,
-        default=settings.LANGUAGE_CODE
+        help_text=_("country of the physical address"),
     )
+    keywords = TaggableManager(
+        _("keywords"),
+        blank=True,
+        help_text=_(
+            "commonly used word(s) or formalised word(s) or phrase(s) used to describe the subject \
+            (space or comma-separated"
+        ),
+    )
+    language = models.CharField(_("language"), max_length=10, choices=LANGUAGES, default=settings.LANGUAGE_CODE)
     timezone = models.CharField(
-        _('Timezone'),
+        _("Timezone"),
         max_length=100,
         default="",
         choices=TIMEZONES,
@@ -138,7 +132,12 @@ class Profile(AbstractUser):
         self._previous_active_state = self.is_active
 
     def get_absolute_url(self):
-        return reverse('profile_detail', args=[self.username, ])
+        return reverse(
+            "profile_detail",
+            args=[
+                self.username,
+            ],
+        )
 
     def __str__(self):
         return str(self.username)
@@ -148,11 +147,10 @@ class Profile(AbstractUser):
         return value.__class__.__name__
 
     objects = ProfileUserManager()
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = "username"
 
     def group_list_public(self):
-        return GroupProfile.objects.exclude(
-            access="private").filter(groupmember__user=self)
+        return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
 
     def group_list_all(self):
         return GroupProfile.objects.filter(groupmember__user=self).distinct()
@@ -172,18 +170,18 @@ class Profile(AbstractUser):
     @property
     def name_long(self):
         if self.first_name and self.last_name:
-            return f'{self.first_name} {self.last_name} ({self.username})'
+            return f"{self.first_name} {self.last_name} ({self.username})"
         elif (not self.first_name) and self.last_name:
-            return f'{self.last_name} ({self.username})'
+            return f"{self.last_name} ({self.username})"
         elif self.first_name and (not self.last_name):
-            return f'{self.first_name} ({self.username})'
+            return f"{self.first_name} ({self.username})"
         else:
             return self.username
 
     @property
     def full_name_or_nick(self):
         if self.first_name and self.last_name:
-            return f'{self.first_name} {self.last_name}'
+            return f"{self.first_name} {self.last_name}"
         else:
             return self.username
 
@@ -193,8 +191,7 @@ class Profile(AbstractUser):
 
     @property
     def location(self):
-        return format_address(self.delivery, self.zipcode,
-                              self.city, self.area, self.country)
+        return format_address(self.delivery, self.zipcode, self.city, self.area, self.country)
 
     @property
     def perms(self):
@@ -202,10 +199,10 @@ class Profile(AbstractUser):
             # return all permissions for admins
             perms = PERMISSIONS.values()
         else:
-            user_groups = self.groups.values_list('name', flat=True)
-            group_perms = Permission.objects.filter(
-                group__name__in=user_groups
-            ).distinct().values_list('codename', flat=True)
+            user_groups = self.groups.values_list("name", flat=True)
+            group_perms = (
+                Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
+            )
             # return constant names defined by GeoNode
             perms = [PERMISSIONS[db_perm] for db_perm in group_perms]
 
@@ -225,8 +222,7 @@ class Profile(AbstractUser):
         resources = ResourceBase.objects.filter(owner=self)
         if resources:
             default_owner = (
-                Profile.objects.filter(username='admin').first() or
-                Profile.objects.filter(is_superuser=True).first()
+                Profile.objects.filter(username="admin").first() or Profile.objects.filter(is_superuser=True).first()
             )
             if default_owner:
                 resources.update(owner=default_owner)
@@ -242,16 +238,17 @@ class Profile(AbstractUser):
                 # send_notification(users=(self,), label="account_active")
 
                 from invitations.adapters import get_invitations_adapter
+
                 current_site = Site.objects.get_current()
                 ctx = {
-                    'username': self.username,
-                    'current_site': current_site,
-                    'site_name': current_site.name,
-                    'email': self.email,
-                    'inviter': self,
+                    "username": self.username,
+                    "current_site": current_site,
+                    "site_name": current_site.name,
+                    "email": self.email,
+                    "inviter": self,
                 }
 
-                email_template = 'pinax/notifications/account_active/account_active'
+                email_template = "pinax/notifications/account_active/account_active"
                 adapter = get_invitations_adapter()
                 adapter.send_invitation_email(email_template, self.email, ctx)
             except Exception as e:
@@ -263,23 +260,12 @@ class Profile(AbstractUser):
 
 
 def get_anonymous_user_instance(user_model):
-    return user_model(pk=-1, username='AnonymousUser')
+    return user_model(pk=-1, username="AnonymousUser")
 
 
 """ Connect relevant signals to their corresponding handlers. """
 user_logged_in.connect(do_login)
 user_logged_out.connect(do_logout)
-social_account_added.connect(
-    update_user_email_addresses,
-    dispatch_uid=str(uuid4()),
-    weak=False
-)
-user_signed_up.connect(
-    notify_admins_new_signup,
-    dispatch_uid=str(uuid4()),
-    weak=False
-)
-signals.post_save.connect(
-    profile_post_save,
-    sender=settings.AUTH_USER_MODEL
-)
+social_account_added.connect(update_user_email_addresses, dispatch_uid=str(uuid4()), weak=False)
+user_signed_up.connect(notify_admins_new_signup, dispatch_uid=str(uuid4()), weak=False)
+signals.post_save.connect(profile_post_save, sender=settings.AUTH_USER_MODEL)

@@ -51,20 +51,16 @@ class ManagementCommandJob(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     args = models.JSONField(
-        blank=True, default=list,
-        verbose_name=_('Positional Arguments'),
-        help_text=_(
-            'JSON encoded positional arguments '
-            '(Example: ["arg1", "arg2"])'
-        ),
+        blank=True,
+        default=list,
+        verbose_name=_("Positional Arguments"),
+        help_text=_("JSON encoded positional arguments " '(Example: ["arg1", "arg2"])'),
     )
     kwargs = models.JSONField(
-        blank=True, default=dict,
-        verbose_name=_('Keyword Arguments'),
-        help_text=_(
-            'JSON encoded keyword arguments '
-            '(Example: {"argument": "value"})'
-        ),
+        blank=True,
+        default=dict,
+        verbose_name=_("Keyword Arguments"),
+        help_text=_("JSON encoded keyword arguments " '(Example: {"argument": "value"})'),
     )
 
     celery_result_id = models.UUIDField(null=True, blank=True)
@@ -85,7 +81,4 @@ class ManagementCommandJob(models.Model):
         return super().clean()
 
     def __str__(self):
-        return (
-            f"ManagementCommandJob"
-            f"({self.id}, {self.command}, {self.user}, {self.created_at})"
-        )
+        return f"ManagementCommandJob" f"({self.id}, {self.command}, {self.user}, {self.created_at})"

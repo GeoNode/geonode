@@ -21,18 +21,15 @@ from django.conf.urls import url, include
 from . import views
 
 js_info_dict = {
-    'packages': ('geonode.geoapps', ),
+    "packages": ("geonode.geoapps",),
 }
 
 urlpatterns = [
     # 'geonode.geoapps.views',
-    url(r'^new$', views.new_geoapp, name="new_geoapp"),
-    url(r'^(?P<geoappid>\d+)/metadata$', views.geoapp_metadata, name='geoapp_metadata'),
-    url(r'^(?P<geoappid>[^/]*)/metadata_detail$',
-        views.geoapp_metadata_detail, name='geoapp_metadata_detail'),
-    url(r'^(?P<geoappid>\d+)/metadata_advanced$',
-        views.geoapp_metadata_advanced, name='geoapp_metadata_advanced'),
-    url(r'^(?P<geoappid>[^/]+)/embed$', views.geoapp_edit,
-        {'template': 'apps/app_embed.html'}, name='geoapp_embed'),
-    url(r'^', include('geonode.geoapps.api.urls')),
+    url(r"^new$", views.new_geoapp, name="new_geoapp"),
+    url(r"^(?P<geoappid>\d+)/metadata$", views.geoapp_metadata, name="geoapp_metadata"),
+    url(r"^(?P<geoappid>[^/]*)/metadata_detail$", views.geoapp_metadata_detail, name="geoapp_metadata_detail"),
+    url(r"^(?P<geoappid>\d+)/metadata_advanced$", views.geoapp_metadata_advanced, name="geoapp_metadata_advanced"),
+    url(r"^(?P<geoappid>[^/]+)/embed$", views.geoapp_edit, {"template": "apps/app_embed.html"}, name="geoapp_embed"),
+    url(r"^", include("geonode.geoapps.api.urls")),
 ]

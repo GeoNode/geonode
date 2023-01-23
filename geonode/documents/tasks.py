@@ -33,12 +33,10 @@ from .models import Document
 logger = get_task_logger(__name__)
 
 
-class DocumentRenderer():
-    FILETYPES = ['pdf']
+class DocumentRenderer:
+    FILETYPES = ["pdf"]
     # See https://pillow.readthedocs.io/en/stable/reference/ImageOps.html#PIL.ImageOps.fit
-    CROP_CENTERING = {
-        'pdf': (0.0, 0.0)
-    }
+    CROP_CENTERING = {"pdf": (0.0, 0.0)}
 
     def __init__(self) -> None:
         pass
@@ -50,7 +48,7 @@ class DocumentRenderer():
         content = None
         if self.supports(filename):
             filetype = self._get_filetype(filename)
-            render = getattr(self, f'render_{filetype}')
+            render = getattr(self, f"render_{filetype}")
             content = render(filename)
         return content
 
@@ -60,7 +58,7 @@ class DocumentRenderer():
             pix = doc[0].get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
             return pix.pil_tobytes(format="PNG")
         except Exception as e:
-            logger.warning(f'Cound not generate thumbnail for {filename}: {e}')
+            logger.warning(f"Cound not generate thumbnail for {filename}: {e}")
             return None
 
     def preferred_crop_centering(self, filename):
@@ -75,16 +73,17 @@ doc_renderer = DocumentRenderer()
 
 @app.task(
     bind=True,
-    name='geonode.documents.tasks.create_document_thumbnail',
-    queue='geonode',
+    name="geonode.documents.tasks.create_document_thumbnail",
+    queue="geonode",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def create_document_thumbnail(self, object_id):
     """
     Create thumbnail for a document.
@@ -104,12 +103,12 @@ def create_document_thumbnail(self, object_id):
     if document.is_image:
         dname = storage_manager.path(document.files[0])
         if storage_manager.exists(dname):
-            image_file = storage_manager.open(dname, 'rb')
+            image_file = storage_manager.open(dname, "rb")
 
         try:
             image = Image.open(image_file)
             with io.BytesIO() as output:
-                image.save(output, format='PNG')
+                image.save(output, format="PNG")
                 thumbnail_content = output.getvalue()
                 output.close()
         except Exception as e:
@@ -130,40 +129,44 @@ def create_document_thumbnail(self, object_id):
         logger.warning(f"Thumbnail for document #{object_id} empty.")
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
     else:
-        filename = f'document-{document.uuid}-thumb.jpg'
+        filename = f"document-{document.uuid}-thumb.jpg"
         document.save_thumbnail(filename, thumbnail_content, centering=centering)
         logger.debug(f"Thumbnail for document #{object_id} created.")
 
 
 @app.task(
     bind=True,
-    name='geonode.documents.tasks.delete_orphaned_document_files',
-    queue='cleanup',
+    name="geonode.documents.tasks.delete_orphaned_document_files",
+    queue="cleanup",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def delete_orphaned_document_files(self):
     from geonode.documents.utils import delete_orphaned_document_files
+
     delete_orphaned_document_files()
 
 
 @app.task(
     bind=True,
-    name='geonode.documents.tasks.delete_orphaned_thumbnails',
-    queue='cleanup',
+    name="geonode.documents.tasks.delete_orphaned_thumbnails",
+    queue="cleanup",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def delete_orphaned_thumbnails(self):
     from geonode.base.utils import delete_orphaned_thumbs
+
     delete_orphaned_thumbs()

@@ -20,10 +20,7 @@ from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 from django.core.exceptions import PermissionDenied
 
-from geonode.base.auth import (
-    visitor_ip_address,
-    is_ipaddress_in_whitelist
-)
+from geonode.base.auth import visitor_ip_address, is_ipaddress_in_whitelist
 
 
 # This backend only raises a permission deined id admin access is forbidden
@@ -32,7 +29,7 @@ class AdminRestrictedAccessBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         user = super().authenticate(request, username, password, **kwargs)
         if request:
-            whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
+            whitelist = getattr(settings, "ADMIN_IP_WHITELIST", [])
             if user and user.is_superuser and len(whitelist) > 0:
                 visitor_ip = visitor_ip_address(request)
                 if not is_ipaddress_in_whitelist(visitor_ip, whitelist):
