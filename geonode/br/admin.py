@@ -23,9 +23,9 @@ from geonode.br.models import RestoredBackup
 
 @admin.register(RestoredBackup)
 class RestoredBackupAdmin(admin.ModelAdmin):
-    readonly_fields = ('name', 'restoration_date', 'archive_md5', 'creation_date')
+    readonly_fields = ("name", "restoration_date", "archive_md5", "creation_date")
     actions = None
-    list_display = ('name', 'restoration_date', 'archive_md5', 'creation_date')
+    list_display = ("name", "restoration_date", "archive_md5", "creation_date")
 
     def has_add_permission(self, request):
         return False

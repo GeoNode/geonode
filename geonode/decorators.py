@@ -30,9 +30,7 @@ from django.contrib.auth import authenticate, login
 from django.utils.decorators import classonlymethod
 from django.core.exceptions import PermissionDenied
 
-from geonode.utils import (check_ogc_backend,
-                           get_client_ip,
-                           get_client_host)
+from geonode.utils import check_ogc_backend, get_client_ip, get_client_host
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +45,16 @@ def on_ogc_backend(backend_package):
     Useful to decorate features/tests that only available for specific
     backend.
     """
-    def decorator(func):
 
+    def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             on_backend = check_ogc_backend(backend_package)
             if on_backend:
                 return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -72,13 +72,13 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
 
     # They are not logged in. See if they provided login credentials
     #
-    if 'HTTP_AUTHORIZATION' in request.META:
-        basic_auth = request.META['HTTP_AUTHORIZATION'].split()
+    if "HTTP_AUTHORIZATION" in request.META:
+        basic_auth = request.META["HTTP_AUTHORIZATION"].split()
         if len(basic_auth) == 2:
             # NOTE: We are only support basic authentication for now.
             #
             if basic_auth[0].lower() == "basic":
-                uname, passwd = base64.b64decode(basic_auth[1]).decode('utf-8').split(':', 1)
+                uname, passwd = base64.b64decode(basic_auth[1]).decode("utf-8").split(":", 1)
                 user = authenticate(username=uname, password=passwd)
                 if user and user.is_active:
                     login(request, user)
@@ -92,7 +92,7 @@ def view_or_basicauth(view, request, test_func, realm="", *args, **kwargs):
     #
     response = HttpResponse()
     response.status_code = 401
-    response['WWW-Authenticate'] = f'Basic realm="{realm}"'
+    response["WWW-Authenticate"] = f'Basic realm="{realm}"'
     return response
 
 
@@ -102,10 +102,10 @@ def view_decorator(fdec, subclass=False):
 
     https://github.com/lqc/django/tree/cbvdecoration_ticket14512
     """
+
     def decorator(cls):
         if not hasattr(cls, "as_view"):
-            raise TypeError(
-                "You should only decorate subclasses of View, not mixins.")
+            raise TypeError("You should only decorate subclasses of View, not mixins.")
         if subclass:
             cls = type(f"{cls.__name__}WithDecorator({fdec.__name__})", (cls,), {})
         original = cls.as_view.__func__
@@ -113,8 +113,10 @@ def view_decorator(fdec, subclass=False):
         @wraps(original)
         def as_view(current, **initkwargs):
             return fdec(original(current, **initkwargs))
+
         cls.as_view = classonlymethod(as_view)
         return cls
+
     return decorator
 
 
@@ -132,8 +134,8 @@ def view_or_apiauth(view, request, test_func, *args, **kwargs):
 
     # They are not logged in. See if they provided login credentials
     #
-    if 'HTTP_AUTHORIZATION' in request.META:
-        _auth = request.META['HTTP_AUTHORIZATION'].split()
+    if "HTTP_AUTHORIZATION" in request.META:
+        _auth = request.META["HTTP_AUTHORIZATION"].split()
         if len(_auth) == 2:
             # NOTE: We are only support basic authentication for now.
             #
@@ -164,12 +166,13 @@ def has_perm_or_basicauth(perm, realm=""):
         ...
 
     """
+
     def view_decorator(func):
         def wrapper(request, *args, **kwargs):
-            return view_or_basicauth(func, request,
-                                     lambda u: u.has_perm(perm),
-                                     realm, *args, **kwargs)
+            return view_or_basicauth(func, request, lambda u: u.has_perm(perm), realm, *args, **kwargs)
+
         return wrapper
+
     return view_decorator
 
 
@@ -192,41 +195,40 @@ def superuser_only(function):
     )
     --------------------------------------------------------------------------
     """
+
     def _inner(request, *args, **kwargs):
         if not auth.get_user(request).is_superuser and not auth.get_user(request).is_staff:
             raise PermissionDenied
         return function(request, *args, **kwargs)
+
     return _inner
 
 
 def check_keyword_write_perms(function):
     def _inner(request, *args, **kwargs):
-        keyword_readonly = settings.FREETEXT_KEYWORDS_READONLY and request.method == "POST" \
-            and not auth.get_user(request).is_superuser
+        keyword_readonly = (
+            settings.FREETEXT_KEYWORDS_READONLY and request.method == "POST" and not auth.get_user(request).is_superuser
+        )
         request.keyword_readonly = keyword_readonly
-        if keyword_readonly and 'resource-keywords' in request.POST:
+        if keyword_readonly and "resource-keywords" in request.POST:
             return HttpResponse(
-                "Unauthorized: Cannot edit/create Free-text Keywords",
-                status=401,
-                content_type="application/json"
+                "Unauthorized: Cannot edit/create Free-text Keywords", status=401, content_type="application/json"
             )
         return function(request, *args, **kwargs)
+
     return _inner
 
 
 def superuser_protected(function):
-    """Decorator that forces a view to be accessible by SUPERUSERS only.
-    """
+    """Decorator that forces a view to be accessible by SUPERUSERS only."""
+
     def _inner(request, *args, **kwargs):
         if not auth.get_user(request).is_superuser:
             return HttpResponse(
-                json.dumps({
-                    'error': 'unauthorized_request'
-                }),
-                status=403,
-                content_type="application/json"
+                json.dumps({"error": "unauthorized_request"}), status=403, content_type="application/json"
             )
         return function(request, *args, **kwargs)
+
     return _inner
 
 
@@ -234,18 +236,17 @@ def whitelist_protected(function):
     """Decorator that forces a view to be accessible by WHITE_LISTED
     IPs only.
     """
+
     def _inner(request, *args, **kwargs):
-        if not settings.AUTH_IP_WHITELIST or \
-            (get_client_ip(request) not in settings.AUTH_IP_WHITELIST and
-             get_client_host(request) not in settings.AUTH_IP_WHITELIST):
+        if not settings.AUTH_IP_WHITELIST or (
+            get_client_ip(request) not in settings.AUTH_IP_WHITELIST
+            and get_client_host(request) not in settings.AUTH_IP_WHITELIST
+        ):
             return HttpResponse(
-                json.dumps({
-                    'error': 'unauthorized_request'
-                }),
-                status=403,
-                content_type="application/json"
+                json.dumps({"error": "unauthorized_request"}), status=403, content_type="application/json"
             )
         return function(request, *args, **kwargs)
+
     return _inner
 
 
@@ -278,34 +279,31 @@ def logged_in_or_basicauth(realm=""):
 
     You can provide the name of the realm to ask for authentication within.
     """
+
     def view_decorator(func):
         def wrapper(request, *args, **kwargs):
-            return view_or_basicauth(func, request,
-                                     lambda u: u.is_authenticated,
-                                     realm, *args, **kwargs)
+            return view_or_basicauth(func, request, lambda u: u.is_authenticated, realm, *args, **kwargs)
+
         return wrapper
+
     return view_decorator
 
 
 def logged_in_or_apiauth():
-
     def view_decorator(func):
         def wrapper(request, *args, **kwargs):
-            return view_or_apiauth(func, request,
-                                   lambda u: u.is_authenticated,
-                                   *args, **kwargs)
+            return view_or_apiauth(func, request, lambda u: u.is_authenticated, *args, **kwargs)
+
         return wrapper
 
     return view_decorator
 
 
 def superuser_or_apiauth():
-
     def view_decorator(func):
         def wrapper(request, *args, **kwargs):
-            return view_or_apiauth(func, request,
-                                   lambda u: u.is_superuser,
-                                   *args, **kwargs)
+            return view_or_apiauth(func, request, lambda u: u.is_superuser, *args, **kwargs)
+
         return wrapper
 
     return view_decorator
@@ -313,6 +311,7 @@ def superuser_or_apiauth():
 
 def dump_func_name(func):
     def echo_func(*func_args, **func_kwargs):
-        logger.debug(f'Start func: {func.__name__}')
+        logger.debug(f"Start func: {func.__name__}")
         return func(*func_args, **func_kwargs)
+
     return echo_func

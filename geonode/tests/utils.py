@@ -57,10 +57,7 @@ logger = logging.getLogger(__name__)
 
 
 def upload_step(step=None):
-    step = urljoin(
-        settings.SITEURL,
-        reverse('data_upload', args=[step] if step else [])
-    )
+    step = urljoin(settings.SITEURL, reverse("data_upload", args=[step] if step else []))
     return step
 
 
@@ -84,17 +81,14 @@ class Client(DjangoTestClient):
             backoff_factor=0.3,
             status_forcelist=(104, 500, 502, 503, 504),
         )
-        self._adapter = requests.adapters.HTTPAdapter(
-            max_retries=self._retry,
-            pool_maxsize=10,
-            pool_connections=10)
+        self._adapter = requests.adapters.HTTPAdapter(max_retries=self._retry, pool_maxsize=10, pool_connections=10)
 
         self._register_user()
 
     def _register_user(self):
         u, _ = get_user_model().objects.get_or_create(username=self.user)
         u.is_active = True
-        u.email = 'admin@geonode.org'
+        u.email = "admin@geonode.org"
         u.set_password(self.passwd)
         u.save()
 
@@ -104,17 +98,17 @@ class Client(DjangoTestClient):
 
         if ajax:
             url += f"{('&' if '?' in url else '?')}force_ajax=true"
-            self._session.headers['X_REQUESTED_WITH'] = "XMLHttpRequest"
+            self._session.headers["X_REQUESTED_WITH"] = "XMLHttpRequest"
 
         cookie_value = self._session.cookies.get(settings.SESSION_COOKIE_NAME)
         if force_login and cookie_value:
             self.response_cookies += f"; {settings.SESSION_COOKIE_NAME}={cookie_value}"
 
         if self.csrf_token:
-            self._session.headers['X-CSRFToken'] = self.csrf_token
+            self._session.headers["X-CSRFToken"] = self.csrf_token
 
         if self.response_cookies:
-            self._session.headers['cookie'] = self.response_cookies
+            self._session.headers["cookie"] = self.response_cookies
 
         if data:
             for name, value in data.items():
@@ -122,21 +116,18 @@ class Client(DjangoTestClient):
                     data[name] = (os.path.basename(value.name), value)
 
             encoder = MultipartEncoder(fields=data)
-            self._session.headers['Content-Type'] = encoder.content_type
+            self._session.headers["Content-Type"] = encoder.content_type
             self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
             self._session.verify = False
-            self._action = getattr(self._session, 'post', None)
+            self._action = getattr(self._session, "post", None)
 
             _retry = 0
             _not_done = True
             while _not_done and _retry < 3:
                 try:
                     response = self._action(
-                        url=url,
-                        data=encoder,
-                        headers=self._session.headers,
-                        timeout=10,
-                        stream=False)
+                        url=url, data=encoder, headers=self._session.headers, timeout=10, stream=False
+                    )
                     _not_done = False
                 except (ProtocolError, ConnectionError, ConnectionResetError):
                     time.sleep(1.0)
@@ -146,18 +137,13 @@ class Client(DjangoTestClient):
         else:
             self._session.mount(f"{urlsplit(url).scheme}://", self._adapter)
             self._session.verify = False
-            self._action = getattr(self._session, 'get', None)
+            self._action = getattr(self._session, "get", None)
 
             _retry = 0
             _not_done = True
             while _not_done and _retry < 3:
                 try:
-                    response = self._action(
-                        url=url,
-                        data=None,
-                        headers=self._session.headers,
-                        timeout=10,
-                        stream=False)
+                    response = self._action(url=url, data=None, headers=self._session.headers, timeout=10, stream=False)
                     _not_done = False
                 except (ProtocolError, ConnectionError, ConnectionResetError):
                     time.sleep(1.0)
@@ -168,12 +154,12 @@ class Client(DjangoTestClient):
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as ex:
-            message = ''
-            if hasattr(ex, 'message'):
+            message = ""
+            if hasattr(ex, "message"):
                 if debug:
-                    logger.error(f'error in request to {path}')
+                    logger.error(f"error in request to {path}")
                     logger.error(ex.message)
-                message = ex.message[ex.message.index(':') + 2:]
+                message = ex.message[ex.message.index(":") + 2 :]
             else:
                 message = str(ex)
             message = f"{message} (Content: {response.content.decode()}"
@@ -186,27 +172,18 @@ class Client(DjangoTestClient):
         return self.make_request(path, debug=debug)
 
     def login(self):
-        """ Method to login the GeoNode site"""
+        """Method to login the GeoNode site"""
         from django.contrib.auth import authenticate
+
         assert authenticate(username=self.user, password=self.passwd)
         self.csrf_token = self.get_csrf_token()
-        params = {
-            'csrfmiddlewaretoken': self.csrf_token,
-            'login': self.user,
-            'next': '/',
-            'password': self.passwd}
-        response = self.make_request(
-            urljoin(
-                settings.SITEURL,
-                reverse('account_login')
-            ),
-            data=params
-        )
+        params = {"csrfmiddlewaretoken": self.csrf_token, "login": self.user, "next": "/", "password": self.passwd}
+        response = self.make_request(urljoin(settings.SITEURL, reverse("account_login")), data=params)
         self.csrf_token = self.get_csrf_token()
-        self.response_cookies = response.headers.get('Set-Cookie')
+        self.response_cookies = response.headers.get("Set-Cookie")
 
     def upload_file(self, _file, perms=None):
-        """ function that uploads a file, or a collection of files, to
+        """function that uploads a file, or a collection of files, to
         the GeoNode"""
         if not self.csrf_token:
             self.login()
@@ -214,29 +191,25 @@ class Client(DjangoTestClient):
         base, ext = os.path.splitext(_file)
         params = {
             # make public if perms not provided since wms client doesn't do authentication
-            'permissions': perms or '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            'csrfmiddlewaretoken': self.csrf_token,
-            'time': 'true',
-            'charset': 'UTF-8'
+            "permissions": perms or '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+            "csrfmiddlewaretoken": self.csrf_token,
+            "time": "true",
+            "charset": "UTF-8",
         }
 
         # deal with shapefiles
-        if ext.lower() == '.shp':
+        if ext.lower() == ".shp":
             for spatial_file in spatial_files:
-                ext, _ = spatial_file.split('_')
+                ext, _ = spatial_file.split("_")
                 file_path = f"{base}.{ext}"
                 # sometimes a shapefile is missing an extra file,
                 # allow for that
                 if os.path.exists(file_path):
-                    params[spatial_file] = open(file_path, 'rb')
+                    params[spatial_file] = open(file_path, "rb")
 
-        with open(_file, 'rb') as base_file:
-            params['base_file'] = base_file
-            resp = self.make_request(
-                upload_step(),
-                data=params,
-                ajax=True,
-                force_login=True)
+        with open(_file, "rb") as base_file:
+            params["base_file"] = base_file
+            resp = self.make_request(upload_step(), data=params, ajax=True, force_login=True)
 
         # Closes the files
         for spatial_file in spatial_files:
@@ -250,7 +223,7 @@ class Client(DjangoTestClient):
             return resp, resp.content
 
     def get_html(self, path, debug=True):
-        """ Method that make a get request and passes the results to bs4
+        """Method that make a get request and passes the results to bs4
         Takes a path and returns a tuple
         """
         resp = self.get(path, debug)
@@ -265,13 +238,12 @@ class Client(DjangoTestClient):
         based on the last response
         """
         if not last:
-            self.get('/')
+            self.get("/")
         return self._session.cookies.get("csrftoken")
 
 
 def get_web_page(url, username=None, password=None, login_url=None):
-    """Get url page possible with username and password.
-    """
+    """Get url page possible with username and password."""
 
     if login_url:
         # Login via a form
@@ -282,15 +254,16 @@ def get_web_page(url, username=None, password=None, login_url=None):
         opener.open(login_url)
 
         try:
-            token = [
-                x.value for x in cookies.cookiejar if x.name == 'csrftoken'][0]
+            token = [x.value for x in cookies.cookiejar if x.name == "csrftoken"][0]
         except IndexError:
             return False, "no csrftoken"
 
-        params = dict(username=username, password=password,
-                      this_is_the_login_form=True,
-                      csrfmiddlewaretoken=token,
-                      )
+        params = dict(
+            username=username,
+            password=password,
+            this_is_the_login_form=True,
+            csrfmiddlewaretoken=token,
+        )
         encoded_params = urlencode(params)
 
         with contextlib.closing(opener.open(login_url, encoded_params)) as f:
@@ -310,7 +283,7 @@ def get_web_page(url, username=None, password=None, login_url=None):
     try:
         pagehandle = urlopen(url)
     except HTTPError as e:
-        msg = f'The server couldn\'t fulfill the request. Error code: {e.status_code}'
+        msg = f"The server couldn't fulfill the request. Error code: {e.status_code}"
         e.args = (msg,)
         raise
     except URLError as e:
@@ -324,11 +297,10 @@ def get_web_page(url, username=None, password=None, login_url=None):
 
 
 def check_dataset(uploaded):
-    """Verify if an object is a valid Dataset.
-    """
-    msg = (f'Was expecting dataset object, got {type(uploaded)}')
+    """Verify if an object is a valid Dataset."""
+    msg = f"Was expecting dataset object, got {type(uploaded)}"
     assert isinstance(uploaded, Dataset), msg
-    msg = (f'The dataset does not have a valid name: {uploaded.name}')
+    msg = f"The dataset does not have a valid name: {uploaded.name}"
     assert len(uploaded.name) > 0, msg
 
 
@@ -352,11 +324,7 @@ if has_notifications:
             ont = notifications.models.NoticeType.objects.get
 
             for name, label, desc in notifications_list:
-                n = obc(user=user,
-                        notice_type=ont(label=name),
-                        medium=email_id,
-                        send=True
-                        )
+                n = obc(user=user, notice_type=ont(label=name), medium=email_id, send=True)
                 notices.append(n)
             return notices
 

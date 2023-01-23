@@ -28,6 +28,4 @@ class GeoNodeResourceConfig(AppConfig):
     def ready(self):
         from geonode.urls import urlpatterns
 
-        urlpatterns += [
-            url(r'^api/v2/', include('geonode.resource.api.urls'))
-        ]
+        urlpatterns += [url(r"^api/v2/", include("geonode.resource.api.urls"))]

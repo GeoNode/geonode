@@ -23,7 +23,6 @@ from tastypie.paginator import Paginator
 
 
 class CrossSiteXHRPaginator(Paginator):
-
     def get_limit(self):
         """
         Determines the proper maximum number of results to return.
@@ -37,9 +36,9 @@ class CrossSiteXHRPaginator(Paginator):
         Default is 20 per page.
         """
 
-        limit = self.request_data.get('limit', self.limit)
+        limit = self.request_data.get("limit", self.limit)
         if limit is None:
-            limit = getattr(settings, 'API_LIMIT_PER_PAGE', 20)
+            limit = getattr(settings, "API_LIMIT_PER_PAGE", 20)
 
         try:
             limit = int(limit)
@@ -67,8 +66,8 @@ class CrossSiteXHRPaginator(Paginator):
         """
         offset = self.offset
 
-        if 'offset' in self.request_data:
-            offset = self.request_data['offset']
+        if "offset" in self.request_data:
+            offset = self.request_data["offset"]
 
         try:
             offset = int(offset)

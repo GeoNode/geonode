@@ -26,8 +26,11 @@ from . import models
 
 @admin.register(models.GroupCategory)
 class GroupCategoryAdmin(TranslationAdmin):
-    list_display = ('name', 'slug',)
-    readonly_fields = ('slug',)
+    list_display = (
+        "name",
+        "slug",
+    )
+    readonly_fields = ("slug",)
 
 
 class GroupMemberInline(admin.TabularInline):
@@ -35,10 +38,10 @@ class GroupMemberInline(admin.TabularInline):
 
 
 class GroupProfileAdmin(admin.ModelAdmin):
-    inlines = [
-        GroupMemberInline
+    inlines = [GroupMemberInline]
+    exclude = [
+        "group",
     ]
-    exclude = ['group', ]
     actions = [set_user_and_group_dataset_permission]
 
 

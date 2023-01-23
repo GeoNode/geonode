@@ -88,8 +88,9 @@ jobs:
                 working_directory: ./
                 no_output_timeout: 10m
             - run:
-                name: Run pep8 checks
+                name: Run code quality checks
                 command: |
+                  docker-compose -f docker-compose-test.yml exec django bash -c 'black --check geonode'
                   docker-compose -f docker-compose-test.yml exec django bash -c 'flake8 geonode'
                   docker-compose -f docker-compose-test.yml exec django bash -c 'codecov; bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8'
                 working_directory: ./

@@ -28,8 +28,14 @@ from django.db.models import Sum, F
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from geonode.monitoring.utils import generate_periods
-from geonode.monitoring.models import (Metric, MetricValue, ServiceTypeMetric,
-                                       MonitoredResource, MetricLabel, EventType,)
+from geonode.monitoring.models import (
+    Metric,
+    MetricValue,
+    ServiceTypeMetric,
+    MonitoredResource,
+    MetricLabel,
+    EventType,
+)
 
 
 log = logging.getLogger(__name__)
@@ -39,8 +45,7 @@ def get_metric_names():
     """
     Returns list of tuples: (service type, list of metrics)
     """
-    q = ServiceTypeMetric.objects.all().select_related(
-    ).order_by('service_type', 'metric')
+    q = ServiceTypeMetric.objects.all().select_related().order_by("service_type", "metric")
 
     out = []
     current_service = None
@@ -49,12 +54,22 @@ def get_metric_names():
         service, metric = item.service_type, item.metric
         if current_service != service:
             if current_service is not None:
-                out.append((current_service, current_set,))
+                out.append(
+                    (
+                        current_service,
+                        current_set,
+                    )
+                )
                 current_set = []
             current_service = service
         current_set.append(metric)
     if current_set:
-        out.append((current_service, current_set,))
+        out.append(
+            (
+                current_service,
+                current_set,
+            )
+        )
 
     return out
 
@@ -64,46 +79,51 @@ def get_labels_for_metric(metric_name, resource=None):
     if not mt:
         raise ValueError(f"No metric for {metric_name}")
 
-    qparams = {'metric_values__service_metric__in': mt}
+    qparams = {"metric_values__service_metric__in": mt}
     if resource:
-        qparams['metricvalue__resource'] = resource
-    return list(MetricLabel.objects.filter(
-        **qparams).distinct().values_list('id', 'name'))
+        qparams["metricvalue__resource"] = resource
+    return list(MetricLabel.objects.filter(**qparams).distinct().values_list("id", "name"))
 
 
 def get_resources_for_metric(metric_name):
     mt = ServiceTypeMetric.objects.filter(metric__name=metric_name)
     if not mt:
         raise ValueError(f"No metric for {metric_name}")
-    return list(MonitoredResource.objects.filter(metric_values__service_metric__in=mt)
-                                         .exclude(name='', type='')
-                                         .distinct()
-                                         .order_by('type', 'name')
-                                         .values_list('type', 'name'))
+    return list(
+        MonitoredResource.objects.filter(metric_values__service_metric__in=mt)
+        .exclude(name="", type="")
+        .distinct()
+        .order_by("type", "name")
+        .values_list("type", "name")
+    )
 
 
 def extract_resources(requests):
-    resources = MonitoredResource.objects.filter(
-        requests__in=requests).distinct()
+    resources = MonitoredResource.objects.filter(requests__in=requests).distinct()
     out = []
     for res in resources:
-        out.append((res, requests.filter(resources=res).distinct(),))
+        out.append(
+            (
+                res,
+                requests.filter(resources=res).distinct(),
+            )
+        )
     return out
 
 
 def extract_event_type(requests):
-    q = requests.exclude(event_type__isnull=True).distinct(
-        'event_type').values_list('event_type', flat=True)
+    q = requests.exclude(event_type__isnull=True).distinct("event_type").values_list("event_type", flat=True)
     try:
         return q.get()
-    except (ObjectDoesNotExist, MultipleObjectsReturned,):
+    except (
+        ObjectDoesNotExist,
+        MultipleObjectsReturned,
+    ):
         pass
 
 
 def extract_event_types(requests):
-    event_types = requests.exclude(event_type__isnull=True)\
-        .distinct('event_type')\
-        .values_list('event_type', flat=True)
+    event_types = requests.exclude(event_type__isnull=True).distinct("event_type").values_list("event_type", flat=True)
     return [EventType.objects.get(id=evt_id) for evt_id in event_types]
 
 
@@ -114,36 +134,52 @@ def extract_special_event_types(requests):
     """
     out = []
 
-    ows_et = requests.exclude(event_type__isnull=True)\
-                     .filter(event_type__name__startswith='OWS:')\
-                     .exclude(event_type__name=EventType.EVENT_OWS)\
-                     .distinct('event_type')\
-                     .values_list('event_type', flat=True)
+    ows_et = (
+        requests.exclude(event_type__isnull=True)
+        .filter(event_type__name__startswith="OWS:")
+        .exclude(event_type__name=EventType.EVENT_OWS)
+        .distinct("event_type")
+        .values_list("event_type", flat=True)
+    )
     ows_rq = requests.filter(event_type__in=ows_et)
     ows_all = EventType.get(EventType.EVENT_OWS)
-    out.append((ows_all, ows_rq,))
+    out.append(
+        (
+            ows_all,
+            ows_rq,
+        )
+    )
 
-    nonows_et = requests.exclude(event_type__isnull=True)\
-                        .exclude(event_type__name__startswith='OWS:')\
-                        .exclude(event_type__name=EventType.EVENT_OTHER)\
-                        .distinct('event_type')\
-                        .values_list('event_type', flat=True)
+    nonows_et = (
+        requests.exclude(event_type__isnull=True)
+        .exclude(event_type__name__startswith="OWS:")
+        .exclude(event_type__name=EventType.EVENT_OTHER)
+        .distinct("event_type")
+        .values_list("event_type", flat=True)
+    )
     nonows_rq = requests.filter(event_type__in=nonows_et)
     nonows_all = EventType.get(EventType.EVENT_OTHER)
-    out.append((nonows_all, nonows_rq,))
+    out.append(
+        (
+            nonows_all,
+            nonows_rq,
+        )
+    )
 
     return out
 
 
-def calculate_rate(metric_name, metric_label,
-                   current_value, valid_to):
+def calculate_rate(metric_name, metric_label, current_value, valid_to):
     """
     Find previous network metric value and caclulate rate between them
     """
-    prev = MetricValue.objects.filter(service_metric__metric__name=metric_name,
-                                      label__name=metric_label,
-                                      valid_to__lt=valid_to)\
-        .order_by('-valid_to').first()
+    prev = (
+        MetricValue.objects.filter(
+            service_metric__metric__name=metric_name, label__name=metric_label, valid_to__lt=valid_to
+        )
+        .order_by("-valid_to")
+        .first()
+    )
     if not prev:
         return
     prev_val = prev.value_num
@@ -160,13 +196,11 @@ def calculate_rate(metric_name, metric_label,
     return rate
 
 
-def calculate_percent(
-        metric_name, metric_label, current_value, valid_to):
+def calculate_percent(metric_name, metric_label, current_value, valid_to):
     """
     Find previous network metric value and caclulate percent
     """
-    rate = calculate_rate(
-        metric_name, metric_label, current_value, valid_to)
+    rate = calculate_rate(metric_name, metric_label, current_value, valid_to)
     if rate is None:
         return
     return rate * 100
@@ -207,15 +241,21 @@ def aggregate_past_periods(metric_data_q=None, periods=None, cleanup=True, now=N
         until = now - cutoff_base
 
         if since > until:
-            log.debug("Wrong period boundaries, end %s is before start %s, agg: %s",
-                      until, since, aggregation_period)
+            log.debug("Wrong period boundaries, end %s is before start %s, agg: %s", until, since, aggregation_period)
             previous_cutoff = max(until, since)
             continue
 
-        log.debug("aggregation params: cutoff: %s agg period: %s"
-                  "\n  since: '%s' until '%s', but previous cutoff:"
-                  " '%s', aggregate to '%s'",
-                  cutoff_base, aggregation_period, since, until, previous_cutoff, aggregation_period)
+        log.debug(
+            "aggregation params: cutoff: %s agg period: %s"
+            "\n  since: '%s' until '%s', but previous cutoff:"
+            " '%s', aggregate to '%s'",
+            cutoff_base,
+            aggregation_period,
+            since,
+            until,
+            previous_cutoff,
+            aggregation_period,
+        )
 
         periods = generate_periods(since, aggregation_period, end=until)
 
@@ -223,7 +263,7 @@ def aggregate_past_periods(metric_data_q=None, periods=None, cleanup=True, now=N
         # and extract service, resource, event type and label combinations
         # then, for each distinctive set, calculate per-metric aggregate values
         for period_start, period_end in periods:
-            log.debug('period %s - %s (%s s)', period_start, period_end, period_end - period_start)
+            log.debug("period %s - %s (%s s)", period_start, period_end, period_end - period_start)
             ret = aggregate_period(period_start, period_end, metric_data_q, cleanup)
             counter += ret
         previous_cutoff = until
@@ -232,67 +272,71 @@ def aggregate_past_periods(metric_data_q=None, periods=None, cleanup=True, now=N
 
 def aggregate_period(period_start, period_end, metric_data_q, cleanup=True):
     counter = 0
-    to_remove_data = {'remove_at': period_start.strftime("%Y%m%d%H%M%S")}
-    source_metric_data = metric_data_q.filter(valid_from__gte=period_start,
-                                              valid_to__lte=period_end)\
-        .exclude(valid_from=period_start,
-                 valid_to=period_end,
-                 data={})
-    r = source_metric_data.values_list('service_id', 'service_metric_id', 'resource_id', 'event_type_id', 'label_id',)\
-                          .distinct('service_id', 'service_metric_id', 'resource_id', 'event_type_id', 'label_id')
+    to_remove_data = {"remove_at": period_start.strftime("%Y%m%d%H%M%S")}
+    source_metric_data = metric_data_q.filter(valid_from__gte=period_start, valid_to__lte=period_end).exclude(
+        valid_from=period_start, valid_to=period_end, data={}
+    )
+    r = source_metric_data.values_list(
+        "service_id",
+        "service_metric_id",
+        "resource_id",
+        "event_type_id",
+        "label_id",
+    ).distinct("service_id", "service_metric_id", "resource_id", "event_type_id", "label_id")
     source_metric_data.update(data=to_remove_data)
 
     for service_id, metric_id, resource_id, event_type_id, label_id in r:
         m = Metric.objects.filter(service_type__id=metric_id).get()
         f = m.get_aggregate_field()
-        per_metric_q = source_metric_data.filter(service_metric_id=metric_id,
-                                                 service_id=service_id,
-                                                 resource_id=resource_id,
-                                                 event_type_id=event_type_id,
-                                                 label_id=label_id)
+        per_metric_q = source_metric_data.filter(
+            service_metric_id=metric_id,
+            service_id=service_id,
+            resource_id=resource_id,
+            event_type_id=event_type_id,
+            label_id=label_id,
+        )
 
         try:
-            value_q = per_metric_q.aggregate(fvalue=f,
-                                             fsamples_count=Sum(F('samples_count')))
+            value_q = per_metric_q.aggregate(fvalue=f, fsamples_count=Sum(F("samples_count")))
         except TypeError as err:
             raise ValueError(f, m, err)
-        value = value_q['fvalue']
-        samples_count = value_q['fsamples_count']
+        value = value_q["fvalue"]
+        samples_count = value_q["fsamples_count"]
         if cleanup:
             per_metric_q.delete()
-        log.debug('Metric %s: %s - %s (value: %s, samples: %s)',
-                  m, period_start, period_end, value, samples_count)
-        if not metric_data_q.filter(service_metric_id=metric_id,
-                                    service_id=service_id,
-                                    resource_id=resource_id,
-                                    event_type_id=event_type_id,
-                                    valid_from=period_start,
-                                    valid_to=period_end,
-                                    label_id=label_id).exists():
-            MetricValue.objects.create(service_metric_id=metric_id,
-                                       service_id=service_id,
-                                       resource_id=resource_id,
-                                       event_type_id=event_type_id,
-                                       value=value,
-                                       value_num=value,
-                                       value_raw=value,
-                                       valid_from=period_start,
-                                       valid_to=period_end,
-                                       label_id=label_id,
-                                       samples_count=samples_count)
+        log.debug("Metric %s: %s - %s (value: %s, samples: %s)", m, period_start, period_end, value, samples_count)
+        if not metric_data_q.filter(
+            service_metric_id=metric_id,
+            service_id=service_id,
+            resource_id=resource_id,
+            event_type_id=event_type_id,
+            valid_from=period_start,
+            valid_to=period_end,
+            label_id=label_id,
+        ).exists():
+            MetricValue.objects.create(
+                service_metric_id=metric_id,
+                service_id=service_id,
+                resource_id=resource_id,
+                event_type_id=event_type_id,
+                value=value,
+                value_num=value,
+                value_raw=value,
+                valid_from=period_start,
+                valid_to=period_end,
+                label_id=label_id,
+                samples_count=samples_count,
+            )
         else:
-            metric_data_q.filter(service_metric_id=metric_id,
-                                 service_id=service_id,
-                                 resource_id=resource_id,
-                                 event_type_id=event_type_id,
-                                 valid_from=period_start,
-                                 valid_to=period_end,
-                                 label_id=label_id)\
-                .update(value=value,
-                        value_num=value,
-                        value_raw=value,
-                        data=None,
-                        samples_count=samples_count)
+            metric_data_q.filter(
+                service_metric_id=metric_id,
+                service_id=service_id,
+                resource_id=resource_id,
+                event_type_id=event_type_id,
+                valid_from=period_start,
+                valid_to=period_end,
+                label_id=label_id,
+            ).update(value=value, value_num=value, value_raw=value, data=None, samples_count=samples_count)
         counter += 1
 
     if cleanup:

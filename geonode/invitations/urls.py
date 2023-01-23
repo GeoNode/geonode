@@ -22,14 +22,9 @@ from django.conf.urls import url
 import invitations
 from . import views
 
-app_name = 'geonode.invitations'
+app_name = "geonode.invitations"
 urlpatterns = [
-    url(r'^geonode-send-invite/$', views.GeoNodeSendInvite.as_view(),
-        name='geonode-send-invite'),
-
-    url(r'^send-json-invite/$', invitations.views.SendJSONInvite.as_view(),
-        name='send-json-invite'),
-
-    url(r'^accept-invite/(?P<key>\w+)/?$', invitations.views.AcceptInvite.as_view(),
-        name='accept-invite'),
+    url(r"^geonode-send-invite/$", views.GeoNodeSendInvite.as_view(), name="geonode-send-invite"),
+    url(r"^send-json-invite/$", invitations.views.SendJSONInvite.as_view(), name="send-json-invite"),
+    url(r"^accept-invite/(?P<key>\w+)/?$", invitations.views.AcceptInvite.as_view(), name="accept-invite"),
 ]

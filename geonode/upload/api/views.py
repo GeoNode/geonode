@@ -60,18 +60,18 @@ class UploadViewSet(DynamicModelViewSet):
     """
     API endpoint that allows uploads to be viewed or edited.
     """
-    parser_class = [FileUploadParser, ]
+
+    parser_class = [
+        FileUploadParser,
+    ]
 
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        UploadPermissionsFilter
-    ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, UploadPermissionsFilter]
     queryset = Upload.objects.all()
     serializer_class = UploadSerializer
     pagination_class = GeoNodeApiPagination
-    http_method_names = ['get', 'post']
+    http_method_names = ["get", "post"]
 
     def _emulate_client_upload_step(self, request, _step):
         """Emulates the calls of a client to the upload flow.
@@ -93,7 +93,7 @@ class UploadViewSet(DynamicModelViewSet):
         if response.status_code == status.HTTP_200_OK:
             content = response.content
             if isinstance(content, bytes):
-                content = content.decode('UTF-8')
+                content = content.decode("UTF-8")
             try:
                 data = json.loads(content)
             except json.decoder.JSONDecodeError:
@@ -101,10 +101,10 @@ class UploadViewSet(DynamicModelViewSet):
 
             next_step = None
             if isinstance(data, dict):
-                response_status = data.get('status', '')
-                response_success = data.get('success', False)
-                redirect_to = data.get('redirect_to', '')
-                if not response_success or not redirect_to or response_status == 'finished':
+                response_status = data.get("status", "")
+                response_success = data.get("success", False)
+                redirect_to = data.get("redirect_to", "")
+                if not response_success or not redirect_to or response_status == "finished":
                     return response, None, True
 
                 # Prepare next step
@@ -114,7 +114,7 @@ class UploadViewSet(DynamicModelViewSet):
                     return response, None, True
                 next_step = parsed_redirect_to.path.split(reverse("data_upload"))[1]
                 query_params = parse_qsl(parsed_redirect_to.query)
-                request.method = 'GET'
+                request.method = "GET"
                 request.GET.clear()
                 for key, value in query_params:
                     request.GET[key] = value
@@ -131,9 +131,10 @@ class UploadViewSet(DynamicModelViewSet):
         # Error, next step cannot be performed by `upload_view`
         return response, None, True
 
-    @extend_schema(methods=['post'],
-                   responses={201: None},
-                   description="""
+    @extend_schema(
+        methods=["post"],
+        responses={201: None},
+        description="""
         Starts an upload session based on the Dataset Upload Form.
 
         the form params look like:
@@ -148,36 +149,29 @@ class UploadViewSet(DynamicModelViewSet):
             'prj_file': prj_file,
             'tif_file': tif_file
         ```
-        """)
-    @action(detail=False, methods=['post'])
+        """,
+    )
+    @action(detail=False, methods=["post"])
     def upload(self, request, format=None):
         user = request.user
         if not user or not user.is_authenticated:
             raise AuthenticationFailed()
 
         # Custom upload steps defined by user
-        non_interactive = json.loads(
-            request.data.get("non_interactive", "false").lower()
-        )
+        non_interactive = json.loads(request.data.get("non_interactive", "false").lower())
         if non_interactive:
-            is_vector_dataset = is_vector(request.FILES.get('base_file').name)
+            is_vector_dataset = is_vector(request.FILES.get("base_file").name)
             steps_list = (None, "check", "final") if is_vector_dataset else (None, "final")
             # Execute steps and get response
             for step in steps_list:
-                response, _, _ = self._emulate_client_upload_step(
-                    request,
-                    step
-                )
+                response, _, _ = self._emulate_client_upload_step(request, step)
             return response
 
         # Upload steps defined by geonode.upload.utils._pages
         next_step = None
         max_steps = get_max_amount_of_steps()
         for n in range(max_steps):
-            response, next_step, is_final = self._emulate_client_upload_step(
-                request,
-                next_step
-            )
+            response, next_step, is_final = self._emulate_client_upload_step(request, next_step)
             if is_final:
                 return response
         # After performing 7 steps if we don't get any final response
@@ -185,7 +179,7 @@ class UploadViewSet(DynamicModelViewSet):
 
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
-    http_method_names = ['get', 'post']
+    http_method_names = ["get", "post"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadSizeLimit.objects.all()
@@ -194,9 +188,9 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         protected_objects = [
-            'dataset_upload_size',
-            'document_upload_size',
-            'file_upload_handler',
+            "dataset_upload_size",
+            "document_upload_size",
+            "file_upload_handler",
         ]
         instance = self.get_object()
         if instance.slug in protected_objects:
@@ -207,7 +201,7 @@ class UploadSizeLimitViewSet(DynamicModelViewSet):
 
 
 class UploadParallelismLimitViewSet(DynamicModelViewSet):
-    http_method_names = ['get', 'post']
+    http_method_names = ["get", "post"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsSelfOrAdminOrReadOnly]
     queryset = UploadParallelismLimit.objects.all()

@@ -22,25 +22,21 @@ from django.conf.urls import url, include
 from . import views
 
 js_info_dict = {
-    'packages': ('geonode.maps', ),
+    "packages": ("geonode.maps",),
 }
 
 map_embed = views.map_embed
 
 urlpatterns = [
     # 'geonode.maps.views',
-    url(r'^checkurl/?$', views.ajax_url_lookup),
-    url(r'^(?P<mapid>[^/]+)/wmc$', views.map_wmc, name='map_wmc'),
-    url(r'^(?P<mapid>[^/]+)/metadata$', views.map_metadata, name='map_metadata'),
-    url(r'^(?P<mapid>[^/]+)/metadata_advanced$', views.map_metadata_advanced, name='map_metadata_advanced'),
-    url(r'^(?P<mapid>[^/]+)/embed$', map_embed, name='map_embed'),
-    url(r'^embed/$', views.map_embed, name='map_embed'),
-    url(r'^metadata/batch/$', views.map_batch_metadata, name='map_batch_metadata'),
-    url(r'^(?P<mapid>[^/]*)/metadata_detail$',
-        views.map_metadata_detail,
-        name='map_metadata_detail'),
-    url(r'^(?P<layername>[^/]*)/attributes',
-        views.mapdataset_attributes,
-        name='mapdataset_attributes'),
-    url(r'^', include('geonode.maps.api.urls')),
+    url(r"^checkurl/?$", views.ajax_url_lookup),
+    url(r"^(?P<mapid>[^/]+)/wmc$", views.map_wmc, name="map_wmc"),
+    url(r"^(?P<mapid>[^/]+)/metadata$", views.map_metadata, name="map_metadata"),
+    url(r"^(?P<mapid>[^/]+)/metadata_advanced$", views.map_metadata_advanced, name="map_metadata_advanced"),
+    url(r"^(?P<mapid>[^/]+)/embed$", map_embed, name="map_embed"),
+    url(r"^embed/$", views.map_embed, name="map_embed"),
+    url(r"^metadata/batch/$", views.map_batch_metadata, name="map_batch_metadata"),
+    url(r"^(?P<mapid>[^/]*)/metadata_detail$", views.map_metadata_detail, name="map_metadata_detail"),
+    url(r"^(?P<layername>[^/]*)/attributes", views.mapdataset_attributes, name="mapdataset_attributes"),
+    url(r"^", include("geonode.maps.api.urls")),
 ]

@@ -35,7 +35,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
 
         # If the post is too large, we create a empty UploadedFile, otherwise another handler will take care or it.
         if self.is_view_elegible_for_size_restriction:
-            file_type = 'dataset_upload_size' if 'uploads/upload' in input_data.path else 'document_upload_size'
+            file_type = "dataset_upload_size" if "uploads/upload" in input_data.path else "document_upload_size"
             self.max_size_allowed = self._get_max_size(file_type)
             self.activated = content_length > self.max_size_allowed
             if self.activated:
@@ -53,7 +53,7 @@ class SizeRestrictedFileUploadHandler(FileUploadHandler):
 
         # For compatibility with low-level network APIs (with 32-bit integers),
         # the chunk size should be < 2^31, but still divisible by 4.
-        _chunk_size = min([2 ** 31 - 4, self.chunk_size])
+        _chunk_size = min([2**31 - 4, self.chunk_size])
 
         # Instantiate the parser and stream:
         stream = LazyStream(ChunkIter(input_data, _chunk_size))

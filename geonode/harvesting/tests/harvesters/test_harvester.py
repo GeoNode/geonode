@@ -18,11 +18,7 @@
 #########################################################################
 
 import typing
-from geonode.harvesting.harvesters.base import (
-    BaseHarvesterWorker,
-    BriefRemoteResource,
-    HarvestedResourceInfo
-)
+from geonode.harvesting.harvesters.base import BaseHarvesterWorker, BriefRemoteResource, HarvestedResourceInfo
 from geonode.harvesting.models import Harvester, HarvestableResource
 from geonode.layers.models import Dataset
 from geonode.harvesting.tests.factories import brief_remote_resource_example
@@ -39,26 +35,19 @@ class TestHarvester(BaseHarvesterWorker):
 
     @classmethod
     def from_django_record(cls, record: Harvester):
-        return cls(
-            record.remote_url,
-            record.id)
+        return cls(record.remote_url, record.id)
 
     def get_num_available_resources(self) -> int:
         return 1
 
-    def list_resources(
-            self,
-            offset: typing.Optional[int] = 0
-    ) -> typing.List[BriefRemoteResource]:
+    def list_resources(self, offset: typing.Optional[int] = 0) -> typing.List[BriefRemoteResource]:
         return [brief_remote_resource_example]
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         return True
 
     def get_resource(
-            self,
-            harvestable_resource: "HarvestableResource",  # noqa
-            harvesting_session_id: int
+        self, harvestable_resource: "HarvestableResource", harvesting_session_id: int  # noqa
     ) -> typing.Optional[HarvestedResourceInfo]:
         return None
 

@@ -29,16 +29,16 @@ def import_link(obj):
     return f"<a href='{obj.get_import_url()}'>Geoserver Importer Link</a>"
 
 
-import_link.short_description = 'Link'
+import_link.short_description = "Link"
 import_link.allow_tags = True
 
 
 class UploadAdmin(admin.ModelAdmin):
-    list_display = ('id', 'import_id', 'name', 'resource', 'user', 'date', 'state', import_link)
-    list_display_links = ('id',)
-    date_hierarchy = 'date'
-    list_filter = ('name', 'resource', 'user', 'date', 'state')
-    search_fields = ('name', 'resource__title', 'user__username', 'date', 'state')
+    list_display = ("id", "import_id", "name", "resource", "user", "date", "state", import_link)
+    list_display_links = ("id",)
+    date_hierarchy = "date"
+    list_filter = ("name", "resource", "user", "date", "state")
+    search_fields = ("name", "resource__title", "user__username", "date", "state")
 
     def delete_queryset(self, request, queryset):
         """
@@ -50,20 +50,21 @@ class UploadAdmin(admin.ModelAdmin):
 
 
 class UploadSizeLimitAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'description', 'max_size', 'max_size_label')
+    list_display = ("slug", "description", "max_size", "max_size_label")
 
     def has_delete_permission(self, request, obj=None):
-        protected_objects = [
-            'dataset_upload_size',
-            'document_upload_size'
-        ]
+        protected_objects = ["dataset_upload_size", "document_upload_size"]
         if obj and obj.slug in protected_objects:
             return False
         return super(UploadSizeLimitAdmin, self).has_delete_permission(request, obj)
 
 
 class UploadParallelismLimitAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'description', 'max_number',)
+    list_display = (
+        "slug",
+        "description",
+        "max_number",
+    )
 
     def has_delete_permission(self, request, obj=None):
         if obj and obj.slug == "default_max_parallel_uploads":

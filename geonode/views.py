@@ -42,87 +42,62 @@ class AjaxLoginForm(forms.Form):
 
 
 def ajax_login(request):
-    if request.method != 'POST':
-        return HttpResponse(
-            content="ajax login requires HTTP POST",
-            status=405,
-            content_type="text/plain"
-        )
+    if request.method != "POST":
+        return HttpResponse(content="ajax login requires HTTP POST", status=405, content_type="text/plain")
     form = AjaxLoginForm(data=request.POST)
     if form.is_valid():
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password']
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
         user = authenticate(username=username, password=password)
         if user is None or not user.is_active:
-            return HttpResponse(
-                content="bad credentials or disabled user",
-                status=400,
-                content_type="text/plain"
-            )
+            return HttpResponse(content="bad credentials or disabled user", status=400, content_type="text/plain")
         else:
             login(request, user)
             if request.session.test_cookie_worked():
                 request.session.delete_test_cookie()
-            return HttpResponse(
-                content="successful login",
-                status=200,
-                content_type="text/plain"
-            )
+            return HttpResponse(content="successful login", status=200, content_type="text/plain")
     else:
         return HttpResponse(
-            "The form you submitted doesn't look like a username/password combo.",
-            content_type="text/plain",
-            status=400)
+            "The form you submitted doesn't look like a username/password combo.", content_type="text/plain", status=400
+        )
 
 
 def ajax_lookup(request):
-    if request.method != 'POST':
+    if request.method != "POST":
+        return HttpResponse(content="ajax user lookup requires HTTP POST", status=405, content_type="text/plain")
+    elif "query" not in request.POST:
         return HttpResponse(
-            content='ajax user lookup requires HTTP POST',
-            status=405,
-            content_type='text/plain'
+            content='use a field named "query" to specify a prefix to filter usernames', content_type="text/plain"
         )
-    elif 'query' not in request.POST:
-        return HttpResponse(
-            content='use a field named "query" to specify a prefix to filter usernames',
-            content_type='text/plain')
-    keyword = request.POST['query']
-    users = get_user_model().objects.filter(
-        Q(username__icontains=keyword)).exclude(Q(username='AnonymousUser') |
-                                                Q(is_active=False))
+    keyword = request.POST["query"]
+    users = (
+        get_user_model()
+        .objects.filter(Q(username__icontains=keyword))
+        .exclude(Q(username="AnonymousUser") | Q(is_active=False))
+    )
     if request.user and request.user.is_authenticated and request.user.is_superuser:
-        groups = GroupProfile.objects.filter(
-            Q(title__icontains=keyword) |
-            Q(slug__icontains=keyword))
+        groups = GroupProfile.objects.filter(Q(title__icontains=keyword) | Q(slug__icontains=keyword))
     elif request.user.is_anonymous:
-        groups = GroupProfile.objects.filter(
-            Q(title__icontains=keyword) |
-            Q(slug__icontains=keyword)).exclude(Q(access='private'))
+        groups = GroupProfile.objects.filter(Q(title__icontains=keyword) | Q(slug__icontains=keyword)).exclude(
+            Q(access="private")
+        )
     else:
-        groups = GroupProfile.objects.filter(
-            Q(title__icontains=keyword) |
-            Q(slug__icontains=keyword)).exclude(
-                Q(access='private') & ~Q(
-                    slug__in=request.user.groupmember_set.values_list("group__slug", flat=True))
+        groups = GroupProfile.objects.filter(Q(title__icontains=keyword) | Q(slug__icontains=keyword)).exclude(
+            Q(access="private") & ~Q(slug__in=request.user.groupmember_set.values_list("group__slug", flat=True))
         )
     json_dict = {
-        'users': [({'username': u.username}) for u in users],
-        'count': users.count(),
+        "users": [({"username": u.username}) for u in users],
+        "count": users.count(),
     }
-    json_dict['groups'] = [({'name': g.slug, 'title': g.title})
-                           for g in groups]
-    return HttpResponse(
-        content=json.dumps(json_dict),
-        content_type='text/plain'
-    )
+    json_dict["groups"] = [({"name": g.slug, "title": g.title}) for g in groups]
+    return HttpResponse(content=json.dumps(json_dict), content_type="text/plain")
 
 
 def err403(request, exception):
     if not request.user.is_authenticated:
-        return HttpResponseRedirect(
-            f"{reverse('account_login')}?next={request.get_full_path()}")
+        return HttpResponseRedirect(f"{reverse('account_login')}?next={request.get_full_path()}")
     else:
-        return TemplateResponse(request, '401.html', {}, status=401).render()
+        return TemplateResponse(request, "401.html", {}, status=401).render()
 
 
 def handler404(request, exception, template_name="404.html"):
@@ -138,41 +113,41 @@ def handler500(request, template_name="500.html"):
 
 
 def ident_json(request):
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     json_data = {}
-    json_data['siteurl'] = site_url
-    json_data['name'] = settings.PYCSW['CONFIGURATION']['metadata:main']['identification_title']
+    json_data["siteurl"] = site_url
+    json_data["name"] = settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_title"]
 
-    json_data['poc'] = {
-        'name': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_name'],
-        'email': settings.PYCSW['CONFIGURATION']['metadata:main']['contact_email'],
-        'twitter': f'https://twitter.com/{settings.TWITTER_SITE}'
+    json_data["poc"] = {
+        "name": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_name"],
+        "email": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_email"],
+        "twitter": f"https://twitter.com/{settings.TWITTER_SITE}",
     }
 
-    json_data['version'] = get_version()
+    json_data["version"] = get_version()
 
-    json_data['services'] = {
-        'csw': settings.CATALOGUE['default']['URL'],
-        'ows': settings.OGC_SERVER['default']['PUBLIC_LOCATION']
+    json_data["services"] = {
+        "csw": settings.CATALOGUE["default"]["URL"],
+        "ows": settings.OGC_SERVER["default"]["PUBLIC_LOCATION"],
     }
 
-    json_data['counts'] = facets({'request': request, 'facet_type': 'home'})
+    json_data["counts"] = facets({"request": request, "facet_type": "home"})
 
-    return HttpResponse(content=json.dumps(json_data),
-                        content_type='application/json')
+    return HttpResponse(content=json.dumps(json_data), content_type="application/json")
 
 
 def h_keywords(request):
     from geonode.base.models import HierarchicalKeyword as hk
-    p_type = request.GET.get('type', None)
-    resource_name = request.GET.get('resource_name', None)
+
+    p_type = request.GET.get("type", None)
+    resource_name = request.GET.get("resource_name", None)
     keywords = hk.resource_keywords_tree(request.user, resource_type=p_type, resource_name=resource_name)
 
     subtypes = []
-    if p_type == 'geoapp':
+    if p_type == "geoapp":
         for label, app in apps.app_configs.items():
-            if hasattr(app, 'type') and app.type == 'GEONODE_APP':
-                if hasattr(app, 'default_model'):
+            if hasattr(app, "type") and app.type == "GEONODE_APP":
+                if hasattr(app, "default_model"):
                     _model = apps.get_model(label, app.default_model)
                     if issubclass(_model, GeoApp):
                         subtypes.append(_model.__name__.lower())
@@ -191,15 +166,11 @@ def h_keywords(request):
 def moderator_contacted(request, inactive_user=None):
     """Used when a user signs up."""
     user = get_user_model().objects.get(id=inactive_user)
-    return TemplateResponse(
-        request,
-        template="account/admin_approval_sent.html",
-        context={"email": user.email}
-    )
+    return TemplateResponse(request, template="account/admin_approval_sent.html", context={"email": user.email})
 
 
 @login_required
 def metadata_update_redirect(request):
-    url = request.POST['url']
+    url = request.POST["url"]
     client_redirect_url = hookset.metadata_update_redirect(url, request=request)
     return HttpResponse(content=client_redirect_url)

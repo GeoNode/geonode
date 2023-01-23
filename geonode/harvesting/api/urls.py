@@ -24,13 +24,13 @@ from . import (
 
 router = routers.ListPatchRouter()
 
-harvesters_node = router.register('harvesters', views.HarvesterViewSet)
+harvesters_node = router.register("harvesters", views.HarvesterViewSet)
 harvesters_node.register(
-    'harvestable-resources',
+    "harvestable-resources",
     views.HarvestableResourceViewSet,
-    basename='harvestable-resources',
-    parents_query_lookups=['harvester_id']
+    basename="harvestable-resources",
+    parents_query_lookups=["harvester_id"],
 )
-router.register('harvesting-sessions', views.AsynchronousHarvestingSessionViewSet)
+router.register("harvesting-sessions", views.AsynchronousHarvestingSessionViewSet)
 
 urlpatterns = router.urls

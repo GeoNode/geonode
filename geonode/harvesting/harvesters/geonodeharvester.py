@@ -42,10 +42,7 @@ from .. import (
     models,
     resourcedescriptor,
 )
-from geonode.utils import (
-    XML_PARSER,
-    get_xpath_value
-)
+from geonode.utils import XML_PARSER, get_xpath_value
 from . import base
 
 logger = logging.getLogger(__name__)
@@ -100,18 +97,18 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
     page_size: int = 10
 
     def __init__(
-            self,
-            *args,
-            harvest_documents: typing.Optional[bool] = True,
-            harvest_datasets: typing.Optional[bool] = True,
-            copy_datasets: typing.Optional[bool] = False,
-            copy_documents: typing.Optional[bool] = False,
-            resource_title_filter: typing.Optional[str] = None,
-            start_date_filter: typing.Optional[str] = None,
-            end_date_filter: typing.Optional[str] = None,
-            keywords_filter: typing.Optional[typing.List[str]] = None,
-            categories_filter: typing.Optional[typing.List[str]] = None,
-            **kwargs
+        self,
+        *args,
+        harvest_documents: typing.Optional[bool] = True,
+        harvest_datasets: typing.Optional[bool] = True,
+        copy_datasets: typing.Optional[bool] = False,
+        copy_documents: typing.Optional[bool] = False,
+        resource_title_filter: typing.Optional[str] = None,
+        start_date_filter: typing.Optional[str] = None,
+        end_date_filter: typing.Optional[str] = None,
+        keywords_filter: typing.Optional[typing.List[str]] = None,
+        categories_filter: typing.Optional[typing.List[str]] = None,
+        **kwargs,
     ):
         """A harvester for remote GeoNode instances."""
         super().__init__(*args, **kwargs)
@@ -157,10 +154,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             logger.error(f"Got back invalid response from {url!r}: {response.status_code}")
         return result
 
-    def list_resources(
-            self,
-            offset: typing.Optional[int] = 0
-    ) -> typing.List[base.BriefRemoteResource]:
+    def list_resources(self, offset: typing.Optional[int] = 0) -> typing.List[base.BriefRemoteResource]:
         url = f"{self.base_api_url}/resources/"
         response = self.http_session.get(url, params=self._get_resource_list_params(offset))
         result = []
@@ -188,22 +182,20 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         return result
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
-        return _check_availability(
-            self.http_session, f"{self.base_api_url}/datasets", "datasets", timeout_seconds)
+        return _check_availability(self.http_session, f"{self.base_api_url}/datasets", "datasets", timeout_seconds)
 
     def get_geonode_resource_type(self, remote_resource_type: str) -> typing.Type[typing.Union[Dataset, Document]]:
-        return {
-            GeoNodeResourceTypeCurrent.DATASET.value: Dataset,
-            GeoNodeResourceTypeCurrent.DOCUMENT.value: Document
-        }[remote_resource_type]
+        return {GeoNodeResourceTypeCurrent.DATASET.value: Dataset, GeoNodeResourceTypeCurrent.DOCUMENT.value: Document}[
+            remote_resource_type
+        ]
 
     def get_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         url_fragment = {
             GeoNodeResourceTypeCurrent.DATASET.value: "/datasets/",
-            GeoNodeResourceTypeCurrent.DOCUMENT.value: "/documents/"
+            GeoNodeResourceTypeCurrent.DOCUMENT.value: "/documents/",
         }[harvestable_resource.remote_resource_type]
         url = f"{self.base_api_url}{url_fragment}{harvestable_resource.unique_identifier}/"
         response = self.http_session.get(url)
@@ -215,10 +207,10 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 logger.exception("Could not decode response payload as valid JSON")
             else:
                 resource_descriptor = self._get_resource_descriptor(
-                    response_payload, harvestable_resource.remote_resource_type)
+                    response_payload, harvestable_resource.remote_resource_type
+                )
                 result = base.HarvestedResourceInfo(
-                    resource_descriptor=resource_descriptor,
-                    additional_information=None
+                    resource_descriptor=resource_descriptor, additional_information=None
                 )
         else:
             logger.error(
@@ -228,8 +220,8 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         return result
 
     def should_copy_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvestable_resource: models.HarvestableResource,
     ) -> bool:
         return {
             GeoNodeResourceTypeCurrent.DATASET.value: self.copy_datasets,
@@ -237,52 +229,49 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         }.get(harvestable_resource.remote_resource_type, False)
 
     def get_geonode_resource_defaults(
-            self,
-            harvested_info: base.HarvestedResourceInfo,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvested_info: base.HarvestedResourceInfo,
+        harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
-        defaults = super().get_geonode_resource_defaults(
-            harvested_info, harvestable_resource)
+        defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
         defaults.update(harvested_info.resource_descriptor.additional_parameters)
         local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
         to_copy = self.should_copy_resource(harvestable_resource)
         if local_resource_type == Document and not to_copy:
             # since we are not copying the document, we need to provide suitable remote URLs
-            defaults.update({
-                "doc_url": harvested_info.resource_descriptor.distribution.embed_url,
-                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-            })
+            defaults.update(
+                {
+                    "doc_url": harvested_info.resource_descriptor.distribution.embed_url,
+                    "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                }
+            )
         elif local_resource_type == Dataset:
-            defaults.update({
-                "name": harvested_info.resource_descriptor.identification.name
-            })
+            defaults.update({"name": harvested_info.resource_descriptor.identification.name})
             if not to_copy:
                 # since we are not copying the dataset, we need to provide suitable SRID and remote URL
                 try:
                     srid = harvested_info.resource_descriptor.reference_systems[0]
                 except AttributeError:
                     srid = None
-                defaults.update({
-                    "alternate": defaults["alternate"],
-                    "workspace": defaults["workspace"],
-                    "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                    "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-                    "srid": srid,
-                    "ptype": GXP_PTYPES["GN_WMS"],
-                })
+                defaults.update(
+                    {
+                        "alternate": defaults["alternate"],
+                        "workspace": defaults["workspace"],
+                        "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                        "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                        "srid": srid,
+                        "ptype": GXP_PTYPES["GN_WMS"],
+                    }
+                )
         return defaults
 
     def _get_contact_descriptor(self, role, contact_details: typing.Dict):
         return resourcedescriptor.RecordDescriptionContact(
-            role=role,
-            name=self._get_related_name(contact_details) or contact_details["username"]
+            role=role, name=self._get_related_name(contact_details) or contact_details["username"]
         )
 
     def _get_related_name(self, contact_details: typing.Dict):
-        return " ".join((
-            contact_details.get("first_name", ""),
-            contact_details.get("last_name", "")
-        )).strip()
+        return " ".join((contact_details.get("first_name", ""), contact_details.get("last_name", ""))).strip()
 
     def _get_document_link_info(self, resource: typing.Dict):
         native_format = resource["extension"]
@@ -296,6 +285,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         download_url = None
         native_format = None
         from geonode.geoserver.ows import _wfs_link, _wcs_link
+
         for link_info in resource.get("links", []):
             type_ = link_info["link_type"]
             if type_ == "OGC:WMS":
@@ -308,11 +298,9 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                     wfs_url,
                     resource["name"],
                     "SHAPE-ZIP",
-                    {
-                        "format_options": "charset:UTF-8"
-                    },
+                    {"format_options": "charset:UTF-8"},
                     srid=resource["srid"],
-                    bbox=None
+                    bbox=None,
                 )
             elif type_ == "OGC:WCS":
                 wcs_url = link_info["url"]
@@ -330,27 +318,22 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                     srid=resource["srid"],
                     bbox=[min_x, min_y, max_x, max_y],
                     compression="DEFLATE",
-                    tile_size=512)
+                    tile_size=512,
+                )
         return native_format, download_url, wms_url, wfs_url, wcs_url
 
     def _get_resource_link_info(
-            self,
-            resource: typing.Dict, remote_resource_type: str,
-            spatial_extent: geos.Polygon,
-    ) -> typing.Tuple[
-        str,
-        str,
-        str,
-        str,
-        typing.Optional[str],
-        typing.Optional[str],
-        typing.Optional[str],
-    ]:
+        self,
+        resource: typing.Dict,
+        remote_resource_type: str,
+        spatial_extent: geos.Polygon,
+    ) -> typing.Tuple[str, str, str, str, typing.Optional[str], typing.Optional[str], typing.Optional[str]]:
         embed_url = resource["embed_url"]
         thumbnail_url = resource["thumbnail_url"]
         if remote_resource_type == GeoNodeResourceTypeCurrent.DATASET.value:
             native_format, download_url, wms_url, wfs_url, wcs_url = self._get_dataset_link_info(
-                resource, spatial_extent)
+                resource, spatial_extent
+            )
         else:
             wms_url = None
             wfs_url = None
@@ -359,9 +342,9 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         return native_format, download_url, embed_url, thumbnail_url, wms_url, wfs_url, wcs_url
 
     def _get_resource_descriptor(
-            self,
-            raw_resource: typing.Dict,
-            remote_resource_type: str,
+        self,
+        raw_resource: typing.Dict,
+        remote_resource_type: str,
     ) -> resourcedescriptor.RecordDescription:
         resource = raw_resource[remote_resource_type]
         resource_date = dateutil.parser.isoparse(resource["date"])
@@ -403,7 +386,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                 supplemental_information=resource.get("raw_supplemental_information"),
                 spatial_extent=spatial_extent,
                 lonlat_extent=lonlat_extent,
-                temporal_extent=(temporal_extent_start, temporal_extent_end) if temporal_extent_start else None
+                temporal_extent=(temporal_extent_start, temporal_extent_end) if temporal_extent_start else None,
             ),
             distribution=resourcedescriptor.RecordDistribution(
                 link_url=resource["link"],
@@ -417,19 +400,20 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             additional_parameters={
                 "subtype": resource["subtype"],
                 "resource_type": remote_resource_type,
-            }
+            },
         )
         if remote_resource_type == GeoNodeResourceTypeCurrent.DOCUMENT.value:
             descriptor.additional_parameters["extension"] = resource["extension"]
         elif remote_resource_type == GeoNodeResourceTypeCurrent.DATASET.value:
-            descriptor.additional_parameters.update({
-                "alternate": resource["alternate"],
-                "workspace": resource["workspace"],
-            })
+            descriptor.additional_parameters.update(
+                {
+                    "alternate": resource["alternate"],
+                    "workspace": resource["workspace"],
+                }
+            )
         return descriptor
 
-    def _get_resource_list_params(
-            self, offset: typing.Optional[int] = 0) -> typing.Dict:
+    def _get_resource_list_params(self, offset: typing.Optional[int] = 0) -> typing.Dict:
         current_page = math.floor((offset + self.page_size) / self.page_size)
         result = {
             "page_size": self.page_size,
@@ -447,10 +431,14 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             result["filter{title.icontains}"] = self.resource_title_filter
         if self.start_date_filter is not None:
             start_date = dateutil.parser.parse(self.start_date_filter)
-            result["filter{date.gte}"] = f"{start_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result[
+                "filter{date.gte}"
+            ] = f"{start_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.end_date_filter is not None:
             end_date = dateutil.parser.parse(self.end_date_filter)
-            result["filter{date.lte}"] = f"{end_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result[
+                "filter{date.lte}"
+            ] = f"{end_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.keywords_filter is not None:
             result["filter{keywords.slug.in}"] = self.keywords_filter
         if self.categories_filter is not None:
@@ -460,6 +448,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
 
 class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     """A harvester for older (v <= 3.2) GeoNode versions"""
+
     harvest_documents: bool
     harvest_datasets: bool
 
@@ -476,25 +465,24 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
     page_size: int = 10
 
     def __init__(
-            self,
-            *args,
-            harvest_documents: typing.Optional[bool] = True,
-            harvest_datasets: typing.Optional[bool] = True,
-            copy_datasets: typing.Optional[bool] = False,
-            copy_documents: typing.Optional[bool] = False,
-            resource_title_filter: typing.Optional[str] = None,
-            start_date_filter: typing.Optional[str] = None,
-            end_date_filter: typing.Optional[str] = None,
-            keywords_filter: typing.Optional[list] = None,
-            categories_filter: typing.Optional[list] = None,
-            **kwargs
+        self,
+        *args,
+        harvest_documents: typing.Optional[bool] = True,
+        harvest_datasets: typing.Optional[bool] = True,
+        copy_datasets: typing.Optional[bool] = False,
+        copy_documents: typing.Optional[bool] = False,
+        resource_title_filter: typing.Optional[str] = None,
+        start_date_filter: typing.Optional[str] = None,
+        end_date_filter: typing.Optional[str] = None,
+        keywords_filter: typing.Optional[list] = None,
+        categories_filter: typing.Optional[list] = None,
+        **kwargs,
     ):
         """A harvester for remote GeoNode instances."""
         super().__init__(*args, **kwargs)
         self.remote_url = self.remote_url.rstrip("/")
         self.http_session = requests.Session()
-        self.harvest_documents = (
-            harvest_documents if harvest_documents is not None else True)
+        self.harvest_documents = harvest_documents if harvest_documents is not None else True
         self.harvest_datasets = harvest_datasets if harvest_datasets is not None else True
         self.copy_datasets = copy_datasets
         self.copy_documents = copy_documents
@@ -530,10 +518,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result += self._get_total_records(GeoNodeResourceType.MAP)
         return result
 
-    def list_resources(
-            self,
-            offset: typing.Optional[int] = 0
-    ) -> typing.List[base.BriefRemoteResource]:
+    def list_resources(self, offset: typing.Optional[int] = 0) -> typing.List[base.BriefRemoteResource]:
         # the implementation of this method is a bit convoluted because the GeoNode
         # legacy versions do not have a common `/resources` endpoint, we must query
         # the individual endpoints for documents, layers and maps and work out the
@@ -546,26 +531,22 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 added = document_list + dataset_list
                 if len(added) < self.page_size:
                     map_list = self._list_map_resources(0)
-                    result = (added + map_list)[:self.page_size]
+                    result = (added + map_list)[: self.page_size]
                 else:
-                    result = added[:self.page_size]
+                    result = added[: self.page_size]
             else:
                 result = document_list
-        elif offset < (
-                total_resources[GeoNodeResourceType.DOCUMENT] +
-                total_resources[GeoNodeResourceType.DATASET]
-        ):
+        elif offset < (total_resources[GeoNodeResourceType.DOCUMENT] + total_resources[GeoNodeResourceType.DATASET]):
             dataset_offset = offset - total_resources[GeoNodeResourceType.DOCUMENT]
             dataset_list = self._list_dataset_resources(dataset_offset)
             if len(dataset_list) < self.page_size:
                 map_list = self._list_map_resources(0)
-                result = (dataset_list + map_list)[:self.page_size]
+                result = (dataset_list + map_list)[: self.page_size]
             else:
                 result = dataset_list
         else:
             map_offset = offset - (
-                total_resources[GeoNodeResourceType.DOCUMENT] +
-                total_resources[GeoNodeResourceType.DATASET]
+                total_resources[GeoNodeResourceType.DOCUMENT] + total_resources[GeoNodeResourceType.DATASET]
             )
             result = self._list_map_resources(map_offset)
         return result
@@ -583,14 +564,13 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         }[remote_resource_type]
 
     def get_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         resource_unique_identifier = harvestable_resource.unique_identifier
         local_resource_type = self.get_geonode_resource_type(harvestable_resource.remote_resource_type)
         endpoint_suffix = {
-            Document: (
-                f"/documents/{resource_unique_identifier}/"),
+            Document: (f"/documents/{resource_unique_identifier}/"),
             Dataset: f"/layers/{resource_unique_identifier}/",
             Map: f"/maps/{resource_unique_identifier}/",
         }[local_resource_type]
@@ -599,22 +579,17 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         result = None
         if response.status_code == requests.codes.ok:
             api_record = response.json()
-            resource_descriptor = self._get_resource_details(
-                api_record, harvestable_resource)
-            result = base.HarvestedResourceInfo(
-                resource_descriptor=resource_descriptor,
-                additional_information=None
-            )
+            resource_descriptor = self._get_resource_details(api_record, harvestable_resource)
+            result = base.HarvestedResourceInfo(resource_descriptor=resource_descriptor, additional_information=None)
         else:
             logger.error(
-                f"Could not retrieve remote resource with unique "
-                f"identifier {resource_unique_identifier!r}"
+                f"Could not retrieve remote resource with unique " f"identifier {resource_unique_identifier!r}"
             )
         return result
 
     def should_copy_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvestable_resource: models.HarvestableResource,
     ) -> bool:
         return {
             GeoNodeResourceType.DOCUMENT.value: self.copy_documents,
@@ -623,9 +598,9 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         }[harvestable_resource.remote_resource_type]
 
     def get_geonode_resource_defaults(
-            self,
-            harvested_info: base.HarvestedResourceInfo,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvested_info: base.HarvestedResourceInfo,
+        harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
         defaults = super().get_geonode_resource_defaults(harvested_info, harvestable_resource)
         defaults.update(harvested_info.resource_descriptor.additional_parameters)
@@ -633,75 +608,71 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         to_copy = self.should_copy_resource(harvestable_resource)
         if local_resource_type == Document and not to_copy:
             # since we are not copying the document, we need to provide suitable remote URLs
-            defaults.update({
-                "doc_url": harvested_info.resource_descriptor.distribution.download_url,
-                "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-            })
+            defaults.update(
+                {
+                    "doc_url": harvested_info.resource_descriptor.distribution.download_url,
+                    "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                }
+            )
         elif local_resource_type == Dataset:
-            defaults.update({
-                "name": harvested_info.resource_descriptor.identification.name,
-            })
+            defaults.update(
+                {
+                    "name": harvested_info.resource_descriptor.identification.name,
+                }
+            )
             if not to_copy:
                 # since we are not copying the dataset, we need to provide suitable SRID and remote URL
                 try:
                     srid = harvested_info.resource_descriptor.reference_systems[0]
                 except AttributeError:
                     srid = None
-                defaults.update({
-                    "name": defaults["name"].rpartition(":")[-1],
-                    "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
-                    "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
-                    "srid": srid,
-                })
+                defaults.update(
+                    {
+                        "name": defaults["name"].rpartition(":")[-1],
+                        "ows_url": harvested_info.resource_descriptor.distribution.wms_url,
+                        "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
+                        "srid": srid,
+                    }
+                )
         return defaults
 
-    def _get_num_available_resources_by_type(
-            self) -> typing.Dict[GeoNodeResourceType, int]:
+    def _get_num_available_resources_by_type(self) -> typing.Dict[GeoNodeResourceType, int]:
         result = {
             GeoNodeResourceType.DOCUMENT: 0,
             GeoNodeResourceType.DATASET: 0,
             GeoNodeResourceType.MAP: 0,
         }
         if self.harvest_documents:
-            result[GeoNodeResourceType.DOCUMENT] = self._get_total_records(
-                GeoNodeResourceType.DOCUMENT)
+            result[GeoNodeResourceType.DOCUMENT] = self._get_total_records(GeoNodeResourceType.DOCUMENT)
         if self.harvest_datasets:
-            result[GeoNodeResourceType.DATASET] = self._get_total_records(
-                GeoNodeResourceType.DATASET)
+            result[GeoNodeResourceType.DATASET] = self._get_total_records(GeoNodeResourceType.DATASET)
         if self.harvest_maps:
-            result[GeoNodeResourceType.MAP] = self._get_total_records(
-                GeoNodeResourceType.MAP)
+            result[GeoNodeResourceType.MAP] = self._get_total_records(GeoNodeResourceType.MAP)
         return result
 
-    def _list_document_resources(
-            self, offset: int) -> typing.List[base.BriefRemoteResource]:
+    def _list_document_resources(self, offset: int) -> typing.List[base.BriefRemoteResource]:
         result = []
         if self.harvest_documents:
             result = self._list_resources_by_type(GeoNodeResourceType.DOCUMENT, offset)
         return result
 
-    def _list_dataset_resources(
-            self, offset: int) -> typing.List[base.BriefRemoteResource]:
+    def _list_dataset_resources(self, offset: int) -> typing.List[base.BriefRemoteResource]:
         result = []
         if self.harvest_datasets:
             result = self._list_resources_by_type(GeoNodeResourceType.DATASET, offset)
         return result
 
-    def _list_map_resources(
-            self, offset: int) -> typing.List[base.BriefRemoteResource]:
+    def _list_map_resources(self, offset: int) -> typing.List[base.BriefRemoteResource]:
         result = []
         if self.harvest_maps:
             result = self._list_resources_by_type(GeoNodeResourceType.MAP, offset)
         return result
 
     def _list_resources_by_type(
-            self,
-            resource_type: GeoNodeResourceType,
-            offset: int
+        self, resource_type: GeoNodeResourceType, offset: int
     ) -> typing.List[base.BriefRemoteResource]:
         response = self.http_session.get(
-            f"{self.base_api_url}/{resource_type.value}/",
-            params=self._get_resource_list_params(offset)
+            f"{self.base_api_url}/{resource_type.value}/", params=self._get_resource_list_params(offset)
         )
         response.raise_for_status()
         result = []
@@ -719,9 +690,7 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return raw_remote_resource["id"]
 
     def _get_resource_details(
-            self,
-            api_record: typing.Dict,
-            harvestable_resource: models.HarvestableResource
+        self, api_record: typing.Dict, harvestable_resource: models.HarvestableResource
     ) -> typing.Optional[resourcedescriptor.RecordDescription]:
         """
         Produce a record description from the response provided by the remote GeoNode.
@@ -738,34 +707,27 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                 "id": api_record["uuid"],
                 "elementsetname": "full",
                 "outputschema": "http://www.isotc211.org/2005/gmd",
-            }
+            },
         )
         if get_record_by_id_response.status_code == requests.codes.ok:
-            xml_root = etree.fromstring(
-                get_record_by_id_response.content, parser=XML_PARSER)
+            xml_root = etree.fromstring(get_record_by_id_response.content, parser=XML_PARSER)
             try:
-                metadata_element = xml_root.xpath(
-                    "./gmd:MD_Metadata", namespaces=xml_root.nsmap)[0]
+                metadata_element = xml_root.xpath("./gmd:MD_Metadata", namespaces=xml_root.nsmap)[0]
             except IndexError:
                 logger.warning("Unable to retrieve a metadata element from the CSW GetRecordById response, skipping...")
                 logger.debug(f"Original response content: {get_record_by_id_response.content}")
             else:
                 try:
-                    result = self._get_resource_descriptor(
-                        metadata_element, api_record, harvestable_resource)
+                    result = self._get_resource_descriptor(metadata_element, api_record, harvestable_resource)
                 except TypeError:
                     logger.exception("Could not retrieve metadata details to generate resource descriptor, skipping...")
                 else:
-                    logger.debug(
-                        f"Found details for resource {result.uuid!r} - {result.identification.title!r}"
-                    )
+                    logger.debug(f"Found details for resource {result.uuid!r} - {result.identification.title!r}")
         else:
-            logger.warning(
-                f"Got invalid response from {get_record_by_id_response.request.url}")
+            logger.warning(f"Got invalid response from {get_record_by_id_response.request.url}")
         return result
 
-    def _get_resource_list_params(
-            self, offset: typing.Optional[int] = 0) -> typing.Dict:
+    def _get_resource_list_params(self, offset: typing.Optional[int] = 0) -> typing.Dict:
         result = {
             "limit": self.page_size,
             "offset": offset,
@@ -774,25 +736,26 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             result["title__icontains"] = self.resource_title_filter
         if self.start_date_filter is not None:
             start_date = dateutil.parser.parse(self.start_date_filter)
-            result["date__gte"] = f"{start_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result[
+                "date__gte"
+            ] = f"{start_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.end_date_filter is not None:
             end_date = dateutil.parser.parse(self.end_date_filter)
-            result["date__lte"] = f"{end_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
+            result[
+                "date__lte"
+            ] = f"{end_date.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().split('+')[0]}Z"
         if self.keywords_filter is not None:
-            result["keywords__slug__in"] = ','.join(self.keywords_filter)
+            result["keywords__slug__in"] = ",".join(self.keywords_filter)
         if self.categories_filter is not None:
-            result["category__identifier__in"] = ','.join(self.categories_filter)
+            result["category__identifier__in"] = ",".join(self.categories_filter)
         return result
 
     def _get_total_records(
-            self,
-            resource_type: GeoNodeResourceType,
+        self,
+        resource_type: GeoNodeResourceType,
     ) -> int:
         url = f"{self.base_api_url}/{resource_type.value}/"
-        response = self.http_session.get(
-            url,
-            params=self._get_resource_list_params()
-        )
+        response = self.http_session.get(url, params=self._get_resource_list_params())
         result = 0
         if response.status_code != requests.codes.ok:
             logger.error(f"Got back invalid response from {url!r}")
@@ -805,47 +768,37 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return result
 
     def _get_resource_descriptor(
-            self,
-            csw_record: etree.Element,
-            api_record: typing.Dict,
-            harvestable_resource: models.HarvestableResource
+        self, csw_record: etree.Element, api_record: typing.Dict, harvestable_resource: models.HarvestableResource
     ) -> resourcedescriptor.RecordDescription:
         identification_descriptor = get_identification_descriptor(
-            csw_record.xpath("gmd:identificationInfo", namespaces=csw_record.nsmap)[0],
-            api_record
+            csw_record.xpath("gmd:identificationInfo", namespaces=csw_record.nsmap)[0], api_record
         )
         crs = api_record.get("srid", "EPSG:4326")
         descriptor = resourcedescriptor.RecordDescription(
             uuid=uuid.UUID(get_xpath_value(csw_record, "gmd:fileIdentifier")),
             language=get_xpath_value(csw_record, "gmd:language"),
             character_set=csw_record.xpath(
-                "gmd:characterSet/gmd:MD_CharacterSetCode/text()",
-                namespaces=csw_record.nsmap)[0],
+                "gmd:characterSet/gmd:MD_CharacterSetCode/text()", namespaces=csw_record.nsmap
+            )[0],
             point_of_contact=get_contact_descriptor(
                 csw_record.xpath(
-                    "gmd:contact[.//gmd:role//@codeListValue='pointOfContact']",
-                    namespaces=csw_record.nsmap
+                    "gmd:contact[.//gmd:role//@codeListValue='pointOfContact']", namespaces=csw_record.nsmap
                 )[0]
             ),
             author=get_contact_descriptor(
-                csw_record.xpath(
-                    "gmd:contact[.//gmd:role//@codeListValue='author']",
-                    namespaces=csw_record.nsmap
-                )[0]
+                csw_record.xpath("gmd:contact[.//gmd:role//@codeListValue='author']", namespaces=csw_record.nsmap)[0]
             ),
             date_stamp=dateutil.parser.parse(
-                csw_record.xpath(
-                    "gmd:dateStamp/gco:DateTime/text()", namespaces=csw_record.nsmap)[0],
+                csw_record.xpath("gmd:dateStamp/gco:DateTime/text()", namespaces=csw_record.nsmap)[0],
             ).replace(tzinfo=dt.timezone.utc),
             reference_systems=[crs],
             identification=identification_descriptor,
             distribution=self.get_distribution_info(
-                csw_record.xpath(
-                    "gmd:distributionInfo", namespaces=csw_record.nsmap)[0],
+                csw_record.xpath("gmd:distributionInfo", namespaces=csw_record.nsmap)[0],
                 api_record,
                 harvestable_resource,
                 identification_descriptor,
-                crs
+                crs,
             ),
             data_quality=get_xpath_value(csw_record, ".//gmd:dataQualityInfo//gmd:lineage"),
         )
@@ -859,16 +812,14 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return descriptor
 
     def _get_dataset_additional_parameters(
-            self,
-            descriptor: resourcedescriptor.RecordDescription,
-            api_record: typing.Dict
+        self, descriptor: resourcedescriptor.RecordDescription, api_record: typing.Dict
     ) -> typing.Dict:
         result = {
             "name": descriptor.identification.name,
             "charset": descriptor.character_set,
             "resource_type": "dataset",
             "alternate": api_record.get("alternate", descriptor.identification.name),
-            "workspace": api_record.get("workspace")
+            "workspace": api_record.get("workspace"),
         }
         if descriptor.identification.native_format.lower() == RemoteDatasetType.VECTOR.value:
             result["subtype"] = GeoNodeDatasetType.VECTOR.value
@@ -877,34 +828,26 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
         return result
 
     def _get_document_additional_parameters(
-            self,
-            descriptor: resourcedescriptor.RecordDescription,
-            api_record: typing.Dict
+        self, descriptor: resourcedescriptor.RecordDescription, api_record: typing.Dict
     ) -> typing.Dict:
-        return {
-            "resource_type": "document",
-            "extension": api_record.get("extension")
-        }
+        return {"resource_type": "document", "extension": api_record.get("extension")}
 
     def _get_map_additional_parameters(
-            self,
-            descriptor: resourcedescriptor.RecordDescription,
-            api_record: typing.Dict
+        self, descriptor: resourcedescriptor.RecordDescription, api_record: typing.Dict
     ) -> typing.Dict:
-        return {
-            "last_modified": api_record.get("last_modified")
-        }
+        return {"last_modified": api_record.get("last_modified")}
 
     def get_distribution_info(
-            self,
-            csw_distribution: etree.Element,
-            api_record: typing.Dict,
-            harvestable_resource: models.HarvestableResource,
-            identification_descriptor: resourcedescriptor.RecordIdentification,
-            crs: str,
+        self,
+        csw_distribution: etree.Element,
+        api_record: typing.Dict,
+        harvestable_resource: models.HarvestableResource,
+        identification_descriptor: resourcedescriptor.RecordIdentification,
+        crs: str,
     ) -> resourcedescriptor.RecordDistribution:
         online_elements = csw_distribution.xpath(
-            ".//gmd:transferOptions//gmd:onLine", namespaces=csw_distribution.nsmap)
+            ".//gmd:transferOptions//gmd:onLine", namespaces=csw_distribution.nsmap
+        )
         link = None
         wms = None
         wfs = None
@@ -958,12 +901,16 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
                     "srs": crs,
                     "format": "image/tiff",
                     "coverageid": api_record["alternate"].replace(":", "__"),
-                    "bbox": f"{min_x},{min_y},{max_x},{max_y}"
+                    "bbox": f"{min_x},{min_y},{max_x},{max_y}",
                 }
                 original = f"{wcs}?{urllib.parse.urlencode(query_params)}"
             else:
                 try:
-                    original = [record_link.get('url') for record_link in api_record.get("links", []) if record_link.get('name') == 'Zipped Shapefile'][0]
+                    original = [
+                        record_link.get("url")
+                        for record_link in api_record.get("links", [])
+                        if record_link.get("name") == "Zipped Shapefile"
+                    ][0]
                 except IndexError:
                     pass
         return resourcedescriptor.RecordDistribution(
@@ -971,21 +918,17 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             wms_url=wms,
             wfs_url=wfs,
             wcs_url=wcs,
-            thumbnail_url=self._retrieve_thumbnail_url(
-                api_record, harvestable_resource),
+            thumbnail_url=self._retrieve_thumbnail_url(api_record, harvestable_resource),
             download_url=original,
             embed_url=original,
         )
 
     def _retrieve_thumbnail_url(
-            self,
-            api_record: typing.Dict,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        api_record: typing.Dict,
+        harvestable_resource: models.HarvestableResource,
     ) -> str:
-        is_document = (
-            harvestable_resource.remote_resource_type ==
-            GeoNodeResourceType.DOCUMENT.value
-        )
+        is_document = harvestable_resource.remote_resource_type == GeoNodeResourceType.DOCUMENT.value
         found_thumbnail = False
         if is_document:
             # there seems to be a bug in GeoNode whereby the thumbnail for documents
@@ -994,14 +937,12 @@ class GeonodeLegacyHarvester(base.BaseHarvesterWorker):
             # the CSW response. Therefore we resort to fetching the thumbnail through
             # the document list endpoint
             document_list_response = self.http_session.get(
-                f"{self.base_api_url}/documents/",
-                params={"id": harvestable_resource.unique_identifier}
+                f"{self.base_api_url}/documents/", params={"id": harvestable_resource.unique_identifier}
             )
             if document_list_response.status_code == requests.codes.ok:
                 raw_response = document_list_response.json()
                 try:
-                    reported_thumbnail: str = (
-                        raw_response["objects"][0]["thumbnail_url"])
+                    reported_thumbnail: str = raw_response["objects"][0]["thumbnail_url"]
                 except (KeyError, IndexError):
                     logger.exception("Could not retrieve document details from the list endpoint")
                 else:
@@ -1033,22 +974,21 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
 
     """
 
-    _concrete_harvester_worker: typing.Optional[
-        typing.Union[GeonodeCurrentHarvester, GeonodeLegacyHarvester]]
+    _concrete_harvester_worker: typing.Optional[typing.Union[GeonodeCurrentHarvester, GeonodeLegacyHarvester]]
 
     def __init__(
-            self,
-            *args,
-            harvest_documents: typing.Optional[bool] = True,
-            harvest_datasets: typing.Optional[bool] = True,
-            copy_datasets: typing.Optional[bool] = False,
-            copy_documents: typing.Optional[bool] = False,
-            resource_title_filter: typing.Optional[str] = None,
-            start_date_filter: typing.Optional[str] = None,
-            end_date_filter: typing.Optional[str] = None,
-            keywords_filter: typing.Optional[typing.List[str]] = None,
-            categories_filter: typing.Optional[typing.List[str]] = None,
-            **kwargs
+        self,
+        *args,
+        harvest_documents: typing.Optional[bool] = True,
+        harvest_datasets: typing.Optional[bool] = True,
+        copy_datasets: typing.Optional[bool] = False,
+        copy_documents: typing.Optional[bool] = False,
+        resource_title_filter: typing.Optional[str] = None,
+        start_date_filter: typing.Optional[str] = None,
+        end_date_filter: typing.Optional[str] = None,
+        keywords_filter: typing.Optional[typing.List[str]] = None,
+        categories_filter: typing.Optional[typing.List[str]] = None,
+        **kwargs,
     ):
         """A harvester for remote GeoNode instances."""
         self._concrete_harvester_worker = None
@@ -1086,10 +1026,7 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
     def get_num_available_resources(self) -> int:
         return self.concrete_worker.get_num_available_resources()
 
-    def list_resources(
-            self,
-            offset: typing.Optional[int] = 0
-    ) -> typing.List[base.BriefRemoteResource]:
+    def list_resources(self, offset: typing.Optional[int] = 0) -> typing.List[base.BriefRemoteResource]:
         return self.concrete_worker.list_resources(offset)
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
@@ -1099,21 +1036,21 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
         return self.concrete_worker.get_geonode_resource_type(remote_resource_type)
 
     def get_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvestable_resource: models.HarvestableResource,
     ) -> typing.Optional[base.HarvestedResourceInfo]:
         return self.concrete_worker.get_resource(harvestable_resource)
 
     def should_copy_resource(
-            self,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvestable_resource: models.HarvestableResource,
     ) -> bool:
         return self.concrete_worker.should_copy_resource(harvestable_resource)
 
     def get_geonode_resource_defaults(
-            self,
-            harvested_info: base.HarvestedResourceInfo,
-            harvestable_resource: models.HarvestableResource,
+        self,
+        harvested_info: base.HarvestedResourceInfo,
+        harvestable_resource: models.HarvestableResource,
     ) -> typing.Dict:
         return self.concrete_worker.get_geonode_resource_defaults(harvested_info, harvestable_resource)
 
@@ -1130,7 +1067,7 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
             "start_date_filter": self.start_date_filter,
             "end_date_filter": self.end_date_filter,
             "keywords_filter": self.keywords_filter,
-            "categories_filter": self.categories_filter
+            "categories_filter": self.categories_filter,
         }
         current = GeonodeCurrentHarvester(**kwargs)
         return current if current.check_availability() else GeonodeLegacyHarvester(**kwargs)
@@ -1138,105 +1075,86 @@ class GeonodeUnifiedHarvesterWorker(base.BaseHarvesterWorker):
 
 def get_contact_descriptor(contact: etree.Element):
     return resourcedescriptor.RecordDescriptionContact(
-        role=contact.xpath(
-            ".//gmd:role/gmd:CI_RoleCode/text()",
-            namespaces=contact.nsmap
-        )[0],
-        name=_get_optional_attribute_value(
-            contact, ".//gmd:individualName"),
-        organization=_get_optional_attribute_value(
-            contact, ".//gmd:organisationName"),
-        position=_get_optional_attribute_value(
-            contact, ".//gmd:positionName"),
-        phone_voice=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:phone//gmd:voice"),
-        phone_facsimile=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:phone//gmd:facsimile"),
+        role=contact.xpath(".//gmd:role/gmd:CI_RoleCode/text()", namespaces=contact.nsmap)[0],
+        name=_get_optional_attribute_value(contact, ".//gmd:individualName"),
+        organization=_get_optional_attribute_value(contact, ".//gmd:organisationName"),
+        position=_get_optional_attribute_value(contact, ".//gmd:positionName"),
+        phone_voice=_get_optional_attribute_value(contact, ".//gmd:contactInfo//gmd:phone//gmd:voice"),
+        phone_facsimile=_get_optional_attribute_value(contact, ".//gmd:contactInfo//gmd:phone//gmd:facsimile"),
         address_delivery_point=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:deliveryPoint"),
-        address_city=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:city"),
-        address_administrative_area=_get_optional_attribute_value(
-            contact,
-            ".//gmd:contactInfo//gmd:address//gmd:administrativeArea"
+            contact, ".//gmd:contactInfo//gmd:address//gmd:deliveryPoint"
         ),
-        address_postal_code=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:postalCode"),
-        address_country=_get_optional_attribute_value(
-            contact, ".//gmd:contactInfo//gmd:address//gmd:country"),
-        address_email=get_xpath_value(
-            contact,
-            ".//gmd:contactInfo//gmd:address//gmd:electronicMailAddress"
-        )
+        address_city=_get_optional_attribute_value(contact, ".//gmd:contactInfo//gmd:address//gmd:city"),
+        address_administrative_area=_get_optional_attribute_value(
+            contact, ".//gmd:contactInfo//gmd:address//gmd:administrativeArea"
+        ),
+        address_postal_code=_get_optional_attribute_value(contact, ".//gmd:contactInfo//gmd:address//gmd:postalCode"),
+        address_country=_get_optional_attribute_value(contact, ".//gmd:contactInfo//gmd:address//gmd:country"),
+        address_email=get_xpath_value(contact, ".//gmd:contactInfo//gmd:address//gmd:electronicMailAddress"),
     )
 
 
 def get_identification_descriptor(csw_identification: etree.Element, api_record: typing.Dict):
     place_keywords = csw_identification.xpath(
-        ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
-        "@codeListValue='place']",
-        namespaces=csw_identification.nsmap
+        ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//" "@codeListValue='place']",
+        namespaces=csw_identification.nsmap,
     )
     other_keywords = csw_identification.xpath(
-        ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//"
-        "@codeListValue!='place']",
-        namespaces=csw_identification.nsmap
+        ".//gmd:descriptiveKeywords//gmd:keyword//text()[../../../gmd:type//" "@codeListValue!='place']",
+        namespaces=csw_identification.nsmap,
     )
     license_info = "".join(
         csw_identification.xpath(
             ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
             "gmd:useConstraints//@codeListValue='license']",
-            namespaces=csw_identification.nsmap
+            namespaces=csw_identification.nsmap,
         )
     ).strip()
     other_constraints_description = "".join(
         csw_identification.xpath(
             ".//gmd:resourceConstraints//gmd:otherConstraints//text()[../../..//"
             "gmd:useConstraints//@codeListValue!='license']",
-            namespaces=csw_identification.nsmap
+            namespaces=csw_identification.nsmap,
         )
     ).strip()
-    other_constraints_code = "".join(
-        csw_identification.xpath(
-            ".//gmd:resourceConstraints//gmd:useConstraints//text()[../../..//"
-            "gmd:useConstraints//@codeListValue!='license']",
-            namespaces=csw_identification.nsmap
-        )
-    ).strip() or None
+    other_constraints_code = (
+        "".join(
+            csw_identification.xpath(
+                ".//gmd:resourceConstraints//gmd:useConstraints//text()[../../..//"
+                "gmd:useConstraints//@codeListValue!='license']",
+                namespaces=csw_identification.nsmap,
+            )
+        ).strip()
+        or None
+    )
     name = get_xpath_value(csw_identification, ".//gmd:citation//gmd:name")
     title = get_xpath_value(csw_identification, ".//gmd:citation//gmd:title")
     return resourcedescriptor.RecordIdentification(
         name=name or title,
         title=title,
-        date=dateutil.parser.parse(
-            get_xpath_value(csw_identification, ".//gmd:citation//gmd:date//gmd:date")
-        ).replace(tzinfo=dt.timezone.utc),
+        date=dateutil.parser.parse(get_xpath_value(csw_identification, ".//gmd:citation//gmd:date//gmd:date")).replace(
+            tzinfo=dt.timezone.utc
+        ),
         date_type=get_xpath_value(csw_identification, ".//gmd:citation//gmd:dateType"),
         abstract=get_xpath_value(csw_identification, ".//gmd:abstract"),
         purpose=get_xpath_value(csw_identification, ".//gmd:purpose"),
         status=get_xpath_value(csw_identification, ".//gmd:status"),
         originator=get_contact_descriptor(
-            csw_identification.xpath(
-                ".//gmd:pointOfContact", namespaces=csw_identification.nsmap)[0]
+            csw_identification.xpath(".//gmd:pointOfContact", namespaces=csw_identification.nsmap)[0]
         ),
         native_format=_get_native_format(csw_identification, api_record),
         place_keywords=place_keywords,
         other_keywords=other_keywords,
         license=license_info.split(":", maxsplit=1),
-        other_constraints=(
-            f"{other_constraints_code or ''}:{other_constraints_description}"),
+        other_constraints=(f"{other_constraints_code or ''}:{other_constraints_description}"),
         topic_category=get_xpath_value(csw_identification, ".//gmd:topicCategory"),
         spatial_extent=get_spatial_extent_native(api_record),
         temporal_extent=get_temporal_extent(csw_identification),
-        supplemental_information=get_xpath_value(
-            csw_identification, ".//gmd:supplumentalInformation")
+        supplemental_information=get_xpath_value(csw_identification, ".//gmd:supplumentalInformation"),
     )
 
 
-def _get_native_format(
-        csw_identification: etree.Element,
-        api_record: typing.Dict
-) -> typing.Optional[str]:
+def _get_native_format(csw_identification: etree.Element, api_record: typing.Dict) -> typing.Optional[str]:
     if api_record.get("csw_type") == "document":
         result = api_record.get("extension")
     else:
@@ -1250,25 +1168,25 @@ def _get_native_format(
     return result
 
 
-def get_spatial_extent_4326(
-        identification_el: etree.Element) -> typing.Optional[geos.Polygon]:
+def get_spatial_extent_4326(identification_el: etree.Element) -> typing.Optional[geos.Polygon]:
     try:
-        extent_el = identification_el.xpath(
-            ".//gmd:extent//gmd:geographicElement",
-            namespaces=identification_el.nsmap
-        )[0]
+        extent_el = identification_el.xpath(".//gmd:extent//gmd:geographicElement", namespaces=identification_el.nsmap)[
+            0
+        ]
         left_x = get_xpath_value(extent_el, ".//gmd:westBoundLongitude")
         right_x = get_xpath_value(extent_el, ".//gmd:eastBoundLongitude")
         lower_y = get_xpath_value(extent_el, ".//gmd:southBoundLatitude")
         upper_y = get_xpath_value(extent_el, ".//gmd:northBoundLatitude")
         # GeoNode seems to have a bug whereby sometimes the reported extent uses a
         # comma as the decimal separator, other times it uses a dot
-        result = geos.Polygon.from_bbox((
-            float(left_x.replace(",", ".")),
-            float(lower_y.replace(",", ".")),
-            float(right_x.replace(",", ".")),
-            float(upper_y.replace(",", ".")),
-        ))
+        result = geos.Polygon.from_bbox(
+            (
+                float(left_x.replace(",", ".")),
+                float(lower_y.replace(",", ".")),
+                float(right_x.replace(",", ".")),
+                float(upper_y.replace(",", ".")),
+            )
+        )
     except IndexError:
         result = None
     return result
@@ -1285,87 +1203,46 @@ def get_spatial_extent_native(api_record: typing.Dict):
         right_x = float(api_record.get("bbox_x1", 0))
         lower_y = float(api_record.get("bbox_y0", 0))
         upper_y = float(api_record.get("bbox_y1", 0))
-        result = geos.Polygon.from_bbox((
-            left_x, lower_y, right_x, upper_y))
+        result = geos.Polygon.from_bbox((left_x, lower_y, right_x, upper_y))
     return result
 
 
-def get_temporal_extent(
-        identification_el: etree.Element
-) -> typing.Optional[typing.Tuple[dt.datetime, dt.datetime]]:
+def get_temporal_extent(identification_el: etree.Element) -> typing.Optional[typing.Tuple[dt.datetime, dt.datetime]]:
     try:
-        extent_el = identification_el.xpath(
-            ".//gmd:extent//gmd:temporalElement",
-            namespaces=identification_el.nsmap
-        )[0]
-        begin = dateutil.parser.parse(
-            get_xpath_value(extent_el, ".//gml:beginPosition")
-        ).replace(tzinfo=dt.timezone.utc)
-        end = dateutil.parser.parse(
-            get_xpath_value(extent_el, ".//gml:endPosition")
-        ).replace(tzinfo=dt.timezone.utc)
+        extent_el = identification_el.xpath(".//gmd:extent//gmd:temporalElement", namespaces=identification_el.nsmap)[0]
+        begin = dateutil.parser.parse(get_xpath_value(extent_el, ".//gml:beginPosition")).replace(
+            tzinfo=dt.timezone.utc
+        )
+        end = dateutil.parser.parse(get_xpath_value(extent_el, ".//gml:endPosition")).replace(tzinfo=dt.timezone.utc)
         result = (begin, end)
     except IndexError:
         result = None
     return result
 
 
-def _get_optional_attribute_value(
-        element: etree.Element, xpath: str) -> typing.Optional[str]:
+def _get_optional_attribute_value(element: etree.Element, xpath: str) -> typing.Optional[str]:
     return element.xpath(f"{xpath}/text()", namespaces=element.nsmap)[0].strip() or None
 
 
 def _get_extra_config_schema() -> typing.Dict:
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": (
-            "https://geonode.org/harvesting/geonode-legacy-harvester.schema.json"),
+        "$id": ("https://geonode.org/harvesting/geonode-legacy-harvester.schema.json"),
         "title": "GeoNode harvester config",
-        "description": (
-            "A jsonschema for validating configuration option for GeoNode's "
-            "remote GeoNode harvester"
-        ),
+        "description": ("A jsonschema for validating configuration option for GeoNode's " "remote GeoNode harvester"),
         "type": "object",
         "properties": {
-            "harvest_documents": {
-                "type": "boolean",
-                "default": True
-            },
-            "copy_documents": {
-                "type": "boolean",
-                "default": False
-            },
-            "harvest_datasets": {
-                "type": "boolean",
-                "default": True
-            },
-            "copy_datasets": {
-                "type": "boolean",
-                "default": False
-            },
+            "harvest_documents": {"type": "boolean", "default": True},
+            "copy_documents": {"type": "boolean", "default": False},
+            "harvest_datasets": {"type": "boolean", "default": True},
+            "copy_datasets": {"type": "boolean", "default": False},
             "resource_title_filter": {
                 "type": "string",
             },
-            "start_date_filter": {
-                "type": "string",
-                "format": "date-time"
-            },
-            "end_date_filter": {
-                "type": "string",
-                "format": "date-time"
-            },
-            "keywords_filter": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                }
-            },
-            "categories_filter": {
-                "type": "array",
-                "items": {
-                    "type": "string"
-                }
-            },
+            "start_date_filter": {"type": "string", "format": "date-time"},
+            "end_date_filter": {"type": "string", "format": "date-time"},
+            "keywords_filter": {"type": "array", "items": {"type": "string"}},
+            "categories_filter": {"type": "array", "items": {"type": "string"}},
         },
         "additionalProperties": False,
     }
@@ -1375,32 +1252,23 @@ def _from_django_record(target_class: typing.Type, record: models.Harvester):
     return target_class(
         record.remote_url,
         record.id,
-        harvest_documents=record.harvester_type_specific_configuration.get(
-            "harvest_documents", True),
-        harvest_datasets=record.harvester_type_specific_configuration.get(
-            "harvest_datasets", True),
-        copy_datasets=record.harvester_type_specific_configuration.get(
-            "copy_datasets", False),
-        copy_documents=record.harvester_type_specific_configuration.get(
-            "copy_documents", False),
-        resource_title_filter=record.harvester_type_specific_configuration.get(
-            "resource_title_filter"),
-        start_date_filter=record.harvester_type_specific_configuration.get(
-            "start_date_filter"),
-        end_date_filter=record.harvester_type_specific_configuration.get(
-            "end_date_filter"),
-        keywords_filter=record.harvester_type_specific_configuration.get(
-            "keywords_filter"),
-        categories_filter=record.harvester_type_specific_configuration.get(
-            "categories_filter")
+        harvest_documents=record.harvester_type_specific_configuration.get("harvest_documents", True),
+        harvest_datasets=record.harvester_type_specific_configuration.get("harvest_datasets", True),
+        copy_datasets=record.harvester_type_specific_configuration.get("copy_datasets", False),
+        copy_documents=record.harvester_type_specific_configuration.get("copy_documents", False),
+        resource_title_filter=record.harvester_type_specific_configuration.get("resource_title_filter"),
+        start_date_filter=record.harvester_type_specific_configuration.get("start_date_filter"),
+        end_date_filter=record.harvester_type_specific_configuration.get("end_date_filter"),
+        keywords_filter=record.harvester_type_specific_configuration.get("keywords_filter"),
+        categories_filter=record.harvester_type_specific_configuration.get("categories_filter"),
     )
 
 
 def _check_availability(
-        http_session,
-        url: str,
-        payload_key_to_check: str,
-        timeout_seconds: typing.Optional[int] = 5,
+    http_session,
+    url: str,
+    payload_key_to_check: str,
+    timeout_seconds: typing.Optional[int] = 5,
 ) -> bool:
     try:
         response = http_session.get(url, timeout=timeout_seconds)

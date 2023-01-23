@@ -599,5 +599,5 @@ TIMEZONES = [
     ("Universal", "Universal"),
     ("W-SU", "W-SU"),
     ("WET", "WET"),
-    ("Zulu", "Zulu")
+    ("Zulu", "Zulu"),
 ]

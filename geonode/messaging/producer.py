@@ -23,18 +23,9 @@ import traceback
 from decorator import decorator
 from kombu import BrokerConnection
 from kombu.common import maybe_declare
-from .queues import (
-    queue_email_events,
-    queue_geoserver_events,
-    queue_notifications_events,
-    queue_dataset_viewers
-)
+from .queues import queue_email_events, queue_geoserver_events, queue_notifications_events, queue_dataset_viewers
 
-from . import (url,
-               producers,
-               connection,
-               broker_socket_timeout,
-               task_serializer)
+from . import url, producers, connection, broker_socket_timeout, task_serializer
 from .consumer import Consumer
 
 logger = logging.getLogger(__name__)
@@ -56,7 +47,7 @@ def sync_if_local_memory(func, *args, **kwargs):
         return func(*args, **kwargs)
     finally:
         connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
-        if getattr(connection.connection, 'driver_name', None) == 'memory':
+        if getattr(connection.connection, "driver_name", None) == "memory":
             # hack explained:
             # when using memory://, first run usually contains only message for
             # specific queue. Subsequent runs will deliver the same message
@@ -75,7 +66,7 @@ def sync_if_local_memory(func, *args, **kwargs):
                 msg = f"Exception while publishing message: {tb}"
                 logger.error(msg)
                 raise Exception(msg)
-        elif not getattr(connection.connection, 'driver_name', None):
+        elif not getattr(connection.connection, "driver_name", None):
             msg = f"Exception while getting connection to {url}"
             logger.error(msg)
             raise Exception(msg)
@@ -85,16 +76,9 @@ def sync_if_local_memory(func, *args, **kwargs):
 def send_email_producer(dataset_uuid, user_id):
     with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
         maybe_declare(queue_email_events, producer.channel)
-        payload = {
-            "dataset_uuid": dataset_uuid,
-            "user_id": user_id
-        }
+        payload = {"dataset_uuid": dataset_uuid, "user_id": user_id}
         producer.publish(
-            payload,
-            exchange='geonode',
-            serializer=task_serializer,
-            routing_key='email',
-            timeout=broker_socket_timeout
+            payload, exchange="geonode", serializer=task_serializer, routing_key="email", timeout=broker_socket_timeout
         )
         producer.release()
 
@@ -105,10 +89,10 @@ def geoserver_upload_dataset(payload):
         maybe_declare(queue_geoserver_events, producer.channel)
         producer.publish(
             payload,
-            exchange='geonode',
+            exchange="geonode",
             serializer=task_serializer,
-            routing_key='geonode.geoserver',
-            timeout=broker_socket_timeout
+            routing_key="geonode.geoserver",
+            timeout=broker_socket_timeout,
         )
         producer.release()
 
@@ -117,13 +101,13 @@ def geoserver_upload_dataset(payload):
 def notifications_send(payload, created=None):
     with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
         maybe_declare(queue_notifications_events, producer.channel)
-        payload['created'] = created
+        payload["created"] = created
         producer.publish(
             payload,
-            exchange='geonode',
+            exchange="geonode",
             serializer=task_serializer,
-            routing_key='notifications',
-            timeout=broker_socket_timeout
+            routing_key="notifications",
+            timeout=broker_socket_timeout,
         )
         producer.release()
 
@@ -132,14 +116,12 @@ def notifications_send(payload, created=None):
 def viewing_dataset(user, owner, dataset_id):
     with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
         maybe_declare(queue_dataset_viewers, producer.channel)
-        payload = {"viewer": user,
-                   "owner_dataset": owner,
-                   "dataset_id": dataset_id}
+        payload = {"viewer": user, "owner_dataset": owner, "dataset_id": dataset_id}
         producer.publish(
             payload,
-            exchange='geonode',
+            exchange="geonode",
             serializer=task_serializer,
-            routing_key='geonode.viewer',
-            timeout=broker_socket_timeout
+            routing_key="geonode.viewer",
+            timeout=broker_socket_timeout,
         )
         producer.release()

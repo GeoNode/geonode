@@ -20,4 +20,4 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-default_app_config = 'geonode.groups.apps.GroupsAppConfig'
+default_app_config = "geonode.groups.apps.GroupsAppConfig"

@@ -25,12 +25,10 @@ from geonode.base.auth import get_token_from_auth_header
 
 
 class OAuthAuthentication(Authentication):
-
     def extract_auth_header(self, request):
         auth_header = None
         try:
-            auth_header = request.META.get(
-                'HTTP_AUTHORIZATION', request.META.get('HTTP_AUTHORIZATION2'))
+            auth_header = request.META.get("HTTP_AUTHORIZATION", request.META.get("HTTP_AUTHORIZATION2"))
         except KeyError:
             pass
         return auth_header
@@ -47,7 +45,7 @@ class OAuthAuthentication(Authentication):
     def is_authenticated(self, request, **kwargs):
         user = AnonymousUser()
         authenticated = False
-        if 'HTTP_AUTHORIZATION' in request.META:
+        if "HTTP_AUTHORIZATION" in request.META:
             auth_header = self.extract_auth_header(request)
             if auth_header:
                 access_token = get_token_from_auth_header(auth_header)

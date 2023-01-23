@@ -39,52 +39,48 @@ logger = logging.getLogger(__name__)
 
 class DatasetsApiTests(APITestCase):
 
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
         self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        create_models(b'document')
-        create_models(b'map')
-        create_models(b'dataset')
+        create_models(b"document")
+        create_models(b"map")
+        create_models(b"dataset")
 
     def test_datasets(self):
         """
         Ensure we can access the Layers list.
         """
-        url = reverse('datasets-list')
+        url = reverse("datasets-list")
         # Anonymous
-        response = self.client.get(url, format='json')
+        response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data['total'], 8)
+        self.assertEqual(response.data["total"], 8)
 
         # Pagination
-        self.assertEqual(len(response.data['datasets']), 8)
+        self.assertEqual(len(response.data["datasets"]), 8)
         logger.debug(response.data)
 
-        for _l in response.data['datasets']:
-            self.assertTrue(_l['resource_type'], 'dataset')
+        for _l in response.data["datasets"]:
+            self.assertTrue(_l["resource_type"], "dataset")
         # Test list response doesn't have attribute_set
-        self.assertIsNotNone(response.data['datasets'][0].get('ptype'))
-        self.assertIsNone(response.data['datasets'][0].get('attribute_set'))
-        self.assertIsNone(response.data['datasets'][0].get('featureinfo_custom_template'))
+        self.assertIsNotNone(response.data["datasets"][0].get("ptype"))
+        self.assertIsNone(response.data["datasets"][0].get("attribute_set"))
+        self.assertIsNone(response.data["datasets"][0].get("featureinfo_custom_template"))
 
         _dataset = Dataset.objects.first()
         assign_perm("base.view_resourcebase", get_anonymous_user(), _dataset.get_self_resource())
 
         # Test detail response has attribute_set
         url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-        response = self.client.get(url, format='json')
-        self.assertIsNotNone(response.data['dataset'].get('ptype'))
-        self.assertIsNotNone(response.data['dataset'].get('subtype'))
-        self.assertIsNotNone(response.data['dataset'].get('attribute_set'))
+        response = self.client.get(url, format="json")
+        self.assertIsNotNone(response.data["dataset"].get("ptype"))
+        self.assertIsNotNone(response.data["dataset"].get("subtype"))
+        self.assertIsNotNone(response.data["dataset"].get("attribute_set"))
 
         # Test "featureinfo_custom_template"
-        _attribute, _ = Attribute.objects.get_or_create(dataset=_dataset, attribute='name')
+        _attribute, _ = Attribute.objects.get_or_create(dataset=_dataset, attribute="name")
         try:
             _attribute.visible = True
             _attribute.attribute_type = Attribute.TYPE_PROPERTY
@@ -94,31 +90,31 @@ class DatasetsApiTests(APITestCase):
             _attribute.save()
 
             url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format='json')
-            self.assertIsNotNone(response.data['dataset'].get('featureinfo_custom_template'))
+            response = self.client.get(url, format="json")
+            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
             self.assertEqual(
-                response.data['dataset'].get('featureinfo_custom_template'),
+                response.data["dataset"].get("featureinfo_custom_template"),
                 '<div><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>')
+                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>',
+            )
 
-            _dataset.featureinfo_custom_template = '<div>Foo Bar</div>'
+            _dataset.featureinfo_custom_template = "<div>Foo Bar</div>"
             _dataset.save()
             url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format='json')
-            self.assertIsNotNone(response.data['dataset'].get('featureinfo_custom_template'))
+            response = self.client.get(url, format="json")
+            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
             self.assertEqual(
-                response.data['dataset'].get('featureinfo_custom_template'),
+                response.data["dataset"].get("featureinfo_custom_template"),
                 '<div><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>')
+                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>',
+            )
 
             _dataset.use_featureinfo_custom_template = True
             _dataset.save()
             url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
-            response = self.client.get(url, format='json')
-            self.assertIsNotNone(response.data['dataset'].get('featureinfo_custom_template'))
-            self.assertEqual(
-                response.data['dataset'].get('featureinfo_custom_template'),
-                '<div>Foo Bar</div>')
+            response = self.client.get(url, format="json")
+            self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
+            self.assertEqual(response.data["dataset"].get("featureinfo_custom_template"), "<div>Foo Bar</div>")
         finally:
             _attribute.delete()
             _dataset.featureinfo_custom_template = None
@@ -129,16 +125,16 @@ class DatasetsApiTests(APITestCase):
         dataset = Dataset.objects.first()
         assign_perm("base.view_resourcebase", get_anonymous_user(), dataset.get_self_resource())
 
-        url = reverse('datasets-detail', kwargs={'pk': dataset.pk})
-        response = self.client.get(f'{url}/maplayers', format='json')
+        url = reverse("datasets-detail", kwargs={"pk": dataset.pk})
+        response = self.client.get(f"{url}/maplayers", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 0)
 
-        response = self.client.get(f'{url}/maplayers', format='json')
+        response = self.client.get(f"{url}/maplayers", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 0)
 
-        response = self.client.get(f'{url}/maps', format='json')
+        response = self.client.get(f"{url}/maps", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 0)
         map = Map.objects.first()
@@ -150,43 +146,45 @@ class DatasetsApiTests(APITestCase):
             current_style=None,
             ows_url=None,
             local=True,
-            dataset=dataset
+            dataset=dataset,
         )
-        response = self.client.get(f'{url}/maplayers', format='json')
+        response = self.client.get(f"{url}/maplayers", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
-        self.assertEqual(response.json()[0]['pk'], map_layer.pk)
+        self.assertEqual(response.json()[0]["pk"], map_layer.pk)
 
-        response = self.client.get(f'{url}/maps', format='json')
+        response = self.client.get(f"{url}/maps", format="json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
-        self.assertEqual(response.json()[0]['pk'], map.pk)
+        self.assertEqual(response.json()[0]["pk"], map.pk)
 
     def test_raw_HTML_stripped_properties(self):
         """
         Ensure "raw_*" properties returns no HTML or carriage-return tag
         """
         dataset = Dataset.objects.first()
-        dataset.abstract = "<p><em>No abstract provided</em>.</p>\r\n<p><img src=\"data:image/jpeg;base64,/9j/4AAQSkZJR/>"
-        dataset.constraints_other = "<p><span style=\"text-decoration: underline;\">None</span></p>"
+        dataset.abstract = (
+            '<p><em>No abstract provided</em>.</p>\r\n<p><img src="data:image/jpeg;base64,/9j/4AAQSkZJR/>'
+        )
+        dataset.constraints_other = '<p><span style="text-decoration: underline;">None</span></p>'
         dataset.supplemental_information = "<p>No information provided &iacute;</p> <p>&pound;682m</p>"
-        dataset.data_quality_statement = "<p><strong>OK</strong></p>\r\n<table style=\"border-collapse: collapse; width:\
-            85.2071%;\" border=\"1\">\r\n<tbody>\r\n<tr>\r\n<td style=\"width: 49.6528%;\">1</td>\r\n<td style=\"width:\
-            50%;\">2</td>\r\n</tr>\r\n<tr>\r\n<td style=\"width: 49.6528%;\">a</td>\r\n<td style=\"width: 50%;\">b</td>\
-            \r\n</tr>\r\n</tbody>\r\n</table>"
+        dataset.data_quality_statement = '<p><strong>OK</strong></p>\r\n<table style="border-collapse: collapse; width:\
+            85.2071%;" border="1">\r\n<tbody>\r\n<tr>\r\n<td style="width: 49.6528%;">1</td>\r\n<td style="width:\
+            50%;">2</td>\r\n</tr>\r\n<tr>\r\n<td style="width: 49.6528%;">a</td>\r\n<td style="width: 50%;">b</td>\
+            \r\n</tr>\r\n</tbody>\r\n</table>'
         dataset.save()
 
         # Admin
-        self.assertTrue(self.client.login(username='admin', password='admin'))
+        self.assertTrue(self.client.login(username="admin", password="admin"))
 
-        url = reverse('datasets-detail', kwargs={'pk': dataset.pk})
-        response = self.client.get(url, format='json')
+        url = reverse("datasets-detail", kwargs={"pk": dataset.pk})
+        response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(int(response.data['dataset']['pk']), int(dataset.pk))
-        self.assertEqual(response.data['dataset']['raw_abstract'], "No abstract provided.")
-        self.assertEqual(response.data['dataset']['raw_constraints_other'], "None")
-        self.assertEqual(response.data['dataset']['raw_supplemental_information'], "No information provided í £682m")
-        self.assertEqual(response.data['dataset']['raw_data_quality_statement'], "OK    1 2   a b")
+        self.assertEqual(int(response.data["dataset"]["pk"]), int(dataset.pk))
+        self.assertEqual(response.data["dataset"]["raw_abstract"], "No abstract provided.")
+        self.assertEqual(response.data["dataset"]["raw_constraints_other"], "None")
+        self.assertEqual(response.data["dataset"]["raw_supplemental_information"], "No information provided í £682m")
+        self.assertEqual(response.data["dataset"]["raw_data_quality_statement"], "OK    1 2   a b")
 
     def test_layer_replace_anonymous_should_raise_error(self):
         layer = Dataset.objects.first()
@@ -267,12 +265,12 @@ class DatasetsApiTests(APITestCase):
 
         admin = get_user_model().objects.get(username="admin")
 
-        if Dataset.objects.filter(name='single_point').exists():
-            '''
+        if Dataset.objects.filter(name="single_point").exists():
+            """
             If the dataset already exists in the test env, we dont want that the test fail
             so we rename it and then we will rollback the cnahge
-            '''
-            _dataset = Dataset.objects.get(name='single_point')
+            """
+            _dataset = Dataset.objects.get(name="single_point")
             _dataset.name = "single_point_2"
             _dataset.save()
 
@@ -284,7 +282,7 @@ class DatasetsApiTests(APITestCase):
                 "Point",
             )
         except Exception as e:
-            if 'There is already a layer named' not in e.args[0]:
+            if "There is already a layer named" not in e.args[0]:
                 raise e
             else:
                 layer = create_single_dataset("single_point")
@@ -340,9 +338,9 @@ class DatasetsApiTests(APITestCase):
         self.client.login(username="admin", password="admin")
 
         data = '<?xml version="1.0" encoding="UTF-8"?><invalid></invalid>'
-        f = BytesIO(bytes(data, encoding='utf-8'))
-        f.name = 'metadata.xml'
-        put_data = {'metadata_file': f}
+        f = BytesIO(bytes(data, encoding="utf-8"))
+        f.name = "metadata.xml"
+        put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(500, response.status_code)
 
@@ -351,8 +349,8 @@ class DatasetsApiTests(APITestCase):
         url = reverse("datasets-replace-metadata", args=(layer.id,))
         self.client.login(username="admin", password="admin")
 
-        f = open(self.exml_path, 'r')
-        put_data = {'metadata_file': f}
+        f = open(self.exml_path, "r")
+        put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(500, response.status_code)
 
@@ -368,10 +366,10 @@ class DatasetsApiTests(APITestCase):
 
         uuid = layer.uuid
         data = open(self.exml_path).read()
-        data = data.replace('7cfbc42c-efa7-431c-8daa-1399dff4cd19', uuid)
-        f = BytesIO(bytes(data, encoding='utf-8'))
-        f.name = 'metadata.xml'
-        put_data = {'metadata_file': f}
+        data = data.replace("7cfbc42c-efa7-431c-8daa-1399dff4cd19", uuid)
+        f = BytesIO(bytes(data, encoding="utf-8"))
+        f.name = "metadata.xml"
+        put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(403, response.status_code)
 
@@ -388,10 +386,10 @@ class DatasetsApiTests(APITestCase):
 
         uuid = layer.uuid
         data = open(self.exml_path).read()
-        data = data.replace('7cfbc42c-efa7-431c-8daa-1399dff4cd19', uuid)
-        f = BytesIO(bytes(data, encoding='utf-8'))
-        f.name = 'metadata.xml'
-        put_data = {'metadata_file': f}
+        data = data.replace("7cfbc42c-efa7-431c-8daa-1399dff4cd19", uuid)
+        f = BytesIO(bytes(data, encoding="utf-8"))
+        f.name = "metadata.xml"
+        put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(200, response.status_code)
 
@@ -402,9 +400,9 @@ class DatasetsApiTests(APITestCase):
 
         uuid = layer.uuid
         data = open(self.exml_path).read()
-        data = data.replace('7cfbc42c-efa7-431c-8daa-1399dff4cd19', uuid)
-        f = BytesIO(bytes(data, encoding='utf-8'))
-        f.name = 'metadata.xml'
-        put_data = {'metadata_file': f}
+        data = data.replace("7cfbc42c-efa7-431c-8daa-1399dff4cd19", uuid)
+        f = BytesIO(bytes(data, encoding="utf-8"))
+        f.name = "metadata.xml"
+        put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(200, response.status_code)

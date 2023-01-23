@@ -22,16 +22,41 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 
 class DatasetAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.layers'
+    name = "geonode.layers"
     verbose_name = "Dataset"
     verbose_name_plural = "Datasets"
     NOTIFICATIONS = (
-        ("dataset_created", _("Dataset Created"), _("A Dataset was created"),),
-        ("dataset_updated", _("Dataset Updated"), _("A Dataset was updated"),),
-        ("dataset_approved", _("Dataset Approved"), _("A Dataset was approved by a Manager"),),
-        ("dataset_published", _("Dataset Published"), _("A Dataset was published"),),
-        ("dataset_deleted", _("Dataset Deleted"), _("A Dataset was deleted"),),
-        ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),)
+        (
+            "dataset_created",
+            _("Dataset Created"),
+            _("A Dataset was created"),
+        ),
+        (
+            "dataset_updated",
+            _("Dataset Updated"),
+            _("A Dataset was updated"),
+        ),
+        (
+            "dataset_approved",
+            _("Dataset Approved"),
+            _("A Dataset was approved by a Manager"),
+        ),
+        (
+            "dataset_published",
+            _("Dataset Published"),
+            _("A Dataset was published"),
+        ),
+        (
+            "dataset_deleted",
+            _("Dataset Deleted"),
+            _("A Dataset was deleted"),
+        ),
+        (
+            "dataset_rated",
+            _("Rating for Dataset"),
+            _("A rating was given to a layer"),
+        ),
+    )
 
 
-default_app_config = 'geonode.layers.DatasetAppConfig'
+default_app_config = "geonode.layers.DatasetAppConfig"

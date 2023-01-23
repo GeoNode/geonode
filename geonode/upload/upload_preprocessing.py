@@ -34,12 +34,15 @@ from .utils import get_kml_doc
 
 logger = logging.getLogger(__name__)
 
-GdalBoundingBox = namedtuple("GdalBoundingBox", [
-    "ulx",
-    "uly",
-    "lrx",
-    "lry",
-])
+GdalBoundingBox = namedtuple(
+    "GdalBoundingBox",
+    [
+        "ulx",
+        "uly",
+        "lrx",
+        "lry",
+    ],
+)
 
 
 def convert_kml_ground_overlay_to_geotiff(kml_path, other_file_path):
@@ -62,17 +65,20 @@ def convert_kml_ground_overlay_to_geotiff(kml_path, other_file_path):
         lry=_extract_bbox_param(kml_doc, namespaces, "south"),
     )
     dirname, basename = os.path.split(other_file_path)
-    output_path = os.path.join(
-        dirname,
-        ".".join((os.path.splitext(basename)[0], "tif"))
-    )
+    output_path = os.path.join(dirname, ".".join((os.path.splitext(basename)[0], "tif")))
     command = [
         "gdal_translate",
-        "-of", "GTiff",
-        "-a_srs", "EPSG:4326",  # KML format always uses EPSG:4326
-        "-a_ullr", bbox.ulx, bbox.uly, bbox.lrx, bbox.lry,
+        "-of",
+        "GTiff",
+        "-a_srs",
+        "EPSG:4326",  # KML format always uses EPSG:4326
+        "-a_ullr",
+        bbox.ulx,
+        bbox.uly,
+        bbox.lrx,
+        bbox.lry,
         other_file_path,
-        output_path
+        output_path,
     ]
     subprocess.check_output(command)
     return output_path
@@ -94,10 +100,8 @@ def preprocess_files(spatial_files):
     result = []
     for spatial_file in spatial_files:
         if spatial_file.file_type == get_type("KML Ground Overlay"):
-            auxillary_file = spatial_file.auxillary_files[0] if\
-                len(spatial_file.auxillary_files) > 0 else None
-            preprocessed = convert_kml_ground_overlay_to_geotiff(
-                spatial_file.base_file, auxillary_file)
+            auxillary_file = spatial_file.auxillary_files[0] if len(spatial_file.auxillary_files) > 0 else None
+            preprocessed = convert_kml_ground_overlay_to_geotiff(spatial_file.base_file, auxillary_file)
             result.append(preprocessed)
         else:
             result.extend(spatial_file.all_files())
@@ -107,8 +111,6 @@ def preprocess_files(spatial_files):
 
 
 def _extract_bbox_param(kml_doc, namespaces, param):
-    return kml_doc.xpath(
-        "kml:Document/kml:GroundOverlay/kml:LatLonBox/"
-        f"kml:{param}/text()",
-        namespaces=namespaces
-    )[0]
+    return kml_doc.xpath("kml:Document/kml:GroundOverlay/kml:LatLonBox/" f"kml:{param}/text()", namespaces=namespaces)[
+        0
+    ]

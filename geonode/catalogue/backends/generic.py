@@ -33,48 +33,37 @@ logger = logging.getLogger(__name__)
 
 TIMEOUT = 10
 METADATA_FORMATS = {
-    'Atom': (
-        'atom:entry',
-        'http://www.w3.org/2005/Atom'),
-    'DIF': (
-        'dif:DIF',
-        'http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/'),
-    'Dublin Core': (
-        'csw:Record',
-        'http://www.opengis.net/cat/csw/2.0.2'),
-    'ebRIM': (
-        'rim:RegistryObject',
-        'urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0'),
-    'FGDC': (
-        'fgdc:metadata',
-        'http://www.opengis.net/cat/csw/csdgm'),
-    'ISO': (
-        'gmd:MD_Metadata',
-        'http://www.isotc211.org/2005/gmd')}
+    "Atom": ("atom:entry", "http://www.w3.org/2005/Atom"),
+    "DIF": ("dif:DIF", "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/"),
+    "Dublin Core": ("csw:Record", "http://www.opengis.net/cat/csw/2.0.2"),
+    "ebRIM": ("rim:RegistryObject", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"),
+    "FGDC": ("fgdc:metadata", "http://www.opengis.net/cat/csw/csdgm"),
+    "ISO": ("gmd:MD_Metadata", "http://www.isotc211.org/2005/gmd"),
+}
 
 
 class Catalogue(CatalogueServiceWeb):
     def __init__(self, *args, **kwargs):
-        self.url = kwargs['URL']
+        self.url = kwargs["URL"]
         self.user = None
         self.password = None
-        self.type = kwargs['ENGINE'].split('.')[-1]
+        self.type = kwargs["ENGINE"].split(".")[-1]
         self.local = False
         self._group_ids = {}
         self._operation_ids = {}
         self.connected = False
-        skip_caps = kwargs.get('skip_caps', True)
+        skip_caps = kwargs.get("skip_caps", True)
         CatalogueServiceWeb.__init__(self, url=self.url, skip_caps=skip_caps)
 
         upurl = urlparse(self.url)
 
-        self.base = f'{upurl.scheme}://{upurl.netloc}/'
+        self.base = f"{upurl.scheme}://{upurl.netloc}/"
 
         # User and Password are optional
-        if 'USER' in kwargs:
-            self.user = kwargs['USER']
-        if 'PASSWORD' in kwargs:
-            self.password = kwargs['PASSWORD']
+        if "USER" in kwargs:
+            self.user = kwargs["USER"]
+        if "PASSWORD" in kwargs:
+            self.password = kwargs["PASSWORD"]
 
     def __enter__(self, *args, **kwargs):
         self.login()
@@ -95,31 +84,29 @@ class Catalogue(CatalogueServiceWeb):
         except Exception:
             return None
 
-        if hasattr(self, 'records'):
+        if hasattr(self, "records"):
             if len(self.records) < 1:
                 return None
             record = list(self.records.values())[0]
             record.keywords = []
-            if hasattr(
-                    record,
-                    'identification') and hasattr(
-                    record.identification,
-                    'keywords'):
+            if hasattr(record, "identification") and hasattr(record.identification, "keywords"):
                 for kw in record.identification.keywords:
-                    record.keywords.extend(kw['keywords'])
+                    record.keywords.extend(kw["keywords"])
             return record
         else:
             return None
 
     def url_for_uuid(self, uuid, outputschema):
-        _query_string = urlencode({
-            "request": "GetRecordById",
-            "service": "CSW",
-            "version": "2.0.2",
-            "id": uuid,
-            "outputschema": outputschema,
-            "elementsetname": "full"
-        })
+        _query_string = urlencode(
+            {
+                "request": "GetRecordById",
+                "service": "CSW",
+                "version": "2.0.2",
+                "id": uuid,
+                "outputschema": outputschema,
+                "elementsetname": "full",
+            }
+        )
         return f"{self.url}?{_query_string}"
 
     def urls_for_uuid(self, uuid):
@@ -127,34 +114,28 @@ class Catalogue(CatalogueServiceWeb):
 
         urls = []
         for mformat in self.formats:
-            urls.append(
-                ('text/xml',
-                 mformat,
-                 self.url_for_uuid(
-                     uuid,
-                     METADATA_FORMATS[mformat][1])))
+            urls.append(("text/xml", mformat, self.url_for_uuid(uuid, METADATA_FORMATS[mformat][1])))
         return urls
 
     def csw_gen_xml(self, layer, template):
-        id_pname = 'dc:identifier'
-        if self.type == 'deegree':
-            id_pname = 'apiso:Identifier'
-        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+        id_pname = "dc:identifier"
+        if self.type == "deegree":
+            id_pname = "apiso:Identifier"
+        site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
         tpl = get_template(template)
-        ctx = {'layer': layer,
-               'SITEURL': site_url,
-               'id_pname': id_pname,
-               'LICENSES_METADATA': getattr(settings,
-                                            'LICENSES',
-                                            dict()).get('METADATA',
-                                                        'never')}
+        ctx = {
+            "layer": layer,
+            "SITEURL": site_url,
+            "id_pname": id_pname,
+            "LICENSES_METADATA": getattr(settings, "LICENSES", dict()).get("METADATA", "never"),
+        }
         md_doc = tpl.render(context=ctx)
         return md_doc
 
     def csw_gen_anytext(self, xml):
-        """ get all element data from an XML document """
+        """get all element data from an XML document"""
         xml = dlxml.fromstring(xml)
-        return ' '.join([value.strip() for value in xml.xpath('//text()')])
+        return " ".join([value.strip() for value in xml.xpath("//text()")])
 
     def csw_request(self, layer, template):
         md_doc = self.csw_gen_xml(layer, template)
@@ -164,14 +145,14 @@ class Catalogue(CatalogueServiceWeb):
     def create_from_dataset(self, layer):
         response = self.csw_request(layer, "catalogue/transaction_insert.xml")  # noqa
         # TODO: Parse response, check for error report
-        return self.url_for_uuid(layer.uuid, namespaces['gmd'])
+        return self.url_for_uuid(layer.uuid, namespaces["gmd"])
 
     def delete_dataset(self, layer):
         response = self.csw_request(layer, "catalogue/transaction_delete.xml")  # noqa
         # TODO: Parse response, check for error report
 
     def update_dataset(self, layer):
-        tmpl = 'catalogue/transaction_update.xml'
+        tmpl = "catalogue/transaction_update.xml"
         response = self.csw_request(layer, tmpl)  # noqa
         # TODO: Parse response, check for error report
 
@@ -184,17 +165,18 @@ class Catalogue(CatalogueServiceWeb):
         dataset_query_like = []
         if keywords:
             for _kw in keywords:
-                dataset_query_like.append(PropertyIsLike('csw:AnyText', _kw))
+                dataset_query_like.append(PropertyIsLike("csw:AnyText", _kw))
         bbox_query = []
         if bbox:
             bbox_query = BBox(bbox)
         return self.getrecords2(
-            typenames=' '.join(formats),
+            typenames=" ".join(formats),
             constraints=dataset_query_like + bbox_query,
             startposition=startposition,
             maxrecords=maxrecords,
-            outputschema='http://www.isotc211.org/2005/gmd',
-            esn='full')
+            outputschema="http://www.isotc211.org/2005/gmd",
+            esn="full",
+        )
 
     def normalize_bbox(self, bbox):
         return [bbox[1], bbox[0], bbox[3], bbox[2]]
@@ -210,39 +192,36 @@ class Catalogue(CatalogueServiceWeb):
             return None
         # Let owslib do some parsing for us...
         result = {}
-        result['uuid'] = rec.identifier
-        result['title'] = rec.identification.title
-        result['abstract'] = rec.identification.abstract
+        result["uuid"] = rec.identifier
+        result["title"] = rec.identification.title
+        result["abstract"] = rec.identification.abstract
 
         keywords = []
         for kw in rec.identification.keywords:
-            keywords.extend(kw['keywords'])
+            keywords.extend(kw["keywords"])
 
-        result['keywords'] = keywords
+        result["keywords"] = keywords
 
         # XXX needs indexing ? how
-        result['attribution'] = {'title': '', 'href': ''}
+        result["attribution"] = {"title": "", "href": ""}
 
-        result['name'] = result['uuid']
+        result["name"] = result["uuid"]
 
-        result['bbox'] = {
-            'minx': rec.identification.bbox.minx,
-            'maxx': rec.identification.bbox.maxx,
-            'miny': rec.identification.bbox.miny,
-            'maxy': rec.identification.bbox.maxy
+        result["bbox"] = {
+            "minx": rec.identification.bbox.minx,
+            "maxx": rec.identification.bbox.maxx,
+            "miny": rec.identification.bbox.miny,
+            "maxy": rec.identification.bbox.maxy,
         }
 
         # locate all distribution links
-        result['download_links'] = self.extract_links(rec)
+        result["download_links"] = self.extract_links(rec)
 
         # construct the link to the Catalogue metadata record (not
         # self-indexed)
-        result['metadata_links'] = [
-            ("text/xml",
-             "ISO",
-             self.url_for_uuid(
-                 rec.identifier,
-                 'http://www.isotc211.org/2005/gmd'))]
+        result["metadata_links"] = [
+            ("text/xml", "ISO", self.url_for_uuid(rec.identifier, "http://www.isotc211.org/2005/gmd"))
+        ]
 
         return result
 
@@ -253,15 +232,15 @@ class Catalogue(CatalogueServiceWeb):
         # extract subset of description value for user-friendly display
         format_re = re.compile(r".*\((.*)(\s*Format*\s*)\).*?")
 
-        if not hasattr(rec, 'distribution'):
+        if not hasattr(rec, "distribution"):
             return None
-        if not hasattr(rec.distribution, 'online'):
+        if not hasattr(rec.distribution, "online"):
             return None
 
         for link_el in rec.distribution.online:
-            if 'WWW:DOWNLOAD' in link_el.protocol:
+            if "WWW:DOWNLOAD" in link_el.protocol:
                 try:
-                    extension = link_el.name.split('.')[-1]
+                    extension = link_el.name.split(".")[-1]
                     format = format_re.match(link_el.description).groups()[0]
                     href = link_el.url
                     links.append((extension, format, href))
@@ -279,8 +258,8 @@ class CatalogueBackend(BaseCatalogueBackend):
             rec = self.catalogue.get_by_uuid(uuid)
             if rec is not None:
                 rec.links = dict()
-                rec.links['metadata'] = self.catalogue.urls_for_uuid(uuid)
-                rec.links['download'] = self.catalogue.extract_links(rec)
+                rec.links["metadata"] = self.catalogue.urls_for_uuid(uuid)
+                rec.links["download"] = self.catalogue.extract_links(rec)
         return rec
 
     def search_records(self, keywords, start, limit, bbox):
@@ -289,13 +268,13 @@ class CatalogueBackend(BaseCatalogueBackend):
             self.catalogue.search(keywords, start + 1, limit, bbox)
 
             # build results into JSON for API
-            results = [
-                self.catalogue.metadatarecord2dict(doc) for v,
-                doc in self.catalogue.records.items()]
+            results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.items()]
 
-            result = {'rows': results,
-                      'total': self.catalogue.results['matches'],
-                      'next_page': self.catalogue.results.get('nextrecord', 0)}
+            result = {
+                "rows": results,
+                "total": self.catalogue.results["matches"],
+                "next_page": self.catalogue.results.get("nextrecord", 0),
+            }
 
             return result
 
@@ -310,8 +289,7 @@ class CatalogueBackend(BaseCatalogueBackend):
                 # too.
                 self.catalogue.delete_dataset({"uuid": uuid})
             except Exception:
-                logger.exception(
-                    'Couldn\'t delete Catalogue record during cleanup()')
+                logger.exception("Couldn't delete Catalogue record during cleanup()")
 
     def create_record(self, item):
         with self.catalogue:

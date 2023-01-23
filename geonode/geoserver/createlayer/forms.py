@@ -21,9 +21,9 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 GEOMETRY_TYPES = (
-    ('Point', _('Points')),
-    ('LineString', _('Lines')),
-    ('Polygon', _('Polygons')),
+    ("Point", _("Points")),
+    ("LineString", _("Lines")),
+    ("Polygon", _("Polygons")),
 )
 
 
@@ -31,21 +31,15 @@ class NewDatasetForm(forms.Form):
     """
     A form to create an empty layer in PostGIS.
     """
-    name = forms.CharField(label=_('Dataset name'), max_length=255)
-    title = forms.CharField(label=_('Dataset title'), max_length=255)
-    geometry_type = forms.ChoiceField(label=_('Geometry type'), choices=GEOMETRY_TYPES)
+
+    name = forms.CharField(label=_("Dataset name"), max_length=255)
+    title = forms.CharField(label=_("Dataset title"), max_length=255)
+    geometry_type = forms.ChoiceField(label=_("Geometry type"), choices=GEOMETRY_TYPES)
 
     permissions = forms.CharField(
-        widget=forms.HiddenInput(
-            attrs={
-                'name': 'permissions',
-                'id': 'permissions'}),
-        required=False)
+        widget=forms.HiddenInput(attrs={"name": "permissions", "id": "permissions"}), required=False
+    )
 
     attributes = forms.CharField(
-        widget=forms.HiddenInput(
-            attrs={
-                'name': 'attributes',
-                'id': 'attributes'}),
-        required=False,
-        empty_value='{}')
+        widget=forms.HiddenInput(attrs={"name": "attributes", "id": "attributes"}), required=False, empty_value="{}"
+    )

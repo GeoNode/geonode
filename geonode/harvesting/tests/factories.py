@@ -23,19 +23,16 @@ import datetime
 from geonode.harvesting import resourcedescriptor
 from geonode.harvesting.harvesters.base import HarvestedResourceInfo, BriefRemoteResource
 
-contact_example = resourcedescriptor.RecordDescriptionContact(
-    role='role',
-    name="Test"
-)
+contact_example = resourcedescriptor.RecordDescriptionContact(role="role", name="Test")
 identification_example = resourcedescriptor.RecordIdentification(
-    name='Test',
-    title='Test',
+    name="Test",
+    title="Test",
     date=datetime.datetime.now(),
-    date_type='type',
+    date_type="type",
     originator=contact_example,
-    place_keywords=['keyword'],
-    other_keywords=('test',),
-    license=['test']
+    place_keywords=["keyword"],
+    other_keywords=("test",),
+    license=["test"],
 )
 distribution_example = resourcedescriptor.RecordDistribution()
 resource_description_example = resourcedescriptor.RecordDescription(
@@ -44,17 +41,13 @@ resource_description_example = resourcedescriptor.RecordDescription(
     author=contact_example,
     date_stamp=datetime.datetime.now(),
     identification=identification_example,
-    distribution=distribution_example
+    distribution=distribution_example,
 )
 
 resource_info_example = HarvestedResourceInfo(
-    resource_descriptor=resource_description_example,
-    additional_information={}
+    resource_descriptor=resource_description_example, additional_information={}
 )
 
 brief_remote_resource_example = BriefRemoteResource(
-    unique_identifier='id',
-    title='Test',
-    abstract='',
-    resource_type='Layer'
+    unique_identifier="id", title="Test", abstract="", resource_type="Layer"
 )
