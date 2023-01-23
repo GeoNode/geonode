@@ -357,7 +357,7 @@ def get_dataset_workspace(dataset):
     except Exception:
         workspace = None
     if not workspace and alternate and ':' in alternate:
-        workspace = alternate.split(":")[1]
+        workspace = alternate.split(":")[0]
     if not workspace:
         default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
         try:
