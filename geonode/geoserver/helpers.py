@@ -1874,6 +1874,7 @@ gs_catalog = Catalog(
     url, _user, _password, retries=ogc_server_settings.MAX_RETRIES, backoff_factor=ogc_server_settings.BACKOFF_FACTOR
 )
 gs_uploader = Client(url, _user, _password)
+gf_client = GeofenceClient(url, _user, _password)
 
 
 def _create_geofence_client():
