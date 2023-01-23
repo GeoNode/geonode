@@ -31,8 +31,8 @@ class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     title = indexes.CharField(boost=2)
     # https://github.com/toastdriven/django-haystack/issues/569 - Necessary for sorting
     title_sortable = indexes.CharField(indexed=False)
-    description = indexes.CharField(model_attr='description', boost=1.5)
-    id = indexes.IntegerField(model_attr='id')
+    description = indexes.CharField(model_attr="description", boost=1.5)
+    id = indexes.IntegerField(model_attr="id")
     type = indexes.CharField(faceted=True)
     json = indexes.CharField(indexed=False)
 
@@ -51,7 +51,6 @@ class GroupIndex(indexes.SearchIndex, indexes.Indexable):
     def prepare_json(self, obj):
         data = {
             "_type": self.prepare_type(obj),
-
             "title": obj.title,
             "description": obj.description,
             "keywords": [keyword.name for keyword in obj.keywords.all()] if obj.keywords else [],

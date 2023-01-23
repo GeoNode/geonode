@@ -25,8 +25,10 @@ def run_setup_hooks(sender, **kwargs):
     # from django.utils import timezone
 
     # Initialize periodic tasks
-    if 'django_celery_beat' in settings.INSTALLED_APPS and \
-            getattr(settings, 'CELERY_BEAT_SCHEDULER', None) == 'django_celery_beat.schedulers:DatabaseScheduler':
+    if (
+        "django_celery_beat" in settings.INSTALLED_APPS
+        and getattr(settings, "CELERY_BEAT_SCHEDULER", None) == "django_celery_beat.schedulers:DatabaseScheduler"
+    ):
         # from django_celery_beat.models import (
         #     IntervalSchedule,
         #     PeriodicTask,
@@ -61,6 +63,7 @@ class ServicesAppConfig(NotificationsAppConfigBase):
         super().ready()
         # Let's make sure the signals are connected to the App
         from . import signals  # noqa
+
         post_migrate.connect(run_setup_hooks, sender=self)
         # settings.CELERY_BEAT_SCHEDULE['probe_services'] = {
         #     'task': 'geonode.services.tasks.probe_services',

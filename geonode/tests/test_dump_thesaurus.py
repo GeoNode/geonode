@@ -55,8 +55,8 @@ class TestDumpThesaurus(TestCase):
 
     def test_dump_thesaurus(self):
         out = self.call_dump_command("--name", "foo_name")
-        self.assertIn("<skos:ConceptScheme rdf:about=\"http://inspire.ec.europa.eu/theme\">", out)
-        self.assertIn("<skos:Concept rdf:about=\"http://inspire.ec.europa.eu/theme/ad\">", out)
+        self.assertIn('<skos:ConceptScheme rdf:about="http://inspire.ec.europa.eu/theme">', out)
+        self.assertIn('<skos:Concept rdf:about="http://inspire.ec.europa.eu/theme/ad">', out)
 
     def test_dump_thesaurus_ttl(self):
         out = self.call_dump_command("--name", "foo_name", "--format", "ttl")

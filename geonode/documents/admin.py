@@ -29,28 +29,33 @@ from geonode.base.admin import metadata_batch_edit
 class DocumentAdminForm(ResourceBaseAdminForm):
     class Meta(ResourceBaseAdminForm.Meta):
         model = Document
-        fields = '__all__'
+        fields = "__all__"
         # exclude = (
         #     'resource',
         # )
 
 
 class DocumentAdmin(TabbedTranslationAdmin):
-    list_display = ('id',
-                    'title',
-                    'date',
-                    'category',
-                    'group',
-                    'is_approved',
-                    'is_published',
-                    'metadata_completeness')
-    list_display_links = ('id',)
-    list_editable = ('title', 'category', 'group', 'is_approved', 'is_published')
-    list_filter = ('date', 'date_type', 'restriction_code_type', 'category',
-                   'group', 'is_approved', 'is_published',)
-    search_fields = ('title', 'abstract', 'purpose',
-                     'is_approved', 'is_published',)
-    date_hierarchy = 'date'
+    list_display = ("id", "title", "date", "category", "group", "is_approved", "is_published", "metadata_completeness")
+    list_display_links = ("id",)
+    list_editable = ("title", "category", "group", "is_approved", "is_published")
+    list_filter = (
+        "date",
+        "date_type",
+        "restriction_code_type",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+    )
+    search_fields = (
+        "title",
+        "abstract",
+        "purpose",
+        "is_approved",
+        "is_published",
+    )
+    date_hierarchy = "date"
     form = DocumentAdminForm
     actions = [metadata_batch_edit]
 
@@ -61,6 +66,7 @@ class DocumentAdmin(TabbedTranslationAdmin):
         """
         for obj in queryset:
             from geonode.resource.manager import resource_manager
+
             resource_manager.delete(obj.uuid, instance=obj)
 
 

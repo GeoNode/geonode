@@ -24,22 +24,13 @@ from corsheaders.middleware import ACCESS_CONTROL_ALLOW_ORIGIN
 
 
 class TestHeaders(GeoNodeBaseTestSupport):
-
     def test_cors_headers(self):
-        categories_url = reverse('categories-list')
-        headers = {
-            'HTTP_ORIGIN': "http://127.0.0.1"
-        }
+        categories_url = reverse("categories-list")
+        headers = {"HTTP_ORIGIN": "http://127.0.0.1"}
         with self.settings(CORS_ALLOW_ALL_ORIGINS=True):
-            response = self.client.get(
-                categories_url,
-                **headers
-            )
-            self.assertEqual(response[ACCESS_CONTROL_ALLOW_ORIGIN], '*')
+            response = self.client.get(categories_url, **headers)
+            self.assertEqual(response[ACCESS_CONTROL_ALLOW_ORIGIN], "*")
 
         with self.settings(CORS_ALLOW_ALL_ORIGINS=False):
-            response = self.client.get(
-                categories_url,
-                **headers
-            )
-            self.assertIsNone(getattr(response, 'ACCESS_CONTROL_ALLOW_ORIGIN', None))
+            response = self.client.get(categories_url, **headers)
+            self.assertIsNone(getattr(response, "ACCESS_CONTROL_ALLOW_ORIGIN", None))

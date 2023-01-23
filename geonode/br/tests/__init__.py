@@ -17,6 +17,6 @@
 #
 #########################################################################
 
-from geonode.br.tests.test_restore import *             # noqa aside
-from geonode.br.tests.test_restore_helpers import *     # noqa aside
-from geonode.br.tests.test_backup import *              # noqa aside
+from geonode.br.tests.test_restore import *  # noqa aside
+from geonode.br.tests.test_restore_helpers import *  # noqa aside
+from geonode.br.tests.test_backup import *  # noqa aside

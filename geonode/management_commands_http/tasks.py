@@ -17,9 +17,7 @@
 #
 #########################################################################
 from celery import shared_task
-from geonode.management_commands_http.utils.job_runner import (
-    run_management_command
-)
+from geonode.management_commands_http.utils.job_runner import run_management_command
 
 
 @shared_task(

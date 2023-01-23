@@ -18,9 +18,7 @@
 #########################################################################
 import logging
 
-from urllib.parse import (
-    urlparse,
-    ParseResult)
+from urllib.parse import urlparse, ParseResult
 
 from django.db import models
 from django.conf import settings
@@ -42,60 +40,32 @@ logger = logging.getLogger("geonode.services")
 class Service(ResourceBase):
     """Service Class to represent remote Geo Web Services"""
 
-    type = models.CharField(
-        max_length=10,
-        choices=service_type_as_tuple
-    )
+    type = models.CharField(max_length=10, choices=service_type_as_tuple)
     method = models.CharField(
         max_length=1,
         choices=(
-            (enumerations.LOCAL, _('Local')),
-            (enumerations.CASCADED, _('Cascaded')),
-            (enumerations.HARVESTED, _('Harvested')),
-            (enumerations.INDEXED, _('Indexed')),
-            (enumerations.LIVE, _('Live')),
-            (enumerations.OPENGEOPORTAL, _('OpenGeoPortal'))
-        )
+            (enumerations.LOCAL, _("Local")),
+            (enumerations.CASCADED, _("Cascaded")),
+            (enumerations.HARVESTED, _("Harvested")),
+            (enumerations.INDEXED, _("Indexed")),
+            (enumerations.LIVE, _("Live")),
+            (enumerations.OPENGEOPORTAL, _("OpenGeoPortal")),
+        ),
     )
     # with service, version and request etc stripped off
-    base_url = models.URLField(
-        unique=True,
-        db_index=True
-    )
-    version = models.CharField(
-        max_length=100,
-        null=True,
-        blank=True
-    )
+    base_url = models.URLField(unique=True, db_index=True)
+    version = models.CharField(max_length=100, null=True, blank=True)
     # Should force to slug?
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-        db_index=True
-    )
-    description = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True
-    )
-    extra_queryparams = models.TextField(
-        null=True,
-        blank=True
-    )
-    operations = models.JSONField(
-        default=dict,
-        null=True,
-        blank=True
-    )
+    name = models.CharField(max_length=255, unique=True, db_index=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    extra_queryparams = models.TextField(null=True, blank=True)
+    operations = models.JSONField(default=dict, null=True, blank=True)
 
     # Foreign Keys
 
     harvester = models.ForeignKey(
-        Harvester,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name='service_harvester')
+        Harvester, null=True, blank=True, on_delete=models.CASCADE, related_name="service_harvester"
+    )
 
     # Supported Capabilities
 
@@ -112,8 +82,12 @@ class Service(ResourceBase):
         parsed_url = urlparse(self.base_url)
         encoded_get_args = self.extra_queryparams
         _service_url = ParseResult(
-            parsed_url.scheme, parsed_url.netloc, parsed_url.path,
-            parsed_url.params, encoded_get_args, parsed_url.fragment
+            parsed_url.scheme,
+            parsed_url.netloc,
+            parsed_url.path,
+            parsed_url.params,
+            encoded_get_args,
+            parsed_url.fragment,
         )
         return _service_url.geturl()
 
@@ -132,14 +106,14 @@ class Service(ResourceBase):
         return [x for x in service_type_as_tuple if x[0] == self.type][0][1]
 
     def get_absolute_url(self):
-        return '/services/%i' % self.id
+        return "/services/%i" % self.id
 
     class Meta:
         # custom permissions,
         # change and delete are standard in django-guardian
         permissions = (
-            ('add_resourcebase_from_service', 'Can add resources to Service'),
-            ('change_resourcebase_metadata', 'Can change resources metadata'),
+            ("add_resourcebase_from_service", "Can add resources to Service"),
+            ("change_resourcebase_metadata", "Can change resources metadata"),
         )
 
 
@@ -148,7 +122,9 @@ class ServiceProfileRole(models.Model):
     """
     ServiceProfileRole is an intermediate model to bind Profiles and Services and apply roles.
     """
+
     profiles = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    role = models.CharField(choices=ROLE_VALUES, max_length=255, help_text=_(
-        'function performed by the responsible party'))
+    role = models.CharField(
+        choices=ROLE_VALUES, max_length=255, help_text=_("function performed by the responsible party")
+    )

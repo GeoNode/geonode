@@ -21,8 +21,8 @@ from django.apps import AppConfig
 
 
 class BackupRestoreAppConfig(AppConfig):
-    name = 'geonode.br'
-    verbose_name = 'Backup/Restore'
+    name = "geonode.br"
+    verbose_name = "Backup/Restore"
 
 
-default_app_config = 'geonode.br.BackupRestoreAppConfig'
+default_app_config = "geonode.br.BackupRestoreAppConfig"

@@ -49,11 +49,7 @@ from geonode.thumbs.background import (
     GenericXYZBackground,
     GenericWMSBackground,
 )
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models,
-    create_single_dataset)
+from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -66,11 +62,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
 
     dataset_coast_line = None
 
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
     def setUpClass(cls):
@@ -80,7 +72,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            cls.dataset_coast_line = create_single_dataset('san_andres_y_providencia_coastline')
+            cls.dataset_coast_line = create_single_dataset("san_andres_y_providencia_coastline")
 
     @classmethod
     def tearDownClass(cls):
@@ -115,11 +107,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         end = datetime.now()
 
         if request_mock.call_count:
-            self.assertEqual(request_mock.call_count, max_retries,
-                             f"Expected to {max_retries} number of failing fetches")
+            self.assertEqual(
+                request_mock.call_count, max_retries, f"Expected to {max_retries} number of failing fetches"
+            )
             self.assertGreaterEqual(
-                (end - start).seconds, max_retries * retry_delay - 1,
-                "Expected delay between consecutive failing fetches"
+                (end - start).seconds,
+                max_retries * retry_delay - 1,
+                "Expected delay between consecutive failing fetches",
             )
 
     @override_settings(
@@ -191,13 +185,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
             logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
-            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                 logger.error(f"Dumping image to: {tmpfile.name}")
                 image.save(tmpfile)
                 # Let's check that the thumb is valid at least
                 with Image.open(tmpfile) as img:
                     img.verify()
-            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                 logger.error(f"Dumping diff to: {tmpfile.name}")
                 diff.save(tmpfile)
                 # Let's check that the thumb is valid at least
@@ -244,9 +238,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         bbox_3857 = [-8250483.072013094, -8221819.186406153, 4961221.562116772, 4985108.133455889, "EPSG:3857"]
 
         zooms = range(6, 13)
-        expected_image_paths = [
-            f"{EXPECTED_RESULTS_DIR}background/wikimedia_zoom_{zoom}_outcome.png" for zoom in zooms
-        ]
+        expected_image_paths = [f"{EXPECTED_RESULTS_DIR}background/wikimedia_zoom_{zoom}_outcome.png" for zoom in zooms]
 
         background = GenericXYZBackground(thumbnail_width=width, thumbnail_height=height)
 
@@ -352,7 +344,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
                 "service_url": settings.OGC_SERVER["default"]["LOCATION"],
                 "dataset_name": "san_andres_y_providencia_coastline_foo",
                 "srid": "EPSG:3857",
-                "version": "1.1.1"
+                "version": "1.1.1",
             }
         }
     )
@@ -376,11 +368,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         end = datetime.now()
 
         if request_mock.call_count:
-            self.assertEqual(request_mock.call_count, max_retries,
-                             f"Expected to {max_retries} number of failing fetches")
+            self.assertEqual(
+                request_mock.call_count, max_retries, f"Expected to {max_retries} number of failing fetches"
+            )
             self.assertGreaterEqual(
-                (end - start).seconds, max_retries * retry_delay - 1,
-                "Expected delay between consecutive failing fetches"
+                (end - start).seconds,
+                max_retries * retry_delay - 1,
+                "Expected delay between consecutive failing fetches",
             )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -390,7 +384,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
                 "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
                 "dataset_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:3857",
-                "version": "1.1.1"
+                "version": "1.1.1",
             }
         }
     )
@@ -413,13 +407,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
             logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
-            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                 logger.error(f"Dumping image to: {tmpfile.name}")
                 image.save(tmpfile)
                 # Let's check that the thumb is valid at least
                 with Image.open(tmpfile) as img:
                     img.verify()
-            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                 logger.error(f"Dumping diff to: {tmpfile.name}")
                 diff.save(tmpfile)
                 # Let's check that the thumb is valid at least
@@ -437,7 +431,7 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
                 "service_url": f"{settings.OGC_SERVER['default']['LOCATION']}ows/",
                 "dataset_name": "san_andres_y_providencia_coastline",
                 "srid": "EPSG:4326",
-                "version": "1.1.1"
+                "version": "1.1.1",
             }
         }
     )
@@ -460,13 +454,13 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
             logger.warn("Mismatch, it was not possible to bump the bg!")
             # Sometimes this test fails to fetch the OSM background
-            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                 logger.error(f"Dumping image to: {tmpfile.name}")
                 image.save(tmpfile)
                 # Let's check that the thumb is valid at least
                 with Image.open(tmpfile) as img:
                     img.verify()
-            with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+            with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                 logger.error(f"Dumping diff to: {tmpfile.name}")
                 diff.save(tmpfile)
                 # Let's check that the thumb is valid at least
@@ -491,8 +485,8 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         cls.user_admin = get_user_model().objects.get(username="admin")
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            cls.dataset_coast_line = create_single_dataset('san_andres_y_providencia_coastline')
-            cls.dataset_highway = create_single_dataset('san_andres_y_providencia_highway')
+            cls.dataset_coast_line = create_single_dataset("san_andres_y_providencia_coastline")
+            cls.dataset_highway = create_single_dataset("san_andres_y_providencia_highway")
 
             # create a map from loaded layers
             admin_user = get_user_model().objects.get(username="admin")
@@ -509,7 +503,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 store=None,
                 current_style=None,
                 ows_url=None,
-                local=True
+                local=True,
             )
             MapLayer.objects.create(
                 map=cls.map_composition,
@@ -518,7 +512,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
                 store=None,
                 current_style=None,
                 ows_url=None,
-                local=True
+                local=True,
             )
             # update MapLayers to correctly show layers' location
             with DisableDjangoSignals():
@@ -532,7 +526,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
     def _fetch_thumb_and_compare(self, url, expected_image):
         if not url:
-            logger.error(f'It was not possible to fetch the remote dataset WMS GetMap! thumb_url: {url}')
+            logger.error(f"It was not possible to fetch the remote dataset WMS GetMap! thumb_url: {url}")
             return
         _, img = http_client.request(url)
         content = BytesIO(img)
@@ -547,13 +541,13 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             if mismatch >= expected_image.size[0] * expected_image.size[1] * 0.01:
                 logger.warn("Mismatch, it was not possible to bump the bg!")
                 # Sometimes this test fails to fetch the OSM background
-                with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                     logger.error(f"Dumping thumb to: {tmpfile.name}")
                     thumb.save(tmpfile)
                     # Let's check that the thumb is valid at least
                     with Image.open(tmpfile) as img:
                         img.verify()
-                with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                     logger.error(f"Dumping diff to: {tmpfile.name}")
                     diff.save(tmpfile)
                     # Let's check that the thumb is valid at least
@@ -608,7 +602,7 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
 
         self.client.login(username="norman", password="norman")
         dataset_id = Dataset.objects.get(alternate="geonode:san_andres_y_providencia_coastline").resourcebase_ptr_id
-        thumbnail_post_url = reverse('base-resources-set-thumb-from-bbox', args=[dataset_id])
+        thumbnail_post_url = reverse("base-resources-set-thumb-from-bbox", args=[dataset_id])
 
         for bbox, expected_thumb_path in zip(bboxes, expected_thumbs_paths):
             response = self.client.post(
@@ -649,13 +643,13 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
             if mismatch >= expected_thumb.size[0] * expected_thumb.size[1] * 0.01:
                 logger.warn("Mismatch, it was not possible to bump the bg!")
                 # Sometimes this test fails to fetch the OSM background
-                with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                     logger.error(f"Dumping thumb to: {tmpfile.name}")
                     thumb.save(tmpfile)
                     # Let's check that the thumb is valid at least
                     with Image.open(tmpfile) as img:
                         img.verify()
-                with tempfile.NamedTemporaryFile(dir='/tmp', suffix='.png', delete=False) as tmpfile:
+                with tempfile.NamedTemporaryFile(dir="/tmp", suffix=".png", delete=False) as tmpfile:
                     logger.error(f"Dumping diff to: {tmpfile.name}")
                     diff.save(tmpfile)
                     # Let's check that the thumb is valid at least
@@ -710,13 +704,15 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
     def test_UTM_dataset_thumbnail(self):
         res = None
         try:
-            dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data', 'WY_USNG.zip')]
+            dt_files = [os.path.join(os.path.abspath(os.path.dirname(__file__)), "data", "WY_USNG.zip")]
             defaults = {"owner": self.user_admin}
             # raises an exception if resource_type is not provided
             self.rm.ingest(dt_files)
             # ingest with datasets
             res = self.rm.ingest(dt_files, resource_type=Dataset, defaults=defaults)
-            if res:  # Since importing this dataset takes some time, the connection might be reset due to very low timeout set for testing.
+            if (
+                res
+            ):  # Since importing this dataset takes some time, the connection might be reset due to very low timeout set for testing.
                 self.assertTrue(isinstance(res.get_real_instance(), Dataset))
 
                 expected_results_dir = f"{EXPECTED_RESULTS_DIR}thumbnails/"

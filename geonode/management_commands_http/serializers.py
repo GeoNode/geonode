@@ -59,9 +59,7 @@ class ManagementCommandJobCreateSerializer(serializers.ModelSerializer):
     args = serializers.JSONField(required=False, default=[])
     kwargs = serializers.JSONField(required=False, default={})
     autostart = serializers.BooleanField(required=False, default=True)
-    user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault()
-    )
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = ManagementCommandJob
@@ -79,7 +77,7 @@ class ManagementCommandJobCreateSerializer(serializers.ModelSerializer):
 
     def validate_args(self, value):
         if not isinstance(value, list):
-            raise serializers.ValidationError('args must be a list')
+            raise serializers.ValidationError("args must be a list")
 
         if "--help" in value:
             raise serializers.ValidationError('Forbidden argument: "--help"')
@@ -88,7 +86,7 @@ class ManagementCommandJobCreateSerializer(serializers.ModelSerializer):
 
     def validate_kwargs(self, value):
         if not isinstance(value, dict):
-            raise serializers.ValidationError('kwargs must be a dict')
+            raise serializers.ValidationError("kwargs must be a dict")
 
         return value
 

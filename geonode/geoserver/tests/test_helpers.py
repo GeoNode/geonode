@@ -32,35 +32,21 @@ from geonode.utils import safe_path_leaf
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
-from geonode.geoserver.helpers import (
-    gs_catalog,
-    ows_endpoint_in_path,
-    get_dataset_storetype,
-    extract_name_from_sld)
+from geonode.geoserver.helpers import gs_catalog, ows_endpoint_in_path, get_dataset_storetype, extract_name_from_sld
 from geonode.layers.populate_datasets_data import create_dataset_data
 
-from geonode.geoserver.ows import (
-    _wcs_link,
-    _wfs_link,
-    _wms_link)
+from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models)
+from geonode.base.populate_test_data import all_public, create_models, remove_models
 
 logger = logging.getLogger(__name__)
 
 
 class HelperTest(GeoNodeBaseTestSupport):
 
-    type = 'dataset'
+    type = "dataset"
 
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
     def setUpClass(cls):
@@ -75,8 +61,8 @@ class HelperTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        self.user = 'admin'
-        self.passwd = 'admin'
+        self.user = "admin"
+        self.passwd = "admin"
         create_dataset_data()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -96,30 +82,29 @@ class HelperTest(GeoNodeBaseTestSupport):
     def test_safe_path_leaf(self):
         base_path = settings.MEDIA_ROOT
 
-        malformed_paths = [
-            'c:/etc/passwd',
-            'c:\\etc\\passwd',
-            '\0_a*b:c<d>e%f/(g)h+i_0.txt'
-        ]
+        malformed_paths = ["c:/etc/passwd", "c:\\etc\\passwd", "\0_a*b:c<d>e%f/(g)h+i_0.txt"]
         for _path in malformed_paths:
             with self.assertRaises(ValidationError):
                 safe_path_leaf(_path)
 
         unsafe_paths = [
-            '/root/',
-            '~/.ssh',
-            '$HOME/.ssh',
-            '/etc/passwd',
-            '.../style.sld',
+            "/root/",
+            "~/.ssh",
+            "$HOME/.ssh",
+            "/etc/passwd",
+            ".../style.sld",
             'fi:l*e/p"a?t>h|.t<xt',
-            os.path.join('/tmp/uploaded/', 'style.sld'),
-            os.path.join(base_path, '../etc/passwd', 'style.sld')
+            os.path.join("/tmp/uploaded/", "style.sld"),
+            os.path.join(base_path, "../etc/passwd", "style.sld"),
         ]
         for _path in unsafe_paths:
-            with self.assertRaisesMessage(GeoNodeException, f"The provided path '{_path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"):
+            with self.assertRaisesMessage(
+                GeoNodeException,
+                f"The provided path '{_path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!",
+            ):
                 safe_path_leaf(_path)
 
-        safe_path = os.path.join(base_path, 'style.sld')
+        safe_path = os.path.join(base_path, "style.sld")
         self.assertEqual(safe_path_leaf(safe_path), safe_path)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -219,80 +204,69 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
           </LegendURL>
         </Style>
       </Layer>"""
-        kwargs = {
-            'content': content,
-            'status': 200,
-            'content_type': 'application/xml'
-        }
+        kwargs = {"content": content, "status": 200, "content_type": "application/xml"}
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
 
-        kwargs = {
-            'content': content,
-            'status': 200,
-            'content_type': 'text/xml; charset=UTF-8'
-        }
+        kwargs = {"content": content, "status": 200, "content_type": "text/xml; charset=UTF-8"}
         _content = _response_callback(**kwargs).content
         self.assertTrue(re.findall(f'{urljoin(settings.SITEURL, "/gs/")}ows', str(_content)))
 
     def test_return_element_if_not_exists_in_the_subtypes(self):
-        el = get_dataset_storetype('not-existing-type')
-        self.assertEqual('not-existing-type', el)
+        el = get_dataset_storetype("not-existing-type")
+        self.assertEqual("not-existing-type", el)
 
     def test_datastore_should_return_vector(self):
-        el = get_dataset_storetype('dataStore')
-        self.assertEqual('vector', el)
+        el = get_dataset_storetype("dataStore")
+        self.assertEqual("vector", el)
 
     def test_coverageStore_should_return_raster(self):
-        el = get_dataset_storetype('coverageStore')
-        self.assertEqual('raster', el)
+        el = get_dataset_storetype("coverageStore")
+        self.assertEqual("raster", el)
 
     def test_remoteStore_should_return_remote(self):
-        el = get_dataset_storetype('remoteStore')
-        self.assertEqual('remote', el)
+        el = get_dataset_storetype("remoteStore")
+        self.assertEqual("remote", el)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_geoserver_proxy_strip_paths(self):
-        response = self.client.get(f"{reverse('gs_layers')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=application/json&access_token=something")
+        response = self.client.get(
+            f"{reverse('gs_layers')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=application/json&access_token=something"
+        )
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=image/png&access_token=something")
+        response = self.client.get(
+            f"{reverse('ows_endpoint')}?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=geonode:tipi_forestali&outputFormat=image/png&access_token=something"
+        )
         self.assertEqual(response.status_code, 200)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_ows_links(self):
-        ows_url = 'http://foo.org/ows'
-        identifier = 'foo:fake_alternate'
+        ows_url = "http://foo.org/ows"
+        identifier = "foo:fake_alternate"
         min_x, min_y, max_x, max_y = -1, -1, 1, 1
-        expected_url = f'{ows_url}?service=WCS&request=GetCoverage&coverageid=foo__fake_alternate&format=image%2Ftiff&version=2.0.1&compression=DEFLATE&tileWidth=512&tileHeight=512&outputCrs=4326'
+        expected_url = f"{ows_url}?service=WCS&request=GetCoverage&coverageid=foo__fake_alternate&format=image%2Ftiff&version=2.0.1&compression=DEFLATE&tileWidth=512&tileHeight=512&outputCrs=4326"
         download_url = _wcs_link(
             ows_url,
             identifier,
             "image/tiff",
-            srid='4326',
+            srid="4326",
             bbox=[min_x, min_y, max_x, max_y],
             compression="DEFLATE",
-            tile_size=512)
+            tile_size=512,
+        )
         self.assertEqual(download_url, expected_url, download_url)
 
-        expected_url = f'{ows_url}?service=WFS&version=1.0.0&request=GetFeature&typename=foo%3Afake_alternate&outputFormat=application%2Fzip&srs=4326&bbox=%5B-1%2C+-1%2C+1%2C+1%5D'
+        expected_url = f"{ows_url}?service=WFS&version=1.0.0&request=GetFeature&typename=foo%3Afake_alternate&outputFormat=application%2Fzip&srs=4326&bbox=%5B-1%2C+-1%2C+1%2C+1%5D"
         download_url = _wfs_link(
-            ows_url,
-            identifier,
-            "application/zip",
-            {},
-            srid='4326',
-            bbox=[min_x, min_y, max_x, max_y])
+            ows_url, identifier, "application/zip", {}, srid="4326", bbox=[min_x, min_y, max_x, max_y]
+        )
         self.assertEqual(download_url, expected_url, download_url)
 
-        expected_url = f'{ows_url}?service=WMS&request=GetMap&layers=foo%3Afake_alternate&format=image%2Fpng&height=512&width=512&srs=4326&bbox=%5B-1%2C+-1%2C+1%2C+1%5D'
+        expected_url = f"{ows_url}?service=WMS&request=GetMap&layers=foo%3Afake_alternate&format=image%2Fpng&height=512&width=512&srs=4326&bbox=%5B-1%2C+-1%2C+1%2C+1%5D"
         download_url = _wms_link(
-            ows_url,
-            identifier,
-            "image/png",
-            512, 512,
-            srid='4326',
-            bbox=[min_x, min_y, max_x, max_y])
+            ows_url, identifier, "image/png", 512, 512, srid="4326", bbox=[min_x, min_y, max_x, max_y]
+        )
         self.assertEqual(download_url, expected_url, download_url)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -307,7 +281,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         end_time_1 = time.time() - start_time
 
         start_time = time.time()
-        re.match(r'.*/(rest)/.*$', path, re.IGNORECASE)
+        re.match(r".*/(rest)/.*$", path, re.IGNORECASE)
         end_time_2 = time.time() - start_time
 
         self.assertLess(end_time_1, end_time_2)

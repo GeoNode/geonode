@@ -24,4 +24,4 @@ logger = logging.getLogger(__name__)
 
 class GroupsAppConfig(AppConfig):
 
-    name = 'geonode.groups'
+    name = "geonode.groups"

@@ -76,6 +76,7 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
 
     def probe(self):
         from geonode.utils import http_client
+
         try:
             resp, _ = http_client.request(self.url)
             return resp.status_code in (200, 201)
@@ -116,11 +117,15 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     _h = _service.harvester
                     num_harvestable_resources = _h.num_harvestable_resources
                     num_harvestable_resources_selected = _h.harvestable_resources.filter(
-                        should_be_harvested=False).count()
+                        should_be_harvested=False
+                    ).count()
                     if num_harvestable_resources == 0:
                         _h.update_availability()
                         _h.initiate_update_harvestable_resources()
-                    if num_harvestable_resources > 0 and num_harvestable_resources_selected <= num_harvestable_resources:
+                    if (
+                        num_harvestable_resources > 0
+                        and num_harvestable_resources_selected <= num_harvestable_resources
+                    ):
                         return True
             except Exception as e:
                 logger.exception(e)
@@ -147,8 +152,7 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
             _service = models.Service.objects.get(id=self.geonode_service_id)
             if _service.harvester:
                 _h = _service.harvester
-                return _h.harvestable_resources.filter(
-                    should_be_harvested=False).order_by('id').iterator()
+                return _h.harvestable_resources.filter(should_be_harvested=False).order_by("id").iterator()
         return []
 
     def harvest_resource(self, resource_id, geonode_service):
@@ -171,10 +175,16 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     _h.status = _h.STATUS_PERFORMING_HARVESTING
                     _h.save()
                     _h_session = AsynchronousHarvestingSession.objects.create(
-                        harvester=_h,
-                        session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+                        harvester=_h, session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
                     )
-                    harvest_resources.apply_async(args=([resource_id, ], _h_session.pk))
+                    harvest_resources.apply_async(
+                        args=(
+                            [
+                                resource_id,
+                            ],
+                            _h_session.pk,
+                        )
+                    )
             except Exception as e:
                 logger.exception(e)
         else:
@@ -182,6 +192,5 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
 
 
 class CascadableServiceHandlerMixin:
-
     def create_cascaded_store(self, service):
         raise NotImplementedError

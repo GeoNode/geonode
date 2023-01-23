@@ -33,8 +33,8 @@ def get_data(action, key, default=None):
     Checks for a key in the action's JSON data field.  Returns default if the key does not exist.
     """
 
-    if hasattr(action, 'data') and action.data:
-        if hasattr(action.data, 'get'):
+    if hasattr(action, "data") and action.data:
+        if hasattr(action.data, "get"):
             return action.data.get(key, default)
         elif action and action.data:
             _action_data = json.loads(action.data)
@@ -48,20 +48,20 @@ def get_data(action, key, default=None):
     return default
 
 
-@register.inclusion_tag('social/_activity_item.html')
+@register.inclusion_tag("social/_activity_item.html")
 def activity_item(action, **kwargs):
     """
     Provides a location to manipulate an action in preparation for display.
     """
     actor = action.actor
-    activity_class = 'activity'
+    activity_class = "activity"
     verb = action.verb
     username = actor.username if actor else "someone"
     target = action.target
     object_type = None
     object = action.action_object
-    raw_action = get_data(action, 'raw_action')
-    object_name = get_data(action, 'object_name')
+    raw_action = get_data(action, "raw_action")
+    object_name = get_data(action, "object_name")
     preposition = _("to")
     fragment = None
 
@@ -77,21 +77,20 @@ def activity_item(action, **kwargs):
         if object_type in geoapps:
             activity_class = object_type
 
-        if object_type == 'map':
-            activity_class = 'map'
+        if object_type == "map":
+            activity_class = "map"
 
-        if object_type == 'dataset':
-            activity_class = 'dataset'
+        if object_type == "dataset":
+            activity_class = "dataset"
 
-        if object_type == 'document':
-            activity_class = 'document'
+        if object_type == "document":
+            activity_class = "document"
 
-    if raw_action == 'deleted':
-        activity_class = 'delete'
+    if raw_action == "deleted":
+        activity_class = "delete"
 
-    if raw_action == 'created' and \
-            object_type in ('dataset', 'document'):
-        activity_class = 'upload'
+    if raw_action == "created" and object_type in ("dataset", "document"):
+        activity_class = "upload"
 
     ctx = dict(
         activity_class=activity_class,
@@ -104,6 +103,6 @@ def activity_item(action, **kwargs):
         timestamp=action.timestamp,
         username=username,
         verb=verb,
-        fragment=fragment
+        fragment=fragment,
     )
     return ctx

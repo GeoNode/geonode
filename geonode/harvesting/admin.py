@@ -59,9 +59,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "get_time_until_next_refresh",
         "get_time_until_next_harvesting",
     )
-    list_filter = (
-        "status",
-    )
+    list_filter = ("status",)
 
     readonly_fields = (
         "status",
@@ -75,9 +73,7 @@ class HarvesterAdmin(admin.ModelAdmin):
         "show_link_to_latest_refresh_session",
     )
 
-    list_editable = (
-        "scheduling_enabled",
-    )
+    list_editable = ("scheduling_enabled",)
 
     actions = [
         "update_harvester_availability",
@@ -98,7 +94,7 @@ class HarvesterAdmin(admin.ModelAdmin):
                     "You should update the list of this harvester's harvestable "
                     "resources now in order to ensure consistency."
                 ),
-                level=messages.WARNING
+                level=messages.WARNING,
             )
 
     def get_form(self, request, obj=None, change=False, **kwargs):
@@ -115,16 +111,12 @@ class HarvesterAdmin(admin.ModelAdmin):
             updated_harvesters.append(harvester)
             if not available:
                 non_available_harvesters.append(harvester)
-        self.message_user(
-            request, f"Updated availability for harvesters: {updated_harvesters}")
+        self.message_user(request, f"Updated availability for harvesters: {updated_harvesters}")
         if len(non_available_harvesters) > 0:
             self.message_user(
                 request,
-                (
-                    f"The following harvesters are not "
-                    f"available: {non_available_harvesters}"
-                ),
-                messages.WARNING
+                (f"The following harvesters are not " f"available: {non_available_harvesters}"),
+                messages.WARNING,
             )
 
     @admin.action(description="Update harvestable resources for selected harvesters")
@@ -218,10 +210,7 @@ class HarvesterAdmin(admin.ModelAdmin):
             if harvester.status != models.Harvester.STATUS_READY:
                 harvester.status = models.Harvester.STATUS_READY
                 harvester.save()
-                self.message_user(
-                    request,
-                    _("Resetting status for harvester %(name)s...") % {"name": harvester.name}
-                )
+                self.message_user(request, _("Resetting status for harvester %(name)s...") % {"name": harvester.name})
 
     @admin.display(description="Updating availability in")
     def get_time_until_next_availability_update(self, harvester: models.Harvester):
@@ -254,8 +243,7 @@ class HarvesterAdmin(admin.ModelAdmin):
 
     @admin.display(description="Selected harvestable resources")
     def show_link_to_selected_harvestable_resources(self, harvester: models.Harvester):
-        num_selected = models.HarvestableResource.objects.filter(
-            harvester=harvester, should_be_harvested=True).count()
+        num_selected = models.HarvestableResource.objects.filter(harvester=harvester, should_be_harvested=True).count()
         if num_selected > 0:
             changelist_uri = reverse("admin:harvesting_harvestableresource_changelist")
             result = mark_safe(
@@ -272,28 +260,18 @@ class HarvesterAdmin(admin.ModelAdmin):
         session = harvester.latest_harvesting_session
         if session is not None:
             changelist_uri = reverse(
-                "admin:harvesting_asynchronousharvestingsession_change",
-                args=(harvester.latest_harvesting_session.id,)
+                "admin:harvesting_asynchronousharvestingsession_change", args=(harvester.latest_harvesting_session.id,)
             )
-            return mark_safe(
-                format_html(
-                    f'<a class="button grp-button" href="{changelist_uri}">Go</a>'
-                )
-            )
+            return mark_safe(format_html(f'<a class="button grp-button" href="{changelist_uri}">Go</a>'))
 
     @admin.display(description="Latest refresh session")
     def show_link_to_latest_refresh_session(self, harvester: models.Harvester):
         session = harvester.latest_refresh_session
         if session is not None:
             changelist_uri = reverse(
-                "admin:harvesting_asynchronousharvestingsession_change",
-                args=(harvester.latest_refresh_session.id,)
+                "admin:harvesting_asynchronousharvestingsession_change", args=(harvester.latest_refresh_session.id,)
             )
-            return mark_safe(
-                format_html(
-                    f'<a class="button grp-button" href="{changelist_uri}">Go</a>'
-                )
-            )
+            return mark_safe(format_html(f'<a class="button grp-button" href="{changelist_uri}">Go</a>'))
 
 
 @admin.register(models.AsynchronousHarvestingSession)
@@ -359,12 +337,8 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
         "remote_resource_type",
         "last_harvesting_succeeded",
     )
-    search_fields = (
-        "title",
-    )
-    list_editable = (
-        "should_be_harvested",
-    )
+    search_fields = ("title",)
+    list_editable = ("should_be_harvested",)
 
     actions = [
         "toggle_should_be_harvested",
@@ -394,19 +368,16 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     def toggle_should_be_harvested(self, request, queryset):
         for harvestable_resource in queryset:
             harvestable_resource: models.HarvestableResource
-            harvestable_resource.should_be_harvested = (
-                not harvestable_resource.should_be_harvested)
+            harvestable_resource.should_be_harvested = not harvestable_resource.should_be_harvested
             harvestable_resource.save()
 
-        self.message_user(
-            request, "Toggled harvestable resources' `should_be_harvested` attribute")
+        self.message_user(request, "Toggled harvestable resources' `should_be_harvested` attribute")
 
     @admin.action(description="Harvest selected resources")
     def initiate_harvest_selected_resources(self, request, queryset):
         selected_harvestable_resources = {}
         for harvestable_resource in queryset:
-            harvester_resources = selected_harvestable_resources.setdefault(
-                harvestable_resource.harvester, [])
+            harvester_resources = selected_harvestable_resources.setdefault(harvestable_resource.harvester, [])
             harvester_resources.append(harvestable_resource.id)
         for harvester, harvestable_resource_ids in selected_harvestable_resources.items():
             try:
@@ -414,7 +385,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
                     harvester.initiate_perform_harvesting(harvestable_resource_ids)
                     self.message_user(
                         request,
-                        f"Harvesting {len(harvestable_resource_ids)} resources from {harvester.name!r} harvester..."
+                        f"Harvesting {len(harvestable_resource_ids)} resources from {harvester.name!r} harvester...",
                     )
                 else:
                     raise RuntimeError(f"Harvester {harvester!r} is not available")
@@ -425,11 +396,7 @@ class HarvestableResourceAdmin(admin.ModelAdmin):
     def show_link_to_harvester(self, harvestable_resource: models.HarvestableResource):
         harvester = harvestable_resource.harvester
         uri = reverse("admin:harvesting_harvester_change", args=(harvester.pk,))
-        return mark_safe(
-            format_html(
-                f'<a grp-button" href="{uri}">{harvester.name}</a>'
-            )
-        )
+        return mark_safe(format_html(f'<a grp-button" href="{uri}">{harvester.name}</a>'))
 
 
 def _worker_config_changed(form) -> bool:

@@ -84,7 +84,7 @@ class LayerUploadForm(forms.Form):
     ]
     # Adding style file based on the backend
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        spatial_files.append('sld_file')
+        spatial_files.append("sld_file")
 
     spatial_files = tuple(spatial_files)
 
@@ -93,21 +93,21 @@ class LayerUploadForm(forms.Form):
         super(LayerUploadForm, self).__init__(*args, **kwargs)
 
     def clean_store_spatial_files(self):
-        store_spatial_files = self.data.get('store_spatial_files')
+        store_spatial_files = self.data.get("store_spatial_files")
         if store_spatial_files is None:
             store_spatial_files = True
-            self.cleaned_data['store_spatial_files'] = True
+            self.cleaned_data["store_spatial_files"] = True
         elif isinstance(store_spatial_files, str):
             store_spatial_files = ast.literal_eval(store_spatial_files.lower().capitalize())
         return store_spatial_files if isinstance(store_spatial_files, bool) else True
 
     def clean(self):
         cleaned = super().clean()
-        if cleaned.get('store_spatial_files') is None:
-            cleaned['store_spatial_files'] = True
+        if cleaned.get("store_spatial_files") is None:
+            cleaned["store_spatial_files"] = True
         uploaded, files = self._get_files_paths_or_objects(cleaned)
         cleaned["uploaded"] = uploaded
-        base_file = files.get('base_file')
+        base_file = files.get("base_file")
 
         if not base_file and "base_file" not in self.errors and "base_file_path" not in self.errors:
             logger.error("Base file must be a file or url.")
@@ -154,16 +154,16 @@ class LayerUploadForm(forms.Form):
             ("shx_file", "shx_file_path"),
             ("prj_file", "prj_file_path"),
             ("xml_file", "xml_file_path"),
-            ("sld_file", "sld_file_path")
+            ("sld_file", "sld_file_path"),
         )
         for file_field in file_fields:
             field_name = file_field[0]
             file_field_value = cleaned_data.get(file_field[0], None)
             path_field_value = cleaned_data.get(file_field[1], None)
             if file_field_value and path_field_value:
-                raise ValidationError(_(
-                    f"`{field_name}` field cannot have both a file and a path. Please choose one and try again."
-                ))
+                raise ValidationError(
+                    _(f"`{field_name}` field cannot have both a file and a path. Please choose one and try again.")
+                )
 
             if path_field_value:
                 uploaded = False
@@ -178,44 +178,36 @@ class LayerUploadForm(forms.Form):
 class TimeForm(forms.Form):
     presentation_strategy = forms.CharField(required=False)
     precision_value = forms.IntegerField(required=False)
-    precision_step = forms.ChoiceField(required=False, choices=[
-        ('years',) * 2,
-        ('months',) * 2,
-        ('days',) * 2,
-        ('hours',) * 2,
-        ('minutes',) * 2,
-        ('seconds',) * 2
-    ])
+    precision_step = forms.ChoiceField(
+        required=False,
+        choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
+    )
 
     def __init__(self, *args, **kwargs):
         # have to remove these from kwargs or Form gets mad
-        self._time_names = kwargs.pop('time_names', None)
-        self._text_names = kwargs.pop('text_names', None)
-        self._year_names = kwargs.pop('year_names', None)
+        self._time_names = kwargs.pop("time_names", None)
+        self._text_names = kwargs.pop("text_names", None)
+        self._year_names = kwargs.pop("year_names", None)
         super().__init__(*args, **kwargs)
-        self._build_choice('time_attribute', self._time_names)
-        self._build_choice('end_time_attribute', self._time_names)
-        self._build_choice('text_attribute', self._text_names)
-        self._build_choice('end_text_attribute', self._text_names)
-        widget = forms.TextInput(attrs={'placeholder': 'Custom Format'})
+        self._build_choice("time_attribute", self._time_names)
+        self._build_choice("end_time_attribute", self._time_names)
+        self._build_choice("text_attribute", self._text_names)
+        self._build_choice("end_text_attribute", self._text_names)
+        widget = forms.TextInput(attrs={"placeholder": "Custom Format"})
         if self._text_names:
-            self.fields['text_attribute_format'] = forms.CharField(
-                required=False, widget=widget)
-            self.fields['end_text_attribute_format'] = forms.CharField(
-                required=False, widget=widget)
-        self._build_choice('year_attribute', self._year_names)
-        self._build_choice('end_year_attribute', self._year_names)
+            self.fields["text_attribute_format"] = forms.CharField(required=False, widget=widget)
+            self.fields["end_text_attribute_format"] = forms.CharField(required=False, widget=widget)
+        self._build_choice("year_attribute", self._year_names)
+        self._build_choice("end_year_attribute", self._year_names)
 
     def _resolve_attribute_and_type(self, *name_and_types):
-        return [(self.cleaned_data[n], t) for n, t in name_and_types
-                if self.cleaned_data.get(n, None)]
+        return [(self.cleaned_data[n], t) for n, t in name_and_types if self.cleaned_data.get(n, None)]
 
     def _build_choice(self, att, names):
         if names:
             names.sort()
-            choices = [('', '<None>')] + [(a, a) for a in names]
-            self.fields[att] = forms.ChoiceField(
-                choices=choices, required=False)
+            choices = [("", "<None>")] + [(a, a) for a in names]
+            self.fields[att] = forms.ChoiceField(choices=choices, required=False)
 
     @property
     def time_names(self):
@@ -231,23 +223,23 @@ class TimeForm(forms.Form):
 
     def clean(self):
         starts = self._resolve_attribute_and_type(
-            ('time_attribute', 'Date'),
-            ('text_attribute', 'Text'),
-            ('year_attribute', 'Number'),
+            ("time_attribute", "Date"),
+            ("text_attribute", "Text"),
+            ("year_attribute", "Number"),
         )
         if len(starts) > 1:
-            raise ValidationError('multiple start attributes')
+            raise ValidationError("multiple start attributes")
         ends = self._resolve_attribute_and_type(
-            ('end_time_attribute', 'Date'),
-            ('end_text_attribute', 'Text'),
-            ('end_year_attribute', 'Number'),
+            ("end_time_attribute", "Date"),
+            ("end_text_attribute", "Text"),
+            ("end_year_attribute", "Number"),
         )
         if len(ends) > 1:
-            raise ValidationError('multiple end attributes')
+            raise ValidationError("multiple end attributes")
         if len(starts) > 0:
-            self.cleaned_data['start_attribute'] = starts[0]
+            self.cleaned_data["start_attribute"] = starts[0]
         if len(ends) > 0:
-            self.cleaned_data['end_attribute'] = ends[0]
+            self.cleaned_data["end_attribute"] = ends[0]
         return self.cleaned_data
 
     # @todo implement clean

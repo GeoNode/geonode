@@ -28,7 +28,7 @@ class MessagingTest(GeoNodeBaseTestSupport):
     Tests geonode.messaging
     """
 
-    type = 'dataset'
+    type = "dataset"
 
     def setUp(self):
         super().setUp()

@@ -26,7 +26,7 @@ from requests.auth import HTTPBasicAuth
 
 logger = logging.getLogger(__name__)
 
-ogc_server_settings = settings.OGC_SERVER['default']
+ogc_server_settings = settings.OGC_SERVER["default"]
 
 
 class GeofenceException(Exception):
@@ -58,10 +58,20 @@ class Rule:
     LIMIT = "LIMIT"
     CM_MIXED = "MIXED"
 
-    def __init__(self, priority, workspace, layer, access: (str, bool),
-                 user=None, group=None,
-                 service=None, request=None, subfield=None,
-                 geo_limit=None, catalog_mode=None) -> None:
+    def __init__(
+        self,
+        priority,
+        workspace,
+        layer,
+        access: (str, bool),
+        user=None,
+        group=None,
+        service=None,
+        request=None,
+        subfield=None,
+        geo_limit=None,
+        catalog_mode=None,
+    ) -> None:
         self.fields = {}
 
         # access may be either a boolean or ALLOW/DENY/LIMIT
@@ -71,37 +81,33 @@ class Rule:
             access = Rule.DENY
 
         for field, value in (
-            ('priority', priority),
-
-            ('userName', user),
-            ('roleName', group),
-
-            ('service', service),
-            ('request', request),
-            ('subfield', subfield),
-
-            ('workspace', workspace),
-            ('layer', layer),
-
-            ('access', access),
+            ("priority", priority),
+            ("userName", user),
+            ("roleName", group),
+            ("service", service),
+            ("request", request),
+            ("subfield", subfield),
+            ("workspace", workspace),
+            ("layer", layer),
+            ("access", access),
         ):
-            if value is not None and value != '*':
+            if value is not None and value != "*":
                 self.fields[field] = value
 
         limits = {}
         for field, value in (
-            ('allowedArea', geo_limit),
-            ('catalogMode', catalog_mode),
+            ("allowedArea", geo_limit),
+            ("catalogMode", catalog_mode),
         ):
             if value is not None:
                 limits[field] = value
 
         if limits:
-            self.fields['limits'] = limits
+            self.fields["limits"] = limits
 
     def get_object(self):
         logger.debug(f"Creating Rule object: {self.fields}")
-        return {'Rule': self.fields}
+        return {"Rule": self.fields}
 
 
 class Batch:
@@ -181,22 +187,18 @@ class Batch:
 
     def __init__(self, log_name=None) -> None:
         self.operations = []
-        self.log_name = f'"{log_name}"' if log_name else ''
+        self.log_name = f'"{log_name}"' if log_name else ""
 
     def __str__(self) -> str:
         return super().__str__()
 
     def add_delete_rule(self, rule_id: int):
-        self.operations.append({
-            '@service': 'rules',
-            '@type': 'delete',
-            '@id': rule_id
-        })
+        self.operations.append({"@service": "rules", "@type": "delete", "@id": rule_id})
 
     def add_insert_rule(self, rule: Rule):
         operation = {
-            '@service': 'rules',
-            '@type': 'insert',
+            "@service": "rules",
+            "@type": "insert",
         }
         operation.update(rule.get_object())
         self.operations.append(operation)
@@ -206,11 +208,7 @@ class Batch:
 
     def get_object(self):
         logger.debug(f"Creating Batch object {self.log_name} with {len(self.operations)} operations")
-        return {
-            'Batch': {
-                'operations': self.operations
-            }
-        }
+        return {"Batch": {"operations": self.operations}}
 
 
 class GeofenceClient:
@@ -229,16 +227,14 @@ class GeofenceClient:
 
     def invalidate_cache(self):
         r = requests.put(
-            f'{self.baseurl.rstrip("/")}/geofence/ruleCache/invalidate',
-            auth=HTTPBasicAuth(self.username, self.pw))
+            f'{self.baseurl.rstrip("/")}/geofence/ruleCache/invalidate', auth=HTTPBasicAuth(self.username, self.pw)
+        )
 
         if r.status_code != 200:
             logger.debug("Could not invalidate cache")
             raise GeofenceException("Could not invalidate cache")
 
-    def get_rules(self, page=None, entries=None,
-                  workspace=None, workspace_any=None,
-                  layer=None, layer_any=None):
+    def get_rules(self, page=None, entries=None, workspace=None, workspace_any=None, layer=None, layer_any=None):
         if (page is None and entries is not None) or (page is not None and entries is None):
             raise GeofenceException(f"Bad page/entries combination {page}/{entries}")
 
@@ -250,13 +246,13 @@ class GeofenceClient:
             params = {}
 
             if entries:
-                params.update({'page': page, 'entries': entries})
+                params.update({"page": page, "entries": entries})
 
             for param, value in (
-                ('workspace', workspace),
-                ('workspaceAny', workspace_any),
-                ('layer', layer),
-                ('layerAny', layer_any),
+                ("workspace", workspace),
+                ("workspaceAny", workspace_any),
+                ("layer", layer),
+                ("layerAny", layer_any),
             ):
                 if value is not None:
                     params[param] = value
@@ -265,10 +261,11 @@ class GeofenceClient:
 
             r = requests.get(
                 url,
-                headers={'Content-type': 'application/json'},
+                headers={"Content-type": "application/json"},
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=ogc_server_settings.get('TIMEOUT', 10),
-                verify=False)
+                timeout=ogc_server_settings.get("TIMEOUT", 10),
+                verify=False,
+            )
 
             if r.status_code != 200:
                 logger.debug(f"Could not retrieve GeoFence Rules from {url} -- code:{r.status_code} - {r.text}")
@@ -288,17 +285,18 @@ class GeofenceClient:
             """
             r = requests.get(
                 f'{self.baseurl.rstrip("/")}/geofence/rules/count.json',
-                headers={'Content-type': 'application/json'},
+                headers={"Content-type": "application/json"},
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=ogc_server_settings.get('TIMEOUT', 10),
-                verify=False)
+                timeout=ogc_server_settings.get("TIMEOUT", 10),
+                verify=False,
+            )
 
             if r.status_code != 200:
                 logger.debug(f"Could not retrieve GeoFence Rules count: [{r.status_code}] - {r.text}")
                 raise GeofenceException(f"Could not retrieve GeoFence Rules count: [{r.status_code}]")
 
             response = r.json()
-            return response['count']
+            return response["count"]
 
         except Exception as e:
             logger.debug("Error while retrieving GeoFence rules count", exc_info=e)
@@ -316,8 +314,9 @@ class GeofenceClient:
                 # headers={'Content-type': 'application/json'},
                 json=rule.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=ogc_server_settings.get('TIMEOUT', 60),
-                verify=False)
+                timeout=ogc_server_settings.get("TIMEOUT", 60),
+                verify=False,
+            )
 
             if r.status_code not in (200, 201):
                 logger.debug(f"Could not insert rule: [{r.status_code}] - {r.content}")
@@ -329,7 +328,7 @@ class GeofenceClient:
 
     def run_batch(self, batch: Batch):
         if batch.get_batch_length() == 0:
-            logger.debug(f'Skipping batch execution {batch.log_name}')
+            logger.debug(f"Skipping batch execution {batch.log_name}")
             return
 
         try:
@@ -341,8 +340,9 @@ class GeofenceClient:
                 f'{self.baseurl.rstrip("/")}/geofence/batch/exec',
                 json=batch.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
-                timeout=ogc_server_settings.get('TIMEOUT', 60),
-                verify=False)
+                timeout=ogc_server_settings.get("TIMEOUT", 60),
+                verify=False,
+            )
 
             if r.status_code != 200:
                 logger.debug(f"Error while running batch {batch.log_name}: [{r.status_code}] - {r.content}")
@@ -357,28 +357,26 @@ class GeofenceClient:
     def purge_all_rules(self):
         """purge all existing GeoFence Cache Rules"""
         rules_objs = self.get_rules()
-        rules = rules_objs['rules']
+        rules = rules_objs["rules"]
 
-        batch = Batch('Purge All')
+        batch = Batch("Purge All")
         for rule in rules:
-            batch.add_delete_rule(rule['id'])
+            batch.add_delete_rule(rule["id"])
 
         logger.debug(f"Going to remove all {len(rules)} rules in geofence")
         self.run_batch(batch)
 
     def purge_layer_rules(self, layer_name: str, workspace: str = None):
         """purge existing GeoFence Cache Rules related to a specific Layer"""
-        gs_rules = self.get_rules(
-            workspace=workspace, workspace_any=False,
-            layer=layer_name, layer_any=False)
+        gs_rules = self.get_rules(workspace=workspace, workspace_any=False, layer=layer_name, layer_any=False)
 
-        batch = Batch(f'Purge {workspace}:{layer_name}')
+        batch = Batch(f"Purge {workspace}:{layer_name}")
 
-        if gs_rules and gs_rules['rules']:
+        if gs_rules and gs_rules["rules"]:
             logger.debug(f"Going to remove {len(gs_rules['rules'])} rules for layer '{layer_name}'")
-            for r in gs_rules['rules']:
-                if r['layer'] and r['layer'] == layer_name:
-                    batch.add_delete_rule(r['id'])
+            for r in gs_rules["rules"]:
+                if r["layer"] and r["layer"] == layer_name:
+                    batch.add_delete_rule(r["id"])
                 else:
                     logger.debug(f"Bad rule retrieved for dataset '{layer_name}': {r}")
         self.run_batch(batch)

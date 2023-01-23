@@ -52,9 +52,12 @@ class MapViewSet(DynamicModelViewSet):
     API endpoint that allows maps to be viewed or edited.
     """
 
-    http_method_names = ['get', 'patch', 'post', 'put']
+    http_method_names = ["get", "patch", "post", "put"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
+    ]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -62,7 +65,7 @@ class MapViewSet(DynamicModelViewSet):
         ExtentFilter,
         MapPermissionsFilter,
     ]
-    queryset = Map.objects.all().order_by('-created')
+    queryset = Map.objects.all().order_by("-created")
     serializer_class = MapSerializer
     pagination_class = GeoNodeApiPagination
 

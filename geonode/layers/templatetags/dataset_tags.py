@@ -55,7 +55,12 @@ def crs_labels(value):  # Only one argument.
 @register.simple_tag
 def get_all_resource_styles(resource):
     if resource and resource.default_style:
-        return set(list(resource.styles.all()) + [resource.default_style, ])
+        return set(
+            list(resource.styles.all())
+            + [
+                resource.default_style,
+            ]
+        )
     else:
         return set()
 
@@ -63,8 +68,7 @@ def get_all_resource_styles(resource):
 @register.simple_tag
 def get_sld_name_from_url(sld_url):
     if sld_url:
-        return os.path.basename(
-            urlparse(sld_url).path).split('.')[0]
+        return os.path.basename(urlparse(sld_url).path).split(".")[0]
     else:
         return sld_url
 
@@ -73,7 +77,7 @@ def get_sld_name_from_url(sld_url):
 def get_style_name_from_legend_url(legend_url):
     try:
         parsed = urlparse(legend_url)
-        return parse_qs(parsed.query)['STYLE'][0]
+        return parse_qs(parsed.query)["STYLE"][0]
     except Exception as e:
         logger.error(e)
         return None
