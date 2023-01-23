@@ -2199,11 +2199,11 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
         args = []
         username = get_user_model().objects.exclude(username='admin').exclude(username='AnonymousUser').first().username
         opts = {
-                "permission": perms_type,
-                "users": [username],
-                "resources": str(dataset.id),
-                "delete": True if mode == 'unset' else False
-            }
+            "permission": perms_type,
+            "users": [username],
+            "resources": str(dataset.id),
+            "delete": True if mode == 'unset' else False
+        }
 
         return dataset, args, username, opts
 
