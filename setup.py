@@ -34,5 +34,5 @@ setup(
         "static": ["*.*"],
         "": ["templates/*.*"],  # noqa
         "templates": ["*.*"],
-    }
+    },
 )
