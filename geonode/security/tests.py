@@ -90,11 +90,13 @@ def _log(msg, *args):
 
 def get_geofence_rules_count():
     from geonode.geoserver.helpers import gf_client
+
     return gf_client.get_rules_count()
 
 
 def get_geofence_rules():
     from geonode.geoserver.helpers import gf_client
+
     return gf_client.get_rules()
 
 
@@ -1759,11 +1761,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             self.assertTrue(request.user.is_superuser)
 
         # Test valid IP in second element
-        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88', '127.0.0.1']):
+        with self.settings(ADMIN_IP_WHITELIST=["88.88.88.88", "127.0.0.1"]):
             request = HttpRequest()
             request.user = admin
-            request.path = reverse('home')
-            request.META['REMOTE_ADDR'] = '127.0.0.1'
+            request.path = reverse("home")
+            request.META["REMOTE_ADDR"] = "127.0.0.1"
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 

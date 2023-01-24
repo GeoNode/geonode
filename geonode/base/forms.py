@@ -470,7 +470,7 @@ class ResourceBaseForm(TranslationModelForm):
             if field in ["poc", "owner"] and not self.can_change_perms:
                 self.fields[field].disabled = True
 
-            if field in ['poc', 'owner'] and not self.can_change_perms:
+            if field in ["poc", "owner"] and not self.can_change_perms:
                 self.fields[field].disabled = True
 
     def disable_keywords_widget_for_non_superuser(self, user):

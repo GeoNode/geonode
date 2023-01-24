@@ -419,9 +419,9 @@ class TestStorageManager(GeoNodeBaseTestSupport):
     @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
     @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
     def test_storage_manager_copy(self):
-        '''
+        """
         Test that the copy works as expected and the permissions are corerct
-        '''
+        """
         dataset = create_single_dataset(name="test_copy")
         dataset.files = [os.path.join(f"{self.project_root}", "tests/data/test_sld.sld")]
         dataset.save()
