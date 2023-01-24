@@ -21,7 +21,6 @@ from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
 
 class WmsModuleTestCase(GeoNodeBaseSimpleTestSupport):
-
     def test_get_nsmap(self):
         fixtures = [
             ({None: "ns1uri", "ns2": "ns2uri"}, {"wms": "ns1uri", "ns2": "ns2uri"}),

@@ -127,7 +127,7 @@ class TestExtractLanguages(SimpleTestCase):
     def test_determinate_title_should_return_the_italian_lang_if_none_is_not_available(self):
         titles = [
             Literal("Italian register of the reference data sets", lang="it"),
-            Literal("Register of the reference data sets", lang="en")
+            Literal("Register of the reference data sets", lang="en"),
         ]
         actual = value_for_language(titles, "it")
         self.assertEqual("Italian register of the reference data sets", actual)

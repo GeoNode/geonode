@@ -30,7 +30,6 @@ from geonode.upload.utils import get_max_upload_size, get_max_upload_parallelism
 
 
 class UtilsTestCase(GeoNodeBaseTestSupport):
-
     def test_pages(self):
         self.assertIn("kml-overlay", utils._pages)
 
@@ -66,34 +65,24 @@ class UtilsTestCase(GeoNodeBaseTestSupport):
         self.assertIn("kml", ns.keys())
 
     def test_get_max_upload_size(self):
-        upload_size = UploadSizeLimit.objects.create(
-            slug="test_slug",
-            max_size=1000,
-            description="test description"
-        )
+        upload_size = UploadSizeLimit.objects.create(slug="test_slug", max_size=1000, description="test description")
         # get upload size of existing obj
         self.assertEqual(get_max_upload_size("test_slug"), 1000)
 
         # get upload size of non existing obj will return settings default max size
-        self.assertEqual(
-            get_max_upload_size("invalid"),
-            getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600)
-        )
+        self.assertEqual(get_max_upload_size("invalid"), getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600))
         upload_size.delete()
 
     def test_get_max_upload_parallelism_limit(self):
         upload_parallelism_limit = UploadParallelismLimit.objects.create(
-            slug="test_slug",
-            max_number=3,
-            description="test description"
+            slug="test_slug", max_number=3, description="test description"
         )
         # get upload parallelism limit of existing obj
         self.assertEqual(get_max_upload_parallelism_limit("test_slug"), 3)
 
         # get upload parallelism limit of non existing obj will return settings default max size
         self.assertEqual(
-            get_max_upload_parallelism_limit("invalid"),
-            getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
+            get_max_upload_parallelism_limit("invalid"), getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
         )
         # cleanUp
         upload_parallelism_limit.delete()

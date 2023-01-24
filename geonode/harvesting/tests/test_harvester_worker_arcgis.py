@@ -23,7 +23,6 @@ from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
 
 class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
-
     def test_parse_spatial_extent_with_latest_wkid(self):
         raw_extent = {
             "xmin": 10,
@@ -33,7 +32,7 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
             "spatialReference": {
                 "wkid": 102100,
                 "latestWkid": 3857,
-            }
+            },
         }
         epsg_code, polygon = arcgis._parse_spatial_extent(raw_extent)
         self.assertEqual(epsg_code, "EPSG:3857")
@@ -47,7 +46,7 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
             "ymax": 45,
             "spatialReference": {
                 "wkid": 102100,
-            }
+            },
         }
         epsg_code, polygon = arcgis._parse_spatial_extent(raw_extent)
         self.assertEqual(epsg_code, "EPSG:102100")
@@ -56,9 +55,19 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
     def test_parse_remote_url(self):
         fixtures = [
             ("https://fake/rest/services/myservice/MapServer", "https://fake/rest/services", "myservice", "MapServer"),
-            ("https://fake/rest/services/myservice/MapServer/Query", "https://fake/rest/services", "myservice", "MapServer"),
+            (
+                "https://fake/rest/services/myservice/MapServer/Query",
+                "https://fake/rest/services",
+                "myservice",
+                "MapServer",
+            ),
             ("https://fake/rest/services", "https://fake/rest/services", None, None),
-            ("https://fake/rest/services/myservice/ImageServer", "https://fake/rest/services", "myservice", "ImageServer"),
+            (
+                "https://fake/rest/services/myservice/ImageServer",
+                "https://fake/rest/services",
+                "myservice",
+                "ImageServer",
+            ),
         ]
         for url, expected_cat_url, expected_service_name, expected_service_type in fixtures:
             cat_url, service_name, service_type = arcgis.parse_remote_url(url)
@@ -69,8 +78,16 @@ class ArcgisModuleTestCase(GeoNodeBaseSimpleTestSupport):
     @mock.patch("geonode.harvesting.harvesters.arcgis.arcrest")
     def test_get_resource_extractor(self, mock_arcrest):
         fixtures = [
-            ("http://somewhere/rest/services/fakeservice1/MapServer/1", mock_arcrest.MapService, arcgis.ArcgisMapServiceResourceExtractor),
-            ("http://somewhere/rest/services/fakeservice1/ImageServer/1", mock_arcrest.ImageService, arcgis.ArcgisImageServiceResourceExtractor),
+            (
+                "http://somewhere/rest/services/fakeservice1/MapServer/1",
+                mock_arcrest.MapService,
+                arcgis.ArcgisMapServiceResourceExtractor,
+            ),
+            (
+                "http://somewhere/rest/services/fakeservice1/ImageServer/1",
+                mock_arcrest.ImageService,
+                arcgis.ArcgisImageServiceResourceExtractor,
+            ),
         ]
         for identifier, mock_class, extractor_class in fixtures:
             result = arcgis.get_resource_extractor(identifier)

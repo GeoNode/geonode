@@ -29,27 +29,22 @@ class TestBaseHarvester(GeoNodeBaseTestSupport):
     """
     Test Base harvester
     """
-    remote_url = 'test.com'
-    name = 'This is geonode harvester'
-    user = get_user_model().objects.get(username='AnonymousUser')
-    harvester_type = 'geonode.harvesting.tests.harvesters.test_harvester.TestHarvester'
+
+    remote_url = "test.com"
+    name = "This is geonode harvester"
+    user = get_user_model().objects.get(username="AnonymousUser")
+    harvester_type = "geonode.harvesting.tests.harvesters.test_harvester.TestHarvester"
 
     def setUp(self):
         super().setUp()
-        self.worker = TestHarvester(
-            remote_url=self.remote_url,
-            harvester_id=1
-        )
+        self.worker = TestHarvester(remote_url=self.remote_url, harvester_id=1)
 
     def test_worker_from_harvester(self):
         """
         Test worker that generated from harvester
         """
         harvester = Harvester.objects.create(
-            remote_url=self.remote_url,
-            name=self.name,
-            default_owner=self.user,
-            harvester_type=self.harvester_type
+            remote_url=self.remote_url, name=self.name, default_owner=self.user, harvester_type=self.harvester_type
         )
         worker = harvester.get_harvester_worker()
         self.assertEqual(worker.__class__, TestHarvester)
@@ -61,10 +56,7 @@ class TestBaseHarvester(GeoNodeBaseTestSupport):
         Test worker that generated from worker using harvester record
         """
         harvester = Harvester.objects.create(
-            remote_url=self.remote_url,
-            name=self.name,
-            default_owner=self.user,
-            harvester_type=self.harvester_type
+            remote_url=self.remote_url, name=self.name, default_owner=self.user, harvester_type=self.harvester_type
         )
         worker = TestHarvester.from_django_record(harvester)
         self.assertEqual(worker.__class__, TestHarvester)
@@ -81,18 +73,14 @@ class TestBaseHarvester(GeoNodeBaseTestSupport):
         self.assertTrue(self.worker.check_availability())
         self.assertEqual(self.worker.get_num_available_resources(), 1)
         self.assertEqual(len(self.worker.list_resources()), 1)
-        self.assertEqual(self.worker.get_geonode_resource_type('type'), Dataset)
+        self.assertEqual(self.worker.get_geonode_resource_type("type"), Dataset)
 
         harvestable_resource = HarvestableResource(
-            unique_identifier='1',
-            title='Test Resource',
+            unique_identifier="1",
+            title="Test Resource",
             harvester=Harvester(
-                remote_url=self.remote_url,
-                name=self.name,
-                default_owner=self.user,
-                harvester_type=self.harvester_type
+                remote_url=self.remote_url, name=self.name, default_owner=self.user, harvester_type=self.harvester_type
             ),
-            last_refreshed=datetime.datetime.now()
+            last_refreshed=datetime.datetime.now(),
         )
-        self.assertIsNone(self.worker.get_resource(
-            harvestable_resource, 1))
+        self.assertIsNone(self.worker.get_resource(harvestable_resource, 1))

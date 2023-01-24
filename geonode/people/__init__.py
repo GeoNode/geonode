@@ -21,16 +21,27 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 
 class PeopleAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.people'
-    NOTIFICATIONS = (("user_follow", _("User following you"), _("Another user has started following you"),),
-                     ("account_approve", _("User requested access"),
-                      _("A new user has requested access to the site"),),
-                     ("account_active", _("Account activated"),
-                      _("This account is now active and can log in the site"),),
-                     )
+    name = "geonode.people"
+    NOTIFICATIONS = (
+        (
+            "user_follow",
+            _("User following you"),
+            _("Another user has started following you"),
+        ),
+        (
+            "account_approve",
+            _("User requested access"),
+            _("A new user has requested access to the site"),
+        ),
+        (
+            "account_active",
+            _("Account activated"),
+            _("This account is now active and can log in the site"),
+        ),
+    )
 
     def ready(self):
         super().ready()
 
 
-default_app_config = 'geonode.people.PeopleAppConfig'
+default_app_config = "geonode.people.PeopleAppConfig"

@@ -43,10 +43,17 @@ from django.contrib.admin.utils import flatten
 from django.utils.translation import get_language
 
 from geonode.base.enumerations import ALL_LANGUAGES
-from geonode.base.models import (HierarchicalKeyword,
-                                 License, Region, ResourceBase, Thesaurus,
-                                 ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel,
-                                 TopicCategory)
+from geonode.base.models import (
+    HierarchicalKeyword,
+    License,
+    Region,
+    ResourceBase,
+    Thesaurus,
+    ThesaurusKeyword,
+    ThesaurusKeywordLabel,
+    ThesaurusLabel,
+    TopicCategory,
+)
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.base.fields import MultiThesauriField
 from geonode.documents.models import Document
@@ -57,14 +64,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_tree_data():
-
     def rectree(parent, path):
         children_list_of_tuples = list()
         c = Region.objects.filter(parent=parent)
         for child in c:
-            children_list_of_tuples.append(
-                tuple((path + parent.name, tuple((child.id, child.name))))
-            )
+            children_list_of_tuples.append(tuple((path + parent.name, tuple((child.id, child.name)))))
             childrens = rectree(child, f"{parent.name}/")
             if childrens:
                 children_list_of_tuples.extend(childrens)
@@ -75,14 +79,10 @@ def get_tree_data():
     try:
         t = Region.objects.filter(Q(level=0) | Q(parent=None))
         for toplevel in t:
-            data.append(
-                tuple((toplevel.id, toplevel.name))
-            )
-            childrens = rectree(toplevel, '')
+            data.append(tuple((toplevel.id, toplevel.name)))
+            childrens = rectree(toplevel, "")
             if childrens:
-                data.append(
-                    tuple((toplevel.name, childrens))
-                )
+                data.append(tuple((toplevel.name, childrens)))
     except Exception:
         pass
 
@@ -91,15 +91,12 @@ def get_tree_data():
 
 class AdvancedModelChoiceIterator(models.ModelChoiceIterator):
     def choice(self, obj):
-        return (
-            self.field.prepare_value(obj),
-            self.field.label_from_instance(obj),
-            obj)
+        return (self.field.prepare_value(obj), self.field.label_from_instance(obj), obj)
 
 
 class CategoryChoiceField(forms.ModelChoiceField):
     def _get_choices(self):
-        if hasattr(self, '_choices'):
+        if hasattr(self, "_choices"):
             return self._choices
 
         return AdvancedModelChoiceIterator(self)
@@ -107,22 +104,22 @@ class CategoryChoiceField(forms.ModelChoiceField):
     choices = property(_get_choices, ChoiceField._set_choices)
 
     def label_from_instance(self, obj):
-        return '<i class="fa ' + obj.fa_class + ' fa-2x unchecked"></i>' \
-            '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>' \
-            '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" ' \
-            'data-content="' + obj.description + '" trigger="hover">' \
-            '<br/><strong>' + obj.gn_description + '</strong></span>'
+        return (
+            '<i class="fa ' + obj.fa_class + ' fa-2x unchecked"></i>'
+            '<i class="fa ' + obj.fa_class + ' fa-2x checked"></i>'
+            '<span class="has-popover" data-container="body" data-toggle="popover" data-placement="top" '
+            'data-content="' + obj.description + '" trigger="hover">'
+            "<br/><strong>" + obj.gn_description + "</strong></span>"
+        )
 
 
 class RegionsMultipleChoiceField(forms.MultipleChoiceField):
-
     def validate(self, value):
         """
         Validates that the input is a list or tuple.
         """
         if self.required and not value:
-            raise forms.ValidationError(
-                self.error_messages['required'], code='required')
+            raise forms.ValidationError(self.error_messages["required"], code="required")
 
 
 class RegionsSelect(forms.Select):
@@ -133,15 +130,12 @@ class RegionsSelect(forms.Select):
             value = []
         final_attrs = self.build_attrs(attrs)
         final_attrs["name"] = name
-        output = [
-            format_html(
-                '<select multiple="multiple"{}>',
-                flatatt(final_attrs))]
+        output = [format_html('<select multiple="multiple"{}>', flatatt(final_attrs))]
         options = self.render_options(value)
         if options:
             output.append(options)
-        output.append('</select>')
-        return mark_safe('\n'.join(output))
+        output.append("</select>")
+        return mark_safe("\n".join(output))
 
     def value_from_datadict(self, data, files, name):
         try:
@@ -150,47 +144,36 @@ class RegionsSelect(forms.Select):
             getter = data.get
         return getter(name)
 
-    def render_option_value(
-            self,
-            selected_choices,
-            option_value,
-            option_label,
-            data_section=None):
+    def render_option_value(self, selected_choices, option_value, option_label, data_section=None):
         if option_value is None:
-            option_value = ''
+            option_value = ""
         option_value = force_text(option_value)
         if option_value in selected_choices:
-            selected_html = mark_safe(' selected')
+            selected_html = mark_safe(" selected")
             if not self.allow_multiple_selected:
                 # Only allow for a single selection.
                 selected_choices.remove(option_value)
         else:
-            selected_html = ''
+            selected_html = ""
 
         label = force_text(option_label)
 
         if data_section is None:
-            data_section = ''
+            data_section = ""
         else:
             data_section = force_text(data_section)
-            if '/' in data_section:
-                label = format_html(
-                    '{} [{}]', label, data_section.rsplit(
-                        '/', 1)[1])
+            if "/" in data_section:
+                label = format_html("{} [{}]", label, data_section.rsplit("/", 1)[1])
 
         return format_html(
-            '<option data-section="{}" value="{}"{}>{}</option>',
-            data_section,
-            option_value,
-            selected_html,
-            label)
+            '<option data-section="{}" value="{}"{}>{}</option>', data_section, option_value, selected_html, label
+        )
 
     def render_options(self, selected_choices):
 
         # Normalize to strings.
         def _region_id_from_choice(choice):
-            if isinstance(choice, int) or \
-                    (isinstance(choice, str) and choice.isdigit()):
+            if isinstance(choice, int) or (isinstance(choice, str) and choice.isdigit()):
                 return int(choice)
             else:
                 return choice.id
@@ -198,56 +181,37 @@ class RegionsSelect(forms.Select):
         selected_choices = {force_text(_region_id_from_choice(v)) for v in selected_choices}
         output = []
 
-        output.append(format_html('<optgroup label="{}">', 'Global'))
+        output.append(format_html('<optgroup label="{}">', "Global"))
         for option_value, option_label in self.choices:
-            if not isinstance(
-                    option_label, (list, tuple)) and isinstance(
-                        option_label, str):
-                output.append(
-                    self.render_option_value(
-                        selected_choices,
-                        option_value,
-                        option_label))
-        output.append('</optgroup>')
+            if not isinstance(option_label, (list, tuple)) and isinstance(option_label, str):
+                output.append(self.render_option_value(selected_choices, option_value, option_label))
+        output.append("</optgroup>")
 
         for option_value, option_label in self.choices:
-            if isinstance(
-                    option_label, (list, tuple)) and not isinstance(
-                        option_label, str):
-                output.append(
-                    format_html(
-                        '<optgroup label="{}">',
-                        force_text(option_value)))
+            if isinstance(option_label, (list, tuple)) and not isinstance(option_label, str):
+                output.append(format_html('<optgroup label="{}">', force_text(option_value)))
                 for option in option_label:
-                    if isinstance(
-                            option, (list, tuple)) and not isinstance(
-                                option, str):
-                        if isinstance(
-                                option[1][0], (list, tuple)) and not isinstance(
-                                    option[1][0], str):
+                    if isinstance(option, (list, tuple)) and not isinstance(option, str):
+                        if isinstance(option[1][0], (list, tuple)) and not isinstance(option[1][0], str):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
-                                        selected_choices,
-                                        *option_child,
-                                        data_section=force_text(
-                                            option[1][0][0])))
+                                        selected_choices, *option_child, data_section=force_text(option[1][0][0])
+                                    )
+                                )
                         else:
                             output.append(
                                 self.render_option_value(
-                                    selected_choices,
-                                    *option[1],
-                                    data_section=force_text(
-                                        option[0])))
+                                    selected_choices, *option[1], data_section=force_text(option[0])
+                                )
+                            )
                     else:
                         output.append(
-                            self.render_option_value(
-                                selected_choices,
-                                *option,
-                                data_section=force_text(option_value)))
-                output.append('</optgroup>')
+                            self.render_option_value(selected_choices, *option, data_section=force_text(option_value))
+                        )
+                output.append("</optgroup>")
 
-        return '\n'.join(output)
+        return "\n".join(output)
 
 
 class CategoryForm(forms.Form):
@@ -255,14 +219,13 @@ class CategoryForm(forms.Form):
         required=False,
         label=f"*{_('Category')}",
         empty_label=None,
-        queryset=TopicCategory.objects.filter(
-            is_choice=True).extra(
-            order_by=['description']))
+        queryset=TopicCategory.objects.filter(is_choice=True).extra(order_by=["description"]),
+    )
 
     def clean(self):
         cleaned_data = self.data
         ccf_data = cleaned_data.get("category_choice_field")
-        category_mandatory = getattr(settings, 'TOPICCATEGORY_MANDATORY', False)
+        category_mandatory = getattr(settings, "TOPICCATEGORY_MANDATORY", False)
         if category_mandatory and not ccf_data:
             msg = _("Category is required.")
             self._errors = self.error_class([msg])
@@ -272,22 +235,24 @@ class CategoryForm(forms.Form):
 
 
 class TKeywordForm(forms.ModelForm):
-    prefix = 'tkeywords'
+    prefix = "tkeywords"
 
     class Meta:
         model = Document
-        fields = ['tkeywords']
+        fields = ["tkeywords"]
 
     tkeywords = MultiThesauriField(
         queryset=ThesaurusKeyword.objects.prefetch_related(
-            Prefetch('keyword', queryset=ThesaurusKeywordLabel.objects.filter(lang='en'))
+            Prefetch("keyword", queryset=ThesaurusKeywordLabel.objects.filter(lang="en"))
         ),
         widget=autocomplete.ModelSelect2Multiple(
-            url='thesaurus_autocomplete',
+            url="thesaurus_autocomplete",
         ),
         label=_("Keywords from Thesaurus"),
         required=False,
-        help_text=_("List of keywords from Thesaurus", ),
+        help_text=_(
+            "List of keywords from Thesaurus",
+        ),
     )
 
 
@@ -302,7 +267,7 @@ class ThesaurusAvailableForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         lang = get_language()
-        for item in Thesaurus.objects.all().order_by('order', 'id'):
+        for item in Thesaurus.objects.all().order_by("order", "id"):
             tname = self._get_thesauro_title_label(item, lang)
             if item.card_max == 0:
                 continue
@@ -341,7 +306,8 @@ class ThesaurusAvailableForm(forms.Form):
             label=f"{tname}",
             required=False,
             widget=forms.Select(attrs={"class": "treq" if required else ""}),
-            choices=self._get_thesauro_keyword_label(item, lang))
+            choices=self._get_thesauro_keyword_label(item, lang),
+        )
 
     @staticmethod
     def _get_thesauro_keyword_label(item, lang):
@@ -349,14 +315,27 @@ class ThesaurusAvailableForm(forms.Form):
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=item)
 
         # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
-        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(
+            lang=lang, keyword_id__in=keyword_id_for_given_thesaurus
+        ).values("keyword_id")
         if len(qs_keyword_ids) == 0:
             lang = remove_country_from_languagecode(lang)
-            qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+            qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(
+                lang=lang, keyword_id__in=keyword_id_for_given_thesaurus
+            ).values("keyword_id")
 
-        not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")
+        not_qs_ids = (
+            ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids)
+            .order_by("keyword_id")
+            .distinct("keyword_id")
+            .values("keyword_id")
+        )
 
-        qs_local = list(ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values_list("keyword_id", "label"))
+        qs_local = list(
+            ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values_list(
+                "keyword_id", "label"
+            )
+        )
         qs_non_local = list(keyword_id_for_given_thesaurus.filter(id__in=not_qs_ids).values_list("id", "alt_label"))
 
         return [THESAURUS_RESULT_LIST_SEPERATOR] + qs_local + [THESAURUS_RESULT_LIST_SEPERATOR] + qs_non_local
@@ -370,7 +349,6 @@ class ThesaurusAvailableForm(forms.Form):
 
 
 class ResourceBaseDateTimePicker(DateTimePicker):
-
     def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
         "Helper function for building an attribute dictionary."
         if extra_attrs:
@@ -383,145 +361,139 @@ class ResourceBaseDateTimePicker(DateTimePicker):
 class ResourceBaseForm(TranslationModelForm):
 
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
-    abstract = forms.CharField(
-        label=_("Abstract"),
-        required=False,
-        widget=TinyMCE())
 
-    purpose = forms.CharField(
-        label=_("Purpose"),
-        required=False,
-        widget=TinyMCE())
+    abstract = forms.CharField(label=_("Abstract"), required=False, widget=TinyMCE())
 
-    constraints_other = forms.CharField(
-        label=_("Other constraints"),
-        required=False,
-        widget=TinyMCE())
+    purpose = forms.CharField(label=_("Purpose"), required=False, widget=TinyMCE())
 
-    supplemental_information = forms.CharField(
-        label=_('Supplemental information'),
-        required=False,
-        widget=TinyMCE())
+    constraints_other = forms.CharField(label=_("Other constraints"), required=False, widget=TinyMCE())
+
+    supplemental_information = forms.CharField(label=_("Supplemental information"), required=False, widget=TinyMCE())
 
     ptype = forms.CharField(required=False)
     sourcetype = forms.CharField(required=False)
 
-    data_quality_statement = forms.CharField(
-        label=_("Data quality statement"),
-        required=False,
-        widget=TinyMCE())
+    data_quality_statement = forms.CharField(label=_("Data quality statement"), required=False, widget=TinyMCE())
 
     owner = forms.ModelChoiceField(
         empty_label=_("Owner"),
         label=_("Owner"),
         required=True,
-        queryset=get_user_model().objects.exclude(username='AnonymousUser'),
-        widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=autocomplete.ModelSelect2(url="autocomplete_profile"),
+    )
 
     date = forms.DateTimeField(
         label=_("Date"),
         localize=True,
-        input_formats=['%Y-%m-%d %H:%M %p'],
-        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
+        input_formats=["%Y-%m-%d %H:%M %p"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"}),
     )
 
     temporal_extent_start = forms.DateTimeField(
         label=_("temporal extent start"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d %H:%M %p'],
-        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
+        input_formats=["%Y-%m-%d %H:%M %p"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"}),
     )
 
     temporal_extent_end = forms.DateTimeField(
         label=_("temporal extent end"),
         required=False,
         localize=True,
-        input_formats=['%Y-%m-%d %H:%M %p'],
-        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"})
+        input_formats=["%Y-%m-%d %H:%M %p"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"}),
     )
 
     poc = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Point of Contact"),
         required=False,
-        queryset=get_user_model().objects.exclude(
-            username='AnonymousUser'),
-        widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=autocomplete.ModelSelect2(url="autocomplete_profile"),
+    )
 
     metadata_author = forms.ModelChoiceField(
         empty_label=_("Person outside GeoNode (fill form)"),
         label=_("Metadata Author"),
         required=False,
-        queryset=get_user_model().objects.exclude(
-            username='AnonymousUser'),
-        widget=autocomplete.ModelSelect2(url='autocomplete_profile'))
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=autocomplete.ModelSelect2(url="autocomplete_profile"),
+    )
 
     keywords = TagField(
         label=_("Free-text Keywords"),
         required=False,
         help_text=_("A space or comma-separated list of keywords. Use the widget to select from Hierarchical tree."),
         # widget=TreeWidget(url='autocomplete_hierachical_keyword'), #Needs updating to work with select2
-        widget=TaggitSelect2Custom(url='autocomplete_hierachical_keyword'))
+        widget=TaggitSelect2Custom(url="autocomplete_hierachical_keyword"),
+    )
 
-    regions = RegionsMultipleChoiceField(
-        label=_("Regions"),
-        required=False,
-        widget=RegionsSelect)
+    regions = RegionsMultipleChoiceField(label=_("Regions"), required=False, widget=RegionsSelect)
 
     regions.widget.attrs = {"size": 20}
 
     extra_metadata = forms.CharField(
         required=False,
         widget=forms.Textarea,
-        help_text=_('Additional metadata, must be in format [\
+        help_text=_(
+            'Additional metadata, must be in format [\
                 {"metadata_key": "metadata_value"},\
                 {"metadata_key": "metadata_value"} \
-            ]')
+            ]'
+        ),
     )
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        self.fields['regions'].choices = get_tree_data()
+        self.fields["regions"].choices = get_tree_data()
         self.can_change_perms = self.user and self.user.has_perm(
-            'change_resourcebase_permissions', self.instance.get_self_resource()
+            "change_resourcebase_permissions", self.instance.get_self_resource()
         )
         if self.instance and self.instance.id and self.instance.metadata.exists():
-            self.fields['extra_metadata'].initial = [x.metadata for x in self.instance.metadata.all()]
+            self.fields["extra_metadata"].initial = [x.metadata for x in self.instance.metadata.all()]
 
         for field in self.fields:
-            if field == 'featured' and self.user and not self.user.is_superuser:
+            if field == "featured" and self.user and not self.user.is_superuser:
                 self.fields[field].disabled = True
             help_text = self.fields[field].help_text
-            if help_text != '':
+            if help_text != "":
                 self.fields[field].widget.attrs.update(
                     {
-                        'class': 'has-popover',
-                        'data-content': help_text,
-                        'data-placement': 'right',
-                        'data-container': 'body',
-                        'data-html': 'true'})
+                        "class": "has-popover",
+                        "data-content": help_text,
+                        "data-placement": "right",
+                        "data-container": "body",
+                        "data-html": "true",
+                    }
+                )
 
-            if field in ['poc', 'owner'] and not self.can_change_perms:
+            if field in ["poc", "owner"] and not self.can_change_perms:
                 self.fields[field].disabled = True
 
     def disable_keywords_widget_for_non_superuser(self, user):
         if settings.FREETEXT_KEYWORDS_READONLY and not user.is_superuser:
-            self['keywords'].field.disabled = True
+            self["keywords"].field.disabled = True
 
     def clean_keywords(self):
-        keywords = self.cleaned_data['keywords']
+        keywords = self.cleaned_data["keywords"]
         _unsescaped_kwds = []
         for k in keywords:
-            _k = ('%s' % re.sub(r'%([A-Z0-9]{2})', r'&#x\g<1>;', k.strip())).split(",")
+            _k = ("%s" % re.sub(r"%([A-Z0-9]{2})", r"&#x\g<1>;", k.strip())).split(",")
             if not isinstance(_k, str):
                 for _kk in [html.unescape(x.strip()) for x in _k]:
                     # Simulate JS Unescape
-                    _kk = _kk.replace('%u', r'\u').encode('unicode-escape').replace(
-                        b'\\\\u',
-                        b'\\u').decode('unicode-escape') if '%u' in _kk else _kk
-                    _hk = HierarchicalKeyword.objects.filter(name__iexact=f'{_kk.strip()}')
+                    _kk = (
+                        _kk.replace("%u", r"\u")
+                        .encode("unicode-escape")
+                        .replace(b"\\\\u", b"\\u")
+                        .decode("unicode-escape")
+                        if "%u" in _kk
+                        else _kk
+                    )
+                    _hk = HierarchicalKeyword.objects.filter(name__iexact=f"{_kk.strip()}")
                     if _hk and len(_hk) > 0:
                         _unsescaped_kwds.append(str(_hk[0]))
                     else:
@@ -541,51 +513,50 @@ class ResourceBaseForm(TranslationModelForm):
         return title
 
     def clean_extra_metadata(self):
-        cleaned_data = self.cleaned_data.get('extra_metadata', [])
+        cleaned_data = self.cleaned_data.get("extra_metadata", [])
         return json.dumps(validate_extra_metadata(cleaned_data, self.instance), indent=4)
 
     class Meta:
         exclude = (
-            'contacts',
-            'name',
-            'uuid',
-            'bbox_polygon',
-            'll_bbox_polygon',
-            'srid',
-            'category',
-            'csw_typename',
-            'csw_schema',
-            'csw_mdsource',
-            'csw_type',
-            'csw_wkt_geometry',
-            'metadata_uploaded',
-            'metadata_xml',
-            'csw_anytext',
-            'popular_count',
-            'share_count',
-            'thumbnail',
-            'charset',
-            'rating',
-            'detail_url',
-            'tkeywords',
-            'users_geolimits',
-            'groups_geolimits',
-            'dirty_state',
-            'state',
-            'blob',
-            'files',
-            'was_approved',
-            'was_published'
+            "contacts",
+            "name",
+            "uuid",
+            "bbox_polygon",
+            "ll_bbox_polygon",
+            "srid",
+            "category",
+            "csw_typename",
+            "csw_schema",
+            "csw_mdsource",
+            "csw_type",
+            "csw_wkt_geometry",
+            "metadata_uploaded",
+            "metadata_xml",
+            "csw_anytext",
+            "popular_count",
+            "share_count",
+            "thumbnail",
+            "charset",
+            "rating",
+            "detail_url",
+            "tkeywords",
+            "users_geolimits",
+            "groups_geolimits",
+            "dirty_state",
+            "state",
+            "blob",
+            "files",
+            "was_approved",
+            "was_published",
         )
 
 
 class ValuesListField(forms.Field):
-
     def to_python(self, value):
         if value in validators.EMPTY_VALUES:
             return []
 
-        value = [item.strip() for item in value.split(',') if item.strip()]
+        value = [item.strip() for item in value.split(",") if item.strip()]
 
         return value
 
@@ -597,32 +568,15 @@ class ValuesListField(forms.Field):
 
 
 class BatchEditForm(forms.Form):
-    LANGUAGES = (('', '--------'),) + ALL_LANGUAGES
-    group = forms.ModelChoiceField(
-        label=_('Group'),
-        queryset=Group.objects.all(),
-        required=False)
-    owner = forms.ModelChoiceField(
-        label=_('Owner'),
-        queryset=get_user_model().objects.all(),
-        required=False)
-    category = forms.ModelChoiceField(
-        label=_('Category'),
-        queryset=TopicCategory.objects.all(),
-        required=False)
-    license = forms.ModelChoiceField(
-        label=_('License'),
-        queryset=License.objects.all(),
-        required=False)
-    regions = forms.ModelChoiceField(
-        label=_('Regions'),
-        queryset=Region.objects.all(),
-        required=False)
-    date = forms.DateTimeField(
-        label=_('Date'),
-        required=False)
+    LANGUAGES = (("", "--------"),) + ALL_LANGUAGES
+    group = forms.ModelChoiceField(label=_("Group"), queryset=Group.objects.all(), required=False)
+    owner = forms.ModelChoiceField(label=_("Owner"), queryset=get_user_model().objects.all(), required=False)
+    category = forms.ModelChoiceField(label=_("Category"), queryset=TopicCategory.objects.all(), required=False)
+    license = forms.ModelChoiceField(label=_("License"), queryset=License.objects.all(), required=False)
+    regions = forms.ModelChoiceField(label=_("Regions"), queryset=Region.objects.all(), required=False)
+    date = forms.DateTimeField(label=_("Date"), required=False)
     language = forms.ChoiceField(
-        label=_('Language'),
+        label=_("Language"),
         required=False,
         choices=LANGUAGES,
     )
@@ -632,7 +586,7 @@ class BatchEditForm(forms.Form):
 
 def get_user_choices():
     try:
-        return [(x.pk, x.title) for x in Dataset.objects.all().order_by('id')]
+        return [(x.pk, x.title) for x in Dataset.objects.all().order_by("id")]
     except Exception:
         return []
 
@@ -640,13 +594,11 @@ def get_user_choices():
 class UserAndGroupPermissionsForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['layers'].label_from_instance = self.label_from_instance
+        self.fields["layers"].label_from_instance = self.label_from_instance
 
     layers = MultipleChoiceField(
         choices=get_user_choices(),
-        widget=autocomplete.Select2Multiple(
-            url='datasets_autocomplete'
-        ),
+        widget=autocomplete.Select2Multiple(url="datasets_autocomplete"),
         label="Datasets",
         required=False,
     )
@@ -655,17 +607,17 @@ class UserAndGroupPermissionsForm(forms.Form):
         required=True,
         widget=forms.RadioSelect,
         choices=(
-            ('view', 'View'),
-            ('download', 'Download'),
-            ('edit', 'Edit'),
+            ("view", "View"),
+            ("download", "Download"),
+            ("edit", "Edit"),
         ),
     )
     mode = forms.ChoiceField(
         required=True,
         widget=forms.RadioSelect,
         choices=(
-            ('set', 'Set'),
-            ('unset', 'Unset'),
+            ("set", "Set"),
+            ("unset", "Unset"),
         ),
     )
     ids = forms.CharField(required=False, widget=forms.HiddenInput())
@@ -677,17 +629,14 @@ class UserAndGroupPermissionsForm(forms.Form):
 
 class OwnerRightsRequestForm(forms.Form):
     resource = forms.ModelChoiceField(
-        label=_('Resource'),
-        queryset=ResourceBase.objects.all(),
-        widget=forms.HiddenInput())
+        label=_("Resource"), queryset=ResourceBase.objects.all(), widget=forms.HiddenInput()
+    )
     reason = forms.CharField(
-        label=_('Reason'),
-        widget=forms.Textarea,
-        help_text=_('Short reasoning behind the request'),
-        required=True)
+        label=_("Reason"), widget=forms.Textarea, help_text=_("Short reasoning behind the request"), required=True
+    )
 
     class Meta:
-        fields = ['reason', 'resource']
+        fields = ["reason", "resource"]
 
 
 class ThesaurusImportForm(forms.Form):

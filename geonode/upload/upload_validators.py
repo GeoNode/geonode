@@ -34,10 +34,7 @@ from .utils import get_kml_doc
 
 logger = logging.getLogger(__name__)
 
-ShapefileAux = namedtuple("ShapefileAux", [
-    "extension",
-    "mandatory"
-])
+ShapefileAux = namedtuple("ShapefileAux", ["extension", "mandatory"])
 
 
 def _supported_type(ext, supported_types):
@@ -46,20 +43,14 @@ def _supported_type(ext, supported_types):
 
 def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types, base_file_path):
     logger.debug(f"uploaded_files: {uploaded_files}")
-    requires_datastore = () if ogc_server_settings.DATASTORE else (
-        'csv',
-        'kml')
+    requires_datastore = () if ogc_server_settings.DATASTORE else ("csv", "kml")
     types = [t for t in files.types if t.code not in requires_datastore]
     base_file_name = os.path.basename(base_file_path)
     base_ext = os.path.splitext(base_file_name)[-1].lower()[1:]
     if not _supported_type(base_ext, types) and base_ext.lower() != "zip":
         raise forms.ValidationError(
-            "%(supported)s files are supported. You uploaded a "
-            "%(uploaded)s file",
-            params={
-                "supported": " , ".join(t.name for t in types),
-                "uploaded": base_ext
-            }
+            "%(supported)s files are supported. You uploaded a " "%(uploaded)s file",
+            params={"supported": " , ".join(t.name for t in types), "uploaded": base_ext},
         )
     elif base_ext.lower() == "zip":
         if not zipfile.is_zipfile(base_file_path):
@@ -78,21 +69,18 @@ def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types, base_f
             valid_extensions = validate_raster_zip(base_file_path)
         if not valid_extensions:
             # No suitable data have been found on the ZIP file; raise a ValidationError
-            raise forms.ValidationError(
-                _("Could not find any valid spatial file inside the uploaded zip"))
+            raise forms.ValidationError(_("Could not find any valid spatial file inside the uploaded zip"))
     elif base_ext.lower() == "kmz":
         if not zipfile.is_zipfile(base_file_path):
             raise forms.ValidationError(_("Invalid kmz file detected"))
         valid_extensions = validate_kmz(base_file_path)
         if not valid_extensions:
-            raise forms.ValidationError(
-                _("Could not find any kml files inside the uploaded kmz"))
+            raise forms.ValidationError(_("Could not find any kml files inside the uploaded kmz"))
     elif base_ext.lower() == "shp":
         file_paths = list(uploaded_files.values())
         if base_file_path not in file_paths:
             file_paths += [base_file_path]
-        valid_extensions = _validate_shapefile_components(
-            file_paths)
+        valid_extensions = _validate_shapefile_components(file_paths)
     elif base_ext.lower() == "kml":
         valid_extensions = validate_kml(uploaded_files)
     elif base_ext.lower() in files._tif_extensions:
@@ -126,14 +114,14 @@ def _validate_shapefile_components(possible_filenames):
         raise forms.ValidationError(_("Only one shapefile per zip is allowed"))
     elif len(shp_files) == 0:
         shp_files = [
-            f for f in possible_filenames if os.path.splitext(f.lower())[1] in (".shp", ".dbf", ".shx", ".prj")]
+            f for f in possible_filenames if os.path.splitext(f.lower())[1] in (".shp", ".dbf", ".shx", ".prj")
+        ]
         aux_mandatory = False
     try:
         shape_component = shp_files[0]
     except IndexError:
         return None
-    base_name, base_extension = os.path.splitext(
-        os.path.basename(shape_component))
+    base_name, base_extension = os.path.splitext(os.path.basename(shape_component))
     components = [base_extension[1:]]
     shapefile_additional = [
         ShapefileAux(extension="dbf", mandatory=aux_mandatory),
@@ -154,8 +142,7 @@ def _validate_shapefile_components(possible_filenames):
         else:
             if additional_component.mandatory:
                 raise forms.ValidationError(
-                    f"Could not find {additional_component.extension} file, which is mandatory for "
-                    "shapefile uploads"
+                    f"Could not find {additional_component.extension} file, which is mandatory for " "shapefile uploads"
                 )
     logger.debug(f"shapefile components: {components}")
     return components
@@ -164,22 +151,18 @@ def _validate_shapefile_components(possible_filenames):
 def _validate_kml_bytes(kml_bytes, other_files):
     result = None
     kml_doc, namespaces = get_kml_doc(kml_bytes)
-    ground_overlays = kml_doc.xpath(
-        "//kml:GroundOverlay", namespaces=namespaces)
+    ground_overlays = kml_doc.xpath("//kml:GroundOverlay", namespaces=namespaces)
     if len(ground_overlays) > 1:
-        raise forms.ValidationError(
-            _("kml files with more than one GroundOverlay are not supported"))
+        raise forms.ValidationError(_("kml files with more than one GroundOverlay are not supported"))
     elif len(ground_overlays) == 1:
         try:
-            image_path = ground_overlays[0].xpath(
-                "kml:Icon/kml:href/text()", namespaces=namespaces)[0].strip()
+            image_path = ground_overlays[0].xpath("kml:Icon/kml:href/text()", namespaces=namespaces)[0].strip()
         except IndexError:
             image_path = ""
         logger.debug(f"image_path: {image_path}")
         logger.debug(f"other_files: {other_files}")
         if image_path not in other_files:
-            raise forms.ValidationError(
-                _("Ground overlay image declared in kml file cannot be found"))
+            raise forms.ValidationError(_("Ground overlay image declared in kml file cannot be found"))
         result = ("kml", "sld", os.path.splitext(image_path)[-1][1:])
     return result
 
@@ -192,10 +175,8 @@ def validate_kml(possible_files):
     uploaded together with a raster file.
 
     """
-    kml_file = [
-        f for f in possible_files if f.name.lower().endswith(".kml")][0]
-    others = [
-        f.name for f in possible_files if not f.name.lower().endswith(".kml")]
+    kml_file = [f for f in possible_files if f.name.lower().endswith(".kml")][0]
+    others = [f.name for f in possible_files if not f.name.lower().endswith(".kml")]
 
     kml_file.seek(0)
     kml_bytes = kml_file.read()
@@ -203,7 +184,10 @@ def validate_kml(possible_files):
     if not result:
         kml_doc, namespaces = get_kml_doc(kml_bytes)
         if kml_doc and namespaces:
-            return ("kml", "sld", )
+            return (
+                "kml",
+                "sld",
+            )
     return result
 
 
@@ -215,8 +199,7 @@ def validate_kml_zip(kmz_django_file):
         if not kml_files:
             return None
         if len(kml_files) > 1:
-            raise forms.ValidationError(
-                _("Only one kml file per ZIP is allowed"))
+            raise forms.ValidationError(_("Only one kml file per ZIP is allowed"))
         kml_zip_path = kml_files[0]
         kml_bytes = zip_handler.read(kml_zip_path)
     kml_doc, namespaces = get_kml_doc(kml_bytes)
@@ -230,15 +213,13 @@ def validate_kmz(kmz_django_file):
         zip_contents = zip_handler.namelist()
         kml_files = [i for i in zip_contents if i.lower().endswith(".kml")]
         if len(kml_files) > 1:
-            raise forms.ValidationError(
-                _("Only one kml file per kmz is allowed"))
+            raise forms.ValidationError(_("Only one kml file per kmz is allowed"))
         try:
             kml_zip_path = kml_files[0]
             kml_bytes = zip_handler.read(kml_zip_path)
         except IndexError:
             return None
-    other_filenames = [
-        i for i in zip_contents if not i.lower().endswith(".kml")]
+    other_filenames = [i for i in zip_contents if not i.lower().endswith(".kml")]
     if _validate_kml_bytes(kml_bytes, other_filenames):
         return ("kmz",)
     else:
@@ -266,40 +247,35 @@ def validate_raster(contents, allow_multiple=False):
         raster_aliases.extend([f".{a}" for a in alias])
     raster_exts.extend(raster_aliases)
 
-    raster_files = [
-        f for f in contents if os.path.splitext(str(f).lower())[1] in raster_exts]
-    other_files = [
-        f for f in contents if os.path.splitext(str(f).lower())[1] not in raster_exts]
+    raster_files = [f for f in contents if os.path.splitext(str(f).lower())[1] in raster_exts]
+    other_files = [f for f in contents if os.path.splitext(str(f).lower())[1] not in raster_exts]
 
     all_extensions = [os.path.splitext(str(f))[1][1:] for f in raster_files]
     other_extensions = tuple({os.path.splitext(str(f))[1][1:] for f in other_files})
     valid_extensions = tuple(set(all_extensions))
     dup_extensions = tuple(dupes(all_extensions))
     if dup_extensions:
-        geotiff_extensions = [
-            x for x in dup_extensions if x in files._tif_extensions]
-        mosaics_extensions = [
-            x for x in other_extensions if x in files._mosaics_extensions]
+        geotiff_extensions = [x for x in dup_extensions if x in files._tif_extensions]
+        mosaics_extensions = [x for x in other_extensions if x in files._mosaics_extensions]
         if mosaics_extensions:
             return ("zip-mosaic",)
         elif geotiff_extensions:
             if not allow_multiple:
                 raise forms.ValidationError(
-                    _("You are trying to upload multiple GeoTIFFs without a valid 'indexer.properties' file."))
+                    _("You are trying to upload multiple GeoTIFFs without a valid 'indexer.properties' file.")
+                )
             else:
                 return ("zip-mosaic",)
         else:
-            raise forms.ValidationError(
-                _("Only one raster file per ZIP is allowed"))
+            raise forms.ValidationError(_("Only one raster file per ZIP is allowed"))
     else:
         if valid_extensions:
             if len(valid_extensions) > 1 and not allow_multiple:
-                raise forms.ValidationError(
-                    _("No multiple rasters allowed"))
+                raise forms.ValidationError(_("No multiple rasters allowed"))
             else:
                 if not allow_multiple or (
-                    'properties' not in other_extensions and (
-                        'sld' in other_extensions or 'xml' in other_extensions)):
+                    "properties" not in other_extensions and ("sld" in other_extensions or "xml" in other_extensions)
+                ):
                     return valid_extensions + other_extensions
                 else:
                     return ("zip-mosaic",)

@@ -32,11 +32,13 @@ def get_dataset_count_by_services(service_id, user):
         harvested_resources_ids = []
         if service.harvester:
             _h = service.harvester
-            harvested_resources_ids = list(_h.harvestable_resources.filter(
-                should_be_harvested=True, geonode_resource__isnull=False).values_list("geonode_resource__id", flat=True))
+            harvested_resources_ids = list(
+                _h.harvestable_resources.filter(should_be_harvested=True, geonode_resource__isnull=False).values_list(
+                    "geonode_resource__id", flat=True
+                )
+            )
         return get_visible_resources(
-            queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids),
-            user=user
+            queryset=ResourceBase.objects.filter(id__in=harvested_resources_ids), user=user
         ).count()
     except Exception:
         return 0

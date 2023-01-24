@@ -52,30 +52,21 @@ from geonode.notifications_helper import send_notification
 from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_languagecode
 from geonode.base.forms import UserAndGroupPermissionsForm
 
-from geonode.base.forms import (
-    BatchEditForm,
-    OwnerRightsRequestForm
-)
-from geonode.base.models import (
-    Region,
-    ResourceBase,
-    HierarchicalKeyword,
-    ThesaurusKeyword,
-    ThesaurusKeywordLabel
-)
+from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
+from geonode.base.models import Region, ResourceBase, HierarchicalKeyword, ThesaurusKeyword, ThesaurusKeywordLabel
 
 logger = logging.getLogger(__name__)
 
 
 def get_url_for_app_model(model, model_class):
-    return reverse(f'admin:{model_class._meta.app_label}_{model}_changelist')
+    return reverse(f"admin:{model_class._meta.app_label}_{model}_changelist")
     # was: return f'/admin/{model_class._meta.app_label}/{model}/'
 
 
 def get_url_for_model(model):
-    url = f'admin:{model.lower()}s_{model.lower()}_changelist'
-    if model.lower() == 'dataset':
-        url = f'admin:layers_{model.lower()}_changelist'
+    url = f"admin:{model.lower()}s_{model.lower()}_changelist"
+    if model.lower() == "dataset":
+        url = f"admin:layers_{model.lower()}_changelist"
     return reverse(url)
     # was: f'/admin/{model.lower()}s/{model.lower()}/'
 
@@ -84,108 +75,103 @@ def user_and_group_permission(request, model):
     if not request.user.is_superuser:
         raise PermissionDenied
 
-    model_mapper = {
-        "profile": get_user_model(),
-        "groupprofile": GroupProfile
-    }
+    model_mapper = {"profile": get_user_model(), "groupprofile": GroupProfile}
 
     model_class = model_mapper[model]
 
     ids = request.POST.get("ids")
     if "cancel" in request.POST or not ids:
-        return HttpResponseRedirect(
-            get_url_for_app_model(model, model_class))
+        return HttpResponseRedirect(get_url_for_app_model(model, model_class))
 
     users_usernames = None
     groups_names = None
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
-        _message = ''
+        _message = ""
         _errors = False
         if form.is_valid():
-            resources_names = form.cleaned_data.get('layers')
-            users_usernames = [user.username for user in model_class.objects.filter(
-                id__in=ids)] if model == 'profile' else None
-            groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
-                id__in=ids)] if model in ('group', 'groupprofile') else None
+            resources_names = form.cleaned_data.get("layers")
+            users_usernames = (
+                [user.username for user in model_class.objects.filter(id__in=ids)] if model == "profile" else None
+            )
+            groups_names = (
+                [group_profile.group.name for group_profile in model_class.objects.filter(id__in=ids)]
+                if model in ("group", "groupprofile")
+                else None
+            )
 
-            if users_usernames and 'AnonymousUser' in users_usernames and \
-                    (not groups_names or 'anonymous' not in groups_names):
+            if (
+                users_usernames
+                and "AnonymousUser" in users_usernames
+                and (not groups_names or "anonymous" not in groups_names)
+            ):
                 if not groups_names:
                     groups_names = []
-                groups_names.append('anonymous')
-            if groups_names and 'anonymous' in groups_names and \
-                    (not users_usernames or 'AnonymousUser' not in users_usernames):
+                groups_names.append("anonymous")
+            if (
+                groups_names
+                and "anonymous" in groups_names
+                and (not users_usernames or "AnonymousUser" not in users_usernames)
+            ):
                 if not users_usernames:
                     users_usernames = []
-                users_usernames.append('AnonymousUser')
+                users_usernames.append("AnonymousUser")
 
-            delete_flag = form.cleaned_data.get('mode') == 'unset'
-            permissions_names = form.cleaned_data.get('permission_type')
+            delete_flag = form.cleaned_data.get("mode") == "unset"
+            permissions_names = form.cleaned_data.get("permission_type")
 
             if permissions_names:
-                if 'edit' in permissions_names and 'AnonymousUser' in users_usernames:
+                if "edit" in permissions_names and "AnonymousUser" in users_usernames:
                     if not _errors:
                         _message = '"EDIT" permissions not allowed for the "AnonymousUser".'
                         _errors = True
                 else:
                     set_permissions.apply_async(
-                        ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
+                        ([permissions_names], resources_names, users_usernames, groups_names, delete_flag)
+                    )
                     if not _errors:
                         _message = f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
             else:
                 if not _errors:
-                    _message = 'No permissions have been set.'
+                    _message = "No permissions have been set."
                     _errors = True
         else:
             if not _errors:
-                _message = f'Some error has occured {form.errors}'
+                _message = f"Some error has occured {form.errors}"
                 _errors = True
-        messages.add_message(
-            request,
-            (messages.INFO if not _errors else messages.ERROR),
-            _message
-        )
-        return HttpResponseRedirect(
-            get_url_for_app_model(model, model_class))
+        messages.add_message(request, (messages.INFO if not _errors else messages.ERROR), _message)
+        return HttpResponseRedirect(get_url_for_app_model(model, model_class))
 
-    form = UserAndGroupPermissionsForm({
-        'permission_type': 'view',
-        'mode': 'set',
-    })
-    return render(
-        request,
-        "base/user_and_group_permissions.html",
-        context={
-            "form": form,
-            "model": model
+    form = UserAndGroupPermissionsForm(
+        {
+            "permission_type": "view",
+            "mode": "set",
         }
     )
+    return render(request, "base/user_and_group_permissions.html", context={"form": form, "model": model})
 
 
 def batch_modify(request, model):
     if not request.user.is_superuser:
         raise PermissionDenied
-    if model == 'Document':
+    if model == "Document":
         Resource = Document
-    if model == 'Dataset':
+    if model == "Dataset":
         Resource = Dataset
-    if model == 'Map':
+    if model == "Map":
         Resource = Map
-    template = 'base/batch_edit.html'
+    template = "base/batch_edit.html"
     ids = request.POST.get("ids")
 
     if "cancel" in request.POST or not ids:
-        return HttpResponseRedirect(
-            get_url_for_model(model))
+        return HttpResponseRedirect(get_url_for_model(model))
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = BatchEditForm(request.POST)
         if form.is_valid():
-            keywords = [keyword.strip() for keyword in
-                        form.cleaned_data.pop("keywords").split(',') if keyword]
+            keywords = [keyword.strip() for keyword in form.cleaned_data.pop("keywords").split(",") if keyword]
             regions = form.cleaned_data.pop("regions")
             ids = form.cleaned_data.pop("ids")
             if not form.cleaned_data.get("date"):
@@ -195,7 +181,7 @@ def batch_modify(request, model):
             for _key, _value in form.cleaned_data.items():
                 if _value:
                     to_update[_key] = _value
-            resources = Resource.objects.filter(id__in=ids.split(','))
+            resources = Resource.objects.filter(id__in=ids.split(","))
             resources.update(**to_update)
             if regions:
                 regions_through = Resource.regions.through
@@ -211,25 +197,26 @@ def batch_modify(request, model):
                         return HierarchicalKeyword.objects.get(name=keyword)
                     except HierarchicalKeyword.DoesNotExist:
                         return HierarchicalKeyword.add_root(name=keyword)
+
                 hierarchical_keyword = [get_or_create(keyword) for keyword in keywords]
 
                 new_keywords = []
                 for keyword in hierarchical_keyword:
-                    new_keywords += [keywords_through(
-                        content_object=resource, tag_id=keyword.pk) for resource in resources]
+                    new_keywords += [
+                        keywords_through(content_object=resource, tag_id=keyword.pk) for resource in resources
+                    ]
                 keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
 
-            return HttpResponseRedirect(
-                get_url_for_model(model))
+            return HttpResponseRedirect(get_url_for_model(model))
 
         return render(
             request,
             template,
             context={
-                'form': form,
-                'ids': ids,
-                'model': model,
-            }
+                "form": form,
+                "ids": ids,
+                "model": model,
+            },
         )
 
     form = BatchEditForm()
@@ -237,27 +224,27 @@ def batch_modify(request, model):
         request,
         template,
         context={
-            'form': form,
-            'ids': ids,
-            'model': model,
-        }
+            "form": form,
+            "ids": ids,
+            "model": model,
+        },
     )
 
 
 class SimpleSelect2View(autocomplete.Select2QuerySetView):
-    """ Generic select2 view for autocompletes
-        Params:
-            model: model to perform the autocomplete query on
-            filter_arg: property to filter with ie. name__icontains
+    """Generic select2 view for autocompletes
+    Params:
+        model: model to perform the autocomplete query on
+        filter_arg: property to filter with ie. name__icontains
     """
 
     def __init__(self, *args, **kwargs):
         super(views.BaseQuerySetView, self).__init__(*args, **kwargs)
-        if not hasattr(self, 'filter_arg'):
+        if not hasattr(self, "filter_arg"):
             raise AttributeError("SimpleSelect2View missing required 'filter_arg' argument")
 
     def get_queryset(self):
-        qs = super(views.BaseQuerySetView, self).get_queryset().order_by('pk')
+        qs = super(views.BaseQuerySetView, self).get_queryset().order_by("pk")
 
         if self.q:
             qs = qs.filter(**{self.filter_arg: self.q})
@@ -265,49 +252,46 @@ class SimpleSelect2View(autocomplete.Select2QuerySetView):
 
 
 class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
-    """ Base resource autocomplete - searches all the resources by title
-        returns any visible resources in this queryset for autocomplete
+    """Base resource autocomplete - searches all the resources by title
+    returns any visible resources in this queryset for autocomplete
     """
 
     def get_queryset(self):
         request = self.request
 
-        permitted = get_objects_for_user(request.user, 'base.view_resourcebase')
+        permitted = get_objects_for_user(request.user, "base.view_resourcebase")
         qs = ResourceBase.objects.all().filter(id__in=permitted)
 
         if self.q:
-            qs = qs.filter(title__icontains=self.q).order_by('title')
+            qs = qs.filter(title__icontains=self.q).order_by("title")
 
         return get_visible_resources(
             qs,
             request.user if request else None,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)[:100]
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )[:100]
 
 
 class RegionAutocomplete(SimpleSelect2View):
     model = Region
-    filter_arg = 'name__icontains'
+    filter_arg = "name__icontains"
 
 
 class HierarchicalKeywordAutocomplete(SimpleSelect2View):
     model = HierarchicalKeyword
-    filter_arg = 'slug__icontains'
+    filter_arg = "slug__icontains"
 
 
 class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
-
     def get_queryset(self):
         thesaurus = settings.THESAURUS
-        tname = thesaurus['name']
-        lang = 'en'
+        tname = thesaurus["name"]
+        lang = "en"
 
         # Filters thesaurus results based on thesaurus name and language
-        qs = ThesaurusKeywordLabel.objects.all().filter(
-            keyword__thesaurus__identifier=tname,
-            lang=lang
-        )
+        qs = ThesaurusKeywordLabel.objects.all().filter(keyword__thesaurus__identifier=tname, lang=lang)
 
         if self.q:
             qs = qs.filter(label__icontains=self.q)
@@ -318,24 +302,26 @@ class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
     def get_results(self, context):
         return [
             {
-                'id': self.get_result_value(result.keyword),
-                'text': self.get_result_label(result),
-                'selected_text': self.get_selected_result_label(result),
-            } for result in context['object_list']
+                "id": self.get_result_value(result.keyword),
+                "text": self.get_result_label(result),
+                "selected_text": self.get_selected_result_label(result),
+            }
+            for result in context["object_list"]
         ]
 
 
 class DatasetsAutocomplete(SimpleSelect2View):
     model = Dataset
-    filter_arg = 'title__icontains'
+    filter_arg = "title__icontains"
 
     def get_results(self, context):
         return [
             {
-                'id': self.get_result_value(result),
-                'text': self.get_result_label(result.title),
-                'selected_text': self.get_selected_result_label(result.title),
-            } for result in context['object_list']
+                "id": self.get_result_value(result),
+                "text": self.get_result_label(result.title),
+                "selected_text": self.get_selected_result_label(result.title),
+            }
+            for result in context["object_list"]
         ]
 
 
@@ -347,12 +333,21 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=tid)
 
         # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
-        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+        qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(
+            lang=lang, keyword_id__in=keyword_id_for_given_thesaurus
+        ).values("keyword_id")
         if len(qs_keyword_ids) == 0:
             lang = remove_country_from_languagecode(lang)
-            qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus).values("keyword_id")
+            qs_keyword_ids = ThesaurusKeywordLabel.objects.filter(
+                lang=lang, keyword_id__in=keyword_id_for_given_thesaurus
+            ).values("keyword_id")
 
-        not_qs_ids = ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids).order_by("keyword_id").distinct("keyword_id").values("keyword_id")
+        not_qs_ids = (
+            ThesaurusKeywordLabel.objects.exclude(keyword_id__in=qs_keyword_ids)
+            .order_by("keyword_id")
+            .distinct("keyword_id")
+            .values("keyword_id")
+        )
         qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=keyword_id_for_given_thesaurus)
         if self.q:
             qs = qs.filter(label__istartswith=self.q)
@@ -364,58 +359,62 @@ class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_results(self, context):
         return [
             {
-                'id': str(result.keyword.pk) if isinstance(result, ThesaurusKeywordLabel) else str(result.pk),
-                'text': self.get_result_label(result),
-                'selected_text': self.get_selected_result_label(result),
-            } for result in context['object_list']
+                "id": str(result.keyword.pk) if isinstance(result, ThesaurusKeywordLabel) else str(result.pk),
+                "text": self.get_result_label(result),
+                "selected_text": self.get_selected_result_label(result),
+            }
+            for result in context["object_list"]
         ]
 
 
 class OwnerRightsRequestView(LoginRequiredMixin, FormView):
-    template_name = 'owner_rights_request.html'
+    template_name = "owner_rights_request.html"
     form_class = OwnerRightsRequestForm
     resource = None
-    redirect_field_name = 'next'
+    redirect_field_name = "next"
 
     def get_success_url(self):
         return self.resource.get_absolute_url()
 
     def get(self, request, *args, **kwargs):
-        r_base = ResourceBase.objects.get(pk=kwargs.get('pk'))
+        r_base = ResourceBase.objects.get(pk=kwargs.get("pk"))
         self.resource = OwnerRightsRequestViewUtils.get_resource(r_base)
-        initial = {
-            'resource': r_base
-        }
+        initial = {"resource": r_base}
         form = self.form_class(initial=initial)
-        return render(request, self.template_name, {'form': form, 'resource': self.resource})
+        return render(request, self.template_name, {"form": form, "resource": self.resource})
 
     def post(self, request, *args, **kwargs):
-        r_base = ResourceBase.objects.get(pk=kwargs.get('pk'))
+        r_base = ResourceBase.objects.get(pk=kwargs.get("pk"))
         self.resource = OwnerRightsRequestViewUtils.get_resource(r_base)
         form = self.form_class(request.POST)
         if form.is_valid():
-            reason = form.cleaned_data['reason']
-            notice_type_label = 'request_resource_edit'
+            reason = form.cleaned_data["reason"]
+            notice_type_label = "request_resource_edit"
             recipients = OwnerRightsRequestViewUtils.get_message_recipients(self.resource.owner)
 
             Message.objects.new_message(
                 from_user=request.user,
                 to_users=recipients,
-                subject=_('System message: A request to modify resource'),
-                content=_('The resource owner has requested to modify the resource') + '.\n'
-                ' ' +
-                _('Resource title') + ': ' + self.resource.title + '.\n'
-                ' ' +
-                _('Reason for the request') + ': "' + reason + '".\n' +
-                ' ' +
-                _('To allow the change, set the resource to not "Approved" under the metadata settings' +
-                  'and write message to the owner to notify him') + '.'
+                subject=_("System message: A request to modify resource"),
+                content=_("The resource owner has requested to modify the resource") + ".\n"
+                " " + _("Resource title") + ": " + self.resource.title + ".\n"
+                " "
+                + _("Reason for the request")
+                + ': "'
+                + reason
+                + '".\n'
+                + " "
+                + _(
+                    'To allow the change, set the resource to not "Approved" under the metadata settings'
+                    + "and write message to the owner to notify him"
+                )
+                + ".",
             )
-            send_notification(recipients, notice_type_label, {
-                'resource': self.resource,
-                'site_url': settings.SITEURL[:-1],
-                'reason': reason
-            })
+            send_notification(
+                recipients,
+                notice_type_label,
+                {"resource": self.resource, "site_url": settings.SITEURL[:-1], "reason": reason},
+            )
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -424,10 +423,8 @@ class OwnerRightsRequestView(LoginRequiredMixin, FormView):
 @login_required
 def resource_clone(request):
     try:
-        uuid = request.POST['uuid']
-        resource = resolve_object(
-            request, ResourceBase, {
-                'uuid': uuid}, 'base.change_resourcebase')
+        uuid = request.POST["uuid"]
+        resource = resolve_object(request, ResourceBase, {"uuid": uuid}, "base.change_resourcebase")
     except PermissionDenied:
         return HttpResponse("Not allowed", status=403)
     except Exception:
@@ -437,26 +434,19 @@ def resource_clone(request):
 
     out = {}
     try:
-        getattr(resource_manager, "copy")(
-            resource.get_real_instance(),
-            uuid=None,
-            defaults={
-                'user': request.user})
-        out['success'] = True
-        out['message'] = _("Resource Cloned Successfully!")
+        getattr(resource_manager, "copy")(resource.get_real_instance(), uuid=None, defaults={"user": request.user})
+        out["success"] = True
+        out["message"] = _("Resource Cloned Successfully!")
     except Exception as e:
         logger.exception(e)
-        out['success'] = False
-        out['message'] = _(f"Error Occurred while Cloning the Resource: {e}")
-        out['errors'] = str(e)
+        out["success"] = False
+        out["message"] = _(f"Error Occurred while Cloning the Resource: {e}")
+        out["errors"] = str(e)
 
-    if out['success']:
+    if out["success"]:
         status_code = 200
-        register_event(request, 'change', resource)
+        register_event(request, "change", resource)
     else:
         status_code = 400
 
-    return HttpResponse(
-        json.dumps(out),
-        content_type='application/json',
-        status=status_code)
+    return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)

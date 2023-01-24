@@ -34,7 +34,6 @@ logger = logging.getLogger(__name__)
 
 
 class DataItemRetriever(object):
-
     def __init__(self, _file):
         self.temporary_folder = None
         self.file_path = None
@@ -45,9 +44,9 @@ class DataItemRetriever(object):
         self._smart_open_uri = None
 
         if isinstance(_file, UploadedFile):
-            '''
+            """
             If the file exists and is reachable we can assume that is not a remote file
-            '''
+            """
             # File provided by django form
             self._django_form_file = _file
             self._is_django_form_file = True
@@ -59,7 +58,12 @@ class DataItemRetriever(object):
             raise ValueError()
 
     def delete_temporary_file(self):
-        if (self.temporary_folder and self.file_path and os.path.exists(self.temporary_folder) and os.path.isfile(self.file_path)):
+        if (
+            self.temporary_folder
+            and self.file_path
+            and os.path.exists(self.temporary_folder)
+            and os.path.isfile(self.file_path)
+        ):
             # Remove File
             os.remove(self.file_path)
             # Verify and remove temp folder
@@ -108,7 +112,9 @@ class DataItemRetriever(object):
                     for chunk in self._django_form_file.chunks():
                         tmp_file.write(chunk)
             else:
-                with open(self.file_path, "wb") as tmp_file, smart_open.open(uri=self._original_file_uri, mode="rb") as original_file:
+                with open(self.file_path, "wb") as tmp_file, smart_open.open(
+                    uri=self._original_file_uri, mode="rb"
+                ) as original_file:
                     for chunk in file_chunks_iterable(original_file):
                         tmp_file.write(chunk)
 
@@ -132,23 +138,16 @@ class DataItemRetriever(object):
         if self.file_path:
             return os.path.basename(self.file_path)
         if self._is_django_form_file:
-            return (
-                self._django_form_file.name
-                if hasattr(self._django_form_file, "name")
-                else self._django_form_file
-            )
+            return self._django_form_file.name if hasattr(self._django_form_file, "name") else self._django_form_file
         return os.path.basename(self._smart_open_uri.uri_path)
 
 
 class DataRetriever(object):
-
     def __init__(self, files, tranfer_at_creation=False):
         self.temporary_folder = None
         self.file_paths = {}
 
-        self.data_items = {
-            name: DataItemRetriever(file) for name, file in files.items() if file
-        }
+        self.data_items = {name: DataItemRetriever(file) for name, file in files.items() if file}
         if tranfer_at_creation:
             self.transfer_remote_files()
 
@@ -160,12 +159,12 @@ class DataRetriever(object):
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = Path(file_path)
             os.chmod(file_path, settings.FILE_UPLOAD_PERMISSIONS)
-        '''
+        """
         Is more usefull to have always unzipped file than the zip file
         So in case is a zip_file, we unzip it and than delete it
-        '''
-        if zipfile.is_zipfile(self.file_paths.get('base_file', 'not_zip')):
-            self._unzip(zip_name=self.file_paths.get('base_file'))
+        """
+        if zipfile.is_zipfile(self.file_paths.get("base_file", "not_zip")):
+            self._unzip(zip_name=self.file_paths.get("base_file"))
 
         if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
             # value is always set by default as None
@@ -200,20 +199,20 @@ class DataRetriever(object):
     def _unzip(self, zip_name: str) -> Mapping:
         from geonode.utils import get_allowed_extensions
 
-        '''
+        """
         Function to unzip the file. If is a shp or a tiff
         is assigned as base_file otherwise will create the expected payloads
         at the end the zip is deleted
-        '''
-        zip_file = self.file_paths['base_file']
+        """
+        zip_file = self.file_paths["base_file"]
         the_zip = zipfile.ZipFile(zip_file, allowZip64=True)
         the_zip.extractall(self.temporary_folder)
         available_choices = get_allowed_extensions()
-        not_main_files = ['xml', 'sld', 'zip', 'kmz']
+        not_main_files = ["xml", "sld", "zip", "kmz"]
         base_file_choices = [x for x in available_choices if x not in not_main_files]
         for _file in Path(self.temporary_folder).iterdir():
             if any([_file.name.endswith(_ext) for _ext in base_file_choices]):
-                self.file_paths['base_file'] = Path(str(_file))
+                self.file_paths["base_file"] = Path(str(_file))
             elif not zipfile.is_zipfile(str(_file)):
                 ext = _file.name.split(".")[-1]
                 self.file_paths[f"{ext}_file"] = Path(str(_file))
@@ -222,6 +221,4 @@ class DataRetriever(object):
         os.remove(zip_name)
 
         # update the data_items
-        self.data_items = {
-            name: DataItemRetriever(str(_file)) for name, _file in self.file_paths.items() if _file
-        }
+        self.data_items = {name: DataItemRetriever(str(_file)) for name, _file in self.file_paths.items() if _file}

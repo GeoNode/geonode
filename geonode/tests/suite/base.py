@@ -20,17 +20,17 @@ database = DEFAULT_DB_ALIAS
 verbosity = 0
 interactive = False
 
-old_db_name = settings.DATABASES['default']['NAME']
+old_db_name = settings.DATABASES["default"]["NAME"]
 
 
 def create_test_db(test_database_name):
-    connection.settings_dict['TEST_NAME'] = test_database_name
+    connection.settings_dict["TEST_NAME"] = test_database_name
 
     management.get_commands()
-    management._commands['syncdb'] = 'django.core'
+    management._commands["syncdb"] = "django.core"
 
     connection.creation.create_test_db(verbosity, autoclobber=not interactive)
-    connection.settings_dict['NAME'] = test_database_name
+    connection.settings_dict["NAME"] = test_database_name
 
 
 def destroy_test_db(database_name):
@@ -38,18 +38,18 @@ def destroy_test_db(database_name):
 
 
 def load_db_fixtures(fixtures):
-    call_command('loaddata', *fixtures)
+    call_command("loaddata", *fixtures)
 
 
 def setup_test_db(worker_index, fixtures, fn, *args):
     management.get_commands()
-    management._commands['syncdb'] = 'django.core'
+    management._commands["syncdb"] = "django.core"
 
-    old_name = settings.DATABASES['default']['NAME']
+    old_name = settings.DATABASES["default"]["NAME"]
     if worker_index is not None:
-        test_database_name = f'test_{worker_index}_{old_name}'
+        test_database_name = f"test_{worker_index}_{old_name}"
     else:
-        test_database_name = f'test_{old_name}'
+        test_database_name = f"test_{old_name}"
 
     create_test_db(test_database_name)
     if fixtures:
@@ -64,5 +64,5 @@ def setup_test_db(worker_index, fixtures, fn, *args):
     finally:
         destroy_test_db(test_database_name)
 
-    connection.settings_dict['NAME'] = old_name
+    connection.settings_dict["NAME"] = old_name
     return result

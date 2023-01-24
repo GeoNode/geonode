@@ -25,12 +25,19 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 
 class BaseAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.base'
-    NOTIFICATIONS = (("request_download_resourcebase", _("Request to download a resource"),
-                      _("A request for downloading a resource was sent")),
-                     ("request_resource_edit", _("Request resource change"),
-                      _("Owner has requested permissions to modify a resource")),
-                     )
+    name = "geonode.base"
+    NOTIFICATIONS = (
+        (
+            "request_download_resourcebase",
+            _("Request to download a resource"),
+            _("A request for downloading a resource was sent"),
+        ),
+        (
+            "request_resource_edit",
+            _("Request resource change"),
+            _("Owner has requested permissions to modify a resource"),
+        ),
+    )
 
 
 def register_url_event(event_type=None):
@@ -41,14 +48,17 @@ def register_url_event(event_type=None):
     >> register_url_event()(TemplateView.view_as_view())
 
     """
+
     def _register_url_event(view):
         @wraps(view)
         def inner(*args, **kwargs):
             if settings.MONITORING_ENABLED:
                 request = args[0]
-                register_event(request, event_type or 'view', request.path)
+                register_event(request, event_type or "view", request.path)
             return view(*args, **kwargs)
+
         return inner
+
     return _register_url_event
 
 
@@ -68,17 +78,18 @@ def register_event(request, event_type, resource):
         return
 
     from geonode.base.models import ResourceBase
+
     if isinstance(resource, str):
-        resource_type = 'url'
+        resource_type = "url"
         resource_name = request.path
         resource_id = None
     elif isinstance(resource, ResourceBase):
         resource_type = resource.__class__._meta.verbose_name_raw
-        resource_name = getattr(resource, 'alternate', None) or resource.title
+        resource_name = getattr(resource, "alternate", None) or resource.title
         resource_id = resource.id
     else:
         raise ValueError(f"Invalid resource: {resource}")
-    if request and hasattr(request, 'register_event'):
+    if request and hasattr(request, "register_event"):
         request.register_event(event_type, resource_type, resource_name, resource_id)
 
 
@@ -88,4 +99,4 @@ def register_proxy_event(request):
     """
 
 
-default_app_config = 'geonode.base.BaseAppConfig'
+default_app_config = "geonode.base.BaseAppConfig"

@@ -20,12 +20,12 @@ from .conf import settings
 
 
 class HookProxy:
-
     def __getattr__(self, attr):
         if not isinstance(settings.GEONODE_CLIENT_HOOKSET, str):
             return getattr(settings.GEONODE_CLIENT_HOOKSET, attr)
         else:
             import importlib
+
             cls = settings.GEONODE_CLIENT_HOOKSET.split(".")
             module_name, class_name = (".".join(cls[:-1]), cls[-1])
             i = importlib.import_module(module_name)

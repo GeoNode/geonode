@@ -18,10 +18,7 @@
 #########################################################################
 from django.contrib import admin
 
-from .models import (
-    ProcessingWorkflow,
-    ProcessingWorkflowTasks,
-    SampleProcessingTask)
+from .models import ProcessingWorkflow, ProcessingWorkflowTasks, SampleProcessingTask
 
 
 class ProcessingWorkflowTasksInline(admin.TabularInline):
@@ -30,9 +27,12 @@ class ProcessingWorkflowTasksInline(admin.TabularInline):
 
 @admin.register(ProcessingWorkflow)
 class ProcessingWorkflowAdmin(admin.ModelAdmin):
-    list_display = ('id', 'is_enabled', 'name')  # , 'date', 'description')
-    list_display_links = ('id', 'name',)
-    filter_horizontal = ('processing_tasks',)
+    list_display = ("id", "is_enabled", "name")  # , 'date', 'description')
+    list_display_links = (
+        "id",
+        "name",
+    )
+    filter_horizontal = ("processing_tasks",)
     inlines = [ProcessingWorkflowTasksInline]
 
 

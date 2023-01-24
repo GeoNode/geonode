@@ -32,8 +32,7 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ValidationError
-from rest_framework.authentication import (BasicAuthentication,
-                                           SessionAuthentication)
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import api_view
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import IsAuthenticated
@@ -46,7 +45,7 @@ from .utils import filtered, resolve_type_serializer
 logger = logging.getLogger(__name__)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def resource_service_search(request, resource_type: str = None):
     """
     Return a list of resources matching the filtering criteria.
@@ -64,7 +63,7 @@ def resource_service_search(request, resource_type: str = None):
 
     """
     try:
-        search_filter = json.loads(request.GET.get('filter', '{}'))
+        search_filter = json.loads(request.GET.get("filter", "{}"))
     except Exception as e:
         return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
@@ -73,7 +72,7 @@ def resource_service_search(request, resource_type: str = None):
     return filtered(request, resource_manager.search(search_filter, resource_type=_resource_type), _serializer)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def resource_service_exists(request, uuid: str):
     """
     Returns a JSON boolean success field valorized with the 'exists' operation outcome.
@@ -89,15 +88,15 @@ def resource_service_exists(request, uuid: str):
     _exists = False
     if resource_manager.exists(uuid):
         _exists = get_resources_with_perms(request.user).filter(uuid=uuid).exists()
-    return Response({'success': _exists}, status=status.HTTP_200_OK)
+    return Response({"success": _exists}, status=status.HTTP_200_OK)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def resource_service_execution_status(request, execution_id: str):
     """Main dispatcher endpoint to follow an API request status progress
 
-     - GET input: <str: execution id>
-     - output: <ExecutionRequest>
+    - GET input: <str: execution id>
+    - output: <ExecutionRequest>
     """
     try:
         _exec_request = ExecutionRequest.objects.filter(exec_id=execution_id)
@@ -108,18 +107,19 @@ def resource_service_execution_status(request, execution_id: str):
             if _request.user == request.user or request.user.is_superuser:
                 return Response(
                     {
-                        'user': _request.user.username,
-                        'status': _request.status,
-                        'func_name': _request.func_name,
-                        'created': _request.created,
-                        'finished': _request.finished,
-                        'last_updated': _request.last_updated,
-                        'input_params': _request.input_params,
-                        'output_params': _request.output_params,
-                        'step': _request.step,
-                        'log': _request.log
+                        "user": _request.user.username,
+                        "status": _request.status,
+                        "func_name": _request.func_name,
+                        "created": _request.created,
+                        "finished": _request.finished,
+                        "last_updated": _request.last_updated,
+                        "input_params": _request.input_params,
+                        "output_params": _request.output_params,
+                        "step": _request.step,
+                        "log": _request.log,
                     },
-                    status=status.HTTP_200_OK)
+                    status=status.HTTP_200_OK,
+                )
         return Response(status=status.HTTP_403_FORBIDDEN)
     except Exception as e:
         logger.exception(e)
@@ -130,17 +130,16 @@ class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     """
     API endpoint that allows users to be viewed or edited.
     """
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
-    ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = ExecutionRequestSerializer
     pagination_class = GeoNodeApiPagination
-    http_method_names = ['get', 'delete']
+    http_method_names = ["get", "delete"]
 
     def get_queryset(self, queryset=None):
-        return ExecutionRequest.objects.filter(user=self.request.user).order_by('pk')
+        return ExecutionRequest.objects.filter(user=self.request.user).order_by("pk")
 
     def delete(self, *args, **kwargs):
         try:

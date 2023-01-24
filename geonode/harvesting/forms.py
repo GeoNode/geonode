@@ -27,7 +27,6 @@ logger = logging.getLogger(__name__)
 
 
 class HarvesterForm(forms.ModelForm):
-
     def clean(self):
         super().clean()
         if self.instance.status != models.Harvester.STATUS_READY:

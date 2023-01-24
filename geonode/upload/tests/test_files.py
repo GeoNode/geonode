@@ -25,7 +25,6 @@ from geonode.upload import files
 
 
 class FilesTestCase(GeoNodeBaseTestSupport):
-
     def test_scan_hint_kml_ground_overlay(self):
         result = files.get_scan_hint(["kml", "other"])
         kml_file_type = files.get_type("KML Ground Overlay")

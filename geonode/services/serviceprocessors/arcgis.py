@@ -45,8 +45,9 @@ from collections import namedtuple
 logger = logging.getLogger(__name__)
 
 
-MapLayer = namedtuple("MapLayer",
-                      "id, \
+MapLayer = namedtuple(
+    "MapLayer",
+    "id, \
                       title, \
                       abstract, \
                       type, \
@@ -55,7 +56,8 @@ MapLayer = namedtuple("MapLayer",
                       extent, \
                       fields, \
                       minScale, \
-                      maxScale")
+                      maxScale",
+)
 
 
 class ArcMapServiceHandler(base.ServiceHandlerBase):
@@ -69,7 +71,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         try:
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
-            _title = _title_safe.replace('_', ' ').strip()
+            _title = _title_safe.replace("_", " ").strip()
         except Exception:
             traceback.print_exc()
             _title = self.parsed_service.mapName
@@ -84,7 +86,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
-        self.title = str(_title).encode("utf-8", "ignore").decode('utf-8')
+        self.title = str(_title).encode("utf-8", "ignore").decode("utf-8")
 
     @property
     def parsed_service(self):
@@ -114,11 +116,15 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 method=self.indexing_method,
                 owner=owner,
                 metadata_only=True,
-                version=str(self.parsed_service._json_struct.get("currentVersion", 0.0)).encode("utf-8", "ignore").decode('utf-8'),
+                version=str(self.parsed_service._json_struct.get("currentVersion", 0.0))
+                .encode("utf-8", "ignore")
+                .decode("utf-8"),
                 name=self.name,
                 title=self.title,
-                abstract=str(self.parsed_service._json_struct.get("serviceDescription")).encode("utf-8", "ignore").decode('utf-8') or _(
-                    "Not provided")
+                abstract=str(self.parsed_service._json_struct.get("serviceDescription"))
+                .encode("utf-8", "ignore")
+                .decode("utf-8")
+                or _("Not provided"),
             )
             service_harvester = Harvester.objects.create(
                 name=self.name,
@@ -127,7 +133,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
                 remote_url=instance.service_url,
                 delete_orphan_resources_automatically=True,
                 harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
-                harvester_type_specific_configuration=self.get_harvester_configuration_options()
+                harvester_type_specific_configuration=self.get_harvester_configuration_options(),
             )
             if service_harvester.update_availability():
                 service_harvester.initiate_update_harvestable_resources()
@@ -142,10 +148,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         return self.parsed_service._json_struct.get("capabilities", "").split(",")
 
     def get_harvester_configuration_options(self):
-        return {
-            "harvest_map_services": True,
-            "harvest_image_services": False
-        }
+        return {"harvest_map_services": True, "harvest_image_services": False}
 
     def _parse_datasets(self, layers):
         map_datasets = []
@@ -156,16 +159,16 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _dataset_meta(self, layer):
         _ll_keys = [
-            'id',
-            'title',
-            'abstract',
-            'type',
-            'geometryType',
-            'copyrightText',
-            'extent',
-            'fields',
-            'minScale',
-            'maxScale'
+            "id",
+            "title",
+            "abstract",
+            "type",
+            "geometryType",
+            "copyrightText",
+            "extent",
+            "fields",
+            "minScale",
+            "maxScale",
         ]
         _ll = {}
         if isinstance(layer, dict):
@@ -174,8 +177,8 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
         else:
             for _key in _ll_keys:
                 _ll[_key] = getattr(layer, _key, None)
-        if not _ll['title'] and getattr(layer, 'name'):
-            _ll['title'] = getattr(layer, 'name')
+        if not _ll["title"] and getattr(layer, "name"):
+            _ll["title"] = getattr(layer, "name")
         return MapLayer(**_ll)
 
     def _offers_geonode_projection(self, srs):
@@ -184,10 +187,9 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
 
     def _get_indexed_dataset_fields(self, dataset_meta):
         srs = f"EPSG:{dataset_meta.extent.spatialReference.wkid}"
-        bbox = utils.decimal_encode([dataset_meta.extent.xmin,
-                                     dataset_meta.extent.ymin,
-                                     dataset_meta.extent.xmax,
-                                     dataset_meta.extent.ymax])
+        bbox = utils.decimal_encode(
+            [dataset_meta.extent.xmin, dataset_meta.extent.ymin, dataset_meta.extent.xmax, dataset_meta.extent.ymax]
+        )
         typename = slugify(f"{dataset_meta.id}-{''.join(c for c in dataset_meta.title if ord(c) < 128)}")
         return {
             "name": dataset_meta.title,
@@ -200,7 +202,7 @@ class ArcMapServiceHandler(base.ServiceHandlerBase):
             "abstract": dataset_meta.abstract,
             "bbox_polygon": BBOXHelper.from_xy([bbox[0], bbox[2], bbox[1], bbox[3]]).as_polygon(),
             "srid": srs,
-            "keywords": ['ESRI', 'ArcGIS REST MapServer', dataset_meta.title],
+            "keywords": ["ESRI", "ArcGIS REST MapServer", dataset_meta.title],
         }
 
 
@@ -216,7 +218,7 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         try:
             _sname = utils.get_esri_service_name(self.url)
             _title_safe = safe(os.path.basename(os.path.normpath(_sname)))
-            _title = _title_safe.replace('_', ' ').strip()
+            _title = _title_safe.replace("_", " ").strip()
         except Exception:
             traceback.print_exc()
             _title = self.parsed_service.mapName
@@ -238,7 +240,4 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
         return ArcImageService(self.url)
 
     def get_harvester_configuration_options(self):
-        return {
-            "harvest_map_services": False,
-            "harvest_image_services": True
-        }
+        return {"harvest_map_services": False, "harvest_image_services": True}
