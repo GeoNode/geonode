@@ -51,7 +51,6 @@ from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from ..people.utils import get_valid_user
-from geonode.people import Roles
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
