@@ -23,9 +23,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from unittest.mock import patch
 from geonode.management_commands_http.models import ManagementCommandJob
-from geonode.management_commands_http.utils.job_runner import (
-    run_management_command
-)
+from geonode.management_commands_http.utils.job_runner import run_management_command
 
 
 class ManagementCommandsTestCase(APITestCase):
@@ -80,9 +78,7 @@ class ManagementCommandsTestCase(APITestCase):
         response_json = response.json()
         self.assertTrue(response_json["success"])
         self.assertEqual(response_json["data"]["command"], cmd_name)
-        self.assertEqual(
-            response_json["data"]["status"], ManagementCommandJob.QUEUED
-        )
+        self.assertEqual(response_json["data"]["status"], ManagementCommandJob.QUEUED)
         job_id = response_json["data"]["id"]
         mocked_async_task.delay.assert_called_once()
         mocked_async_task.delay.assert_called_with(job_id=job_id)
@@ -96,9 +92,7 @@ class ManagementCommandsTestCase(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(
-            response.json()["data"]["status"], ManagementCommandJob.CREATED
-        )
+        self.assertEqual(response.json()["data"]["status"], ManagementCommandJob.CREATED)
         mocked_async_task.delay.assert_not_called()
 
     def test_management_commands_create_without_command(self):
@@ -238,9 +232,7 @@ class ManagementCommandJobsTestCase(APITestCase):
         response = self.client.patch(resource_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         response_json = response.json()
-        self.assertEqual(
-            response_json["data"]["status"], ManagementCommandJob.QUEUED
-        )
+        self.assertEqual(response_json["data"]["status"], ManagementCommandJob.QUEUED)
         mocked_async_task.delay.assert_called_once()
         mocked_async_task.delay.assert_called_with(job_id=self.job1.id)
 
@@ -267,9 +259,7 @@ class ManagementCommandJobsTestCase(APITestCase):
         response_json = response.json()
         self.assertTrue(response_json["success"])
         self.assertEqual(response_json["data"]["command"], "ping_mngmt_commands_http")
-        self.assertEqual(
-            response_json["data"]["status"], ManagementCommandJob.QUEUED
-        )
+        self.assertEqual(response_json["data"]["status"], ManagementCommandJob.QUEUED)
         job_id = response_json["data"]["id"]
         mocked_async_task.delay.assert_called_once()
         mocked_async_task.delay.assert_called_with(job_id=job_id)

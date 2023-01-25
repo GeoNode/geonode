@@ -40,6 +40,7 @@ class Map(ResourceBase):
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
     """
+
     last_modified = models.DateTimeField(auto_now_add=True)
     # The last time the map was modified.
 
@@ -256,7 +257,7 @@ class MapLayer(models.Model):
     @property
     def dataset_title(self):
         """
-            Used by geonode/maps/templates/maps/map_download.html
+        Used by geonode/maps/templates/maps/map_download.html
         """
         if self.dataset:
             title = self.dataset.title
@@ -267,7 +268,7 @@ class MapLayer(models.Model):
     @property
     def local_link(self):
         """
-            Used by geonode/maps/templates/maps/map_download.html
+        Used by geonode/maps/templates/maps/map_download.html
         """
         layer = self.dataset if self.local else None
         if layer:

@@ -25,11 +25,7 @@ from decimal import Decimal
 from typing import Union, List, Generator
 from shapely import affinity
 from shapely.ops import split
-from shapely.geometry import (
-    mapping,
-    Polygon,
-    LineString,
-    GeometryCollection)
+from shapely.geometry import mapping, Polygon, LineString, GeometryCollection
 
 from django.contrib.gis.geos import Polygon as DjangoPolygon
 
@@ -93,7 +89,10 @@ def filter_bbox(queryset, bbox):
     for _bbox in bboxes:
         _bbox = list(map(Decimal, _bbox))
         search_polygon = polygon_from_bbox((_bbox[0], _bbox[1], _bbox[2], _bbox[3]))
-        for search_polygon_dl in [DjangoPolygon.from_ewkt(_p.wkt) for _p in split_polygon(json.loads(search_polygon.json), output_format="polygons")]:
+        for search_polygon_dl in [
+            DjangoPolygon.from_ewkt(_p.wkt)
+            for _p in split_polygon(json.loads(search_polygon.json), output_format="polygons")
+        ]:
             _qs = queryset.filter(ll_bbox_polygon__intersects=search_polygon_dl)
             search_queryset = _qs if search_queryset is None else search_queryset | _qs
 
@@ -112,10 +111,9 @@ def check_crossing(lon1: float, lon2: float, validate: bool = False, dlon_thresh
     return abs(lon2 - lon1) > dlon_threshold
 
 
-def translate_polygons(geometry_collection: GeometryCollection,
-                       output_format: str = "geojson") -> Generator[
-    Union[List[dict], List[Polygon]], None, None
-]:
+def translate_polygons(
+    geometry_collection: GeometryCollection, output_format: str = "geojson"
+) -> Generator[Union[List[dict], List[Polygon]], None, None]:
     """
     ref.: https://towardsdatascience.com/around-the-world-in-80-lines-crossing-the-antimeridian-with-python-and-shapely-c87c9b6e1513
     """
@@ -132,9 +130,9 @@ def translate_polygons(geometry_collection: GeometryCollection,
         yield json.dumps(mapping(geo_polygon)) if (yield_geojson) else geo_polygon
 
 
-def split_polygon(geojson: dict, output_format: str = "geojson", validate: bool = False) -> Union[
-    List[dict], List[Polygon], GeometryCollection
-]:
+def split_polygon(
+    geojson: dict, output_format: str = "geojson", validate: bool = False
+) -> Union[List[dict], List[Polygon], GeometryCollection]:
     """
     ref.: https://towardsdatascience.com/around-the-world-in-80-lines-crossing-the-antimeridian-with-python-and-shapely-c87c9b6e1513
     Given a GeoJSON representation of a Polygon, returns a collection of
@@ -191,13 +189,13 @@ def split_polygon(geojson: dict, output_format: str = "geojson", validate: bool 
                 ring_maxx = x_shift
 
         # Ensure that any holes remain contained within the (translated) outer shell
-        if (ring_index == 0):  # by GeoJSON definition, first ring is the outer shell
+        if ring_index == 0:  # by GeoJSON definition, first ring is the outer shell
             shell_minx, shell_maxx = (ring_minx, ring_maxx)
-        elif (ring_minx < shell_minx):
+        elif ring_minx < shell_minx:
             ring_shift = [[x + 360, y] for (x, y) in coords_shift[ring_index]]
             coords_shift[ring_index] = ring_shift
             ring_minx, ring_maxx = (x + 360 for x in (ring_minx, ring_maxx))
-        elif (ring_maxx > shell_maxx):
+        elif ring_maxx > shell_maxx:
             ring_shift = [[x - 360, y] for (x, y) in coords_shift[ring_index]]
             coords_shift[ring_index] = ring_shift
             ring_minx, ring_maxx = (x - 360 for x in (ring_minx, ring_maxx))

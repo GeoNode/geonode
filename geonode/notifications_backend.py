@@ -39,34 +39,38 @@ class EmailBackend(BaseBackend):
 
     def deliver(self, recipient, sender, notice_type, extra_context):
         context = self.default_context()
-        context.update({
-            "recipient": recipient,
-            "sender": sender,
-            "notice": ugettext(notice_type.display),
-        })
+        context.update(
+            {
+                "recipient": recipient,
+                "sender": sender,
+                "notice": ugettext(notice_type.display),
+            }
+        )
         context.update(extra_context)
 
-        messages = self.get_formatted_messages((
-            "short.txt",
-            "full.txt"
-        ), notice_type.label, context)
+        messages = self.get_formatted_messages(("short.txt", "full.txt"), notice_type.label, context)
 
-        context.update({
-            "message": messages["short.txt"],
-        })
+        context.update(
+            {
+                "message": messages["short.txt"],
+            }
+        )
         subject = "".join(render_to_string("pinax/notifications/email_subject.txt", context).splitlines())
 
-        context.update({
-            "message": messages["full.txt"]
-        })
+        context.update({"message": messages["full.txt"]})
         body = render_to_string("pinax/notifications/email_body.txt", context)
 
         email = EmailMessage(
             subject=subject,
             body=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[recipient.email, ],
-            reply_to=[settings.DEFAULT_FROM_EMAIL, ])
+            to=[
+                recipient.email,
+            ],
+            reply_to=[
+                settings.DEFAULT_FROM_EMAIL,
+            ],
+        )
         email.content_subtype = "html"
 
         # TODO: require this to be passed in extra_context
@@ -75,7 +79,11 @@ class EmailBackend(BaseBackend):
         try:
             # Manually open the connection
             connection.open()
-            connection.send_messages([email, ])
+            connection.send_messages(
+                [
+                    email,
+                ]
+            )
             # The connection was already open so send_messages() doesn't close it.
         except Exception as e:
             logger.error(e)

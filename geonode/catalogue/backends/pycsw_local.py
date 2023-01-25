@@ -26,41 +26,46 @@ from geonode.catalogue.backends.generic import CatalogueBackend as GenericCatalo
 from geonode.catalogue.backends.generic import METADATA_FORMATS
 from shapely.errors import WKBReadingError, WKTReadingError
 
-true_value = 'true'
-false_value = 'false'
-if settings.DATABASES['default']['ENGINE'].endswith(('sqlite', 'sqlite3', 'spatialite',)):
-    true_value = '1'
-    false_value = '0'
+true_value = "true"
+false_value = "false"
+if settings.DATABASES["default"]["ENGINE"].endswith(
+    (
+        "sqlite",
+        "sqlite3",
+        "spatialite",
+    )
+):
+    true_value = "1"
+    false_value = "0"
 
 # pycsw settings that the user shouldn't have to worry about
 CONFIGURATION = {
-    'server': {
-        'home': '.',
-        'url': settings.CATALOGUE['default']['URL'],
-        'encoding': 'UTF-8',
-        'language': settings.LANGUAGE_CODE,
-        'maxrecords': '10',
+    "server": {
+        "home": ".",
+        "url": settings.CATALOGUE["default"]["URL"],
+        "encoding": "UTF-8",
+        "language": settings.LANGUAGE_CODE,
+        "maxrecords": "10",
         #  'loglevel': 'DEBUG',
         #  'logfile': '/tmp/pycsw.log',
         #  'federatedcatalogues': 'http://geo.data.gov/geoportal/csw/discovery',
-        'pretty_print': 'true',
-        'domainquerytype': 'range',
-        'domaincounts': 'true',
-        'profiles': 'apiso,ebrim',
+        "pretty_print": "true",
+        "domainquerytype": "range",
+        "domaincounts": "true",
+        "profiles": "apiso,ebrim",
     },
-    'repository': {
-        'source': 'geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository',
-        'filter': 'uuid IS NOT NULL',
-        'mappings': os.path.join(os.path.dirname(__file__), 'pycsw_local_mappings.py')
-    }
+    "repository": {
+        "source": "geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository",
+        "filter": "uuid IS NOT NULL",
+        "mappings": os.path.join(os.path.dirname(__file__), "pycsw_local_mappings.py"),
+    },
 }
 
 
 class CatalogueBackend(GenericCatalogueBackend):
-
     def __init__(self, *args, **kwargs):
         GenericCatalogueBackend.__init__(CatalogueBackend, self, *args, **kwargs)
-        self.catalogue.formats = ['Atom', 'DIF', 'Dublin Core', 'ebRIM', 'FGDC', 'ISO']
+        self.catalogue.formats = ["Atom", "DIF", "Dublin Core", "ebRIM", "FGDC", "ISO"]
         self.catalogue.local = True
 
     def remove_record(self, uuid):
@@ -74,20 +79,20 @@ class CatalogueBackend(GenericCatalogueBackend):
         if len(results) < 1:
             return None
 
-        result = dlxml.fromstring(results).find('{http://www.isotc211.org/2005/gmd}MD_Metadata')
+        result = dlxml.fromstring(results).find("{http://www.isotc211.org/2005/gmd}MD_Metadata")
 
         if result is None:
             return None
 
         record = MD_Metadata(result)
         record.keywords = []
-        if hasattr(record, 'identification') and hasattr(record.identification, 'keywords'):
+        if hasattr(record, "identification") and hasattr(record.identification, "keywords"):
             for kw in record.identification.keywords:
-                record.keywords.extend(kw['keywords'])
+                record.keywords.extend(kw["keywords"])
 
         record.links = {}
-        record.links['metadata'] = self.catalogue.urls_for_uuid(uuid)
-        record.links['download'] = self.catalogue.extract_links(record)
+        record.links["metadata"] = self.catalogue.urls_for_uuid(uuid)
+        record.links["download"] = self.catalogue.extract_links(record)
         return record
 
     def search_records(self, keywords, start, limit, bbox):
@@ -96,18 +101,20 @@ class CatalogueBackend(GenericCatalogueBackend):
             # serialize XML
             e = dlxml.fromstring(lresults)
 
-            self.catalogue.records = \
-                [MD_Metadata(x) for x in e.findall('//{http://www.isotc211.org/2005/gmd}MD_Metadata')]
+            self.catalogue.records = [
+                MD_Metadata(x) for x in e.findall("//{http://www.isotc211.org/2005/gmd}MD_Metadata")
+            ]
 
             # build results into JSON for API
             results = [self.catalogue.metadatarecord2dict(doc) for v, doc in self.catalogue.records.items()]
 
-            result = {'rows': results,
-                      'total': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get(
-                          'numberOfRecordsMatched'),
-                      'next_page': e.find('{http://www.opengis.net/cat/csw/2.0.2}SearchResults').attrib.get(
-                          'nextRecord')
-                      }
+            result = {
+                "rows": results,
+                "total": e.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib.get(
+                    "numberOfRecordsMatched"
+                ),
+                "next_page": e.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib.get("nextRecord"),
+            }
 
             return result
 
@@ -116,19 +123,19 @@ class CatalogueBackend(GenericCatalogueBackend):
         HTTP-less CSW
         """
 
-        mdict = dict(settings.PYCSW['CONFIGURATION'], **CONFIGURATION)
-        if 'server' in settings.PYCSW['CONFIGURATION']:
+        mdict = dict(settings.PYCSW["CONFIGURATION"], **CONFIGURATION)
+        if "server" in settings.PYCSW["CONFIGURATION"]:
             # override server system defaults with user specified directives
-            mdict['server'].update(settings.PYCSW['CONFIGURATION']['server'])
+            mdict["server"].update(settings.PYCSW["CONFIGURATION"]["server"])
 
         # fake HTTP environment variable
-        os.environ['QUERY_STRING'] = ''
+        os.environ["QUERY_STRING"] = ""
 
         # init pycsw
-        csw = server.Csw(mdict, version='2.0.2')
+        csw = server.Csw(mdict, version="2.0.2")
 
         # fake HTTP method
-        csw.requesttype = 'GET'
+        csw.requesttype = "GET"
 
         # fake HTTP request parameters
         if identifier is None:  # it's a GetRecords request
@@ -137,25 +144,25 @@ class CatalogueBackend(GenericCatalogueBackend):
                 formats.append(METADATA_FORMATS[f][0])
 
             csw.kvp = {
-                'service': 'CSW',
-                'version': '2.0.2',
-                'elementsetname': 'full',
-                'typenames': formats,
-                'resulttype': 'results',
-                'constraintlanguage': 'CQL_TEXT',
-                'outputschema': 'http://www.isotc211.org/2005/gmd',
-                'constraint': None,
-                'startposition': start,
-                'maxrecords': limit
+                "service": "CSW",
+                "version": "2.0.2",
+                "elementsetname": "full",
+                "typenames": formats,
+                "resulttype": "results",
+                "constraintlanguage": "CQL_TEXT",
+                "outputschema": "http://www.isotc211.org/2005/gmd",
+                "constraint": None,
+                "startposition": start,
+                "maxrecords": limit,
             }
             response = csw.getrecords2()
         else:  # it's a GetRecordById request
             csw.kvp = {
-                'service': 'CSW',
-                'version': '2.0.2',
-                'request': 'GetRecordById',
-                'id': identifier,
-                'outputschema': 'http://www.isotc211.org/2005/gmd',
+                "service": "CSW",
+                "version": "2.0.2",
+                "request": "GetRecordById",
+                "id": identifier,
+                "outputschema": "http://www.isotc211.org/2005/gmd",
             }
             # FIXME(Ariel): Remove this try/except block when pycsw deals with
             # empty geometry fields better.

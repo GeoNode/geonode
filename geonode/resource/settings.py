@@ -18,4 +18,6 @@
 #########################################################################
 import os
 
-RESOURCE_MANAGER_CONCRETE_CLASS = os.environ.get('RESOURCE_MANAGER_CONCRETE_CLASS', 'geonode.geoserver.manager.GeoServerResourceManager')
+RESOURCE_MANAGER_CONCRETE_CLASS = os.environ.get(
+    "RESOURCE_MANAGER_CONCRETE_CLASS", "geonode.geoserver.manager.GeoServerResourceManager"
+)

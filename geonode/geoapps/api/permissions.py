@@ -27,8 +27,9 @@ class GeoAppPermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
+
     shortcut_kwargs = {
-        'accept_global_perms': True,
+        "accept_global_perms": True,
     }
 
     def filter_queryset(self, request, queryset, view):
@@ -39,19 +40,15 @@ class GeoAppPermissionsFilter(BaseFilterBackend):
         from geonode.security.utils import get_visible_resources
 
         user = request.user
-        resources = get_objects_for_user(
-            user,
-            'base.view_resourcebase',
-            **self.shortcut_kwargs
-        )
+        resources = get_objects_for_user(user, "base.view_resourcebase", **self.shortcut_kwargs)
 
         _allowed_ids = get_visible_resources(
             resources,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES
-        ).values_list('id', flat=True)
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        ).values_list("id", flat=True)
 
         obj_with_perms = [_app.id for _app in GeoApp.objects.filter(id__in=_allowed_ids)]
 

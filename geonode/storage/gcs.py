@@ -22,7 +22,6 @@ from storages.backends.gcloud import GoogleCloudStorage
 
 
 class GoogleStorageManager(StorageManagerInterface):
-
     def __init__(self):
         self._gcp = GoogleCloudStorage()
 
@@ -38,7 +37,7 @@ class GoogleStorageManager(StorageManagerInterface):
     def listdir(self, path):
         return self._gcp.listdir(path)
 
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         return self._gcp.open(name, mode=mode)
 
     def path(self, name):

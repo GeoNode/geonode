@@ -30,24 +30,25 @@ from geonode.monitoring.models import Service, Host
 from geonode.monitoring.utils import MonitoringHandler
 
 
-FILTER_URLS = (settings.MEDIA_URL,
-               settings.STATIC_URL,
-               '/gs/',
-               '/api/',
-               '/security/',
-               '/jsi18n/',
-               '/h_keywords_api',
-               '/admin/jsi18n/',)
+FILTER_URLS = (
+    settings.MEDIA_URL,
+    settings.STATIC_URL,
+    "/gs/",
+    "/api/",
+    "/security/",
+    "/jsi18n/",
+    "/h_keywords_api",
+    "/admin/jsi18n/",
+)
 
 
 class MonitoringMiddleware(MiddlewareMixin):
-
     def __init__(self, get_response):
         self.get_response = get_response
         self.setup_logging()
 
     def setup_logging(self):
-        self.log = logging.getLogger(f'{__name__}.catcher')
+        self.log = logging.getLogger(f"{__name__}.catcher")
         self.log.propagate = False
         self.log.setLevel(logging.DEBUG)
         self.log.handlers = []
@@ -57,8 +58,8 @@ class MonitoringMiddleware(MiddlewareMixin):
         self.log.addHandler(self.handler)
 
     def get_service(self):
-        hname = getattr(settings, 'MONITORING_HOST_NAME', None) or 'localhost'
-        sname = getattr(settings, 'MONITORING_SERVICE_NAME', None) or 'geonode'
+        hname = getattr(settings, "MONITORING_HOST_NAME", None) or "localhost"
+        sname = getattr(settings, "MONITORING_SERVICE_NAME", None) or "geonode"
         try:
             host = Host.objects.get(name=hname)
         except Host.DoesNotExist:
@@ -78,31 +79,41 @@ class MonitoringMiddleware(MiddlewareMixin):
             if isinstance(skip_url, str):
                 if current.startswith(skip_url):
                     return False
-            elif hasattr(skip_url, 'match'):
+            elif hasattr(skip_url, "match"):
                 if skip_url.match(current):
                     return False
         return True
 
     @staticmethod
     def register_event(request, event_type, resource_type, resource_name, resource_id):
-        m = getattr(request, '_monitoring', None)
+        m = getattr(request, "_monitoring", None)
         if not m:
             return
-        events = m['events']
-        events.append((event_type, resource_type, resource_name, resource_id,))
+        events = m["events"]
+        events.append(
+            (
+                event_type,
+                resource_type,
+                resource_name,
+                resource_id,
+            )
+        )
 
     def register_request(self, request, response):
         if self.service:
-            self.log.debug('request', extra={'request': request, 'response': response})
+            self.log.debug("request", extra={"request": request, "response": response})
 
     def register_exception(self, request, exception):
         if self.service:
-            response = HttpResponse('')
-            self.log.debug('request', exc_info=exception, extra={'request': request, 'response': response})
+            response = HttpResponse("")
+            self.log.debug("request", exc_info=exception, extra={"request": request, "response": response})
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         m = request.resolver_match
-        if m.namespace in ('admin', 'monitoring',):
+        if m.namespace in (
+            "admin",
+            "monitoring",
+        ):
             request._monitoring = None
             del request._monitoring
 
@@ -116,18 +127,21 @@ class MonitoringMiddleware(MiddlewareMixin):
         if not request.session.session_key:
             request.session.create()
 
-        meta = {'started': now,
-                'resources': {},
-                'events': [],
-                'finished': None,
-                }
+        meta = {
+            "started": now,
+            "resources": {},
+            "events": [],
+            "finished": None,
+        }
 
         if settings.USER_ANALYTICS_ENABLED:
-            _session_key = request.session.session_key.encode() if request.session.session_key else ''
-            meta.update({
-                'user_identifier': hashlib.sha256(_session_key).hexdigest(),
-                'user_username': request.user.username if request.user.is_authenticated else 'AnonymousUser'
-            })
+            _session_key = request.session.session_key.encode() if request.session.session_key else ""
+            meta.update(
+                {
+                    "user_identifier": hashlib.sha256(_session_key).hexdigest(),
+                    "user_username": request.user.username if request.user.is_authenticated else "AnonymousUser",
+                }
+            )
 
         request._monitoring = meta
 
@@ -137,20 +151,20 @@ class MonitoringMiddleware(MiddlewareMixin):
         request.register_event = register_event
 
     def process_response(self, request, response):
-        m = getattr(request, '_monitoring', None)
+        m = getattr(request, "_monitoring", None)
         if m is None:
             return response
         utc = pytz.utc
         now = datetime.utcnow().replace(tzinfo=utc)
-        m['finished'] = now
+        m["finished"] = now
         self.register_request(request, response)
         return response
 
     def process_exception(self, request, exception):
-        m = getattr(request, '_monitoring', None)
+        m = getattr(request, "_monitoring", None)
         if m is None:
             return
         utc = pytz.utc
         now = datetime.utcnow().replace(tzinfo=utc)
-        m['finished'] = now
+        m["finished"] = now
         self.register_exception(request, exception)

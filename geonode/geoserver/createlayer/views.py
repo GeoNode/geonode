@@ -31,33 +31,33 @@ from .utils import create_dataset
 
 
 @login_required
-def dataset_create(request, template='createlayer/dataset_create.html'):
+def dataset_create(request, template="createlayer/dataset_create.html"):
     """
     Create an empty layer.
     """
     error = None
-    if request.method == 'POST':
+    if request.method == "POST":
         form = NewDatasetForm(request.POST)
         if form.is_valid():
             try:
-                name = form.cleaned_data['name']
+                name = form.cleaned_data["name"]
                 name = slugify(name.replace(".", "_"))
-                title = form.cleaned_data['title']
-                geometry_type = form.cleaned_data['geometry_type']
-                attributes = form.cleaned_data['attributes']
+                title = form.cleaned_data["title"]
+                geometry_type = form.cleaned_data["geometry_type"]
+                attributes = form.cleaned_data["attributes"]
                 permissions = DEFAULT_PERMS_SPEC
                 layer = create_dataset(name, title, request.user.username, geometry_type, attributes)
                 layer.set_permissions(json.loads(permissions), created=True)
                 return redirect(layer)
             except Exception as e:
-                error = f'{e} ({type(e)})'
+                error = f"{e} ({type(e)})"
     else:
         form = NewDatasetForm()
 
     ctx = {
-        'form': form,
-        'is_dataset': True,
-        'error': error,
+        "form": form,
+        "is_dataset": True,
+        "error": error,
     }
 
     return render(request, template, context=ctx)

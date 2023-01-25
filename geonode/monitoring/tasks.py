@@ -23,20 +23,21 @@ from django.core.management import call_command
 
 @shared_task(
     bind=True,
-    name='geonode.monitoring.tasks.collect_metrics',
-    queue='geoserver.events',
+    name="geonode.monitoring.tasks.collect_metrics",
+    queue="geoserver.events",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def collect_metrics(self):
     """
     Collect metrics events data
     """
     if settings.MONITORING_ENABLED:
-        return call_command('collect_metrics', '-n', '-t', 'xml')
+        return call_command("collect_metrics", "-n", "-t", "xml")
     return True

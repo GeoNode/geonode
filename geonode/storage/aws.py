@@ -22,7 +22,6 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 
 class AwsStorageManager(StorageManagerInterface):
-
     def __init__(self):
         self._aws = S3Boto3Storage()
 
@@ -38,7 +37,7 @@ class AwsStorageManager(StorageManagerInterface):
     def listdir(self, path):
         return self._aws.listdir(path)
 
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         return self._aws.open(name, mode=mode)
 
     def path(self, name):

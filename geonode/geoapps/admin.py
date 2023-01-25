@@ -26,18 +26,45 @@ from geonode.base.admin import ResourceBaseAdminForm
 
 
 class GeoAppAdminForm(ResourceBaseAdminForm):
-
     class Meta(ResourceBaseAdminForm.Meta):
         model = GeoApp
-        fields = '__all__'
+        fields = "__all__"
 
 
 class GeoAppAdmin(TabbedTranslationAdmin):
-    list_display_links = ('title',)
-    list_display = ('id', 'title', 'type', 'owner', 'category', 'group', 'is_approved', 'is_published',)
-    list_editable = ('owner', 'category', 'group', 'is_approved', 'is_published',)
-    list_filter = ('title', 'owner', 'category', 'group', 'is_approved', 'is_published',)
-    search_fields = ('title', 'abstract', 'purpose', 'is_approved', 'is_published',)
+    list_display_links = ("title",)
+    list_display = (
+        "id",
+        "title",
+        "type",
+        "owner",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+    )
+    list_editable = (
+        "owner",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+    )
+    list_filter = (
+        "title",
+        "owner",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+    )
+    search_fields = (
+        "title",
+        "abstract",
+        "purpose",
+        "is_approved",
+        "is_published",
+    )
     form = GeoAppAdminForm
 
     def delete_queryset(self, request, queryset):
@@ -47,6 +74,7 @@ class GeoAppAdmin(TabbedTranslationAdmin):
         """
         for obj in queryset:
             from geonode.resource.manager import resource_manager
+
             resource_manager.delete(obj.uuid, instance=obj)
 
 

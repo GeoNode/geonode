@@ -28,8 +28,8 @@ from geonode.tasks.tasks import send_queued_notifications
 
 logger = logging.getLogger(__name__)
 
-E = getattr(settings, 'NOTIFICATION_ENABLED', False)
-M = getattr(settings, 'NOTIFICATIONS_MODULE', None)
+E = getattr(settings, "NOTIFICATION_ENABLED", False)
+M = getattr(settings, "NOTIFICATIONS_MODULE", None)
 notifications = None
 
 has_notifications = E and M and M in settings.INSTALLED_APPS
@@ -49,6 +49,7 @@ class NotificationsAppConfigBase(AppConfig):
     in NOTIFICATIONS attribute to automatically register to
     post_migrate signal.
     """
+
     # override in subclass
     NOTIFICATIONS = tuple()
 
@@ -59,8 +60,7 @@ class NotificationsAppConfigBase(AppConfig):
         if has_notifications and notifications:
             self._get_logger().debug("Creating notifications")
             for label, display, description in self.NOTIFICATIONS:
-                notifications.models.NoticeType.create(
-                    label, display, description)
+                notifications.models.NoticeType.create(label, display, description)
 
     def ready(self):
         signals.post_migrate.connect(self._register_notifications, sender=self)
@@ -109,13 +109,12 @@ def queue_notification(*args, **kwargs):
 
 
 def get_notification_recipients(notice_type_label, exclude_user=None, resource=None):
-    """ Get notification recipients
-    """
+    """Get notification recipients"""
     if not has_notifications:
         return []
-    recipients_ids = notifications.models.NoticeSetting.objects \
-        .filter(notice_type__label=notice_type_label) \
-        .values('user')
+    recipients_ids = notifications.models.NoticeSetting.objects.filter(notice_type__label=notice_type_label).values(
+        "user"
+    )
 
     profiles = get_user_model().objects.filter(id__in=recipients_ids)
     exclude_users_ids = []
@@ -124,11 +123,14 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
     if resource and resource.title:
         for user in profiles:
             try:
-                if not user.is_superuser and \
-                        not user.has_perm('view_resourcebase', resource.get_self_resource()):
+                if not user.is_superuser and not user.has_perm("view_resourcebase", resource.get_self_resource()):
                     exclude_users_ids.append(user.id)
-                if user.pk == resource.owner.pk and \
-                        not notice_type_label.split("_")[-1] in ("updated", "rated", "approved", "published"):
+                if user.pk == resource.owner.pk and not notice_type_label.split("_")[-1] in (
+                    "updated",
+                    "rated",
+                    "approved",
+                    "published",
+                ):
                     exclude_users_ids.append(user.id)
             except Exception as e:
                 # fallback which wont send mails

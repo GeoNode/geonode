@@ -31,15 +31,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-from guardian.shortcuts import (
-    get_perms,
-    get_groups_with_perms)
+from guardian.shortcuts import get_perms, get_groups_with_perms
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
-from geonode.security.utils import (
-    get_user_groups,
-    AdvancedSecurityWorkflowManager)
+from geonode.security.utils import get_user_groups, AdvancedSecurityWorkflowManager
 
 from .permissions import (
     VIEW_PERMISSIONS,
@@ -51,10 +47,7 @@ from .permissions import (
     DATASET_EDIT_STYLE_PERMISSIONS,
 )
 
-from .utils import (
-    get_users_with_perms,
-    get_user_obj_perms_model,
-    skip_registered_members_common_group)
+from .utils import get_users_with_perms, get_user_obj_perms_model, skip_registered_members_common_group
 
 logger = logging.getLogger(__name__)
 
@@ -93,29 +86,26 @@ class PermissionLevelMixin:
         users = get_users_with_perms(resource)
         groups = get_groups_with_perms(resource, attach_perms=True)
 
-        info = {
-            'users': users,
-            'groups': groups
-        }
+        info = {"users": users, "groups": groups}
 
         try:
             if hasattr(self, "dataset"):
                 info_dataset = {
-                    'users': get_users_with_perms(
-                        self.dataset),
-                    'groups': get_groups_with_perms(
-                        self.dataset,
-                        attach_perms=True)}
-                for user in info_dataset['users']:
-                    if user in info['users']:
-                        info['users'][user] = info['users'][user] + info_dataset['users'][user]
+                    "users": get_users_with_perms(self.dataset),
+                    "groups": get_groups_with_perms(self.dataset, attach_perms=True),
+                }
+                for user in info_dataset["users"]:
+                    if user in info["users"]:
+                        info["users"][user] = info["users"][user] + info_dataset["users"][user]
                     else:
-                        info['users'][user] = info_dataset['users'][user]
-                for group in info_dataset['groups']:
-                    if group in info['groups']:
-                        info['groups'][group] = list(dict.fromkeys(info['groups'][group] + info_dataset['groups'][group]))
+                        info["users"][user] = info_dataset["users"][user]
+                for group in info_dataset["groups"]:
+                    if group in info["groups"]:
+                        info["groups"][group] = list(
+                            dict.fromkeys(info["groups"][group] + info_dataset["groups"][group])
+                        )
                     else:
-                        info['groups'][group] = info_dataset['groups'][group]
+                        info["groups"][group] = info_dataset["groups"][group]
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
@@ -183,7 +173,7 @@ class PermissionLevelMixin:
         from geonode.resource.manager import resource_manager
 
         # default permissions for anonymous users
-        anonymous_group, _ = Group.objects.get_or_create(name='anonymous')
+        anonymous_group, _ = Group.objects.get_or_create(name="anonymous")
 
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
@@ -196,28 +186,29 @@ class PermissionLevelMixin:
 
         # default permissions for owner and owner's groups
         _owner = owner or self.owner
-        user_groups = Group.objects.filter(
-            name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
+        user_groups = Group.objects.filter(name__in=_owner.groupmember_set.values_list("group__slug", flat=True))
 
         # Anonymous
         anonymous_can_view = settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION
         if anonymous_can_view:
-            perm_spec["groups"][anonymous_group] = ['view_resourcebase']
+            perm_spec["groups"][anonymous_group] = ["view_resourcebase"]
         else:
             for user_group in user_groups:
                 if not skip_registered_members_common_group(user_group):
-                    perm_spec["groups"][user_group] = ['view_resourcebase']
+                    perm_spec["groups"][user_group] = ["view_resourcebase"]
 
         anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
         if anonymous_can_download:
-            perm_spec["groups"][anonymous_group] = ['view_resourcebase', 'download_resourcebase']
+            perm_spec["groups"][anonymous_group] = ["view_resourcebase", "download_resourcebase"]
         else:
             for user_group in user_groups:
                 if not skip_registered_members_common_group(user_group):
-                    perm_spec["groups"][user_group] = ['view_resourcebase', 'download_resourcebase']
+                    perm_spec["groups"][user_group] = ["view_resourcebase", "download_resourcebase"]
 
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
-        return resource_manager.set_permissions(self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created)
+        return resource_manager.set_permissions(
+            self.uuid, instance=self, owner=owner, permissions=perm_spec, created=created
+        )
 
     def set_permissions(self, perm_spec=None, created=False, approval_status_changed=False, group_status_changed=False):
         """
@@ -239,8 +230,15 @@ class PermissionLevelMixin:
         }
         """
         from geonode.resource.manager import resource_manager
-        return resource_manager.set_permissions(self.uuid, instance=self, permissions=perm_spec, created=created,
-                                                approval_status_changed=approval_status_changed, group_status_changed=group_status_changed)
+
+        return resource_manager.set_permissions(
+            self.uuid,
+            instance=self,
+            permissions=perm_spec,
+            created=created,
+            approval_status_changed=approval_status_changed,
+            group_status_changed=group_status_changed,
+        )
 
     def handle_moderated_uploads(self):
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
@@ -267,7 +265,11 @@ class PermissionLevelMixin:
                 if len(prev_perm_spec["users"]) != len(perm_spec["users"]):
                     return False
                 else:
-                    _users_iterator = prev_perm_spec["users"].items() if isinstance(prev_perm_spec["users"], dict) else prev_perm_spec["users"]
+                    _users_iterator = (
+                        prev_perm_spec["users"].items()
+                        if isinstance(prev_perm_spec["users"], dict)
+                        else prev_perm_spec["users"]
+                    )
                     for _user, _perms in _users_iterator:
                         if sorted(_perms) != sorted(perm_spec["users"].get(_user, [])):
                             return False
@@ -278,7 +280,11 @@ class PermissionLevelMixin:
                 if len(prev_perm_spec["groups"]) != len(perm_spec["groups"]):
                     return False
                 else:
-                    _groups_iterator = prev_perm_spec["groups"].items() if isinstance(prev_perm_spec["groups"], dict) else prev_perm_spec["groups"]
+                    _groups_iterator = (
+                        prev_perm_spec["groups"].items()
+                        if isinstance(prev_perm_spec["groups"], dict)
+                        else prev_perm_spec["groups"]
+                    )
                     for _group, _perms in _groups_iterator:
                         if sorted(_perms) != sorted(perm_spec["groups"].get(_group, [])):
                             return False
@@ -330,7 +336,9 @@ class PermissionLevelMixin:
                     if _perms and get_user_model().objects.filter(username=_user).count() == 1:
                         perm_spec_fixed["users"][get_user_model().objects.get(username=_user)] = _perms
         if "groups" in perm_spec:
-            _groups_iterator = perm_spec["groups"].items() if isinstance(perm_spec["groups"], dict) else perm_spec["groups"]
+            _groups_iterator = (
+                perm_spec["groups"].items() if isinstance(perm_spec["groups"], dict) else perm_spec["groups"]
+            )
             for _group, _perms in _groups_iterator:
                 if not isinstance(_group, Group):
                     perm_spec_fixed["groups"].pop(_group)
@@ -351,15 +359,14 @@ class PermissionLevelMixin:
 
         PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
         # include explicit permissions appliable to "subtype == 'vector'"
-        if self.subtype in ['vector', 'vector_time']:
+        if self.subtype in ["vector", "vector_time"]:
             PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
-        elif self.subtype == 'raster':
+        elif self.subtype == "raster":
             PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
 
         resource_perms = Permission.objects.filter(
-            codename__in=PERMISSIONS_TO_FETCH,
-            content_type_id__in=[ctype.id, ctype_resource_base.id]
-        ).values_list('codename', flat=True)
+            codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
+        ).values_list("codename", flat=True)
 
         # Don't filter for admin users
         if not user.is_superuser:
@@ -368,22 +375,22 @@ class PermissionLevelMixin:
                 object_pk=self.pk,
                 content_type_id__in=[ctype.id, ctype_resource_base.id],
                 user__username=str(user),
-                permission__codename__in=resource_perms
+                permission__codename__in=resource_perms,
             )
             # get user's implicit perms for anyone flag
             implicit_perms = get_perms(user, self)
             # filter out implicit permissions unappliable to "subtype != 'vector'"
-            if self.subtype == 'raster':
+            if self.subtype == "raster":
                 implicit_perms = list(set(implicit_perms) - set(DATASET_EDIT_DATA_PERMISSIONS))
-            elif self.subtype != 'vector':
+            elif self.subtype != "vector":
                 implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
 
             resource_perms = user_resource_perms.union(
                 user_model.objects.filter(permission__codename__in=implicit_perms)
-            ).values_list('permission__codename', flat=True)
+            ).values_list("permission__codename", flat=True)
 
         # filter out permissions for edit, change or publish if readonly mode is active
-        perm_prefixes = ['change', 'delete', 'publish']
+        perm_prefixes = ["change", "delete", "publish"]
         if config.read_only:
             clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
             query = reduce(operator.or_, clauses)
@@ -391,7 +398,7 @@ class PermissionLevelMixin:
                 resource_perms = resource_perms.exclude(query)
             else:
                 perm_objects = Permission.objects.filter(codename__in=resource_perms)
-                resource_perms = perm_objects.exclude(query).values_list('codename', flat=True)
+                resource_perms = perm_objects.exclude(query).values_list("codename", flat=True)
 
         return resource_perms
 

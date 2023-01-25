@@ -32,8 +32,12 @@ from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.notifications_helper import (send_notification, queue_notification,
-                                          has_notifications, get_notification_recipients)
+from geonode.notifications_helper import (
+    send_notification,
+    queue_notification,
+    has_notifications,
+    get_notification_recipients,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,34 +70,41 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
 
     verb = None
     obj_type = instance.__class__._meta.object_name.lower()
-    action_settings = defaultdict(lambda: dict(actor=getattr(instance, "owner", None),
-                                               action_object=instance,
-                                               created_verb=_('created'),
-                                               deleted_verb=_('deleted'),
-                                               obj_type=obj_type,
-                                               object_name=getattr(instance, 'name', None),
-                                               target=None,
-                                               updated_verb=_('updated'),
-                                               ))
+    action_settings = defaultdict(
+        lambda: dict(
+            actor=getattr(instance, "owner", None),
+            action_object=instance,
+            created_verb=_("created"),
+            deleted_verb=_("deleted"),
+            obj_type=obj_type,
+            object_name=getattr(instance, "name", None),
+            target=None,
+            updated_verb=_("updated"),
+        )
+    )
 
     try:
-        action_settings['map'].update(object_name=getattr(instance, 'title', None),)
+        action_settings["map"].update(
+            object_name=getattr(instance, "title", None),
+        )
     except Exception as e:
         logger.exception(e)
 
     try:
-        action_settings['dataset'].update(created_verb=_('uploaded'))
+        action_settings["dataset"].update(created_verb=_("uploaded"))
     except Exception as e:
         logger.exception(e)
 
     try:
-        action_settings['document'].update(created_verb=_('uploaded'))
+        action_settings["document"].update(created_verb=_("uploaded"))
     except Exception as e:
         logger.exception(e)
 
-    if obj_type not in ['document', 'dataset', 'map']:
+    if obj_type not in ["document", "dataset", "map"]:
         try:
-            action_settings[obj_type].update(object_name=getattr(instance, 'title', None),)
+            action_settings[obj_type].update(
+                object_name=getattr(instance, "title", None),
+            )
         except Exception as e:
             logger.exception(e)
 
@@ -101,38 +112,41 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
         action = action_settings[obj_type]
         if created:
             # object was created
-            verb = action.get('created_verb')
-            raw_action = 'created'
+            verb = action.get("created_verb")
+            raw_action = "created"
         else:
             if created is False:
                 # object was saved.
-                if not isinstance(instance, Dataset) and \
-                        not isinstance(instance, Document) and \
-                        not isinstance(instance, Map) and \
-                        not isinstance(instance, GeoApp):
-                    verb = action.get('updated_verb')
-                    raw_action = 'updated'
+                if (
+                    not isinstance(instance, Dataset)
+                    and not isinstance(instance, Document)
+                    and not isinstance(instance, Map)
+                    and not isinstance(instance, GeoApp)
+                ):
+                    verb = action.get("updated_verb")
+                    raw_action = "updated"
 
             if created is None:
                 # object was deleted.
-                verb = action.get('deleted_verb')
-                raw_action = 'deleted'
-                action.update(action_object=None,
-                              target=None)
+                verb = action.get("deleted_verb")
+                raw_action = "deleted"
+                action.update(action_object=None, target=None)
     except Exception as e:
         logger.exception(e)
 
     if verb:
         try:
-            activity.send(action.get('actor'),
-                          verb=str(verb),
-                          action_object=action.get('action_object'),
-                          target=action.get('target', None),
-                          object_name=action.get('object_name'),
-                          raw_action=raw_action)
+            activity.send(
+                action.get("actor"),
+                verb=str(verb),
+                action_object=action.get("action_object"),
+                target=action.get("target", None),
+                object_name=action.get("object_name"),
+                raw_action=raw_action,
+            )
         # except ModelNotActionable:
         except Exception:
-            logger.warning('The activity received a non-actionable Model or None as the actor/action.')
+            logger.warning("The activity received a non-actionable Model or None as the actor/action.")
 
 
 def relationship_post_save_actstream(instance, sender, created, **kwargs):
@@ -161,15 +175,14 @@ if activity:
 
 
 def rating_post_save(instance, sender, created, **kwargs):
-    """ Send a notification when rating a layer, map or document
-    """
-    notice_type_label = f'{instance.content_object.class_name.lower()}_rated'
-    recipients = get_notification_recipients(notice_type_label,
-                                             instance.user,
-                                             resource=instance.content_object)
-    send_notification(recipients,
-                      notice_type_label,
-                      {'resource': instance.content_object, 'user': instance.user, 'rating': instance.rating})
+    """Send a notification when rating a layer, map or document"""
+    notice_type_label = f"{instance.content_object.class_name.lower()}_rated"
+    recipients = get_notification_recipients(notice_type_label, instance.user, resource=instance.content_object)
+    send_notification(
+        recipients,
+        notice_type_label,
+        {"resource": instance.content_object, "user": instance.user, "rating": instance.rating},
+    )
 
 
 # rating notifications

@@ -18,25 +18,21 @@ _REQUEST_FACTORY = APIRequestFactory()
 
 
 class BriefHarvesterSerializerTestCase(GeoNodeBaseTestSupport):
-    remote_url = 'test.com'
-    name = 'This is geonode harvester'
-    user = get_user_model().objects.get(username='AnonymousUser')
+    remote_url = "test.com"
+    name = "This is geonode harvester"
+    user = get_user_model().objects.get(username="AnonymousUser")
     harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker"
 
     @classmethod
     def setUpTestData(cls):
         cls.harvester = models.Harvester.objects.create(
-            remote_url=cls.remote_url,
-            name=cls.name,
-            default_owner=cls.user,
-            harvester_type=cls.harvester_type
+            remote_url=cls.remote_url, name=cls.name, default_owner=cls.user, harvester_type=cls.harvester_type
         )
 
     def test_serializer_is_able_to_serialize_model_instance(self):
         api_endpoint = "/api/v2/harvesters/"
         request = _REQUEST_FACTORY.get(api_endpoint)
-        serializer = serializers.BriefHarvesterSerializer(
-            self.harvester, context={"request": request})
+        serializer = serializers.BriefHarvesterSerializer(self.harvester, context={"request": request})
         serialized = serializer.data
         self.assertEqual(serialized["remote_url"], self.harvester.remote_url)
         self.assertEqual(serialized["name"], self.harvester.name)
@@ -45,25 +41,21 @@ class BriefHarvesterSerializerTestCase(GeoNodeBaseTestSupport):
 
 
 class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
-    remote_url = 'test.com'
-    name = 'This is geonode harvester'
-    user = get_user_model().objects.get(username='AnonymousUser')
+    remote_url = "test.com"
+    name = "This is geonode harvester"
+    user = get_user_model().objects.get(username="AnonymousUser")
     harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker"
 
     @classmethod
     def setUpTestData(cls):
         cls.harvester = models.Harvester.objects.create(
-            remote_url=cls.remote_url,
-            name=cls.name,
-            default_owner=cls.user,
-            harvester_type=cls.harvester_type
+            remote_url=cls.remote_url, name=cls.name, default_owner=cls.user, harvester_type=cls.harvester_type
         )
 
     def test_serializer_is_able_to_serialize_model_instance(self):
         api_endpoint = "/api/v2/harvesters/"
         request = _REQUEST_FACTORY.get(api_endpoint)
-        serializer = serializers.BriefHarvesterSerializer(
-            self.harvester, context={"request": request})
+        serializer = serializers.BriefHarvesterSerializer(self.harvester, context={"request": request})
         serialized = serializer.data
         self.assertEqual(serialized["remote_url"], self.harvester.remote_url)
         self.assertEqual(serialized["name"], self.harvester.name)
@@ -216,9 +208,7 @@ class HarvesterSerializerTestCase(GeoNodeBaseTestSupport):
         self.assertEqual(len(self.harvester.harvester_type_specific_configuration), 0)
         serializer = serializers.HarvesterSerializer(
             self.harvester,
-            data={
-                "harvester_type_specific_configuration": {"harvest_datasets": False}
-            },
+            data={"harvester_type_specific_configuration": {"harvest_datasets": False}},
             context={"request": request},
             partial=True,
         )
@@ -233,26 +223,23 @@ class BriefAsynchronousHarvestingSessionSerializerTestCase(GeoNodeBaseTestSuppor
 
     @classmethod
     def setUpTestData(cls):
-        remote_url = 'test.com'
-        name = 'This is geonode harvester'
-        user = get_user_model().objects.get(username='AnonymousUser')
+        remote_url = "test.com"
+        name = "This is geonode harvester"
+        user = get_user_model().objects.get(username="AnonymousUser")
         harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker"
         cls.harvester = models.Harvester.objects.create(
-            remote_url=remote_url,
-            name=name,
-            default_owner=user,
-            harvester_type=harvester_type
+            remote_url=remote_url, name=name, default_owner=user, harvester_type=harvester_type
         )
         cls.harvesting_session = models.AsynchronousHarvestingSession.objects.create(
-            harvester=cls.harvester,
-            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
+            harvester=cls.harvester, session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
         )
 
     def test_serializer_is_able_to_serialize_model_instance(self):
         api_endpoint = "/api/v2/harvesting-sessions/"
         request = _REQUEST_FACTORY.get(api_endpoint)
         serializer = serializers.BriefAsynchronousHarvestingSessionSerializer(
-            self.harvesting_session, context={"request": request})
+            self.harvesting_session, context={"request": request}
+        )
         serialized = serializer.data
         self.assertIsNotNone(serialized["started"])
 
@@ -266,10 +253,10 @@ class HarvestableResourceSerializerTestCase(GeoNodeBaseTestSupport):
     @classmethod
     def setUpTestData(cls):
         cls.harvester = models.Harvester.objects.create(
-            remote_url='test.com',
-            name='This is geonode harvester',
-            default_owner=get_user_model().objects.get(username='AnonymousUser'),
-            harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker"
+            remote_url="test.com",
+            name="This is geonode harvester",
+            default_owner=get_user_model().objects.get(username="AnonymousUser"),
+            harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
         )
         cls.harvestable_resource = models.HarvestableResource.objects.create(
             unique_identifier=cls.unique_identifier,
@@ -277,14 +264,13 @@ class HarvestableResourceSerializerTestCase(GeoNodeBaseTestSupport):
             harvester=cls.harvester,
             should_be_harvested=cls.default_should_be_harvested,
             remote_resource_type=cls.remote_resource_type,
-            last_refreshed=now()
+            last_refreshed=now(),
         )
 
     def test_serializer_is_able_to_serialize_model_instance(self):
         api_endpoint = f"/api/v2/harvesters/{self.harvester.id}/harvestable-resources/"
         request = _REQUEST_FACTORY.get(api_endpoint)
-        serializer = serializers.HarvestableResourceSerializer(
-            self.harvestable_resource, context={"request": request})
+        serializer = serializers.HarvestableResourceSerializer(self.harvestable_resource, context={"request": request})
         serialized = serializer.data
         self.assertIsNotNone(serialized["unique_identifier"], self.unique_identifier)
         self.assertIsNotNone(serialized["title"], self.title)
@@ -298,12 +284,12 @@ class HarvestableResourceSerializerTestCase(GeoNodeBaseTestSupport):
         serializer = serializers.HarvestableResourceSerializer(
             data={
                 "unique_identifier": self.unique_identifier,
-                "should_be_harvested": not self.default_should_be_harvested
+                "should_be_harvested": not self.default_should_be_harvested,
             },
             context={
                 "request": request,
                 "harvester": self.harvester,
-            }
+            },
         )
         serializer.is_valid(raise_exception=True)
         print(f"validated_data: {serializer.validated_data}")

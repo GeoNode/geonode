@@ -22,13 +22,13 @@ from django.contrib.auth import get_user_model
 
 
 class ProfileIndex(indexes.SearchIndex, indexes.Indexable):
-    id = indexes.IntegerField(model_attr='id')
-    username = indexes.CharField(model_attr='username', null=True)
-    first_name = indexes.CharField(model_attr='first_name', null=True)
-    last_name = indexes.CharField(model_attr='last_name', null=True)
-    profile = indexes.CharField(model_attr='profile', null=True)
-    organization = indexes.CharField(model_attr='organization', null=True)
-    position = indexes.CharField(model_attr='position', null=True)
+    id = indexes.IntegerField(model_attr="id")
+    username = indexes.CharField(model_attr="username", null=True)
+    first_name = indexes.CharField(model_attr="first_name", null=True)
+    last_name = indexes.CharField(model_attr="last_name", null=True)
+    profile = indexes.CharField(model_attr="profile", null=True)
+    organization = indexes.CharField(model_attr="organization", null=True)
+    position = indexes.CharField(model_attr="position", null=True)
     text = indexes.CharField(document=True, use_template=True)
     type = indexes.CharField(faceted=True)
 

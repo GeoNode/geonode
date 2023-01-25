@@ -58,16 +58,9 @@ from geonode.base import register_event
 from geonode.monitoring.models import EventType
 
 from geonode.geoserver.helpers import select_relevant_files
-from .forms import (
-    LayerUploadForm,
-    SRSForm,
-    TimeForm
-)
-from .models import (
-    Upload)
-from .files import (
-    get_scan_hint,
-    scan_file)
+from .forms import LayerUploadForm, SRSForm, TimeForm
+from .models import Upload
+from .files import get_scan_hint, scan_file
 from .utils import (
     _ALLOW_TIME_STEP,
     _SUPPORTED_CRS,
@@ -80,30 +73,23 @@ from .utils import (
     json_response,
     get_previous_step,
     dataset_eligible_for_time_dimension,
-    next_step_response)
-from .upload import (
-    save_step,
-    srs_step,
-    time_step,
-    csv_step,
-    final_step,
-    LayerNotReady,
-    UploaderSession)
+    next_step_response,
+)
+from .upload import save_step, srs_step, time_step, csv_step, final_step, LayerNotReady, UploaderSession
 
 logger = logging.getLogger(__name__)
 
 
-def _log(msg, *args, level='error'):
+def _log(msg, *args, level="error"):
     # this logger is used also for debug purpose with error level
     getattr(logger, level)(msg, *args)
 
 
 def _get_upload_session(req):
     upload_session = None
-    if 'id' in req.GET:
-        upload_id = str(req.GET['id'])
-        upload_obj = get_object_or_404(
-            Upload, import_id=upload_id, user=req.user)
+    if "id" in req.GET:
+        upload_id = str(req.GET["id"])
+        upload_obj = get_object_or_404(Upload, import_id=upload_id, user=req.user)
         upload_session = upload_obj.get_session
     return upload_session
 
@@ -121,36 +107,31 @@ def data_upload_progress(req):
         except Exception:
             pass
 
-    return json_response({'state': 'NONE'})
+    return json_response({"state": "NONE"})
 
 
 def save_step_view(req, session):
     form = LayerUploadForm(req.POST, req.FILES, user=req.user)
 
-    overwrite = req.path_info.endswith('/replace')
+    overwrite = req.path_info.endswith("/replace")
     target_store = None
     if form.is_valid():
         logger.debug(f"valid_extensions: {form.cleaned_data['valid_extensions']}")
         data_retriever = form.cleaned_data["data_retriever"]
         relevant_files = select_relevant_files(
-            form.cleaned_data["valid_extensions"],
-            data_retriever.get_paths(allow_transfer=False).values()
+            form.cleaned_data["valid_extensions"], data_retriever.get_paths(allow_transfer=False).values()
         )
         logger.debug(f"relevant_files: {relevant_files}")
         base_file = data_retriever.get("base_file").get_path(allow_transfer=False)
         name, ext = os.path.splitext(os.path.basename(base_file))
-        logger.debug(f'Name: {name}, ext: {ext}')
+        logger.debug(f"Name: {name}, ext: {ext}")
         logger.debug(f"base_file: {base_file}")
         scan_hint = get_scan_hint(form.cleaned_data["valid_extensions"])
-        spatial_files = scan_file(
-            base_file,
-            scan_hint=scan_hint,
-            charset=form.cleaned_data["charset"]
-        )
+        spatial_files = scan_file(base_file, scan_hint=scan_hint, charset=form.cleaned_data["charset"])
         logger.debug(f"spatial_files: {spatial_files}")
 
         if overwrite:
-            dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+            dataset = Dataset.objects.filter(id=req.GET["dataset_id"])
             if dataset.exists():
                 name = dataset.first().name
                 target_store = dataset.first().store
@@ -160,18 +141,18 @@ def save_step_view(req, session):
             name,
             spatial_files,
             overwrite=overwrite,
-            store_spatial_files=form.cleaned_data.get('store_spatial_files', True),
-            mosaic=form.cleaned_data['mosaic'] or scan_hint == 'zip-mosaic',
-            append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
-            append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
-            mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
-            mosaic_time_value=form.cleaned_data['mosaic_time_value'],
-            time_presentation=form.cleaned_data['time_presentation'],
-            time_presentation_res=form.cleaned_data['time_presentation_res'],
-            time_presentation_default_value=form.cleaned_data['time_presentation_default_value'],
-            time_presentation_reference_value=form.cleaned_data['time_presentation_reference_value'],
+            store_spatial_files=form.cleaned_data.get("store_spatial_files", True),
+            mosaic=form.cleaned_data["mosaic"] or scan_hint == "zip-mosaic",
+            append_to_mosaic_opts=form.cleaned_data["append_to_mosaic_opts"],
+            append_to_mosaic_name=form.cleaned_data["append_to_mosaic_name"],
+            mosaic_time_regex=form.cleaned_data["mosaic_time_regex"],
+            mosaic_time_value=form.cleaned_data["mosaic_time_value"],
+            time_presentation=form.cleaned_data["time_presentation"],
+            time_presentation_res=form.cleaned_data["time_presentation_res"],
+            time_presentation_default_value=form.cleaned_data["time_presentation_default_value"],
+            time_presentation_reference_value=form.cleaned_data["time_presentation_reference_value"],
             charset_encoding=form.cleaned_data["charset"],
-            target_store=target_store
+            target_store=target_store,
         )
 
         if upload and import_session and import_session.state in (enumerations.STATE_READY, enumerations.STATE_PENDING):
@@ -180,7 +161,7 @@ def save_step_view(req, session):
             if spatial_files[0].sld_files:
                 sld = spatial_files[0].sld_files[0]
 
-            _log(f'provided sld is {sld}')
+            _log(f"provided sld is {sld}")
             # upload_type = get_upload_type(base_file)
             upload_session = UploaderSession(
                 tempdir=data_retriever.temporary_folder,
@@ -192,15 +173,15 @@ def save_step_view(req, session):
                 dataset_title=form.cleaned_data["dataset_title"],
                 permissions=form.cleaned_data["permissions"],
                 import_sld_file=sld,
-                spatial_files_uploaded=form.cleaned_data['uploaded'],
+                spatial_files_uploaded=form.cleaned_data["uploaded"],
                 upload_type=spatial_files[0].file_type.code,
-                time=form.cleaned_data['time'],
-                mosaic=form.cleaned_data['mosaic'],
-                append_to_mosaic_opts=form.cleaned_data['append_to_mosaic_opts'],
-                append_to_mosaic_name=form.cleaned_data['append_to_mosaic_name'],
-                mosaic_time_regex=form.cleaned_data['mosaic_time_regex'],
-                mosaic_time_value=form.cleaned_data['mosaic_time_value'],
-                user=upload.user
+                time=form.cleaned_data["time"],
+                mosaic=form.cleaned_data["mosaic"],
+                append_to_mosaic_opts=form.cleaned_data["append_to_mosaic_opts"],
+                append_to_mosaic_name=form.cleaned_data["append_to_mosaic_name"],
+                mosaic_time_regex=form.cleaned_data["mosaic_time_regex"],
+                mosaic_time_value=form.cleaned_data["mosaic_time_value"],
+                user=upload.user,
             )
             Upload.objects.update_from_session(upload_session)
             return next_step_response(req, upload_session, force_ajax=True)
@@ -228,15 +209,17 @@ def srs_step_view(request, upload_session):
     form = SRSForm()
     for task in import_session.tasks:
         # CRS missing/unknown
-        if task.state == 'NO_CRS':
+        if task.state == "NO_CRS":
             native_crs = task.layer.srs
         else:
             _crs_already_configured = True
         if form:
             name = task.layer.name
 
-    force_ajax = '&force_ajax=true' if request and 'force_ajax' in request.GET and request.GET['force_ajax'] == 'true' else ''
-    if request.method == 'GET':
+    force_ajax = (
+        "&force_ajax=true" if request and "force_ajax" in request.GET and request.GET["force_ajax"] == "true" else ""
+    )
+    if request.method == "GET":
         if not force_ajax:
             # layer = check_import_session_is_valid(
             #     request, upload_session, import_session)
@@ -248,32 +231,33 @@ def srs_step_view(request, upload_session):
                     async_upload=False,
                     native_crs=native_crs or None,
                     dataset_name=name,
-                    error=error)
-                return render(request, 'upload/dataset_upload_crs.html', context=context)
+                    error=error,
+                )
+                return render(request, "upload/dataset_upload_crs.html", context=context)
         if _crs_already_configured:
-            upload_session.completed_step = 'srs'
+            upload_session.completed_step = "srs"
         return next_step_response(request, upload_session)
-    elif request.method != 'POST':
+    elif request.method != "POST":
         raise Exception("405 Method Not Allowed")
 
-    source = request.POST.get('source', '')
-    target = request.POST.get('target', '')
+    source = request.POST.get("source", "")
+    target = request.POST.get("target", "")
     if not source:
-        error = 'Source SRS is mandatory. Please insert an EPSG code (e.g.: EPSG:4326).'
-    elif not re.search(r'\:', source) and re.search(r'EPSG', source):
-        source = re.sub(r'(EPSG)', r'EPSG:', source)
+        error = "Source SRS is mandatory. Please insert an EPSG code (e.g.: EPSG:4326)."
+    elif not re.search(r"\:", source) and re.search(r"EPSG", source):
+        source = re.sub(r"(EPSG)", r"EPSG:", source)
 
     if not error:
         if not source.startswith("EPSG:"):
-            error = 'Source SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326).'
+            error = "Source SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326)."
         else:
             if not target:
                 target = source
-            elif not re.search(r'\:', target) and re.search(r'EPSG', target):
-                target = re.sub(r'(EPSG)', r'EPSG:', target)
+            elif not re.search(r"\:", target) and re.search(r"EPSG", target):
+                target = re.sub(r"(EPSG)", r"EPSG:", target)
 
             if not target.startswith("EPSG:"):
-                error = 'Target SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326).'
+                error = "Target SRS is not valid. Please insert a valid EPSG code (e.g.: EPSG:4326)."
             else:
                 srs_step(upload_session, source, target)
                 return next_step_response(request, upload_session)
@@ -281,14 +265,14 @@ def srs_step_view(request, upload_session):
     if error:
         return json_response(
             {
-                'status': 'error',
-                'success': False,
-                'id': upload_session.import_session.id,
-                'error_msg': f"{error}",
+                "status": "error",
+                "success": False,
+                "id": upload_session.import_session.id,
+                "error_msg": f"{error}",
             }
         )
     else:
-        upload_session.completed_step = 'srs'
+        upload_session.completed_step = "srs"
 
     return next_step_response(request, upload_session)
 
@@ -306,20 +290,21 @@ def csv_step_view(request, upload_session):
     # if so, can proceed directly to next step
     attributes = import_session.tasks[0].layer.attributes
     for attr in attributes:
-        if attr.binding == 'com.vividsolutions.jts.geom.Point':
-            upload_session.completed_step = 'csv'
+        if attr.binding == "com.vividsolutions.jts.geom.Point":
+            upload_session.completed_step = "csv"
             return next_step_response(request, upload_session)
 
     # no geometry found, let's find all the numerical columns
-    number_names = ['java.lang.Integer', 'java.lang.Double']
-    point_candidates = sorted([attr.name for attr in attributes
-                               if attr.binding in number_names])
+    number_names = ["java.lang.Integer", "java.lang.Double"]
+    point_candidates = sorted([attr.name for attr in attributes if attr.binding in number_names])
 
-    lat_field = request.POST.get('lat', '')
-    lng_field = request.POST.get('lng', '')
+    lat_field = request.POST.get("lat", "")
+    lng_field = request.POST.get("lng", "")
 
-    force_ajax = '&force_ajax=true' if request and 'force_ajax' in request.GET and request.GET['force_ajax'] == 'true' else ''
-    if request.method == 'GET':
+    force_ajax = (
+        "&force_ajax=true" if request and "force_ajax" in request.GET and request.GET["force_ajax"] == "true" else ""
+    )
+    if request.method == "GET":
         if not force_ajax:
             # layer = check_import_session_is_valid(
             #     request, upload_session, import_session)
@@ -339,7 +324,7 @@ def csv_step_view(request, upload_session):
                     lng_candidate = candidate.name
                     if lng_candidate and lng_candidate not in point_candidates:
                         point_candidates.append(lng_candidate)
-            if request.method == 'POST':
+            if request.method == "POST":
                 guessed_lat_or_lng = False
                 selected_lat = lat_field
                 selected_lng = lng_field
@@ -350,9 +335,11 @@ def csv_step_view(request, upload_session):
             present_choices = len(point_candidates) >= 2
             possible_data_problems = None
             if non_str_in_headers:
-                possible_data_problems = ("There are some suspicious column names in your data. "
-                                          "Did you provide column names in the header? The following names look wrong: ")
-                possible_data_problems += ','.join(non_str_in_headers)
+                possible_data_problems = (
+                    "There are some suspicious column names in your data. "
+                    "Did you provide column names in the header? The following names look wrong: "
+                )
+                possible_data_problems += ",".join(non_str_in_headers)
 
             context = dict(
                 present_choices=present_choices,
@@ -363,32 +350,32 @@ def csv_step_view(request, upload_session):
                 guessed_lat_or_lng=guessed_lat_or_lng,
                 dataset_name=import_session.tasks[0].layer.name,
                 error=error,
-                possible_data_problems=possible_data_problems
+                possible_data_problems=possible_data_problems,
             )
-            return render(request, 'upload/dataset_upload_csv.html', context=context)
+            return render(request, "upload/dataset_upload_csv.html", context=context)
         return next_step_response(request, upload_session)
-    elif request.method == 'POST':
+    elif request.method == "POST":
         if not lat_field or not lng_field:
-            error = 'Please choose which columns contain the latitude and longitude data.'
+            error = "Please choose which columns contain the latitude and longitude data."
         # elif (lat_field not in point_candidates or
         #       lng_field not in point_candidates):
         #     error = 'Invalid latitude/longitude columns'
         elif lat_field == lng_field:
-            error = 'You cannot select the same column for latitude and longitude data.'
+            error = "You cannot select the same column for latitude and longitude data."
 
         if error:
             return json_response(
                 {
-                    'status': 'error',
-                    'success': False,
-                    'id': upload_session.import_session.id,
-                    'error_msg': f"{error}",
+                    "status": "error",
+                    "success": False,
+                    "id": upload_session.import_session.id,
+                    "error_msg": f"{error}",
                 }
             )
         else:
             csv_step(upload_session, lat_field, lng_field)
             return next_step_response(request, upload_session)
-    elif request.method != 'POST':
+    elif request.method != "POST":
         raise Exception()
 
 
@@ -398,24 +385,22 @@ def check_step_view(request, upload_session):
     import_session = upload_session.import_session
     assert import_session is not None
 
-    if request.method == 'GET':
-        layer = check_import_session_is_valid(
-            request, upload_session, import_session)
-        if upload_session.completed_step != 'error':
+    if request.method == "GET":
+        layer = check_import_session_is_valid(request, upload_session, import_session)
+        if upload_session.completed_step != "error":
             if not layer:
-                upload_session.completed_step = 'error'
-                upload_session.error_msg = 'Could not access/read the uploaded file!'
+                upload_session.completed_step = "error"
+                upload_session.error_msg = "Could not access/read the uploaded file!"
             else:
-                (has_time_dim, dataset_values) = \
-                    dataset_eligible_for_time_dimension(
-                        request,
-                        import_session.tasks[0].layer, upload_session=upload_session)
+                (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(
+                    request, import_session.tasks[0].layer, upload_session=upload_session
+                )
                 if has_time_dim:
-                    upload_session.completed_step = 'check'
+                    upload_session.completed_step = "check"
                 else:
                     # This command skip completely 'time' configuration
-                    upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
-    elif request.method != 'POST':
+                    upload_session.completed_step = "time" if _ALLOW_TIME_STEP else "check"
+    elif request.method != "POST":
         raise Exception()
     return next_step_response(request, upload_session)
 
@@ -426,20 +411,21 @@ def create_time_form(request, upload_session, form_data):
     feature_type = upload_session.import_session.tasks[0].layer
 
     (has_time, dataset_values) = dataset_eligible_for_time_dimension(
-        request, feature_type, upload_session=upload_session)
+        request, feature_type, upload_session=upload_session
+    )
     att_list = []
     if has_time:
         att_list = _get_time_dimensions(feature_type, upload_session)
     else:
-        att_list = [{'name': a.name, 'binding': a.binding} for a in feature_type.attributes]
+        att_list = [{"name": a.name, "binding": a.binding} for a in feature_type.attributes]
 
     def filter_type(b):
-        return [att['name'] for att in att_list if b in att['binding']]
+        return [att["name"] for att in att_list if b in att["binding"]]
 
     args = dict(
-        time_names=filter_type('Date'),
-        text_names=filter_type('String'),
-        year_names=filter_type('Integer') + filter_type('Long') + filter_type('Double')
+        time_names=filter_type("Date"),
+        text_names=filter_type("String"),
+        year_names=filter_type("Integer") + filter_type("Long") + filter_type("Double"),
     )
     if form_data:
         return TimeForm(form_data, **args)
@@ -452,53 +438,50 @@ def time_step_view(request, upload_session):
     import_session = upload_session.import_session
     assert import_session is not None
 
-    force_ajax = '&force_ajax=true' if request and 'force_ajax' in request.GET and request.GET['force_ajax'] == 'true' else ''
-    if request.method == 'GET':
-        layer = check_import_session_is_valid(
-            request, upload_session, import_session)
+    force_ajax = (
+        "&force_ajax=true" if request and "force_ajax" in request.GET and request.GET["force_ajax"] == "true" else ""
+    )
+    if request.method == "GET":
+        layer = check_import_session_is_valid(request, upload_session, import_session)
         if layer:
-            (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(request, layer, upload_session=upload_session)
+            (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(
+                request, layer, upload_session=upload_session
+            )
             if has_time_dim and dataset_values:
-                upload_session.completed_step = 'check'
+                upload_session.completed_step = "check"
                 if not force_ajax:
                     context = {
-                        'time_form': create_time_form(request, upload_session, None),
-                        'dataset_name': layer.name,
-                        'dataset_values': dataset_values,
-                        'dataset_attributes': list(dataset_values[0].keys()),
-                        'async_upload': is_async_step(upload_session)
+                        "time_form": create_time_form(request, upload_session, None),
+                        "dataset_name": layer.name,
+                        "dataset_values": dataset_values,
+                        "dataset_attributes": list(dataset_values[0].keys()),
+                        "async_upload": is_async_step(upload_session),
                     }
-                    return render(request, 'upload/dataset_upload_time.html', context=context)
+                    return render(request, "upload/dataset_upload_time.html", context=context)
             else:
-                upload_session.completed_step = 'time' if _ALLOW_TIME_STEP else 'check'
+                upload_session.completed_step = "time" if _ALLOW_TIME_STEP else "check"
         return next_step_response(request, upload_session)
-    elif request.method != 'POST':
+    elif request.method != "POST":
         raise Exception()
 
     form = create_time_form(request, upload_session, request.POST)
     if not form.is_valid():
-        logger.exception('Invalid upload form: %s', form.errors)
+        logger.exception("Invalid upload form: %s", form.errors)
         raise GeneralUploadException(detail="Invalid Submission")
 
     cleaned = form.cleaned_data
-    start_attribute_and_type = cleaned.get('start_attribute', None)
+    start_attribute_and_type = cleaned.get("start_attribute", None)
     if upload_session.time_transforms:
-        upload_session.import_session.tasks[0].remove_transforms(
-            upload_session.time_transforms,
-            save=True
-        )
+        upload_session.import_session.tasks[0].remove_transforms(upload_session.time_transforms, save=True)
         upload_session.import_session.tasks[0].save_transforms()
         upload_session.time_transforms = None
 
     if upload_session.import_session.tasks[0].transforms:
         for transform in upload_session.import_session.tasks[0].transforms:
-            if 'type' in transform and \
-                    (str(transform['type']) == 'DateFormatTransform' or
-                     str(transform['type']) == 'CreateIndexTransform'):
-                upload_session.import_session.tasks[0].remove_transforms(
-                    [transform],
-                    save=True
-                )
+            if "type" in transform and (
+                str(transform["type"]) == "DateFormatTransform" or str(transform["type"]) == "CreateIndexTransform"
+            ):
+                upload_session.import_session.tasks[0].remove_transforms([transform], save=True)
                 upload_session.import_session.tasks[0].save_transforms()
 
     try:
@@ -509,25 +492,26 @@ def time_step_view(request, upload_session):
         raise GeneralUploadException(detail=_("The GeoServer Import Session is no more available ") + str(e))
 
     if start_attribute_and_type:
+
         def tx(type_name):
             # return None if type_name is None or type_name == 'Date' \
-            return None if type_name is None \
-                else 'DateFormatTransform'
-        end_attribute, end_type = cleaned.get('end_attribute', (None, None))
+            return None if type_name is None else "DateFormatTransform"
+
+        end_attribute, end_type = cleaned.get("end_attribute", (None, None))
         time_step(
             upload_session,
             time_attribute=start_attribute_and_type[0],
             time_transform_type=tx(start_attribute_and_type[1]),
-            time_format=cleaned.get('attribute_format', None),
+            time_format=cleaned.get("attribute_format", None),
             end_time_attribute=end_attribute,
             end_time_transform_type=tx(end_type),
-            end_time_format=cleaned.get('end_attribute_format', None),
-            presentation_strategy=cleaned['presentation_strategy'],
-            precision_value=cleaned['precision_value'],
-            precision_step=cleaned['precision_step'],
+            end_time_format=cleaned.get("end_attribute_format", None),
+            presentation_strategy=cleaned["presentation_strategy"],
+            precision_value=cleaned["precision_value"],
+            precision_step=cleaned["precision_step"],
         )
 
-    upload_session.completed_step = 'check'
+    upload_session.completed_step = "check"
     return next_step_response(request, upload_session)
 
 
@@ -535,28 +519,27 @@ def final_step_view(req, upload_session):
     _json_response = None
     if not upload_session:
         upload_session = _get_upload_session(req)
-    if upload_session and getattr(upload_session, 'import_session', None):
+    if upload_session and getattr(upload_session, "import_session", None):
         import_session = upload_session.import_session
-        _log('Checking session %s validity', import_session.id)
-        if not check_import_session_is_valid(
-                req, upload_session, import_session):
+        _log("Checking session %s validity", import_session.id)
+        if not check_import_session_is_valid(req, upload_session, import_session):
             error_msg = upload_session.import_session.tasks[0].error_message
             url = "/upload/dataset_upload_invalid.html"
             _json_response = json_response(
                 {
-                    'url': url,
-                    'status': 'error',
-                    'id': import_session.id,
-                    'error_msg': error_msg or 'Import Session is Invalid!',
-                    'success': False
+                    "url": url,
+                    "status": "error",
+                    "id": import_session.id,
+                    "error_msg": error_msg or "Import Session is Invalid!",
+                    "success": False,
                 }
             )
             return _json_response
         else:
             try:
                 dataset_id = None
-                if req and 'dataset_id' in req.GET:
-                    dataset = Dataset.objects.filter(id=req.GET['dataset_id'])
+                if req and "dataset_id" in req.GET:
+                    dataset = Dataset.objects.filter(id=req.GET["dataset_id"])
                     if dataset.exists():
                         dataset_id = dataset.first().resourcebase_ptr_id
 
@@ -568,50 +551,42 @@ def final_step_view(req, upload_session):
                 # upload as it does not return a response as a json object
                 _json_response = json_response(
                     {
-                        'status': 'finished',
-                        'id': import_session.id,
-                        'url': saved_dataset.get_absolute_url(),
-                        'bbox': saved_dataset.bbox_string,
-                        'crs': {
-                            'type': 'name',
-                            'properties': saved_dataset.srid
-                        },
-                        'success': True
+                        "status": "finished",
+                        "id": import_session.id,
+                        "url": saved_dataset.get_absolute_url(),
+                        "bbox": saved_dataset.bbox_string,
+                        "crs": {"type": "name", "properties": saved_dataset.srid},
+                        "success": True,
                     }
                 )
                 register_event(req, EventType.EVENT_UPLOAD, saved_dataset)
                 return _json_response
             except (LayerNotReady, AssertionError) as e:
                 logger.exception(e)
-                force_ajax = '&force_ajax=true' if req and 'force_ajax' in req.GET and req.GET['force_ajax'] == 'true' else ''
+                force_ajax = (
+                    "&force_ajax=true" if req and "force_ajax" in req.GET and req.GET["force_ajax"] == "true" else ""
+                )
                 return json_response(
                     {
-                        'status': 'running',
-                        'success': True,
-                        'id': import_session.id,
-                        'redirect_to': f"/upload/final?id={import_session.id}{force_ajax}"
+                        "status": "running",
+                        "success": True,
+                        "id": import_session.id,
+                        "redirect_to": f"/upload/final?id={import_session.id}{force_ajax}",
                     }
                 )
             except Exception as e:
                 logger.exception(e)
                 url = "upload/dataset_upload_invalid.html"
-                _json_response = json_response(
-                    {
-                        'status': 'error',
-                        'url': url,
-                        'error_msg': str(e),
-                        'success': False
-                    }
-                )
+                _json_response = json_response({"status": "error", "url": url, "error_msg": str(e), "success": False})
                 return _json_response
     else:
         url = "upload/dataset_upload_invalid.html"
         _json_response = json_response(
             {
-                'status': 'error',
-                'url': url,
-                'error_msg': _('Upload Session invalid or no more accessible!'),
-                'success': False
+                "status": "error",
+                "url": url,
+                "error_msg": _("Upload Session invalid or no more accessible!"),
+                "success": False,
             }
         )
         return _json_response
@@ -621,12 +596,12 @@ def final_step_view(req, upload_session):
     Workflow Views Definition
 """
 _steps = {
-    'save': save_step_view,
-    'srs': srs_step_view,
-    'csv': csv_step_view,
-    'check': check_step_view,
-    'time': time_step_view,
-    'final': final_step_view
+    "save": save_step_view,
+    "srs": srs_step_view,
+    "csv": csv_step_view,
+    "check": check_step_view,
+    "time": time_step_view,
+    "final": final_step_view,
 }
 
 
@@ -640,19 +615,16 @@ def view(req, step=None):
         raise AuthenticationFailed()
 
     upload_session = None
-    upload_id = req.GET.get('id', None)
+    upload_id = req.GET.get("id", None)
 
     if step is None:
         if upload_id:
             # upload recovery
-            upload_obj = get_object_or_404(
-                Upload,
-                import_id=upload_id,
-                user=req.user)
+            upload_obj = get_object_or_404(Upload, import_id=upload_id, user=req.user)
             session = upload_obj.get_session
             if session:
                 return next_step_response(req, session)
-        step = 'save'
+        step = "save"
 
         # delete existing session
         if upload_id and upload_id in req.session:
@@ -660,13 +632,9 @@ def view(req, step=None):
             req.session.modified = True
     else:
         if not upload_id:
-            return render(
-                req,
-                "upload/dataset_upload_invalid.html",
-                context={})
+            return render(req, "upload/dataset_upload_invalid.html", context={})
 
-        upload_obj = get_object_or_404(
-            Upload, import_id=upload_id, user=req.user)
+        upload_obj = get_object_or_404(Upload, import_id=upload_id, user=req.user)
         session = upload_obj.get_session
         try:
             if session:
@@ -676,15 +644,13 @@ def view(req, step=None):
         except Exception as e:
             logger.exception(e)
     try:
-        if req.method == 'GET' and upload_session:
+        if req.method == "GET" and upload_session:
             # set the current step to match the requested page - this
             # could happen if the form is ajax w/ progress monitoring as
             # the advance would have already happened @hacky
             _completed_step = upload_session.completed_step
             try:
-                _completed_step = get_previous_step(
-                    upload_session,
-                    step)
+                _completed_step = get_previous_step(upload_session, step)
                 upload_session.completed_step = _completed_step
             except Exception as e:
                 logger.exception(e)
@@ -697,7 +663,7 @@ def view(req, step=None):
         if resp:
             content = resp.content
             if isinstance(content, bytes):
-                content = content.decode('UTF-8')
+                content = content.decode("UTF-8")
             try:
                 resp_js = json.loads(content)
             except json.decoder.JSONDecodeError:
@@ -710,9 +676,9 @@ def view(req, step=None):
 
             # must be put back to update object in session
             if upload_session:
-                if resp_js and step == 'final':
+                if resp_js and step == "final":
                     try:
-                        delete_session = resp_js.get('status') != 'pending'
+                        delete_session = resp_js.get("status") != "pending"
                         if delete_session:
                             # we're done with this session, wax it
                             upload_session = None
@@ -725,15 +691,16 @@ def view(req, step=None):
             if upload_session:
                 upload_session = Upload.objects.update_from_session(upload_session)
             if not settings.ASYNC_SIGNALS and resp_js and isinstance(resp_js, dict):
-                _success = resp_js.get('success', False)
-                _redirect_to = resp_js.get('redirect_to', '')
-                _required_input = resp_js.get('required_input', False)
-                if _success and (_required_input or 'upload/final' in _redirect_to):
+                _success = resp_js.get("success", False)
+                _redirect_to = resp_js.get("redirect_to", "")
+                _required_input = resp_js.get("required_input", False)
+                if _success and (_required_input or "upload/final" in _redirect_to):
                     from geonode.upload.tasks import finalize_incomplete_session_uploads
+
                     finalize_incomplete_session_uploads.apply()
         return resp
     except BadStatusLine:
-        logger.exception('bad status line, geoserver down?')
+        logger.exception("bad status line, geoserver down?")
         raise GeneralUploadException(detail=_geoserver_down_error_msg)
     except gsimporter.RequestFailed as e:
         logger.exception(e)
@@ -755,17 +722,18 @@ def view(req, step=None):
 @login_required
 def delete(req, id):
     upload = get_object_or_404(Upload, id=id)
-    if (not req.user.is_superuser and req.user != upload.user) or\
-            not req.user.is_authenticated:
+    if (not req.user.is_superuser and req.user != upload.user) or not req.user.is_authenticated:
         raise PermissionDenied()
     upload.delete()
-    return json_response(dict(
-        success=True,
-    ))
+    return json_response(
+        dict(
+            success=True,
+        )
+    )
 
 
 def response_content_type(request):
-    if "application/json" in request.META['HTTP_ACCEPT']:
+    if "application/json" in request.META["HTTP_ACCEPT"]:
         return "application/json"
     else:
         return "text/plain"

@@ -17,27 +17,21 @@
 #
 #########################################################################
 from storages.utils import setting
-from storages.backends.dropbox import (
-    _DEFAULT_MODE,
-    _DEFAULT_TIMEOUT,
-    DropBoxStorage)
+from storages.backends.dropbox import _DEFAULT_MODE, _DEFAULT_TIMEOUT, DropBoxStorage
 
 from geonode.storage.manager import StorageManagerInterface
 
 
 class DropboxStorageManager(StorageManagerInterface):
-
     def __init__(self):
-        location = setting('DROPBOX_ROOT_PATH', '/')
-        oauth2_access_token = setting('DROPBOX_OAUTH2_TOKEN')
-        timeout = setting('DROPBOX_TIMEOUT', _DEFAULT_TIMEOUT)
-        write_mode = setting('DROPBOX_WRITE_MODE', _DEFAULT_MODE)
+        location = setting("DROPBOX_ROOT_PATH", "/")
+        oauth2_access_token = setting("DROPBOX_OAUTH2_TOKEN")
+        timeout = setting("DROPBOX_TIMEOUT", _DEFAULT_TIMEOUT)
+        write_mode = setting("DROPBOX_WRITE_MODE", _DEFAULT_MODE)
 
         self._drx = DropBoxStorage(
-            oauth2_access_token=oauth2_access_token,
-            root_path=location,
-            timeout=timeout,
-            write_mode=write_mode)
+            oauth2_access_token=oauth2_access_token, root_path=location, timeout=timeout, write_mode=write_mode
+        )
 
     def _get_concrete_manager(self):
         return DropboxStorageManager()
@@ -51,7 +45,7 @@ class DropboxStorageManager(StorageManagerInterface):
     def listdir(self, path):
         return self._drx.listdir(path)
 
-    def open(self, name, mode='rb'):
+    def open(self, name, mode="rb"):
         return self._drx.open(name, mode=mode)
 
     def path(self, name):

@@ -275,17 +275,17 @@ class Command(BaseCommand):
                     chmod_tree(static_root)
                     for static_files_folder in static_folders:
                         if getattr(settings, 'PROJECT_ROOT', None) and \
-                                    static_files_folder.startswith(settings.PROJECT_ROOT):
+                                static_files_folder.startswith(settings.PROJECT_ROOT):
                             print(f"[Sanity Check] Full Write Access to '{static_files_folder}' ...")
                             chmod_tree(static_files_folder)
                     for template_files_folder in template_folders:
                         if getattr(settings, 'PROJECT_ROOT', None) and \
-                                    template_files_folder.startswith(settings.PROJECT_ROOT):
+                                template_files_folder.startswith(settings.PROJECT_ROOT):
                             print(f"[Sanity Check] Full Write Access to '{template_files_folder}' ...")
                             chmod_tree(template_files_folder)
                     for locale_files_folder in locale_folders:
                         if getattr(settings, 'PROJECT_ROOT', None) and \
-                                    locale_files_folder.startswith(settings.PROJECT_ROOT):
+                                locale_files_folder.startswith(settings.PROJECT_ROOT):
                             print(f"[Sanity Check] Full Write Access to '{locale_files_folder}' ...")
                             chmod_tree(locale_files_folder)
                 except Exception as exception:

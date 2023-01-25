@@ -32,21 +32,49 @@ class MapLayerInline(admin.TabularInline):
 
 
 class MapAdminForm(ResourceBaseAdminForm):
-
     class Meta(ResourceBaseAdminForm.Meta):
         model = Map
-        fields = '__all__'
+        fields = "__all__"
 
 
 class MapAdmin(TabbedTranslationAdmin):
-    inlines = [MapLayerInline, ]
-    list_display_links = ('title',)
-    list_display = ('id', 'title', 'owner', 'category', 'group', 'is_approved', 'is_published', 'featured',)
-    list_editable = ('owner', 'category', 'group', 'is_approved', 'is_published', 'featured',)
-    list_filter = ('owner', 'category', 'group', 'featured',
-                   'is_approved', 'is_published',)
-    search_fields = ('title', 'abstract', 'purpose',
-                     'is_approved', 'is_published',)
+    inlines = [
+        MapLayerInline,
+    ]
+    list_display_links = ("title",)
+    list_display = (
+        "id",
+        "title",
+        "owner",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+        "featured",
+    )
+    list_editable = (
+        "owner",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+        "featured",
+    )
+    list_filter = (
+        "owner",
+        "category",
+        "group",
+        "featured",
+        "is_approved",
+        "is_published",
+    )
+    search_fields = (
+        "title",
+        "abstract",
+        "purpose",
+        "is_approved",
+        "is_published",
+    )
     form = MapAdminForm
     actions = [metadata_batch_edit]
 
@@ -57,14 +85,18 @@ class MapAdmin(TabbedTranslationAdmin):
         """
         for obj in queryset:
             from geonode.resource.manager import resource_manager
+
             resource_manager.delete(obj.uuid, instance=obj)
 
 
 class MapLayerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'map', 'name')
-    list_filter = ('map',)
-    search_fields = ('map__title', 'name',)
-    form = forms.modelform_factory(MapLayer, fields='__all__')
+    list_display = ("id", "map", "name")
+    list_filter = ("map",)
+    search_fields = (
+        "map__title",
+        "name",
+    )
+    form = forms.modelform_factory(MapLayer, fields="__all__")
 
 
 admin.site.register(Map, MapAdmin)

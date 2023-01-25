@@ -28,8 +28,10 @@ register = template.Library()
 
 @register.simple_tag
 def is_unread(thread, user):
-    if thread.userthread_set.filter(user=user, unread=True).exists() or \
-            thread.groupmemberthread_set.filter(user=user, unread=True).exists():
+    if (
+        thread.userthread_set.filter(user=user, unread=True).exists()
+        or thread.groupmemberthread_set.filter(user=user, unread=True).exists()
+    ):
         return True
     return False
 
@@ -42,30 +44,30 @@ def random_uuid():
 @register.simple_tag
 def format_senders(thread, current_user):
     User = get_user_model()
-    users = User.objects.filter(sent_messages__thread=thread).annotate(Sum('pk'))
-    sender_string = ''
+    users = User.objects.filter(sent_messages__thread=thread).annotate(Sum("pk"))
+    sender_string = ""
     u_count = users.count()
     if u_count < 3:
         for user in users:
             if user == current_user:
-                user_repr = _('me')
+                user_repr = _("me")
             else:
-                user_repr = f'{user.full_name_or_nick}'
-            sender_string += f'{user_repr}, '
+                user_repr = f"{user.full_name_or_nick}"
+            sender_string += f"{user_repr}, "
         sender_string = sender_string[:-2]
     elif u_count == 3:
         for user in users:
             if user == current_user:
-                user_repr = _('me')
+                user_repr = _("me")
             else:
-                user_repr = f'{user.first_name_or_nick}'
-            sender_string += f'{user_repr}, '
+                user_repr = f"{user.first_name_or_nick}"
+            sender_string += f"{user_repr}, "
         sender_string = sender_string[:-2]
     else:
         first_sender = thread.first_message.sender
         last_sender = thread.latest_message.sender
-        sender_string = f'{first_sender.first_name_or_nick} .. {last_sender.first_name_or_nick}'
-    return f'{sender_string}'
+        sender_string = f"{first_sender.first_name_or_nick} .. {last_sender.first_name_or_nick}"
+    return f"{sender_string}"
 
 
 @register.simple_tag
@@ -75,8 +77,7 @@ def get_item(dictionary, key):
 
 @register.simple_tag
 def show_notification(notice_type_label, current_user):
-    adms_notice_types = getattr(settings, 'ADMINS_ONLY_NOTICE_TYPES', [])
-    if not current_user.is_superuser and adms_notice_types and \
-            notice_type_label in adms_notice_types:
+    adms_notice_types = getattr(settings, "ADMINS_ONLY_NOTICE_TYPES", [])
+    if not current_user.is_superuser and adms_notice_types and notice_type_label in adms_notice_types:
         return False
     return True

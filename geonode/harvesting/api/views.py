@@ -18,14 +18,8 @@
 #########################################################################
 import rest_framework.permissions
 
-from dynamic_rest.viewsets import (
-    DynamicModelViewSet,
-    WithDynamicViewSetMixin
-)
-from rest_framework.authentication import (
-    BasicAuthentication,
-    SessionAuthentication
-)
+from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -42,7 +36,6 @@ logger = logging.getLogger(__name__)
 
 
 class IsAdminOrListOnly(rest_framework.permissions.BasePermission):
-
     def has_permission(self, request, view):
         if request.user.is_superuser:
             result = True

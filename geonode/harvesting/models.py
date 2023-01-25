@@ -55,61 +55,38 @@ class Harvester(models.Model):
     ]
 
     name = models.CharField(max_length=255, help_text=_("Harvester name"))
-    status = models.CharField(
-        max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
-    remote_url = models.URLField(
-        help_text=_("Base URL of the remote service that is to be harvested"))
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
+    remote_url = models.URLField(help_text=_("Base URL of the remote service that is to be harvested"))
     scheduling_enabled = models.BooleanField(
-        help_text=_(
-            "Whether to periodically schedule this harvester to look for resources on "
-            "the remote service"
-        ),
-        default=True
+        help_text=_("Whether to periodically schedule this harvester to look for resources on " "the remote service"),
+        default=True,
     )
     harvesting_session_update_frequency = models.PositiveIntegerField(
-        help_text=_(
-            "How often (in minutes) should new harvesting sessions be automatically scheduled?"),
-        default=60
+        help_text=_("How often (in minutes) should new harvesting sessions be automatically scheduled?"), default=60
     )
     refresh_harvestable_resources_update_frequency = models.PositiveIntegerField(
-        help_text=_(
-            "How often (in minutes) should new refresh sessions be automatically scheduled?"),
-        default=30
+        help_text=_("How often (in minutes) should new refresh sessions be automatically scheduled?"), default=30
     )
     remote_available = models.BooleanField(
-        help_text=_("Whether the remote service is known to be available or not"),
-        editable=False,
-        default=False
+        help_text=_("Whether the remote service is known to be available or not"), editable=False, default=False
     )
     check_availability_frequency = models.PositiveIntegerField(
-        help_text=_(
-            "How often (in minutes) should the remote service be checked for "
-            "availability?"
-        ),
-        default=10
+        help_text=_("How often (in minutes) should the remote service be checked for " "availability?"), default=10
     )
     last_checked_availability = models.DateTimeField(
-        help_text=_("Last time the remote server was checked for availability"),
-        blank=True,
-        null=True
+        help_text=_("Last time the remote server was checked for availability"), blank=True, null=True
     )
     last_checked_harvestable_resources = models.DateTimeField(
-        help_text=_(
-            "Last time the remote server was checked for harvestable resources"),
+        help_text=_("Last time the remote server was checked for harvestable resources"),
         blank=True,
         null=True,
     )
     last_check_harvestable_resources_message = models.TextField(blank=True)
     default_owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        help_text=_("Default owner of harvested resources")
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, help_text=_("Default owner of harvested resources")
     )
     harvest_new_resources_by_default = models.BooleanField(
-        help_text=_(
-            "Should new resources be harvested automatically without "
-            "explicit selection?"
-        ),
+        help_text=_("Should new resources be harvested automatically without " "explicit selection?"),
         default=False,
     )
     delete_orphan_resources_automatically = models.BooleanField(
@@ -124,8 +101,7 @@ class Harvester(models.Model):
         default=False,
     )
     last_updated = models.DateTimeField(
-        help_text=_("Date of last update to the harvester configuration."),
-        auto_now=True
+        help_text=_("Date of last update to the harvester configuration."), auto_now=True
     )
     harvester_type = models.CharField(
         max_length=255,
@@ -134,7 +110,7 @@ class Harvester(models.Model):
             "can be added by an admin by changing the main GeoNode `settings.py` file"
         ),
         choices=(((i, i) for i in get_setting("HARVESTER_CLASSES"))),
-        default=get_setting("HARVESTER_CLASSES")[0]
+        default=get_setting("HARVESTER_CLASSES")[0],
     )
     harvester_type_specific_configuration = models.JSONField(
         default=dict,
@@ -143,18 +119,13 @@ class Harvester(models.Model):
             "Configuration specific to each harvester type. Please consult GeoNode "
             "documentation on harvesting for more info. This field is mandatory, so at "
             "the very least an empty object (i.e. {}) must be supplied."
-        )
+        ),
     )
-    num_harvestable_resources = models.IntegerField(
-        blank=True,
-        default=0
-    )
+    num_harvestable_resources = models.IntegerField(blank=True, default=0)
 
     class Meta:
         # Note: name must be unique because we use it to create a periodic task for the harvester
-        constraints = [
-            models.UniqueConstraint(fields=("name",), name="unique name")
-        ]
+        constraints = [models.UniqueConstraint(fields=("name",), name="unique name")]
 
     def __str__(self):
         return f"{self.name}({self.id})"
@@ -172,9 +143,7 @@ class Harvester(models.Model):
     @property
     def latest_harvesting_session(self):
         try:
-            result = self.sessions.filter(
-                session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
-            ).latest("started")
+            result = self.sessions.filter(session_type=AsynchronousHarvestingSession.TYPE_HARVESTING).latest("started")
         except AsynchronousHarvestingSession.DoesNotExist:
             result = None
         return result
@@ -191,26 +160,23 @@ class Harvester(models.Model):
         return result
 
     def get_next_refresh_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
-        return self._get_next_dispatch_time(
-            AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES)
+        return self._get_next_dispatch_time(AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES)
 
     def get_next_harvesting_session_dispatch_time(self) -> typing.Optional[dt.datetime]:
-        return self._get_next_dispatch_time(
-            AsynchronousHarvestingSession.TYPE_HARVESTING)
+        return self._get_next_dispatch_time(AsynchronousHarvestingSession.TYPE_HARVESTING)
 
     def _get_next_dispatch_time(self, session_type: str) -> typing.Optional[dt.datetime]:
         related_session_object_name, frequency_attribute = {
             AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES: (
                 "latest_refresh_session",
-                "refresh_harvestable_resources_update_frequency"
+                "refresh_harvestable_resources_update_frequency",
             ),
             AsynchronousHarvestingSession.TYPE_HARVESTING: (
                 "latest_harvesting_session",
-                "harvesting_session_update_frequency"
+                "harvesting_session_update_frequency",
             ),
         }[session_type]
-        latest_session: typing.Optional[AsynchronousHarvestingSession] = getattr(
-            self, related_session_object_name)
+        latest_session: typing.Optional[AsynchronousHarvestingSession] = getattr(self, related_session_object_name)
         frequency = getattr(self, frequency_attribute)
         now = timezone.now()
         if not self.scheduling_enabled:
@@ -253,10 +219,7 @@ class Harvester(models.Model):
         except jsonschema.exceptions.ValidationError as exc:
             raise ValidationError(str(exc))
 
-    def update_availability(
-            self,
-            timeout_seconds: typing.Optional[int] = 5
-    ):
+    def update_availability(self, timeout_seconds: typing.Optional[int] = 5):
         """Use the harvesting worker to check if the remote service is available"""
         worker = self.get_harvester_worker()
         self.last_checked_availability = timezone.now()
@@ -271,32 +234,26 @@ class Harvester(models.Model):
             self.status = self.STATUS_UPDATING_HARVESTABLE_RESOURCES
             self.save()
             refresh_session = AsynchronousHarvestingSession.objects.create(
-                harvester=self,
-                session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+                harvester=self, session_type=AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
             )
             refresh_session.initiate()
         else:
             raise RuntimeError(error_msg)
 
-    def initiate_perform_harvesting(
-            self,
-            harvestable_resource_ids: typing.Optional[typing.List[int]] = None
-    ):
+    def initiate_perform_harvesting(self, harvestable_resource_ids: typing.Optional[typing.List[int]] = None):
         should_continue, error_msg = self.worker_can_perform_action()
         if should_continue:
             self.status = self.STATUS_PERFORMING_HARVESTING
             self.save()
             harvesting_session = AsynchronousHarvestingSession.objects.create(
-                harvester=self,
-                session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+                harvester=self, session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
             )
             harvesting_session.initiate(harvestable_resource_ids)
         else:
             raise RuntimeError(error_msg)
 
     def initiate_abort_update_harvestable_resources(self):
-        should_continue, error_msg = self.worker_can_perform_action(
-            self.STATUS_UPDATING_HARVESTABLE_RESOURCES)
+        should_continue, error_msg = self.worker_can_perform_action(self.STATUS_UPDATING_HARVESTABLE_RESOURCES)
         if should_continue:
             self.status = self.STATUS_ABORTING_UPDATE_HARVESTABLE_RESOURCES
             self.save()
@@ -305,8 +262,7 @@ class Harvester(models.Model):
             raise RuntimeError(error_msg)
 
     def initiate_abort_perform_harvesting(self):
-        should_continue, error_msg = self.worker_can_perform_action(
-            self.STATUS_PERFORMING_HARVESTING)
+        should_continue, error_msg = self.worker_can_perform_action(self.STATUS_PERFORMING_HARVESTING)
         if should_continue:
             self.status = self.STATUS_ABORTING_PERFORMING_HARVESTING
             self.save()
@@ -319,8 +275,8 @@ class Harvester(models.Model):
         return worker_class.from_django_record(self)
 
     def worker_can_perform_action(
-            self,
-            target_status: typing.Optional[str] = STATUS_READY,
+        self,
+        target_status: typing.Optional[str] = STATUS_READY,
     ) -> typing.Tuple[bool, str]:
         if self.status != target_status:
             error_message = (
@@ -357,35 +313,24 @@ class AsynchronousHarvestingSession(models.Model):
         (TYPE_HARVESTING, _("harvesting")),
         (TYPE_DISCOVER_HARVESTABLE_RESOURCES, _("discover-harvestable-resources")),
     ]
-    session_type = models.CharField(
-        max_length=50,
-        choices=TYPE_CHOICES,
-        editable=False
-    )
+    session_type = models.CharField(max_length=50, choices=TYPE_CHOICES, editable=False)
     started = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     ended = models.DateTimeField(null=True, blank=True)
-    harvester = models.ForeignKey(
-        Harvester,
-        on_delete=models.CASCADE,
-        related_name="sessions"
-    )
+    harvester = models.ForeignKey(Harvester, on_delete=models.CASCADE, related_name="sessions")
     status = models.CharField(
         max_length=50,
         choices=STATUS_CHOICES,
         default=STATUS_PENDING,
         editable=False,
     )
-    details = models.TextField(blank=True,)
+    details = models.TextField(
+        blank=True,
+    )
     total_records_to_process = models.IntegerField(
-        default=0,
-        editable=False,
-        help_text=_("Number of records being processed in this session")
+        default=0, editable=False, help_text=_("Number of records being processed in this session")
     )
-    records_done = models.IntegerField(
-        default=0,
-        help_text=_("Number of records that have already been processed")
-    )
+    records_done = models.IntegerField(default=0, help_text=_("Number of records that have already been processed"))
 
     @admin.display(description="Progress (%)")
     def get_progress_percentage(self) -> int:
@@ -408,19 +353,16 @@ class AsynchronousHarvestingSession(models.Model):
         # is mysterious, since the celery docs say it should work)
         if self.session_type == self.TYPE_DISCOVER_HARVESTABLE_RESOURCES:
             task_signature = celery_app.app.signature(
-                "geonode.harvesting.tasks.update_harvestable_resources",
-                args=(self.pk,)
+                "geonode.harvesting.tasks.update_harvestable_resources", args=(self.pk,)
             )
         elif self.session_type == self.TYPE_HARVESTING:
             if harvestable_resource_ids is None:
                 task_signature = celery_app.app.signature(
-                    "geonode.harvesting.tasks.harvesting_dispatcher",
-                    args=(self.pk,)
+                    "geonode.harvesting.tasks.harvesting_dispatcher", args=(self.pk,)
                 )
             else:
                 task_signature = celery_app.app.signature(
-                    "geonode.harvesting.tasks.harvest_resources",
-                    args=(harvestable_resource_ids or [], self.pk)
+                    "geonode.harvesting.tasks.harvest_resources", args=(harvestable_resource_ids or [], self.pk)
                 )
         else:
             raise RuntimeError("Invalid selection")
@@ -468,17 +410,11 @@ class HarvestableResource(models.Model):
             "the availability of resources between consecutive harvesting sessions."
         ),
     )
-    status = models.CharField(
-        max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default=STATUS_READY)
     title = models.CharField(max_length=255)
     abstract = models.TextField(max_length=2000, blank=True)
-    harvester = models.ForeignKey(
-        Harvester,
-        on_delete=models.CASCADE,
-        related_name="harvestable_resources"
-    )
-    geonode_resource = models.ForeignKey(
-        "base.ResourceBase", null=True, on_delete=models.SET_NULL)
+    harvester = models.ForeignKey(Harvester, on_delete=models.CASCADE, related_name="harvestable_resources")
+    geonode_resource = models.ForeignKey("base.ResourceBase", null=True, on_delete=models.SET_NULL)
     should_be_harvested = models.BooleanField(default=False)
     last_updated = models.DateTimeField(auto_now=True)
     last_refreshed = models.DateTimeField()
@@ -492,15 +428,12 @@ class HarvestableResource(models.Model):
             "how to fill this field, in accordance with the resources for which "
             "harvesting is supported"
         ),
-        blank=True
+        blank=True,
     )
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=("harvester", "unique_identifier"),
-                name="unique_id_for_harvester"
-            ),
+            models.UniqueConstraint(fields=("harvester", "unique_identifier"), name="unique_id_for_harvester"),
         ]
 
     def delete(self, using=None, keep_parents=False):
@@ -513,10 +446,7 @@ class HarvestableResource(models.Model):
         return super().delete(using, keep_parents)
 
 
-def validate_worker_configuration(
-        worker_type: "BaseHarvesterWorker",  # noqa
-        worker_config: typing.Dict
-):
+def validate_worker_configuration(worker_type: "BaseHarvesterWorker", worker_config: typing.Dict):  # noqa
     worker_class = import_string(worker_type)
     schema = worker_class.get_extra_config_schema()
     if schema is not None:

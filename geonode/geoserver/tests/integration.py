@@ -54,42 +54,36 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
-@override_settings(SITEURL='http://localhost:8001/')
+@override_settings(SITEURL="http://localhost:8001/")
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode/GeoServer syncronization
     """
+
     port = 8001
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
-        settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+        settings.OGC_SERVER["default"]["GEOFENCE_SECURITY_ENABLED"] = True
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_set_attributes_from_geoserver(self):
-        """Test attributes syncronization
-        """
+        """Test attributes syncronization"""
         layer = Dataset.objects.all().first()
         create_dataset_data(layer.resourcebase_ptr_id)
         try:
             # set attributes for resource
             for attribute in layer.attribute_set.all():
-                attribute.attribute_label = f'{attribute.attribute}_label'
-                attribute.description = f'{attribute.attribute}_description'
+                attribute.attribute_label = f"{attribute.attribute}_label"
+                attribute.description = f"{attribute.attribute}_description"
                 attribute.save()
 
             # tests if everything is synced properly
             for attribute in layer.attribute_set.all():
-                self.assertEqual(
-                    attribute.attribute_label,
-                    f'{attribute.attribute}_label'
-                )
-                self.assertEqual(
-                    attribute.description,
-                    f'{attribute.attribute}_description'
-                )
+                self.assertEqual(attribute.attribute_label, f"{attribute.attribute}_label")
+                self.assertEqual(attribute.description, f"{attribute.attribute}_description")
 
             # sync the attributes with GeoServer
             # since on geoserver are empty, we expect that now the layer
@@ -100,7 +94,7 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
             self.assertIsNotNone(links)
             self.assertTrue(len(links) >= 7)
 
-            original_data_links = [ll for ll in links if 'original' == ll.link_type]
+            original_data_links = [ll for ll in links if "original" == ll.link_type]
             self.assertEqual(len(original_data_links), 0)
 
         finally:
@@ -108,23 +102,23 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
             layer.delete()
 
 
-@override_settings(SITEURL='http://localhost:8002/')
+@override_settings(SITEURL="http://localhost:8002/")
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """
+
     port = 8002
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
-        settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+        settings.OGC_SERVER["default"]["GEOFENCE_SECURITY_ENABLED"] = True
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_capabilities(self):
-        """Test capabilities
-        """
+        """Test capabilities"""
 
         # a category
         category = TopicCategory.objects.first()
@@ -135,50 +129,40 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
 
         # create 3 layers, 2 with norman as an owner an 2 with category as a category
         layer1 = create_dataset(
-            name='layer1',
-            title="san_andres_y_providencia_poi",
-            owner_name=norman,
-            geometry_type="Point"
+            name="layer1", title="san_andres_y_providencia_poi", owner_name=norman, geometry_type="Point"
         )
-        layer2 = create_dataset(
-            name='layer2',
-            title="single_point",
-            owner_name=norman,
-            geometry_type="Point"
-        )
+        layer2 = create_dataset(name="layer2", title="single_point", owner_name=norman, geometry_type="Point")
         layer2.category = category
         layer2.save()
         layer3 = create_dataset(
-            name='layer3',
-            title="san_andres_y_providencia_administrative",
-            owner_name=admin,
-            geometry_type="Point"
+            name="layer3", title="san_andres_y_providencia_administrative", owner_name=admin, geometry_type="Point"
         )
         layer3.category = category
         layer3.save()
         try:
-            namespaces = {'wms': 'http://www.opengis.net/wms',
-                          'xlink': 'http://www.w3.org/1999/xlink',
-                          'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
+            namespaces = {
+                "wms": "http://www.opengis.net/wms",
+                "xlink": "http://www.w3.org/1999/xlink",
+                "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            }
 
             # 0. test capabilities_dataset
-            url = reverse('capabilities_dataset', args=[layer1.id])
+            url = reverse("capabilities_dataset", args=[layer1.id])
             resp = self.client.get(url)
             layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
-            layernodes = rootdoc.findall('./[wms:Name]', namespaces)
+            layernodes = rootdoc.findall("./[wms:Name]", namespaces)
             layernode = layernodes[0]
 
             self.assertEqual(1, len(layernodes))
-            self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                             layer1.name)
+            self.assertEqual(layernode.find("wms:Name", namespaces).text, layer1.name)
 
             # 1. test capabilities_user
-            url = reverse('capabilities_user', args=[norman.username])
+            url = reverse("capabilities_user", args=[norman.username])
             resp = self.client.get(url)
             layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
-            layernodes = rootdoc.findall('./[wms:Name]', namespaces)
+            layernodes = rootdoc.findall("./[wms:Name]", namespaces)
 
             # norman has 2 layers
             self.assertEqual(1, len(layernodes))
@@ -186,18 +170,18 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the norman two layers are named layer1 and layer2
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == layer1.name:
+                if layernode.find("wms:Name", namespaces).text == layer1.name:
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == layer2.name:
+                elif layernode.find("wms:Name", namespaces).text == layer2.name:
                     count += 1
             self.assertEqual(1, count)
 
             # 2. test capabilities_category
-            url = reverse('capabilities_category', args=[category.identifier])
+            url = reverse("capabilities_category", args=[category.identifier])
             resp = self.client.get(url)
             layercap = dlxml.fromstring(resp.content)
             rootdoc = etree.ElementTree(layercap)
-            layernodes = rootdoc.findall('./[wms:Name]', namespaces)
+            layernodes = rootdoc.findall("./[wms:Name]", namespaces)
 
             # category is in two layers
             self.assertEqual(1, len(layernodes))
@@ -205,9 +189,9 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             # the layers for category are named layer1 and layer3
             count = 0
             for layernode in layernodes:
-                if layernode.find('wms:Name', namespaces).text == layer1.name:
+                if layernode.find("wms:Name", namespaces).text == layer1.name:
                     count += 1
-                elif layernode.find('wms:Name', namespaces).text == layer3.name:
+                elif layernode.find("wms:Name", namespaces).text == layer3.name:
                     count += 1
             self.assertEqual(1, count)
 
@@ -220,22 +204,22 @@ class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
             layer3.delete()
 
 
-@override_settings(SITEURL='http://localhost:8003/')
+@override_settings(SITEURL="http://localhost:8003/")
 class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     """
     Tests GeoNode permissions and its integration with GeoServer
     """
+
     port = 8003
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()
-        settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] = True
+        settings.OGC_SERVER["default"]["GEOFENCE_SECURITY_ENABLED"] = True
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @timeout_decorator.timeout(LOCAL_TIMEOUT)
     def test_unpublished(self):
-        """Test permissions on an unpublished layer
-        """
+        """Test permissions on an unpublished layer"""
         layer = Dataset.objects.first()
         layer.set_default_permissions()
         check_dataset(layer)
@@ -247,11 +231,10 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             # request getCapabilities: layer must be there as it is published and
             # advertised: we need to check if in response there is
             # <Name>geonode:san_andres_y_providencia_water</Name>
-            geoserver_base_url = settings.OGC_SERVER['default']['LOCATION']
-            get_capabilities_url = 'ows?' \
-                'service=wms&version=1.3.0&request=GetCapabilities'
+            geoserver_base_url = settings.OGC_SERVER["default"]["LOCATION"]
+            get_capabilities_url = "ows?" "service=wms&version=1.3.0&request=GetCapabilities"
             url = urljoin(geoserver_base_url, get_capabilities_url)
-            str_to_check = f'<Name>geonode:{layer.name}</Name>'
+            str_to_check = f"<Name>geonode:{layer.name}</Name>"
             request = Request(url)
             response = urlopen(request)
 
@@ -302,71 +285,67 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
     def test_default_anonymous_permissions(self):
         anonymous = get_user_model().objects.get(username="AnonymousUser")
         norman = get_user_model().objects.get(username="norman")
-        with override_settings(RESOURCE_PUBLISHING=False,
-                               ADMIN_MODERATE_UPLOADS=False,
-                               DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
-                               DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
-            self.client.login(username='norman', password='norman')
+        with override_settings(
+            RESOURCE_PUBLISHING=False,
+            ADMIN_MODERATE_UPLOADS=False,
+            DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
+            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,
+        ):
+            self.client.login(username="norman", password="norman")
 
             saved_dataset = create_dataset(
-                name='san_andres_y_providencia_poi_by_norman',
-                title='san_andres_y_providencia_poi',
+                name="san_andres_y_providencia_poi_by_norman",
+                title="san_andres_y_providencia_poi",
                 owner_name=norman,
-                geometry_type='Point'
+                geometry_type="Point",
             )
 
             try:
-                namespaces = {'wms': 'http://www.opengis.net/wms',
-                              'xlink': 'http://www.w3.org/1999/xlink',
-                              'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
-                url = urljoin(settings.SITEURL, reverse('capabilities_dataset', args=[saved_dataset.id]))
+                namespaces = {
+                    "wms": "http://www.opengis.net/wms",
+                    "xlink": "http://www.w3.org/1999/xlink",
+                    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                }
+                url = urljoin(settings.SITEURL, reverse("capabilities_dataset", args=[saved_dataset.id]))
                 resp = self.client.get(url)
                 content = resp.content
                 self.assertTrue(content)
                 layercap = dlxml.fromstring(content)
                 rootdoc = etree.ElementTree(layercap)
-                layernodes = rootdoc.findall('./[wms:Name]', namespaces)
+                layernodes = rootdoc.findall("./[wms:Name]", namespaces)
                 layernode = layernodes[0]
                 self.assertEqual(1, len(layernodes))
-                self.assertEqual(layernode.find('wms:Name', namespaces).text,
-                                 saved_dataset.name)
+                self.assertEqual(layernode.find("wms:Name", namespaces).text, saved_dataset.name)
                 self.client.logout()
                 resp = self.client.get(url)
                 layercap = dlxml.fromstring(resp.content)
                 self.assertIsNotNone(layercap)
             finally:
                 # annonymous can not download created resource
-                self.assertEqual(['view_resourcebase'], self.get_user_resource_perms(saved_dataset, anonymous))
+                self.assertEqual(["view_resourcebase"], self.get_user_resource_perms(saved_dataset, anonymous))
                 # Cleanup
                 saved_dataset.delete()
 
-        with override_settings(
-            DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
-            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True
-        ):
+        with override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False, DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=True):
             saved_dataset = create_dataset(
-                name='san_andres_y_providencia_poi_by_norman',
-                title='san_andres_y_providencia_poi',
+                name="san_andres_y_providencia_poi_by_norman",
+                title="san_andres_y_providencia_poi",
                 owner_name=norman,
-                geometry_type='Point'
+                geometry_type="Point",
             )
             # annonymous can view/download created resource
             self.assertEqual(
-                ['download_resourcebase', 'view_resourcebase'],
-                self.get_user_resource_perms(saved_dataset, anonymous)
+                ["download_resourcebase", "view_resourcebase"], self.get_user_resource_perms(saved_dataset, anonymous)
             )
             # Cleanup
             saved_dataset.delete()
 
-        with override_settings(
-            DEFAULT_ANONYMOUS_VIEW_PERMISSION=False,
-            DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False
-        ):
+        with override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False, DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False):
             saved_dataset = create_dataset(
-                name='san_andres_y_providencia_poi_by_norman',
-                title='san_andres_y_providencia_poi',
+                name="san_andres_y_providencia_poi_by_norman",
+                title="san_andres_y_providencia_poi",
                 owner_name=norman,
-                geometry_type='Point'
+                geometry_type="Point",
             )
             # annonymous can not view/download created resource
             self.assertEqual([], self.get_user_resource_perms(saved_dataset, anonymous))
@@ -374,6 +353,4 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             saved_dataset.delete()
 
     def get_user_resource_perms(self, instance, user):
-        return list(
-            instance.get_user_perms(user).union(instance.get_self_resource().get_user_perms(user))
-        )
+        return list(instance.get_user_perms(user).union(instance.get_self_resource().get_user_perms(user)))

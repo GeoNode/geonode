@@ -23,29 +23,18 @@ from .views import DocumentUploadView, DocumentUpdateView
 from . import views
 
 js_info_dict = {
-    'packages': ('geonode.documents',),
+    "packages": ("geonode.documents",),
 }
 
 urlpatterns = [  # 'geonode.documents.views',
-    url(r'^(?P<docid>\d+)/download/?$',
-        views.document_download, name='document_download'),
-    url(r'^(?P<docid>\d+)/link/?$',
-        views.document_link, name='document_link'),
-    url(r'^(?P<docid>\d+)/replace$', login_required(DocumentUpdateView.as_view()),
-        name="document_replace"),
-    url(r'^(?P<docid>\d+)/embed/?$',
-        views.document_embed, name='document_embed'),
-    url(r'^upload/?$', login_required(
-        DocumentUploadView.as_view()), name='document_upload'),
-    url(r'^(?P<docid>[^/]*)/metadata_detail$', views.document_metadata_detail,
-        name='document_metadata_detail'),
-    url(r'^(?P<docid>\d+)/metadata$',
-        views.document_metadata, name='document_metadata'),
-    url(
-        r'^metadata/batch/$',
-        views.document_batch_metadata,
-        name='document_batch_metadata'),
-    url(r'^(?P<docid>\d+)/metadata_advanced$', views.document_metadata_advanced,
-        name='document_metadata_advanced'),
-    url(r'^', include('geonode.documents.api.urls')),
+    url(r"^(?P<docid>\d+)/download/?$", views.document_download, name="document_download"),
+    url(r"^(?P<docid>\d+)/link/?$", views.document_link, name="document_link"),
+    url(r"^(?P<docid>\d+)/replace$", login_required(DocumentUpdateView.as_view()), name="document_replace"),
+    url(r"^(?P<docid>\d+)/embed/?$", views.document_embed, name="document_embed"),
+    url(r"^upload/?$", login_required(DocumentUploadView.as_view()), name="document_upload"),
+    url(r"^(?P<docid>[^/]*)/metadata_detail$", views.document_metadata_detail, name="document_metadata_detail"),
+    url(r"^(?P<docid>\d+)/metadata$", views.document_metadata, name="document_metadata"),
+    url(r"^metadata/batch/$", views.document_batch_metadata, name="document_batch_metadata"),
+    url(r"^(?P<docid>\d+)/metadata_advanced$", views.document_metadata_advanced, name="document_metadata_advanced"),
+    url(r"^", include("geonode.documents.api.urls")),
 ]

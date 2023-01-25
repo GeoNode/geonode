@@ -25,8 +25,9 @@ class UploadPermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
+
     shortcut_kwargs = {
-        'accept_global_perms': True,
+        "accept_global_perms": True,
     }
 
     def filter_queryset(self, request, queryset, view):

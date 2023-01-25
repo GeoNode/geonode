@@ -42,69 +42,74 @@ from geonode import settings
 
 
 class TestCopyTree(GeoNodeBaseTestSupport):
-    @patch('shutil.copy2')
-    @patch('os.path.getmtime', return_value=(datetime.now() - timedelta(days=1)).timestamp())
-    @patch('os.listdir', return_value=['Erling_Haaland.jpg'])
-    @patch('os.path.isdir', return_value=False)
+    @patch("shutil.copy2")
+    @patch("os.path.getmtime", return_value=(datetime.now() - timedelta(days=1)).timestamp())
+    @patch("os.listdir", return_value=["Erling_Haaland.jpg"])
+    @patch("os.path.isdir", return_value=False)
     def test_backup_of_root_files_with_modification_dates_meeting_less_than_filter_criteria(
-            self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2):
+        self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2
+    ):
         """
         Test that all root directories whose modification dates meet the 'data_dt_filter'
         less-than iso timestamp are backed-up successfully
         """
-        copy_tree('/src', '/dst', ignore=ignore_time('<', datetime.now().isoformat()))
+        copy_tree("/src", "/dst", ignore=ignore_time("<", datetime.now().isoformat()))
         self.assertTrue(patch_shutil_copy2.called)
 
-    @patch('shutil.copy2')
-    @patch('os.path.getmtime', return_value=(datetime.now() + timedelta(days=1)).timestamp())
-    @patch('os.listdir', return_value=['Sancho.jpg'])
-    @patch('os.path.isdir', return_value=False)
+    @patch("shutil.copy2")
+    @patch("os.path.getmtime", return_value=(datetime.now() + timedelta(days=1)).timestamp())
+    @patch("os.listdir", return_value=["Sancho.jpg"])
+    @patch("os.path.isdir", return_value=False)
     def test_skipped_backup_of_root_files_with_modification_dates_not_meeting_less_than_filter_criteria(
-            self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2):
+        self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2
+    ):
         """
         Test that all root directories whose modification dates do not meet the 'data_dt_filter'
         less-than iso timestamp are not backed-up
         """
-        copy_tree('/src', '/dst', ignore=ignore_time('<', datetime.now().isoformat()))
+        copy_tree("/src", "/dst", ignore=ignore_time("<", datetime.now().isoformat()))
         self.assertFalse(patch_shutil_copy2.called)
 
-    @patch('shutil.copy2')
-    @patch('os.path.getmtime', return_value=(datetime.now() - timedelta(days=1)).timestamp())
-    @patch('os.listdir', return_value=['Saala.jpg'])
-    @patch('os.path.isdir', return_value=False)
+    @patch("shutil.copy2")
+    @patch("os.path.getmtime", return_value=(datetime.now() - timedelta(days=1)).timestamp())
+    @patch("os.listdir", return_value=["Saala.jpg"])
+    @patch("os.path.isdir", return_value=False)
     def test_backup_of_root_files_with_modification_dates_meeting_greater_than_filter_criteria(
-            self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2):
+        self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2
+    ):
         """
         Test that all root directories whose modification dates do not meet the 'data_dt_filter'
         greater-than iso timestamp are backed-up successfully
         """
-        copy_tree('/src', '/dst', ignore=ignore_time('>', datetime.now().isoformat()))
+        copy_tree("/src", "/dst", ignore=ignore_time(">", datetime.now().isoformat()))
         self.assertFalse(patch_shutil_copy2.called)
 
-    @patch('shutil.copy2')
-    @patch('os.path.getmtime', return_value=(datetime.now() + timedelta(days=1)).timestamp())
-    @patch('os.listdir', return_value=['Sadio.jpg'])
-    @patch('os.path.isdir', return_value=False)
+    @patch("shutil.copy2")
+    @patch("os.path.getmtime", return_value=(datetime.now() + timedelta(days=1)).timestamp())
+    @patch("os.listdir", return_value=["Sadio.jpg"])
+    @patch("os.path.isdir", return_value=False)
     def test_skipped_backup_of_root_files_with_modification_dates_not_meeting_greater_than_filter_criteria(
-            self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2):
+        self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copy2
+    ):
         """
         Test that all root directories whose modification dates do not meet the 'data_dt_filter'
         less-than iso timestamp are not backed-up
         """
-        copy_tree('/src', '/dst', ignore=ignore_time('>', datetime.now().isoformat()))
+        copy_tree("/src", "/dst", ignore=ignore_time(">", datetime.now().isoformat()))
         self.assertTrue(patch_shutil_copy2.called)
 
-    @patch('os.path.exists', return_value=True)
-    @patch('shutil.copytree')
-    @patch('os.path.getmtime', return_value=0)
-    @patch('os.listdir', return_value=['an_awesome_directory'])
-    @patch('os.path.isdir', return_value=True)
+    @patch("os.path.exists", return_value=True)
+    @patch("shutil.copytree")
+    @patch("os.path.getmtime", return_value=0)
+    @patch("os.listdir", return_value=["an_awesome_directory"])
+    @patch("os.path.isdir", return_value=True)
     def test_backup_of_child_directories(
-            self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copytree, path_os_exists):
+        self, patch_isdir, patch_listdir, patch_getmtime, patch_shutil_copytree, path_os_exists
+    ):
         """
         Test that all directories which meet the 'ignore criteria are backed-up'
         """
-        copy_tree('/src', '/dst', ignore=ignore_time('>=', datetime.now().isoformat()))
+        copy_tree("/src", "/dst", ignore=ignore_time(">=", datetime.now().isoformat()))
         self.assertTrue(patch_shutil_copytree.called)
 
 
@@ -118,7 +123,19 @@ class TestFixupShp(GeoNodeBaseTestSupport):
         dataset_shp = unzip_file(dataset_zip)
 
         expected_fieldnames = [
-            "ID", "_f", "__1", "__2", "m", "_", "_M2", "_M2_1", "l", "x", "y", "_WU", "_1",
+            "ID",
+            "_f",
+            "__1",
+            "__2",
+            "m",
+            "_",
+            "_M2",
+            "_M2_1",
+            "l",
+            "x",
+            "y",
+            "_WU",
+            "_1",
         ]
         _, _, fieldnames = fixup_shp_columnnames(dataset_shp, "windows-1258")
 
@@ -141,32 +158,32 @@ class TestFixupShp(GeoNodeBaseTestSupport):
 
 
 class TestSetAttributes(GeoNodeBaseTestSupport):
-
     def setUp(self):
         super().setUp()
         # Load users to log in as
-        call_command('loaddata', 'people_data', verbosity=0)
-        self.user = get_user_model().objects.get(username='admin')
+        call_command("loaddata", "people_data", verbosity=0)
+        self.user = get_user_model().objects.get(username="admin")
 
     def test_set_attributes_creates_attributes(self):
-        """ Test utility function set_attributes() which creates Attribute instances attached
-            to a Dataset instance.
+        """Test utility function set_attributes() which creates Attribute instances attached
+        to a Dataset instance.
         """
         # Creating a dataset requires being logged in
-        self.client.login(username='norman', password='norman')
+        self.client.login(username="norman", password="norman")
 
         # Create dummy dataset to attach attributes to
         _l = Dataset.objects.create(
             owner=self.user,
-            name='dummy_dataset',
+            name="dummy_dataset",
             bbox_polygon=Polygon.from_bbox((-180, -90, 180, 90)),
-            srid='EPSG:4326')
+            srid="EPSG:4326",
+        )
 
         attribute_map = [
-            ['id', 'Integer'],
-            ['date', 'IntegerList'],
-            ['enddate', 'Real'],
-            ['date_as_date', 'xsd:dateTime'],
+            ["id", "Integer"],
+            ["date", "IntegerList"],
+            ["enddate", "Real"],
+            ["date_as_date", "xsd:dateTime"],
         ]
 
         # attribute_map gets modified as a side-effect of the call to set_attributes()
@@ -206,8 +223,8 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
         # Test that deleted attributes from GeoServer gets deleted on GeoNode too
         attribute_map = [
-            ['id', 'Integer'],
-            ['date_as_date', 'xsd:dateTime'],
+            ["id", "Integer"],
+            ["date_as_date", "xsd:dateTime"],
         ]
 
         # attribute_map gets modified as a side-effect of the call to set_attributes()
@@ -225,7 +242,6 @@ class TestSetAttributes(GeoNodeBaseTestSupport):
 
 
 class TestSupportedTypes(TestCase):
-
     def setUp(self):
         self.replaced = [
             {
@@ -234,40 +250,39 @@ class TestSupportedTypes(TestCase):
                 "format": "vector",
                 "ext": ["shp"],
                 "requires": ["shp", "prj", "dbf", "shx"],
-                "optional": ["xml", "sld"]
+                "optional": ["xml", "sld"],
             },
         ]
 
-    @override_settings(ADDITIONAL_DATASET_FILE_TYPES=[
-        {
-            "id": "dummy_type",
-            "label": "Dummy Type",
-            "format": "dummy",
-            "ext": ["dummy"]
-        },
-    ])
+    @override_settings(
+        ADDITIONAL_DATASET_FILE_TYPES=[
+            {"id": "dummy_type", "label": "Dummy Type", "format": "dummy", "ext": ["dummy"]},
+        ]
+    )
     def test_should_append_additional_type_if_config_is_provided(self):
         prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
         supported_types = get_supported_datasets_file_types()
-        supported_keys = [t.get('id') for t in supported_types]
-        self.assertIn('dummy_type', supported_keys)
+        supported_keys = [t.get("id") for t in supported_types]
+        self.assertIn("dummy_type", supported_keys)
         self.assertEqual(len(supported_keys), prev_count + 1)
 
-    @override_settings(ADDITIONAL_DATASET_FILE_TYPES=[
-        {
-            "id": "shp",
-            "label": "Replaced type",
-            "format": "vector",
-            "ext": ["shp"],
-            "requires": ["shp", "prj", "dbf", "shx"],
-            "optional": ["xml", "sld"]
-        },
-    ])
+    @override_settings(
+        ADDITIONAL_DATASET_FILE_TYPES=[
+            {
+                "id": "shp",
+                "label": "Replaced type",
+                "format": "vector",
+                "ext": ["shp"],
+                "requires": ["shp", "prj", "dbf", "shx"],
+                "optional": ["xml", "sld"],
+            },
+        ]
+    )
     def test_should_replace_the_type_id_if_already_exists(self):
         prev_count = len(settings.SUPPORTED_DATASET_FILE_TYPES)
         supported_types = get_supported_datasets_file_types()
-        supported_keys = [t.get('id') for t in supported_types]
-        self.assertIn('shp', supported_keys)
+        supported_keys = [t.get("id") for t in supported_types]
+        self.assertIn("shp", supported_keys)
         self.assertEqual(len(supported_keys), prev_count)
-        shp_type = [t for t in supported_types if t['id'] == "shp"][0]
-        self.assertEqual(shp_type['label'], "Replaced type")
+        shp_type = [t for t in supported_types if t["id"] == "shp"][0]
+        self.assertEqual(shp_type["label"], "Replaced type")
