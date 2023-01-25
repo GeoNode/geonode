@@ -16,11 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import itertools
+
 import logging
-import typing
 import requests
 import traceback
+import typing
 import xml.etree.ElementTree as ET
 
 from lxml import etree
@@ -31,60 +31,41 @@ from guardian.shortcuts import get_anonymous_user
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-
+from geonode.geoserver.geofence import Batch, Rule, AutoPriorityBatch
+from geonode.geoserver.helpers import geofence, gf_utils
 from geonode.groups.models import GroupProfile
 from geonode.utils import get_dataset_workspace
-from geonode.geoserver.helpers import gf_client
-from geonode.geoserver.geofence import Batch, Rule
+
 
 logger = logging.getLogger(__name__)
 
 
-def get_highest_priority():
-    """Get the highest Rules priority"""
-    try:
-        rules_count = gf_client.get_rules_count()
-        rules_objs = gf_client.get_rules(page=rules_count - 1, entries=1)
-        if len(rules_objs['rules']) > 0:
-            highest_priority = rules_objs['rules'][0]['priority']
-        else:
-            highest_priority = 0
-        return int(highest_priority)
-    except Exception:
-        tb = traceback.format_exc()
-        logger.debug(tb)
-        return -1
+def delete_all_geofence_rules():
+    """purge all existing GeoFence Rules"""
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] or \
+            getattr(settings, "GEOFENCE_SECURITY_ENABLED", False):
+        gf_utils.delete_all_rules()
 
 
-def purge_geofence_all():
-    """purge all existing GeoFence Cache Rules"""
-    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
-        gf_client.purge_all_rules()
-
-
-def purge_geofence_dataset_rules(resource):
-    """purge layer existing GeoFence Cache Rules"""
-    # Scan GeoFence Rules associated to the Dataset
+def delete_geofence_rules_for_layer(instance):
+    """Delete all rules for a given layer
+       This function wraps the gf_util method, since it doesn't know about Dataset model
     """
-    curl -u admin:geoserver
-    http://<host>:<port>/geoserver/rest/geofence/rules.json?workspace=geonode&layer={layer}
-    """
-    workspace = get_dataset_workspace(resource.dataset)
-    dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
-        else resource.dataset.alternate
-    try:
-        gf_client.purge_layer_rules(dataset_name, workspace=workspace)
-    except Exception as e:
-        logger.error(f"Error removing rules for {workspace}:{dataset_name}", exc_info=e)
-        tb = traceback.format_exc()
-        logger.debug(tb)
+    if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED'] or \
+            getattr(settings, "GEOFENCE_SECURITY_ENABLED", False):
+        resource = instance.get_self_resource()
+        workspace_name = get_dataset_workspace(resource.dataset)
+        layer_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
+            else resource.dataset.alternate
+        logger.debug(f"Removing rules for layer {workspace_name}:{layer_name}")
+        gf_utils.delete_layer_rules(workspace_name, layer_name)
 
 
-def set_geofence_invalidate_cache():
+def invalidate_geofence_cache():
     """invalidate GeoFence Cache Rules"""
     if settings.OGC_SERVER['default']['GEOFENCE_SECURITY_ENABLED']:
         try:
-            gf_client.invalidate_cache()
+            geofence.invalidate_cache()
             return True
         except Exception:
             tb = traceback.format_exc()
@@ -237,7 +218,7 @@ def set_geowebcache_invalidate_cache(dataset_alternate, cat=None):
             logger.debug(tb)
 
 
-def set_geofence_all(instance):
+def allow_layer_to_all(instance):
     """assign access permissions to all users
 
     This method is only relevant to Dataset instances that have their
@@ -249,28 +230,30 @@ def set_geofence_all(instance):
 
     """
     resource = instance.get_self_resource()
-    logger.debug(f"Inside set_geofence_all for instance {instance}")
+    logger.debug(f"Inside allow_layer_to_all for instance {instance}")
     workspace = get_dataset_workspace(resource.dataset)
     dataset_name = resource.dataset.name if resource.dataset and hasattr(resource.dataset, 'name') \
         else resource.dataset.alternate
-    logger.debug(f"going to work in workspace {workspace}")
-    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-        try:
-            priority = get_highest_priority() + 1
-            gf_client.insert_rule(Rule(priority, workspace, dataset_name, Rule.ALLOW))
-        except Exception as e:
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            raise RuntimeError(f"Could not ADD GeoServer ANONYMOUS Rule for Dataset {dataset_name}: {e}")
-        finally:
-            set_geofence_invalidate_cache()
-    else:
-        resource.set_dirty_state()
+    logger.debug(f"Allowing {workspace}:{dataset_name} access to everybody")
+    try:
+        priority = gf_utils.get_first_available_priority()
+        geofence.insert_rule(Rule(Rule.ALLOW, priority=priority, workspace=workspace, layer=dataset_name))
+    except Exception as e:
+        tb = traceback.format_exc()
+        logger.debug(tb)
+        raise RuntimeError(f"Could not ADD GeoServer ANONYMOUS Rule for Dataset {dataset_name}: {e}")
+    finally:
+        if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+            invalidate_geofence_cache()
+        else:
+            resource.set_dirty_state()
 
 
-def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_perms=None):
+# def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_perms=None):
+def create_geofence_rules(dataset, perms, user=None, group=None, batch: Batch = None):
     """
-    Sync Guardian permissions to GeoFence.
+    Collect GeoFence rules related to passed perms into a Batch.
+    If the batch does not exist, it is created and returned.
     """
     layer_name = dataset.name if dataset and hasattr(dataset, 'name') else dataset.alternate
     workspace_name = get_dataset_workspace(dataset)
@@ -279,94 +262,78 @@ def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_per
 
     gf_requests = {}
     if 'change_dataset_data' not in perms:
-        _skip_perm = False
-        if user and group_perms:
-            if isinstance(user, str):
-                user = get_user_model().objects.get(username=user)
-            user_groups = list(user.groups.values_list('name', flat=True))
-            for _group, _perm in group_perms.items():
-                if 'change_dataset_data' in _perm and _group in user_groups:
-                    _skip_perm = True
-                    break
-        if not _skip_perm:
-            gf_requests["WFS"] = {
-                "TRANSACTION": False,
-                "LOCKFEATURE": False,
-                "GETFEATUREWITHLOCK": False
-            }
-    _user = None
-    _group = None
+        gf_requests["WFS"] = {
+            "TRANSACTION": False,
+            "LOCKFEATURE": False,
+            "GETFEATUREWITHLOCK": False
+        }
 
-    _group, _user, _disable_cache, users_geolimits, groups_geolimits, anonymous_geolimits = get_user_geolimits(dataset, user, group)
+    username = (user if isinstance(user, str) else user.username) if user else None
+    groupname = (group if isinstance(group, str) else group.name) if group else None
 
-    if _disable_cache:
-        gf_services_limits_first = {"*": gf_services.pop('*')}
-        gf_services_limits_first.update(gf_services)
-        gf_services = gf_services_limits_first
+    users_geolimits, groups_geolimits, anonymous_geolimits = get_geolimits(dataset, username, groupname)
+    # _disable_cache = has_geolimits(dataset, user, group)
+    #
+    # if _disable_cache:
+    #     gf_services_limits_first = {"*": gf_services.pop('*')}
+    #     gf_services_limits_first.update(gf_services)
+    #     gf_services = gf_services_limits_first
 
-    batch = Batch(f'Sync {workspace_name}:{layer_name}')
-    priority = get_highest_priority() + 1
-    pri = itertools.count(priority)
-
-    def resolve_geolimits(geolimits):
-        return geolimits.last().wkt if geolimits and geolimits.exists() else None
+    if not batch:
+        batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f'Sync {workspace_name}:{layer_name}')
 
     # Set global geolimits
-    wkt = resolve_geolimits(users_geolimits)
-    if wkt:
-        logger.debug(f"Adding GeoFence USER GeoLimit rule: U:{_user} L:{dataset} ")
-        batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.LIMIT, catalog_mode=Rule.CM_MIXED,
-                                   user=_user,
-                                   geo_limit=wkt))
-    wkt = resolve_geolimits(anonymous_geolimits)
-    if wkt:
-        logger.debug(f"Adding GeoFence ANON GeoLimit rule: L:{dataset} ")
-        batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.LIMIT, catalog_mode=Rule.CM_MIXED,
-                                   geo_limit=wkt))
-    wkt = resolve_geolimits(groups_geolimits)
-    if wkt:
-        logger.debug(f"Adding GeoFence GROUP GeoLimit rule: G:{_group} L:{dataset} ")
-        batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.LIMIT, catalog_mode=Rule.CM_MIXED,
-                                   group=_group,
-                                   geo_limit=wkt))
+    # Anon limits should go at the end, but it's responsibility of the caller to create first user/group rules
+    for limits, scope, u, g in (
+            (users_geolimits, 'USER', username, None),
+            (anonymous_geolimits, 'ANON', None, None),
+            (groups_geolimits, 'GROUP', None, groupname),
+    ):
+        if limits and limits.exists():
+            logger.debug(f"Adding GeoFence {scope} GeoLimit rule: U:{u} G:{g} L:{dataset} ")
+            wkt = limits.last().wkt
+            batch.add_insert_rule(Rule(Rule.LIMIT,
+                                       workspace=workspace_name, layer=layer_name,
+                                       user=u, group=g,
+                                       geo_limit=wkt, catalog_mode=Rule.CM_MIXED))
+
     # Set services rules
     for service, allowed in gf_services.items():
         if dataset and layer_name and allowed:
-            if _user:
-                logger.debug(f"Adding GeoFence USER rules: U:{_user} S:{service} L:{dataset} ")
+            if username:
+                logger.debug(f"Adding GeoFence USER rules: U:{username} S:{service} L:{dataset} ")
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, enabled,
-                                                   service=service, request=request, user=_user))
-                batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.ALLOW,
-                                           service=service, user=_user))
-
-            elif not _group:
+                        batch.add_insert_rule(Rule(enabled, user=username,
+                                                   workspace=workspace_name, layer=layer_name,
+                                                   service=service, request=request))
+                batch.add_insert_rule(Rule(Rule.ALLOW, user=username,
+                                           workspace=workspace_name, layer=layer_name,
+                                           service=service))
+            elif not groupname:
                 logger.debug(f"Adding GeoFence ANON rules: S:{service} L:{dataset} ")
 
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, enabled,
+                        batch.add_insert_rule(Rule(enabled,
+                                                   workspace=workspace_name, layer=layer_name,
                                                    service=service, request=request))
-                batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.ALLOW,
-                                           service=service))
 
-            if _group:
-                logger.debug(f"Adding GeoFence GROUP rules: G:{_group} S:{service} L:{dataset} ")
+                batch.add_insert_rule(Rule(Rule.ALLOW,
+                                           workspace=workspace_name, layer=layer_name,
+                                           service=service))
+            if groupname:
+                logger.debug(f"Adding GeoFence GROUP rules: G:{groupname} S:{service} L:{dataset} ")
 
                 if service in gf_requests:
                     for request, enabled in gf_requests[service].items():
-                        batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, enabled,
-                                                   service=service, request=request, group=_group))
-                batch.add_insert_rule(Rule(pri.__next__(), workspace_name, layer_name, Rule.ALLOW,
-                                           service=service, group=_group))
-
-    gf_client.run_batch(batch)
-
-    if not getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
-        set_geofence_invalidate_cache()
-    else:
-        dataset.set_dirty_state()
+                        batch.add_insert_rule(Rule(enabled, group=groupname,
+                                                   workspace=workspace_name, layer=layer_name,
+                                                   service=service, request=request))
+                batch.add_insert_rule(Rule(Rule.ALLOW, group=groupname,
+                                      workspace=workspace_name, layer=layer_name,
+                                      service=service))
+    return batch
 
 
 def sync_resources_with_guardian(resource=None):
@@ -382,12 +349,18 @@ def sync_resources_with_guardian(resource=None):
         dirty_resources = ResourceBase.objects.filter(dirty_state=True)
     if dirty_resources and dirty_resources.exists():
         logger.debug(" --------------------------- synching with guardian!")
+
+        rules_committed = False
+
         for r in dirty_resources:
             if r.polymorphic_ctype.name == 'dataset':
                 layer = None
                 try:
-                    purge_geofence_dataset_rules(r)
                     layer = Dataset.objects.get(id=r.id)
+                    batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync resources {r}")
+
+                    gf_utils.collect_delete_layer_rules(get_dataset_workspace(layer), layer.name, batch)
+
                     perm_spec = layer.get_all_level_info()
                     # All the other users
                     if 'users' in perm_spec:
@@ -395,43 +368,60 @@ def sync_resources_with_guardian(resource=None):
                             user = get_user_model().objects.get(username=user)
                             # Set the GeoFence User Rules
                             geofence_user = str(user)
-                            if "AnonymousUser" in geofence_user or get_anonymous_user() in geofence_user:
+                            if "AnonymousUser" in geofence_user or str(get_anonymous_user()) in geofence_user:
                                 geofence_user = None
-                            sync_geofence_with_guardian(layer, perms, user=geofence_user)
+                            create_geofence_rules(layer, perms, user=geofence_user, batch=batch)
                     # All the other groups
                     if 'groups' in perm_spec:
                         for group, perms in perm_spec['groups'].items():
                             group = Group.objects.get(name=group)
                             # Set the GeoFence Group Rules
-                            sync_geofence_with_guardian(layer, perms, group=group)
+                            create_geofence_rules(layer, perms, group=group, batch=batch)
+
+                    logger.info(f"Going to synch permissions in GeoFence for resource {resource}")
+                    rules_committed = geofence.run_batch(batch)
                     r.clear_dirty_state()
                 except Exception as e:
                     logger.exception(e)
-                    logger.warn(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
+                    logger.warning(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
+
+        if rules_committed:
+            invalidate_geofence_cache()
 
 
-def get_user_geolimits(layer, user, group):
-    _user = None
-    _group = None
-    _disable_dataset_cache = None
+def get_geolimits(layer, username, groupname):
     users_geolimits = None
     groups_geolimits = None
     anonymous_geolimits = None
+
+    if username:
+        users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=username))
+
+    if groupname:
+        if GroupProfile.objects.filter(group__name=groupname).exists():
+            groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=groupname))
+
+    if not username and not groupname:
+        anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
+
+    return users_geolimits, groups_geolimits, anonymous_geolimits
+
+
+def has_geolimits(layer, user, group):
     if user:
         _user = user if isinstance(user, str) else user.username
         users_geolimits = layer.users_geolimits.filter(user=get_user_model().objects.get(username=_user))
-        _disable_dataset_cache = users_geolimits.exists()
+        return users_geolimits.exists()
 
     if group:
         _group = group if isinstance(group, str) else group.name
         if GroupProfile.objects.filter(group__name=_group).count() == 1:
             groups_geolimits = layer.groups_geolimits.filter(group=GroupProfile.objects.get(group__name=_group))
-            _disable_dataset_cache = groups_geolimits.exists()
+            return groups_geolimits.exists()
 
     if not user and not group:
         anonymous_geolimits = layer.users_geolimits.filter(user=get_anonymous_user())
-        _disable_dataset_cache = anonymous_geolimits.exists()
-    return _group, _user, _disable_dataset_cache, users_geolimits, groups_geolimits, anonymous_geolimits
+        return anonymous_geolimits.exists()
 
 
 def _get_gf_services(layer, perms):
@@ -449,7 +439,7 @@ def _get_gf_services(layer, perms):
     return gf_services
 
 
-def _get_gwc_filters_and_formats(disable_cache: list = []) -> typing.Tuple[list, list]:
+def _get_gwc_filters_and_formats(disable_cache: bool) -> typing.Tuple[list, list]:
     filters = [{
         "styleParameterFilter": {
             "STYLES": ""
@@ -464,17 +454,7 @@ def _get_gwc_filters_and_formats(disable_cache: list = []) -> typing.Tuple[list,
         'image/vnd.jpeg-png',
         'image/vnd.jpeg-png8'
     ]
-    if disable_cache and any(disable_cache):
+    if disable_cache:
         filters = None
         formats = None
-    return (filters, formats)
-
-
-def sync_permissions_and_disable_cache(cache_rules, resource, perms, user, group, group_perms):
-    if group_perms:
-        sync_geofence_with_guardian(dataset=resource, perms=perms, user=user, group_perms=group_perms)
-    else:
-        sync_geofence_with_guardian(dataset=resource, perms=perms, user=user, group=group)
-    _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(layer=resource, user=user, group=group)
-    cache_rules.append(_disable_dataset_cache)
-    return list(set(cache_rules))
+    return filters, formats

@@ -164,8 +164,8 @@ class UploaderBase(GeoNodeBaseTestSupport):
         # Cleanup
         if settings.OGC_SERVER['default'].get(
                 "GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.geoserver.security import purge_geofence_all
-            purge_geofence_all()
+            from geonode.geoserver.security import delete_all_geofence_rules
+            delete_all_geofence_rules()
 
     def check_dataset_geonode_page(self, path):
         """ Check that the final dataset page render's correctly after
