@@ -30,6 +30,7 @@ from django.test.utils import override_settings
 from guardian.shortcuts import get_anonymous_user
 
 from geonode import geoserver
+from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
@@ -142,26 +143,31 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
         list_url = reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "datasets"})
 
+        resp = self.client.get(list_url)
+        self.assertEqual(len(self.deserialize(resp)["objects"]), 8)
+
         layer = Dataset.objects.first()
         layer.set_permissions(self.perm_spec)
         layer.clear_dirty_state()
-        self.assertHttpNotFound(self.api_client.get(f"{list_url + str(layer.id)}/"))
 
-        self.api_client.client.login(username=self.user, password=self.passwd)
-        resp = self.api_client.get(f"{list_url + str(layer.id)}/")
-        self.assertValidJSONResponse(resp)
+        resp = self.client.get(list_url)
+        self.assertEqual(len(self.deserialize(resp)["objects"]), 7)
+        self.assertHttpNotFound(self.client.get(f"{list_url + str(layer.id)}/"))
+
+        self.client.login(username=self.user, password=self.passwd)
+        self.assertValidJSONResponse(self.client.get(f"{list_url + str(layer.id)}/"))
 
         # with delayed security
-        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+        with self.settings(DELAYED_SECURITY_SIGNALS=True, GEOFENCE_SECURITY_ENABLED=True):
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-                from geonode.geoserver.security import sync_geofence_with_guardian
 
-                sync_geofence_with_guardian(layer, self.perm_spec)
+                gm = GeoServerResourceManager()
+                gm.set_permissions(layer.uuid, instance=layer, permissions=self.perm_spec)
                 self.assertTrue(layer.dirty_state)
 
                 self.client.login(username=self.user, password=self.passwd)
                 resp = self.client.get(list_url)
-                self.assertEqual(len(self.deserialize(resp)["objects"]), 7)
+                self.assertEqual(len(self.deserialize(resp)["objects"]), 7)  # admin can't see resources in dirty_state
 
                 self.client.logout()
                 resp = self.client.get(list_url)
@@ -171,8 +177,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
                 get_user_model().objects.create(
                     username="imnew",
-                    password="pbkdf2_sha256$12000$UE4gAxckVj4Z$N\
-                    6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=",
+                    password="pbkdf2_sha256$12000$UE4gAxckVj4Z$N6NbOXIQWWblfInIoq/Ta34FdRiPhawCIZ+sOO3YQs=",
                 )
                 self.client.login(username="imnew", password="thepwd")
                 resp = self.client.get(list_url)

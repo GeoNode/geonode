@@ -132,6 +132,7 @@ OGC_SERVER = {
         'PRINT_NG_ENABLED': True,
         'GEONODE_SECURITY_ENABLED': True,
         'GEOFENCE_SECURITY_ENABLED': True,
+        'GEOFENCE_TIMEOUT': int(os.getenv('GEOFENCE_TIMEOUT', os.getenv('OGC_REQUEST_TIMEOUT', '60'))),
         'WMST_ENABLED': False,
         'BACKEND_WRITE_ENABLED': True,
         'WPS_ENABLED': False,
