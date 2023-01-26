@@ -88,18 +88,6 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
-def get_geofence_rules_count():
-    from geonode.geoserver.helpers import gf_client
-
-    return gf_client.get_rules_count()
-
-
-def get_geofence_rules():
-    from geonode.geoserver.helpers import gf_client
-
-    return gf_client.get_rules()
-
-
 class StreamToLogger:
     """
     Fake file-like stream object that redirects writes to a logger instance.
