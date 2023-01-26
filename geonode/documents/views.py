@@ -293,7 +293,14 @@ class DocumentUpdateView(UpdateView):
 
 @login_required
 @check_keyword_write_perms
-def document_metadata(request, docid, template="documents/document_metadata.html", ajax=True):
+def document_metadata(
+    request,
+    docid,
+    template="documents/document_metadata.html",
+    panel_template="layouts/doc_panels.html",
+    custom_metadata=None,
+    ajax=True,
+):
     document = None
     try:
         document = _resolve_document(request, docid, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
@@ -503,6 +510,8 @@ def document_metadata(request, docid, template="documents/document_metadata.html
         context={
             "resource": document,
             "document": document,
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
             "document_form": document_form,
             "poc_form": poc_form,
             "author_form": author_form,
@@ -542,6 +551,15 @@ def document_metadata_detail(request, docid, template="documents/document_metada
             group = None
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, document)
+
+    # Load metadata_records for contrib apps
+    if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+        if hasattr(document, 'extra_metadata'):
+            del document.extra_metadata
+        document.extra_metadata = [
+            {extra.metadata.get("name", ""): extra.metadata.get("value", "")} for extra in document.metadata.all()
+        ]
+
     return render(request, template, context={"resource": document, "group": group, "SITEURL": site_url})
 
 

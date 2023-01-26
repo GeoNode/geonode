@@ -504,6 +504,8 @@ INSTALLED_APPS = (
     "allauth.socialaccount",
     # GeoNode
     "geonode",
+    # custom metadata
+    "custom_metadata.apps.CustomMetadataConfig",
 )
 
 markdown_white_listed_tags = [
@@ -2186,6 +2188,9 @@ EXTRA_METADATA_SCHEMA = {
     },
     **CUSTOM_METADATA_SCHEMA,
 }
+
+EXTRA_METADATA_ENABLED = os.getenv("EXTRA_METADATA_ENABLED", True)
+EXTRA_METADATA_APP_URL_PATTERNS = os.getenv("EXTRA_METADATA_APP_URL_PATTERNS", False)
 
 
 """

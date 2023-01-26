@@ -80,6 +80,14 @@ def catalogue_post_save(instance, sender, **kwargs):
                     resource=resources.get(), url=metadata_url, extension="xml", link_type="metadata"
                 ).update(**_d)
 
+    # Load metadata_records for contrib apps
+    if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+        if hasattr(instance, 'extra_metadata'):
+            del instance.extra_metadata
+        instance.extra_metadata = [
+            {extra.metadata.get("name", ""): extra.metadata.get("value", "")} for extra in instance.metadata.all()
+        ]
+
     # generate an XML document (GeoNode's default is ISO)
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))

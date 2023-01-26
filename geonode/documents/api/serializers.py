@@ -21,6 +21,7 @@ import logging
 from dynamic_rest.fields.fields import DynamicComputedField
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.documents.models import Document
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -59,3 +60,7 @@ class DocumentSerializer(ResourceBaseSerializer):
             "file_path",
             "doc_file",
         )
+
+        # Load metadata_records for contrib apps
+        if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+            fields += ("metadata",)

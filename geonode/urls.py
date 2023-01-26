@@ -65,6 +65,23 @@ urlpatterns = [
     url(r"^messages/", include(msg_urls)),
 ]
 
+# custom_metadata
+if settings.EXTRA_METADATA_ENABLED:
+    custom_metadata_app = getattr(settings, "CUSTOM_METADATA_APP", "custom_metadata")
+    default_url_patterns = [
+        "datasets",
+        "maps",
+        "documents",
+        "apps",
+    ]
+    url_patterns = getattr(settings, "EXTRA_METADATA_APP_URL_PATTERNS", None) or default_url_patterns
+    for pattern in url_patterns:
+        try:
+            module = __import__(f"{custom_metadata_app}.urls.{pattern}_urls")
+            urlpatterns += [url(f"^{pattern}/", include(f"{custom_metadata_app}.urls.{pattern}_urls"))]
+        except ModuleNotFoundError as e:
+            pass
+
 urlpatterns += [
     # ResourceBase views
     url(r"^base/", include("geonode.base.urls")),

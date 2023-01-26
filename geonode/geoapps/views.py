@@ -172,12 +172,28 @@ def geoapp_metadata_detail(request, geoappid, template="apps/app_metadata_detail
             group = None
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
+
+    # Load metadata_records for contrib apps
+    if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+        if hasattr(geoapp_obj, 'extra_metadata'):
+            del geoapp_obj.extra_metadata
+        geoapp_obj.extra_metadata = [
+            {extra.metadata.get("name", ""): extra.metadata.get("value", "")} for extra in geoapp_obj.metadata.all()
+        ]
+
     return render(request, template, context={"resource": geoapp_obj, "group": group, "SITEURL": site_url})
 
 
 @login_required
 @check_keyword_write_perms
-def geoapp_metadata(request, geoappid, template="apps/app_metadata.html", ajax=True):
+def geoapp_metadata(
+    request,
+    geoappid,
+    template="apps/app_metadata.html",
+    ajax=True,
+    panel_template="layouts/app_panels.html",
+    custom_metadata=None,
+):
     geoapp_obj = None
     try:
         geoapp_obj = _resolve_geoapp(request, geoappid, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
@@ -394,6 +410,8 @@ def geoapp_metadata(request, geoappid, template="apps/app_metadata.html", ajax=T
         context={
             "resource": geoapp_obj,
             "geoapp": geoapp_obj,
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
             "geoapp_form": geoapp_form,
             "poc_form": poc_form,
             "author_form": author_form,

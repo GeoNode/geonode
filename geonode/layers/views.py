@@ -331,7 +331,14 @@ def dataset_feature_catalogue(request, layername, template="../../catalogue/temp
 
 @login_required
 @check_keyword_write_perms
-def dataset_metadata(request, layername, template="datasets/dataset_metadata.html", ajax=True):
+def dataset_metadata(
+    request,
+    layername,
+    template="datasets/dataset_metadata.html",
+    panel_template="layouts/panels.html",
+    custom_metadata=None,
+    ajax=True,
+):
     try:
         layer = _resolve_dataset(request, layername, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
     except PermissionDenied as e:
@@ -686,6 +693,8 @@ def dataset_metadata(request, layername, template="datasets/dataset_metadata.htm
         context={
             "resource": layer,
             "dataset": layer,
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
             "dataset_form": dataset_form,
             "poc_form": poc_form,
             "author_form": author_form,
@@ -962,6 +971,14 @@ def dataset_metadata_detail(request, layername, template="datasets/dataset_metad
 
     register_event(request, "view_metadata", layer)
     perms_list = list(layer.get_self_resource().get_user_perms(request.user).union(layer.get_user_perms(request.user)))
+
+    # Load metadata_records for contrib apps
+    if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+        if hasattr(layer, 'extra_metadata'):
+            del layer.extra_metadata
+        layer.extra_metadata = [
+            {extra.metadata.get("name", ""): extra.metadata.get("value", "")} for extra in layer.metadata.all()
+        ]
 
     return render(
         request, template, context={"resource": layer, "perms_list": perms_list, "group": group, "SITEURL": site_url}

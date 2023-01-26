@@ -254,7 +254,6 @@ class ExtraMetadataSerializer(DynamicModelSerializer):
         fields = ("pk", "metadata")
 
     def to_representation(self, obj):
-
         if isinstance(obj, QuerySet):
             out = []
             for el in obj:
@@ -485,7 +484,12 @@ class ResourceBaseSerializer(
 
         self.fields["favorite"] = FavoriteField(read_only=True)
 
-    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
+    # Load metadata_records for contrib apps
+    if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+        deferred = False
+    else:
+        deferred = True
+    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=deferred)
 
     class Meta:
         model = ResourceBase

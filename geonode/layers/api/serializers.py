@@ -179,6 +179,9 @@ class DatasetSerializer(ResourceBaseSerializer):
             "attribute_set",
             "executions",
         )
+        # Load metadata_records for contrib apps
+        if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+            fields += ("metadata",)
 
     name = serializers.CharField(read_only=True)
     workspace = serializers.CharField(read_only=True)

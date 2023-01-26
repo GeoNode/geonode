@@ -19,6 +19,7 @@
 import ast
 import logging
 
+from django.conf import settings
 from dynamic_rest.fields.fields import DynamicField, DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
 from rest_framework import serializers
@@ -161,6 +162,9 @@ class MapSerializer(ResourceBaseSerializer):
         name = "map"
         view_name = "maps-list"
         fields = ("pk", "uuid", "urlsuffix", "featuredurl", "data", "maplayers", "executions")
+        # Load metadata_records for contrib apps
+        if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+            fields += ("metadata",)
 
 
 class SimpleMapSerializer(BaseDynamicModelSerializer):

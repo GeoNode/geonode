@@ -19,6 +19,7 @@
 import logging
 
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException, GeneralGeoAppException
 
 from geonode.geoapps.models import GeoApp
@@ -38,6 +39,9 @@ class GeoAppSerializer(ResourceBaseSerializer):
         name = "geoapp"
         view_name = "geoapps-list"
         fields = ("pk", "uuid", "data", "name", "executions")
+        # Load metadata_records for contrib apps
+        if getattr(settings, "EXTRA_METADATA_ENABLED", False):
+            fields += ("metadata",)
 
     def extra_update_checks(self, validated_data):
         _user_profiles = {}
