@@ -58,11 +58,20 @@ class Rule:
 
     CM_MIXED = "MIXED"
 
-    def __init__(self, access: (str, bool),
-                 priority=None, workspace=None, layer=None,
-                 user=None, group=None,
-                 service=None, request=None, subfield=None,
-                 geo_limit=None, catalog_mode=None) -> None:
+    def __init__(
+        self,
+        access: (str, bool),
+        priority=None,
+        workspace=None,
+        layer=None,
+        user=None,
+        group=None,
+        service=None,
+        request=None,
+        subfield=None,
+        geo_limit=None,
+        catalog_mode=None,
+    ) -> None:
         self.fields = {}
 
         # access may be either a boolean or ALLOW/DENY/LIMIT
@@ -72,40 +81,36 @@ class Rule:
             access = Rule.DENY
 
         for field, value in (
-            ('priority', priority),
-
-            ('userName', user),
-            ('roleName', group),
-
-            ('service', service),
-            ('request', request),
-            ('subfield', subfield),
-
-            ('workspace', workspace),
-            ('layer', layer),
-
-            ('access', access),
+            ("priority", priority),
+            ("userName", user),
+            ("roleName", group),
+            ("service", service),
+            ("request", request),
+            ("subfield", subfield),
+            ("workspace", workspace),
+            ("layer", layer),
+            ("access", access),
         ):
-            if value is not None and value != '*':
+            if value is not None and value != "*":
                 self.fields[field] = value
 
         limits = {}
         for field, value in (
-            ('allowedArea', geo_limit),
-            ('catalogMode', catalog_mode),
+            ("allowedArea", geo_limit),
+            ("catalogMode", catalog_mode),
         ):
             if value is not None:
                 limits[field] = value
 
         if limits:
-            self.fields['limits'] = limits
+            self.fields["limits"] = limits
 
     def set_priority(self, pri: int):
-        self.fields['priority'] = pri
+        self.fields["priority"] = pri
 
     def get_object(self) -> dict:
         logger.debug(f"Creating Rule object: {self.fields}")
-        return {'Rule': self.fields}
+        return {"Rule": self.fields}
 
 
 class Batch:
@@ -186,22 +191,18 @@ class Batch:
 
     def __init__(self, log_name=None) -> None:
         self.operations = []
-        self.log_name = f'"{log_name}"' if log_name else ''
+        self.log_name = f'"{log_name}"' if log_name else ""
 
     def __str__(self) -> str:
         return super().__str__()
 
     def add_delete_rule(self, rule_id: int):
-        self.operations.append({
-            '@service': 'rules',
-            '@type': 'delete',
-            '@id': rule_id
-        })
+        self.operations.append({"@service": "rules", "@type": "delete", "@id": rule_id})
 
     def add_insert_rule(self, rule: Rule):
         operation = {
-            '@service': 'rules',
-            '@type': 'insert',
+            "@service": "rules",
+            "@type": "insert",
         }
         operation.update(rule.get_object())
         self.operations.append(operation)
@@ -210,11 +211,7 @@ class Batch:
         return len(self.operations)
 
     def get_object(self) -> dict:
-        return {
-            'Batch': {
-                'operations': self.operations
-            }
-        }
+        return {"Batch": {"operations": self.operations}}
 
 
 class AutoPriorityBatch(Batch):
@@ -241,8 +238,8 @@ class GeoFenceClient:
     """
 
     def __init__(self, baseurl: str, username: str, pw: str) -> None:
-        if not baseurl.endswith('/'):
-            baseurl += '/'
+        if not baseurl.endswith("/"):
+            baseurl += "/"
 
         self.baseurl = baseurl
         self.username = username
@@ -253,17 +250,21 @@ class GeoFenceClient:
         self.timeout = timeout
 
     def invalidate_cache(self):
-        r = requests.put(
-            f'{self.baseurl}ruleCache/invalidate',
-            auth=HTTPBasicAuth(self.username, self.pw))
+        r = requests.put(f"{self.baseurl}ruleCache/invalidate", auth=HTTPBasicAuth(self.username, self.pw))
 
         if r.status_code != 200:
             logger.debug("Could not invalidate cache")
             raise GeofenceException("Could not invalidate cache")
 
-    def get_rules(self, page: int = None, entries: int = None,
-                  workspace: str = None, workspace_any: bool = None,
-                  layer: str = None, layer_any: bool = None):
+    def get_rules(
+        self,
+        page: int = None,
+        entries: int = None,
+        workspace: str = None,
+        workspace_any: bool = None,
+        layer: str = None,
+        layer_any: bool = None,
+    ):
         if (page is None and entries is not None) or (page is not None and entries is None):
             raise GeofenceException(f"Bad page/entries combination {page}/{entries}")
 
@@ -275,25 +276,26 @@ class GeoFenceClient:
             params = {}
 
             if entries:
-                params.update({'page': page, 'entries': entries})
+                params.update({"page": page, "entries": entries})
 
             for param, value in (
-                ('workspace', workspace),
-                ('workspaceAny', workspace_any),
-                ('layer', layer),
-                ('layerAny', layer_any),
+                ("workspace", workspace),
+                ("workspaceAny", workspace_any),
+                ("layer", layer),
+                ("layerAny", layer_any),
             ):
                 if value is not None:
                     params[param] = value
 
-            url = f'{self.baseurl}rules.json?{urllib.parse.urlencode(params)}'
+            url = f"{self.baseurl}rules.json?{urllib.parse.urlencode(params)}"
 
             r = requests.get(
                 url,
-                headers={'Content-type': 'application/json'},
+                headers={"Content-type": "application/json"},
                 auth=HTTPBasicAuth(self.username, self.pw),
                 timeout=self.timeout,
-                verify=False)
+                verify=False,
+            )
 
             if r.status_code != 200:
                 logger.debug(f"Could not retrieve GeoFence Rules from {url} -- code:{r.status_code} - {r.text}")
@@ -312,18 +314,19 @@ class GeoFenceClient:
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
             r = requests.get(
-                f'{self.baseurl}rules/count.json',
-                headers={'Content-type': 'application/json'},
+                f"{self.baseurl}rules/count.json",
+                headers={"Content-type": "application/json"},
                 auth=HTTPBasicAuth(self.username, self.pw),
                 timeout=self.timeout,
-                verify=False)
+                verify=False,
+            )
 
             if r.status_code != 200:
                 logger.debug(f"Could not retrieve GeoFence Rules count: [{r.status_code}] - {r.text}")
                 raise GeofenceException(f"Could not retrieve GeoFence Rules count: [{r.status_code}]")
 
             response = r.json()
-            return response['count']
+            return response["count"]
 
         except Exception as e:
             logger.debug("Error while retrieving GeoFence rules count", exc_info=e)
@@ -337,11 +340,12 @@ class GeoFenceClient:
             http://<host>:<port>/geoserver/rest/geofence/rules
             """
             r = requests.post(
-                f'{self.baseurl}rules',
+                f"{self.baseurl}rules",
                 json=rule.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
                 timeout=self.timeout,
-                verify=False)
+                verify=False,
+            )
 
             if r.status_code not in (200, 201):
                 logger.debug(f"Could not insert rule: [{r.status_code}] - {r.text}")
@@ -353,7 +357,7 @@ class GeoFenceClient:
 
     def run_batch(self, batch: Batch, timeout: int = None) -> bool:
         if batch.length() == 0:
-            logger.debug(f'Skipping batch execution {batch.log_name}')
+            logger.debug(f"Skipping batch execution {batch.log_name}")
             return False
 
         logger.debug(f"Running batch {batch.log_name} with {batch.length()} operations")
@@ -363,15 +367,18 @@ class GeoFenceClient:
                 http://<host>:<port>/geoserver/rest/geofence/rules/count.json
             """
             r = requests.post(
-                f'{self.baseurl}batch/exec',
+                f"{self.baseurl}batch/exec",
                 json=batch.get_object(),
                 auth=HTTPBasicAuth(self.username, self.pw),
                 timeout=timeout or self.timeout,
-                verify=False)
+                verify=False,
+            )
 
             if r.status_code != 200:
-                logger.debug(f"Error while running batch {batch.log_name}: [{r.status_code}] - {r.content}"
-                             f"\n {batch.get_object()}")
+                logger.debug(
+                    f"Error while running batch {batch.log_name}: [{r.status_code}] - {r.content}"
+                    f"\n {batch.get_object()}"
+                )
                 raise GeofenceException(f"Error while running batch {batch.log_name}: [{r.status_code}]")
 
             return True
@@ -389,11 +396,11 @@ class GeoFenceUtils:
     def delete_all_rules(self):
         """purge all existing GeoFence Cache Rules"""
         rules_objs = self.geofence.get_rules()
-        rules = rules_objs['rules']
+        rules = rules_objs["rules"]
 
-        batch = Batch('Purge All')
+        batch = Batch("Purge All")
         for rule in rules:
-            batch.add_delete_rule(rule['id'])
+            batch.add_delete_rule(rule["id"])
 
         logger.debug(f"Going to remove all {len(rules)} rules in geofence")
         self.geofence.run_batch(batch)
@@ -404,18 +411,20 @@ class GeoFenceUtils:
         try:
             # Scan GeoFence Rules associated to the Dataset
             gs_rules = self.geofence.get_rules(
-                workspace=workspace_name, workspace_any=False,
-                layer=layer_name, layer_any=False)
+                workspace=workspace_name, workspace_any=False, layer=layer_name, layer_any=False
+            )
 
             if not batch:
-                batch = Batch(f'Delete {workspace_name}:{layer_name}')
+                batch = Batch(f"Delete {workspace_name}:{layer_name}")
 
             cnt = 0
-            if gs_rules and gs_rules['rules']:
-                logger.debug(f"Going to collect {len(gs_rules['rules'])} rules for layer '{workspace_name}:{layer_name}'")
-                for r in gs_rules['rules']:
-                    if r['layer'] and r['layer'] == layer_name:
-                        batch.add_delete_rule(r['id'])
+            if gs_rules and gs_rules["rules"]:
+                logger.debug(
+                    f"Going to collect {len(gs_rules['rules'])} rules for layer '{workspace_name}:{layer_name}'"
+                )
+                for r in gs_rules["rules"]:
+                    if r["layer"] and r["layer"] == layer_name:
+                        batch.add_delete_rule(r["id"])
                         cnt += 1
                     else:
                         logger.warning(f"Bad rule retrieved for dataset '{workspace_name or ''}:{layer_name}': {r}")
@@ -446,8 +455,8 @@ class GeoFenceUtils:
         try:
             rules_count = self.geofence.get_rules_count()
             rules_objs = self.geofence.get_rules(page=rules_count - 1, entries=1)
-            if len(rules_objs['rules']) > 0:
-                highest_priority = rules_objs['rules'][0]['priority']
+            if len(rules_objs["rules"]) > 0:
+                highest_priority = rules_objs["rules"][0]["priority"]
             else:
                 highest_priority = 0
             return int(highest_priority) + 1
