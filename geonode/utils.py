@@ -350,8 +350,6 @@ def get_dataset_name(dataset):
 
 def get_dataset_workspace(dataset):
     """Get the workspace where the input layer belongs"""
-    alternate = None
-    workspace = None
     try:
         alternate = dataset.alternate
     except Exception:
