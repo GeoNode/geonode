@@ -442,6 +442,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         approval_status_changed: bool = False,
         group_status_changed: bool = False,
     ) -> bool:
+
         _resource = instance or ResourceManager._get_instance(uuid)
 
         try:
