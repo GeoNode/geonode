@@ -17,7 +17,7 @@ The following are required only for core and extension modules (they are welcome
 - [ ] Commit message must be in the form "[Fixes #<issue_number>] Title of the Issue"
 - [ ] New unit tests have been added covering the changes, unless there is an explanation on why the tests are not necessary/implemented
 - [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
-- [ ] This PR passes the QA checks: flake8 geonode
+- [ ] This PR passes the QA checks: black geonode && flake8 geonode
 - [ ] Commits changing the **settings**, **UI**, **existing user workflows**, or adding **new functionality**, need to include documentation updates
 - [ ] Commits adding **new texts** do use gettext and have updated .po / .mo files (without location infos)
 
