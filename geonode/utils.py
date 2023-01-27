@@ -259,6 +259,9 @@ class OGC_Servers_Handler:
         for option in ["WMST_ENABLED", "WPS_ENABLED"]:
             server.setdefault(option, False)
 
+        for option in ["TIMEOUT", "GEOFENCE_TIMEOUT"]:
+            server.setdefault(option, 60)
+
     def __getitem__(self, alias):
         if hasattr(self._servers, alias):
             return getattr(self._servers, alias)
