@@ -17,9 +17,9 @@
 #
 #########################################################################
 import os
-from django.contrib.auth import get_user_model
 import logging
 
+from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
@@ -27,8 +27,9 @@ from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
-from geonode.documents.models import Document
+
 from geonode.base.populate_test_data import create_models
+from geonode.documents.models import Document
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +76,17 @@ class DocumentsApiTests(APITestCase):
 
         # import json
         # logger.error(f"{json.dumps(layers_data)}")
+
+    def test_extra_metadata_included_with_param(self):
+        resource = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{resource.pk}")
+        data = {"include[]": "metadata"}
+
+        response = self.client.get(url, format="json", data=data)
+        self.assertIsNotNone(response.data["document"].get("metadata"))
+
+        response = self.client.get(url, format="json")
+        self.assertNotIn("metadata", response.data["document"])
 
     def test_creation_return_error_if_file_is_not_passed(self):
         """
