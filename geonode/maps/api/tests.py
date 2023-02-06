@@ -116,13 +116,13 @@ class MapsApiTests(APITestCase):
     def test_extra_metadata_included_with_param(self):
         resource = Map.objects.first()
         url = urljoin(f"{reverse('maps-list')}/", f"{resource.pk}")
-        data = {"include[]": "metadata,data"}
+        data = {"include[]": "metadata"}
 
         response = self.client.get(url, format="json", data=data)
         self.assertIsNotNone(response.data["map"].get("metadata"))
 
         response = self.client.get(url, format="json")
-        self.assertNotIn("map", response.data["document"])
+        self.assertNotIn("map", response.data["map"])
 
     def test_patch_map(self):
         """
