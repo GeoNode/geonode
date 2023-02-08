@@ -238,7 +238,6 @@ def group_remove(request, slug):
     if request.method == "GET":
         return render(request, "groups/group_remove.html", context={"group": group})
     if request.method == "POST":
-
         if not group.user_is_role(request.user, role="manager"):
             return HttpResponseForbidden()
 

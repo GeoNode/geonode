@@ -20,7 +20,6 @@ import json
 
 
 class BaseHookSet:
-
     # Layers
     def dataset_list_template(self, context=None):
         return NotImplemented

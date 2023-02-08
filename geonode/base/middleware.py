@@ -47,7 +47,6 @@ class ReadOnlyMiddleware:
         return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-
         session = request.session
         configuration_session_cache(session)
 
@@ -86,7 +85,6 @@ class MaintenanceMiddleware:
         return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-
         session = request.session
         configuration_session_cache(session)
 

@@ -327,7 +327,6 @@ class DatasetsAutocomplete(SimpleSelect2View):
 
 class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-
         tid = self.request.GET.get("sysid")
         lang = get_language()
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=tid)

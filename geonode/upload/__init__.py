@@ -66,7 +66,6 @@ def run_setup_hooks(sender, **kwargs):
 
 
 class UploadAppConfig(AppConfig):
-
     name = "geonode.upload"
 
     def ready(self):

@@ -25,7 +25,6 @@ from . import config
 
 
 class HarvestingAppConfig(AppConfig):
-
     name = "geonode.harvesting"
 
     def ready(self):

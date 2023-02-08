@@ -322,7 +322,6 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         """Verify that GeoNode CSW can handle bulk upload of ISO and FGDC metadata"""
         csw = get_catalogue()
         if csw.catalogue.type == "pycsw_http":
-
             identifiers = []
 
             # upload all metadata
