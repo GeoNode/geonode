@@ -26,7 +26,6 @@ MULTI_EMAIL_FIELD_EMPTY_VALUES = validators.EMPTY_VALUES + ("[]",)
 
 
 class MultiEmailWidget(Textarea):
-
     is_hidden = False
 
     def prep_value(self, value):

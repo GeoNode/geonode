@@ -184,7 +184,6 @@ def upload(
     time_presentation_default_value=None,
     time_presentation_reference_value=None,
 ):
-
     if user is None:
         user = get_default_user()
     if isinstance(user, str):
@@ -521,7 +520,6 @@ def time_step(
         if use_big_date:
             transforms.append(build_att_remap_transform(time_attribute))
             if end_time_attribute:
-
                 transforms.append(build_att_remap_transform(end_time_attribute))
 
         transforms.append({"type": "CreateIndexTransform", "field": time_attribute})

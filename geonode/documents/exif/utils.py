@@ -63,7 +63,6 @@ def convertExifLocationToDecimalDegrees(location, direction):
 
 
 def exif_extract_metadata_doc(doc):
-
     if not doc:
         return None
 
@@ -126,7 +125,6 @@ def exif_extract_metadata_doc(doc):
 
 
 def exif_build_abstract(model=None, date=None, lat=None, lon=None):
-
     if model and date and lat and lon:
         return ABSTRACT_TEMPLATE_MODEL_DATE_LATLON.format(model=model, date=date, lat=lat, lon=lon)
     elif model and date:

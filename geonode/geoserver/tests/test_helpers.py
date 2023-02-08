@@ -43,7 +43,6 @@ logger = logging.getLogger(__name__)
 
 
 class HelperTest(GeoNodeBaseTestSupport):
-
     type = "dataset"
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]

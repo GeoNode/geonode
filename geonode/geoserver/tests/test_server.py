@@ -545,7 +545,6 @@ SLDS = {
 
 
 class LayerTests(GeoNodeBaseTestSupport):
-
     type = "dataset"
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
@@ -1186,7 +1185,6 @@ class LayerTests(GeoNodeBaseTestSupport):
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_set_resources_links(self):
-
         from django.db.models import Q
         from geonode.base.models import Link
         from geonode.catalogue import get_catalogue

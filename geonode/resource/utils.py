@@ -140,7 +140,6 @@ def update_resource(
     vals: dict = {},
     extra_metadata: list = [],
 ):
-
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
 

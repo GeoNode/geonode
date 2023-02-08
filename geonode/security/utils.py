@@ -720,7 +720,6 @@ class AdvancedSecurityWorkflowManager:
 
     @staticmethod
     def set_group_member_permissions(user, group, role):
-
         if not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow():
             """
             Internally the set_permissions function will automatically handle the permissions

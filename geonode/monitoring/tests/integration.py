@@ -156,7 +156,6 @@ class TestClient(DjangoTestClient):
 
 
 class MonitoringTestBase(GeoNodeLiveTestSupport):
-
     type = "dataset"
 
     #  loading test thesausuri and initial data
@@ -399,7 +398,6 @@ class MonitoringUtilsTestCase(MonitoringTestBase):
 
 @override_settings(USE_TZ=True)
 class MonitoringChecksTestCase(MonitoringTestBase):
-
     reserved_fields = (
         "emails",
         "severity",
@@ -822,7 +820,6 @@ class MonitoringChecksTestCase(MonitoringTestBase):
 
 @override_settings(USE_TZ=True)
 class AutoConfigTestCase(MonitoringTestBase):
-
     OGC_GS_1 = "http://localhost/geoserver123/"
     OGC_GS_2 = "http://google.com/test/"
 
@@ -874,7 +871,6 @@ class AutoConfigTestCase(MonitoringTestBase):
 
 @override_settings(USE_TZ=True)
 class MonitoringAnalyticsTestCase(MonitoringTestBase):
-
     # fixtures = ['metric_data']
 
     def setUp(self):

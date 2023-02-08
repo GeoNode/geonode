@@ -362,7 +362,6 @@ class ParallelTestSuiteRunner:
     def _create_worker_pool(self, pool_size, target_func, worker_args):
         workers = []
         for index in range(0, pool_size):
-
             args = (index,) + worker_args
             worker = Process(target=target_func, args=args)
             workers.append(worker)
@@ -462,7 +461,6 @@ class DjangoParallelTestSuiteRunner(ParallelTestSuiteRunner, DiscoverRunner):
         return ordered_test_databases
 
     def setup_databases_18(self, **kwargs):
-
         mirrored_aliases = {}
         test_databases = {}
         dependencies = {}

@@ -59,7 +59,6 @@ EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
 
 class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
-
     dataset_coast_line = None
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
@@ -212,7 +211,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         }
     )
     def test_tile_background_generic_fetch(self):
-
         width = 240
         height = 200
 
@@ -231,7 +229,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         }
     )
     def test_tile_background_generic_fetch_zoom(self):
-
         width = 500
         height = 200
 
@@ -256,7 +253,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
                 logger.error(f"It was not possible to fetch the background: {e}")
 
     def test_tile_background_wikimedia_fetch(self):
-
         width = 240
         height = 200
 
@@ -281,7 +277,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
             self._fetch_and_compare_background(background, bbox, expected_image_path)
 
     def test_tile_background_osm_fetch(self):
-
         width = 240
         height = 200
 
@@ -314,7 +309,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         }
     )
     def test_tile_background_tms_fetch(self):
-
         width = 240
         height = 200
 
@@ -473,7 +467,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
 
 
 class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
-
     dataset_coast_line = None
     dataset_highway = None
     map_composition = None
@@ -582,7 +575,6 @@ class GeoNodeThumbnailsIntegration(GeoNodeBaseTestSupport):
         }
     )
     def test_dataset_custom_thumbs(self):
-
         bboxes = [
             [-9072629.904175375, -9043966.018568434, 1491839.8773032012, 1507127.2829602365, "EPSG:3857"],
             [-9701812.234583871, -8784567.895161757, 1183222.3819935687, 1672419.363018697, "EPSG:3857"],

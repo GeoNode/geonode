@@ -84,7 +84,6 @@ class SizeRestrictedFileField(forms.FileField):
 
 class DocumentFormMixin:
     def generate_link_choices(self, resources=None):
-
         if resources is None:
             resources = list(Dataset.objects.all())
             resources += list(Map.objects.all())
@@ -122,7 +121,6 @@ class DocumentFormMixin:
 
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
-
     title = forms.CharField(required=False)
 
     links = forms.MultipleChoiceField(label=_("Link to"), required=False)

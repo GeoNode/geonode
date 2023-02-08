@@ -1472,7 +1472,6 @@ def create_geoserver_db_featurestore(
 
 
 def _create_featurestore(name, data, overwrite=False, charset="UTF-8", workspace=None):
-
     cat = gs_catalog
     cat.create_featurestore(name, data, workspace=workspace, overwrite=overwrite, charset=charset)
     store = get_store(cat, name, workspace=workspace)

@@ -97,7 +97,6 @@ def user_info(request):
 
 @csrf_exempt
 def verify_token(request):
-
     if request.POST and "token" in request.POST:
         token = None
         try:

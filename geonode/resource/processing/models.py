@@ -38,7 +38,6 @@ class AbstractProcessingTaskManager(PolymorphicManager):
 
 
 class AbstractProcessingTask(PolymorphicModel):
-
     objects = AbstractProcessingTaskManager()
 
     name = models.CharField(max_length=255, unique=True)
@@ -54,7 +53,6 @@ class AbstractProcessingTask(PolymorphicModel):
 
 
 class ProcessingWorkflow(models.Model):
-
     name = models.CharField(max_length=255, unique=True)
 
     processing_tasks = models.ManyToManyField(AbstractProcessingTask, blank=True, through="ProcessingWorkflowTasks")
@@ -73,7 +71,6 @@ class ProcessingWorkflow(models.Model):
 
 
 class ProcessingWorkflowTasks(models.Model):
-
     workflow = models.ForeignKey(ProcessingWorkflow, on_delete=models.DO_NOTHING)
     task = models.ForeignKey(AbstractProcessingTask, related_name="link_to_workflow", on_delete=models.DO_NOTHING)
     order = models.PositiveIntegerField()
