@@ -40,7 +40,6 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
     # force restore interruption before starting the procedure itself
     @mock.patch("geonode.br.management.commands.utils.utils.confirm", return_value=False)
     def test_with_logs_success(self, fake_confirm):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -62,7 +61,6 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
     # force restore interruption before starting the procedure itself
     @mock.patch("geonode.br.management.commands.utils.utils.confirm", return_value=False)
     def test_with_logs_failure(self, fake_confirm):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -93,7 +91,6 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
     # mock geonode.base.models.Configuration save() method
     @mock.patch("geonode.base.models.Configuration.save", return_value=None)
     def test_with_read_only_mode(self, mock_configuration_save, fake_confirm):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -117,7 +114,6 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
     # mock geonode.base.models.Configuration save() method
     @mock.patch("geonode.base.models.Configuration.save", return_value=None)
     def test_without_read_only_mode(self, mock_configuration_save, fake_confirm):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -141,7 +137,6 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
     # mock geonode.base.models.Configuration save() method
     @mock.patch("geonode.base.models.Configuration.save", return_value=None)
     def test_config_files(self, mock_configuration_save, fake_confirm):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:

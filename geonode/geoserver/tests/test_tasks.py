@@ -9,7 +9,6 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 
 class TasksTest(GeoNodeBaseTestSupport):
-
     type = "dataset"
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]

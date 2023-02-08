@@ -39,7 +39,6 @@ from geonode.utils import forward_mercator, inverse_mercator
 
 
 class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
-
     GEOSERVER = False
 
     def setUp(self):

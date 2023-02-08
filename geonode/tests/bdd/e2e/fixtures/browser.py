@@ -29,7 +29,6 @@ def base_url():
 
 @pytest.fixture
 def browser(browser, base_url, credentials):
-
     if credentials["login"]:
         browser.visit(urljoin(base_url, settings.LOGIN_URL))
 

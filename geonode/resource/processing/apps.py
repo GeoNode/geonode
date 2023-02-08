@@ -21,7 +21,6 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class AppConfig(BaseAppConfig):
-
     name = "geonode.resource.processing"
     label = "geonode_resource_processing"
     verbose_name = _("GeoNode Resource Processing Library")

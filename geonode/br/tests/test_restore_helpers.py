@@ -36,7 +36,6 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_options() method test
     def test_mandatory_option_failure(self):
-
         options = {}
 
         with self.assertRaises(CommandError) as exc:
@@ -46,7 +45,6 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_options() method test
     def test_exclusive_option_failure(self):
-
         options = {"backup_file": "/some/random/path/1.zip", "backup_files_dir": "/some/random/path"}
 
         with self.assertRaises(CommandError) as exc:
@@ -56,7 +54,6 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_options() method test
     def test_mandatory_option_backup_file_success(self):
-
         with tempfile.NamedTemporaryFile() as tmp:
             with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as archive:
                 archive.writestr("something.txt", "Some Content Here")
@@ -66,9 +63,7 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_options() method test
     def test_mandatory_option_backup_file_failure(self):
-
         with tempfile.NamedTemporaryFile() as tmp:
-
             options = {"backup_file": tmp.name}
 
             with self.assertRaises(CommandError) as exc:
@@ -78,16 +73,13 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_options() method test
     def test_mandatory_option_backup_files_dir_success(self):
-
         with tempfile.TemporaryDirectory() as tmp:
             options = {"backup_files_dir": tmp}
             RestoreCommand().validate_backup_file_options(**options)
 
     # validate_backup_file_options() method test
     def test_mandatory_option_backup_files_dir_failure(self):
-
         with tempfile.NamedTemporaryFile() as tmp:
-
             options = {"backup_files_dir": tmp.name}
 
             with self.assertRaises(CommandError) as exc:
@@ -97,18 +89,14 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # parse_backup_files_dir() method test
     def test_backup_files_dir_no_archive(self):
-
         with tempfile.TemporaryDirectory() as tmp:
-
             backup_file = RestoreCommand().parse_backup_files_dir(tmp)
             self.assertIsNone(backup_file, "Expecting backup file to be None")
 
     # parse_backup_files_dir() method test
     def test_backup_files_dir_multiple_archives(self):
-
         # create a backup files directory
         with tempfile.TemporaryDirectory() as tmp_dir:
-
             # create the 1st backup file
             with tempfile.NamedTemporaryFile(dir=tmp_dir) as tmp_file_1:
                 with zipfile.ZipFile(tmp_file_1, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -128,13 +116,11 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # parse_backup_files_dir() method test
     def test_backup_files_dir_with_newer_restored_backup(self):
-
         # create an entry in restoration history with a dump created in the future
         RestoredBackupFactory(creation_date=(datetime.datetime.now()) + datetime.timedelta(days=2))
 
         # create a backup files directory
         with tempfile.TemporaryDirectory() as tmp_dir:
-
             # create the backup file
             with tempfile.NamedTemporaryFile(dir=tmp_dir) as tmp_file:
                 with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -146,13 +132,11 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # parse_backup_files_dir() method test
     def test_backup_files_dir_with_older_restored_backup(self):
-
         # create an entry in restoration history with a dump created in the past
         RestoredBackupFactory(creation_date=(datetime.datetime.now()) - datetime.timedelta(days=2))
 
         # create a backup files directory
         with tempfile.TemporaryDirectory() as tmp_dir:
-
             # create the backup file
             with tempfile.NamedTemporaryFile(dir=tmp_dir) as tmp_file:
                 with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -164,7 +148,6 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_hash() method test
     def test_backup_hash_no_md5_file(self):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -176,7 +159,6 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_hash() method test
     def test_backup_hash_failure(self):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:
@@ -203,7 +185,6 @@ class RestoreCommandHelpersTests(GeoNodeBaseTestSupport):
 
     # validate_backup_file_hash() method test
     def test_backup_hash_success(self):
-
         # create the backup file
         with tempfile.NamedTemporaryFile() as tmp_file:
             with zipfile.ZipFile(tmp_file, "w", zipfile.ZIP_DEFLATED) as archive:

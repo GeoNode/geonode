@@ -397,7 +397,6 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         if not self.request_validator.validate_response_type(
             request.client_id, request.response_type, request.client, request
         ):
-
             log.debug("Client %s is not authorized to use response_type %s.", request.client_id, request.response_type)
             raise errors.UnauthorizedClientError(request=request)
 

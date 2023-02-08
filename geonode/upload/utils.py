@@ -115,7 +115,6 @@ class JSONResponse(HttpResponse):
     """JSON response class."""
 
     def __init__(self, obj="", json_opts=None, content_type="application/json", *args, **kwargs):
-
         if json_opts is None:
             json_opts = {}
         content = json.dumps(obj, **json_opts)
@@ -654,7 +653,6 @@ def import_imagemosaic_granules(
     time_presentation_default_value,
     time_presentation_reference_value,
 ):
-
     # The very first step is to rename the granule by adding the selected regex
     #  matching value to the filename.
 

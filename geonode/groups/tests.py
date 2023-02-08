@@ -46,7 +46,6 @@ def _log(msg, *args):
 
 
 class GroupsSmokeTest(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod

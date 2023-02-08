@@ -45,7 +45,6 @@ class GeoNodeBaseSimpleTestSupport(SimpleTestCase):
 
 
 class GeoNodeBaseTestSupport(TestCase):
-
     type = None
     obj_ids = []
     integration = False
@@ -70,6 +69,5 @@ class GeoNodeBaseTestSupport(TestCase):
 
 
 class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport, LiveServerTestCase):
-
     integration = True
     port = 8000

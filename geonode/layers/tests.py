@@ -1310,7 +1310,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
@@ -1469,7 +1468,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
-
     type = "dataset"
 
     @classmethod
@@ -1944,7 +1942,6 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertTrue(form.is_valid())
 
     def test_dataset_time_form_should_work(self):
-
         attr, _ = Attribute.objects.get_or_create(
             dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
         )
@@ -1964,7 +1961,6 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertDictEqual({}, form.errors)
 
     def test_dataset_time_form_should_raise_error_if_invalid_payload(self):
-
         attr, _ = Attribute.objects.get_or_create(
             dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
         )

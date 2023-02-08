@@ -38,7 +38,6 @@ def run_setup_hooks(*args, **kwargs):
 
 
 def set_resource_links(*args, **kwargs):
-
     from geonode.utils import set_resource_default_links
     from geonode.catalogue.models import catalogue_post_save
     from geonode.layers.models import Dataset

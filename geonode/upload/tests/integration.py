@@ -106,7 +106,6 @@ def get_wms(version="1.1.1", type_name=None, username=None, password=None):
 
 
 class UploaderBase(GeoNodeBaseTestSupport):
-
     type = "dataset"
 
     @classmethod
@@ -334,7 +333,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
         self.assertTrue(resp.status_code, 400)
 
     def upload_folder_of_files(self, folder, final_check, session_ids=None):
-
         mains = (".tif", ".shp", ".zip", ".asc")
 
         def is_main(_file):
