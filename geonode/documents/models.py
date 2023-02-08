@@ -145,7 +145,6 @@ class Document(ResourceBase):
 
 
 class DocumentResourceLink(models.Model):
-
     # relation to the document model
     document = models.ForeignKey(Document, null=True, blank=True, related_name="links", on_delete=models.CASCADE)
 

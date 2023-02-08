@@ -160,7 +160,6 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # with delayed security
         with self.settings(DELAYED_SECURITY_SIGNALS=True, GEOFENCE_SECURITY_ENABLED=True):
             if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-
                 gm = GeoServerResourceManager()
                 gm.set_permissions(layer.uuid, instance=layer, permissions=self.perm_spec)
                 self.assertTrue(layer.dirty_state)
@@ -435,7 +434,6 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """Test groups filtering"""
 
         with self.settings(API_LOCKDOWN=False):
-
             filter_url = self.groups_list_url
 
             resp = self.api_client.get(filter_url)

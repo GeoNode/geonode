@@ -449,7 +449,6 @@ def epsg_3857_area_of_use():
 
 
 def crop_to_3857_area_of_use(bbox: List) -> List:
-
     # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
     bbox4326 = transform_bbox(bbox, target_crs="EPSG:4326")
 

@@ -125,7 +125,6 @@ def forgot_username(request):
     if request.method == "POST":
         username_form = ForgotUsernameForm(request.POST)
         if username_form.is_valid():
-
             users = get_user_model().objects.filter(email=username_form.cleaned_data["email"])
 
             if users:
@@ -147,7 +146,6 @@ def forgot_username(request):
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
-
         if self.request and self.request.user:
             qs = get_available_users(self.request.user)
         else:

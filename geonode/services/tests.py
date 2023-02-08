@@ -337,7 +337,6 @@ class ModuleFunctionsTestCase(StandardTestCase):
 
     @mock.patch("arcrest.MapService", autospec=True)
     def test_get_arcgis_alternative_structure(self, mock_map_service):
-
         LayerESRIExtent = namedtuple("LayerESRIExtent", "spatialReference xmin ymin ymax xmax")
         LayerESRIExtentSpatialReference = namedtuple("LayerESRIExtentSpatialReference", "wkid latestWkid")
 

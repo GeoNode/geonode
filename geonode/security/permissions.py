@@ -327,7 +327,6 @@ class BindingFailed(Exception):
 
 
 class PermSpecConverterBase(object):
-
     _object_name = None
 
     def __init__(self, json, resource, parent=None):
@@ -393,7 +392,6 @@ class PermSpecConverterBase(object):
 
 
 class PermSpec(PermSpecConverterBase):
-
     _object_name = "perm_spec"
     _bindings = (
         _binding("users"),
@@ -580,7 +578,6 @@ class PermSpec(PermSpecConverterBase):
 
 
 class PermSpecUserCompact(PermSpecConverterBase):
-
     _object_name = "perm_spec_user_compact"
     _bindings = (
         _binding("id"),
@@ -595,7 +592,6 @@ class PermSpecUserCompact(PermSpecConverterBase):
 
 
 class PermSpecGroupCompact(PermSpecConverterBase):
-
     _object_name = "perm_spec_group_compact"
     _bindings = (
         _binding("id"),
@@ -607,7 +603,6 @@ class PermSpecGroupCompact(PermSpecConverterBase):
 
 
 class PermSpecCompact(PermSpecConverterBase):
-
     _object_name = "perm_spec_compact"
     _bindings = (
         _binding("users", expected=False, binding=PermSpecUserCompact),

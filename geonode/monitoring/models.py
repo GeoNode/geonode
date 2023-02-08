@@ -945,7 +945,6 @@ class ExceptionEvent(models.Model):
 
 
 class MetricLabel(models.Model):
-
     name = models.TextField(null=False, blank=True, default="")
     user = models.CharField(max_length=150, default=None, null=True, blank=True)
 
@@ -1106,7 +1105,6 @@ class MetricValue(models.Model):
 
 
 class NotificationCheck(models.Model):
-
     GRACE_PERIOD_1M = timedelta(seconds=60)
     GRACE_PERIOD_5M = timedelta(seconds=5 * 60)
     GRACE_PERIOD_10M = timedelta(seconds=10 * 60)
@@ -1289,7 +1287,6 @@ class NotificationCheck(models.Model):
             thresholds,
             _description,
         ) in user_threshold:
-
             # metric_name is a string for metric.name
             # field opt is NotificationMetricDefinition.FIELD_OPTION* value
             # use_* are flags to set limitations on scope of alert
@@ -1330,7 +1327,6 @@ class NotificationCheck(models.Model):
         return inst
 
     def get_user_threshold(self, notification_def):
-
         return self.user_threshold[notification_def.field_name]
 
     def get_user_form(self, *args_, **kwargs_):

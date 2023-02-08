@@ -237,7 +237,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
-
                 from geonode.security import middleware as mw
 
                 # reload the middleware module to fetch overridden settings
@@ -1269,7 +1268,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     # 7. change_dataset_style
 
     def test_not_superuser_permissions(self):
-
         rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             delete_all_geofence_rules()

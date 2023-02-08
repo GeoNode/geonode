@@ -30,7 +30,6 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 
 
 class FavoriteTest(GeoNodeBaseTestSupport):
-
     type = "document"
 
     """

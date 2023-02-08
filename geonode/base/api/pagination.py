@@ -26,7 +26,6 @@ DEFAULT_PAGE_QUERY_PARAM = getattr(settings, "REST_API_DEFAULT_PAGE_QUERY_PARAM"
 
 
 class GeoNodeApiPagination(PageNumberPagination):
-
     page = DEFAULT_PAGE
     page_size = DEFAULT_PAGE_SIZE
     page_size_query_param = DEFAULT_PAGE_QUERY_PARAM
