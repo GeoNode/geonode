@@ -299,7 +299,6 @@ class FilteredView(View):
 
 @view_decorator(superuser_protected, subclass=True)
 class ResourcesList(FilteredView):
-
     filter_form = ResourcesFilterForm
     fields_map = (
         (
@@ -346,7 +345,6 @@ class ResourcesList(FilteredView):
 
 @view_decorator(superuser_protected, subclass=True)
 class ResourceTypesList(FilteredView):
-
     output_name = "resource_types"
 
     def get(self, request, *args, **kwargs):
@@ -363,7 +361,6 @@ class ResourceTypesList(FilteredView):
 
 @view_decorator(superuser_protected, subclass=True)
 class LabelsList(FilteredView):
-
     filter_form = LabelsFilterForm
     fields_map = (
         (
@@ -593,7 +590,6 @@ class NotificaitonCheckForm(forms.ModelForm):
 
 
 class MetricNotificationCheckForm(forms.ModelForm):
-
     metric = forms.CharField(required=True)
     service = forms.CharField(required=False)
     resource = forms.CharField(required=False)

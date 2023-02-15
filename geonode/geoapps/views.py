@@ -71,7 +71,6 @@ def _resolve_geoapp(request, id, permission="base.change_resourcebase", msg=_PER
 
 @login_required
 def new_geoapp(request, template="apps/app_new.html"):
-
     access_token = None
     if request and request.user:
         access_token = get_or_create_token(request.user)

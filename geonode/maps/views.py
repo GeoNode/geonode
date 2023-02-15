@@ -162,7 +162,6 @@ def map_metadata(
                 tkeywords_form.fields[tid].initial = values
 
     if request.method == "POST" and map_form.is_valid() and category_form.is_valid() and tkeywords_form.is_valid():
-
         new_poc = map_form.cleaned_data["poc"]
         new_author = map_form.cleaned_data["metadata_author"]
         new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data["keywords"]

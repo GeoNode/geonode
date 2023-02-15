@@ -39,7 +39,6 @@ from geonode.upload.tasks import finalize_incomplete_session_uploads
 
 
 class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
-
     MOCK_PREFIX = "geonode.upload.upload_preprocessing"
 
     @mock.patch(MOCK_PREFIX + ".convert_kml_ground_overlay_to_geotiff", autospec=True)

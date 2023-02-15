@@ -76,7 +76,6 @@ def resource_permissions_handle_post(request, resource):
 
         for user, perms in info["users"].items():
             if "download_resourcebase" in perms and "view_resourcebase" not in perms and not view_any:
-
                 success = False
                 message = _(
                     "User {username} has download permissions but cannot "

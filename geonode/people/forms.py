@@ -31,7 +31,6 @@ attrs_dict = {"class": "required"}
 
 
 class AllauthReCaptchaSignupForm(forms.Form):
-
     captcha = ReCaptchaField()
 
     def signup(self, request, user):

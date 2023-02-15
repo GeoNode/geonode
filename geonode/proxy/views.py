@@ -100,7 +100,6 @@ def proxy(
     # White-Black Listing Hosts
     site_url = urlsplit(settings.SITEURL)
     if sec_chk_hosts and not settings.DEBUG:
-
         # Attach current SITEURL
         if site_url.hostname not in PROXY_ALLOWED_HOSTS:
             PROXY_ALLOWED_HOSTS += (site_url.hostname,)
@@ -263,7 +262,6 @@ def proxy(
 
 
 def download(request, resourceid, sender=Dataset):
-
     _not_authorized = _("You are not authorized to download this resource.")
     _not_permitted = _("You are not permitted to save or edit this resource.")
     _no_files_found = _("No files have been found for this resource. Please, contact a system administrator.")

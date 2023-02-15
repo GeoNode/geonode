@@ -63,7 +63,6 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
         )
 
     def test_make_bbox_to_pixels_transf_same(self):
-
         src_bbox = [0, 0, 1, 1]
         dest_bbox = [0, 0, 1, 1]
         transf = utils.make_bbox_to_pixels_transf(src_bbox, dest_bbox)
@@ -72,7 +71,6 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
         self.assertEqual(tuple(point), transformed, "Expected linear transformation to return the same coords.")
 
     def test_make_bbox_to_pixels_transf_diff(self):
-
         multiplication_factor = 10
         src_bbox = [0, 0, 1, 1]
         dest_bbox = [0, 0, multiplication_factor * src_bbox[2], multiplication_factor * src_bbox[3]]
@@ -104,7 +102,6 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
 
 
 class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
-
     fixtures = GeoNodeBaseTestSupport.fixtures.copy() + [
         FIXTURES_DIR + filename
         for filename in [
@@ -126,7 +123,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             super().setUpClass()
 
     def test_generate_thumbnail_name_dataset(self):
-
         dataset_name = thumbnails._generate_thumbnail_name(Dataset.objects.first())
         self.assertIsNotNone(
             re.match(f"dataset-{self.re_uuid}-thumb.png", dataset_name, re.I),
@@ -150,7 +146,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
     @patch("geonode.maps.models.Map.maplayers", new_callable=PropertyMock)
     @patch("geonode.maps.models.Map.uuid", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map(self, uuid_mock, layers_mock):
-
         layers_mock.return_value = [MapLayer()]
         uuid_mock.return_value = str(uuid.uuid4())
 
@@ -175,7 +170,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_generate_thumbnail_name_geoapp(self):
-
         geo_app = resource_manager.create(
             None,
             resource_type=GeoApp,

@@ -38,7 +38,6 @@ logger = logging.getLogger(__name__)
 
 
 class DatasetsApiTests(APITestCase):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -271,7 +270,6 @@ class DatasetsApiTests(APITestCase):
 
     @patch("geonode.layers.api.views.validate_input_source")
     def test_layer_replace_should_work(self, _validate_input_source):
-
         _validate_input_source.return_value = True
 
         admin = get_user_model().objects.get(username="admin")

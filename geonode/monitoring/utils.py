@@ -95,7 +95,6 @@ class RequestToMonitoringThread(threading.Thread):
 
 
 class GeoServerMonitorClient:
-
     REPORT_FORMATS = (
         "html",
         "xml",

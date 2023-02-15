@@ -62,7 +62,6 @@ from .forms import DocumentCreateForm
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
-
     type = "document"
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
@@ -652,7 +651,6 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):

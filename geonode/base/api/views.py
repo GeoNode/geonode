@@ -826,7 +826,6 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-
             request_params = self._get_request_params(request)
             uuid = request_params.get("uuid", str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)

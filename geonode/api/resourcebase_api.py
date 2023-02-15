@@ -403,7 +403,6 @@ class CommonModelApi(ModelResource):
         sqs = self.build_haystack_filters(request.GET)
 
         if not settings.SKIP_PERMS_FILTER:
-
             filter_set = get_objects_for_user(request.user, "base.view_resourcebase")
 
             filter_set = get_visible_resources(

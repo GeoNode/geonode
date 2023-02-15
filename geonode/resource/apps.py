@@ -21,7 +21,6 @@ from django.conf.urls import url, include
 
 
 class GeoNodeResourceConfig(AppConfig):
-
     name = "geonode.resource"
     verbose_name = "GeoNode Resource Service and Manager"
 

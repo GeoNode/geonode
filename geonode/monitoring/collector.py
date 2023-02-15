@@ -342,7 +342,6 @@ class CollectorAPI:
                     free,
                 ),
             ):
-
                 mdata = {
                     "value": val,
                     "value_raw": val,
@@ -589,7 +588,6 @@ class CollectorAPI:
         resources = self.extract_resources(requests)
 
         def push_metric_values(srequests, **mdefaults):
-
             count = srequests.count()
             count_mdefaults = mdefaults.copy()
             count_mdefaults["value"] = count
@@ -665,7 +663,6 @@ class CollectorAPI:
                 requests,
             )
         ] + resources:
-
             metric_defaults["resource"] = resource
             metric_defaults["event_type"] = event_all
             push_metric_values(_requests, **metric_defaults)

@@ -170,7 +170,6 @@ class RegionsSelect(forms.Select):
         )
 
     def render_options(self, selected_choices):
-
         # Normalize to strings.
         def _region_id_from_choice(choice):
             if isinstance(choice, int) or (isinstance(choice, str) and choice.isdigit()):
@@ -260,7 +259,6 @@ THESAURUS_RESULT_LIST_SEPERATOR = ("", "-------")
 
 
 class ThesaurusAvailableForm(forms.Form):
-
     # seperator at beginning of thesaurus search result and between
     # results found in local language and alt label
 
@@ -311,7 +309,6 @@ class ThesaurusAvailableForm(forms.Form):
 
     @staticmethod
     def _get_thesauro_keyword_label(item, lang):
-
         keyword_id_for_given_thesaurus = ThesaurusKeyword.objects.filter(thesaurus_id=item)
 
         # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again

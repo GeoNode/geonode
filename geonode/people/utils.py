@@ -58,7 +58,6 @@ def get_valid_user(user=None):
 
 
 def format_address(street=None, zipcode=None, city=None, area=None, country=None):
-
     if country is not None and country == "USA":
         address = ""
         if city and area:

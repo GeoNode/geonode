@@ -98,7 +98,6 @@ class UploadParallelismLimitManager(models.Manager):
 
 
 class Upload(models.Model):
-
     objects = UploadManager()
 
     import_id = models.BigIntegerField(null=True)
@@ -252,7 +251,6 @@ class Upload(models.Model):
 
 
 class UploadSizeLimit(models.Model):
-
     objects = UploadSizeLimitManager()
 
     slug = models.SlugField(
