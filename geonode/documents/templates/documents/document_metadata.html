@@ -56,7 +56,7 @@
 
       {% csrf_token %}
         <div id="mdeditor_form" class="col-md-12 form-controls">
-          {% form document_form using "layouts/doc_panels.html" %}
+          {% form document_form using panel_template %}
           {# document_form|as_bootstrap #}
         </div>
 

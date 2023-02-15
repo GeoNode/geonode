@@ -21,9 +21,10 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
+
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from mock import patch
 from rest_framework.test import APITestCase
-from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
@@ -110,6 +111,17 @@ class MapsApiTests(APITestCase):
                 self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
                 self.assertEqual(response.data["map"]["maplayers"][0]["extra_params"], {"foo": "bar"})
                 self.assertIsNotNone(response.data["map"]["maplayers"][0]["dataset"])
+
+    def test_extra_metadata_included_with_param(self):
+        resource = Map.objects.first()
+        url = urljoin(f"{reverse('maps-list')}/", f"{resource.pk}")
+        data = {"include[]": "metadata"}
+
+        response = self.client.get(url, format="json", data=data)
+        self.assertIsNotNone(response.data["map"].get("metadata"))
+
+        response = self.client.get(url, format="json")
+        self.assertNotIn("map", response.data["map"])
 
     def test_patch_map(self):
         """
