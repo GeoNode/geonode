@@ -269,6 +269,8 @@ span.grippy::after {
             <a>{% trans "Optional Metadata" %}</a>
         {% endif %}
       </li>
+      {% block extra_metadata_steps %}
+      {% endblock %}
   </ul>
     <div id="mandatory" class="tab-pane fade in active">
         <!--<br />-->
@@ -568,6 +570,8 @@ span.grippy::after {
         </div>
       </div></div></div>
     </div>
+    {% block extra_metadata_content %}
+    {% endblock %}
 </div>
 <div id="settings" class="tab-pane fade" style="overflow: hidden;">
   <!--<br />-->
