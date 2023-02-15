@@ -266,6 +266,8 @@ span.grippy::after {
             <a>{% trans "Optional Metadata" %}</a>
         {% endif %}
       </li>
+      {% block extra_metadata_steps %}
+      {% endblock %}
   </ul>
   {% block mandatory %}
     <div id="mandatory" class="tab-pane fade in active">
@@ -580,6 +582,8 @@ span.grippy::after {
         </div>
       </div></div></div>
     </div>
+    {% block extra_metadata_content %}
+    {% endblock %}
   </div>
   {% endblock ownership %}
 

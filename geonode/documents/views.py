@@ -293,7 +293,14 @@ class DocumentUpdateView(UpdateView):
 
 @login_required
 @check_keyword_write_perms
-def document_metadata(request, docid, template="documents/document_metadata.html", ajax=True):
+def document_metadata(
+    request,
+    docid,
+    template="documents/document_metadata.html",
+    panel_template="layouts/doc_panels.html",
+    custom_metadata=None,
+    ajax=True,
+):
     document = None
     try:
         document = _resolve_document(request, docid, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
@@ -503,6 +510,8 @@ def document_metadata(request, docid, template="documents/document_metadata.html
         context={
             "resource": document,
             "document": document,
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
             "document_form": document_form,
             "poc_form": poc_form,
             "author_form": author_form,
@@ -524,7 +533,7 @@ def document_metadata_advanced(request, docid):
     return document_metadata(request, docid, template="documents/document_metadata_advanced.html")
 
 
-def document_metadata_detail(request, docid, template="documents/document_metadata_detail.html"):
+def document_metadata_detail(request, docid, template="documents/document_metadata_detail.html", custom_metadata=None):
     try:
         document = _resolve_document(request, docid, "view_resourcebase", _PERMISSION_MSG_METADATA)
     except PermissionDenied:
@@ -542,7 +551,12 @@ def document_metadata_detail(request, docid, template="documents/document_metada
             group = None
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, document)
-    return render(request, template, context={"resource": document, "group": group, "SITEURL": site_url})
+
+    return render(
+        request,
+        template,
+        context={"resource": document, "group": group, "SITEURL": site_url, "custom_metadata": custom_metadata},
+    )
 
 
 @login_required

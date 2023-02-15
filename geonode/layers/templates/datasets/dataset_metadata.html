@@ -78,7 +78,7 @@
 
         {% csrf_token %}
         <div id="mdeditor_form" class="col-md-12 form-controls">
-          {% form dataset_form using "layouts/panels.html" %}
+          {% form dataset_form using panel_template %}
           {# dataset_form|as_bootstrap #}
         </div>
 
