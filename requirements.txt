@@ -169,7 +169,7 @@ selenium-requests==2.0.3
 webdriver_manager==3.8.5
 
 # Security and audit
-mistune==2.0.4
+mistune==2.0.5
 wandb==0.13.9
 protobuf==3.20.3
 mako==1.2.4
