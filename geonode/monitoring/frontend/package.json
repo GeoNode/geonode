@@ -70,7 +70,7 @@
     "react-tooltip": "3.10.0",
     "reactjs-calendar-heatmap": "0.0.10",
     "recharts": "1.8.6",
-    "redux": "4.0.4",
+    "redux": "4.2.1",
     "redux-actions": "2.6.5",
     "redux-thunk": "2.3.0",
     "rimraf": "^3.0.2",
