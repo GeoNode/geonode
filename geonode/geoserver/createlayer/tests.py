@@ -37,7 +37,8 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
     """
     Test createlayer application.
     """
-    fixtures = ['initial_data.json', 'bobby']
+
+    fixtures = ["initial_data.json", "bobby"]
 
     def setUp(self):
         super().setUp()
@@ -60,22 +61,17 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         """
         Try creating a layer.
         """
-        internal_apps_tests = os.environ.get('TEST_RUN_INTERNAL_APPS', None)
+        internal_apps_tests = os.environ.get("TEST_RUN_INTERNAL_APPS", None)
         if not internal_apps_tests:
             internal_apps_tests = settings.internal_apps_tests
         else:
-            dataset_name = 'point_dataset'
-            dataset_title = 'A layer for points'
-            print(settings.DATABASES['datastore'])
-            print('#######')
-            print(settings.OGC_SERVER['default']['DATASTORE'])
+            dataset_name = "point_dataset"
+            dataset_title = "A layer for points"
+            print(settings.DATABASES["datastore"])
+            print("#######")
+            print(settings.OGC_SERVER["default"]["DATASTORE"])
 
-            create_dataset(
-                dataset_name,
-                dataset_title,
-                'bobby',
-                'Point'
-            )
+            create_dataset(dataset_name, dataset_title, "bobby", "Point")
 
             cat = gs_catalog
 
@@ -97,7 +93,7 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
                 self.assertEqual(resource.projection, layer.srid)
 
                 # check if layer detail page is accessible with client
-                response = self.client.get(reverse('dataset_embed', args=(f'geonode:{dataset_name}',)))
+                response = self.client.get(reverse("dataset_embed", args=(f"geonode:{dataset_name}",)))
                 self.assertEqual(response.status_code, 200)
             finally:
                 cat.delete(gs_dataset)
@@ -107,18 +103,14 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
         Try creating a layer with uncorrect geometry type.
         """
         with self.assertRaises(GeoNodeException):
-            create_dataset(
-                'wrong_geom_dataset',
-                'A layer with wrong geometry',
-                'bobby',
-                'wrong_geometry')
+            create_dataset("wrong_geom_dataset", "A layer with wrong geometry", "bobby", "wrong_geometry")
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_creation_with_attributes(self):
         """
         Try creating a layer with attributes.
         """
-        internal_apps_tests = os.environ.get('TEST_RUN_INTERNAL_APPS', None)
+        internal_apps_tests = os.environ.get("TEST_RUN_INTERNAL_APPS", None)
         if not internal_apps_tests:
             internal_apps_tests = settings.internal_apps_tests
 
@@ -132,16 +124,10 @@ class CreateLayerCoreTest(GeoNodeBaseTestSupport):
             }
             """
 
-            dataset_name = 'attributes_dataset'
-            dataset_title = 'A layer with attributes'
+            dataset_name = "attributes_dataset"
+            dataset_title = "A layer with attributes"
 
-            create_dataset(
-                dataset_name,
-                dataset_title,
-                'bobby',
-                'Point',
-                attributes
-            )
+            create_dataset(dataset_name, dataset_title, "bobby", "Point", attributes)
 
             cat = gs_catalog
             gs_dataset = cat.get_layer(dataset_name)

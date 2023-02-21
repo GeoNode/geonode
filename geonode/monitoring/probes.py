@@ -26,12 +26,14 @@ import psutil
 
 
 class BaseProbe:
-
     @staticmethod
     def get_loadavg():
         try:
             return os.getloadavg()
-        except (AttributeError, OSError,):
+        except (
+            AttributeError,
+            OSError,
+        ):
             return []
 
     @staticmethod
@@ -66,21 +68,19 @@ class BaseProbe:
         def m(val):
             return val
 
-        return {'all': m(vm.total),
-                # 'usage': m(vm.used),
-                'used': m(vm.used),
-                'free': m(vm.available),
-                'usage': vm.used,
-                'usage.percent': ((vm.used * 100.0) / vm.total),
-                }
+        return {
+            "all": m(vm.total),
+            # 'usage': m(vm.used),
+            "used": m(vm.used),
+            "free": m(vm.available),
+            "usage": vm.used,
+            "usage.percent": ((vm.used * 100.0) / vm.total),
+        }
 
     @staticmethod
     def get_cpu():
         cpu = psutil.cpu_times()
-        return {
-            'usage': cpu.user + cpu.system,
-            'usage.percent': psutil.cpu_percent()
-        }
+        return {"usage": cpu.user + cpu.system, "usage.percent": psutil.cpu_percent()}
 
     @staticmethod
     def get_disk():
@@ -99,23 +99,26 @@ class BaseProbe:
         usage = psutil.disk_io_counters(True)
         for p in partitions:
             dev = p.device
-            dev_name = dev.split('/')[-1]
+            dev_name = dev.split("/")[-1]
             part = p.mountpoint
             du = psutil.disk_usage(part)
             _dusage = usage.get(dev_name)
-            dusage = {'write': 0,
-                      'read': 0}
+            dusage = {"write": 0, "read": 0}
             if _dusage:
-                dusage['write'] = _dusage.write_bytes
-                dusage['read'] = _dusage.read_bytes
+                dusage["write"] = _dusage.write_bytes
+                dusage["read"] = _dusage.read_bytes
 
-            out.append({'device': dev,
-                        'total': du.total,
-                        'used': du.used,
-                        'free': du.free,
-                        'percent': du.percent,
-                        'usage': dusage,
-                        'mountpoint': part})
+            out.append(
+                {
+                    "device": dev,
+                    "total": du.total,
+                    "used": du.used,
+                    "free": du.free,
+                    "percent": du.percent,
+                    "usage": dusage,
+                    "mountpoint": part,
+                }
+            )
         return out
 
     @staticmethod
@@ -140,10 +143,7 @@ class BaseProbe:
                 mac = ifdata[1].address
             ip = ifdata[0].address
 
-            out[ifname] = {'ip': ip,
-                           'mac': mac,
-                           'traffic': {'in': ifstats.bytes_recv,
-                                       'out': ifstats.bytes_sent}}
+            out[ifname] = {"ip": ip, "mac": mac, "traffic": {"in": ifstats.bytes_recv, "out": ifstats.bytes_sent}}
         return out
 
 

@@ -39,30 +39,30 @@ FIXTURES_DIR = "geonode/thumbs/tests/fixtures/"
 
 
 class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
-
     def test_create_getmap_request(self):
-        request = utils._build_getmap_request(layers=["geonode:Foo"], size=[512, 512], srs="epsg:4326", bbox=[-180, -90, 180, 90], bgcolor="fff")
+        request = utils._build_getmap_request(
+            layers=["geonode:Foo"], size=[512, 512], srs="epsg:4326", bbox=[-180, -90, 180, 90], bgcolor="fff"
+        )
         self.assertDictEqual(
             request,
             {
-                'service': 'WMS',
-                'version': '1.3.0',
-                'request': 'GetMap',
-                'layers': 'geonode:Foo',
-                'styles': '',
-                'width': '512',
-                'height': '512',
-                'crs': 'epsg:4326',
-                'bbox': '-90,-180,90,180',
-                'format': 'None',
-                'transparent': 'FALSE',
-                'bgcolor': '0xff',
-                'exceptions': 'None'
-            }
+                "service": "WMS",
+                "version": "1.3.0",
+                "request": "GetMap",
+                "layers": "geonode:Foo",
+                "styles": "",
+                "width": "512",
+                "height": "512",
+                "crs": "epsg:4326",
+                "bbox": "-90,-180,90,180",
+                "format": "None",
+                "transparent": "FALSE",
+                "bgcolor": "0xff",
+                "exceptions": "None",
+            },
         )
 
     def test_make_bbox_to_pixels_transf_same(self):
-
         src_bbox = [0, 0, 1, 1]
         dest_bbox = [0, 0, 1, 1]
         transf = utils.make_bbox_to_pixels_transf(src_bbox, dest_bbox)
@@ -71,7 +71,6 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
         self.assertEqual(tuple(point), transformed, "Expected linear transformation to return the same coords.")
 
     def test_make_bbox_to_pixels_transf_diff(self):
-
         multiplication_factor = 10
         src_bbox = [0, 0, 1, 1]
         dest_bbox = [0, 0, multiplication_factor * src_bbox[2], multiplication_factor * src_bbox[3]]
@@ -103,7 +102,6 @@ class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
 
 
 class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
-
     fixtures = GeoNodeBaseTestSupport.fixtures.copy() + [
         FIXTURES_DIR + filename
         for filename in [
@@ -125,10 +123,10 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             super().setUpClass()
 
     def test_generate_thumbnail_name_dataset(self):
-
         dataset_name = thumbnails._generate_thumbnail_name(Dataset.objects.first())
         self.assertIsNotNone(
-            re.match(f"dataset-{self.re_uuid}-thumb.png", dataset_name, re.I), "Dataset name should meet a provided pattern"
+            re.match(f"dataset-{self.re_uuid}-thumb.png", dataset_name, re.I),
+            "Dataset name should meet a provided pattern",
         )
 
     def test_get_unique_upload_path(self):
@@ -148,7 +146,6 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
     @patch("geonode.maps.models.Map.maplayers", new_callable=PropertyMock)
     @patch("geonode.maps.models.Map.uuid", new_callable=PropertyMock)
     def test_generate_thumbnail_name_map(self, uuid_mock, layers_mock):
-
         layers_mock.return_value = [MapLayer()]
         uuid_mock.return_value = str(uuid.uuid4())
 
@@ -163,24 +160,24 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             resource_type=Document,
             defaults=dict(
                 doc_url="http://geonode.org/map.pdf",
-                owner=get_user_model().objects.get(username='admin'),
+                owner=get_user_model().objects.get(username="admin"),
                 title="Test doc",
-            ))
+            ),
+        )
         name = thumbnails._generate_thumbnail_name(doc)
         self.assertIsNotNone(
             re.match(f"document-{self.re_uuid}-thumb.png", name, re.I), "Document name should meet a provided pattern"
         )
 
     def test_generate_thumbnail_name_geoapp(self):
-
         geo_app = resource_manager.create(
             None,
             resource_type=GeoApp,
             defaults=dict(
                 title="Test GeoApp",
-                owner=get_user_model().objects.get(username='admin'),
-                blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}'
-            )
+                owner=get_user_model().objects.get(username="admin"),
+                blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}',
+            ),
         )
         name = thumbnails._generate_thumbnail_name(geo_app)
         self.assertIsNotNone(
@@ -211,7 +208,9 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._datasets_locations(dataset, compute_bbox=True, target_crs="EPSG:4326")
 
         self.assertEqual(bbox[0:4], dataset.bbox[0:4], "Expected calculated BBOX to match dataset's")
-        self.assertEqual(bbox[-1].lower(), dataset.bbox[-1].lower(), "Expected calculated BBOX's CRS to match dataset's")
+        self.assertEqual(
+            bbox[-1].lower(), dataset.bbox[-1].lower(), "Expected calculated BBOX's CRS to match dataset's"
+        )
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
 
     def test_datasets_locations_simple_map(self):
@@ -226,7 +225,16 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         locations, bbox = thumbnails._datasets_locations(map)
 
         self.assertFalse(bbox, "Expected BBOX not to be calculated")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], ["geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1", dataset.alternate], ["test_style", "theaters_nyc"]]])
+        self.assertEqual(
+            locations,
+            [
+                [
+                    settings.OGC_SERVER["default"]["LOCATION"],
+                    ["geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1", dataset.alternate],
+                    ["test_style", "theaters_nyc"],
+                ]
+            ],
+        )
 
     def test_datasets_locations_simple_map_default_bbox(self):
         expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.093033709, 4984363.884452854, "EPSG:3857"]
@@ -238,18 +246,20 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(bbox[-1].upper(), "EPSG:3857", "Expected calculated BBOX CRS to be EPSG:3857")
         self.assertEqual(bbox, expected_bbox, "Expected calculated BBOX to match pre-converted one.")
-        self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"]]])
+        self.assertEqual(
+            locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], ["theaters_nyc"]]]
+        )
 
     def test_datasets_locations_composition_map_default_bbox(self):
         expected_locations = [
             [
                 settings.GEOSERVER_LOCATION,
                 [
-                    'rt_geologia.dbg_risorse_minerarie',
-                    'geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1',
-                    'geonode:theaters_nyc',
+                    "rt_geologia.dbg_risorse_minerarie",
+                    "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1",
+                    "geonode:theaters_nyc",
                 ],
-                []
+                [],
             ]
         ]
 

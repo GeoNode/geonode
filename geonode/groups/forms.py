@@ -30,24 +30,20 @@ from geonode.people.utils import get_available_users
 
 
 class GroupForm(TranslationModelForm):
-
     slug = forms.SlugField(
         help_text=_("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         widget=forms.HiddenInput,
-        required=False)
+        required=False,
+    )
 
     def clean_slug(self):
-        if GroupProfile.objects.filter(
-                slug__iexact=self.cleaned_data["slug"]).exists():
-            raise forms.ValidationError(
-                _("A group already exists with that slug."))
+        if GroupProfile.objects.filter(slug__iexact=self.cleaned_data["slug"]).exists():
+            raise forms.ValidationError(_("A group already exists with that slug."))
         return self.cleaned_data["slug"].lower()
 
     def clean_title(self):
-        if GroupProfile.objects.filter(
-                title__iexact=self.cleaned_data["title"]).exists():
-            raise forms.ValidationError(
-                _("A group already exists with that name."))
+        if GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).exists():
+            raise forms.ValidationError(_("A group already exists with that name."))
         return self.cleaned_data["title"]
 
     def clean(self):
@@ -55,42 +51,36 @@ class GroupForm(TranslationModelForm):
 
         name = cleaned_data.get("title")
         if not name or GroupProfile.objects.filter(title__iexact=self.cleaned_data["title"]).exists():
-            raise forms.ValidationError(
-                _("A group already exists with that name."))
+            raise forms.ValidationError(_("A group already exists with that name."))
         slug = slugify(name)
         if not slug or GroupProfile.objects.filter(slug__iexact=self.cleaned_data["slug"]).exists():
-            raise forms.ValidationError(
-                _("A group already exists with that slug."))
+            raise forms.ValidationError(_("A group already exists with that slug."))
         cleaned_data["slug"] = slug
 
         return cleaned_data
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ["group"]
 
 
 class GroupUpdateForm(forms.ModelForm):
-
     def clean_name(self):
-        if GroupProfile.objects.filter(
-                name__iexact=self.cleaned_data["title"]).exists():
+        if GroupProfile.objects.filter(name__iexact=self.cleaned_data["title"]).exists():
             if self.cleaned_data["title"] == self.instance.name:
                 pass  # same instance
             else:
-                raise forms.ValidationError(
-                    _("A group already exists with that name."))
+                raise forms.ValidationError(_("A group already exists with that name."))
         return self.cleaned_data["title"]
 
     class Meta:
         model = GroupProfile
-        exclude = ['group']
+        exclude = ["group"]
 
 
 class GroupMemberForm(forms.Form):
-
     def __init__(self, *args, **kwargs):
-        """ Grants access to the request object so that only members of the current user
+        """Grants access to the request object so that only members of the current user
         are given as options"""
         _user = None
         if isinstance(args[0], get_user_model()):
@@ -98,36 +88,27 @@ class GroupMemberForm(forms.Form):
             args = args[1:]
         super(forms.Form, self).__init__(*args, **kwargs)
         if _user:
-            self.fields['user_identifiers'].queryset = get_available_users(_user).order_by('username')
+            self.fields["user_identifiers"].queryset = get_available_users(_user).order_by("username")
         else:
-            self.fields['user_identifiers'].queryset = None
+            self.fields["user_identifiers"].queryset = None
 
     user_identifiers = forms.ModelMultipleChoiceField(
-        required=True,
-        queryset=None,
-        label=_("User Identifiers"),
-        widget=Select2MultipleWidget
+        required=True, queryset=None, label=_("User Identifiers"), widget=Select2MultipleWidget
     )
 
-    manager_role = forms.BooleanField(
-        required=False,
-        label=_("Assign manager role")
-    )
+    manager_role = forms.BooleanField(required=False, label=_("Assign manager role"))
 
     def clean_user_identifiers(self):
         new_members = []
         errors = []
-        for user in self.cleaned_data['user_identifiers']:
+        for user in self.cleaned_data["user_identifiers"]:
             try:
                 new_members.append(user)
             except get_user_model().DoesNotExist:
                 errors.append(user)
         if errors:
             raise forms.ValidationError(
-                _("The following are not valid usernames: %(errors)s; "
-                  "not added to the group"),
-                params={
-                    "errors": ", ".join(errors)
-                }
+                _("The following are not valid usernames: %(errors)s; " "not added to the group"),
+                params={"errors": ", ".join(errors)},
             )
         return new_members

@@ -36,4 +36,4 @@ def custom_theme(request):
             slides = theme.jumbotron_slide_show.filter(is_enabled=True)
         except Exception:
             slides = []
-    return {'custom_theme': theme, 'slides': slides}
+    return {"custom_theme": theme, "slides": slides}

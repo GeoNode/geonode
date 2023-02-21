@@ -44,6 +44,7 @@ from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 from geonode.layers.api.exceptions import InvalidDatasetException
 from geonode.security.permissions import PermSpec, PermSpecCompact
 from geonode.storage.manager import storage_manager
+
 # Geonode functionality
 from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
@@ -51,33 +52,22 @@ from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
 
-READ_PERMISSIONS = [
-    'view_resourcebase'
-]
-WRITE_PERMISSIONS = [
-    'change_dataset_data',
-    'change_dataset_style',
-    'change_resourcebase_metadata'
-]
-DOWNLOAD_PERMISSIONS = [
-    'download_resourcebase'
-]
+READ_PERMISSIONS = ["view_resourcebase"]
+WRITE_PERMISSIONS = ["change_dataset_data", "change_dataset_style", "change_resourcebase_metadata"]
+DOWNLOAD_PERMISSIONS = ["download_resourcebase"]
 OWNER_PERMISSIONS = [
-    'change_resourcebase',
-    'delete_resourcebase',
-    'change_resourcebase_permissions',
-    'publish_resourcebase'
+    "change_resourcebase",
+    "delete_resourcebase",
+    "change_resourcebase_permissions",
+    "publish_resourcebase",
 ]
 
-logger = logging.getLogger('geonode.layers.utils')
+logger = logging.getLogger("geonode.layers.utils")
 
 _separator = f"\n{'-' * 100}\n"
 
 
-def _clean_string(
-        str,
-        regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)",
-        replace="_"):
+def _clean_string(str, regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)", replace="_"):
     """
     Replaces a string that matches the regex with the replacement.
     """
@@ -98,8 +88,7 @@ def resolve_regions(regions):
                 if region.isnumeric():
                     region_resolved = Region.objects.get(id=int(region))
                 else:
-                    region_resolved = Region.objects.get(
-                        Q(name__iexact=region) | Q(code__iexact=region))
+                    region_resolved = Region.objects.get(Q(name__iexact=region) | Q(code__iexact=region))
                 regions_resolved.append(region_resolved)
             except ObjectDoesNotExist:
                 regions_unresolved.append(region)
@@ -109,33 +98,35 @@ def resolve_regions(regions):
 
 def get_files(filename):
     """Converts the data to Shapefiles or Geotiffs and returns
-       a dictionary with all the required files
+    a dictionary with all the required files
     """
     files = {}
 
     # Verify if the filename is in ascii format.
     try:
-        filename.encode('ascii')
+        filename.encode("ascii")
     except UnicodeEncodeError:
         msg = f"Please use only characters from the english alphabet for the filename. '{os.path.basename(filename).encode('UTF-8', 'strict')}' is not yet supported."
         raise GeoNodeException(msg)
 
     # Let's unzip the filname in case it is a ZIP file
     from geonode.utils import unzip_file, mkdtemp
+
     tempdir = None
     if is_zipfile(filename):
         tempdir = mkdtemp()
-        _filename = unzip_file(filename,
-                               '.shp', tempdir=tempdir)
+        _filename = unzip_file(filename, ".shp", tempdir=tempdir)
         if not _filename:
             # We need to iterate files as filename could be the zipfile
             import ntpath
             from geonode.upload.utils import _SUPPORTED_EXT
+
             file_basename, file_ext = ntpath.splitext(filename)
             for item in os.listdir(tempdir):
                 item_basename, item_ext = ntpath.splitext(item)
                 if ntpath.basename(item_basename) == ntpath.basename(file_basename) and (
-                        item_ext.lower() in _SUPPORTED_EXT):
+                    item_ext.lower() in _SUPPORTED_EXT
+                ):
                     filename = os.path.join(tempdir, item)
                     break
         else:
@@ -143,54 +134,59 @@ def get_files(filename):
 
     # Make sure the file exists.
     if not os.path.exists(filename):
-        msg = f'Could not open {filename}. Make sure you are using a valid file'
+        msg = f"Could not open {filename}. Make sure you are using a valid file"
         logger.debug(msg)
         raise GeoNodeException(msg)
 
     base_name, extension = os.path.splitext(filename)
     # Replace special characters in filenames - []{}()
-    glob_name = re.sub(r'([\[\]\(\)\{\}])', r'[\g<1>]', base_name)
+    glob_name = re.sub(r"([\[\]\(\)\{\}])", r"[\g<1>]", base_name)
 
-    if extension.lower() == '.shp':
-        required_extensions = dict(
-            shp='.[sS][hH][pP]', dbf='.[dD][bB][fF]', shx='.[sS][hH][xX]')
+    if extension.lower() == ".shp":
+        required_extensions = dict(shp=".[sS][hH][pP]", dbf=".[dD][bB][fF]", shx=".[sS][hH][xX]")
         for ext, pattern in required_extensions.items():
             matches = glob.glob(glob_name + pattern)
             if len(matches) == 0:
-                msg = (f'Expected helper file {base_name}.{ext} does not exist; a Shapefile '
-                       'requires helper files with the following extensions: '
-                       f'{list(required_extensions.keys())}')
+                msg = (
+                    f"Expected helper file {base_name}.{ext} does not exist; a Shapefile "
+                    "requires helper files with the following extensions: "
+                    f"{list(required_extensions.keys())}"
+                )
                 raise GeoNodeException(msg)
             elif len(matches) > 1:
-                msg = ('Multiple helper files for %s exist; they need to be '
-                       'distinct by spelling and not just case.') % filename
+                msg = (
+                    "Multiple helper files for %s exist; they need to be " "distinct by spelling and not just case."
+                ) % filename
                 raise GeoNodeException(msg)
             else:
                 files[ext] = matches[0]
 
         matches = glob.glob(f"{glob_name}.[pP][rR][jJ]")
         if len(matches) == 1:
-            files['prj'] = matches[0]
+            files["prj"] = matches[0]
         elif len(matches) > 1:
-            msg = ('Multiple helper files for %s exist; they need to be '
-                   'distinct by spelling and not just case.') % filename
+            msg = (
+                "Multiple helper files for %s exist; they need to be " "distinct by spelling and not just case."
+            ) % filename
             raise GeoNodeException(msg)
 
     elif extension.lower() in cov_exts:
-        files[extension.lower().replace('.', '')] = filename
+        files[extension.lower().replace(".", "")] = filename
 
     # Only for GeoServer
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
         matches = glob.glob(f"{os.path.dirname(glob_name)}.[sS][lL][dD]")
         if len(matches) == 1:
-            files['sld'] = matches[0]
+            files["sld"] = matches[0]
         else:
             matches = glob.glob(f"{glob_name}.[sS][lL][dD]")
             if len(matches) == 1:
-                files['sld'] = matches[0]
+                files["sld"] = matches[0]
             elif len(matches) > 1:
-                msg = ('Multiple style files (sld) for %s exist; they need to be '
-                       'distinct by spelling and not just case.') % filename
+                msg = (
+                    "Multiple style files (sld) for %s exist; they need to be "
+                    "distinct by spelling and not just case."
+                ) % filename
                 raise GeoNodeException(msg)
 
     matches = glob.glob(f"{glob_name}.[xX][mM][lL]")
@@ -201,10 +197,9 @@ def get_files(filename):
         matches = glob.glob(f"{filename}.[xX][mM][lL]")
 
     if len(matches) == 1:
-        files['xml'] = matches[0]
+        files["xml"] = matches[0]
     elif len(matches) > 1:
-        msg = ('Multiple XML files for %s exist; they need to be '
-               'distinct by spelling and not just case.') % filename
+        msg = ("Multiple XML files for %s exist; they need to be " "distinct by spelling and not just case.") % filename
         raise GeoNodeException(msg)
 
     return files, tempdir
@@ -212,12 +207,12 @@ def get_files(filename):
 
 def dataset_type(filename):
     """Finds out if a filename is a Feature or a Vector
-       returns a gsconfig resource_type string
-       that can be either 'featureType' or 'coverage'
+    returns a gsconfig resource_type string
+    that can be either 'featureType' or 'coverage'
     """
     base_name, extension = os.path.splitext(filename)
 
-    if extension.lower() == '.zip':
+    if extension.lower() == ".zip":
         zf = ZipFile(filename, allowZip64=True)
         # ZipFile doesn't support with statement in 2.6, so don't do it
         with zf:
@@ -226,7 +221,7 @@ def dataset_type(filename):
                 if e in shp_exts or e in cov_exts or e in csv_exts:
                     extension = e
 
-    if extension.lower() == '.tar' or filename.endswith('.tar.gz'):
+    if extension.lower() == ".tar" or filename.endswith(".tar.gz"):
         tf = tarfile.open(filename)
         # TarFile doesn't support with statement in 2.6, so don't do it
         with tf:
@@ -236,11 +231,11 @@ def dataset_type(filename):
                     extension = e
 
     if extension.lower() in vec_exts:
-        return 'vector'
+        return "vector"
     elif extension.lower() in cov_exts:
-        return 'raster'
+        return "raster"
     else:
-        msg = f'Saving of extension [{extension}] is not implemented'
+        msg = f"Saving of extension [{extension}] is not implemented"
         raise GeoNodeException(msg)
 
 
@@ -253,23 +248,21 @@ def get_valid_name(dataset_name):
     while Dataset.objects.filter(name=proposed_name).exists():
         possible_chars = string.ascii_lowercase + string.digits
         suffix = "".join([choice(possible_chars) for i in range(4)])
-        proposed_name = f'{name}_{suffix}'
-        logger.debug('Requested name already used; adjusting name '
-                     f'[{dataset_name}] => [{proposed_name}]')
+        proposed_name = f"{name}_{suffix}"
+        logger.debug("Requested name already used; adjusting name " f"[{dataset_name}] => [{proposed_name}]")
 
     return proposed_name
 
 
 def get_valid_dataset_name(layer, overwrite):
-    """Checks if the layer is a string and fetches it from the database.
-    """
+    """Checks if the layer is a string and fetches it from the database."""
     # The first thing we do is get the layer name string
     if isinstance(layer, Dataset):
         dataset_name = layer.name
     elif isinstance(layer, str):
         dataset_name = str(layer)
     else:
-        msg = ('You must pass either a filename or a GeoNode dataset object')
+        msg = "You must pass either a filename or a GeoNode dataset object"
         raise GeoNodeException(msg)
 
     if overwrite:
@@ -279,17 +272,17 @@ def get_valid_dataset_name(layer, overwrite):
 
 
 def get_default_user():
-    """Create a default user
-    """
-    superusers = get_user_model().objects.filter(
-        is_superuser=True).order_by('id')
+    """Create a default user"""
+    superusers = get_user_model().objects.filter(is_superuser=True).order_by("id")
     if superusers.exists():
         # Return the first created superuser
         return superusers[0]
     else:
-        raise GeoNodeException('You must have an admin account configured '
-                               'before importing data. '
-                               'Try: django-admin.py createsuperuser')
+        raise GeoNodeException(
+            "You must have an admin account configured "
+            "before importing data. "
+            "Try: django-admin.py createsuperuser"
+        )
 
 
 def is_vector(filename):
@@ -315,7 +308,7 @@ def get_resolution(filename):
         gtif = gdal.Open(filename)
         gt = gtif.GetGeoTransform()
         __, resx, __, __, __, resy = gt
-        resolution = f'{resx} {resy}'
+        resolution = f"{resx} {resy}"
         return resolution
     except Exception:
         return None
@@ -324,6 +317,7 @@ def get_resolution(filename):
 def get_bbox(filename):
     """Return bbox in the format [xmin,xmax,ymin,ymax]."""
     from django.contrib.gis.gdal import DataSource, SRSException
+
     srid = 4326
     bbox_x0, bbox_y0, bbox_x1, bbox_y1 = -180, -90, 180, 90
 
@@ -339,26 +333,26 @@ def get_bbox(filename):
             srs = layer.srs
             try:
                 if not srs:
-                    raise GeoNodeException('Invalid Projection. Dataset is missing CRS!')
+                    raise GeoNodeException("Invalid Projection. Dataset is missing CRS!")
                 srs.identify_epsg()
             except SRSException:
                 pass
             epsg_code = srs.srid
             # can't find epsg code, then check if bbox is within the 4326 boundary
-            if epsg_code is None and (x_min <= bbox_x0 <= x_max and
-                                      x_min <= bbox_x1 <= x_max and
-                                      y_min <= bbox_y0 <= y_max and
-                                      y_min <= bbox_y1 <= y_max):
+            if epsg_code is None and (
+                x_min <= bbox_x0 <= x_max
+                and x_min <= bbox_x1 <= x_max
+                and y_min <= bbox_y0 <= y_max
+                and y_min <= bbox_y1 <= y_max
+            ):
                 # set default epsg code
-                epsg_code = '4326'
+                epsg_code = "4326"
             elif epsg_code is None:
                 # otherwise, stop the upload process
-                raise GeoNodeException(
-                    "Invalid    Datasets. "
-                    "Needs an authoritative SRID in its CRS to be accepted")
+                raise GeoNodeException("Invalid    Datasets. " "Needs an authoritative SRID in its CRS to be accepted")
 
             # eliminate default EPSG srid as it will be added when this function returned
-            srid = epsg_code if epsg_code else '4326'
+            srid = epsg_code if epsg_code else "4326"
         elif is_raster(filename):
             gtif = gdal.Open(filename)
             gt = gtif.GetGeoTransform()
@@ -386,7 +380,7 @@ def get_bbox(filename):
             bbox_y0 = min(ext[0][1], ext[2][1])
             bbox_x1 = max(ext[0][0], ext[2][0])
             bbox_y1 = max(ext[0][1], ext[2][1])
-            srid = srs.GetAuthorityCode(None) if srs else '4326'
+            srid = srs.GetAuthorityCode(None) if srs else "4326"
     except Exception:
         pass
 
@@ -405,8 +399,7 @@ def delete_orphaned_datasets():
                 storage_manager.delete(os.path.join("layers", filename))
                 deleted.append(filename)
             except NotImplementedError as e:
-                logger.error(
-                    f"Failed to delete orphaned dataset file '{filename}': {e}")
+                logger.error(f"Failed to delete orphaned dataset file '{filename}': {e}")
 
     return deleted
 
@@ -420,9 +413,12 @@ def surrogate_escape_string(input_string, source_character_set):
     return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
-def set_datasets_permissions(permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False):
+def set_datasets_permissions(
+    permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False
+):
     # here to avoid circular import
     from geonode.resource.manager import resource_manager
+
     # Processing information
     resources_as_pk = []
     for el in resources_names or []:
@@ -494,9 +490,11 @@ def set_datasets_permissions(permissions_name, resources_names=None, users_usern
                 final_perms_payload["groups"] = {
                     _group: _perms
                     for _group, _perms in perms_spec_compact_resource.extended["groups"].items()
-                    if _user not in copy_compact_perms.extended["groups"]
+                    if _group not in copy_compact_perms.extended["groups"]
                 }
-                if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get("anonymous"):
+                if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get(
+                    "anonymous"
+                ):
                     final_perms_payload["groups"].pop("anonymous")
 
             # calling the resource manager to set the permissions
@@ -505,46 +503,46 @@ def set_datasets_permissions(permissions_name, resources_names=None, users_usern
 
 def get_uuid_handler():
     from django.utils.module_loading import import_string
+
     return import_string(settings.LAYER_UUID_HANDLER)
 
 
-def validate_input_source(layer, filename, files, gtype=None, action_type='replace', storage_manager=storage_manager):
+def validate_input_source(layer, filename, files, gtype=None, action_type="replace", storage_manager=storage_manager):
     if layer.is_vector() and is_raster(filename):
-        raise InvalidDatasetException(_(
-            f"You are attempting to {action_type} a vector dataset with a raster."))
+        raise InvalidDatasetException(_(f"You are attempting to {action_type} a vector dataset with a raster."))
     elif (not layer.is_vector()) and is_vector(filename):
-        raise InvalidDatasetException(_(
-            f"You are attempting to {action_type} a raster dataset with a vector."))
+        raise InvalidDatasetException(_(f"You are attempting to {action_type} a raster dataset with a vector."))
 
     if layer.is_vector():
         absolute_base_file = None
         try:
-            absolute_base_file = storage_manager.path(files['shp'])
+            absolute_base_file = storage_manager.path(files["shp"])
         except SuspiciousFileOperation:
-            absolute_base_file = files['shp']
+            absolute_base_file = files["shp"]
         except InvalidDatasetException:
             absolute_base_file = None
 
-        if not absolute_base_file or \
-                os.path.splitext(absolute_base_file)[1].lower() != '.shp':
+        if not absolute_base_file or os.path.splitext(absolute_base_file)[1].lower() != ".shp":
             raise InvalidDatasetException(
-                _(f"You are attempting to {action_type} a vector dataset with an unknown format."))
+                _(f"You are attempting to {action_type} a vector dataset with an unknown format.")
+            )
         else:
             try:
                 gtype = layer.gtype if not gtype else gtype
                 inDataSource = ogr.Open(absolute_base_file)
                 if inDataSource is None:
                     raise InvalidDatasetException(
-                        _(f"Please ensure that the base_file {absolute_base_file} is not empty"))
+                        _(f"Please ensure that the base_file {absolute_base_file} is not empty")
+                    )
                 lyr = inDataSource.GetLayer(str(layer.name))
                 if not lyr:
                     raise InvalidDatasetException(
-                        _(f"Please ensure the name is consistent with the file you are trying to {action_type}."))
+                        _(f"Please ensure the name is consistent with the file you are trying to {action_type}.")
+                    )
                 schema_is_compliant = False
                 _ff = json.loads(lyr.GetFeature(0).ExportToJson())
                 if gtype:
-                    logger.warning(
-                        _("Local GeoNode dataset has no geometry type."))
+                    logger.warning(_("Local GeoNode dataset has no geometry type."))
                     if _ff["geometry"]["type"] in gtype or gtype in _ff["geometry"]["type"]:
                         schema_is_compliant = True
                 elif "geometry" in _ff and _ff["geometry"]["type"]:
@@ -552,36 +550,42 @@ def validate_input_source(layer, filename, files, gtype=None, action_type='repla
 
                 if not schema_is_compliant:
                     raise InvalidDatasetException(
-                        _(f"Please ensure there is at least one geometry type \
-                            that is consistent with the file you are trying to {action_type}."))
+                        _(
+                            f"Please ensure there is at least one geometry type \
+                            that is consistent with the file you are trying to {action_type}."
+                        )
+                    )
 
                 new_schema_fields = [field.name for field in lyr.schema]
                 gs_dataset = gs_catalog.get_layer(layer.name)
 
                 if not gs_dataset:
-                    raise InvalidDatasetException(
-                        _("The selected Dataset does not exists in the catalog."))
+                    raise InvalidDatasetException(_("The selected Dataset does not exists in the catalog."))
 
                 gs_dataset = gs_dataset.resource.attributes
-                schema_is_compliant = all([x.replace("-", '_') in gs_dataset for x in new_schema_fields])
+                schema_is_compliant = all([x.replace("-", "_") in gs_dataset for x in new_schema_fields])
 
                 if not schema_is_compliant:
                     raise InvalidDatasetException(
-                        _("Please ensure that the dataset structure is consistent "
-                          f"with the file you are trying to {action_type}."))
+                        _(
+                            "Please ensure that the dataset structure is consistent "
+                            f"with the file you are trying to {action_type}."
+                        )
+                    )
                 return True
             except Exception as e:
                 raise InvalidDatasetException(
-                    _(f"Some error occurred while trying to access the uploaded schema: {str(e)}"))
+                    _(f"Some error occurred while trying to access the uploaded schema: {str(e)}")
+                )
 
 
 def is_xml_upload_only(request):
     # will check if only the XML file is provided
-    return mdata_search_by_type(request, 'xml')
+    return mdata_search_by_type(request, "xml")
 
 
 def is_sld_upload_only(request):
-    return mdata_search_by_type(request, 'sld')
+    return mdata_search_by_type(request, "sld")
 
 
 def mdata_search_by_type(request, filetype):

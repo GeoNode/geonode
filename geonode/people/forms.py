@@ -27,20 +27,18 @@ from django.utils.translation import ugettext as _
 from captcha.fields import ReCaptchaField
 
 # Ported in from django-registration
-attrs_dict = {'class': 'required'}
+attrs_dict = {"class": "required"}
 
 
 class AllauthReCaptchaSignupForm(forms.Form):
-
     captcha = ReCaptchaField()
 
     def signup(self, request, user):
-        """ Required, or else it thorws deprecation warnings """
+        """Required, or else it thorws deprecation warnings"""
         pass
 
 
 class ProfileCreationForm(UserCreationForm):
-
     class Meta:
         model = get_user_model()
         fields = ("username",)
@@ -54,41 +52,37 @@ class ProfileCreationForm(UserCreationForm):
         except get_user_model().DoesNotExist:
             return username
         raise forms.ValidationError(
-            self.error_messages['duplicate_username'],
-            code='duplicate_username',
+            self.error_messages["duplicate_username"],
+            code="duplicate_username",
         )
 
 
 class ProfileChangeForm(UserChangeForm):
-
     class Meta:
         model = get_user_model()
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ForgotUsernameForm(forms.Form):
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
-                                                               maxlength=75)),
-                             label=_('Email Address'))
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict, maxlength=75)), label=_("Email Address"))
 
 
 class ProfileForm(forms.ModelForm):
     keywords = taggit.forms.TagField(
-        label=_("Keywords"),
-        required=False,
-        help_text=_("A space or comma-separated list of keywords"))
+        label=_("Keywords"), required=False, help_text=_("A space or comma-separated list of keywords")
+    )
 
     class Meta:
         model = get_user_model()
         exclude = (
-            'user',
-            'password',
-            'last_login',
-            'groups',
-            'user_permissions',
-            'username',
-            'is_staff',
-            'is_superuser',
-            'is_active',
-            'date_joined'
+            "user",
+            "password",
+            "last_login",
+            "groups",
+            "user_permissions",
+            "username",
+            "is_staff",
+            "is_superuser",
+            "is_active",
+            "date_joined",
         )

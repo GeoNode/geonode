@@ -24,7 +24,6 @@ from geonode.tests.base import GeoNodeBaseSimpleTestSupport
 
 
 class ConfigTestCase(GeoNodeBaseSimpleTestSupport):
-
     @override_settings(HARVESTER_CLASSES=[])
     def test_default_config_harvester_classes(self):
         self.assertEqual(config.get_setting("HARVESTER_CLASSES"), config._DEFAULT_HARVESTERS)
@@ -35,8 +34,7 @@ class ConfigTestCase(GeoNodeBaseSimpleTestSupport):
             "fake_harvester2",
         ]
         with self.settings(HARVESTER_CLASSES=phony_class_paths):
-            self.assertEqual(
-                config.get_setting("HARVESTER_CLASSES"), config._DEFAULT_HARVESTERS + phony_class_paths)
+            self.assertEqual(config.get_setting("HARVESTER_CLASSES"), config._DEFAULT_HARVESTERS + phony_class_paths)
 
     def test_harvester_classes_dont_repeat(self):
         phony_class_paths = [
@@ -47,5 +45,4 @@ class ConfigTestCase(GeoNodeBaseSimpleTestSupport):
             "fake_harvester1",
         ]
         with self.settings(HARVESTER_CLASSES=phony_class_paths + repeated_paths):
-            self.assertEqual(
-                config.get_setting("HARVESTER_CLASSES"), config._DEFAULT_HARVESTERS + phony_class_paths)
+            self.assertEqual(config.get_setting("HARVESTER_CLASSES"), config._DEFAULT_HARVESTERS + phony_class_paths)

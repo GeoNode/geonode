@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 def flip_coordinates(c1, c2):
     if c1 > c2:
-        logger.debug(f'Flipping coordinates {c1}, {c2}')
+        logger.debug(f"Flipping coordinates {c1}, {c2}")
         temp = c1
         c1 = c2
         c2 = temp
@@ -55,7 +55,7 @@ def bbox2wktpolygon(bbox):
     miny = float(bbox[1])
     maxx = float(bbox[2])
     maxy = float(bbox[3])
-    return f'POLYGON(({minx:.2f} {miny:.2f}, {minx:.2f} {maxy:.2f}, {maxx:.2f} {maxy:.2f}, {maxx:.2f} {miny:.2f}, {minx:.2f} {miny:.2f}))'
+    return f"POLYGON(({minx:.2f} {miny:.2f}, {minx:.2f} {maxy:.2f}, {maxx:.2f} {maxy:.2f}, {maxx:.2f} {miny:.2f}, {minx:.2f} {miny:.2f}))"
 
 
 def inverse_mercator(xy):
@@ -80,7 +80,7 @@ def get_esri_service_name(url):
     For example: http://example.com/arcgis/rest/services/myservice/mylayer/MapServer/?f=json
     Will return: myservice/mylayer
     """
-    result = re.search('rest/services/(.*)/(?:MapServer|ImageServer)', url)
+    result = re.search("rest/services/(.*)/(?:MapServer|ImageServer)", url)
     if result is None:
         return url
     else:
@@ -96,19 +96,19 @@ def get_esri_extent(esriobj):
     srs = None
 
     try:
-        if 'fullExtent' in esriobj._json_struct:
-            extent = esriobj._json_struct['fullExtent']
+        if "fullExtent" in esriobj._json_struct:
+            extent = esriobj._json_struct["fullExtent"]
     except Exception as err:
         logger.debug(err, exc_info=True)
 
     try:
-        if 'extent' in esriobj._json_struct:
-            extent = esriobj._json_struct['extent']
+        if "extent" in esriobj._json_struct:
+            extent = esriobj._json_struct["extent"]
     except Exception as err:
         logger.debug(err, exc_info=True)
 
     try:
-        srs = extent['spatialReference']['wkid']
+        srs = extent["spatialReference"]["wkid"]
     except Exception as err:
         logger.debug(err, exc_info=True)
 
@@ -122,24 +122,24 @@ def decimal_encode(bbox):
         try:
             o = float(o)
         except Exception:
-            o = None if 'EPSG' not in o else o
+            o = None if "EPSG" not in o else o
         if o and isinstance(o, float):
             _bbox.append(f"{round(o, 2):.15f}")
-        elif o and 'EPSG' in o:
+        elif o and "EPSG" in o:
             _srid = o
     _bbox = _bbox if not _srid else _bbox + [_srid]
     return _bbox
 
 
 def test_resource_table_status(test_cls, table, is_row_filtered):
-    tbody = table.find_elements_by_tag_name('tbody')
-    rows = tbody[0].find_elements_by_tag_name('tr')
+    tbody = table.find_elements_by_tag_name("tbody")
+    rows = tbody[0].find_elements_by_tag_name("tr")
     visible_rows_count = 0
     filter_row_count = 0
     hidden_row_count = 0
     for row in rows:
-        attr_name = row.get_attribute('name')
-        val = row.value_of_css_property('display')
+        attr_name = row.get_attribute("name")
+        val = row.value_of_css_property("display")
 
         if attr_name == "filter_row":
             filter_row_count = filter_row_count + 1
@@ -147,9 +147,11 @@ def test_resource_table_status(test_cls, table, is_row_filtered):
             hidden_row_count = hidden_row_count + 1
         else:
             visible_rows_count = visible_rows_count + 1
-    result = {"filter_row_count": filter_row_count,
-              "visible_rows_count": visible_rows_count,
-              "hidden_row_count": hidden_row_count}
+    result = {
+        "filter_row_count": filter_row_count,
+        "visible_rows_count": visible_rows_count,
+        "hidden_row_count": hidden_row_count,
+    }
 
     if is_row_filtered:
         test_cls.assertTrue(result["filter_row_count"] > 0)
@@ -163,16 +165,12 @@ def test_resource_table_status(test_cls, table, is_row_filtered):
 
 def parse_services_types():
     from django.utils.module_loading import import_string
+
     services_type_modules = (
-        django_settings.SERVICES_TYPE_MODULES
-        if hasattr(django_settings, "SERVICES_TYPE_MODULES")
-        else []
+        django_settings.SERVICES_TYPE_MODULES if hasattr(django_settings, "SERVICES_TYPE_MODULES") else []
     )
     custom_services_types = {}
     for services_type_path in services_type_modules:
         custom_services_type_module = import_string(services_type_path)
-        custom_services_types = {
-            **custom_services_types,
-            **custom_services_type_module.services_type
-        }
+        custom_services_types = {**custom_services_types, **custom_services_type_module.services_type}
     return custom_services_types

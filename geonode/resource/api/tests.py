@@ -24,52 +24,32 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 
 class ExecutionRequestApi(GeoNodeBaseTestSupport):
     #  loading test thesausuri and initial data
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json',
-        "test_thesaurus.json"
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json", "test_thesaurus.json"]
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.superuser, _ = get_user_model().objects.get_or_create(
-            username='superuser',
-            password="secret",
-            is_active=True,
-            is_superuser=True
+            username="superuser", password="secret", is_active=True, is_superuser=True
         )
         cls.emmett_brown, _ = get_user_model().objects.get_or_create(
-            username='emmett_brown',
+            username="emmett_brown",
             password="secret",
             is_active=True,
         )
 
         cls.superuser_request_delete = ExecutionRequest.objects.create(
-            user=cls.superuser,
-            func_name='foo',
-            action="delete",
-            input_params={},
-            name="ReadableName"
+            user=cls.superuser, func_name="foo", action="delete", input_params={}, name="ReadableName"
         )
 
         cls.superuser_request_copy = ExecutionRequest.objects.create(
-            user=cls.superuser,
-            func_name='foo',
-            action="copy",
-            input_params={},
-            name="ReadableName"
+            user=cls.superuser, func_name="foo", action="copy", input_params={}, name="ReadableName"
         )
 
         cls.emmett_brown_request = ExecutionRequest.objects.create(
-            user=cls.emmett_brown,
-            func_name='bar',
-            action="copy",
-            input_params={},
-            name="ReadableName"
+            user=cls.emmett_brown, func_name="bar", action="copy", input_params={}, name="ReadableName"
         )
-        cls.url = reverse('executionrequest-list')
+        cls.url = reverse("executionrequest-list")
         cls.filtered_url = f"{reverse('executionrequest-list')}?filter{{action}}=delete"
 
     @classmethod
@@ -127,11 +107,7 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
 
     def test_endpoint_should_delete_the_instance(self):
         _available = ExecutionRequest.objects.create(
-            user=self.superuser,
-            func_name='foo',
-            action="copy",
-            input_params={},
-            name="ReadableName"
+            user=self.superuser, func_name="foo", action="copy", input_params={}, name="ReadableName"
         )
 
         self.client.force_login(self.superuser)
@@ -141,9 +117,7 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
 
         self.assertEqual(200, response.status_code)
 
-        self.assertFalse(
-            ExecutionRequest.objects.filter(exec_id=_available.exec_id).exists()
-        )
+        self.assertFalse(ExecutionRequest.objects.filter(exec_id=_available.exec_id).exists())
 
     def test_endpoint_should_raise_exception_if_the_uuid_is_not_valid(self):
         self.client.force_login(self.superuser)
@@ -152,10 +126,8 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
 
         expected = {
             "success": False,
-            "errors": [
-                '“random_uuid” is not a valid UUID.'
-            ],
-            "code": "executionrequest_exception"
+            "errors": ["“random_uuid” is not a valid UUID."],
+            "code": "executionrequest_exception",
         }
         self.assertEqual(500, response.status_code)
         self.assertDictEqual(expected, response.json())
@@ -167,26 +139,18 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
 
         expected = {
             "success": False,
-            "errors": [
-                "uuid provided does not exists: 400f433c-3e44-42bd-8b5b-67847c9294b7"
-            ],
-            "code": "not_found"
+            "errors": ["uuid provided does not exists: 400f433c-3e44-42bd-8b5b-67847c9294b7"],
+            "code": "not_found",
         }
         self.assertEqual(404, response.status_code)
         self.assertDictEqual(expected, response.json())
 
     def test_endpoint_should_raise_error_if_pk_is_not_passed(self):
         self.client.force_login(self.superuser)
-        _url = reverse('executionrequest-list')
+        _url = reverse("executionrequest-list")
         response = self.client.delete(_url)
 
-        expected = {
-            "success": False,
-            "errors": [
-                "UUID was not provided"
-            ],
-            "code": "executionrequest_exception"
-        }
+        expected = {"success": False, "errors": ["UUID was not provided"], "code": "executionrequest_exception"}
 
         self.assertEqual(500, response.status_code)
         self.assertDictEqual(expected, response.json())
@@ -194,10 +158,7 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
     def test_endpoint_should_return_the_source(self):
         # creating dummy execution request
         obj = ExecutionRequest.objects.create(
-            user=self.superuser,
-            func_name='import_new_resource',
-            action="import",
-            source="upload_workflow"
+            user=self.superuser, func_name="import_new_resource", action="import", source="upload_workflow"
         )
         self.client.force_login(self.superuser)
 
@@ -210,7 +171,7 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
 
         source = payload.get("request", {}).get("source", None)
         self.assertIsNotNone(source)
-        self.assertEqual('upload_workflow', source)
+        self.assertEqual("upload_workflow", source)
 
         # cleanup
         obj.delete()

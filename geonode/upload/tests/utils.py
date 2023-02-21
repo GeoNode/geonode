@@ -28,12 +28,12 @@ from django.contrib.auth import authenticate
 
 logger = logging.getLogger(__name__)
 
-GEONODE_USER = 'admin'
-GEONODE_PASSWD = 'admin'
+GEONODE_USER = "admin"
+GEONODE_PASSWD = "admin"
 
 
 def rest_upload_by_path(_file, client, username=GEONODE_USER, password=GEONODE_PASSWD, non_interactive=False):
-    """ function that uploads a file, or a collection of files, to
+    """function that uploads a file, or a collection of files, to
     the GeoNode"""
     assert authenticate(username=username, password=password)
     client.login(username=username, password=password)
@@ -41,31 +41,29 @@ def rest_upload_by_path(_file, client, username=GEONODE_USER, password=GEONODE_P
     base, ext = os.path.splitext(_file)
     params = {
         # make public since wms client doesn't do authentication
-        'permissions': '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-        'time': 'false',
-        'charset': 'UTF-8'
+        "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
+        "time": "false",
+        "charset": "UTF-8",
     }
 
     # deal with shapefiles
-    if ext.lower() == '.shp':
+    if ext.lower() == ".shp":
         for spatial_file in spatial_files:
-            ext, _ = spatial_file.split('_')
+            ext, _ = spatial_file.split("_")
             file_path = f"{base}.{ext}"
             # sometimes a shapefile is missing an extra file,
             # allow for that
             if os.path.exists(file_path):
-                params[spatial_file] = open(file_path, 'rb')
+                params[spatial_file] = open(file_path, "rb")
 
-    with open(_file, 'rb') as base_file:
-        params['base_file'] = base_file
+    with open(_file, "rb") as base_file:
+        params["base_file"] = base_file
         for name, value in params.items():
             if isinstance(value, IOBase):
                 params[name] = (os.path.basename(value.name), value)
-        url = urljoin(
-            f"{reverse('uploads-list')}/",
-            'upload/')
+        url = urljoin(f"{reverse('uploads-list')}/", "upload/")
         if non_interactive:
-            params["non_interactive"] = 'true'
+            params["non_interactive"] = "true"
         logger.error(f" ---- UPLOAD URL: {url}")
         response = client.post(url, data=params)
 
@@ -78,7 +76,5 @@ def rest_upload_by_path(_file, client, username=GEONODE_USER, password=GEONODE_P
         logger.error(f" -- response: {response.status_code} / {response.json()}")
         return response, response.json()
     except (ValueError, TypeError):
-        logger.exception(
-            ValueError(
-                f"probably not json, status {response.status_code} / {response.content}"))
+        logger.exception(ValueError(f"probably not json, status {response.status_code} / {response.content}"))
         return response, response.content

@@ -70,10 +70,7 @@ from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVis
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
-from geonode.security.utils import (
-    get_visible_resources,
-    get_resources_with_perms,
-    get_user_visible_groups)
+from geonode.security.utils import get_visible_resources, get_resources_with_perms, get_user_visible_groups
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -100,7 +97,7 @@ from .serializers import (
     TopicCategorySerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
-    ExtraMetadataSerializer
+    ExtraMetadataSerializer,
 )
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
@@ -114,11 +111,13 @@ class UserViewSet(DynamicModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticated, IsSelfOrAdminOrReadOnly, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    permission_classes = [
+        IsAuthenticated,
+        IsSelfOrAdminOrReadOnly,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -135,25 +134,37 @@ class UserViewSet(DynamicModelViewSet):
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the Resources visible to the user.")
-    @action(detail=True, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseSerializer(many=True)},
+        description="API endpoint allowing to retrieve the Resources visible to the user.",
+    )
+    @action(detail=True, methods=["get"])
     def resources(self, request, pk=None):
         user = self.get_object()
-        permitted = get_objects_for_user(user, 'base.view_resourcebase')
-        qs = ResourceBase.objects.all().filter(id__in=permitted).order_by('title')
+        permitted = get_objects_for_user(user, "base.view_resourcebase")
+        qs = ResourceBase.objects.all().filter(id__in=permitted).order_by("title")
 
         resources = get_visible_resources(
             qs,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
-        return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
 
-    @extend_schema(methods=['get'], responses={200: GroupProfileSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the Groups the user is member of.")
-    @action(detail=True, methods=['get'])
+        paginator = GeoNodeApiPagination()
+        paginator.page_size = request.GET.get("page_size", 10)
+        result_page = paginator.paginate_queryset(resources, request)
+        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
+        return paginator.get_paginated_response({"resources": serializer.data})
+
+    @extend_schema(
+        methods=["get"],
+        responses={200: GroupProfileSerializer(many=True)},
+        description="API endpoint allowing to retrieve the Groups the user is member of.",
+    )
+    @action(detail=True, methods=["get"])
     def groups(self, request, pk=None):
         user = self.get_object()
         qs_ids = GroupMember.objects.filter(user=user).values_list("group", flat=True)
@@ -165,11 +176,13 @@ class GroupViewSet(DynamicModelViewSet):
     """
     API endpoint that allows gropus to be viewed or edited.
     """
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, IsManagerEditOrAdmin, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        IsManagerEditOrAdmin,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = GroupProfileSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -177,46 +190,59 @@ class GroupViewSet(DynamicModelViewSet):
         """
         Filters the public groups and private ones the current user is member of.
         """
-        metadata_author_groups = get_user_visible_groups(
-            self.request.user, include_public_invite=True)
+        metadata_author_groups = get_user_visible_groups(self.request.user, include_public_invite=True)
         if not isinstance(metadata_author_groups, list):
             metadata_author_groups = list(metadata_author_groups.all())
         queryset = GroupProfile.objects.filter(id__in=[_g.id for _g in metadata_author_groups])
         return queryset.order_by("title")
 
-    @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the Group members.")
-    @action(detail=True, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: UserSerializer(many=True)},
+        description="API endpoint allowing to retrieve the Group members.",
+    )
+    @action(detail=True, methods=["get"])
     def members(self, request, pk=None):
         group = self.get_object()
         members = get_user_model().objects.filter(id__in=group.member_queryset().values_list("user", flat=True))
         return Response(UserSerializer(embed=True, many=True).to_representation(members))
 
-    @extend_schema(methods=['get'], responses={200: UserSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the Group managers.")
-    @action(detail=True, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: UserSerializer(many=True)},
+        description="API endpoint allowing to retrieve the Group managers.",
+    )
+    @action(detail=True, methods=["get"])
     def managers(self, request, pk=None):
         group = self.get_object()
         managers = group.get_managers()
         return Response(UserSerializer(embed=True, many=True).to_representation(managers))
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the Group specific resources.")
-    @action(detail=True, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseSerializer(many=True)},
+        description="API endpoint allowing to retrieve the Group specific resources.",
+    )
+    @action(detail=True, methods=["get"])
     def resources(self, request, pk=None):
         group = self.get_object()
         resources = group.resources()
-        return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
+        paginator = GeoNodeApiPagination()
+        paginator.page_size = request.GET.get("page_size", 10)
+        result_page = paginator.paginate_queryset(list(resources), request)
+        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
+        return paginator.get_paginated_response({"resources": serializer.data})
 
 
 class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists regions.
     """
-    permission_classes = [AllowAny, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, FacetVisibleResourceFilter
+
+    permission_classes = [
+        AllowAny,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, FacetVisibleResourceFilter]
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
     pagination_class = GeoNodeApiPagination
@@ -232,18 +258,18 @@ class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, Retrie
 
         def _get_kw_hrefs(keywords, slugs: list = []):
             for obj in keywords:
-                if obj.get('tags', []):
-                    slugs.append(obj.get('href'))
-                _get_kw_hrefs(obj.get('nodes', []), slugs)
+                if obj.get("tags", []):
+                    slugs.append(obj.get("href"))
+                _get_kw_hrefs(obj.get("nodes", []), slugs)
             return slugs
 
         slugs = _get_kw_hrefs(resource_keywords)
         return HierarchicalKeyword.objects.filter(slug__in=slugs)
 
-    permission_classes = [AllowAny, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    permission_classes = [
+        AllowAny,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = HierarchicalKeywordSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -252,10 +278,11 @@ class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     """
     API endpoint that lists Thesaurus keywords.
     """
-    permission_classes = [AllowAny, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+
+    permission_classes = [
+        AllowAny,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     queryset = ThesaurusKeyword.objects.all()
     serializer_class = ThesaurusKeywordSerializer
     pagination_class = GeoNodeApiPagination
@@ -265,10 +292,11 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveMode
     """
     API endpoint that lists categories.
     """
-    permission_classes = [AllowAny, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, FacetVisibleResourceFilter
+
+    permission_classes = [
+        AllowAny,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter, FacetVisibleResourceFilter]
     queryset = TopicCategory.objects.all()
     serializer_class = TopicCategorySerializer
     pagination_class = GeoNodeApiPagination
@@ -278,11 +306,12 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
     """
     API endpoint that lists all possible owners.
     """
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [AllowAny, ]
-    filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter
+    permission_classes = [
+        AllowAny,
     ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = OwnerSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -294,11 +323,11 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         filter_options = {}
         if self.request.query_params:
             filter_options = {
-                'type_filter': self.request.query_params.get('type'),
-                'title_filter': self.request.query_params.get('title__icontains')
+                "type_filter": self.request.query_params.get("type"),
+                "title_filter": self.request.query_params.get("title__icontains"),
             }
-        queryset = queryset.filter(id__in=Subquery(
-            get_resources_with_perms(self.request.user, filter_options).values('owner'))
+        queryset = queryset.filter(
+            id__in=Subquery(get_resources_with_perms(self.request.user, filter_options).values("owner"))
         )
         return queryset.order_by("username")
 
@@ -307,61 +336,87 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
+
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
-        DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter,
-        ExtentFilter, ResourceBasePermissionsFilter, FavoriteFilter
+        DynamicFilterBackend,
+        DynamicSortingFilter,
+        DynamicSearchFilter,
+        ExtentFilter,
+        ResourceBasePermissionsFilter,
+        FavoriteFilter,
     ]
-    queryset = ResourceBase.objects.all().order_by('-created')
+    queryset = ResourceBase.objects.all().order_by("-created")
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
     def _filtered(self, request, filter):
         paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get('page_size', 10)
+        paginator.page_size = request.GET.get("page_size", 10)
         resources = get_resources_with_perms(request.user).filter(**filter)
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the approved Resources.")
-    @action(detail=False, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseSerializer(many=True)},
+        description="API endpoint allowing to retrieve the approved Resources.",
+    )
+    @action(detail=False, methods=["get"])
     def approved(self, request):
         return self._filtered(request, {"is_approved": True})
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the published Resources.")
-    @action(detail=False, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseSerializer(many=True)},
+        description="API endpoint allowing to retrieve the published Resources.",
+    )
+    @action(detail=False, methods=["get"])
     def published(self, request):
         return self._filtered(request, {"is_published": True})
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the featured Resources.")
-    @action(detail=False, methods=['get'])
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseSerializer(many=True)},
+        description="API endpoint allowing to retrieve the featured Resources.",
+    )
+    @action(detail=False, methods=["get"])
     def featured(self, request):
         return self._filtered(request, {"featured": True})
 
-    @extend_schema(methods=['get'], responses={200: FavoriteSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the favorite Resources.")
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated, ])
+    @extend_schema(
+        methods=["get"],
+        responses={200: FavoriteSerializer(many=True)},
+        description="API endpoint allowing to retrieve the favorite Resources.",
+    )
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=[
+            IsAuthenticated,
+        ],
+    )
     def favorites(self, request, pk=None):
         paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get('page_size', 10)
+        paginator.page_size = request.GET.get("page_size", 10)
         favorites = Favorite.objects.favorites_for_user(user=request.user)
         result_page = paginator.paginate_queryset(favorites, request)
         serializer = FavoriteSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"favorites": serializer.data})
 
-    @extend_schema(methods=['post', 'delete'], responses={200: FavoriteSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the favorite Resources.")
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
+    @extend_schema(
+        methods=["post", "delete"],
+        responses={200: FavoriteSerializer(many=True)},
+        description="API endpoint allowing to retrieve the favorite Resources.",
+    )
+    @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         resource = self.get_object()
         user = request.user
 
-        if request.method == 'POST':
+        if request.method == "POST":
             try:
                 Favorite.objects.get(user=user, object_id=resource.pk)
                 return Response({"message": "Resource is already in favorites"}, status=400)
@@ -369,15 +424,17 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 Favorite.objects.create_favorite(resource, user)
                 return Response({"message": "Successfuly added resource to favorites"}, status=201)
 
-        if request.method == 'DELETE':
+        if request.method == "DELETE":
             try:
                 Favorite.objects.get(user=user, object_id=resource.pk).delete()
                 return Response({"message": "Successfuly removed resource from favorites"}, status=200)
             except Favorite.DoesNotExist:
                 return Response({"message": "Resource not in favorites"}, status=404)
 
-    @extend_schema(methods=['get'], responses={200: ResourceBaseTypesSerializer()},
-                   description="""
+    @extend_schema(
+        methods=["get"],
+        responses={200: ResourceBaseTypesSerializer()},
+        description="""
         Returns the list of available ResourceBase polymorphic_ctypes.
 
         the mapping looks like:
@@ -403,22 +460,20 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             ]
         }
         ```
-        """)
-    @action(detail=False, methods=['get'])
+        """,
+    )
+    @action(detail=False, methods=["get"])
     def resource_types(self, request):
-
-        def _to_compact_perms_list(allowed_perms: dict, resource_type: str, resource_subtype: str, compact_perms_labels: dict = {}) -> list:
+        def _to_compact_perms_list(
+            allowed_perms: dict, resource_type: str, resource_subtype: str, compact_perms_labels: dict = {}
+        ) -> list:
             _compact_perms_list = {}
             for _k, _v in allowed_perms.items():
                 _is_owner = _k not in ["anonymous", groups_settings.REGISTERED_MEMBERS_GROUP_NAME]
                 _is_none_allowed = not _is_owner
                 _compact_perms_list[_k] = get_compact_perms_list(
-                    _v,
-                    resource_type,
-                    resource_subtype,
-                    _is_owner,
-                    _is_none_allowed,
-                    compact_perms_labels)
+                    _v, resource_type, resource_subtype, _is_owner, _is_none_allowed, compact_perms_labels
+                )
             return _compact_perms_list
 
         resource_types = []
@@ -427,55 +482,67 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         for _model in apps.get_models():
             if _model.__name__ == "ResourceBase":
                 for _m in _model.__subclasses__():
-                    if _m.__name__.lower() not in ['service']:
+                    if _m.__name__.lower() not in ["service"]:
                         _types.append(_m.__name__.lower())
                         _allowed_perms[_m.__name__.lower()] = {
                             "perms": _m.allowed_permissions,
                             "compact": _to_compact_perms_list(
-                                _m.allowed_permissions, _m.__name__.lower(), _m.__name__.lower(), _m.compact_permission_labels)
+                                _m.allowed_permissions,
+                                _m.__name__.lower(),
+                                _m.__name__.lower(),
+                                _m.compact_permission_labels,
+                            ),
                         }
 
-        if settings.GEONODE_APPS_ENABLE and 'geoapp' in _types:
-            _types.remove('geoapp')
-            if hasattr(settings, 'CLIENT_APP_LIST') and settings.CLIENT_APP_LIST:
+        if settings.GEONODE_APPS_ENABLE and "geoapp" in _types:
+            _types.remove("geoapp")
+            if hasattr(settings, "CLIENT_APP_LIST") and settings.CLIENT_APP_LIST:
                 _types += settings.CLIENT_APP_LIST
             else:
                 from geonode.geoapps.models import GeoApp
-                geoapp_types = [x for x in GeoApp.objects.values_list('resource_type', flat=True).all().distinct()]
+
+                geoapp_types = [x for x in GeoApp.objects.values_list("resource_type", flat=True).all().distinct()]
                 _types += geoapp_types
 
-            if hasattr(settings, 'CLIENT_APP_ALLOWED_PERMS_LIST') and settings.CLIENT_APP_ALLOWED_PERMS_LIST:
+            if hasattr(settings, "CLIENT_APP_ALLOWED_PERMS_LIST") and settings.CLIENT_APP_ALLOWED_PERMS_LIST:
                 for _type in settings.CLIENT_APP_ALLOWED_PERMS_LIST:
                     for _type_name, _type_perms in _type.items():
                         _compact_permission_labels = {}
-                        if hasattr(settings, 'CLIENT_APP_COMPACT_PERM_LABELS'):
+                        if hasattr(settings, "CLIENT_APP_COMPACT_PERM_LABELS"):
                             _compact_permission_labels = settings.CLIENT_APP_COMPACT_PERM_LABELS.get(_type_name, {})
                         _allowed_perms[_type_name] = {
                             "perms": _type_perms,
-                            "compact": _to_compact_perms_list(_type_perms, _type_name, _type_name, _compact_permission_labels)
+                            "compact": _to_compact_perms_list(
+                                _type_perms, _type_name, _type_name, _compact_permission_labels
+                            ),
                         }
             else:
                 from geonode.geoapps.models import GeoApp
+
                 for _m in GeoApp.objects.filter(resource_type__in=_types).iterator():
-                    if hasattr(_m, 'resource_type') and _m.resource_type and _m.resource_type not in _allowed_perms:
+                    if hasattr(_m, "resource_type") and _m.resource_type and _m.resource_type not in _allowed_perms:
                         _allowed_perms[_m.resource_type] = {
                             "perms": _m.allowed_permissions,
                             "compact": _to_compact_perms_list(
-                                _m.allowed_permissions, _m.resource_type, _m.subtype, _m.compact_permission_labels)
+                                _m.allowed_permissions, _m.resource_type, _m.subtype, _m.compact_permission_labels
+                            ),
                         }
 
         for _type in _types:
-            resource_types.append({
-                "name": _type,
-                "count": get_resources_with_perms(request.user).filter(resource_type=_type).count(),
-                "allowed_perms": _allowed_perms[_type] if _type in _allowed_perms else []
-            })
+            resource_types.append(
+                {
+                    "name": _type,
+                    "count": get_resources_with_perms(request.user).filter(resource_type=_type).count(),
+                    "allowed_perms": _allowed_perms[_type] if _type in _allowed_perms else [],
+                }
+            )
         return Response({"resource_types": resource_types})
 
-    @extend_schema(methods=['get', 'put', 'patch', 'delete'],
-                   request=PermSpecSerialiazer(),
-                   responses={200: None},
-                   description="""
+    @extend_schema(
+        methods=["get", "put", "patch", "delete"],
+        request=PermSpecSerialiazer(),
+        responses={200: None},
+        description="""
         Sets an object's the permission levels based on the perm_spec JSON.
 
         the mapping looks like:
@@ -494,15 +561,15 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         }
         ```
-        """)
+        """,
+    )
     @action(
         detail=True,
         url_path="permissions",  # noqa
         url_name="perms-spec",
-        methods=['get', 'put', 'patch', 'delete'],
-        permission_classes=[
-            IsAuthenticated
-        ])
+        methods=["get", "put", "patch", "delete"],
+        permission_classes=[IsAuthenticated],
+    )
     def resource_service_permissions(self, request, pk):
         """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
 
@@ -560,85 +627,90 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        _user_can_manage = request.user.has_perm('change_resourcebase_permissions', resource.get_self_resource())
-        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not _user_can_manage:
+        _user_can_manage = request.user.has_perm("change_resourcebase_permissions", resource.get_self_resource())
+        if (
+            config.read_only
+            or config.maintenance
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+            or resource is None
+            or not _user_can_manage
+        ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             perms_spec = PermSpec(resource.get_all_level_info(), resource)
             request_params = request.data
-            if request.method == 'GET':
+            if request.method == "GET":
                 return Response(perms_spec.compact)
-            elif request.method == 'DELETE':
+            elif request.method == "DELETE":
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
-                    func_name='remove_permissions',
+                    func_name="remove_permissions",
                     geonode_resource=resource,
                     action="permissions",
-                    input_params={
-                        "uuid": request_params.get('uuid', resource.uuid)
-                    }
+                    input_params={"uuid": request_params.get("uuid", resource.uuid)},
                 )
-            elif request.method == 'PUT':
+            elif request.method == "PUT":
                 perms_spec_compact = PermSpecCompact(request.data, resource)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
-                    func_name='set_permissions',
+                    func_name="set_permissions",
                     geonode_resource=resource,
                     action="permissions",
                     input_params={
-                        "uuid": request_params.get('uuid', resource.uuid),
-                        "owner": request_params.get('owner', resource.owner.username),
+                        "uuid": request_params.get("uuid", resource.uuid),
+                        "owner": request_params.get("owner", resource.owner.username),
                         "permissions": perms_spec_compact.extended,
-                        "created": request_params.get('created', False)
-                    }
+                        "created": request_params.get("created", False),
+                    },
                 )
-            elif request.method == 'PATCH':
+            elif request.method == "PATCH":
                 perms_spec_compact_patch = PermSpecCompact(request.data, resource)
                 perms_spec_compact_resource = PermSpecCompact(perms_spec.compact, resource)
                 perms_spec_compact_resource.merge(perms_spec_compact_patch)
                 _exec_request = ExecutionRequest.objects.create(
                     user=request.user,
-                    func_name='set_permissions',
+                    func_name="set_permissions",
                     geonode_resource=resource,
                     action="permissions",
                     input_params={
-                        "uuid": request_params.get('uuid', resource.uuid),
-                        "owner": request_params.get('owner', resource.owner.username),
+                        "uuid": request_params.get("uuid", resource.uuid),
+                        "owner": request_params.get("owner", resource.owner.username),
                         "permissions": perms_spec_compact_resource.extended,
-                        "created": request_params.get('created', False)
-                    }
+                        "created": request_params.get("created", False),
+                    },
                 )
             resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
             return Response(
                 {
-                    'status': _exec_request.status,
-                    'execution_id': _exec_request.exec_id,
-                    'status_url':
-                        urljoin(
-                            settings.SITEURL,
-                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
-                        )
+                    "status": _exec_request.status,
+                    "execution_id": _exec_request.exec_id,
+                    "status_url": urljoin(
+                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
+                    ),
                 },
-                status=status.HTTP_200_OK)
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
     @extend_schema(
-        methods=["post"], responses={200}, description="API endpoint allowing to set the thumbnail url for an existing dataset."
+        methods=["post"],
+        responses={200},
+        description="API endpoint allowing to set the thumbnail url for an existing dataset.",
     )
     @action(
         detail=False,
         url_path="(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
         url_name="set-thumb-from-bbox",
         methods=["post"],
-        permission_classes=[
-            IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
-        ])
+        permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
+    )
     def set_thumbnail_from_bbox(self, request, resource_id):
         import traceback
         from django.utils.datastructures import MultiValueDictKeyError
+
         try:
             resource = ResourceBase.objects.get(id=ast.literal_eval(resource_id))
 
@@ -656,13 +728,20 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 bbox = request_body["bbox"] + [request_body["srid"]]
                 zoom = request_body.get("zoom", None)
 
-            thumbnail_url = create_thumbnail(resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True)
-            return Response({"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200)
+            thumbnail_url = create_thumbnail(
+                resource.get_real_instance(), bbox=bbox, background_zoom=zoom, overwrite=True
+            )
+            return Response(
+                {"message": "Thumbnail correctly created.", "success": True, "thumbnail_url": thumbnail_url}, status=200
+            )
         except ResourceBase.DoesNotExist:
             traceback.print_exc()
             logger.error(f"Resource selected with id {resource_id} does not exists")
             return Response(
-                data={"message": f"Resource selected with id {resource_id} does not exists", "success": False}, status=404, exception=True)
+                data={"message": f"Resource selected with id {resource_id} does not exists", "success": False},
+                status=404,
+                exception=True,
+            )
         except NotImplementedError as e:
             traceback.print_exc()
             logger.error(e)
@@ -684,9 +763,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_path="ingest/(?P<resource_type>\w+)",  # noqa
         url_name="resource-service-ingest",
         methods=["post"],
-        permission_classes=[
-            IsAuthenticated
-        ])
+        permission_classes=[IsAuthenticated],
+    )
     def resource_service_ingest(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'INGEST' operation
 
@@ -739,38 +817,41 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         """
         config = Configuration.load()
-        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated \
-                or not request.user.has_perm('base.add_resourcebase'):
+        if (
+            config.read_only
+            or config.maintenance
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+            or not request.user.has_perm("base.add_resourcebase")
+        ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
-
             request_params = self._get_request_params(request)
-            uuid = request_params.get('uuid', str(uuid4()))
+            uuid = request_params.get("uuid", str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
-                func_name='ingest',
+                func_name="ingest",
                 geonode_resource=resource_filter.get() if resource_filter.exists() else None,
                 action="ingest",
                 input_params={
                     "uuid": uuid,
-                    "files": request_params.get('files', '[]'),
+                    "files": request_params.get("files", "[]"),
                     "resource_type": resource_type,
-                    "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
-                }
+                    "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
+                },
             )
             resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
             return Response(
                 {
-                    'status': _exec_request.status,
-                    'execution_id': _exec_request.exec_id,
-                    'status_url':
-                        urljoin(
-                            settings.SITEURL,
-                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
-                        )
+                    "status": _exec_request.status,
+                    "execution_id": _exec_request.exec_id,
+                    "status_url": urljoin(
+                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
+                    ),
                 },
-                status=status.HTTP_200_OK)
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
@@ -783,9 +864,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_path="create/(?P<resource_type>\w+)",  # noqa
         url_name="resource-service-create",
         methods=["post"],
-        permission_classes=[
-            IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
-        ])
+        permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
+    )
     def resource_service_create(self, request, resource_type: str = None):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
         **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
@@ -837,52 +917,57 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             }
         """
         config = Configuration.load()
-        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated \
-                or not request.user.has_perm('base.add_resourcebase'):
+        if (
+            config.read_only
+            or config.maintenance
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+            or not request.user.has_perm("base.add_resourcebase")
+        ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = self._get_request_params(request)
-            uuid = request_params.get('uuid', str(uuid4()))
+            uuid = request_params.get("uuid", str(uuid4()))
             resource_filter = ResourceBase.objects.filter(uuid=uuid)
 
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
-                func_name='create',
+                func_name="create",
                 geonode_resource=resource_filter.get() if resource_filter.exists() else None,
                 action="create",
                 input_params={
                     "uuid": uuid,
                     "resource_type": resource_type,
-                    "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
-                }
+                    "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
+                },
             )
             resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
             return Response(
                 {
-                    'status': _exec_request.status,
-                    'execution_id': _exec_request.exec_id,
-                    'status_url':
-                        urljoin(
-                            settings.SITEURL,
-                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
-                        )
+                    "status": _exec_request.status,
+                    "execution_id": _exec_request.exec_id,
+                    "status_url": urljoin(
+                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
+                    ),
                 },
-                status=status.HTTP_200_OK)
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
     @extend_schema(
-        methods=["delete"], responses={200}, description="Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'."
+        methods=["delete"],
+        responses={200},
+        description="Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'.",
     )
     @action(
         detail=True,
         url_path="delete",  # noqa
         url_name="resource-service-delete",
         methods=["delete"],
-        permission_classes=[
-            IsAuthenticated, UserHasPerms
-        ])
+        permission_classes=[IsAuthenticated, UserHasPerms],
+    )
     def resource_service_delete(self, request, pk):
         """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
 
@@ -923,46 +1008,50 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not request.user.has_perm('delete_resourcebase', resource.get_self_resource()):
+        if (
+            config.read_only
+            or config.maintenance
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+            or resource is None
+            or not request.user.has_perm("delete_resourcebase", resource.get_self_resource())
+        ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
-                func_name='delete',
+                func_name="delete",
                 action="delete",
                 geonode_resource=resource,
-                input_params={
-                    "uuid": resource.uuid
-                }
+                input_params={"uuid": resource.uuid},
             )
             resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
             return Response(
                 {
-                    'status': _exec_request.status,
-                    'execution_id': _exec_request.exec_id,
-                    'status_url':
-                        urljoin(
-                            settings.SITEURL,
-                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
-                        )
+                    "status": _exec_request.status,
+                    "execution_id": _exec_request.exec_id,
+                    "status_url": urljoin(
+                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
+                    ),
                 },
-                status=status.HTTP_200_OK)
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
     @extend_schema(
-        methods=["put"], responses={200}, description="Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'."
+        methods=["put"],
+        responses={200},
+        description="Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'.",
     )
     @action(
         detail=True,
         url_path="update",  # noqa
         url_name="resource-service-update",
         methods=["put"],
-        permission_classes=[
-            IsAuthenticated, UserHasPerms
-        ])
+        permission_classes=[IsAuthenticated, UserHasPerms],
+    )
     def resource_service_update(self, request, pk):
         """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
 
@@ -1030,45 +1119,52 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not request.user.has_perm('change_resourcebase', resource.get_self_resource()):
+        if (
+            config.read_only
+            or config.maintenance
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+            or resource is None
+            or not request.user.has_perm("change_resourcebase", resource.get_self_resource())
+        ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         try:
             request_params = self._get_request_params(request=request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
-                func_name='update',
+                func_name="update",
                 geonode_resource=resource,
                 action="update",
                 input_params={
-                    "uuid": request_params.get('uuid', resource.uuid),
-                    "xml_file": request_params.get('xml_file', None),
-                    "metadata_uploaded": request_params.get('metadata_uploaded', False),
-                    "vals": request_params.get('vals', '{}'),
-                    "regions": request_params.get('regions', '[]'),
-                    "keywords": request_params.get('keywords', '[]'),
-                    "custom": request_params.get('custom', '{}'),
-                    "notify": request_params.get('notify', True)
-                }
+                    "uuid": request_params.get("uuid", resource.uuid),
+                    "xml_file": request_params.get("xml_file", None),
+                    "metadata_uploaded": request_params.get("metadata_uploaded", False),
+                    "vals": request_params.get("vals", "{}"),
+                    "regions": request_params.get("regions", "[]"),
+                    "keywords": request_params.get("keywords", "[]"),
+                    "custom": request_params.get("custom", "{}"),
+                    "notify": request_params.get("notify", True),
+                },
             )
             resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
             return Response(
                 {
-                    'status': _exec_request.status,
-                    'execution_id': _exec_request.exec_id,
-                    'status_url':
-                        urljoin(
-                            settings.SITEURL,
-                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
-                        )
+                    "status": _exec_request.status,
+                    "execution_id": _exec_request.exec_id,
+                    "status_url": urljoin(
+                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
+                    ),
                 },
-                status=status.HTTP_200_OK)
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
     @extend_schema(
-        methods=["put"], responses={200}, description="Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'uuid'."
+        methods=["put"],
+        responses={200},
+        description="Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'uuid'.",
     )
     @action(
         detail=True,
@@ -1076,20 +1172,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="resource-service-copy",
         methods=["put"],
         permission_classes=[
-            IsAuthenticated, UserHasPerms(
+            IsAuthenticated,
+            UserHasPerms(
                 perms_dict={
-                    "dataset": {
-                        "PUT": ['base.add_resourcebase', 'base.download_resourcebase'], "rule": all
-                    },
-                    "document": {
-                        "PUT": ['base.add_resourcebase', 'base.download_resourcebase'], "rule": all
-                    },
-                    "default": {
-                        "PUT": ['base.add_resourcebase']
-                    }
+                    "dataset": {"PUT": ["base.add_resourcebase", "base.download_resourcebase"], "rule": all},
+                    "document": {"PUT": ["base.add_resourcebase", "base.download_resourcebase"], "rule": all},
+                    "default": {"PUT": ["base.add_resourcebase"]},
                 }
-            )
-        ])
+            ),
+        ],
+    )
     def resource_service_copy(self, request, pk):
         """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'pk'
 
@@ -1141,8 +1233,14 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """
         config = Configuration.load()
         resource = get_object_or_404(ResourceBase, pk=pk)
-        if config.read_only or config.maintenance or request.user.is_anonymous or not request.user.is_authenticated or \
-                resource is None or not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
+        if (
+            config.read_only
+            or config.maintenance
+            or request.user.is_anonymous
+            or not request.user.is_authenticated
+            or resource is None
+            or not request.user.has_perm("view_resourcebase", resource.get_self_resource())
+        ):
             return Response(status=status.HTTP_403_FORBIDDEN)
         if not resource.is_copyable:
             return Response({"message": "Resource can not be cloned."}, status=400)
@@ -1150,48 +1248,50 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             request_params = self._get_request_params(request)
             _exec_request = ExecutionRequest.objects.create(
                 user=request.user,
-                func_name='copy',
+                func_name="copy",
                 geonode_resource=resource,
                 action="copy",
                 input_params={
                     "instance": resource.id,
-                    "owner": request_params.get('owner', request.user.username),
-                    "defaults": request_params.get('defaults', '{}')
-                }
+                    "owner": request_params.get("owner", request.user.username),
+                    "defaults": request_params.get("defaults", "{}"),
+                },
             )
             resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
             return Response(
                 {
-                    'status': _exec_request.status,
-                    'execution_id': _exec_request.exec_id,
-                    'status_url':
-                        urljoin(
-                            settings.SITEURL,
-                            reverse('rs-execution-status', kwargs={'execution_id': _exec_request.exec_id})
-                        )
+                    "status": _exec_request.status,
+                    "execution_id": _exec_request.exec_id,
+                    "status_url": urljoin(
+                        settings.SITEURL, reverse("rs-execution-status", kwargs={"execution_id": _exec_request.exec_id})
+                    ),
                 },
-                status=status.HTTP_200_OK)
+                status=status.HTTP_200_OK,
+            )
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
 
     @extend_schema(
-        methods=['post', 'get'],
+        methods=["post", "get"],
         responses={200},
-        description="API endpoint allowing to rate and get overall rating of the Resource.")
+        description="API endpoint allowing to rate and get overall rating of the Resource.",
+    )
     @action(
         detail=True,
         url_path="ratings",
         url_name="ratings",
-        methods=['post', 'get'],
+        methods=["post", "get"],
         permission_classes=[
-            IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
-        ])
+            IsAuthenticatedOrReadOnly,
+            UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
+        ],
+    )
     def ratings(self, request, pk):
         resource = get_object_or_404(ResourceBase, pk=pk)
         resource = resource.get_real_instance()
         ct = ContentType.objects.get_for_model(resource)
-        if request.method == 'POST':
+        if request.method == "POST":
             rating_input = int(request.data.get("rating"))
             category = resource._meta.object_name.lower()
             # check if category is configured in settings.PINAX_RATINGS_CATEGORY_CHOICES
@@ -1199,60 +1299,38 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
             # Check for errors and bail early
             if category and cat_choice is None:
-                return HttpResponseForbidden(
-                    "Invalid category. It must match a preconfigured setting"
-                )
+                return HttpResponseForbidden("Invalid category. It must match a preconfigured setting")
             if rating_input not in range(NUM_OF_RATINGS + 1):
-                return HttpResponseForbidden(
-                    f"Invalid rating. It must be a value between 0 and {NUM_OF_RATINGS}"
-                )
-            Rating.update(
-                rating_object=resource,
-                user=request.user,
-                category=cat_choice,
-                rating=rating_input
-            )
+                return HttpResponseForbidden(f"Invalid rating. It must be a value between 0 and {NUM_OF_RATINGS}")
+            Rating.update(rating_object=resource, user=request.user, category=cat_choice, rating=rating_input)
         user_rating = None
         if request.user.is_authenticated:
-            user_rating = Rating.objects.filter(
-                object_id=resource.pk,
-                content_type=ct,
-                user=request.user
-            ).first()
-        overall_rating = OverallRating.objects.filter(
-            object_id=resource.pk,
-            content_type=ct
-        ).aggregate(r=models.Avg("rating"))["r"]
+            user_rating = Rating.objects.filter(object_id=resource.pk, content_type=ct, user=request.user).first()
+        overall_rating = OverallRating.objects.filter(object_id=resource.pk, content_type=ct).aggregate(
+            r=models.Avg("rating")
+        )["r"]
         overall_rating = Decimal(str(overall_rating or "0"))
 
-        return Response(
-            {
-                "rating": user_rating.rating if user_rating else 0,
-                "overall_rating": overall_rating
-            }
-        )
+        return Response({"rating": user_rating.rating if user_rating else 0, "overall_rating": overall_rating})
 
     @extend_schema(
-        methods=['put'],
-        responses={200},
-        description="API endpoint allowing to set thumbnail of the Resource.")
+        methods=["put"], responses={200}, description="API endpoint allowing to set thumbnail of the Resource."
+    )
     @action(
         detail=True,
         url_path="set_thumbnail",
         url_name="set_thumbnail",
-        methods=['put'],
-        permission_classes=[
-            IsAuthenticated, UserHasPerms
-        ],
-        parser_classes=[JSONParser, MultiPartParser]
+        methods=["put"],
+        permission_classes=[IsAuthenticated, UserHasPerms],
+        parser_classes=[JSONParser, MultiPartParser],
     )
     def set_thumbnail(self, request, pk):
         resource = get_object_or_404(ResourceBase, pk=pk)
 
-        if not request.data.get('file'):
+        if not request.data.get("file"):
             raise ValidationError("Field file is required")
 
-        file_data = request.data['file']
+        file_data = request.data["file"]
 
         if isinstance(file_data, str):
             if re.match(BASE64_PATTERN, file_data):
@@ -1260,42 +1338,41 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     thumbnail, _thumbnail_format = _decode_base64(file_data)
                 except Exception:
                     return Response(
-                        'The request body is not a valid base64 string or the image format is not PNG or JPEG',
-                        status=status.HTTP_400_BAD_REQUEST
+                        "The request body is not a valid base64 string or the image format is not PNG or JPEG",
+                        status=status.HTTP_400_BAD_REQUEST,
                     )
             else:
                 try:
                     # Check if file_data is a valid url and set it as thumbail_url
                     validate = URLValidator()
                     validate(file_data)
-                    if urlparse(file_data).path.rsplit('.')[-1] not in ['png', 'jpeg', 'jpg']:
+                    if urlparse(file_data).path.rsplit(".")[-1] not in ["png", "jpeg", "jpg"]:
                         return Response(
-                            'The url must be of an image with format (png, jpeg or jpg)',
-                            status=status.HTTP_400_BAD_REQUEST
+                            "The url must be of an image with format (png, jpeg or jpg)",
+                            status=status.HTTP_400_BAD_REQUEST,
                         )
                     resource.thumbnail_url = file_data
                     resource.save()
                     return Response({"thumbnail_url": resource.thumbnail_url})
                 except Exception:
-                    raise ValidationError(detail='file is either a file upload, ASCII byte string or a valid image url string')
+                    raise ValidationError(
+                        detail="file is either a file upload, ASCII byte string or a valid image url string"
+                    )
         else:
             # Validate size
             if file_data.size > 1000000:
-                raise ValidationError(detail='File must not exceed 1MB')
+                raise ValidationError(detail="File must not exceed 1MB")
 
             thumbnail = file_data.read()
             try:
                 file_data.seek(0)
                 Image.open(file_data)
             except Exception:
-                raise ValidationError(detail='Invalid data provided')
+                raise ValidationError(detail="Invalid data provided")
         if thumbnail:
             resource_manager.set_thumbnail(resource.uuid, instance=resource, thumbnail=thumbnail)
             return Response({"thumbnail_url": resource.thumbnail_url})
-        return Response(
-            'Unable to set thumbnail',
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response("Unable to set thumbnail", status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         methods=["get", "put", "delete", "post"], description="Get/Update/Delete/Add extra metadata for resource"
@@ -1303,9 +1380,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     @action(
         detail=True,
         methods=["get", "put", "delete", "post"],
-        permission_classes=[
-            IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
-        ],
+        permission_classes=[IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
     )
@@ -1326,7 +1401,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 return Response(status=500, data=e.args[0])
 
         if request.method == "PUT":
-            '''
+            """
             update specific metadata. The ID of the metadata is required to perform the update
             [
                 {
@@ -1339,25 +1414,25 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         "category": "object"
                 }
             ]
-            '''
+            """
             for _m in extra_metadata:
-                _id = _m.pop('id')
+                _id = _m.pop("id")
                 ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id=_id).update(metadata=_m)
             logger.info("metadata updated for the selected resource")
             _obj.refresh_from_db()
             return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
         elif request.method == "DELETE":
             # delete single metadata
-            '''
+            """
             Expect a payload with the IDs of the metadata that should be deleted. Payload be like:
             [4, 3]
-            '''
+            """
             ResourceBase.objects.filter(id=_obj.id).first().metadata.filter(id__in=request.data).delete()
             _obj.refresh_from_db()
             return Response(ExtraMetadataSerializer().to_representation(_obj.metadata.all()))
         elif request.method == "POST":
             # add new metadata
-            '''
+            """
             [
                 {
                         "name": "foo_name",
@@ -1368,12 +1443,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         "category": "object"
                 }
             ]
-            '''
+            """
             for _m in extra_metadata:
-                new_m = ExtraMetadata.objects.create(
-                    resource=_obj,
-                    metadata=_m
-                )
+                new_m = ExtraMetadata.objects.create(resource=_obj, metadata=_m)
                 new_m.save()
                 _obj.metadata.add(new_m)
             _obj.refresh_from_db()
@@ -1381,12 +1453,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
     def _get_request_params(self, request, encode=False):
         try:
-            return QueryDict(request.body, mutable=True, encoding="UTF-8") if encode else QueryDict(request.body, mutable=True)
+            return (
+                QueryDict(request.body, mutable=True, encoding="UTF-8")
+                if encode
+                else QueryDict(request.body, mutable=True)
+            )
         except Exception as e:
-            '''
+            """
             The request with the barer token access to the request.data during the token verification
             so in this case if the request.body cannot not access, we just re-access to the
             request.data to get the params needed
-            '''
+            """
             logger.debug(e)
             return request.data

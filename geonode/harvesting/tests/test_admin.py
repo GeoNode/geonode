@@ -8,25 +8,22 @@ from rest_framework import status
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-from .. import (
-    admin,
-    models
-)
+from .. import admin, models
 
 
 class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
-    harvester_type = 'geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker'
+    harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker"
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.user = get_user_model().objects.get(username='admin')
+        self.user = get_user_model().objects.get(username="admin")
         self.client.login(username="admin", password="admin")
 
         self.harvester = models.Harvester.objects.create(
             remote_url="http://fake1.com",
             name="harvester1",
             default_owner=self.user,
-            harvester_type=self.harvester_type
+            harvester_type=self.harvester_type,
         )
 
     def test_get_form_returns_current_user(self):
@@ -38,24 +35,23 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
 
     def test_add_harvester(self):
         data = {
-            'name': 'harvester',
-            'remote_url': "http://fake.com",
-            'harvesting_session_update_frequency': 60,
-            'refresh_harvestable_resources_update_frequency': 30,
-            'check_availability_frequency': 10,
-            'harvester_type_specific_configuration': '{}',
-            'harvester_type': self.harvester_type,
-            'status': models.Harvester.STATUS_READY,
-            'default_owner': self.user.pk
-
+            "name": "harvester",
+            "remote_url": "http://fake.com",
+            "harvesting_session_update_frequency": 60,
+            "refresh_harvestable_resources_update_frequency": 30,
+            "check_availability_frequency": 10,
+            "harvester_type_specific_configuration": "{}",
+            "harvester_type": self.harvester_type,
+            "status": models.Harvester.STATUS_READY,
+            "default_owner": self.user.pk,
         }
         self.assertFalse(models.Harvester.objects.filter(name=data["name"]).exists())
-        response = self.client.post(reverse('admin:harvesting_harvester_add'), data)
+        response = self.client.post(reverse("admin:harvesting_harvester_add"), data)
         print(f"response: {response.content}")
         self.assertEqual(response.status_code, status.HTTP_302_FOUND)  # response from admin
         harvester = models.Harvester.objects.get(name=data["name"])
-        self.assertEqual(harvester.name, data['name'])
-        self.assertEqual(harvester.remote_url, data['remote_url'])
+        self.assertEqual(harvester.name, data["name"])
+        self.assertEqual(harvester.remote_url, data["remote_url"])
         self.assertEqual(harvester.status, models.Harvester.STATUS_READY)
 
     def test_update_harvester_availability(self):
@@ -118,30 +114,20 @@ class HarvesterAdminTestCase(GeoNodeBaseTestSupport):
 
 
 class AsynchronousHarvestingSessionAdminTestCase(GeoNodeBaseTestSupport):
-
     def test_django_admin_does_not_allow_creating_new_session(self):
-        data = {
-            'session_type': "harvesting",
-            'harvester': 1000,
-            'status': 'pending'
-        }
-        response = self.client.post(reverse('admin:harvesting_harvester_add'), data, follow=True)
+        data = {"session_type": "harvesting", "harvester": 1000, "status": "pending"}
+        response = self.client.post(reverse("admin:harvesting_harvester_add"), data, follow=True)
         print(response.redirect_chain)
         self.assertRedirects(response, "/en-us/admin/login/?next=/en-us/admin/harvesting/harvester/add/")
 
 
 class HarvestableResourceAdminTestCase(GeoNodeBaseTestSupport):
-
     def test_initiate_harvest_selected_resources_initiates_when_harvester_is_available(self):
         mock_harvester_model = mock.MagicMock(spec=models.Harvester)
         mock_harvester = mock_harvester_model.return_value
         mock_harvester.update_availability.return_value = True
         fake_resource_id = 1000
-        mock_resource = mock.MagicMock(
-            spec=models.HarvestableResource,
-            harvester=mock_harvester,
-            id=fake_resource_id
-        )
+        mock_resource = mock.MagicMock(spec=models.HarvestableResource, harvester=mock_harvester, id=fake_resource_id)
         model_admin = admin.HarvestableResourceAdmin(model=mock_resource, admin_site=AdminSite())
         with mock.patch.object(model_admin, "message_user"):
             model_admin.initiate_harvest_selected_resources(None, [mock_resource])
@@ -153,11 +139,7 @@ class HarvestableResourceAdminTestCase(GeoNodeBaseTestSupport):
         mock_harvester = mock_harvester_model.return_value
         mock_harvester.update_availability.return_value = False
         fake_resource_id = 1000
-        mock_resource = mock.MagicMock(
-            spec=models.HarvestableResource,
-            harvester=mock_harvester,
-            id=fake_resource_id
-        )
+        mock_resource = mock.MagicMock(spec=models.HarvestableResource, harvester=mock_harvester, id=fake_resource_id)
         model_admin = admin.HarvestableResourceAdmin(model=mock_resource, admin_site=AdminSite())
         with mock.patch.object(model_admin, "message_user"):
             model_admin.initiate_harvest_selected_resources(None, [mock_resource])

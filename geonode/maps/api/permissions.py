@@ -25,8 +25,9 @@ class MapPermissionsFilter(BaseFilterBackend):
     A filter backend that limits results to those where the requesting user
     has read object level permissions.
     """
+
     shortcut_kwargs = {
-        'accept_global_perms': True,
+        "accept_global_perms": True,
     }
 
     def filter_queryset(self, request, queryset, view):
@@ -43,17 +44,16 @@ class MapPermissionsFilter(BaseFilterBackend):
         #     'model_name': queryset.model._meta.model_name,
         # }
 
-        resources = get_objects_for_user(
-            user,
-            'base.view_resourcebase',
-            **self.shortcut_kwargs
-        ).filter(polymorphic_ctype__model='map')
+        resources = get_objects_for_user(user, "base.view_resourcebase", **self.shortcut_kwargs).filter(
+            polymorphic_ctype__model="map"
+        )
 
         obj_with_perms = get_visible_resources(
             resources,
             user,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES)
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
 
-        return queryset.filter(id__in=obj_with_perms.values('id'))
+        return queryset.filter(id__in=obj_with_perms.values("id"))

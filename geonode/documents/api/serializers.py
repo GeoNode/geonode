@@ -26,13 +26,11 @@ logger = logging.getLogger(__name__)
 
 
 class GeonodeFilePathField(DynamicComputedField):
-
     def get_attribute(self, instance):
         return instance.files
 
 
 class DocumentFieldField(DynamicComputedField):
-
     def get_attribute(self, instance):
         return instance.files
 
@@ -49,4 +47,16 @@ class DocumentSerializer(ResourceBaseSerializer):
         model = Document
         name = "document"
         view_name = "documents-list"
-        fields = ("pk", "uuid", "name", "href", "subtype", "extension", "mime_type", "executions", "file_path", "doc_file")
+        fields = (
+            "pk",
+            "uuid",
+            "name",
+            "href",
+            "subtype",
+            "extension",
+            "mime_type",
+            "executions",
+            "file_path",
+            "doc_file",
+            "metadata",
+        )

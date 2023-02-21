@@ -27,7 +27,6 @@ from .. import models
 
 
 class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
-
     def test_base_api_url(self):
         """Base API URL does not have an extra slash, regardless of whether the original URL has it or not"""
         base_remote_urls = [
@@ -49,16 +48,22 @@ class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
         categories = ["category1", "category2"]
         combinations = [
             {
-                "harvest_documents": True, "harvest_datasets": True, "copy_datasets": True, "copy_documents": True,
-                "resource_title_filter": "something", "start_date_filter": now, "end_date_filter": now,
-                "keywords_filter": keywords, "categories_filter": categories
+                "harvest_documents": True,
+                "harvest_datasets": True,
+                "copy_datasets": True,
+                "copy_documents": True,
+                "resource_title_filter": "something",
+                "start_date_filter": now,
+                "end_date_filter": now,
+                "keywords_filter": keywords,
+                "categories_filter": categories,
             },
         ]
         for param_combination in combinations:
             harvester = models.Harvester(
                 name="fake1",
                 harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester",
-                harvester_type_specific_configuration=param_combination
+                harvester_type_specific_configuration=param_combination,
             )
             harvester.get_harvester_worker()
 

@@ -186,14 +186,14 @@
      <gmd:MD_DataIdentification>
        <gmd:citation>
          <gmd:CI_Citation>
-           {% if layer.alternate %}
-           <gmd:name>
-             <gco:CharacterString>{{layer.alternate}}</gco:CharacterString>
-           </gmd:name>
-           {% endif %}
            <gmd:title>
              <gco:CharacterString>{{layer.title}}</gco:CharacterString>
            </gmd:title>
+           {% if layer.alternate %}
+           <gmd:alternateTitle>
+             <gco:CharacterString>{{layer.alternate}}</gco:CharacterString>
+           </gmd:alternateTitle>
+           {% endif %}
            <gmd:date>
              <gmd:CI_Date>
                <gmd:date>
@@ -501,10 +501,10 @@
        </gmd:contentType>
      </gmd:MD_CoverageDescription>
      {% elif layer.subtype == 'vector' %}
-     <gmd:includedWithDataset>
-       <gco:Boolean>0</gco:Boolean>
-     </gmd:includedWithDataset>
      <gmd:MD_FeatureCatalogueDescription>
+       <gmd:includedWithDataset>
+         <gco:Boolean>0</gco:Boolean>
+       </gmd:includedWithDataset>
        <gmd:featureCatalogueCitation uuidref="{{layer.uuid}}" xlink:href="{{ SITEURL }}{{ layer.get_absolute_url }}/feature_catalogue"/>
      </gmd:MD_FeatureCatalogueDescription>
      {% endif %}
@@ -583,3 +583,4 @@
      </gmd:DQ_DataQuality>
    </gmd:dataQualityInfo>
  </gmd:MD_Metadata>
+ 

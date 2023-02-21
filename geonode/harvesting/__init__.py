@@ -17,4 +17,4 @@
 #
 #########################################################################
 
-default_app_config = 'geonode.harvesting.apps.HarvestingAppConfig'
+default_app_config = "geonode.harvesting.apps.HarvestingAppConfig"

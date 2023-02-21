@@ -25,16 +25,9 @@ from actstream.models import Action
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
-from django.http import (
-    Http404,
-    HttpResponseForbidden,
-    HttpResponseNotAllowed,
-    HttpResponseRedirect)
+from django.http import Http404, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseRedirect
 from django.contrib import messages
-from django.shortcuts import (
-    get_object_or_404,
-    redirect,
-    render)
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView, CreateView
 from django.views.generic.edit import UpdateView
@@ -55,16 +48,16 @@ logger = logging.getLogger(__name__)
 
 class SetGroupDatasetPermission(View):
     def get(self, request):
-        return user_and_group_permission(request, 'groupprofile')
+        return user_and_group_permission(request, "groupprofile")
 
     def post(self, request):
-        return user_and_group_permission(request, 'groupprofile')
+        return user_and_group_permission(request, "groupprofile")
 
 
 @view_decorator(superuser_only, subclass=True)
 class GroupCategoryCreateView(CreateView):
     model = models.GroupCategory
-    fields = ['name', 'description']
+    fields = ["name", "description"]
 
 
 class GroupCategoryDetailView(DetailView):
@@ -73,8 +66,8 @@ class GroupCategoryDetailView(DetailView):
 
 class GroupCategoryUpdateView(UpdateView):
     model = models.GroupCategory
-    fields = ['name', 'description']
-    template_name_suffix = '_update_form'
+    fields = ["name", "description"]
+    template_name_suffix = "_update_form"
 
 
 group_category_create = GroupCategoryCreateView.as_view()
@@ -91,11 +84,7 @@ def group_create(request):
             group.save()
             form.save_m2m()
             group.join(request.user, role="manager")
-            return HttpResponseRedirect(
-                reverse(
-                    "group_detail",
-                    args=[
-                        group.slug]))
+            return HttpResponseRedirect(reverse("group_detail", args=[group.slug]))
     else:
         form = forms.GroupForm()
 
@@ -109,24 +98,23 @@ def group_update(request, slug):
         return HttpResponseForbidden()
 
     if request.method == "POST":
-        form = forms.GroupUpdateForm(
-            request.POST, request.FILES, instance=group)
+        form = forms.GroupUpdateForm(request.POST, request.FILES, instance=group)
         if form.is_valid():
             group = form.save(commit=False)
             group.save()
             form.save_m2m()
-            return HttpResponseRedirect(
-                reverse(
-                    "group_detail",
-                    args=[
-                        group.slug]))
+            return HttpResponseRedirect(reverse("group_detail", args=[group.slug]))
     else:
         form = forms.GroupForm(instance=group)
 
-    return render(request, "groups/group_update.html", context={
-        "form": form,
-        "group": group,
-    })
+    return render(
+        request,
+        "groups/group_update.html",
+        context={
+            "form": form,
+            "group": group,
+        },
+    )
 
 
 class GroupDetailView(ListView):
@@ -143,24 +131,20 @@ class GroupDetailView(ListView):
         return self.group.member_queryset()
 
     def get(self, request, *args, **kwargs):
-        self.group = get_object_or_404(
-            models.GroupProfile, slug=kwargs.get('slug'))
-        if self.group.access == 'private' and \
-                not self.group.user_is_member(request.user):
+        self.group = get_object_or_404(models.GroupProfile, slug=kwargs.get("slug"))
+        if self.group.access == "private" and not self.group.user_is_member(request.user):
             raise Http404
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object'] = self.group
-        context['maps'] = self.group.resources(resource_type='map')
-        context['datasets'] = self.group.resources(resource_type='dataset')
-        context['documents'] = self.group.resources(resource_type='document')
-        context['is_member'] = self.group.user_is_member(self.request.user)
-        context['is_manager'] = self.group.user_is_role(
-            self.request.user,
-            "manager")
-        context['can_view'] = self.group.can_view(self.request.user)
+        context["object"] = self.group
+        context["maps"] = self.group.resources(resource_type="map")
+        context["datasets"] = self.group.resources(resource_type="dataset")
+        context["documents"] = self.group.resources(resource_type="document")
+        context["is_member"] = self.group.user_is_member(self.request.user)
+        context["is_manager"] = self.group.user_is_role(self.request.user, "manager")
+        context["can_view"] = self.group.can_view(self.request.user)
         return context
 
 
@@ -175,8 +159,8 @@ def group_members(request, slug):
         context={
             "group": group,
             "members": group.member_queryset(),
-            "member_form": forms.GroupMemberForm(request.user) if is_manager else None
-        }
+            "member_form": forms.GroupMemberForm(request.user) if is_manager else None,
+        },
     )
 
 
@@ -190,11 +174,7 @@ def group_members_add(request, slug):
     if form.is_valid():
         for user in form.cleaned_data["user_identifiers"]:
             try:
-                group.join(
-                    user,
-                    role=GroupMember.MANAGER if form.cleaned_data[
-                        "manager_role"] else GroupMember.MEMBER
-                )
+                group.join(user, role=GroupMember.MANAGER if form.cleaned_data["manager_role"] else GroupMember.MEMBER)
             except Exception as e:
                 messages.add_message(request, messages.ERROR, e)
                 return redirect("group_members", slug=group.slug)
@@ -255,12 +235,9 @@ def group_join(request, slug):
 @login_required
 def group_remove(request, slug):
     group = get_object_or_404(models.GroupProfile, slug=slug)
-    if request.method == 'GET':
-        return render(
-            request,
-            "groups/group_remove.html", context={"group": group})
-    if request.method == 'POST':
-
+    if request.method == "GET":
+        return render(request, "groups/group_remove.html", context={"group": group})
+    if request.method == "POST":
         if not group.user_is_role(request.user, role="manager"):
             return HttpResponseForbidden()
 
@@ -275,19 +252,22 @@ class GroupActivityView(ListView):
     Returns recent group activity.
     """
 
-    template_name = 'groups/activity.html'
+    template_name = "groups/activity.html"
     group = None
 
     def get_queryset(self):
         if not self.group:
             return None
         else:
-            members = ([(member.user.id) for member in self.group.member_queryset()])
-            return Action.objects.filter(public=True, actor_object_id__in=members, )[:15]
+            members = [(member.user.id) for member in self.group.member_queryset()]
+            return Action.objects.filter(
+                public=True,
+                actor_object_id__in=members,
+            )[:15]
 
     def get(self, request, *args, **kwargs):
         self.group = None
-        group = get_object_or_404(models.GroupProfile, slug=kwargs.get('slug'))
+        group = get_object_or_404(models.GroupProfile, slug=kwargs.get("slug"))
 
         if not group.can_view(request.user):
             raise Http404()
@@ -301,38 +281,25 @@ class GroupActivityView(ListView):
             return action.timestamp
 
         context = super().get_context_data(**kwargs)
-        context['group'] = self.group
+        context["group"] = self.group
         # Additional Filtered Lists Below
         action_list = []
-        actions = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='dataset')
-        context['action_list_datasets'] = [
-            action
-            for action in actions
-            if action.action_object and action.action_object.group == self.group.group][
-            :15]
-        action_list.extend(context['action_list_datasets'])
-        actions = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='map')[:15]
-        context['action_list_maps'] = [
-            action
-            for action in actions
-            if action.action_object and action.action_object.group == self.group.group][
-            :15]
-        action_list.extend(context['action_list_maps'])
-        actions = Action.objects.filter(
-            public=True,
-            action_object_content_type__model='document')[:15]
-        context['action_list_documents'] = [
-            action
-            for action in actions
-            if
-            action.action_object and action.action_object.group == self.group.group][
-            :15]
-        action_list.extend(context['action_list_documents'])
-        context['action_list'] = sorted(action_list, key=getKey, reverse=True)
+        actions = Action.objects.filter(public=True, action_object_content_type__model="dataset")
+        context["action_list_datasets"] = [
+            action for action in actions if action.action_object and action.action_object.group == self.group.group
+        ][:15]
+        action_list.extend(context["action_list_datasets"])
+        actions = Action.objects.filter(public=True, action_object_content_type__model="map")[:15]
+        context["action_list_maps"] = [
+            action for action in actions if action.action_object and action.action_object.group == self.group.group
+        ][:15]
+        action_list.extend(context["action_list_maps"])
+        actions = Action.objects.filter(public=True, action_object_content_type__model="document")[:15]
+        context["action_list_documents"] = [
+            action for action in actions if action.action_object and action.action_object.group == self.group.group
+        ][:15]
+        action_list.extend(context["action_list_documents"])
+        context["action_list"] = sorted(action_list, key=getKey, reverse=True)
         return context
 
 
@@ -346,12 +313,12 @@ class GroupProfileAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(title__icontains=self.q)
 
         if not user.is_authenticated or user.is_anonymous:
-            return qs.exclude(access='private')
+            return qs.exclude(access="private")
         elif not user.is_superuser:
-            return qs.filter(Q(pk__in=user.group_list_all()) | ~Q(access='private'))
+            return qs.filter(Q(pk__in=user.group_list_all()) | ~Q(access="private"))
         return qs
 
 
 class GroupCategoryAutocomplete(SimpleSelect2View):
     model = models.GroupCategory
-    filter_arg = 'name__icontains'
+    filter_arg = "name__icontains"

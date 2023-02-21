@@ -31,38 +31,38 @@ from geonode.base.auth import (
     extract_user_from_headers,
     get_token_object_from_session,
     visitor_ip_address,
-    is_ipaddress_in_whitelist
+    is_ipaddress_in_whitelist,
 )
 
 
 # make sure login_url can be mapped to redirection URL and will match request.path
-login_url = settings.LOGIN_URL.replace(settings.SITEURL.rstrip('/'), '')
-if not login_url.startswith('/'):
+login_url = settings.LOGIN_URL.replace(settings.SITEURL.rstrip("/"), "")
+if not login_url.startswith("/"):
     login_url = f"/{login_url}"
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     white_list_paths = (
-        reverse('account_login'),
-        reverse('forgot_username'),
-        reverse('help'),
-        reverse('dataset_acls'),
-        reverse('dataset_acls_dep'),
-        reverse('dataset_resolve_user'),
-        reverse('dataset_resolve_user_dep'),
-        reverse('proxy'),
-        '/account/(?!.*(?:signup))',
+        reverse("account_login"),
+        reverse("forgot_username"),
+        reverse("help"),
+        reverse("dataset_acls"),
+        reverse("dataset_acls_dep"),
+        reverse("dataset_resolve_user"),
+        reverse("dataset_resolve_user_dep"),
+        reverse("proxy"),
+        "/account/(?!.*(?:signup))",
         # block unauthenticated users from creating new accounts.
-        '/static/*',
+        "/static/*",
         login_url,
     )
 else:
     white_list_paths = (
-        reverse('account_login'),
-        reverse('forgot_username'),
-        reverse('help'),
-        '/account/(?!.*(?:signup))',
+        reverse("account_login"),
+        reverse("forgot_username"),
+        reverse("help"),
+        "/account/(?!.*(?:signup))",
         # block unauthenticated users from creating new accounts.
-        '/static/*',
+        "/static/*",
         login_url,
     )
 
@@ -89,27 +89,21 @@ class LoginRequiredMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def process_request(self, request):
-
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-
             if not any(path.match(request.path) for path in white_list):
-                return HttpResponseRedirect(
-                    f"{self.redirect_to}?next={request.path}"
-                )
+                return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
 
 class LoginFromApiKeyMiddleware(MiddlewareMixin):
-
     def __init__(self, get_response):
         self.get_response = get_response
 
     def process_request(self, request):
-        '''
+        """
         If an api key is provided and validated, the user can access to the page even without the login
         This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
-        '''
+        """
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-
             request.user = extract_user_from_headers(request)
 
             if request.user and not request.user.is_anonymous and request.user.is_authenticated:
@@ -121,7 +115,7 @@ class SessionControlMiddleware(MiddlewareMixin):
     Middleware that checks if session variables have been correctly set.
     """
 
-    redirect_to = getattr(settings, 'LOGIN_URL', reverse('account_login'))
+    redirect_to = getattr(settings, "LOGIN_URL", reverse("account_login"))
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -148,13 +142,13 @@ class SessionControlMiddleware(MiddlewareMixin):
             try:
                 from django.contrib import messages
                 from django.utils.translation import ugettext_noop as _
+
                 messages.warning(request, _("Session is Expired. Please login again!"))
             except Exception:
                 pass
 
             if not any(path.match(request.path) for path in white_list):
-                return HttpResponseRedirect(
-                    f'{self.redirect_to}?next={request.path}')
+                return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
 
 class AdminAllowedMiddleware(MiddlewareMixin):
@@ -166,7 +160,7 @@ class AdminAllowedMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def process_request(self, request):
-        whitelist = getattr(settings, 'ADMIN_IP_WHITELIST', [])
+        whitelist = getattr(settings, "ADMIN_IP_WHITELIST", [])
         if len(whitelist) > 0:
             # When the request reaches the middleware the user attached to it (directly or through a session)
             # might differ from the user from the headers. E.g. userX might have a an active session
@@ -195,6 +189,7 @@ class AdminAllowedMiddleware(MiddlewareMixin):
                         try:
                             from django.contrib import messages
                             from django.utils.translation import ugettext_noop as _
+
                             messages.warning(request, _("Admin access forbidden from {visitor_ip}"))
                         except Exception:
                             pass

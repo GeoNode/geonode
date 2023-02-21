@@ -136,21 +136,17 @@ class HarvesterSerializer(BriefHarvesterSerializer):
 
         worker_config_field = "harvester_type_specific_configuration"
         worker_type_field = "harvester_type"
-        worker_type = data.get(
-            worker_type_field, getattr(self.instance, worker_type_field, None))
-        worker_config = data.get(
-            worker_config_field, getattr(self.instance, worker_config_field, None))
+        worker_type = data.get(worker_type_field, getattr(self.instance, worker_type_field, None))
+        worker_config = data.get(worker_config_field, getattr(self.instance, worker_config_field, None))
         if worker_type is not None and worker_config is not None:
             try:
                 models.validate_worker_configuration(worker_type, worker_config)
             except jsonschema.exceptions.ValidationError:
-                raise serializers.ValidationError(
-                    f"Invalid {worker_config_field!r} configuration")
+                raise serializers.ValidationError(f"Invalid {worker_config_field!r} configuration")
 
         if data.get("status") and data.get(worker_config_field):
             raise serializers.ValidationError(
-                f"Cannot update a harvester's 'status' and {worker_config_field!r} at "
-                f"the same time"
+                f"Cannot update a harvester's 'status' and {worker_config_field!r} at " f"the same time"
             )
         return data
 
@@ -205,30 +201,23 @@ class HarvesterSerializer(BriefHarvesterSerializer):
         elif desired_status == models.Harvester.STATUS_UPDATING_HARVESTABLE_RESOURCES:
             session = models.AsynchronousHarvestingSession.objects.create(
                 harvester=instance,
-                session_type=models.AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+                session_type=models.AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES,
             )
             post_update_task = tasks.update_harvestable_resources.signature(args=(session.pk,))
         elif desired_status == models.Harvester.STATUS_PERFORMING_HARVESTING:
             session = models.AsynchronousHarvestingSession.objects.create(
-                harvester=instance,
-                session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
+                harvester=instance, session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
             )
             post_update_task = tasks.harvesting_dispatcher.signature(args=(session.pk,))
         elif desired_status == models.Harvester.STATUS_CHECKING_AVAILABILITY:
-            post_update_task = tasks.check_harvester_available.signature(
-                args=(instance.id,))
+            post_update_task = tasks.check_harvester_available.signature(args=(instance.id,))
         elif desired_status is None:
             current_worker_config = instance.harvester_type_specific_configuration
-            desired_worker_config = validated_data.get(
-                "harvester_type_specific_configuration", current_worker_config)
+            desired_worker_config = validated_data.get("harvester_type_specific_configuration", current_worker_config)
             if desired_worker_config != current_worker_config:
-                logger.debug(
-                    f"Regenerating harvestable resource list for harvester "
-                    f"{instance!r} asynchronously..."
-                )
+                logger.debug(f"Regenerating harvestable resource list for harvester " f"{instance!r} asynchronously...")
                 models.HarvestableResource.objects.filter(harvester=instance).delete()
-                post_update_task = tasks.update_harvestable_resources.signature(
-                    args=(instance.id,))
+                post_update_task = tasks.update_harvestable_resources.signature(args=(instance.id,))
             else:
                 post_update_task = None
         else:
@@ -253,7 +242,6 @@ class BriefAsynchronousHarvestingSessionSerializer(DynamicModelSerializer):
 
 
 class HarvestableResourceSerializer(DynamicModelSerializer):
-
     class Meta:
         model = models.HarvestableResource
         fields = [
@@ -279,11 +267,9 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
         # that allows for bulk update of multiple instances simultaneously. This mixin class is instantiating
         # this serializer class without providing an instance and then calling its `save()` method
         harvestable_resource = models.HarvestableResource.objects.get(
-            harvester=self.context["harvester"],
-            unique_identifier=validated_data["unique_identifier"]
+            harvester=self.context["harvester"], unique_identifier=validated_data["unique_identifier"]
         )
-        harvestable_resource.should_be_harvested = (
-            validated_data["should_be_harvested"])
+        harvestable_resource.should_be_harvested = validated_data["should_be_harvested"]
         harvestable_resource.save()
         return harvestable_resource
 
@@ -305,12 +291,8 @@ class HarvestableResourceSerializer(DynamicModelSerializer):
         """
 
         if not isinstance(data, typing.Mapping):
-            message = self.error_messages['invalid'].format(
-                datatype=type(data).__name__
-            )
-            raise exceptions.ValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: [message]
-            }, code='invalid')
+            message = self.error_messages["invalid"].format(datatype=type(data).__name__)
+            raise exceptions.ValidationError({api_settings.NON_FIELD_ERRORS_KEY: [message]}, code="invalid")
 
         ret = collections.OrderedDict()
         errors = collections.OrderedDict()

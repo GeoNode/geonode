@@ -21,9 +21,10 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.urls import reverse
+
+from guardian.shortcuts import assign_perm, get_anonymous_user
 from mock import patch
 from rest_framework.test import APITestCase
-from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Dataset
@@ -33,7 +34,6 @@ logger = logging.getLogger(__name__)
 
 
 class MapsApiTests(APITestCase):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -112,6 +112,17 @@ class MapsApiTests(APITestCase):
                 self.assertEqual(response.data["map"]["maplayers"][0]["extra_params"], {"foo": "bar"})
                 self.assertIsNotNone(response.data["map"]["maplayers"][0]["dataset"])
 
+    def test_extra_metadata_included_with_param(self):
+        resource = Map.objects.first()
+        url = urljoin(f"{reverse('maps-list')}/", f"{resource.pk}")
+        data = {"include[]": "metadata"}
+
+        response = self.client.get(url, format="json", data=data)
+        self.assertIsNotNone(response.data["map"].get("metadata"))
+
+        response = self.client.get(url, format="json")
+        self.assertNotIn("map", response.data["map"])
+
     def test_patch_map(self):
         """
         Patch to maps/<pk>/
@@ -162,10 +173,8 @@ class MapsApiTests(APITestCase):
 
         expected_error = {
             "success": False,
-            "errors": [
-                "serializer instance and object are different"
-            ],
-            "code": "maps_exception"
+            "errors": ["serializer instance and object are different"],
+            "code": "maps_exception",
         }
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected_error, response.json())
@@ -193,7 +202,7 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
-        self.assertIsNotNone(response.data["map"]['thumbnail_url'])
+        self.assertIsNotNone(response.data["map"]["thumbnail_url"])
 
 
 DUMMY_MAPDATA = {

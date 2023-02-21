@@ -94,7 +94,7 @@ def create_thumbnail(
     # handle custom, uploaded thumbnails, which may have different extensions from the default thumbnail
     thumbnail_exists = False
     if instance.thumbnail_url:
-        thumbnail_exists = utils.thumb_exists(instance.thumbnail_url.rsplit('/')[-1])
+        thumbnail_exists = utils.thumb_exists(instance.thumbnail_url.rsplit("/")[-1])
 
     if (thumbnail_exists or utils.thumb_exists(default_thumbnail_name)) and not overwrite:
         logger.debug(f"Thumbnail for {instance.name} already exists. Skipping thumbnail generation.")
@@ -116,7 +116,9 @@ def create_thumbnail(
         compute_bbox_from_datasets = True
 
     # --- define dataset locations ---
-    locations, datasets_bbox = _datasets_locations(instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs)
+    locations, datasets_bbox = _datasets_locations(
+        instance, compute_bbox=compute_bbox_from_datasets, target_crs=target_crs
+    )
 
     if compute_bbox_from_datasets and is_map_with_datasets:
         if not datasets_bbox:
@@ -169,7 +171,7 @@ def create_thumbnail(
                 img = Image.open(content)
                 img.verify()  # verify that it is, in fact an image
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-                merged_partial_thumbs.paste(img, mask=img.convert('RGBA'))
+                merged_partial_thumbs.paste(img, mask=img.convert("RGBA"))
             except UnidentifiedImageError as e:
                 logger.error(f"Thumbnail generation. Error occurred while fetching dataset image: {image}")
                 logger.exception(e)
@@ -228,9 +230,7 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp]) ->
     elif isinstance(instance, GeoApp):
         file_name = f"geoapp-{instance.uuid}-thumb.png"
     else:
-        raise ThumbnailError(
-            "Thumbnail generation didn't recognize the provided instance."
-        )
+        raise ThumbnailError("Thumbnail generation didn't recognize the provided instance.")
 
     return file_name
 
@@ -257,20 +257,14 @@ def _datasets_locations(
     locations = []
     bbox = []
     if isinstance(instance, Dataset):
-        locations.append(
-            [
-                instance.ows_url or ogc_server_settings.LOCATION,
-                [instance.alternate],
-                []
-            ]
-        )
+        locations.append([instance.ows_url or ogc_server_settings.LOCATION, [instance.alternate], []])
         if compute_bbox:
             if instance.ll_bbox_polygon:
                 bbox = utils.clean_bbox(instance.ll_bbox, target_crs)
             elif (
-                    instance.bbox[-1].upper() != 'EPSG:3857'
-                    and target_crs.upper() == 'EPSG:3857'
-                    and utils.exceeds_epsg3857_area_of_use(instance.bbox)
+                instance.bbox[-1].upper() != "EPSG:3857"
+                and target_crs.upper() == "EPSG:3857"
+                and utils.exceeds_epsg3857_area_of_use(instance.bbox)
             ):
                 # handle exceeding the area of use of the default thumb's CRS
                 bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(instance.bbox), target_crs)
@@ -278,7 +272,6 @@ def _datasets_locations(
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
         for map_dataset in instance.maplayers.iterator():
-
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
                     "Incorrectly defined remote dataset encountered (no OWS URL defined)."
@@ -301,7 +294,7 @@ def _datasets_locations(
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")
                 continue
 
-            if dataset.subtype in ['tileStore', 'remote']:
+            if dataset.subtype in ["tileStore", "remote"]:
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == dataset.remote_service.service_url:
                     # if previous dataset's location is the same as the current one - append current dataset there
@@ -310,11 +303,13 @@ def _datasets_locations(
                     if map_dataset_style:
                         locations[-1][2].append(map_dataset_style)
                 else:
-                    locations.append([
-                        dataset.remote_service.service_url,
-                        [dataset.alternate],
-                        [map_dataset_style] if map_dataset_style else []
-                    ])
+                    locations.append(
+                        [
+                            dataset.remote_service.service_url,
+                            [dataset.alternate],
+                            [map_dataset_style] if map_dataset_style else [],
+                        ]
+                    )
             else:
                 # limit number of locations, ensuring dataset order
                 if len(locations) and locations[-1][0] == settings.OGC_SERVER["default"]["LOCATION"]:
@@ -324,19 +319,21 @@ def _datasets_locations(
                     if map_dataset_style:
                         locations[-1][2].append(map_dataset_style)
                 else:
-                    locations.append([
-                        settings.OGC_SERVER["default"]["LOCATION"],
-                        [dataset.alternate],
-                        [map_dataset_style] if map_dataset_style else []
-                    ])
+                    locations.append(
+                        [
+                            settings.OGC_SERVER["default"]["LOCATION"],
+                            [dataset.alternate],
+                            [map_dataset_style] if map_dataset_style else [],
+                        ]
+                    )
 
             if compute_bbox:
                 if dataset.ll_bbox_polygon:
                     dataset_bbox = utils.clean_bbox(dataset.ll_bbox, target_crs)
                 elif (
-                        dataset.bbox[-1].upper() != 'EPSG:3857'
-                        and target_crs.upper() == 'EPSG:3857'
-                        and utils.exceeds_epsg3857_area_of_use(dataset.bbox)
+                    dataset.bbox[-1].upper() != "EPSG:3857"
+                    and target_crs.upper() == "EPSG:3857"
+                    and utils.exceeds_epsg3857_area_of_use(dataset.bbox)
                 ):
                     # handle exceeding the area of use of the default thumb's CRS
                     dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(dataset.bbox), target_crs)

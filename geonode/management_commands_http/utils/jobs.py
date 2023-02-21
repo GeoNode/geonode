@@ -39,8 +39,6 @@ def stop_task(job: ManagementCommandJob):
 def get_celery_task_meta(job: ManagementCommandJob):
     if not job.celery_result_id or celery_app.conf.task_always_eager:
         return {}
-    async_result = run_management_command_async.AsyncResult(
-        job.celery_result_id
-    )
+    async_result = run_management_command_async.AsyncResult(job.celery_result_id)
     task_meta = async_result.backend.get_task_meta(job.celery_result_id)
     return task_meta

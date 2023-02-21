@@ -28,18 +28,15 @@ from .. import models
 
 
 class HarvesterTestCase(GeoNodeBaseTestSupport):
-    remote_url = 'test.com'
-    name = 'This is geonode harvester'
-    user = get_user_model().objects.get(username='AnonymousUser')
+    remote_url = "test.com"
+    name = "This is geonode harvester"
+    user = get_user_model().objects.get(username="AnonymousUser")
     harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     def setUp(self):
         super().setUp()
         self.harvester = models.Harvester.objects.create(
-            remote_url=self.remote_url,
-            name=self.name,
-            default_owner=self.user,
-            harvester_type=self.harvester_type
+            remote_url=self.remote_url, name=self.name, default_owner=self.user, harvester_type=self.harvester_type
         )
 
     def test_get_worker_works(self):
@@ -69,11 +66,11 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
             ("2020-01-01T00:00:00", "2020-01-01T00:11:00", 10, "2020-01-01T00:11:00"),
         ]
         for last_checked, now, frequency, expected in fixtures:
-            mock_timezone.now.return_value = dt.datetime.fromisoformat(
-                now).replace(tzinfo=dt.timezone.utc)
+            mock_timezone.now.return_value = dt.datetime.fromisoformat(now).replace(tzinfo=dt.timezone.utc)
             harvester = models.Harvester(check_availability_frequency=frequency)
-            harvester.last_checked_availability = dt.datetime.fromisoformat(
-                last_checked).replace(tzinfo=dt.timezone.utc)
+            harvester.last_checked_availability = dt.datetime.fromisoformat(last_checked).replace(
+                tzinfo=dt.timezone.utc
+            )
             result = harvester.get_next_check_availability_dispatch_time()
             expected_result = dt.datetime.fromisoformat(expected).replace(tzinfo=dt.timezone.utc)
             self.assertEqual(result, expected_result)
@@ -85,12 +82,9 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
             ("2020-01-01T00:00:00", "2020-01-01T00:11:00", 10, "2020-01-01T00:11:00"),
         ]
         for last_check, now, frequency, expected in fixtures:
-            mock_timezone.now.return_value = dt.datetime.fromisoformat(
-                now).replace(tzinfo=dt.timezone.utc)
+            mock_timezone.now.return_value = dt.datetime.fromisoformat(now).replace(tzinfo=dt.timezone.utc)
             with mock.patch.object(
-                    models.Harvester,
-                    "latest_refresh_session",
-                    new_callable=mock.PropertyMock
+                models.Harvester, "latest_refresh_session", new_callable=mock.PropertyMock
             ) as mock_latest_refresh_session:
                 mock_latest_refresh_session.return_value = mock.MagicMock(
                     started=dt.datetime.fromisoformat(last_check).replace(tzinfo=dt.timezone.utc)
@@ -99,28 +93,26 @@ class HarvesterTestCase(GeoNodeBaseTestSupport):
                     harvesting_session_update_frequency=10,
                     refresh_harvestable_resources_update_frequency=10,
                 )
-                result = harvester._get_next_dispatch_time(models.AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES)
+                result = harvester._get_next_dispatch_time(
+                    models.AsynchronousHarvestingSession.TYPE_DISCOVER_HARVESTABLE_RESOURCES
+                )
                 expected_result = dt.datetime.fromisoformat(expected).replace(tzinfo=dt.timezone.utc)
                 self.assertEqual(result, expected_result)
 
 
 class AsynchronousHarvestingSessionTestCase(GeoNodeBaseTestSupport):
-    remote_url = 'test.com'
-    name = 'This is geonode harvester'
-    user = get_user_model().objects.get(username='AnonymousUser')
+    remote_url = "test.com"
+    name = "This is geonode harvester"
+    user = get_user_model().objects.get(username="AnonymousUser")
     harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     def setUp(self):
         super().setUp()
         self.harvester = models.Harvester.objects.create(
-            remote_url=self.remote_url,
-            name=self.name,
-            default_owner=self.user,
-            harvester_type=self.harvester_type
+            remote_url=self.remote_url, name=self.name, default_owner=self.user, harvester_type=self.harvester_type
         )
         self.harvesting_session = models.AsynchronousHarvestingSession.objects.create(
-            harvester=self.harvester,
-            session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
+            harvester=self.harvester, session_type=models.AsynchronousHarvestingSession.TYPE_HARVESTING
         )
 
     def test_check_attributes(self):
@@ -133,26 +125,23 @@ class AsynchronousHarvestingSessionTestCase(GeoNodeBaseTestSupport):
 
 
 class HarvestableResourceTestCase(GeoNodeBaseTestSupport):
-    unique_identifier = 'id'
-    title = 'Test'
-    remote_url = 'test.com'
-    name = 'This is geonode harvester'
-    user = get_user_model().objects.get(username='AnonymousUser')
+    unique_identifier = "id"
+    title = "Test"
+    remote_url = "test.com"
+    name = "This is geonode harvester"
+    user = get_user_model().objects.get(username="AnonymousUser")
     harvester_type = "geonode.harvesting.harvesters.geonodeharvester.GeonodeLegacyHarvester"
 
     def setUp(self):
         super().setUp()
         self.harvester = models.Harvester.objects.create(
-            remote_url=self.remote_url,
-            name=self.name,
-            default_owner=self.user,
-            harvester_type=self.harvester_type
+            remote_url=self.remote_url, name=self.name, default_owner=self.user, harvester_type=self.harvester_type
         )
         self.harvestable_resource = models.HarvestableResource.objects.create(
             unique_identifier=self.unique_identifier,
             title=self.title,
             harvester=self.harvester,
-            last_refreshed=dt.datetime.now()
+            last_refreshed=dt.datetime.now(),
         )
 
     def test_check_attributes(self):
@@ -165,7 +154,6 @@ class HarvestableResourceTestCase(GeoNodeBaseTestSupport):
 
 
 class WorkerConfigValidationTestCase(SimpleTestCase):
-
     @mock.patch("geonode.harvesting.models.jsonschema")
     @mock.patch("geonode.harvesting.models.import_string")
     def test_validate_worker_configuration(self, mock_import_string, mock_jsonschema):

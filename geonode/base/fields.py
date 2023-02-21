@@ -21,7 +21,6 @@ from django import forms
 
 
 class MultiThesauriField(forms.ModelMultipleChoiceField):
-
     def label_from_instance(self, obj):
         # Note: Not using .get() because filter()[0] is used in original
         # code. The hard-coded language is currently used throughout

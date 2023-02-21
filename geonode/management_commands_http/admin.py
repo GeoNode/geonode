@@ -78,13 +78,18 @@ class ManagementCommandJobAdmin(admin.ModelAdmin):
         if autostart and not change:
             start_task(obj)
 
-    def add_view(self, request, form_url='', extra_context=None):
+    def add_view(self, request, form_url="", extra_context=None):
         self.form = ManagementCommandJobAdminForm
-        self.fields = ("command", "args", "kwargs", "autostart",)
+        self.fields = (
+            "command",
+            "args",
+            "kwargs",
+            "autostart",
+        )
         self.readonly_fields = []
         return super().add_view(request, form_url, extra_context)
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
+    def change_view(self, request, object_id, form_url="", extra_context=None):
         self.form = ModelForm
         self.fields = (
             "celery_result_id",

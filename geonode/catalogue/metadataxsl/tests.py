@@ -21,10 +21,7 @@ from django.urls import reverse
 from geonode.base.models import ResourceBase
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models)
+from geonode.base.populate_test_data import all_public, create_models, remove_models
 
 
 class MetadataXSLTest(GeoNodeBaseTestSupport):
@@ -32,14 +29,11 @@ class MetadataXSLTest(GeoNodeBaseTestSupport):
     """
     Tests geonode.catalogue.metadataxsl app/module
     """
-    type = 'dataset'
+
+    type = "dataset"
 
     #  loading test initial data
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
     def setUpClass(cls):
@@ -63,7 +57,7 @@ class MetadataXSLTest(GeoNodeBaseTestSupport):
         _dataset.set_permissions({"users": {}, "groups": {}})
         _dataset.save()
         self.client.login(username=self.adm_un, password=self.adm_pw)
-        url = reverse('prefix_xsl_line', kwargs={'id': _dataset.id})
+        url = reverse("prefix_xsl_line", kwargs={"id": _dataset.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.client.logout()

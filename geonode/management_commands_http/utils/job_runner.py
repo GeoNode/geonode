@@ -77,9 +77,7 @@ def run_management_command(job_id, async_result_id: str = ""):
     try:
         job = ManagementCommandJob.objects.get(id=job_id)
     except ManagementCommandJob.DoesNotExist:
-        raise exceptions.NotFound(
-            f"ManagementCommandJob with id {job_id} was not found."
-        )
+        raise exceptions.NotFound(f"ManagementCommandJob with id {job_id} was not found.")
     with io.StringIO() as output:
         with JobRunner(job, output, async_result_id):
             call_command(job.command, *job.args, **job.kwargs, stdout=output)

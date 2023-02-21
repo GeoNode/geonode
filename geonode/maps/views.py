@@ -54,13 +54,8 @@ from geonode.maps.forms import MapForm
 from geonode.maps.models import Map, MapLayer
 from geonode.monitoring.models import EventType
 from geonode.people.forms import ProfileForm
-from geonode.security.utils import (
-    get_user_visible_groups,
-    AdvancedSecurityWorkflowManager)
-from geonode.utils import (
-    check_ogc_backend,
-    http_client,
-    resolve_object)
+from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
+from geonode.utils import check_ogc_backend, http_client, resolve_object
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     # FIXME: The post service providing the map_status object
@@ -82,7 +77,14 @@ def _resolve_map(request, id, permission="base.change_resourcebase", msg=_PERMIS
 
 @login_required
 @check_keyword_write_perms
-def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
+def map_metadata(
+    request,
+    mapid,
+    template="maps/map_metadata.html",
+    ajax=True,
+    panel_template="layouts/map_panels.html",
+    custom_metadata=None,
+):
     try:
         map_obj = _resolve_map(request, mapid, "base.change_resourcebase_metadata", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
@@ -103,79 +105,81 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
 
     if request.method == "POST":
         map_form = MapForm(request.POST, instance=map_obj, prefix="resource", user=request.user)
-        category_form = CategoryForm(request.POST, prefix="category_choice_field", initial=int(
-            request.POST["category_choice_field"]) if "category_choice_field" in request.POST and
-            request.POST["category_choice_field"] else None)
+        category_form = CategoryForm(
+            request.POST,
+            prefix="category_choice_field",
+            initial=int(request.POST["category_choice_field"])
+            if "category_choice_field" in request.POST and request.POST["category_choice_field"]
+            else None,
+        )
 
-        if hasattr(settings, 'THESAURUS'):
+        if hasattr(settings, "THESAURUS"):
             tkeywords_form = TKeywordForm(request.POST)
         else:
-            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix='tkeywords')
+            tkeywords_form = ThesaurusAvailableForm(request.POST, prefix="tkeywords")
     else:
         map_form = MapForm(instance=map_obj, prefix="resource", user=request.user)
         map_form.disable_keywords_widget_for_non_superuser(request.user)
         category_form = CategoryForm(
-            prefix="category_choice_field",
-            initial=topic_category.id if topic_category else None)
+            prefix="category_choice_field", initial=topic_category.id if topic_category else None
+        )
 
         # Keywords from THESAURUS management
         map_tkeywords = map_obj.tkeywords.all()
-        tkeywords_list = ''
+        tkeywords_list = ""
         # Create THESAURUS widgets
-        lang = 'en'
-        if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
-            warnings.warn('The settings for Thesaurus has been moved to Model, \
-            this feature will be removed in next releases', DeprecationWarning)
-            tkeywords_list = ''
+        lang = "en"
+        if hasattr(settings, "THESAURUS") and settings.THESAURUS:
+            warnings.warn(
+                "The settings for Thesaurus has been moved to Model, \
+            this feature will be removed in next releases",
+                DeprecationWarning,
+            )
+            tkeywords_list = ""
             if map_tkeywords and len(map_tkeywords) > 0:
-                tkeywords_ids = map_tkeywords.values_list('id', flat=True)
-                if hasattr(settings, 'THESAURUS') and settings.THESAURUS:
+                tkeywords_ids = map_tkeywords.values_list("id", flat=True)
+                if hasattr(settings, "THESAURUS") and settings.THESAURUS:
                     el = settings.THESAURUS
-                    thesaurus_name = el['name']
+                    thesaurus_name = el["name"]
                     try:
                         t = Thesaurus.objects.get(identifier=thesaurus_name)
                         for tk in t.thesaurus.filter(pk__in=tkeywords_ids):
                             tkl = tk.keyword.filter(lang=lang)
                             if len(tkl) > 0:
-                                tkl_ids = ",".join(
-                                    map(str, tkl.values_list('id', flat=True)))
-                                tkeywords_list += f",{tkl_ids}" if len(
-                                    tkeywords_list) > 0 else tkl_ids
+                                tkl_ids = ",".join(map(str, tkl.values_list("id", flat=True)))
+                                tkeywords_list += f",{tkl_ids}" if len(tkeywords_list) > 0 else tkl_ids
                     except Exception:
                         tb = traceback.format_exc()
                         logger.error(tb)
 
             tkeywords_form = TKeywordForm(instance=map_obj)
         else:
-            tkeywords_form = ThesaurusAvailableForm(prefix='tkeywords')
+            tkeywords_form = ThesaurusAvailableForm(prefix="tkeywords")
             #  set initial values for thesaurus form
             for tid in tkeywords_form.fields:
                 values = []
                 values = [keyword.id for keyword in topic_thesaurus if int(tid) == keyword.thesaurus.id]
                 tkeywords_form.fields[tid].initial = values
 
-    if request.method == "POST" and map_form.is_valid(
-    ) and category_form.is_valid() and tkeywords_form.is_valid():
-
-        new_poc = map_form.cleaned_data['poc']
-        new_author = map_form.cleaned_data['metadata_author']
-        new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data['keywords']
-        new_regions = map_form.cleaned_data['regions']
-        new_title = map_form.cleaned_data['title']
-        new_abstract = map_form.cleaned_data['abstract']
+    if request.method == "POST" and map_form.is_valid() and category_form.is_valid() and tkeywords_form.is_valid():
+        new_poc = map_form.cleaned_data["poc"]
+        new_author = map_form.cleaned_data["metadata_author"]
+        new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data["keywords"]
+        new_regions = map_form.cleaned_data["regions"]
+        new_title = map_form.cleaned_data["title"]
+        new_abstract = map_form.cleaned_data["abstract"]
 
         new_category = None
-        if category_form and 'category_choice_field' in category_form.cleaned_data and\
-                category_form.cleaned_data['category_choice_field']:
-            new_category = TopicCategory.objects.get(
-                id=int(category_form.cleaned_data['category_choice_field']))
+        if (
+            category_form
+            and "category_choice_field" in category_form.cleaned_data
+            and category_form.cleaned_data["category_choice_field"]
+        ):
+            new_category = TopicCategory.objects.get(id=int(category_form.cleaned_data["category_choice_field"]))
 
         if new_poc is None:
             if poc is None:
-                poc_form = ProfileForm(
-                    request.POST,
-                    prefix="poc",
-                    instance=poc)
+                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
             else:
                 poc_form = ProfileForm(request.POST, prefix="poc")
             if poc_form.has_changed and poc_form.is_valid():
@@ -183,8 +187,7 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
 
         if new_author is None:
             if metadata_author is None:
-                author_form = ProfileForm(request.POST, prefix="author",
-                                          instance=metadata_author)
+                author_form = ProfileForm(request.POST, prefix="author", instance=metadata_author)
             else:
                 author_form = ProfileForm(request.POST, prefix="author")
             if author_form.has_changed and author_form.is_valid():
@@ -204,11 +207,8 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
         # clearing old metadata from the resource
         map_obj.metadata.all().delete()
         # creating new metadata for the resource
-        for _m in json.loads(map_form.cleaned_data['extra_metadata']):
-            new_m = ExtraMetadata.objects.create(
-                resource=map_obj,
-                metadata=_m
-            )
+        for _m in json.loads(map_form.cleaned_data["extra_metadata"]):
+            new_m = ExtraMetadata.objects.create(resource=map_obj, metadata=_m)
             map_obj.metadata.add(new_m)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
@@ -221,14 +221,12 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
             # Keywords from THESAURUS management
             # Rewritten to work with updated autocomplete
             if not tkeywords_form.is_valid():
-                return HttpResponse(json.dumps({'message': "Invalid thesaurus keywords"}, status_code=400))
+                return HttpResponse(json.dumps({"message": "Invalid thesaurus keywords"}, status_code=400))
 
-            thesaurus_setting = getattr(settings, 'THESAURUS', None)
+            thesaurus_setting = getattr(settings, "THESAURUS", None)
             if thesaurus_setting:
-                tkeywords_data = tkeywords_form.cleaned_data['tkeywords']
-                tkeywords_data = tkeywords_data.filter(
-                    thesaurus__identifier=thesaurus_setting['name']
-                )
+                tkeywords_data = tkeywords_form.cleaned_data["tkeywords"]
+                tkeywords_data = tkeywords_data.filter(thesaurus__identifier=thesaurus_setting["name"])
                 map_obj.tkeywords.set(tkeywords_data)
             elif Thesaurus.objects.all().exists():
                 fields = tkeywords_form.cleaned_data
@@ -239,45 +237,40 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
             logger.error(tb)
 
         vals = {}
-        if 'group' in map_form.changed_data:
-            vals['group'] = map_form.cleaned_data.get('group')
-        if any([x in map_form.changed_data for x in ['is_approved', 'is_published']]):
-            vals['is_approved'] = map_form.cleaned_data.get('is_approved', map_obj.is_approved)
-            vals['is_published'] = map_form.cleaned_data.get('is_published', map_obj.is_published)
+        if "group" in map_form.changed_data:
+            vals["group"] = map_form.cleaned_data.get("group")
+        if any([x in map_form.changed_data for x in ["is_approved", "is_published"]]):
+            vals["is_approved"] = map_form.cleaned_data.get("is_approved", map_obj.is_approved)
+            vals["is_published"] = map_form.cleaned_data.get("is_published", map_obj.is_published)
         resource_manager.update(
             map_obj.uuid,
             instance=map_obj,
             notify=True,
             vals=vals,
-            extra_metadata=json.loads(map_form.cleaned_data['extra_metadata'])
+            extra_metadata=json.loads(map_form.cleaned_data["extra_metadata"]),
         )
-        return HttpResponse(json.dumps({'message': message}))
-    elif request.method == "POST" and (not map_form.is_valid(
-    ) or not category_form.is_valid() or not tkeywords_form.is_valid()):
+        return HttpResponse(json.dumps({"message": message}))
+    elif request.method == "POST" and (
+        not map_form.is_valid() or not category_form.is_valid() or not tkeywords_form.is_valid()
+    ):
         errors_list = {**map_form.errors.as_data(), **category_form.errors.as_data(), **tkeywords_form.errors.as_data()}
         logger.error(f"GeoApp Metadata form is not valid: {errors_list}")
-        out = {
-            'success': False,
-            "errors": [f"{x}: {y[0].messages[0]}" for x, y in errors_list.items()]
-        }
-        return HttpResponse(
-            json.dumps(out),
-            content_type='application/json',
-            status=400)
+        out = {"success": False, "errors": [f"{x}: {y[0].messages[0]}" for x, y in errors_list.items()]}
+        return HttpResponse(json.dumps(out), content_type="application/json", status=400)
     # - POST Request Ends here -
 
     # Request.GET
     if poc is None:
         poc_form = ProfileForm(request.POST, prefix="poc")
     else:
-        map_form.fields['poc'].initial = poc.id
+        map_form.fields["poc"].initial = poc.id
         poc_form = ProfileForm(prefix="poc")
         poc_form.hidden = True
 
     if metadata_author is None:
         author_form = ProfileForm(request.POST, prefix="author")
     else:
-        map_form.fields['metadata_author'].initial = metadata_author.id
+        map_form.fields["metadata_author"].initial = metadata_author.id
         author_form = ProfileForm(prefix="author")
         author_form.hidden = True
 
@@ -286,54 +279,48 @@ def map_metadata(request, mapid, template="maps/map_metadata.html", ajax=True):
     metadata_author_groups = get_user_visible_groups(request.user)
 
     if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, map_obj):
-        map_form.fields['is_published'].widget.attrs.update({'disabled': 'true'})
+        map_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
     if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, map_obj):
-        map_form.fields['is_approved'].widget.attrs.update({'disabled': 'true'})
+        map_form.fields["is_approved"].widget.attrs.update({"disabled": "true"})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
-    return render(request, template, context={
-        "resource": map_obj,
-        "map": map_obj,
-        "config": json.dumps(map_obj.blob),
-        "map_form": map_form,
-        "poc_form": poc_form,
-        "author_form": author_form,
-        "category_form": category_form,
-        "tkeywords_form": tkeywords_form,
-        "layers": layers,
-        "preview": getattr(settings, 'GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore'),
-        "crs": getattr(settings, 'DEFAULT_MAP_CRS', 'EPSG:3857'),
-        "metadata_author_groups": metadata_author_groups,
-        "TOPICCATEGORY_MANDATORY": getattr(settings, 'TOPICCATEGORY_MANDATORY', False),
-        "GROUP_MANDATORY_RESOURCES": getattr(settings, 'GROUP_MANDATORY_RESOURCES', False),
-        "UI_MANDATORY_FIELDS": list(
-            set(getattr(settings, 'UI_DEFAULT_MANDATORY_FIELDS', []))
-            |
-            set(getattr(settings, 'UI_REQUIRED_FIELDS', []))
-        )
-    })
+    return render(
+        request,
+        template,
+        context={
+            "resource": map_obj,
+            "map": map_obj,
+            "config": json.dumps(map_obj.blob),
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
+            "map_form": map_form,
+            "poc_form": poc_form,
+            "author_form": author_form,
+            "category_form": category_form,
+            "tkeywords_form": tkeywords_form,
+            "layers": layers,
+            "preview": getattr(settings, "GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
+            "crs": getattr(settings, "DEFAULT_MAP_CRS", "EPSG:3857"),
+            "metadata_author_groups": metadata_author_groups,
+            "TOPICCATEGORY_MANDATORY": getattr(settings, "TOPICCATEGORY_MANDATORY", False),
+            "GROUP_MANDATORY_RESOURCES": getattr(settings, "GROUP_MANDATORY_RESOURCES", False),
+            "UI_MANDATORY_FIELDS": list(
+                set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
+                | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
+            ),
+        },
+    )
 
 
 @login_required
 def map_metadata_advanced(request, mapid):
-    return map_metadata(
-        request,
-        mapid,
-        template='maps/map_metadata_advanced.html')
+    return map_metadata(request, mapid, template="maps/map_metadata_advanced.html")
 
 
 @xframe_options_exempt
-def map_embed(
-        request,
-        mapid=None,
-        template='maps/map_embed.html'):
+def map_embed(request, mapid=None, template="maps/map_embed.html"):
     try:
-        map_obj = _resolve_map(
-            request,
-            mapid,
-            'base.view_resourcebase',
-            _PERMISSION_MSG_VIEW
-        )
+        map_obj = _resolve_map(request, mapid, "base.view_resourcebase", _PERMISSION_MSG_VIEW)
     except PermissionDenied:
         return HttpResponse(MSG_NOT_ALLOWED, status=403)
     except Exception:
@@ -351,8 +338,8 @@ def map_embed(
             access_token = None
 
     context_dict = {
-        'access_token': access_token,
-        'resource': map_obj,
+        "access_token": access_token,
+        "resource": map_obj,
     }
 
     register_event(request, EventType.EVENT_VIEW, map_obj)
@@ -537,10 +524,7 @@ def map_wms(request, mapid):
 def mapdataset_attributes(request, layername):
     # Return custom layer attribute labels/order in JSON format
     layer = Dataset.objects.get(alternate=layername)
-    return HttpResponse(
-        json.dumps(
-            layer.attribute_config()),
-        content_type="application/json")
+    return HttpResponse(json.dumps(layer.attribute_config()), content_type="application/json")
 
 
 def get_suffix_if_custom(map):
@@ -556,36 +540,29 @@ def get_suffix_if_custom(map):
 
 
 def ajax_url_lookup(request):
-    if request.method != 'POST':
+    if request.method != "POST":
+        return HttpResponse(content="ajax user lookup requires HTTP POST", status=405, content_type="text/plain")
+    elif "query" not in request.POST:
         return HttpResponse(
-            content='ajax user lookup requires HTTP POST',
-            status=405,
-            content_type='text/plain'
+            content='use a field named "query" to specify a prefix to filter urls', content_type="text/plain"
         )
-    elif 'query' not in request.POST:
-        return HttpResponse(
-            content='use a field named "query" to specify a prefix to filter urls',
-            content_type='text/plain')
-    if request.POST['query'] != '':
-        maps = Map.objects.filter(urlsuffix__startswith=request.POST['query'])
-        if request.POST['mapid'] != '':
-            maps = maps.exclude(id=request.POST['mapid'])
+    if request.POST["query"] != "":
+        maps = Map.objects.filter(urlsuffix__startswith=request.POST["query"])
+        if request.POST["mapid"] != "":
+            maps = maps.exclude(id=request.POST["mapid"])
         json_dict = {
-            'urls': [({'url': m.urlsuffix}) for m in maps],
-            'count': maps.count(),
+            "urls": [({"url": m.urlsuffix}) for m in maps],
+            "count": maps.count(),
         }
     else:
         json_dict = {
-            'urls': [],
-            'count': 0,
+            "urls": [],
+            "count": 0,
         }
-    return HttpResponse(
-        content=json.dumps(json_dict),
-        content_type='text/plain'
-    )
+    return HttpResponse(content=json.dumps(json_dict), content_type="text/plain")
 
 
-def map_metadata_detail(request, mapid, template="maps/map_metadata_detail.html"):
+def map_metadata_detail(request, mapid, template="maps/map_metadata_detail.html", custom_metadata=None):
     try:
         map_obj = _resolve_map(request, mapid, "view_resourcebase")
     except PermissionDenied:
@@ -603,9 +580,14 @@ def map_metadata_detail(request, mapid, template="maps/map_metadata_detail.html"
             group = None
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, map_obj)
-    return render(request, template, context={"resource": map_obj, "group": group, "SITEURL": site_url})
+
+    return render(
+        request,
+        template,
+        context={"resource": map_obj, "group": group, "SITEURL": site_url, "custom_metadata": custom_metadata},
+    )
 
 
 @login_required
 def map_batch_metadata(request):
-    return batch_modify(request, 'Map')
+    return batch_modify(request, "Map")

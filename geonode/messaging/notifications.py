@@ -28,21 +28,21 @@ logger = logging.getLogger(__name__)
 
 
 def message_received_notification(**kwargs):
-    """ Send a notification when a request to a layer, map or document has
+    """Send a notification when a request to a layer, map or document has
     been submitted
     """
-    notice_type_label = 'message_received'
-    message = kwargs.get('message')
+    notice_type_label = "message_received"
+    message = kwargs.get("message")
     thread = message.thread
 
     recipients = _get_user_to_notify(message)
 
     ctx = {
-        'message': message.content,
-        'thread_subject': thread.subject,
-        'sender': message.sender,
-        'thread_url': settings.SITEURL + thread.get_absolute_url()[1:],
-        'site_url': settings.SITEURL
+        "message": message.content,
+        "thread_subject": thread.subject,
+        "sender": message.sender,
+        "thread_url": settings.SITEURL + thread.get_absolute_url()[1:],
+        "site_url": settings.SITEURL,
     }
     logger.debug(f"message_received_notification to: {recipients}")
     send_notification(recipients, notice_type_label, ctx)
@@ -55,7 +55,4 @@ def _get_user_to_notify(message):
 
 
 def initialize_notification_signal():
-    message_sent.connect(
-        message_received_notification,
-        sender=Message
-    )
+    message_sent.connect(message_received_notification, sender=Message)

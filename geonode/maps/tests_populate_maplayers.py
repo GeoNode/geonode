@@ -20,40 +20,43 @@
 from geonode import geoserver  # noqa
 from geonode.maps.models import Map, MapLayer
 
-maplayers = [{
-    "map": 'GeoNode Default Map',
-    "name": "geonode:CA",
-    "current_style": "",
-    "ows_url": "http://localhost:8080/geoserver/wms",
-},
+maplayers = [
     {
-    "map": 'GeoNode Default Map',
-    "name": None,
-    "current_style": "",
-},
+        "map": "GeoNode Default Map",
+        "name": "geonode:CA",
+        "current_style": "",
+        "ows_url": "http://localhost:8080/geoserver/wms",
+    },
     {
-    "map": 'GeoNode Default Map',
-    "name": None,
-    "current_style": "",
-},
+        "map": "GeoNode Default Map",
+        "name": None,
+        "current_style": "",
+    },
     {
-    "map": 'GeoNode Default Map',
-    "name": "SATELLITE",
-    "current_style": "",
-},
+        "map": "GeoNode Default Map",
+        "name": None,
+        "current_style": "",
+    },
     {
-    "map": 'GeoNode Default Map',
-    "name": None,
-    "current_style": "",
-}]
+        "map": "GeoNode Default Map",
+        "name": "SATELLITE",
+        "current_style": "",
+    },
+    {
+        "map": "GeoNode Default Map",
+        "name": None,
+        "current_style": "",
+    },
+]
 
 
 def create_maplayers():
     from geonode.utils import DisableDjangoSignals
+
     with DisableDjangoSignals():
         for ml in maplayers:
             MapLayer.objects.create(
-                name=ml['name'],
-                current_style=ml['current_style'],
-                map=Map.objects.get(title=ml['map']),
+                name=ml["name"],
+                current_style=ml["current_style"],
+                map=Map.objects.get(title=ml["map"]),
             )

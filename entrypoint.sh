@@ -65,7 +65,7 @@ else
     invoke waitforgeoserver
     invoke geoserverfixture
     echo "Executing UWSGI server $cmd for Production"
-    invoke initzalf
+    #invoke initzalf
 fi
 
 echo "-----------------------------------------------------"

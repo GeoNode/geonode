@@ -29,24 +29,20 @@ logger = logging.getLogger(__name__)
 
 
 class GeoAppSerializer(ResourceBaseSerializer):
-
     def __init__(self, *args, **kwargs):
         # Instantiate the superclass normally
         super().__init__(*args, **kwargs)
 
     class Meta:
         model = GeoApp
-        name = 'geoapp'
-        view_name = 'geoapps-list'
-        fields = (
-            'pk', 'uuid', 'data', 'name',
-            'executions'
-        )
+        name = "geoapp"
+        view_name = "geoapps-list"
+        fields = ("pk", "uuid", "data", "name", "executions", "metadata")
 
     def extra_update_checks(self, validated_data):
         _user_profiles = {}
         for _key, _value in validated_data.items():
-            if _key in ('owner', 'poc', 'metadata_owner'):
+            if _key in ("owner", "poc", "metadata_owner"):
                 _user_profiles[_key] = _value
         for _key, _value in _user_profiles.items():
             validated_data.pop(_key)
@@ -57,26 +53,25 @@ class GeoAppSerializer(ResourceBaseSerializer):
                 raise InvalidGeoAppException(f"The specified '{_key}' does not exist!")
 
     def extra_create_checks(self, validated_data):
-        if 'name' not in validated_data or \
-                'owner' not in validated_data:
+        if "name" not in validated_data or "owner" not in validated_data:
             raise InvalidGeoAppException("No valid data: 'name' and 'owner' are mandatory fields!")
 
-        if self.Meta.model.objects.filter(name=validated_data['name']).count():
+        if self.Meta.model.objects.filter(name=validated_data["name"]).count():
             raise DuplicateGeoAppException("A GeoApp with the same 'name' already exists!")
 
         self.extra_update_checks(validated_data)
 
     def validate(self, data):
-        request = self.context.get('request')
+        request = self.context.get("request")
         if request:
-            data['owner'] = request.user
+            data["owner"] = request.user
         return data
 
     def _sanitize_validated_data(self, validated_data, instance=None):
         # Extract users' profiles
         _user_profiles = {}
         for _key, _value in validated_data.items():
-            if _key in ('owner', 'poc', 'metadata_owner'):
+            if _key in ("owner", "poc", "metadata_owner"):
                 _user_profiles[_key] = _value
         for _key, _value in _user_profiles.items():
             validated_data.pop(_key)
@@ -89,18 +84,14 @@ class GeoAppSerializer(ResourceBaseSerializer):
         return validated_data
 
     def _create_and_update(self, validated_data, instance=None):
-
         # Extract JSON blob
         _data = {}
-        if 'blob' in validated_data:
-            _data = validated_data.pop('blob')
+        if "blob" in validated_data:
+            _data = validated_data.pop("blob")
 
         # Create a new instance
         if not instance:
-            _instance = resource_manager.create(
-                None,
-                resource_type=self.Meta.model,
-                defaults=validated_data)
+            _instance = resource_manager.create(None, resource_type=self.Meta.model, defaults=validated_data)
         else:
             _instance = instance
 
@@ -111,29 +102,27 @@ class GeoAppSerializer(ResourceBaseSerializer):
             raise GeneralGeoAppException(e)
 
         # Let's finalize the instance and notify the users
-        validated_data['blob'] = _data
-        return resource_manager.update(
-            _instance.uuid,
-            instance=_instance,
-            vals=validated_data,
-            notify=True)
+        validated_data["blob"] = _data
+        return resource_manager.update(_instance.uuid, instance=_instance, vals=validated_data, notify=True)
 
     def create(self, validated_data):
         # Sanity checks
-        _mandatory_fields = ['name', 'owner', 'resource_type']
+        _mandatory_fields = ["name", "owner", "resource_type"]
         if not all([_x in validated_data for _x in _mandatory_fields]):
             raise InvalidGeoAppException(f"No valid data: {_mandatory_fields} are mandatory fields!")
 
-        if self.Meta.model.objects.filter(name=validated_data['name']).count():
+        if self.Meta.model.objects.filter(name=validated_data["name"]).count():
             raise DuplicateGeoAppException("A GeoApp with the same 'name' already exists!")
 
         return self._create_and_update(self._sanitize_validated_data(validated_data))
 
     def update(self, instance, validated_data):
         if instance.resource_type:
-            validated_data['resource_type'] = instance.resource_type
+            validated_data["resource_type"] = instance.resource_type
         # Sanity checks
-        _mandatory_fields = ['resource_type', ]
+        _mandatory_fields = [
+            "resource_type",
+        ]
         if not all([_x in validated_data for _x in _mandatory_fields]):
             raise InvalidGeoAppException(f"No valid data: {_mandatory_fields} are mandatory fields!")
 

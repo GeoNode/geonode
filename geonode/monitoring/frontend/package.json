@@ -69,11 +69,11 @@
     "react-tap-event-plugin": "3.0.3",
     "react-tooltip": "3.10.0",
     "reactjs-calendar-heatmap": "0.0.10",
-    "recharts": "1.6.2",
+    "recharts": "1.8.6",
     "redux": "4.0.4",
     "redux-actions": "2.6.5",
     "redux-thunk": "2.3.0",
     "rimraf": "^3.0.2",
-    "ua-parser-js": "0.7.20"
+    "ua-parser-js": "0.7.33"
   }
 }

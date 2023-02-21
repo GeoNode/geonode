@@ -32,8 +32,10 @@ def run_setup_hooks(*args, **kwargs):
     from geonode.monitoring.models import populate
 
     # Initialize periodic tasks
-    if 'django_celery_beat' in settings.INSTALLED_APPS and \
-            getattr(settings, 'CELERY_BEAT_SCHEDULER', None) == 'django_celery_beat.schedulers:DatabaseScheduler':
+    if (
+        "django_celery_beat" in settings.INSTALLED_APPS
+        and getattr(settings, "CELERY_BEAT_SCHEDULER", None) == "django_celery_beat.schedulers:DatabaseScheduler"
+    ):
         from django_celery_beat.models import (
             IntervalSchedule,
             PeriodicTask,
@@ -41,10 +43,7 @@ def run_setup_hooks(*args, **kwargs):
 
         check_intervals = IntervalSchedule.objects.filter(every=300, period="seconds")
         if not check_intervals.exists():
-            check_interval, _ = IntervalSchedule.objects.get_or_create(
-                every=300,
-                period="seconds"
-            )
+            check_interval, _ = IntervalSchedule.objects.get_or_create(every=300, period="seconds")
         else:
             check_interval = check_intervals.first()
 
@@ -53,35 +52,36 @@ def run_setup_hooks(*args, **kwargs):
             defaults=dict(
                 task="geonode.monitoring.tasks.collect_metrics",
                 interval=check_interval,
-                args='',
-                start_time=timezone.now()
-            )
+                args="",
+                start_time=timezone.now(),
+            ),
         )
 
     # Initialize notifications
     if not has_notifications:
-        log.warning("Monitoring requires notifications app to be enabled. "
-                    "Otherwise, no notifications will be send")
+        log.warning("Monitoring requires notifications app to be enabled. " "Otherwise, no notifications will be send")
     populate()
 
 
 class MonitoringAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.monitoring'
-    NOTIFICATION_NAME = 'monitoring_alert'
-    NOTIFICATIONS = ((NOTIFICATION_NAME,
-                      _("Monitoring alert"),
-                      _("Alert situation reported by monitoring"),
-                      ),
-                     )
+    name = "geonode.monitoring"
+    NOTIFICATION_NAME = "monitoring_alert"
+    NOTIFICATIONS = (
+        (
+            NOTIFICATION_NAME,
+            _("Monitoring alert"),
+            _("Alert situation reported by monitoring"),
+        ),
+    )
 
     def ready(self):
         super().ready()
         if settings.MONITORING_ENABLED:
             post_migrate.connect(run_setup_hooks, sender=self)
-            settings.CELERY_BEAT_SCHEDULE['collect_metrics'] = {
-                'task': 'geonode.monitoring.tasks.collect_metrics',
-                'schedule': 300.0,
+            settings.CELERY_BEAT_SCHEDULE["collect_metrics"] = {
+                "task": "geonode.monitoring.tasks.collect_metrics",
+                "schedule": 300.0,
             }
 
 
-default_app_config = 'geonode.monitoring.MonitoringAppConfig'
+default_app_config = "geonode.monitoring.MonitoringAppConfig"

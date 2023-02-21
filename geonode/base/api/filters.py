@@ -29,9 +29,8 @@ logger = logging.getLogger(__name__)
 
 
 class DynamicSearchFilter(SearchFilter):
-
     def get_search_fields(self, view, request):
-        return request.GET.getlist('search_fields', [])
+        return request.GET.getlist("search_fields", [])
 
 
 class ExtentFilter(BaseFilterBackend):
@@ -40,8 +39,8 @@ class ExtentFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        if request.query_params.get('extent'):
-            return filter_bbox(queryset, request.query_params.get('extent'))
+        if request.query_params.get("extent"):
+            return filter_bbox(queryset, request.query_params.get("extent"))
         return queryset
 
 
@@ -51,7 +50,7 @@ class FavoriteFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, _):
-        if strtobool(request.query_params.get("favorite", 'False')):
+        if strtobool(request.query_params.get("favorite", "False")):
             c_types = list({r.polymorphic_ctype.model for r in queryset})
             return queryset.filter(
                 pk__in=Subquery(
@@ -71,20 +70,12 @@ class FacetVisibleResourceFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, _):
         _filter = {}
 
-        _with_resources = ast.literal_eval(request.GET.get("with_resources", 'False'))
+        _with_resources = ast.literal_eval(request.GET.get("with_resources", "False"))
 
         if _with_resources:
-            _filter["id__in"] = [
-                _facet.id
-                for _facet in queryset
-                if _facet.resourcebase_set.exists()
-            ]
-        elif 'with_resources' in request.GET and not _with_resources:
+            _filter["id__in"] = [_facet.id for _facet in queryset if _facet.resourcebase_set.exists()]
+        elif "with_resources" in request.GET and not _with_resources:
             # check that the facet has been passed and is false
-            _filter["id__in"] = [
-                _facet.id
-                for _facet in queryset
-                if not _facet.resourcebase_set.exists()
-            ]
+            _filter["id__in"] = [_facet.id for _facet in queryset if not _facet.resourcebase_set.exists()]
 
         return queryset.filter(**_filter)

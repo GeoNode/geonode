@@ -48,13 +48,13 @@ class GroupCategory(models.Model):
     description = models.TextField(_("Description"), null=True, default=None, blank=True)
 
     class Meta:
-        verbose_name_plural = _('Group Categories')
+        verbose_name_plural = _("Group Categories")
 
     def __str__(self):
         return str(self.name)
 
     def get_absolute_url(self):
-        return reverse('group_category_detail', args=(self.slug,))
+        return reverse("group_category_detail", args=(self.slug,))
 
 
 def group_category_pre_save(sender, instance, *args, **kwargs):
@@ -71,35 +71,28 @@ class GroupProfile(models.Model):
         ("private", _("Private")),
     ]
 
-    access_help_text = _('Public: Any registered user can view and join a public group.<br>'
-                         'Public (invite-only):Any registered user can view the group.  '
-                         'Only invited users can join.<br>'
-                         'Private: Registered users cannot see any details about the group, including membership.  '
-                         'Only invited users can join.')
-    email_help_text = _('Email used to contact one or all group members, '
-                        'such as a mailing list, shared email, or exchange group.')
+    access_help_text = _(
+        "Public: Any registered user can view and join a public group.<br>"
+        "Public (invite-only):Any registered user can view the group.  "
+        "Only invited users can join.<br>"
+        "Private: Registered users cannot see any details about the group, including membership.  "
+        "Only invited users can join."
+    )
+    email_help_text = _(
+        "Email used to contact one or all group members, " "such as a mailing list, shared email, or exchange group."
+    )
 
     group = models.OneToOneField(Group, on_delete=models.CASCADE)
-    title = models.CharField(_('Title'), max_length=1000)
+    title = models.CharField(_("Title"), max_length=1000)
     slug = models.SlugField(unique=True, max_length=1000)
-    logo = models.ImageField(_('Logo'), upload_to="people_group", blank=True)
-    description = models.TextField(_('Description'))
-    email = models.EmailField(
-        _('Email'),
-        null=True,
-        blank=True,
-        help_text=email_help_text)
-    keywords = TaggableManager(
-        _('Keywords'),
-        help_text=_("A space or comma-separated list of keywords"),
-        blank=True)
+    logo = models.ImageField(_("Logo"), upload_to="people_group", blank=True)
+    description = models.TextField(_("Description"))
+    email = models.EmailField(_("Email"), null=True, blank=True, help_text=email_help_text)
+    keywords = TaggableManager(_("Keywords"), help_text=_("A space or comma-separated list of keywords"), blank=True)
     access = models.CharField(
-        _('Access'),
-        max_length=15,
-        default="public'",
-        choices=GROUP_CHOICES,
-        help_text=access_help_text)
-    categories = models.ManyToManyField(GroupCategory, verbose_name=_("Categories"), blank=True, related_name='groups')
+        _("Access"), max_length=15, default="public'", choices=GROUP_CHOICES, help_text=access_help_text
+    )
+    categories = models.ManyToManyField(GroupCategory, verbose_name=_("Categories"), blank=True, related_name="groups")
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     last_modified = models.DateTimeField(auto_now=True, null=True, blank=True)
 
@@ -142,8 +135,8 @@ class GroupProfile(models.Model):
         :param resource_type: Filter's the queryset to objects with the same type.
         """
         queryset = get_objects_for_group(
-            self.group, [
-                'base.view_resourcebase', 'base.change_resourcebase'], any_perm=True)
+            self.group, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
+        )
 
         _queryset = []
         if resource_type:
@@ -164,20 +157,16 @@ class GroupProfile(models.Model):
         Returns a queryset of the group's members.
         """
         return get_user_model().objects.filter(
-            Q(id__in=self.member_queryset().filter(
-                role=GroupMember.MEMBER).values_list(
-                "user",
-                flat=True)))
+            Q(id__in=self.member_queryset().filter(role=GroupMember.MEMBER).values_list("user", flat=True))
+        )
 
     def get_managers(self):
         """
         Returns a queryset of the group's managers.
         """
         return get_user_model().objects.filter(
-            Q(id__in=self.member_queryset().filter(
-                role=GroupMember.MANAGER).values_list(
-                "user",
-                flat=True)))
+            Q(id__in=self.member_queryset().filter(role=GroupMember.MANAGER).values_list("user", flat=True))
+        )
 
     def user_is_member(self, user):
         if not user.is_authenticated:
@@ -208,7 +197,7 @@ class GroupProfile(models.Model):
         if not _members.count():
             GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
         else:
-            logger.warning(f"The invited user \"{user.username}\" is already a member")
+            logger.warning(f'The invited user "{user.username}" is already a member')
 
     def leave(self, user, **kwargs):
         if not user or user.is_anonymous or user == user.get_anonymous():
@@ -219,10 +208,15 @@ class GroupProfile(models.Model):
                 _member.delete()
                 user.groups.remove(self.group)
         else:
-            logger.warning(f"The invited user \"{user.username}\" is not a member")
+            logger.warning(f'The invited user "{user.username}" is not a member')
 
     def get_absolute_url(self):
-        return reverse('group_detail', args=[self.slug, ])
+        return reverse(
+            "group_detail",
+            args=[
+                self.slug,
+            ],
+        )
 
     @property
     def class_name(self):
@@ -254,10 +248,13 @@ class GroupMember(models.Model):
 
     group = models.ForeignKey(GroupProfile, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    role = models.CharField(max_length=10, choices=[
-        (MANAGER, _("Manager")),
-        (MEMBER, _("Member")),
-    ])
+    role = models.CharField(
+        max_length=10,
+        choices=[
+            (MANAGER, _("Manager")),
+            (MEMBER, _("Member")),
+        ],
+    )
     joined = models.DateTimeField(default=now)
 
     def save(self, *args, **kwargs):
@@ -290,9 +287,11 @@ class GroupMember(models.Model):
 
 def group_pre_delete(instance, sender, **kwargs):
     """Make sure that the anonymous group is not deleted"""
-    if instance.name == 'anonymous':
-        raise Exception('Deletion of the anonymous group is\
-         not permitted as will break the geonode permissions system')
+    if instance.name == "anonymous":
+        raise Exception(
+            "Deletion of the anonymous group is\
+         not permitted as will break the geonode permissions system"
+        )
 
 
 signals.pre_delete.connect(group_pre_delete, sender=Group)

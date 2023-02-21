@@ -26,16 +26,11 @@ from django.urls import reverse
 
 from .models import Favorite
 from geonode.documents.models import Document
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models,
-    create_single_dataset)
+from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 
 
 class FavoriteTest(GeoNodeBaseTestSupport):
-
-    type = 'document'
+    type = "document"
 
     """
     Tests geonode.favorite app/module
@@ -50,8 +45,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        remove_models(cls.get_obj_ids, type=cls.get_type,
-                      integration=cls.get_integration)
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
 
     def setUp(self):
         super().setUp()
@@ -80,13 +74,11 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(favorites_for_user.count(), 2)
 
         # test document favorites for user.
-        document_favorites = Favorite.objects.favorite_documents_for_user(
-            test_user)
+        document_favorites = Favorite.objects.favorite_documents_for_user(test_user)
         self.assertEqual(document_favorites.count(), 2)
 
         # test layer favorites for user.
-        dataset_favorites = Favorite.objects.favorite_datasets_for_user(
-            test_user)
+        dataset_favorites = Favorite.objects.favorite_datasets_for_user(test_user)
         self.assertEqual(dataset_favorites.count(), 0)
 
         # test map favorites for user.
@@ -98,8 +90,7 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(user_favorites.count(), 0)
 
         # test favorite for user and a specific content object.
-        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(
-            test_user, test_document_1)
+        user_content_favorite = Favorite.objects.favorite_for_user_and_content_object(test_user, test_document_1)
         self.assertEqual(user_content_favorite.object_id, test_document_1.id)
 
         # test bulk favorites.
@@ -110,18 +101,18 @@ class FavoriteTest(GeoNodeBaseTestSupport):
     def test_given_resource_base_object_will_assign_subtype_as_content_type(self):
         test_user = get_user_model().objects.first()
 
-        '''
+        """
         If the input object is a ResourceBase, in favorite content type, should be saved he
         subtype content type (Doc, Dataset, Map or GeoApp)
-        '''
-        create_single_dataset('foo_dataset')
-        resource = ResourceBase.objects.get(title='foo_dataset')
+        """
+        create_single_dataset("foo_dataset")
+        resource = ResourceBase.objects.get(title="foo_dataset")
         created_fav = Favorite.objects.create_favorite(resource, test_user)
-        self.assertEqual('dataset', created_fav.content_type.model)
+        self.assertEqual("dataset", created_fav.content_type.model)
 
-        '''
+        """
         If the input object is a subtype, should save the relative content type
-        '''
+        """
         test_document_1 = Document.objects.first()
         self.assertIsNotNone(test_document_1)
         Favorite.objects.create_favorite(test_document_1, test_user)
@@ -130,10 +121,4 @@ class FavoriteTest(GeoNodeBaseTestSupport):
         self.assertEqual(fav.content_type, ct)
 
     def _get_response(self, input_url, input_args):
-        return self.client.post(
-            reverse(
-                input_url,
-                args=input_args
-            ),
-            content_type="application/json"
-        )
+        return self.client.post(reverse(input_url, args=input_args), content_type="application/json")

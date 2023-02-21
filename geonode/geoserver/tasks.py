@@ -26,9 +26,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
-from geonode.tasks.tasks import (
-    AcquireLock,
-    FaultTolerantTask)
+from geonode.tasks.tasks import AcquireLock, FaultTolerantTask
 from geonode.base.models import Link
 from geonode.base import enumerations
 from geonode.layers.models import Dataset
@@ -43,7 +41,8 @@ from .helpers import (
     set_dataset_style,
     cascading_delete,
     create_gs_thumbnail,
-    sync_instance_with_geoserver)
+    sync_instance_with_geoserver,
+)
 
 logger = get_task_logger(__name__)
 
@@ -53,21 +52,22 @@ log_lock = logging.getLogger("geonode_lock_handler")
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_update_datasets',
-    queue='geoserver.catalog',
+    name="geonode.geoserver.tasks.geoserver_update_datasets",
+    queue="geoserver.catalog",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def geoserver_update_datasets(self, *args, **kwargs):
     """
     Runs update layers.
     """
-    lock_id = f'{self.request.id}'
+    lock_id = f"{self.request.id}"
     log_lock.debug(f"geoserver_update_datasets: Creating lock {lock_id}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_update_datasets: Acquiring lock {lock_id}")
@@ -83,20 +83,18 @@ def geoserver_update_datasets(self, *args, **kwargs):
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_set_style',
-    queue='geoserver.catalog',
+    name="geonode.geoserver.tasks.geoserver_set_style",
+    queue="geoserver.catalog",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
-def geoserver_set_style(
-        self,
-        instance_id,
-        base_file):
+    retry_jitter=False,
+)
+def geoserver_set_style(self, instance_id, base_file):
     """
     Sets styles from SLD file.
     """
@@ -107,7 +105,7 @@ def geoserver_set_style(
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    lock_id = f"{self.request.id}" if self.request.id else instance.name
     log_lock.debug(f"geoserver_set_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_set_style: Acquiring lock {lock_id} for {instance.name}")
@@ -121,11 +119,7 @@ def geoserver_set_style(
                     sld = base_file
                     base_file = None
 
-                set_dataset_style(
-                    instance,
-                    instance.alternate,
-                    sld,
-                    base_file=base_file)
+                set_dataset_style(instance, instance.alternate, sld, base_file=base_file)
 
             except Exception as e:
                 logger.exception(e)
@@ -137,26 +131,23 @@ def geoserver_set_style(
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_create_style',
-    queue='geoserver.catalog',
+    name="geonode.geoserver.tasks.geoserver_create_style",
+    queue="geoserver.catalog",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
-def geoserver_create_style(
-        self,
-        instance_id,
-        name,
-        sld_file,
-        tempdir):
+    retry_jitter=False,
+)
+def geoserver_create_style(self, instance_id, name, sld_file, tempdir):
     """
     Sets or create styles from Upload Session.
     """
     from geonode.geoserver.signals import geoserver_automatic_default_style_set
+
     instance = None
     try:
         instance = Dataset.objects.get(id=instance_id)
@@ -164,7 +155,7 @@ def geoserver_create_style(
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    lock_id = f"{self.request.id}" if self.request.id else instance.name
     log_lock.debug(f"geoserver_create_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_create_style: Acquiring lock {lock_id} for {instance.name}")
@@ -188,11 +179,7 @@ def geoserver_create_style(
                         sld = f.read()
                         f.close()
                         if not gs_catalog.get_style(name=name, workspace=settings.DEFAULT_WORKSPACE):
-                            style = gs_catalog.create_style(
-                                name,
-                                sld,
-                                raw=True,
-                                workspace=settings.DEFAULT_WORKSPACE)
+                            style = gs_catalog.create_style(name, sld, raw=True, workspace=settings.DEFAULT_WORKSPACE)
                             gs_dataset = gs_catalog.get_layer(name)
                             _default_style = gs_dataset.default_style
                             gs_dataset.default_style = style
@@ -202,8 +189,9 @@ def geoserver_create_style(
                                 gs_catalog.delete(_default_style)
                                 Link.objects.filter(
                                     resource=instance.resourcebase_ptr,
-                                    name='Legend',
-                                    url__contains=f'STYLE={_default_style.name}').delete()
+                                    name="Legend",
+                                    url__contains=f"STYLE={_default_style.name}",
+                                ).delete()
                             except Exception as e:
                                 logger.exception(e)
                     else:
@@ -221,20 +209,18 @@ def geoserver_create_style(
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_post_save_datasets',
-    queue='geoserver.catalog',
+    name="geonode.geoserver.tasks.geoserver_post_save_datasets",
+    queue="geoserver.catalog",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
-def geoserver_post_save_datasets(
-        self,
-        instance_id,
-        *args, **kwargs):
+    retry_jitter=False,
+)
+def geoserver_post_save_datasets(self, instance_id, *args, **kwargs):
     """
     Runs update layers.
     """
@@ -245,7 +231,7 @@ def geoserver_post_save_datasets(
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    lock_id = f"{self.request.id}" if self.request.id else instance.name
     log_lock.debug(f"geoserver_post_save_datasets: Creating lock {lock_id} for {instance_id}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_post_save_datasets: Acquiring lock {lock_id} for {instance_id}")
@@ -256,7 +242,7 @@ def geoserver_post_save_datasets(
 
                 # Updating HAYSTACK Indexes if needed
                 if settings.HAYSTACK_SEARCH:
-                    call_command('update_index')
+                    call_command("update_index")
             finally:
                 lock.release()
                 log_lock.debug(f"geoserver_post_save_datasets: Releasing lock {lock_id} for {instance_id}")
@@ -265,16 +251,17 @@ def geoserver_post_save_datasets(
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_create_thumbnail',
-    queue='geoserver.events',
+    name="geonode.geoserver.tasks.geoserver_create_thumbnail",
+    queue="geoserver.events",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=True):
     """
     Runs create_gs_thumbnail.
@@ -286,7 +273,7 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
         logger.error(f"Resource id {instance_id} does not exist yet!")
         raise
 
-    lock_id = f'{self.request.id}' if self.request.id else instance.name
+    lock_id = f"{self.request.id}" if self.request.id else instance.name
     log_lock.debug(f"geoserver_create_thumbnail: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_create_thumbnail: Acquiring lock {lock_id} for {instance.name}")
@@ -310,21 +297,22 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-    name='geonode.geoserver.tasks.geoserver_cascading_delete',
-    queue='cleanup',
+    name="geonode.geoserver.tasks.geoserver_cascading_delete",
+    queue="cleanup",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def geoserver_cascading_delete(self, *args, **kwargs):
     """
     Runs cascading_delete.
     """
-    lock_id = f'{self.request.id}'
+    lock_id = f"{self.request.id}"
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
             try:
@@ -335,22 +323,24 @@ def geoserver_cascading_delete(self, *args, **kwargs):
 
 @app.task(
     bind=True,
-    name='geonode.geoserver.tasks.geoserver_delete_map',
-    queue='cleanup',
+    name="geonode.geoserver.tasks.geoserver_delete_map",
+    queue="cleanup",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def geoserver_delete_map(self, object_id):
     """
     Deletes a map and the associated map layers.
     """
     from geonode.maps.models import Map
-    lock_id = f'{self.request.id}'
+
+    lock_id = f"{self.request.id}"
     with AcquireLock(lock_id) as lock:
         if lock.acquire() is True:
             try:
@@ -367,19 +357,20 @@ def geoserver_delete_map(self, object_id):
 
 @shared_task(
     bind=True,
-    name='geonode.security.tasks.synch_guardian',
-    queue='security',
+    name="geonode.security.tasks.synch_guardian",
+    queue="security",
     expires=600,
     time_limit=600,
     acks_late=False,
-    autoretry_for=(Exception, ),
-    retry_kwargs={'max_retries': 5},
+    autoretry_for=(Exception,),
+    retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-    retry_jitter=False)
+    retry_jitter=False,
+)
 def synch_guardian():
     """
     Sync resources with Guardian and clear their dirty state
     """
-    if getattr(settings, 'DELAYED_SECURITY_SIGNALS', False):
+    if getattr(settings, "DELAYED_SECURITY_SIGNALS", False):
         sync_resources_with_guardian()

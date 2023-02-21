@@ -20,6 +20,4 @@
 from django.conf.urls import url
 from . import views
 
-urlpatterns = [
-    url(r'^xsl/(?P<id>\d+)$', views.prefix_xsl_line, name='prefix_xsl_line')
-]
+urlpatterns = [url(r"^xsl/(?P<id>\d+)$", views.prefix_xsl_line, name="prefix_xsl_line")]

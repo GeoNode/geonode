@@ -34,16 +34,9 @@ from geonode.security.views import _perms_info_json
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.conf import settings as groups_settings
 
-from geonode.groups.models import (
-    GroupProfile,
-    GroupMember,
-    GroupCategory)
+from geonode.groups.models import GroupProfile, GroupMember, GroupCategory
 
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models,
-    create_single_dataset)
+from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -53,12 +46,7 @@ def _log(msg, *args):
 
 
 class GroupsSmokeTest(GeoNodeBaseTestSupport):
-
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
     def setUpClass(cls):
@@ -75,19 +63,19 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         super().setUp()
 
         self.norman = get_user_model().objects.get(username="norman")
-        self.norman.groups.add(Group.objects.get(name='anonymous'))
-        self.test_user = get_user_model().objects.get(username='test_user')
-        self.test_user.groups.add(Group.objects.get(name='anonymous'))
-        self.bar = GroupProfile.objects.get(slug='bar')
+        self.norman.groups.add(Group.objects.get(name="anonymous"))
+        self.test_user = get_user_model().objects.get(username="test_user")
+        self.test_user.groups.add(Group.objects.get(name="anonymous"))
+        self.bar = GroupProfile.objects.get(slug="bar")
         self.anonymous_user = get_anonymous_user()
 
-        c1 = GroupCategory.objects.create(name='test #1 category')
-        g = GroupProfile.objects.create(slug='test', title='test')
+        c1 = GroupCategory.objects.create(name="test #1 category")
+        g = GroupProfile.objects.create(slug="test", title="test")
         g.categories.add(c1)
         g.save()
         User = get_user_model()
-        u = User.objects.create(username='test')
-        u.set_password('test')
+        u = User.objects.create(username="test")
+        u.set_password("test")
         u.save()
 
     """
@@ -99,8 +87,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Ensures that a default group and grouprofile 'registered-users' has been
         created at initialization time.
         """
-        group = Group.objects.filter(
-            name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
+        group = Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).first()
         self.assertTrue(group)
 
     def test_users_group_list_view(self):
@@ -114,20 +101,14 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         bobby = get_user_model().objects.get(username="bobby")
 
         public_group, _public_created = GroupProfile.objects.get_or_create(
-            slug='public_group',
-            title='public_group',
-            access='public')
+            slug="public_group", title="public_group", access="public"
+        )
         private_group, _private_created = GroupProfile.objects.get_or_create(
-            slug='private_group',
-            title='private_group',
-            access='private')
+            slug="private_group", title="private_group", access="private"
+        )
 
         private_group.join(bobby)
-        data = {
-            "query": "p",
-            "page": 1,
-            "pageSize": 9
-        }
+        data = {"query": "p", "page": 1, "pageSize": 9}
 
         # Anonymous
         """
@@ -137,12 +118,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                     {"name": "public_group", "title": "public_group"}]
             }'
         """
-        response = self.client.post(
-            reverse(
-                'account_ajax_lookup'
-            ),
-            data
-        )
+        response = self.client.post(reverse("account_ajax_lookup"), data)
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         logger.debug(f"Anonymous --> {content}")
@@ -150,14 +126,20 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(content["groups"][0]["name"], "public_group")
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['public_group', ])
+                "group_detail",
+                args=[
+                    "public_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['private_group', ])
+                "group_detail",
+                args=[
+                    "private_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 404)
 
@@ -171,12 +153,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             }'
         """
         self.assertTrue(self.client.login(username="admin", password="admin"))
-        response = self.client.post(
-            reverse(
-                'account_ajax_lookup'
-            ),
-            data
-        )
+        response = self.client.post(reverse("account_ajax_lookup"), data)
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         logger.debug(f"admin --> {content}")
@@ -185,14 +162,20 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(content["groups"][1]["name"], "private_group")
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['public_group', ])
+                "group_detail",
+                args=[
+                    "public_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['private_group', ])
+                "group_detail",
+                args=[
+                    "private_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 200)
 
@@ -206,12 +189,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             }'
         """
         self.assertTrue(self.client.login(username="bobby", password="bob"))
-        response = self.client.post(
-            reverse(
-                'account_ajax_lookup'
-            ),
-            data
-        )
+        response = self.client.post(reverse("account_ajax_lookup"), data)
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         logger.debug(f"bobby --> {content}")
@@ -220,14 +198,20 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(content["groups"][1]["name"], "private_group")
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['public_group', ])
+                "group_detail",
+                args=[
+                    "public_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['private_group', ])
+                "group_detail",
+                args=[
+                    "private_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 200)
 
@@ -240,12 +224,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             }'
         """
         self.assertTrue(self.client.login(username="norman", password="norman"))
-        response = self.client.post(
-            reverse(
-                'account_ajax_lookup'
-            ),
-            data
-        )
+        response = self.client.post(reverse("account_ajax_lookup"), data)
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         logger.debug(f"norman --> {content}")
@@ -253,23 +232,29 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertEqual(content["groups"][0]["name"], "public_group")
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['public_group', ])
+                "group_detail",
+                args=[
+                    "public_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
             reverse(
-                'group_detail',
-                args=['private_group', ])
+                "group_detail",
+                args=[
+                    "private_group",
+                ],
+            )
         )
         self.assertEqual(response.status_code, 404)
 
         if _public_created:
             public_group.delete()
-            self.assertFalse(GroupProfile.objects.filter(slug='public_group').exists())
+            self.assertFalse(GroupProfile.objects.filter(slug="public_group").exists())
         if _private_created:
             private_group.delete()
-            self.assertFalse(GroupProfile.objects.filter(slug='private_group').exists())
+            self.assertFalse(GroupProfile.objects.filter(slug="private_group").exists())
 
     def test_group_permissions_extend_to_user(self):
         """
@@ -281,21 +266,12 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         layer.set_default_permissions()
 
         # Test that the anonymous user can read
-        self.assertTrue(
-            self.anonymous_user.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.anonymous_user.has_perm("view_resourcebase", layer.get_self_resource()))
 
         # Test that the default perms give Norman view permissions but not
         # write permissions
-        self.assertTrue(
-            self.norman.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
-        self.assertFalse(
-            self.norman.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.norman.has_perm("view_resourcebase", layer.get_self_resource()))
+        self.assertFalse(self.norman.has_perm("change_resourcebase", layer.get_self_resource()))
 
         # Make sure Norman is not in the bar group.
         self.assertFalse(self.bar.user_is_member(self.norman))
@@ -307,38 +283,22 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertTrue(self.bar.user_is_member(self.norman))
 
         # Give the bar group permissions to change the layer.
-        permissions = {
-            'groups': {
-                'bar': [
-                    'view_resourcebase',
-                    'change_resourcebase']}}
+        permissions = {"groups": {"bar": ["view_resourcebase", "change_resourcebase"]}}
         layer.set_permissions(permissions)
 
-        self.assertTrue(
-            self.norman.has_perm(
-                'view_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.norman.has_perm("view_resourcebase", layer.get_self_resource()))
         # check that now norman can change the layer
-        self.assertTrue(
-            self.norman.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.norman.has_perm("change_resourcebase", layer.get_self_resource()))
 
         # Test adding a new user to the group after setting permissions on the layer.
         # Make sure Test User is not in the bar group.
         self.assertFalse(self.bar.user_is_member(self.test_user))
 
-        self.assertFalse(
-            self.test_user.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
+        self.assertFalse(self.test_user.has_perm("change_resourcebase", layer.get_self_resource()))
 
         self.bar.join(self.test_user)
 
-        self.assertTrue(
-            self.test_user.has_perm(
-                'change_resourcebase',
-                layer.get_self_resource()))
+        self.assertTrue(self.test_user.has_perm("change_resourcebase", layer.get_self_resource()))
 
     def test_group_resource(self):
         """
@@ -348,7 +308,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         layer = Dataset.objects.first()
         map = Map.objects.first()
 
-        perm_spec = {'groups': {'bar': ['change_resourcebase']}}
+        perm_spec = {"groups": {"bar": ["change_resourcebase"]}}
         # Give the self.bar group write perms on the layer
         layer.set_permissions(perm_spec)
         map.set_permissions(perm_spec)
@@ -358,12 +318,8 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.assertTrue(map.get_self_resource() in self.bar.resources())
 
         # Test the resource filter
-        self.assertTrue(
-            layer.get_self_resource() in self.bar.resources(
-                resource_type='dataset'))
-        self.assertTrue(
-            map.get_self_resource() not in self.bar.resources(
-                resource_type='dataset'))
+        self.assertTrue(layer.get_self_resource() in self.bar.resources(resource_type="dataset"))
+        self.assertTrue(map.get_self_resource() not in self.bar.resources(resource_type="dataset"))
 
         # Revoke permissions on the layer from the self.bar group
         layer.set_permissions("{}")
@@ -381,16 +337,14 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         perms_info = layer.get_all_level_info()
 
         # Ensure there is only one group 'anonymous' by default
-        self.assertEqual(len(perms_info['groups'].keys()), 1)
+        self.assertEqual(len(perms_info["groups"].keys()), 1)
 
         # Add the foo group to the layer object groups
-        layer.set_permissions({'groups': {'bar': ['view_resourcebase']}})
+        layer.set_permissions({"groups": {"bar": ["view_resourcebase"]}})
 
         perms_info = _perms_info_json(layer)
         # Ensure foo is in the perms_info output
-        self.assertCountEqual(
-            json.loads(perms_info)['groups'], {
-                'bar': ['view_resourcebase']})
+        self.assertCountEqual(json.loads(perms_info)["groups"], {"bar": ["view_resourcebase"]})
 
     def test_resource_permissions(self):
         """
@@ -409,17 +363,13 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         objects = layer, document, map_obj
 
         for obj in objects:
-            response = self.client.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = self.client.get(reverse("resource_permissions", kwargs=dict(resource_id=obj.id)))
             self.assertEqual(response.status_code, 200)
             content = response.content
             if isinstance(content, bytes):
-                content = content.decode('UTF-8')
+                content = content.decode("UTF-8")
             js = json.loads(content)
-            permissions = js.get('permissions', dict())
+            permissions = js.get("permissions", dict())
 
             if isinstance(permissions, str):
                 permissions = json.loads(permissions)
@@ -427,99 +377,75 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             # Ensure the groups value is empty by default
             expected_permissions = {}
             if settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION:
-                expected_permissions.setdefault(
-                    'anonymous', []).append('download_resourcebase')
+                expected_permissions.setdefault("anonymous", []).append("download_resourcebase")
             if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
-                expected_permissions.setdefault(
-                    'anonymous', []).append('view_resourcebase')
+                expected_permissions.setdefault("anonymous", []).append("view_resourcebase")
 
-            self.assertCountEqual(permissions.get('groups'), expected_permissions)
+            self.assertCountEqual(permissions.get("groups"), expected_permissions)
 
-            permissions = {
-                'groups': {
-                    'bar': ['change_resourcebase']
-                },
-                'users': {
-                    'admin': ['change_resourcebase']
-                }
-            }
+            permissions = {"groups": {"bar": ["change_resourcebase"]}, "users": {"admin": ["change_resourcebase"]}}
 
             # Give the bar group permissions
             response = self.client.post(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(resource_id=obj.id)),
+                reverse("resource_permissions", kwargs=dict(resource_id=obj.id)),
                 data=json.dumps(permissions),
-                content_type="application/json")
+                content_type="application/json",
+            )
 
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = self.client.get(reverse("resource_permissions", kwargs=dict(resource_id=obj.id)))
 
             content = response.content
             if isinstance(content, bytes):
-                content = content.decode('UTF-8')
+                content = content.decode("UTF-8")
             js = json.loads(content)
-            permissions = js.get('permissions', dict())
+            permissions = js.get("permissions", dict())
 
             if isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Make sure the bar group now has write permissions
-            self.assertCountEqual(
-                permissions['groups'], {
-                    'bar': ['change_resourcebase']})
+            self.assertCountEqual(permissions["groups"], {"bar": ["change_resourcebase"]})
 
             # Remove group permissions
-            permissions = {"users": {"admin": ['change_resourcebase']}}
+            permissions = {"users": {"admin": ["change_resourcebase"]}}
 
             # Update the object's permissions to remove the bar group
             response = self.client.post(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(resource_id=obj.id)),
+                reverse("resource_permissions", kwargs=dict(resource_id=obj.id)),
                 data=json.dumps(permissions),
-                content_type="application/json")
+                content_type="application/json",
+            )
 
             self.assertEqual(response.status_code, 200)
 
-            response = self.client.get(
-                reverse(
-                    'resource_permissions',
-                    kwargs=dict(
-                        resource_id=obj.id)))
+            response = self.client.get(reverse("resource_permissions", kwargs=dict(resource_id=obj.id)))
 
             content = response.content
             if isinstance(content, bytes):
-                content = content.decode('UTF-8')
+                content = content.decode("UTF-8")
             js = json.loads(content)
-            permissions = js.get('permissions', dict())
+            permissions = js.get("permissions", dict())
 
             if isinstance(permissions, str):
                 permissions = json.loads(permissions)
 
             # Assert the bar group no longer has permissions
-            self.assertCountEqual(permissions['groups'], {})
+            self.assertCountEqual(permissions["groups"], {})
 
     def test_create_new_group(self):
         """
         Tests creating a group through the group_create route.
         """
 
-        d = dict(title='TestGroup',
-                 description='This is a test group.',
-                 access='public',
-                 keywords='testing, groups')
+        d = dict(title="TestGroup", description="This is a test group.", access="public", keywords="testing, groups")
 
         self.client.login(username="admin", password="admin")
-        response = self.client.post(reverse('group_create'), data=d)
+        response = self.client.post(reverse("group_create"), data=d)
         # successful POSTS will redirect to the group's detail view.
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(GroupProfile.objects.get(title='TestGroup'))
+        self.assertTrue(GroupProfile.objects.get(title="TestGroup"))
 
     def test_delete_group_view(self):
         """
@@ -532,16 +458,11 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
 
         # Delete the group
-        response = self.client.post(
-            reverse(
-                'group_remove', args=[
-                    self.bar.slug]))
+        response = self.client.post(reverse("group_remove", args=[self.bar.slug]))
 
         # successful POSTS will redirect to the group list view.
         self.assertEqual(response.status_code, 302)
-        self.assertFalse(
-            GroupProfile.objects.filter(
-                id=self.bar.id).exists())
+        self.assertFalse(GroupProfile.objects.filter(id=self.bar.id).exists())
 
     def test_delete_group_view_no_perms(self):
         """
@@ -554,10 +475,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         self.client.login(username="norman", password="norman")
 
         # Delete the group
-        response = self.client.post(
-            reverse(
-                'group_remove', args=[
-                    self.bar.slug]))
+        response = self.client.post(reverse("group_remove", args=[self.bar.slug]))
 
         self.assertEqual(response.status_code, 403)
 
@@ -569,7 +487,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         Tests the get_managers method.
         """
         norman = get_user_model().objects.get(username="norman")
-        admin = get_user_model().objects.get(username='admin')
+        admin = get_user_model().objects.get(username="admin")
 
         # Make sure norman is not a user
         self.assertFalse(self.bar.user_is_member(norman))
@@ -711,24 +629,21 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
             test_profile, _ = GroupProfile.objects.update_or_create(
                 slug="test",
                 defaults=dict(
-                    description="test",
-                    access="public",
-                    logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents"))
+                    description="test", access="public", logo=SimpleUploadedFile("dummy-file.jpg", b"dummy contents")
+                ),
             )
 
             response = self.client.get(
-                reverse("api_dispatch_list",
-                        kwargs={"api_name": "api", "resource_name": "groups"})
+                reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "groups"})
             )
         content = response.content
         if isinstance(content, bytes):
-            content = content.decode('UTF-8')
+            content = content.decode("UTF-8")
             response_payload = json.loads(content)
             returned = response_payload["objects"]
-            group_profile = [
-                g["group_profile"] for g in returned if
-                g["group_profile"]["title"] == test_profile.title
-            ][0]
+            group_profile = [g["group_profile"] for g in returned if g["group_profile"]["title"] == test_profile.title][
+                0
+            ]
             self.assertEqual(200, response.status_code)
             self.assertEqual(group_profile["logo"], test_profile.logo.url)
 
@@ -739,26 +654,20 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
 
         with self.settings(API_LOCKDOWN=False):
             test_profile, _ = GroupProfile.objects.update_or_create(
-                slug="test",
-                defaults=dict(
-                    title="test",
-                    description="test",
-                    access="public")
+                slug="test", defaults=dict(title="test", description="test", access="public")
             )
 
             response = self.client.get(
-                reverse("api_dispatch_list",
-                        kwargs={"api_name": "api", "resource_name": "groups"})
+                reverse("api_dispatch_list", kwargs={"api_name": "api", "resource_name": "groups"})
             )
         content = response.content
         if isinstance(content, bytes):
-            content = content.decode('UTF-8')
+            content = content.decode("UTF-8")
             response_payload = json.loads(content)
             returned = response_payload["objects"]
-            group_profile = [
-                g["group_profile"] for g in returned if
-                g["group_profile"]["title"] == test_profile.title
-            ][0]
+            group_profile = [g["group_profile"] for g in returned if g["group_profile"]["title"] == test_profile.title][
+                0
+            ]
             self.assertEqual(200, response.status_code)
             self.assertIsNone(group_profile["logo"])
 
@@ -775,53 +684,29 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         response = self.client.get("/groups/group/bar/activity/")
         self.assertEqual(200, response.status_code)
 
-        self.assertContains(response,
-                            'Datasets',
-                            count=3,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            'Maps',
-                            count=3,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            'Documents',
-                            count=3,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            '<a href="/datasets/:geonode:CA">CA</a>',
-                            count=0,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        self.assertContains(response,
-                            'uploaded',
-                            count=0,
-                            status_code=200,
-                            msg_prefix='',
-                            html=False)
-        dataset = create_single_dataset('single_point.shp')
+        self.assertContains(response, "Datasets", count=3, status_code=200, msg_prefix="", html=False)
+        self.assertContains(response, "Maps", count=3, status_code=200, msg_prefix="", html=False)
+        self.assertContains(response, "Documents", count=3, status_code=200, msg_prefix="", html=False)
+        self.assertContains(
+            response, '<a href="/datasets/:geonode:CA">CA</a>', count=0, status_code=200, msg_prefix="", html=False
+        )
+        self.assertContains(response, "uploaded", count=0, status_code=200, msg_prefix="", html=False)
+        dataset = create_single_dataset("single_point.shp")
         try:
             # Add test to test perms being sent to the front end.
             dataset.set_default_permissions()
             perms_info = dataset.get_all_level_info()
 
             # Ensure there is only one group 'anonymous' by default
-            self.assertEqual(len(perms_info['groups'].keys()), 1)
+            self.assertEqual(len(perms_info["groups"].keys()), 1)
 
             # Add the foo group to the dataset object groups
-            perms_info['groups']['bar'] = ['view_resourcebase']
+            perms_info["groups"]["bar"] = ["view_resourcebase"]
             dataset.set_permissions(perms_info)
 
             perms_info = _perms_info_json(dataset)
             # Ensure foo is in the perms_info output
-            self.assertCountEqual(
-                json.loads(perms_info)['groups']['bar'], ['view_resourcebase'])
+            self.assertCountEqual(json.loads(perms_info)["groups"]["bar"], ["view_resourcebase"])
 
             dataset.group = self.bar.group
             dataset.save()
@@ -834,15 +719,10 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
                 f'<a href="{dataset.detail_url}">geonode:single_point.shp</a>',
                 count=2,
                 status_code=200,
-                msg_prefix='',
-                html=False)
-            self.assertContains(
-                response,
-                'uploaded',
-                count=2,
-                status_code=200,
-                msg_prefix='',
-                html=False)
+                msg_prefix="",
+                html=False,
+            )
+            self.assertContains(response, "uploaded", count=2, status_code=200, msg_prefix="", html=False)
         finally:
             dataset.set_default_permissions()
             dataset.group = None
@@ -853,77 +733,66 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
     """
 
     def test_api(self):
-        api_url = '/api/groupcategory/'
+        api_url = "/api/groupcategory/"
 
-        self.client.login(username='test', password='test')  # login necessary because settings.API_LOCKDOWN=True
+        self.client.login(username="test", password="test")  # login necessary because settings.API_LOCKDOWN=True
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
         content = r.content
         if isinstance(content, bytes):
-            content = content.decode('UTF-8')
+            content = content.decode("UTF-8")
         data = json.loads(content)
-        self.assertEqual(
-            data['meta']['total_count'],
-            GroupCategory.objects.all().count())
+        self.assertEqual(data["meta"]["total_count"], GroupCategory.objects.all().count())
 
         # check if we have non-empty group category
-        self.assertTrue(
-            GroupCategory.objects.filter(
-                groups__isnull=False).exists())
+        self.assertTrue(GroupCategory.objects.filter(groups__isnull=False).exists())
 
-        for item in data['objects']:
-            self.assertTrue(
-                GroupCategory.objects.filter(
-                    slug=item['slug']).count() == 1)
-            g = GroupCategory.objects.get(slug=item['slug'])
-            self.assertEqual(item['member_count'], g.groups.all().count())
+        for item in data["objects"]:
+            self.assertTrue(GroupCategory.objects.filter(slug=item["slug"]).count() == 1)
+            g = GroupCategory.objects.get(slug=item["slug"])
+            self.assertEqual(item["member_count"], g.groups.all().count())
 
         self.client.logout()
         r = self.client.get(api_url)
         self.assertEqual(r.status_code, 200)
         content = r.content
         if isinstance(content, bytes):
-            content = content.decode('UTF-8')
+            content = content.decode("UTF-8")
         data = json.loads(content)
-        self.assertEqual(
-            data['meta']['total_count'], 1)
+        self.assertEqual(data["meta"]["total_count"], 1)
 
         # check if we have non-empty group category
-        self.assertTrue(
-            GroupCategory.objects.filter(
-                groups__isnull=False).exists())
+        self.assertTrue(GroupCategory.objects.filter(groups__isnull=False).exists())
 
-        for item in data['objects']:
-            self.assertTrue(
-                GroupCategory.objects.filter(
-                    slug=item['slug']).count() == 1)
-            g = GroupCategory.objects.get(slug=item['slug'])
-            self.assertEqual(item['member_count'], 1)
+        for item in data["objects"]:
+            self.assertTrue(GroupCategory.objects.filter(slug=item["slug"]).count() == 1)
+            g = GroupCategory.objects.get(slug=item["slug"])
+            self.assertEqual(item["member_count"], 1)
 
     def test_group_categories_list(self):
-        view_url = reverse('group_category_list')
+        view_url = reverse("group_category_list")
         r = self.client.get(view_url)
         self.assertEqual(r.status_code, 200)
 
     def test_group_categories_add(self):
-        view_url = reverse('group_category_create')
+        view_url = reverse("group_category_create")
         # Test that the view is protected to anonymous users
         r = self.client.get(view_url)
         self.assertTrue(r.status_code in (302, 403))
 
         # Test that the view is protected to non-admin users
-        self.client.login(username='test', password='test')
+        self.client.login(username="test", password="test")
         r = self.client.post(view_url)
         self.assertTrue(r.status_code in (401, 403))
 
         # Test that the view is accessible to administrators
-        self.client.login(username='admin', password='admin')
+        self.client.login(username="admin", password="admin")
         r = self.client.get(view_url)
         self.assertEqual(r.status_code, 200)
 
         # Create e new category
-        category = 'test #3 category'
-        r = self.client.post(view_url, {'name': category})
+        category = "test #3 category"
+        r = self.client.post(view_url, {"name": category})
 
         self.assertEqual(r.status_code, 302)
         q = GroupCategory.objects.filter(name=category)

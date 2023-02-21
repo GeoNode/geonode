@@ -23,6 +23,5 @@ from geonode.resource.processing.models import AbstractProcessingTask, AbstractP
 # Samples
 # ##################################################################################### #
 class SampleGeoServerProcessingTask(AbstractProcessingTask, metaclass=AbstractProcessingTaskMeta):
-
     def execute(self, resource):
         print(f"Executing {self.name} against {resource}")

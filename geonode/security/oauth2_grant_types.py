@@ -60,9 +60,7 @@ def code_challenge_method_s256(verifier, challenge):
 
     .. _`Section 4.3`: https://tools.ietf.org/html/rfc7636#section-4.3
     """
-    return base64.urlsafe_b64encode(
-        hashlib.sha256(verifier.encode()).digest()
-    ).decode().rstrip('=') == challenge
+    return base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip("=") == challenge
 
 
 def code_challenge_method_plain(verifier, challenge):
@@ -162,16 +160,13 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
     .. _`PKCE`: https://tools.ietf.org/html/rfc7636
     """
 
-    default_response_mode = 'query'
-    response_types = ['code']
+    default_response_mode = "query"
+    response_types = ["code"]
 
     # This dict below is private because as RFC mention it:
     # "S256" is Mandatory To Implement (MTI) on the server.
     #
-    _code_challenge_methods = {
-        'plain': code_challenge_method_plain,
-        'S256': code_challenge_method_s256
-    }
+    _code_challenge_methods = {"plain": code_challenge_method_plain, "S256": code_challenge_method_s256}
 
     def create_authorization_code(self, request):
         """
@@ -180,11 +175,10 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         :param request: OAuthlib request.
         :type request: oauthlib.common.Request
         """
-        grant = {'code': common.generate_token()}
-        if hasattr(request, 'state') and request.state:
-            grant['state'] = request.state
-        log.debug('Created authorization code grant %r for request %r.',
-                  grant, request)
+        grant = {"code": common.generate_token()}
+        if hasattr(request, "state") and request.state:
+            grant["state"] = request.state
+        log.debug("Created authorization code grant %r for request %r.", grant, request)
         return grant
 
     def create_authorization_response(self, request, token_handler):
@@ -259,8 +253,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         """
         try:
             self.validate_authorization_request(request)
-            log.debug('Pre resource owner authorization validation ok for %r.',
-                      request)
+            log.debug("Pre resource owner authorization validation ok for %r.", request)
 
         # If the request fails due to a missing, invalid, or mismatching
         # redirection URI, or if the client identifier is missing or invalid,
@@ -268,8 +261,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         # error and MUST NOT automatically redirect the user-agent to the
         # invalid redirection URI.
         except errors.FatalClientError as e:
-            log.debug('Fatal client error during validation of %r. %r.',
-                      request, e)
+            log.debug("Fatal client error during validation of %r. %r.", request, e)
             raise
 
         # If the resource owner denies the access request or if the request
@@ -279,21 +271,19 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         # "application/x-www-form-urlencoded" format, per Appendix B:
         # https://tools.ietf.org/html/rfc6749#appendix-B
         except errors.OAuth2Error as e:
-            log.debug('Client error during validation of %r. %r.', request, e)
+            log.debug("Client error during validation of %r. %r.", request, e)
             request.redirect_uri = request.redirect_uri or self.error_uri
             redirect_uri = common.add_params_to_uri(
-                request.redirect_uri, e.twotuples,
-                fragment=request.response_mode == "fragment")
-            return {'Location': redirect_uri}, None, 302
+                request.redirect_uri, e.twotuples, fragment=request.response_mode == "fragment"
+            )
+            return {"Location": redirect_uri}, None, 302
 
         grant = self.create_authorization_code(request)
         for modifier in self._code_modifiers:
             grant = modifier(grant, token_handler, request)
-        log.debug('Saving grant %r for %r.', grant, request)
-        self.request_validator.save_authorization_code(
-            request.client_id, grant, request)
-        return self.prepare_authorization_response(
-            request, grant, {}, None, 302)
+        log.debug("Saving grant %r for %r.", grant, request)
+        self.request_validator.save_authorization_code(request.client_id, grant, request)
+        return self.prepare_authorization_response(request, grant, {}, None, 302)
 
     def create_token_response(self, request, token_handler):
         """Validate the authorization code.
@@ -313,9 +303,9 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         headers = self._get_default_headers()
         try:
             self.validate_token_request(request)
-            log.debug('Token request validation ok for %r.', request)
+            log.debug("Token request validation ok for %r.", request)
         except errors.OAuth2Error as e:
-            log.debug('Client error during validation of %r. %r.', request, e)
+            log.debug("Client error during validation of %r. %r.", request, e)
             headers.update(e.headers)
             return headers, e.json, e.status_code
 
@@ -325,8 +315,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
             token = modifier(token, token_handler, request)
 
         self.request_validator.save_token(token, request)
-        self.request_validator.invalidate_authorization_code(
-            request.client_id, request.code, request)
+        self.request_validator.invalidate_authorization_code(request.client_id, request.code, request)
         return headers, json.dumps(token), 200
 
     def validate_authorization_request(self, request):
@@ -355,18 +344,15 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         # invalid redirection URI.
 
         # First check duplicate parameters
-        for param in ('client_id', 'response_type', 'redirect_uri', 'scope', 'state'):
+        for param in ("client_id", "response_type", "redirect_uri", "scope", "state"):
             try:
                 duplicate_params = request.duplicate_params
                 if param in duplicate_params:
-                    raise errors.InvalidRequestFatalError(
-                        description=f'Duplicate {param} parameter.',
-                        request=request)
+                    raise errors.InvalidRequestFatalError(description=f"Duplicate {param} parameter.", request=request)
             except ValueError:
                 log.exception(
-                    errors.InvalidRequestFatalError(
-                        description='Unable to parse query string',
-                        request=request))
+                    errors.InvalidRequestFatalError(description="Unable to parse query string", request=request)
+                )
 
         # REQUIRED. The client identifier as described in Section 2.2.
         # https://tools.ietf.org/html/rfc6749#section-2.2
@@ -378,8 +364,7 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
 
         # OPTIONAL. As described in Section 3.1.2.
         # https://tools.ietf.org/html/rfc6749#section-3.1.2
-        log.debug('Validating redirection uri %s for client %s.',
-                  request.redirect_uri, request.client_id)
+        log.debug("Validating redirection uri %s for client %s.", request.redirect_uri, request.client_id)
 
         # OPTIONAL. As described in Section 3.1.2.
         # https://tools.ietf.org/html/rfc6749#section-3.1.2
@@ -406,15 +391,13 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
             raise errors.MissingResponseTypeError(request=request)
         # Value MUST be set to "code" or one of the OpenID authorization code including
         # response_types "code token", "code id_token", "code token id_token"
-        elif 'code' not in request.response_type and request.response_type != 'none':
+        elif "code" not in request.response_type and request.response_type != "none":
             raise errors.UnsupportedResponseTypeError(request=request)
 
-        if not self.request_validator.validate_response_type(request.client_id,
-                                                             request.response_type,
-                                                             request.client, request):
-
-            log.debug('Client %s is not authorized to use response_type %s.',
-                      request.client_id, request.response_type)
+        if not self.request_validator.validate_response_type(
+            request.client_id, request.response_type, request.client, request
+        ):
+            log.debug("Client %s is not authorized to use response_type %s.", request.client_id, request.response_type)
             raise errors.UnauthorizedClientError(request=request)
 
         # OPTIONAL. Validate PKCE request or reply with "error"/"invalid_request"
@@ -438,13 +421,15 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         # https://tools.ietf.org/html/rfc6749#section-3.3
         self.validate_scopes(request)
 
-        request_info.update({
-            'client_id': request.client_id,
-            'redirect_uri': request.redirect_uri,
-            'response_type': request.response_type,
-            'state': request.state,
-            'request': request
-        })
+        request_info.update(
+            {
+                "client_id": request.client_id,
+                "redirect_uri": request.redirect_uri,
+                "response_type": request.response_type,
+                "state": request.state,
+                "request": request,
+            }
+        )
 
         for validator in self.custom_validators.post_auth:
             request_info.update(validator(request))
@@ -457,20 +442,18 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
         :type request: oauthlib.common.Request
         """
         # REQUIRED. Value MUST be set to "authorization_code".
-        if request.grant_type not in ('authorization_code', 'openid'):
+        if request.grant_type not in ("authorization_code", "openid"):
             raise errors.UnsupportedGrantTypeError(request=request)
 
         for validator in self.custom_validators.pre_token:
             validator(request)
 
         if request.code is None:
-            raise errors.InvalidRequestError(
-                description='Missing code parameter.', request=request)
+            raise errors.InvalidRequestError(description="Missing code parameter.", request=request)
 
-        for param in ('client_id', 'grant_type', 'redirect_uri'):
+        for param in ("client_id", "grant_type", "redirect_uri"):
             if param in request.duplicate_params:
-                raise errors.InvalidRequestError(description=f'Duplicate {param} parameter.',
-                                                 request=request)
+                raise errors.InvalidRequestError(description=f"Duplicate {param} parameter.", request=request)
 
         if self.request_validator.client_authentication_required(request):
             # If the client type is confidential or the client was issued client
@@ -479,19 +462,19 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
             # in Section 3.2.1.
             # https://tools.ietf.org/html/rfc6749#section-3.2.1
             if not self.request_validator.authenticate_client(request):
-                log.debug('Client authentication failed, %r.', request)
+                log.debug("Client authentication failed, %r.", request)
                 raise errors.InvalidClientError(request=request)
         elif not self.request_validator.authenticate_client_id(request.client_id, request):
             # REQUIRED, if the client is not authenticating with the
             # authorization server as described in Section 3.2.1.
             # https://tools.ietf.org/html/rfc6749#section-3.2.1
-            log.debug('Client authentication failed, %r.', request)
+            log.debug("Client authentication failed, %r.", request)
             raise errors.InvalidClientError(request=request)
 
-        if not hasattr(request.client, 'client_id'):
-            raise NotImplementedError('Authenticate client must set the '
-                                      'request.client.client_id attribute '
-                                      'in authenticate_client.')
+        if not hasattr(request.client, "client_id"):
+            raise NotImplementedError(
+                "Authenticate client must set the " "request.client.client_id attribute " "in authenticate_client."
+            )
 
         request.client_id = request.client_id or request.client.client_id
 
@@ -500,10 +483,13 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
 
         # REQUIRED. The authorization code received from the
         # authorization server.
-        if not self.request_validator.validate_code(request.client_id,
-                                                    request.code, request.client, request):
-            log.debug('Client, %r (%r), is not allowed access to scopes %r.',
-                      request.client_id, request.client, request.scopes)
+        if not self.request_validator.validate_code(request.client_id, request.code, request.client, request):
+            log.debug(
+                "Client, %r (%r), is not allowed access to scopes %r.",
+                request.client_id,
+                request.client,
+                request.scopes,
+            )
             raise errors.InvalidGrantError(request=request)
 
         # OPTIONAL. Validate PKCE code_verifier
@@ -519,43 +505,40 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
 
             if challenge_method not in self._code_challenge_methods:
                 raise errors.ServerError(
-                    description=f"code_challenge_method {challenge_method} is not supported.",
-                    request=request
+                    description=f"code_challenge_method {challenge_method} is not supported.", request=request
                 )
 
-            if not self.validate_code_challenge(challenge,
-                                                challenge_method,
-                                                request.code_verifier):
-                log.debug('request provided a invalid code_verifier.')
+            if not self.validate_code_challenge(challenge, challenge_method, request.code_verifier):
+                log.debug("request provided a invalid code_verifier.")
                 raise errors.InvalidGrantError(request=request)
         elif self.request_validator.is_pkce_required(request.client_id, request) is True:
             if request.code_verifier is None:
                 raise errors.MissingCodeVerifierError(request=request)
             raise errors.InvalidGrantError(request=request, description="Challenge not found")
 
-        for attr in ('user', 'scopes'):
+        for attr in ("user", "scopes"):
             if getattr(request, attr, None) is None:
-                log.debug('request.%s was not set on code validation.', attr)
+                log.debug("request.%s was not set on code validation.", attr)
 
         # REQUIRED, if the "redirect_uri" parameter was included in the
         # authorization request as described in Section 4.1.1, and their
         # values MUST be identical.
         if request.redirect_uri is None:
             request.using_default_redirect_uri = True
-            request.redirect_uri = self.request_validator.get_default_redirect_uri(
-                request.client_id, request)
-            log.debug('Using default redirect_uri %s.', request.redirect_uri)
+            request.redirect_uri = self.request_validator.get_default_redirect_uri(request.client_id, request)
+            log.debug("Using default redirect_uri %s.", request.redirect_uri)
             if not request.redirect_uri:
                 raise errors.MissingRedirectURIError(request=request)
         else:
             request.using_default_redirect_uri = False
-            log.debug('Using provided redirect_uri %s', request.redirect_uri)
+            log.debug("Using provided redirect_uri %s", request.redirect_uri)
 
-        if not self.request_validator.confirm_redirect_uri(request.client_id, request.code,
-                                                           request.redirect_uri, request.client,
-                                                           request):
-            log.debug('Redirect_uri (%r) invalid for client %r (%r).',
-                      request.redirect_uri, request.client_id, request.client)
+        if not self.request_validator.confirm_redirect_uri(
+            request.client_id, request.code, request.redirect_uri, request.client, request
+        ):
+            log.debug(
+                "Redirect_uri (%r) invalid for client %r (%r).", request.redirect_uri, request.client_id, request.client
+            )
             raise errors.MismatchingRedirectURIError(request=request)
 
         for validator in self.custom_validators.post_token:
@@ -564,16 +547,13 @@ class OAuth2AuthorizationCodeGrant(GrantTypeBase):
     def validate_code_challenge(self, challenge, challenge_method, verifier):
         if challenge_method in self._code_challenge_methods:
             return self._code_challenge_methods[challenge_method](verifier, challenge)
-        raise NotImplementedError(f'Unknown challenge_method {challenge_method}')
+        raise NotImplementedError(f"Unknown challenge_method {challenge_method}")
 
 
 class OpenIDAuthorizationCodeGrant(OpenIDGrantTypeBase):
-
     def __init__(self, request_validator=None, **kwargs):
-        self.proxy_target = OAuth2AuthorizationCodeGrant(
-            request_validator=request_validator, **kwargs)
-        self.custom_validators.post_auth.append(
-            self.openid_authorization_validator)
+        self.proxy_target = OAuth2AuthorizationCodeGrant(request_validator=request_validator, **kwargs)
+        self.custom_validators.post_auth.append(self.openid_authorization_validator)
         self.register_token_modifier(self.add_id_token)
 
     def add_id_token(self, token, token_handler, request):
@@ -585,13 +565,10 @@ class OpenIDAuthorizationCodeGrant(OpenIDGrantTypeBase):
         retrieve the nonce accordingly to the code storage.
         """
         # Treat it as normal OAuth 2 auth code request if openid is not present
-        if not request.scopes or 'openid' not in request.scopes:
+        if not request.scopes or "openid" not in request.scopes:
             return token
 
         nonce = self.request_validator.get_authorization_code_nonce(
-            request.client_id,
-            request.code,
-            request.redirect_uri,
-            request
+            request.client_id, request.code, request.redirect_uri, request
         )
         return super().add_id_token(token, token_handler, request, nonce=nonce)

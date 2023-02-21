@@ -38,10 +38,10 @@ LIVE = "X"
 OPENGEOPORTAL = "O"
 
 HARVESTER_TYPES = {
-    'WMS': 'geonode.harvesting.harvesters.wms.OgcWmsHarvester',
-    'GN_WMS': 'geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker',
-    'REST_MAP': 'geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker',
-    'REST_IMG': 'geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker',
+    "WMS": "geonode.harvesting.harvesters.wms.OgcWmsHarvester",
+    "GN_WMS": "geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
+    "REST_MAP": "geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker",
+    "REST_IMG": "geonode.harvesting.harvesters.arcgis.ArcgisHarvesterWorker",
 }
 
 QUEUED = "QUEUED"

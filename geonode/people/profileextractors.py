@@ -82,7 +82,6 @@ class BaseExtractor:
 
 
 class FacebookExtractor(BaseExtractor):
-
     def extract_email(self, data):
         return data.get("email", "")
 
@@ -97,7 +96,6 @@ class FacebookExtractor(BaseExtractor):
 
 
 class LinkedInExtractor(BaseExtractor):
-
     def extract_email(self, data):
         try:
             element = data.get("elements")[0]
@@ -130,7 +128,6 @@ class LinkedInExtractor(BaseExtractor):
 
 
 class OpenIDExtractor(BaseExtractor):
-
     def extract_email(self, data):
         return data.get("email", "")
 
@@ -144,6 +141,7 @@ class OpenIDExtractor(BaseExtractor):
         country = data.get("country", "")
         if country:
             from geonode.base.enumerations import COUNTRIES
+
             for _cnt in COUNTRIES:
                 if country == _cnt[1]:
                     country = _cnt[0]
@@ -154,6 +152,7 @@ class OpenIDExtractor(BaseExtractor):
         language = data.get("language", "")
         if language:
             from .languages import LANGUAGES
+
             for _cnt in LANGUAGES:
                 if language == _cnt[1]:
                     language = _cnt[0]
@@ -164,6 +163,7 @@ class OpenIDExtractor(BaseExtractor):
         timezone = data.get("timezone", "")
         if timezone:
             from .timezones import TIMEZONES
+
             for _cnt in TIMEZONES:
                 if timezone == _cnt[1]:
                     timezone = _cnt[0]
@@ -193,8 +193,5 @@ class OpenIDExtractor(BaseExtractor):
 
 
 def _get_latest_position(data):
-    all_positions = data.get(
-        "positions",
-        {"values": []}
-    )["values"]
+    all_positions = data.get("positions", {"values": []})["values"]
     return all_positions[0] if any(all_positions) else None

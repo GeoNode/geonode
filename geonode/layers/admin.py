@@ -37,17 +37,16 @@ class AttributeInline(admin.TabularInline):
 
 
 class DatasetAdminForm(ResourceBaseAdminForm):
-
     class Meta(ResourceBaseAdminForm.Meta):
         model = Dataset
-        fields = '__all__'
+        fields = "__all__"
 
     tkeywords = MultiThesauriField(
         queryset=ThesaurusKeyword.objects.prefetch_related(
-            Prefetch('keyword', queryset=ThesaurusKeywordLabel.objects.filter(lang='en'))
+            Prefetch("keyword", queryset=ThesaurusKeywordLabel.objects.filter(lang="en"))
         ),
         widget=autocomplete.ModelSelect2Multiple(
-            url='thesaurus_autocomplete',
+            url="thesaurus_autocomplete",
         ),
         label=("Keywords from Thesaurus"),
         required=False,
@@ -57,27 +56,37 @@ class DatasetAdminForm(ResourceBaseAdminForm):
 
 class DatasetAdmin(TabbedTranslationAdmin):
     list_display = (
-        'id',
-        'alternate',
-        'title',
-        'date',
-        'category',
-        'group',
-        'is_approved',
-        'is_published',
-        'state',
-        'dirty_state',
-        'metadata_completeness')
-    list_display_links = ('id',)
-    list_editable = ('title', 'category', 'group', 'is_approved', 'is_published', 'dirty_state')
-    list_filter = ('subtype', 'owner', 'category', 'group',
-                   'restriction_code_type__identifier', 'date', 'date_type',
-                   'is_approved', 'is_published', 'state', 'dirty_state')
-    search_fields = ('alternate', 'title', 'abstract', 'purpose',
-                     'is_approved', 'is_published', 'state')
-    filter_horizontal = ('contacts',)
-    date_hierarchy = 'date'
-    readonly_fields = ('uuid', 'alternate', 'workspace')
+        "id",
+        "alternate",
+        "title",
+        "date",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+        "state",
+        "dirty_state",
+        "metadata_completeness",
+    )
+    list_display_links = ("id",)
+    list_editable = ("title", "category", "group", "is_approved", "is_published", "dirty_state")
+    list_filter = (
+        "subtype",
+        "owner",
+        "category",
+        "group",
+        "restriction_code_type__identifier",
+        "date",
+        "date_type",
+        "is_approved",
+        "is_published",
+        "state",
+        "dirty_state",
+    )
+    search_fields = ("alternate", "title", "abstract", "purpose", "is_approved", "is_published", "state")
+    filter_horizontal = ("contacts",)
+    date_hierarchy = "date"
+    readonly_fields = ("uuid", "alternate", "workspace")
     inlines = [AttributeInline]
     form = DatasetAdminForm
     actions = [metadata_batch_edit]
@@ -89,30 +98,30 @@ class DatasetAdmin(TabbedTranslationAdmin):
         """
         for obj in queryset:
             from geonode.resource.manager import resource_manager
+
             resource_manager.delete(obj.uuid, instance=obj)
 
 
 class AttributeAdmin(admin.ModelAdmin):
     model = Attribute
-    list_display_links = ('id',)
-    list_display = (
-        'id',
-        'dataset',
-        'attribute',
-        'description',
-        'attribute_label',
-        'attribute_type',
-        'display_order')
-    list_filter = ('dataset', 'attribute_type')
-    search_fields = ('attribute', 'attribute_label',)
+    list_display_links = ("id",)
+    list_display = ("id", "dataset", "attribute", "description", "attribute_label", "attribute_type", "display_order")
+    list_filter = ("dataset", "attribute_type")
+    search_fields = (
+        "attribute",
+        "attribute_label",
+    )
 
 
 class StyleAdmin(admin.ModelAdmin):
     model = Style
-    list_display_links = ('sld_title',)
-    list_display = ('id', 'name', 'sld_title', 'workspace', 'sld_url')
-    list_filter = ('workspace',)
-    search_fields = ('name', 'workspace',)
+    list_display_links = ("sld_title",)
+    list_display = ("id", "name", "sld_title", "workspace", "sld_url")
+    list_filter = ("workspace",)
+    search_fields = (
+        "name",
+        "workspace",
+    )
 
 
 admin.site.register(Dataset, DatasetAdmin)

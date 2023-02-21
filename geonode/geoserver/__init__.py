@@ -38,7 +38,6 @@ def run_setup_hooks(*args, **kwargs):
 
 
 def set_resource_links(*args, **kwargs):
-
     from geonode.utils import set_resource_default_links
     from geonode.catalogue.models import catalogue_post_save
     from geonode.layers.models import Dataset
@@ -53,16 +52,23 @@ def set_resource_links(*args, **kwargs):
                 set_resource_default_links(layer, layer)
                 catalogue_post_save(instance=layer, sender=layer.__class__)
             except Exception:
-                logger.exception(
-                    f"[ERROR] Dataset [{_lyr_name}] couldn't be updated"
-                )
+                logger.exception(f"[ERROR] Dataset [{_lyr_name}] couldn't be updated")
 
 
 class GeoserverAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.geoserver'
-    NOTIFICATIONS = (("dataset_uploaded", _("Dataset Uploaded"), _("A layer was uploaded"),),
-                     ("dataset_rated", _("Rating for Dataset"), _("A rating was given to a layer"),),
-                     )
+    name = "geonode.geoserver"
+    NOTIFICATIONS = (
+        (
+            "dataset_uploaded",
+            _("Dataset Uploaded"),
+            _("A layer was uploaded"),
+        ),
+        (
+            "dataset_rated",
+            _("Rating for Dataset"),
+            _("A rating was given to a layer"),
+        ),
+    )
 
     def ready(self):
         super().ready()
@@ -70,9 +76,10 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
         # Connect the post_migrate signal with the _set_resource_links
         # method to update links for each resource
         from django.db.models import signals
+
         signals.post_migrate.connect(set_resource_links, sender=self)
 
 
-default_app_config = 'geonode.geoserver.GeoserverAppConfig'
+default_app_config = "geonode.geoserver.GeoserverAppConfig"
 
-BACKEND_PACKAGE = 'geonode.geoserver'
+BACKEND_PACKAGE = "geonode.geoserver"

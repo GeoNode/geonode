@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
 
 
 class BaseThumbBackground(ABC):
-
     def __init__(self, thumbnail_width: int, thumbnail_height: int, max_retries: int = 3, retry_delay: int = 1):
         """
         Base class for thumbnails background retrieval.
@@ -67,7 +66,6 @@ class BaseThumbBackground(ABC):
 
 
 class GenericWMSBackground(BaseThumbBackground):
-
     def __init__(
         self,
         thumbnail_width: int,
@@ -160,7 +158,6 @@ class GenericWMSBackground(BaseThumbBackground):
 
 
 class GenericXYZBackground(BaseThumbBackground):
-
     def __init__(
         self,
         thumbnail_width: int,
@@ -185,7 +182,7 @@ class GenericXYZBackground(BaseThumbBackground):
         self.tile_size = options.get("tile_size", 256)
         self.tms = False
         try:
-            self.tms = ast.literal_eval(str(options.get('tms')))
+            self.tms = ast.literal_eval(str(options.get("tms")))
         except Exception:
             pass
         # ---
@@ -287,7 +284,7 @@ class GenericXYZBackground(BaseThumbBackground):
                 1, bbox[1]
             )
 
-        map_row_tiles = 2 ** zoom - 1  # number of tiles in the Map's row for a certain zoom level
+        map_row_tiles = 2**zoom - 1  # number of tiles in the Map's row for a certain zoom level
 
         map_worlds = int(east_rescaling_factor - west_rescaling_factor)  # number maps in an image
         worlds_between = map_worlds - 1  # number of full maps in an image
@@ -345,7 +342,7 @@ class GenericXYZBackground(BaseThumbBackground):
         for offset_x, x in enumerate(tiles_rows):
             for offset_y, y in enumerate(tiles_cols):
                 if self.tms:
-                    y = (2 ** zoom) - y - 1
+                    y = (2**zoom) - y - 1
                 imgurl = self.url.format(x=x, y=y, z=zoom)
 
                 im = None
@@ -436,7 +433,6 @@ class GenericXYZBackground(BaseThumbBackground):
 
 
 class WikiMediaTileBackground(GenericXYZBackground):
-
     def __init__(
         self,
         thumbnail_width: int,
@@ -454,7 +450,6 @@ class WikiMediaTileBackground(GenericXYZBackground):
 
 
 class OSMTileBackground(GenericXYZBackground):
-
     def __init__(
         self,
         thumbnail_width: int,

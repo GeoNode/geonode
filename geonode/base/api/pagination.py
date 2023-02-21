@@ -20,26 +20,22 @@ from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 
-DEFAULT_PAGE = getattr(settings, 'REST_API_DEFAULT_PAGE', 1)
-DEFAULT_PAGE_SIZE = getattr(settings, 'REST_API_DEFAULT_PAGE_SIZE', 10)
-DEFAULT_PAGE_QUERY_PARAM = getattr(settings, 'REST_API_DEFAULT_PAGE_QUERY_PARAM', 'page_size')
+DEFAULT_PAGE = getattr(settings, "REST_API_DEFAULT_PAGE", 1)
+DEFAULT_PAGE_SIZE = getattr(settings, "REST_API_DEFAULT_PAGE_SIZE", 10)
+DEFAULT_PAGE_QUERY_PARAM = getattr(settings, "REST_API_DEFAULT_PAGE_QUERY_PARAM", "page_size")
 
 
 class GeoNodeApiPagination(PageNumberPagination):
-
     page = DEFAULT_PAGE
     page_size = DEFAULT_PAGE_SIZE
     page_size_query_param = DEFAULT_PAGE_QUERY_PARAM
 
     def get_paginated_response(self, data):
         _paginated_response = {
-            'links': {
-                'next': self.get_next_link(),
-                'previous': self.get_previous_link()
-            },
-            'total': self.page.paginator.count,
-            'page': int(self.request.GET.get('page', DEFAULT_PAGE)),  # can not set default = self.page
-            DEFAULT_PAGE_QUERY_PARAM: int(self.request.GET.get(DEFAULT_PAGE_QUERY_PARAM, self.page_size))
+            "links": {"next": self.get_next_link(), "previous": self.get_previous_link()},
+            "total": self.page.paginator.count,
+            "page": int(self.request.GET.get("page", DEFAULT_PAGE)),  # can not set default = self.page
+            DEFAULT_PAGE_QUERY_PARAM: int(self.request.GET.get(DEFAULT_PAGE_QUERY_PARAM, self.page_size)),
         }
         _paginated_response.update(data)
         return Response(_paginated_response)
