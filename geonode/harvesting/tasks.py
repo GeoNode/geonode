@@ -37,7 +37,7 @@ from .harvesters import base
 logger = logging.getLogger(__name__)
 
 
-@app.task(bind=True, queue="geonode", acks_late=False, ignore_result=False)
+@app.task(bind=True, queue="geonode", expires=30, time_limit=600, acks_late=False, ignore_result=False)
 def harvesting_scheduler(self):
     """Check whether any of the configured harvesters needs to be run or not.
 
@@ -82,6 +82,8 @@ def harvesting_scheduler(self):
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -112,7 +114,7 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
         harvester.harvestable_resources.filter(should_be_harvested=True).values_list("id", flat=True)
     )
     if len(harvestable_resources) > 0:
-        harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id))
+        harvest_resources.apply_async(args=(harvestable_resources, harvesting_session_id), expiration=30)
     else:
         message = "harvesting_dispatcher - Nothing to do"
         logger.debug(message)
@@ -124,6 +126,8 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -154,7 +158,7 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
                     )
                 )
                 harvesting_workflow = chord(resource_tasks, body=harvesting_finalizer)
-                harvesting_workflow.apply_async()
+                harvesting_workflow.apply_async(args=(), expiration=30)
             else:
                 message = (
                     f"Skipping harvesting for harvester {harvester.name!r} because the "
@@ -179,6 +183,8 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -230,6 +236,8 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -249,6 +257,8 @@ def _finish_harvesting(self, harvesting_session_id: int):
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -293,6 +303,8 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
     bind=True,
     # name='geonode.harvesting.tasks.check_harvester_available',
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
 )
 def check_harvester_available(self, harvester_id: int):
@@ -304,6 +316,8 @@ def check_harvester_available(self, harvester_id: int):
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -349,7 +363,7 @@ def update_harvestable_resources(self, refresh_session_id: int):
                     )
                 )
                 update_workflow = chord(batches, body=update_finalizer)
-                update_workflow.apply_async()
+                update_workflow.apply_async(args=(), expiration=30)
         else:
             finish_asynchronous_session(
                 refresh_session_id, session.STATUS_FINISHED_ALL_FAILED, final_details="Harvester is not available"
@@ -361,6 +375,8 @@ def update_harvestable_resources(self, refresh_session_id: int):
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -401,6 +417,8 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )
@@ -425,6 +443,8 @@ def _finish_harvestable_resources_update(self, refresh_session_id: int):
 @app.task(
     bind=True,
     queue="geonode",
+    expires=30,
+    time_limit=600,
     acks_late=False,
     ignore_result=False,
 )

@@ -43,7 +43,9 @@ logger = logging.getLogger(__name__)
 UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, "UPLOAD_SESSION_EXPIRY_HOURS", 24)
 
 
-@app.task(bind=True, base=FaultTolerantTask, queue="upload", acks_late=False, ignore_result=True)
+@app.task(
+    bind=True, base=FaultTolerantTask, queue="upload", expires=30, time_limit=600, acks_late=False, ignore_result=True
+)
 def finalize_incomplete_session_uploads(self, *args, **kwargs):
     """The task periodically checks for pending and stale Upload sessions.
     It runs every 600 seconds (see the PeriodTask on geonode.upload._init_),
@@ -80,7 +82,7 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
         )
     )
     upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
-    upload_workflow.apply_async()
+    upload_workflow.apply_async(args=(), expiration=30)
 
     # Let's finish the valid ones
     session = None
@@ -126,14 +128,16 @@ def finalize_incomplete_session_uploads(self, *args, **kwargs):
     )
 
     upload_workflow = chord(_upload_tasks, body=upload_workflow_finalizer)
-    result = upload_workflow.apply_async()
+    result = upload_workflow.apply_async(args=(), expiration=30)
     if result.ready():
         with allow_join_result():
             return result.get()
     return result.state
 
 
-@app.task(bind=True, base=FaultTolerantTask, queue="upload", acks_late=False, ignore_result=False)
+@app.task(
+    bind=True, base=FaultTolerantTask, queue="upload", expires=30, time_limit=600, acks_late=False, ignore_result=False
+)
 def _upload_workflow_finalizer(self, task_name: str, upload_ids: list):
     """Task invoked at 'upload_workflow.chord' end in the case everything went well."""
     if upload_ids:
@@ -154,7 +158,9 @@ def _upload_workflow_error(self, task_name: str, upload_ids: list):
         _upload.set_processing_state(enumerations.STATE_INVALID)
 
 
-@app.task(bind=True, base=FaultTolerantTask, queue="upload", acks_late=False, ignore_result=False)
+@app.task(
+    bind=True, base=FaultTolerantTask, queue="upload", expires=30, time_limit=600, acks_late=False, ignore_result=False
+)
 def _update_upload_session_state(self, upload_session_id: int):
     """Task invoked by 'upload_workflow.chord' in order to process all the 'PENDING' Upload tasks."""
     lock_id = f"_update_upload_session_state-{upload_session_id}"
@@ -234,7 +240,9 @@ def _update_upload_session_state(self, upload_session_id: int):
                 )
 
 
-@app.task(bind=True, base=FaultTolerantTask, queue="upload", acks_late=False, ignore_result=False)
+@app.task(
+    bind=True, base=FaultTolerantTask, queue="upload", expires=30, time_limit=600, acks_late=False, ignore_result=False
+)
 def _upload_session_cleanup(self, upload_session_id: int):
     """Task invoked by 'upload_workflow.chord' in order to remove and cleanup all the 'INVALID' stale Upload tasks."""
     try:

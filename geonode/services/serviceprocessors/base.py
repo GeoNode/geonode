@@ -183,7 +183,8 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                                 resource_id,
                             ],
                             _h_session.pk,
-                        )
+                        ),
+                        expiration=30,
                     )
             except Exception as e:
                 logger.exception(e)
