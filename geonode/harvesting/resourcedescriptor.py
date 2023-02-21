@@ -89,7 +89,6 @@ class RecordDescription:
     date_stamp: typing.Optional[dt.datetime] = None
     reference_systems: typing.Optional[typing.List[str]] = None
     data_quality: typing.Optional[str] = None
-    additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(
-        default_factory=dict)
+    additional_parameters: typing.Optional[typing.Dict] = dataclasses.field(default_factory=dict)
     language: typing.Optional[str] = None
     character_set: typing.Optional[str] = None

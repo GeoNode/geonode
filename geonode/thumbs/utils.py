@@ -38,7 +38,7 @@ from geonode.storage.manager import storage_manager
 logger = logging.getLogger(__name__)
 
 MISSING_THUMB = settings.MISSING_THUMBNAIL
-BASE64_PATTERN = 'data:image/(jpeg|png|jpg);base64'
+BASE64_PATTERN = "data:image/(jpeg|png|jpg);base64"
 
 
 def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[List, Tuple]) -> Callable:
@@ -76,8 +76,8 @@ def transform_bbox(bbox: List, target_crs: str = "EPSG:3857"):
     Function transforming BBOX in dataset compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
     preserving overflow values.
     """
-    match = re.match(r'^(EPSG:)?(?P<srid>\d{4,6})$', str(target_crs))
-    target_srid = int(match.group('srid')) if match else 4326
+    match = re.match(r"^(EPSG:)?(?P<srid>\d{4,6})$", str(target_crs))
+    target_srid = int(match.group("srid")) if match else 4326
     return list(bbox_to_projection(bbox, target_srid=target_srid))[:-1] + [target_crs]
 
 
@@ -146,16 +146,16 @@ def assign_missing_thumbnail(instance) -> None:
 
 
 def get_map(
-        ogc_server_location: str,
-        layers: List,
-        bbox: List,
-        wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
-        mime_type: str = "image/png",
-        styles: List = None,
-        width: int = 240,
-        height: int = 200,
-        max_retries: int = 3,
-        retry_delay: int = 1,
+    ogc_server_location: str,
+    layers: List,
+    bbox: List,
+    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
+    mime_type: str = "image/png",
+    styles: List = None,
+    width: int = 240,
+    height: int = 200,
+    max_retries: int = 3,
+    retry_delay: int = 1,
 ):
     """
     Function fetching an image from OGC server.
@@ -178,6 +178,7 @@ def get_map(
     :returns: retrieved image
     """
     from geonode.geoserver.helpers import ogc_server_settings
+
     if ogc_server_location is not None:
         thumbnail_url = ogc_server_location
     else:
@@ -195,7 +196,7 @@ def get_map(
         if user:
             access_token = get_or_create_token(user)
             if access_token and not access_token.is_expired():
-                additional_kwargs['access_token'] = access_token.token
+                additional_kwargs["access_token"] = access_token.token
 
         # add WMS endpoint to requests to Geoserver
         wms_endpoint = getattr(ogc_server_settings, "WMS_ENDPOINT") or "ows"
@@ -247,50 +248,62 @@ def get_map(
     return image.read()
 
 
-def _build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, bbox=None,
-                          format=None, size=None, time=None, dimensions={},
-                          elevation=None, transparent=False,
-                          bgcolor=None, exceptions=None, **kwargs):
+def _build_getmap_request(
+    version="1.3.0",
+    layers=None,
+    styles=None,
+    srs=None,
+    bbox=None,
+    format=None,
+    size=None,
+    time=None,
+    dimensions={},
+    elevation=None,
+    transparent=False,
+    bgcolor=None,
+    exceptions=None,
+    **kwargs,
+):
     from owslib.crs import Crs
 
-    request = {'service': 'WMS', 'version': version, 'request': 'GetMap'}
+    request = {"service": "WMS", "version": version, "request": "GetMap"}
 
     # check layers and styles
     assert len(layers) > 0
-    request['layers'] = ','.join(layers)
+    request["layers"] = ",".join(layers)
     if styles:
         assert len(styles) == len(layers)
-        request['styles'] = ','.join(styles)
+        request["styles"] = ",".join(styles)
     else:
-        request['styles'] = ''
+        request["styles"] = ""
 
     # size
-    request['width'] = str(size[0])
-    request['height'] = str(size[1])
+    request["width"] = str(size[0])
+    request["height"] = str(size[1])
 
     # remap srs to crs for the actual request
-    if srs.upper() == 'EPSG:0':
+    if srs.upper() == "EPSG:0":
         # if it's esri's unknown spatial ref code, bail
-        raise Exception(f'Undefined spatial reference ({srs}).')
+        raise Exception(f"Undefined spatial reference ({srs}).")
 
     sref = Crs(srs)
-    if sref.axisorder == 'yx':
+    if sref.axisorder == "yx":
         # remap the given bbox
         bbox = (bbox[1], bbox[0], bbox[3], bbox[2])
 
     # remapping the srs to crs for the request
-    request['crs'] = str(srs)
-    request['bbox'] = ','.join([repr(x) for x in bbox])
-    request['format'] = str(format)
-    request['transparent'] = str(transparent).upper()
-    request['bgcolor'] = f"0x{bgcolor[1:7]}"
-    request['exceptions'] = str(exceptions)
+    request["crs"] = str(srs)
+    request["bbox"] = ",".join([repr(x) for x in bbox])
+    request["format"] = str(format)
+    request["transparent"] = str(transparent).upper()
+    request["bgcolor"] = f"0x{bgcolor[1:7]}"
+    request["exceptions"] = str(exceptions)
 
     if time is not None:
-        request['time'] = str(time)
+        request["time"] = str(time)
 
     if elevation is not None:
-        request['elevation'] = str(elevation)
+        request["elevation"] = str(elevation)
 
     # any other specified dimension, prefixed with "dim_"
     for k, v in list(dimensions.items()):
@@ -302,24 +315,26 @@ def _build_getmap_request(version='1.3.0', layers=None, styles=None, srs=None, b
     return request
 
 
-def getmap(base_url,
-           version='1.3.0',
-           headers={},
-           layers=None,
-           styles=None,
-           srs=None,
-           bbox=None,
-           format=None,
-           size=None,
-           time=None,
-           elevation=None,
-           dimensions={},
-           transparent=False,
-           bgcolor='#FFFFFF',
-           exceptions='XML',
-           method='Get',
-           timeout=None,
-           **kwargs):
+def getmap(
+    base_url,
+    version="1.3.0",
+    headers={},
+    layers=None,
+    styles=None,
+    srs=None,
+    bbox=None,
+    format=None,
+    size=None,
+    time=None,
+    elevation=None,
+    dimensions={},
+    transparent=False,
+    bgcolor="#FFFFFF",
+    exceptions="XML",
+    method="Get",
+    timeout=None,
+    **kwargs,
+):
     """Request and return an image from the WMS as a file-like object.
 
     Parameters
@@ -398,7 +413,8 @@ def getmap(base_url,
         transparent=transparent,
         bgcolor=bgcolor,
         exceptions=exceptions,
-        **kwargs)
+        **kwargs,
+    )
 
     data = urlencode(request)
 
@@ -410,10 +426,10 @@ def getmap(base_url,
         headers[k.lower()] = v
 
     # handle the potential charset def
-    if headers.get('content-type', '').split(';')[0] in ['application/vnd.ogc.se_xml', 'text/xml']:
+    if headers.get("content-type", "").split(";")[0] in ["application/vnd.ogc.se_xml", "text/xml"]:
         se_xml = u.read()
         se_tree = etree.fromstring(se_xml)
-        err_message = str(se_tree.find(nspath('ServiceException', n.get_namespace('ogc'))).text).strip()
+        err_message = str(se_tree.find(nspath("ServiceException", n.get_namespace("ogc"))).text).strip()
         raise ServiceException(err_message)
     return u
 
@@ -422,20 +438,19 @@ def epsg_3857_area_of_use():
     """
     Shortcut function, returning area of use of EPSG:3857 (in EPSG:4326) in a dataset compliant BBOX
     """
-    epsg3857 = CRS.from_user_input('EPSG:3857')
+    epsg3857 = CRS.from_user_input("EPSG:3857")
     return [
-        getattr(epsg3857.area_of_use, 'west'),
-        getattr(epsg3857.area_of_use, 'east'),
-        getattr(epsg3857.area_of_use, 'south'),
-        getattr(epsg3857.area_of_use, 'north'),
-        'EPSG:4326'
+        getattr(epsg3857.area_of_use, "west"),
+        getattr(epsg3857.area_of_use, "east"),
+        getattr(epsg3857.area_of_use, "south"),
+        getattr(epsg3857.area_of_use, "north"),
+        "EPSG:4326",
     ]
 
 
 def crop_to_3857_area_of_use(bbox: List) -> List:
-
     # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
-    bbox4326 = transform_bbox(bbox, target_crs='EPSG:4326')
+    bbox4326 = transform_bbox(bbox, target_crs="EPSG:4326")
 
     # get area of use of EPSG:3857 in EPSG:4326
     epsg3857_bounds_bbox = epsg_3857_area_of_use()
@@ -443,14 +458,12 @@ def crop_to_3857_area_of_use(bbox: List) -> List:
     bbox = []
     for coord, bound_coord in zip(bbox4326[:-1], epsg3857_bounds_bbox[:-1]):
         if abs(coord) > abs(bound_coord):
-            logger.debug(
-                "Thumbnail generation: cropping BBOX's coord to EPSG:3857 area of use."
-            )
+            logger.debug("Thumbnail generation: cropping BBOX's coord to EPSG:3857 area of use.")
             bbox.append(bound_coord)
         else:
             bbox.append(coord)
 
-    bbox.append('EPSG:4326')
+    bbox.append("EPSG:4326")
 
     return bbox
 
@@ -465,7 +478,7 @@ def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
     """
 
     # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
-    bbox4326 = transform_bbox(bbox, target_crs='EPSG:4326')
+    bbox4326 = transform_bbox(bbox, target_crs="EPSG:4326")
 
     # get area of use of EPSG:3857 in EPSG:4326
     epsg3857_bounds_bbox = epsg_3857_area_of_use()
@@ -490,7 +503,7 @@ def clean_bbox(bbox, target_crs):
     # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
     # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
     # the provided bbox is impossible.
-    if target_crs == 'EPSG:3857' and bbox[-1].upper() != 'EPSG:3857':
+    if target_crs == "EPSG:3857" and bbox[-1].upper() != "EPSG:3857":
         bbox = crop_to_3857_area_of_use(bbox)
 
     bbox = transform_bbox(bbox, target_crs=target_crs)
@@ -546,11 +559,11 @@ def remove_thumbs(name):
 
 
 def get_unique_upload_path(filename):
-    """ Generates a unique name from the given filename and
+    """Generates a unique name from the given filename and
     creates a unique file upload path"""
     # create an upload path from a unique filename
     filename, ext = os.path.splitext(filename)
-    unique_file_name = f'{filename}-{uuid4()}{ext}'
+    unique_file_name = f"{filename}-{uuid4()}{ext}"
     upload_path = thumb_path(unique_file_name)
     return upload_path
 
@@ -565,8 +578,8 @@ def _decode_base64(data):
     _thumbnail_format = "png"
     _invalid_padding = data.find(";base64,")
     if _invalid_padding:
-        _thumbnail_format = data[data.find("image/") + len("image/"):_invalid_padding]
-        data = data[_invalid_padding + len(";base64,"):]
+        _thumbnail_format = data[data.find("image/") + len("image/") : _invalid_padding]
+        data = data[_invalid_padding + len(";base64,") :]
     missing_padding = len(data) % 4
     if missing_padding != 0:
         data += b"=" * (4 - missing_padding)

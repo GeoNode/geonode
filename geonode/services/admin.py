@@ -25,16 +25,15 @@ from . import models
 
 
 class ServiceAdminForm(ResourceBaseAdminForm):
-
     class Meta(ResourceBaseAdminForm.Meta):
         model = models.Service
-        fields = '__all__'
+        fields = "__all__"
 
 
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'base_url', 'type', 'method')
-    list_display_links = ('id', 'name')
-    list_filter = ('id', 'name', 'type', 'method')
+    list_display = ("id", "name", "base_url", "type", "method")
+    list_display_links = ("id", "name")
+    list_filter = ("id", "name", "type", "method")
     form = ServiceAdminForm
 
 

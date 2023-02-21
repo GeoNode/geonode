@@ -48,7 +48,7 @@ from geonode.base.models import (
     TopicCategory,
     Thesaurus,
     ThesaurusKeyword,
-    generate_thesaurus_reference
+    generate_thesaurus_reference,
 )
 from django.conf import settings
 from django.contrib.gis.geos import Polygon
@@ -62,7 +62,10 @@ from django.utils import translation
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
-    get_name_translation, get_thesaurus_localized_label, get_thesaurus_translation_by_id, get_unique_thesaurus_set,
+    get_name_translation,
+    get_thesaurus_localized_label,
+    get_thesaurus_translation_by_id,
+    get_unique_thesaurus_set,
     get_thesaurus_title,
     get_thesaurus_date,
 )
@@ -76,14 +79,13 @@ from django.core.management.base import CommandError
 from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
 
 
-test_image = Image.new('RGBA', size=(50, 50), color=(155, 0, 0))
+test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
 
 class ThumbnailTests(GeoNodeBaseTestSupport):
-
     def setUp(self):
         super().setUp()
-        self.rb = ResourceBase.objects.create(uuid=str(uuid4()), owner=get_user_model().objects.get(username='admin'))
+        self.rb = ResourceBase.objects.create(uuid=str(uuid4()), owner=get_user_model().objects.get(username="admin"))
 
     def tearDown(self):
         super().tearDown()
@@ -101,15 +103,15 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         Tests that an empty image does not change the current resource thumbnail.
         """
         current = self.rb.get_thumbnail_url()
-        self.rb.save_thumbnail('test-thumb', None)
+        self.rb.save_thumbnail("test-thumb", None)
         self.assertEqual(current, self.rb.get_thumbnail_url())
 
-    @patch('PIL.Image.open', return_value=test_image)
+    @patch("PIL.Image.open", return_value=test_image)
     def test_monochromatic_image(self, image):
         """
         Tests that an monochromatic image does not change the current resource thumbnail.
         """
-        filename = 'test-thumb'
+        filename = "test-thumb"
 
         current = self.rb.get_thumbnail_url()
         self.rb.save_thumbnail(filename, image)
@@ -119,12 +121,12 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
         thumb_utils.remove_thumbs(filename)
         self.assertFalse(thumb_utils.thumb_exists(filename))
 
-    @patch('PIL.Image.open', return_value=test_image)
+    @patch("PIL.Image.open", return_value=test_image)
     def test_thumb_utils_methods(self, image):
         """
         Bunch of tests on thumb_utils helpers.
         """
-        filename = 'test-thumb'
+        filename = "test-thumb"
         upload_path = thumb_utils.thumb_path(filename)
         self.assertEqual(upload_path, os.path.join(settings.THUMBNAIL_LOCATION, filename))
         thumb_utils.remove_thumbs(filename)
@@ -141,25 +143,23 @@ class ThumbnailTests(GeoNodeBaseTestSupport):
 
 
 class TestThumbnailUrl(GeoNodeBaseTestSupport):
-
     def setUp(self):
         super().setUp()
         f = BytesIO(test_image.tobytes())
-        f.name = 'test_image.jpeg'
+        f.name = "test_image.jpeg"
 
 
 class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
-
     def test_add_missing_metadata_author_or_poc(self):
         """
         Test that calling add_missing_metadata_author_or_poc resource method sets
         a missing metadata_author and/or point of contact (poc) to resource owner
         """
-        user = get_user_model().objects.create(username='zlatan_i')
+        user = get_user_model().objects.create(username="zlatan_i")
         self.rb.owner = user
         self.rb.add_missing_metadata_author_or_poc()
-        self.assertEqual(self.rb.metadata_author.username, 'zlatan_i')
-        self.assertEqual(self.rb.poc.username, 'zlatan_i')
+        self.assertEqual(self.rb.metadata_author.username, "zlatan_i")
+        self.assertEqual(self.rb.poc.username, "zlatan_i")
 
 
 class RenderMenuTagTest(GeoNodeBaseTestSupport):
@@ -169,385 +169,303 @@ class RenderMenuTagTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-        self.placeholder_0 = MenuPlaceholder.objects.create(
-            name='test_menu_placeholder_0'
-        )
-        self.placeholder_1 = MenuPlaceholder.objects.create(
-            name='test_unicode_äöü_menu_placeholder_1'
-        )
-        self.menu_0_0 = Menu.objects.create(
-            title='test_menu_0_0',
-            order=0,
-            placeholder=self.placeholder_0
-
-        )
-        self.menu_0_1 = Menu.objects.create(
-            title='test_menu_0_1',
-            order=1,
-            placeholder=self.placeholder_0
-
-        )
-        self.menu_1_0 = Menu.objects.create(
-            title='test_unicode_äöü_menu_1_0',
-            order=0,
-            placeholder=self.placeholder_1
-
-        )
+        self.placeholder_0 = MenuPlaceholder.objects.create(name="test_menu_placeholder_0")
+        self.placeholder_1 = MenuPlaceholder.objects.create(name="test_unicode_äöü_menu_placeholder_1")
+        self.menu_0_0 = Menu.objects.create(title="test_menu_0_0", order=0, placeholder=self.placeholder_0)
+        self.menu_0_1 = Menu.objects.create(title="test_menu_0_1", order=1, placeholder=self.placeholder_0)
+        self.menu_1_0 = Menu.objects.create(title="test_unicode_äöü_menu_1_0", order=0, placeholder=self.placeholder_1)
         self.menu_item_0_0_0 = MenuItem.objects.create(
-            title='test_menu_item_0_0_0',
-            order=0,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_0_0
+            title="test_menu_item_0_0_0", order=0, blank_target=False, url="/about", menu=self.menu_0_0
         )
         self.menu_item_0_0_1 = MenuItem.objects.create(
-            title='test_menu_item_0_0_1',
-            order=1,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_0_0
+            title="test_menu_item_0_0_1", order=1, blank_target=False, url="/about", menu=self.menu_0_0
         )
         self.menu_item_0_1_0 = MenuItem.objects.create(
-            title='test_menu_item_0_1_0',
-            order=0,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_0_1
+            title="test_menu_item_0_1_0", order=0, blank_target=False, url="/about", menu=self.menu_0_1
         )
         self.menu_item_0_1_1 = MenuItem.objects.create(
-            title='test_menu_item_0_1_1',
-            order=1,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_0_1
+            title="test_menu_item_0_1_1", order=1, blank_target=False, url="/about", menu=self.menu_0_1
         )
         self.menu_item_0_1_2 = MenuItem.objects.create(
-            title='test_menu_item_0_1_2',
-            order=2,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_0_1
+            title="test_menu_item_0_1_2", order=2, blank_target=False, url="/about", menu=self.menu_0_1
         )
         self.menu_item_1_0_0 = MenuItem.objects.create(
-            title='test_unicode_äöü_menu_item_1_0_0',
-            order=0,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_1_0
+            title="test_unicode_äöü_menu_item_1_0_0", order=0, blank_target=False, url="/about", menu=self.menu_1_0
         )
         self.menu_item_1_0_1 = MenuItem.objects.create(
-            title='test_unicode_äöü_menu_item_1_0_1',
-            order=1,
-            blank_target=False,
-            url='/about',
-            menu=self.menu_1_0
+            title="test_unicode_äöü_menu_item_1_0_1", order=1, blank_target=False, url="/about", menu=self.menu_1_0
         )
 
     def test_get_menu_placeholder_0(self):
-        template = Template(
-            "{% load base_tags %} {% get_menu 'test_menu_placeholder_0' %}"
-        )
+        template = Template("{% load base_tags %} {% get_menu 'test_menu_placeholder_0' %}")
         rendered = template.render(Context({}))
         # menu_placeholder_0
         # first menu with ascii chars
         self.assertIn(
-            self.menu_0_0.title,
-            rendered,
-            f'Expected "{self.menu_0_0.title}" string in the rendered template'
+            self.menu_0_0.title, rendered, f'Expected "{self.menu_0_0.title}" string in the rendered template'
         )
         self.assertIn(
             self.menu_item_0_0_0.title,
             rendered,
-            f'Expected "{self.menu_item_0_0_0.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_0_0.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_0_0_1.title,
             rendered,
-            f'Expected "{self.menu_item_0_0_1.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_0_1.title}" string in the rendered template',
         )
         # second menu
         self.assertIn(
-            self.menu_0_1.title,
-            rendered,
-            f'Expected "{self.menu_0_1.title}" string in the rendered template'
+            self.menu_0_1.title, rendered, f'Expected "{self.menu_0_1.title}" string in the rendered template'
         )
         self.assertIn(
             self.menu_item_0_1_0.title,
             rendered,
-            f'Expected "{self.menu_item_0_1_0.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_1_0.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_0_1_1.title,
             rendered,
-            f'Expected "{self.menu_item_0_1_1.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_1_1.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_0_1_2.title,
             rendered,
-            f'Expected "{self.menu_item_0_1_2.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_1_2.title}" string in the rendered template',
         )
         # menu_placeholder_1
         # first menu
         # unicode
         self.assertNotIn(
-            self.menu_1_0.title,
-            rendered,
-            f'No "{self.menu_1_0.title}" string expected in the rendered template'
+            self.menu_1_0.title, rendered, f'No "{self.menu_1_0.title}" string expected in the rendered template'
         )
         self.assertNotIn(
             self.menu_item_1_0_0.title,
             rendered,
-            f'No "{self.menu_item_1_0_0.title}" string expected in the rendered template'
+            f'No "{self.menu_item_1_0_0.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_1_0_1.title,
             rendered,
-            f'No "{self.menu_item_1_0_1.title}" string expected in the rendered template'
+            f'No "{self.menu_item_1_0_1.title}" string expected in the rendered template',
         )
 
     def test_get_menu_placeholder_1(self):
-        template = Template(
-            "{% load base_tags %} {% get_menu 'test_unicode_äöü_menu_placeholder_1' %}"
-        )
+        template = Template("{% load base_tags %} {% get_menu 'test_unicode_äöü_menu_placeholder_1' %}")
         rendered = template.render(Context({}))
         # menu_placeholder_0
         # first menu
         self.assertNotIn(
-            self.menu_0_0.title,
-            rendered,
-            f'No "{self.menu_0_0.title}" string expected in the rendered template'
+            self.menu_0_0.title, rendered, f'No "{self.menu_0_0.title}" string expected in the rendered template'
         )
         self.assertNotIn(
             self.menu_item_0_0_0.title,
             rendered,
-            f'No "{self.menu_item_0_0_0.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_0_0.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_0_0_1.title,
             rendered,
-            f'No "{self.menu_item_0_0_1.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_0_1.title}" string expected in the rendered template',
         )
         # second menu
         self.assertNotIn(
-            self.menu_0_1.title,
-            rendered,
-            f'No "{self.menu_0_1.title}" string expected in the rendered template'
+            self.menu_0_1.title, rendered, f'No "{self.menu_0_1.title}" string expected in the rendered template'
         )
         self.assertNotIn(
             self.menu_item_0_1_0.title,
             rendered,
-            f'No "{self.menu_item_0_1_0.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_1_0.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_0_1_1.title,
             rendered,
-            f'No "{self.menu_item_0_1_1.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_1_1.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_0_1_2.title,
             rendered,
-            f'No "{self.menu_item_0_1_2.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_1_2.title}" string expected in the rendered template',
         )
         # menu_placeholder_1
         # first menu
         # unicode
         self.assertIn(
-            self.menu_1_0.title,
-            rendered,
-            f'Expected "{self.menu_1_0.title}" string in the rendered template'
+            self.menu_1_0.title, rendered, f'Expected "{self.menu_1_0.title}" string in the rendered template'
         )
         self.assertIn(
             self.menu_item_1_0_0.title,
             rendered,
-            f'Expected "{self.menu_item_1_0_0.title}" string in the rendered template'
+            f'Expected "{self.menu_item_1_0_0.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_1_0_1.title,
             rendered,
-            f'Expected "{self.menu_item_1_0_1.title}" string in the rendered template'
+            f'Expected "{self.menu_item_1_0_1.title}" string in the rendered template',
         )
 
     def test_render_nav_menu_placeholder_0(self):
-        template = Template(
-            "{% load base_tags %} {% render_nav_menu 'test_menu_placeholder_0' %}"
-        )
+        template = Template("{% load base_tags %} {% render_nav_menu 'test_menu_placeholder_0' %}")
         rendered = template.render(Context({}))
         # menu_placeholder_0
         # first menu
         self.assertIn(
-            self.menu_0_0.title,
-            rendered,
-            f'Expected "{self.menu_0_0.title}" string in the rendered template'
+            self.menu_0_0.title, rendered, f'Expected "{self.menu_0_0.title}" string in the rendered template'
         )
         self.assertIn(
             self.menu_item_0_0_0.title,
             rendered,
-            f'Expected "{self.menu_item_0_0_0.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_0_0.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_0_0_1.title,
             rendered,
-            f'Expected "{self.menu_item_0_0_1.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_0_1.title}" string in the rendered template',
         )
         # second menu
         self.assertIn(
-            self.menu_0_1.title,
-            rendered,
-            f'Expected "{self.menu_0_1.title}" string in the rendered template'
+            self.menu_0_1.title, rendered, f'Expected "{self.menu_0_1.title}" string in the rendered template'
         )
         self.assertIn(
             self.menu_item_0_1_0.title,
             rendered,
-            f'Expected "{self.menu_item_0_1_0.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_1_0.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_0_1_1.title,
             rendered,
-            f'Expected "{self.menu_item_0_1_1.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_1_1.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_0_1_2.title,
             rendered,
-            f'Expected "{self.menu_item_0_1_2.title}" string in the rendered template'
+            f'Expected "{self.menu_item_0_1_2.title}" string in the rendered template',
         )
         # menu_placeholder_1
         # first menu
         # unicode
         self.assertNotIn(
-            self.menu_1_0.title,
-            rendered,
-            f'No "{self.menu_1_0.title}" string expected in the rendered template'
+            self.menu_1_0.title, rendered, f'No "{self.menu_1_0.title}" string expected in the rendered template'
         )
         self.assertNotIn(
             self.menu_item_1_0_0.title,
             rendered,
-            f'No "{self.menu_item_1_0_0.title}" string expected in the rendered template'
+            f'No "{self.menu_item_1_0_0.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_1_0_1.title,
             rendered,
-            f'No "{self.menu_item_1_0_1.title}" string expected in the rendered template'
+            f'No "{self.menu_item_1_0_1.title}" string expected in the rendered template',
         )
 
     def test_render_nav_menu_placeholder_1(self):
-        template = Template(
-            "{% load base_tags %} {% render_nav_menu 'test_unicode_äöü_menu_placeholder_1' %}"
-        )
+        template = Template("{% load base_tags %} {% render_nav_menu 'test_unicode_äöü_menu_placeholder_1' %}")
         rendered = template.render(Context({}))
         # menu_placeholder_0
         # first menu
         self.assertNotIn(
-            self.menu_0_0.title,
-            rendered,
-            f'No "{self.menu_0_0.title}" string expected in the rendered template'
+            self.menu_0_0.title, rendered, f'No "{self.menu_0_0.title}" string expected in the rendered template'
         )
         self.assertNotIn(
             self.menu_item_0_0_0.title,
             rendered,
-            f'No "{self.menu_item_0_0_0.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_0_0.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_0_0_1.title,
             rendered,
-            f'No "{self.menu_item_0_0_1.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_0_1.title}" string expected in the rendered template',
         )
         # second menu
         self.assertNotIn(
-            self.menu_0_1.title,
-            rendered,
-            f'No "{self.menu_0_1.title}" string expected in the rendered template'
+            self.menu_0_1.title, rendered, f'No "{self.menu_0_1.title}" string expected in the rendered template'
         )
         self.assertNotIn(
             self.menu_item_0_1_0.title,
             rendered,
-            f'No "{self.menu_item_0_1_0.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_1_0.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_0_1_1.title,
             rendered,
-            f'No "{self.menu_item_0_1_1.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_1_1.title}" string expected in the rendered template',
         )
         self.assertNotIn(
             self.menu_item_0_1_2.title,
             rendered,
-            f'No "{self.menu_item_0_1_2.title}" string expected in the rendered template'
+            f'No "{self.menu_item_0_1_2.title}" string expected in the rendered template',
         )
         # menu_placeholder_1
         # first menu
         # unicode
         self.assertIn(
-            self.menu_1_0.title,
-            rendered,
-            f'Expected "{self.menu_1_0.title}" string in the rendered template'
+            self.menu_1_0.title, rendered, f'Expected "{self.menu_1_0.title}" string in the rendered template'
         )
         self.assertIn(
             self.menu_item_1_0_0.title,
             rendered,
-            f'Expected "{self.menu_item_1_0_0.title}" string in the rendered template'
+            f'Expected "{self.menu_item_1_0_0.title}" string in the rendered template',
         )
         self.assertIn(
             self.menu_item_1_0_1.title,
             rendered,
-            f'Expected "{self.menu_item_1_0_1.title}" string in the rendered template'
+            f'Expected "{self.menu_item_1_0_1.title}" string in the rendered template',
         )
 
 
 class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
-
     def test_delete_resources_no_arguments(self):
         args = []
         kwargs = {}
 
         with self.assertRaises(CommandError) as exception:
-            call_command('delete_resources', *args, **kwargs)
+            call_command("delete_resources", *args, **kwargs)
 
         self.assertIn(
-            'No configuration provided',
-            exception.exception.args[0],
-            '"No configuration" exception expected.'
+            "No configuration provided", exception.exception.args[0], '"No configuration" exception expected.'
         )
 
     def test_delete_resources_too_many_arguments(self):
         args = []
-        kwargs = {'config_path': '/example/config.txt', 'map_filters': "*"}
+        kwargs = {"config_path": "/example/config.txt", "map_filters": "*"}
 
         with self.assertRaises(CommandError) as exception:
-            call_command('delete_resources', *args, **kwargs)
+            call_command("delete_resources", *args, **kwargs)
 
         self.assertIn(
-            'Too many configuration options provided',
+            "Too many configuration options provided",
             exception.exception.args[0],
-            '"Too many configuration options provided" exception expected.'
+            '"Too many configuration options provided" exception expected.',
         )
 
     def test_delete_resource_config_file_not_existing(self):
         args = []
-        kwargs = {'config_path': '/example/config.json'}
+        kwargs = {"config_path": "/example/config.json"}
 
         with self.assertRaises(CommandError) as exception:
-            call_command('delete_resources', *args, **kwargs)
+            call_command("delete_resources", *args, **kwargs)
 
         self.assertIn(
-            'Specified configuration file does not exist',
+            "Specified configuration file does not exist",
             exception.exception.args[0],
-            '"Specified configuration file does not exist" exception expected.'
+            '"Specified configuration file does not exist" exception expected.',
         )
 
     def test_delete_resource_config_file_empty(self):
         # create an empty config file
-        config_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'delete_resources_config.json')
-        open(config_file_path, 'a').close()
+        config_file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "delete_resources_config.json")
+        open(config_file_path, "a").close()
 
         args = []
-        kwargs = {'config_path': config_file_path}
+        kwargs = {"config_path": config_file_path}
 
         with self.assertRaises(CommandError) as exception:
-            call_command('delete_resources', *args, **kwargs)
+            call_command("delete_resources", *args, **kwargs)
 
         self.assertIn(
-            'Specified configuration file is empty',
+            "Specified configuration file is empty",
             exception.exception.args[0],
-            '"Specified configuration file is empty" exception expected.'
+            '"Specified configuration file is empty" exception expected.',
         )
 
         # delete the config file
@@ -555,7 +473,6 @@ class DeleteResourcesCommandTests(GeoNodeBaseTestSupport):
 
 
 class ConfigurationTest(GeoNodeBaseTestSupport):
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_read_only_whitelist(self):
         web_client = Client()
@@ -568,18 +485,18 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
 
         # post to whitelisted URLs as AnonymousUser
         for url_name in ReadOnlyMiddleware.WHITELISTED_URL_NAMES:
-            if url_name == 'login':
-                response = web_client.post(reverse('admin:login'))
-            elif url_name == 'logout':
-                response = web_client.post(reverse('admin:logout'))
+            if url_name == "login":
+                response = web_client.post(reverse("admin:login"))
+            elif url_name == "logout":
+                response = web_client.post(reverse("admin:logout"))
             else:
                 response = web_client.post(reverse(url_name))
 
-            self.assertNotEqual(response.status_code, 405, 'Whitelisted URL is not available.')
+            self.assertNotEqual(response.status_code, 405, "Whitelisted URL is not available.")
 
     def test_read_only_casual_user_privileges(self):
         web_client = Client()
-        url_name = 'autocomplete_region'
+        url_name = "autocomplete_region"
 
         # set read-only flag
         config = Configuration.load()
@@ -588,16 +505,15 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         config.save()
 
         # get user
-        user, _ = get_user_model().objects.get_or_create(username='user1')
+        user, _ = get_user_model().objects.get_or_create(username="user1")
         web_client.force_login(user)
 
         # post not whitelisted URL as superuser
         response = web_client.post(reverse(url_name))
 
-        self.assertEqual(response.status_code, 405, 'User is allowed to post to forbidden URL')
+        self.assertEqual(response.status_code, 405, "User is allowed to post to forbidden URL")
 
     def test_maintenance_whitelist(self):
-
         web_client = Client()
 
         # set read-only flag
@@ -608,17 +524,17 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
 
         # post to whitelisted URLs as AnonymousUser
         for url_name in MaintenanceMiddleware.WHITELISTED_URL_NAMES:
-            if url_name == 'login':
-                response = web_client.get(reverse('admin:login'))
-            elif url_name == 'logout':
-                response = web_client.get(reverse('admin:logout'))
-            elif url_name == 'index':
+            if url_name == "login":
+                response = web_client.get(reverse("admin:login"))
+            elif url_name == "logout":
+                response = web_client.get(reverse("admin:logout"))
+            elif url_name == "index":
                 # url needed in the middleware only for admin panel login redirection
                 continue
             else:
                 response = web_client.get(reverse(url_name))
 
-            self.assertNotEqual(response.status_code, 503, 'Whitelisted URL is not available.')
+            self.assertNotEqual(response.status_code, 503, "Whitelisted URL is not available.")
 
     def test_maintenance_false(self):
         web_client = Client()
@@ -630,9 +546,9 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         config.save()
 
         # post not whitelisted URL as superuser
-        response = web_client.get('/')
+        response = web_client.get("/")
 
-        self.assertNotEqual(response.status_code, 503, 'User is allowed to get index page')
+        self.assertNotEqual(response.status_code, 503, "User is allowed to get index page")
 
     def test_maintenance_true(self):
         web_client = Client()
@@ -644,38 +560,37 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         config.save()
 
         # post not whitelisted URL as superuser
-        response = web_client.get('/')
+        response = web_client.get("/")
 
-        self.assertEqual(response.status_code, 503, 'User is allowed to get index page')
+        self.assertEqual(response.status_code, 503, "User is allowed to get index page")
 
 
 class TestOwnerRightsRequestUtils(TestCase):
-
     def setUp(self):
         User = get_user_model()
-        self.user = User.objects.create(username='test', email='test@test.com')
-        self.admin = User.objects.create(username='admin', email='test@test.com', is_superuser=True)
-        self.d = Document.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
-        self.la = Dataset.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
-        self.s = Service.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
-        self.m = Map.objects.create(uuid=str(uuid4()), owner=self.user, title='test', is_approved=True)
+        self.user = User.objects.create(username="test", email="test@test.com")
+        self.admin = User.objects.create(username="admin", email="test@test.com", is_superuser=True)
+        self.d = Document.objects.create(uuid=str(uuid4()), owner=self.user, title="test", is_approved=True)
+        self.la = Dataset.objects.create(uuid=str(uuid4()), owner=self.user, title="test", is_approved=True)
+        self.s = Service.objects.create(uuid=str(uuid4()), owner=self.user, title="test", is_approved=True)
+        self.m = Map.objects.create(uuid=str(uuid4()), owner=self.user, title="test", is_approved=True)
 
     def test_get_concrete_resource(self):
-        self.assertTrue(isinstance(
-            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.d.id)), Document
-        ))
+        self.assertTrue(
+            isinstance(OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.d.id)), Document)
+        )
 
-        self.assertTrue(isinstance(
-            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.la.id)), Dataset
-        ))
+        self.assertTrue(
+            isinstance(OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.la.id)), Dataset)
+        )
 
-        self.assertTrue(isinstance(
-            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.s.id)), Service
-        ))
+        self.assertTrue(
+            isinstance(OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.s.id)), Service)
+        )
 
-        self.assertTrue(isinstance(
-            OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.m.id)), Map
-        ))
+        self.assertTrue(
+            isinstance(OwnerRightsRequestViewUtils.get_resource(ResourceBase.objects.get(pk=self.m.id)), Map)
+        )
 
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_msg_recipients_admin_mode(self):
@@ -703,10 +618,9 @@ class TestOwnerRightsRequestUtils(TestCase):
 
 
 class TestGetVisibleResource(TestCase):
-
     def setUp(self):
-        self.user = get_user_model().objects.create(username='mikel_arteta')
-        self.category = TopicCategory.objects.create(identifier='biota')
+        self.user = get_user_model().objects.create(username="mikel_arteta")
+        self.category = TopicCategory.objects.create(identifier="biota")
         self.rb = ResourceBase.objects.create(uuid=str(uuid4()), category=self.category, owner=self.user)
 
     def test_category_data_not_shown_for_missing_resourcebase_permissions(self):
@@ -715,23 +629,23 @@ class TestGetVisibleResource(TestCase):
         ISO category format data of the ISO category
         """
         categories = get_visibile_resources(self.user)
-        self.assertEqual(categories['iso_formats'].count(), 0)
+        self.assertEqual(categories["iso_formats"].count(), 0)
 
     def test_category_data_shown_for_with_resourcebase_permissions(self):
         """
         Test that a user with view permissions of a resource base can see
         ISO format data of the ISO category
         """
-        assign_perm('view_resourcebase', self.user, self.rb)
+        assign_perm("view_resourcebase", self.user, self.rb)
         categories = get_visibile_resources(self.user)
-        self.assertEqual(categories['iso_formats'].count(), 1)
+        self.assertEqual(categories["iso_formats"].count(), 1)
 
     def test_visible_notifications(self):
         """
         Test that a standard user won't be able to show ADMINS_ONLY_NOTICE_TYPES
         """
-        self.assertFalse(show_notification('monitoring_alert', self.user))
-        self.assertTrue(show_notification('request_download_resourcebase', self.user))
+        self.assertFalse(show_notification("monitoring_alert", self.user))
+        self.assertTrue(show_notification("request_download_resourcebase", self.user))
 
     def test_extent_filter_crossing_dateline(self):
         from .bbox_utils import filter_bbox
@@ -742,16 +656,18 @@ class TestGetVisibleResource(TestCase):
             _ll = Dataset.objects.create(
                 uuid=str(uuid4()),
                 owner=self.user,
-                name='test_extent_filter_crossing_dateline',
-                title='test_extent_filter_crossing_dateline',
-                alternate='geonode:test_extent_filter_crossing_dateline',
+                name="test_extent_filter_crossing_dateline",
+                title="test_extent_filter_crossing_dateline",
+                alternate="geonode:test_extent_filter_crossing_dateline",
                 is_approved=True,
                 is_published=True,
-                ll_bbox_polygon=Polygon.from_bbox(bbox)
+                ll_bbox_polygon=Polygon.from_bbox(bbox),
             )
             self.assertListEqual(list(_ll.ll_bbox_polygon.extent), bbox, _ll.ll_bbox_polygon.extent)
             self.assertTrue(Dataset.objects.filter(title=_ll.title).exists(), Dataset.objects.all())
-            _qs = filter_bbox(Dataset.objects.all(), '-180.0000,-39.7790,-164.2456,9.2702,134.0552,-39.7790,180.0000,9.2702')
+            _qs = filter_bbox(
+                Dataset.objects.all(), "-180.0000,-39.7790,-164.2456,9.2702,134.0552,-39.7790,180.0000,9.2702"
+            )
             self.assertTrue(_qs.filter(title=_ll.title), Dataset.objects.all() | _qs.all())
         finally:
             if _ll:
@@ -759,7 +675,6 @@ class TestGetVisibleResource(TestCase):
 
 
 class TestHtmlTagRemoval(SimpleTestCase):
-
     def test_not_tags_in_attribute(self):
         attribute_target_value = "This is not a templated text"
         r = ResourceBase()
@@ -797,11 +712,8 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
 
 class TestTagThesaurus(TestCase):
-
     #  loading test thesausurs
-    fixtures = [
-        "test_thesaurus.json"
-    ]
+    fixtures = ["test_thesaurus.json"]
 
     def setUp(self):
         self.sut = Thesaurus(
@@ -830,34 +742,34 @@ class TestTagThesaurus(TestCase):
 
     def test_get_name_translation_raise_exception_if_identifier_does_not_exists(self):
         with self.assertRaises(ObjectDoesNotExist):
-            get_name_translation('foo_indentifier')
+            get_name_translation("foo_indentifier")
 
-    @patch('geonode.base.templatetags.thesaurus.get_language')
+    @patch("geonode.base.templatetags.thesaurus.get_language")
     def test_get_name_translation_return_thesauro_title_if_label_for_selected_language_does_not_exists(self, lang):
-        lang.return_value = 'ke'
-        actual = get_name_translation('inspire-theme')
+        lang.return_value = "ke"
+        actual = get_name_translation("inspire-theme")
         expected = "GEMET - INSPIRE themes, version 1.0"
         self.assertEqual(expected, actual)
 
-    @patch('geonode.base.templatetags.thesaurus.get_language')
+    @patch("geonode.base.templatetags.thesaurus.get_language")
     def test_get_thesaurus_translation_by_id(self, lang):
-        lang.return_value = 'it'
+        lang.return_value = "it"
         actual = get_thesaurus_translation_by_id(1)
         expected = "Tema GEMET - INSPIRE, versione 1.0"
         self.assertEqual(expected, actual)
 
-    @patch('geonode.base.templatetags.thesaurus.get_language')
+    @patch("geonode.base.templatetags.thesaurus.get_language")
     def test_get_thesaurus_localized_label(self, lang):
-        lang.return_value = 'de'
+        lang.return_value = "de"
         keyword = ThesaurusKeyword.objects.get(id=1)
         actual = get_thesaurus_localized_label(keyword)
         expected = "Adressen"
         self.assertEqual(expected, actual)
 
-    @patch('geonode.base.templatetags.thesaurus.get_language')
+    @patch("geonode.base.templatetags.thesaurus.get_language")
     def test_get_name_translation_return_label_title_if_label_for_selected_language_exists(self, lang):
-        lang.return_value = 'it'
-        actual = get_name_translation('inspire-theme')
+        lang.return_value = "it"
+        actual = get_name_translation("inspire-theme")
         expected = "Tema GEMET - INSPIRE, versione 1.0"
         self.assertEqual(expected, actual)
 
@@ -868,11 +780,8 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
-
     #  loading test thesausurs
-    fixtures = [
-        "test_thesaurus.json"
-    ]
+    fixtures = ["test_thesaurus.json"]
 
     def setUp(self):
         self.sut = ThesaurusAvailableForm
@@ -893,35 +802,35 @@ class TestThesaurusAvailableForm(TestCase):
 
     def test_field_class_treq_is_correctly_set_when_field_is_required(self):
         actual = self.sut(data={"1": 1})
-        required = actual.fields.get('1')
-        obj_class = required.widget.attrs.get('class')
-        self.assertTrue(obj_class == 'treq')
+        required = actual.fields.get("1")
+        obj_class = required.widget.attrs.get("class")
+        self.assertTrue(obj_class == "treq")
 
     def test_field_class_treq_is_not_set_when_field_is_optional(self):
         actual = self.sut(data={"1": 1})
-        required = actual.fields.get('2')
-        obj_class = required.widget.attrs.get('class')
-        self.assertTrue(obj_class == '')
+        required = actual.fields.get("2")
+        obj_class = required.widget.attrs.get("class")
+        self.assertTrue(obj_class == "")
 
     def test_will_return_thesaurus_with_the_expected_defined_order(self):
         actual = self.sut(data={"1": 1})
         fields = list(actual.fields.items())
         #  will check if the first element of the tuple is the thesaurus_id = 2
-        self.assertEqual(fields[0][0], '2')
+        self.assertEqual(fields[0][0], "2")
         #  will check if the second element of the tuple is the thesaurus_id = 1
-        self.assertEqual(fields[1][0], '1')
+        self.assertEqual(fields[1][0], "1")
 
     def test_will_return_thesaurus_with_the_defaul_order_as_0(self):
         # Update thesaurus order to 0 in order to check if the default order by id is observed
-        t = Thesaurus.objects.get(identifier='inspire-theme')
+        t = Thesaurus.objects.get(identifier="inspire-theme")
         t.order = 0
         t.save()
         actual = ThesaurusAvailableForm(data={"1": 1})
         fields = list(actual.fields.items())
         #  will check if the first element of the tuple is the thesaurus_id = 2
-        self.assertEqual(fields[0][0], '1')
+        self.assertEqual(fields[0][0], "1")
         #  will check if the second element of the tuple is the thesaurus_id = 1
-        self.assertEqual(fields[1][0], '2')
+        self.assertEqual(fields[1][0], "2")
 
     def test_get_thesuro_key_label_with_cmd_language_code(self):
         # in python test language code look like 'en' this test checks if key label result function
@@ -943,79 +852,82 @@ class TestThesaurusAvailableForm(TestCase):
 
 
 class TestFacets(TestCase):
-
     def setUp(self):
-        self.user = get_user_model().objects.create(username='test', email='test@test.com')
+        self.user = get_user_model().objects.create(username="test", email="test@test.com")
         Dataset.objects.update_or_create(
-            name='test_boxes_vector',
+            name="test_boxes_vector",
             defaults=dict(
                 uuid=str(uuid4()),
                 owner=self.user,
-                title='test_boxes',
-                abstract='nothing',
-                subtype='vector',
-                is_approved=True))
+                title="test_boxes",
+                abstract="nothing",
+                subtype="vector",
+                is_approved=True,
+            ),
+        )
         Dataset.objects.update_or_create(
-            name='test_1_vector',
+            name="test_1_vector",
             defaults=dict(
                 uuid=str(uuid4()),
                 owner=self.user,
-                title='test_1',
-                abstract='contains boxes',
-                subtype='vector',
-                is_approved=True))
+                title="test_1",
+                abstract="contains boxes",
+                subtype="vector",
+                is_approved=True,
+            ),
+        )
         Dataset.objects.update_or_create(
-            name='test_2_vector',
+            name="test_2_vector",
             defaults=dict(
                 uuid=str(uuid4()),
                 owner=self.user,
-                title='test_2',
-                purpose='contains boxes',
-                subtype='vector',
-                is_approved=True))
+                title="test_2",
+                purpose="contains boxes",
+                subtype="vector",
+                is_approved=True,
+            ),
+        )
         Dataset.objects.update_or_create(
-            name='test_3_vector',
+            name="test_3_vector",
+            defaults=dict(uuid=str(uuid4()), owner=self.user, title="test_3", subtype="vector", is_approved=True),
+        )
+        Dataset.objects.update_or_create(
+            name="test_boxes_vector",
             defaults=dict(
                 uuid=str(uuid4()),
                 owner=self.user,
-                title='test_3',
-                subtype='vector',
-                is_approved=True))
+                title="test_boxes",
+                abstract="nothing",
+                subtype="vector",
+                is_approved=True,
+            ),
+        )
         Dataset.objects.update_or_create(
-            name='test_boxes_vector',
+            name="test_1_raster",
             defaults=dict(
                 uuid=str(uuid4()),
                 owner=self.user,
-                title='test_boxes',
-                abstract='nothing',
-                subtype='vector',
-                is_approved=True))
+                title="test_1",
+                abstract="contains boxes",
+                subtype="raster",
+                is_approved=True,
+            ),
+        )
         Dataset.objects.update_or_create(
-            name='test_1_raster',
+            name="test_2_raster",
             defaults=dict(
                 uuid=str(uuid4()),
                 owner=self.user,
-                title='test_1',
-                abstract='contains boxes',
-                subtype='raster',
-                is_approved=True))
+                title="test_2",
+                purpose="contains boxes",
+                subtype="raster",
+                is_approved=True,
+            ),
+        )
         Dataset.objects.update_or_create(
-            name='test_2_raster',
-            defaults=dict(
-                uuid=str(uuid4()),
-                owner=self.user,
-                title='test_2',
-                purpose='contains boxes',
-                subtype='raster',
-                is_approved=True))
-        Dataset.objects.update_or_create(
-            name='test_boxes_raster',
-            defaults=dict(
-                uuid=str(uuid4()),
-                owner=self.user,
-                title='test_boxes',
-                subtype='raster',
-                is_approved=True))
+            name="test_boxes_raster",
+            defaults=dict(uuid=str(uuid4()), owner=self.user, title="test_boxes", subtype="raster", is_approved=True),
+        )
 
         self.request_mock = Mock(spec=requests.Request, GET=Mock())
 
@@ -1025,31 +937,28 @@ class TestFacets(TestCase):
             _l.clear_dirty_state()
             _l.set_processing_state(enumerations.STATE_PROCESSED)
         self.request_mock.GET.get.side_effect = lambda key, self: {
-            'title__icontains': 'boxes',
-            'abstract__icontains': 'boxes',
-            'purpose__icontains': 'boxes',
-            'date__gte': None,
-            'date__range': None,
-            'date__lte': None,
-            'extent': None
+            "title__icontains": "boxes",
+            "abstract__icontains": "boxes",
+            "purpose__icontains": "boxes",
+            "date__gte": None,
+            "date__range": None,
+            "date__lte": None,
+            "extent": None,
         }.get(key)
         self.request_mock.GET.getlist.return_value = None
         self.request_mock.user = self.user
-        results = facets({'request': self.request_mock})
-        self.assertEqual(results['vector'], 3)
-        self.assertEqual(results['raster'], 3)
+        results = facets({"request": self.request_mock})
+        self.assertEqual(results["vector"], 3)
+        self.assertEqual(results["raster"], 3)
 
 
 class TestGenerateThesaurusReference(TestCase):
-
-    fixtures = [
-        "test_thesaurus.json"
-    ]
+    fixtures = ["test_thesaurus.json"]
 
     def setUp(self):
         self.site_url = settings.SITEURL if hasattr(settings, "SITEURL") else "http://localhost"
 
-    '''
+    """
     If the keyword.about does not exists, the url created will have a prefix and a specifier:
     as prefix:
         - use the Keyword's thesaurus.about URI if it exists,
@@ -1058,27 +967,27 @@ class TestGenerateThesaurusReference(TestCase):
         - we may use the ThesaurusKeyword.alt_label if it exists, otherwise its id
 
     So the final about field value will be composed as f'{prefix}#{specifier}'
-    '''
+    """
 
     def test_should_return_keyword_url(self):
         expected = "http://inspire.ec.europa.eu/theme/ad"
         keyword = ThesaurusKeyword.objects.get(id=1)
         actual = generate_thesaurus_reference(keyword)
         keyword.refresh_from_db()
-        '''
+        """
         Check if the expected about has been created and that the instance is correctly updated
-        '''
+        """
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
 
     def test_should_return_as_url_thesaurus_about_and_keyword_alt_label(self):
         expected = "http://inspire.ec.europa.eu/theme#foo_keyword"
-        keyword = ThesaurusKeyword.objects.get(alt_label='foo_keyword')
+        keyword = ThesaurusKeyword.objects.get(alt_label="foo_keyword")
         actual = generate_thesaurus_reference(keyword)
         keyword.refresh_from_db()
-        '''
+        """
         Check if the expected about has been created and that the instance is correctly updated
-        '''
+        """
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
 
@@ -1087,9 +996,9 @@ class TestGenerateThesaurusReference(TestCase):
         keyword = ThesaurusKeyword.objects.get(id=37)
         actual = generate_thesaurus_reference(keyword)
         keyword.refresh_from_db()
-        '''
+        """
         Check if the expected about has been created and that the instance is correctly updated
-        '''
+        """
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
 
@@ -1098,9 +1007,9 @@ class TestGenerateThesaurusReference(TestCase):
         keyword = ThesaurusKeyword.objects.get(id=39)
         actual = generate_thesaurus_reference(keyword)
         keyword.refresh_from_db()
-        '''
+        """
         Check if the expected about has been created and that the instance is correctly updated
-        '''
+        """
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
 
@@ -1109,17 +1018,15 @@ class TestGenerateThesaurusReference(TestCase):
         keyword = ThesaurusKeyword.objects.get(id=38)
         actual = generate_thesaurus_reference(keyword)
         keyword.refresh_from_db()
-        '''
+        """
         Check if the expected about has been created and that the instance is correctly updated
-        '''
+        """
         self.assertEqual(expected, actual)
         self.assertEqual(expected, keyword.about)
 
 
 class TestHandleMetadataKeyword(TestCase):
-    fixtures = [
-        "test_thesaurus.json"
-    ]
+    fixtures = ["test_thesaurus.json"]
 
     def setUp(self):
         self.keyword = [
@@ -1148,14 +1055,11 @@ class TestHandleMetadataKeyword(TestCase):
             },
             {"keywords": ["Global"], "thesaurus": {"date": None, "datetype": None, "title": None}, "type": "place"},
         ]
-        self.dataset = create_single_dataset('keyword-handler')
-        self.sut = KeywordHandler(
-            instance=self.dataset,
-            keywords=self.keyword
-        )
+        self.dataset = create_single_dataset("keyword-handler")
+        self.sut = KeywordHandler(instance=self.dataset, keywords=self.keyword)
 
     def test_return_empty_if_keywords_is_an_empty_list(self):
-        setattr(self.sut, 'keywords', [])
+        setattr(self.sut, "keywords", [])
         keyword, thesaurus_keyword = self.sut.handle_metadata_keywords()
         self.assertListEqual([], keyword)
         self.assertListEqual([], thesaurus_keyword)

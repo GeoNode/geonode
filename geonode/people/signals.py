@@ -33,11 +33,7 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 from django.db.models import Q
 
-from geonode.base.auth import (
-    get_or_create_token,
-    delete_old_tokens,
-    set_session_token,
-    remove_session_token)
+from geonode.base.auth import get_or_create_token, delete_old_tokens, set_session_token, remove_session_token
 
 from geonode.notifications_helper import send_notification
 
@@ -65,7 +61,7 @@ def do_login(sender, user, request, **kwargs):
 
 
 def do_logout(sender, user, request, **kwargs):
-    if 'access_token' in request.session:
+    if "access_token" in request.session:
         try:
             delete_old_tokens(user)
         except Exception:
@@ -80,14 +76,12 @@ def update_user_email_addresses(sender, **kwargs):
     user = sociallogin.user
     extractor = get_data_extractor(sociallogin.account.provider)
     try:
-        sociallogin_email = extractor.extract_email(
-            sociallogin.account.extra_data)
+        sociallogin_email = extractor.extract_email(sociallogin.account.extra_data)
     except NotImplementedError:
         sociallogin_email = None
     if sociallogin_email is not None:
         try:
-            EmailAddress.objects.add_email(
-                request=None, user=user, email=sociallogin_email, confirm=False)
+            EmailAddress.objects.add_email(request=None, user=user, email=sociallogin_email, confirm=False)
         except IntegrityError:
             logging.exception(msg=f"Could not add email address {sociallogin_email} to user {user}")
 
@@ -97,10 +91,7 @@ def notify_admins_new_signup(sender, **kwargs):
     send_notification(
         users=staff,
         label="account_approve",
-        extra_context={
-            "from_user": kwargs["user"],
-            "account_approval_required": settings.ACCOUNT_APPROVAL_REQUIRED
-        }
+        extra_context={"from_user": kwargs["user"], "account_approval_required": settings.ACCOUNT_APPROVAL_REQUIRED},
     )
 
 
@@ -112,21 +103,21 @@ def profile_post_save(instance, sender, **kwargs):
     from django.contrib.auth.models import Group
     from geonode.groups.conf import settings as groups_settings
 
-    created = kwargs.get('created', False)
+    created = kwargs.get("created", False)
 
     if created:
-        anon_group, _ = Group.objects.get_or_create(name='anonymous')
+        anon_group, _ = Group.objects.get_or_create(name="anonymous")
         instance.groups.add(anon_group)
-        is_anonymous = instance.username == 'AnonymousUser'
+        is_anonymous = instance.username == "AnonymousUser"
 
         if not is_anonymous:
-            if Group.objects.filter(name='contributors').count() and not (instance.is_staff or instance.is_superuser):
-                cont_group = Group.objects.get(name='contributors')
+            if Group.objects.filter(name="contributors").count() and not (instance.is_staff or instance.is_superuser):
+                cont_group = Group.objects.get(name="contributors")
                 instance.groups.add(cont_group)
             if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).count():
                 registeredmembers_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
                 instance.groups.add(registeredmembers_group)
 
     # do not create email, when user-account signup code is in use
-    if getattr(instance, '_disable_account_creation', False):
+    if getattr(instance, "_disable_account_creation", False):
         return

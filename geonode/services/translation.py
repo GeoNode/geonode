@@ -23,8 +23,8 @@ from .models import Service
 
 class ServiceTranslationOptions(TranslationOptions):
     fields = (
-        'name',
-        'description',
+        "name",
+        "description",
     )
 
 

@@ -27,29 +27,27 @@ from geonode.groups.conf import settings as groups_settings
 
 
 def get_default_user():
-    """Create a default user
-    """
-    superusers = get_user_model().objects.filter(
-        is_superuser=True).order_by('id')
+    """Create a default user"""
+    superusers = get_user_model().objects.filter(is_superuser=True).order_by("id")
     if superusers.exists():
         # Return the first created superuser
         return superusers[0]
     else:
-        raise GeoNodeException('You must have an admin account configured '
-                               'before importing data. '
-                               'Try: django-admin.py createsuperuser')
+        raise GeoNodeException(
+            "You must have an admin account configured "
+            "before importing data. "
+            "Try: django-admin.py createsuperuser"
+        )
 
 
 def get_valid_user(user=None):
-    """Gets the default user or creates it if it does not exist
-    """
+    """Gets the default user or creates it if it does not exist"""
     if user is None:
         theuser = get_default_user()
     elif isinstance(user, str):
         theuser = get_user_model().objects.get(username=user)
     elif user == user.get_anonymous():
-        raise GeoNodeException('The user uploading files must not '
-                               'be anonymous')
+        raise GeoNodeException("The user uploading files must not " "be anonymous")
     else:
         theuser = user
 
@@ -60,7 +58,6 @@ def get_valid_user(user=None):
 
 
 def format_address(street=None, zipcode=None, city=None, area=None, country=None):
-
     if country is not None and country == "USA":
         address = ""
         if city and area:
@@ -119,7 +116,7 @@ def get_available_users(user):
         Queryset: Queryset of users a given user can see
     """
     if user.is_superuser:
-        return get_user_model().objects.exclude(Q(username='AnonymousUser') | Q(is_active=False))
+        return get_user_model().objects.exclude(Q(username="AnonymousUser") | Q(is_active=False))
 
     member_ids = []
     if not user.is_anonymous:
@@ -127,14 +124,19 @@ def get_available_users(user):
         member_ids.extend([user.id])
 
     # Only return user that are members of any group profile the current user is member of
-    member_ids.extend(list(GroupMember.objects.filter(
-        group__in=GroupProfile.objects.filter(
-            Q(access='public') | Q(group__in=user.groups.all()))
-    ).select_related('user').values_list('user__id', flat=True)))
+    member_ids.extend(
+        list(
+            GroupMember.objects.filter(
+                group__in=GroupProfile.objects.filter(Q(access="public") | Q(group__in=user.groups.all()))
+            )
+            .select_related("user")
+            .values_list("user__id", flat=True)
+        )
+    )
     if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).exists():
         # Retrieve all members in Registered member's group
         rm_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
-        users_ids = list(rm_group.user_set.values_list('id', flat=True))
+        users_ids = list(rm_group.user_set.values_list("id", flat=True))
         member_ids.extend(users_ids)
 
     return get_user_model().objects.filter(id__in=member_ids)

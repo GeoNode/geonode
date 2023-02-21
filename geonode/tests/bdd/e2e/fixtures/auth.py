@@ -22,8 +22,4 @@ import pytest
 @pytest.fixture
 def credentials():
     """Login credentials."""
-    return {
-        'username': 'admin',
-        'password': 'admin',
-        'login': True
-    }
+    return {"username": "admin", "password": "admin", "login": True}

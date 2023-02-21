@@ -37,14 +37,13 @@ from geonode.base.populate_test_data import create_single_dataset
 
 
 class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
-
     def setUp(self):
         self.files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
         self.files_as_dict, self.tmpdir = get_files(self.files)
         self.cat = gs_catalog
         self.user = get_user_model().objects.get(username="admin")
         self.sut = create_single_dataset("san_andres_y_providencia_water.shp")
-        self.sut.name = 'san_andres_y_providencia_water'
+        self.sut.name = "san_andres_y_providencia_water"
         self.sut.save()
         self.geoserver_url = settings.GEOSERVER_LOCATION
         self.geoserver_manager = GeoServerResourceManager()
@@ -57,27 +56,35 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_append_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
-        _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="append")
-        basic_auth = base64.b64encode(b'admin:geoserver')
+        _gs_import_session_info = self.geoserver_manager._execute_resource_import(
+            layer, list(self.files_as_dict.values()), self.user, action_type="append"
+        )
+        basic_auth = base64.b64encode(b"admin:geoserver")
         result = requests.get(
-            f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}',
-            headers={"Authorization": f"Basic {basic_auth.decode('utf-8')}"})
+            f"{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}",
+            headers={"Authorization": f"Basic {basic_auth.decode('utf-8')}"},
+        )
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(result.json().get('import').get('state'), enumerations.STATE_COMPLETE)
+        self.assertEqual(result.json().get("import").get("state"), enumerations.STATE_COMPLETE)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
-        _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
-        basic_auth = base64.b64encode(b'admin:geoserver')
+        _gs_import_session_info = self.geoserver_manager._execute_resource_import(
+            layer, list(self.files_as_dict.values()), self.user, action_type="replace"
+        )
+        basic_auth = base64.b64encode(b"admin:geoserver")
         result = requests.get(
-            f'{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}',
-            headers={"Authorization": f"Basic {basic_auth.decode('utf-8')}"})
+            f"{self.geoserver_url}/rest/imports/{_gs_import_session_info.import_session.id}",
+            headers={"Authorization": f"Basic {basic_auth.decode('utf-8')}"},
+        )
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(result.json().get('import').get('state'), enumerations.STATE_COMPLETE)
+        self.assertEqual(result.json().get("import").get("state"), enumerations.STATE_COMPLETE)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_return_none_for_not_existing_dataset(self):
-        layer = create_single_dataset('fake_dataset')
-        _gs_import_session_info = self.geoserver_manager._execute_resource_import(layer, list(self.files_as_dict.values()), self.user, action_type="replace")
+        layer = create_single_dataset("fake_dataset")
+        _gs_import_session_info = self.geoserver_manager._execute_resource_import(
+            layer, list(self.files_as_dict.values()), self.user, action_type="replace"
+        )
         self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_COMPLETE)

@@ -42,7 +42,7 @@ def convertExifDateToDjangoDate(date):
         int("".join(a[5:7])),
         int("".join(a[8:10])),
         int("".join(a[11:13])),
-        int("".join(a[14:16]))
+        int("".join(a[14:16])),
     )
 
 
@@ -55,7 +55,7 @@ def convertExifLocationToDecimalDegrees(location, direction):
         dd += float(s) / 3600.0
 
         if direction:
-            if direction.lower() == 's' or direction.lower() == 'w':
+            if direction.lower() == "s" or direction.lower() == "w":
                 dd = dd * -1.0
         return dd
     else:
@@ -63,7 +63,6 @@ def convertExifLocationToDecimalDegrees(location, direction):
 
 
 def exif_extract_metadata_doc(doc):
-
     if not doc:
         return None
 
@@ -74,11 +73,9 @@ def exif_extract_metadata_doc(doc):
 
     if ext[1:] in {"jpg", "jpeg"}:
         from PIL import Image, ExifTags
+
         img = Image.open(doc.doc_file.path)
-        exif_data = {
-            ExifTags.TAGS[k]: v
-            for k, v in img._getexif().items() if k in ExifTags.TAGS
-        }
+        exif_data = {ExifTags.TAGS[k]: v for k, v in img._getexif().items() if k in ExifTags.TAGS}
 
         model = None
         date = None
@@ -115,20 +112,19 @@ def exif_extract_metadata_doc(doc):
                 decode = ExifTags.GPSTAGS.get(key, key)
                 gpsinfo[decode] = exif_data["GPSInfo"][key]
             if "GPSLatitude" in gpsinfo and "GPSLongitude" in gpsinfo:
-                lat = convertExifLocationToDecimalDegrees(gpsinfo["GPSLatitude"], gpsinfo.get('GPSLatitudeRef', 'N'))
-                lon = convertExifLocationToDecimalDegrees(gpsinfo["GPSLongitude"], gpsinfo.get('GPSLongitudeRef', 'E'))
+                lat = convertExifLocationToDecimalDegrees(gpsinfo["GPSLatitude"], gpsinfo.get("GPSLatitudeRef", "N"))
+                lon = convertExifLocationToDecimalDegrees(gpsinfo["GPSLongitude"], gpsinfo.get("GPSLongitudeRef", "E"))
                 bbox = [lon, lon, lat, lat]
 
         abstract = exif_build_abstract(model=model, date=date, lat=lat, lon=lon)
 
-        return {'date': date, 'keywords': keywords, 'bbox': bbox, 'abstract': abstract}
+        return {"date": date, "keywords": keywords, "bbox": bbox, "abstract": abstract}
 
     else:
         return None
 
 
 def exif_build_abstract(model=None, date=None, lat=None, lon=None):
-
     if model and date and lat and lon:
         return ABSTRACT_TEMPLATE_MODEL_DATE_LATLON.format(model=model, date=date, lat=lat, lon=lon)
     elif model and date:

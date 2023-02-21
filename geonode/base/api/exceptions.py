@@ -31,7 +31,7 @@ def geonode_exception_handler(exc, context):
         response.data = {
             "success": False,
             "errors": [str(detail)],
-            "code": exc.code if hasattr(exc, "code") else exc.default_code
+            "code": exc.code if hasattr(exc, "code") else exc.default_code,
         }
     return response
 

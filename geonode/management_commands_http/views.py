@@ -50,27 +50,21 @@ class ManagementCommandView(views.APIView, CreateJobMixin):
       - GET detail: Help for a specific command
       - POST: Create a job (and automatic runs) for a specific command.
     """
+
     permission_classes = [permissions.IsAdminUser]
     allowed_methods = ["GET", "POST"]
 
     def retrieve_details(self, cmd_name):
         # Object not found
         if cmd_name not in self.available_commands:
-            return Response(
-                {"success": False, "error": "Command not found"},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"success": False, "error": "Command not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # Object Details: fetch help text of the Command
         cmd_details = get_management_command_details(cmd_name)
         return Response({"success": True, "error": None, "data": cmd_details})
 
     def list(self):
-        return Response({
-            "success": True,
-            "error": None,
-            "data": self.available_commands
-        })
+        return Response({"success": True, "error": None, "data": self.available_commands})
 
     def get(self, request, cmd_name=None):
         self.available_commands = get_management_commands()
@@ -98,14 +92,11 @@ class ManagementCommandView(views.APIView, CreateJobMixin):
         return ManagementCommandJobCreateSerializer(*args, **kwargs)
 
 
-class ManagementCommandJobViewSet(
-    CreateJobMixin,
-    mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
-):
+class ManagementCommandJobViewSet(CreateJobMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
-        Create, List, Retrieve, Start, Stop and Get Status of a Management Command Job.
+    Create, List, Retrieve, Start, Stop and Get Status of a Management Command Job.
     """
+
     permission_classes = [permissions.IsAdminUser]
     queryset = ManagementCommandJob.objects.all().order_by("-created_at")
     serializer_class = ManagementCommandJobSerializer
@@ -147,19 +138,11 @@ class ManagementCommandJobViewSet(
             start_task(job)
         except ValueError as exc:
             error_message = str(exc)
-            response = {
-                "success": False,
-                "error": error_message,
-                "data": self.get_serializer().data
-            }
+            response = {"success": False, "error": error_message, "data": self.get_serializer().data}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         job.refresh_from_db()
         serializer = self.get_serializer(instance=job)
-        response = {
-            "success": True,
-            "error": None,
-            "data": serializer.data
-        }
+        response = {"success": True, "error": None, "data": serializer.data}
         return Response(response)
 
     @action(detail=True, methods=["PATCH"])
@@ -167,11 +150,7 @@ class ManagementCommandJobViewSet(
         job = self.get_object()
         stop_task(job)
         serializer = self.get_serializer(instance=job)
-        response = {
-            "success": True,
-            "error": None,
-            "data": serializer.data
-        }
+        response = {"success": True, "error": None, "data": serializer.data}
         return Response(response)
 
     @action(detail=True, methods=["GET"])

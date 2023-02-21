@@ -62,67 +62,56 @@ groups:
 
 # Permissions mapping
 PERMISSIONS = {
-    'add_resourcebase': 'add_resource',
+    "add_resourcebase": "add_resource",
 }
 
-DOWNLOADABLE_RESOURCES = [
-    'dataset',
-    'document'
-]
+DOWNLOADABLE_RESOURCES = ["dataset", "document"]
 
-DATA_EDITABLE_RESOURCES_SUBTYPES = [
-    'vector',
-    'vector_time'
-]
+DATA_EDITABLE_RESOURCES_SUBTYPES = ["vector", "vector_time"]
 
-DATA_STYLABLE_RESOURCES_SUBTYPES = [
-    'raster',
-    'vector',
-    'vector_time'
-]
+DATA_STYLABLE_RESOURCES_SUBTYPES = ["raster", "vector", "vector_time"]
 
 # The following permissions will be filtered out when READ_ONLY mode is active
 READ_ONLY_AFFECTED_PERMISSIONS = [
-    'add_resource',
+    "add_resource",
 ]
 
 # Permissions on resources
 VIEW_PERMISSIONS = [
-    'view_resourcebase',
+    "view_resourcebase",
 ]
 
 DOWNLOAD_PERMISSIONS = [
-    'download_resourcebase',
+    "download_resourcebase",
 ]
 
 EDIT_PERMISSIONS = [
-    'change_resourcebase',
-    'change_resourcebase_metadata',
+    "change_resourcebase",
+    "change_resourcebase_metadata",
 ]
 
 BASIC_MANAGE_PERMISSIONS = [
-    'delete_resourcebase',
-    'change_resourcebase_permissions',
+    "delete_resourcebase",
+    "change_resourcebase_permissions",
 ]
 
 MANAGE_PERMISSIONS = BASIC_MANAGE_PERMISSIONS + [
-    'publish_resourcebase',
+    "publish_resourcebase",
 ]
 
 ADMIN_PERMISSIONS = MANAGE_PERMISSIONS + EDIT_PERMISSIONS
 
 OWNER_PERMISSIONS = ADMIN_PERMISSIONS + VIEW_PERMISSIONS
 
-DATASET_EDIT_DATA_PERMISSIONS = ['change_dataset_data', ]
-DATASET_EDIT_STYLE_PERMISSIONS = ['change_dataset_style', ]
+DATASET_EDIT_DATA_PERMISSIONS = [
+    "change_dataset_data",
+]
+DATASET_EDIT_STYLE_PERMISSIONS = [
+    "change_dataset_style",
+]
 DATASET_ADMIN_PERMISSIONS = DATASET_EDIT_DATA_PERMISSIONS + DATASET_EDIT_STYLE_PERMISSIONS
 
-SERVICE_PERMISSIONS = [
-    "add_service",
-    "delete_service",
-    "change_resourcebase_metadata",
-    "add_resourcebase_from_service"
-]
+SERVICE_PERMISSIONS = ["add_service", "delete_service", "change_resourcebase_metadata", "add_resourcebase_from_service"]
 
 DEFAULT_PERMISSIONS = []
 if settings.DEFAULT_ANONYMOUS_VIEW_PERMISSION:
@@ -158,31 +147,17 @@ PERM_SPEC_COMPACT_SCHEMA = {
                 {
                     "type": "object",
                     "properties": {
-                        "avatar": {
-                            "type": "string"
-                        },
-                        "first_name": {
-                            "type": "string"
-                        },
-                        "id": {
-                            "type": "integer"
-                        },
-                        "last_name": {
-                            "type": "string"
-                        },
+                        "avatar": {"type": "string"},
+                        "first_name": {"type": "string"},
+                        "id": {"type": "integer"},
+                        "last_name": {"type": "string"},
                         "permissions": {
                             "type": "string",
-                            "enum": ["none", "view", "download", "edit", "manage", "owner"]
+                            "enum": ["none", "view", "download", "edit", "manage", "owner"],
                         },
-                        "username": {
-                            "type": "string"
-                        },
-                        "is_staff": {
-                            "type": "boolean"
-                        },
-                        "is_superuser": {
-                            "type": "boolean"
-                        }
+                        "username": {"type": "string"},
+                        "is_staff": {"type": "boolean"},
+                        "is_superuser": {"type": "boolean"},
                     },
                     "required": [
                         "avatar",
@@ -192,10 +167,10 @@ PERM_SPEC_COMPACT_SCHEMA = {
                         "permissions",
                         "username",
                         "is_staff",
-                        "is_superuser"
-                    ]
+                        "is_superuser",
+                    ],
                 }
-            ]
+            ],
         },
         "organizations": {
             "type": "array",
@@ -203,28 +178,17 @@ PERM_SPEC_COMPACT_SCHEMA = {
                 {
                     "type": "object",
                     "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
+                        "id": {"type": "integer"},
+                        "name": {"type": "string"},
                         "permissions": {
                             "type": "string",
-                            "enum": ["none", "view", "download", "edit", "manage", "owner"]
+                            "enum": ["none", "view", "download", "edit", "manage", "owner"],
                         },
-                        "title": {
-                            "type": "string"
-                        }
+                        "title": {"type": "string"},
                     },
-                    "required": [
-                        "id",
-                        "name",
-                        "permissions",
-                        "title"
-                    ]
+                    "required": ["id", "name", "permissions", "title"],
                 }
-            ]
+            ],
         },
         "groups": {
             "type": "array",
@@ -232,53 +196,43 @@ PERM_SPEC_COMPACT_SCHEMA = {
                 {
                     "type": "object",
                     "properties": {
-                        "id": {
-                            "type": "integer"
-                        },
-                        "title": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
+                        "id": {"type": "integer"},
+                        "title": {"type": "string"},
+                        "name": {"type": "string"},
                         "permissions": {
                             "type": "string",
-                            "enum": ["none", "view", "download", "edit", "manage", "owner"]
-                        }
+                            "enum": ["none", "view", "download", "edit", "manage", "owner"],
+                        },
                     },
-                    "required": [
-                        "id",
-                        "title",
-                        "name",
-                        "permissions"
-                    ]
+                    "required": ["id", "title", "name", "permissions"],
                 }
-            ]
-        }
+            ],
+        },
     },
-    "required": [
-        "users",
-        "organizations",
-        "groups"
-    ]
+    "required": ["users", "organizations", "groups"],
 }
 
 
-def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> list:
+def _to_extended_perms(
+    perm: str, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False
+) -> list:
     """Explode "compact" permissions into an "extended" set, accordingly to the schema below:
 
-      - view: view resource
-      - download: view and download
-      - edit: view download and edit (metadata, style, data)
-      - manage: change permissions, delete resource, etc.
-      - owner: admin permissions
+    - view: view resource
+    - download: view and download
+    - edit: view download and edit (metadata, style, data)
+    - manage: change permissions, delete resource, etc.
+    - owner: admin permissions
     """
 
-    def safe_list(perms): return sorted(list(set(copy.deepcopy(perms)))) if perms else []
+    def safe_list(perms):
+        return sorted(list(set(copy.deepcopy(perms)))) if perms else []
 
     if is_owner:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_subtype and resource_subtype.lower() in safe_list(DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES):
+            if resource_subtype and resource_subtype.lower() in safe_list(
+                DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES
+            ):
                 return safe_list(DATASET_ADMIN_PERMISSIONS + OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS)
             else:
                 return safe_list(OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS)
@@ -295,7 +249,9 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
             return safe_list(VIEW_PERMISSIONS)
     elif perm == EDIT_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_subtype and resource_subtype.lower() in safe_list(DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES):
+            if resource_subtype and resource_subtype.lower() in safe_list(
+                DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES
+            ):
                 return safe_list(DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS)
             else:
                 return safe_list(VIEW_PERMISSIONS + EDIT_PERMISSIONS + DOWNLOAD_PERMISSIONS)
@@ -303,22 +259,28 @@ def _to_extended_perms(perm: str, resource_type: str = None, resource_subtype: s
             return safe_list(VIEW_PERMISSIONS + EDIT_PERMISSIONS)
     elif perm == MANAGE_RIGHTS:
         if resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES:
-            if resource_subtype and resource_subtype.lower() in safe_list(DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES):
-                return safe_list(DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS)
+            if resource_subtype and resource_subtype.lower() in safe_list(
+                DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES
+            ):
+                return safe_list(
+                    DATASET_ADMIN_PERMISSIONS + VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS
+                )
             else:
                 return safe_list(VIEW_PERMISSIONS + ADMIN_PERMISSIONS + DOWNLOAD_PERMISSIONS)
         else:
             return safe_list(VIEW_PERMISSIONS + ADMIN_PERMISSIONS)
 
 
-def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False) -> str:
+def _to_compact_perms(
+    perms: list, resource_type: str = None, resource_subtype: str = None, is_owner: bool = False
+) -> str:
     """Compress standard permissions into a "compact" set, accordingly to the schema below:
 
-      - view: view resource
-      - download: view and download
-      - edit: view download and edit (metadata, style, data)
-      - manage: change permissions, delete resource, etc.
-      - owner: admin permissions
+    - view: view resource
+    - download: view and download
+    - edit: view download and edit (metadata, style, data)
+    - manage: change permissions, delete resource, etc.
+    - owner: admin permissions
     """
     if is_owner:
         return OWNER_RIGHTS
@@ -326,28 +288,32 @@ def _to_compact_perms(perms: list, resource_type: str = None, resource_subtype: 
         return NONE_RIGHTS
     if any(_p in MANAGE_PERMISSIONS for _p in perms):
         return MANAGE_RIGHTS
-    elif resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES and any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms):
+    elif (
+        resource_type
+        and resource_type.lower() in DOWNLOADABLE_RESOURCES
+        and any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms)
+    ):
         return EDIT_RIGHTS
     elif any(_p in DATASET_ADMIN_PERMISSIONS + EDIT_PERMISSIONS for _p in perms):
         return EDIT_RIGHTS
-    elif resource_type and resource_type.lower() in DOWNLOADABLE_RESOURCES and any(_p in DOWNLOAD_PERMISSIONS for _p in perms):
+    elif (
+        resource_type
+        and resource_type.lower() in DOWNLOADABLE_RESOURCES
+        and any(_p in DOWNLOAD_PERMISSIONS for _p in perms)
+    ):
         return DOWNLOAD_RIGHTS
     elif any(_p in VIEW_PERMISSIONS for _p in perms):
         return VIEW_RIGHTS
     return NONE_RIGHTS
 
 
-_Binding = collections.namedtuple('Binding', [
-    'name', 'expected', 'ro', 'binding'
-])
+_Binding = collections.namedtuple("Binding", ["name", "expected", "ro", "binding"])
 
-_User = collections.namedtuple('User', [
-    'id', 'username', 'last_name', 'first_name', 'avatar', 'is_superuser', 'is_staff'
-])
+_User = collections.namedtuple(
+    "User", ["id", "username", "last_name", "first_name", "avatar", "is_superuser", "is_staff"]
+)
 
-_Group = collections.namedtuple('Group', [
-    'id', 'title', 'name', 'logo'
-])
+_Group = collections.namedtuple("Group", ["id", "title", "name", "logo"])
 
 
 def _binding(name, expected=True, ro=True, binding=None):
@@ -355,19 +321,19 @@ def _binding(name, expected=True, ro=True, binding=None):
 
 
 class BindingFailed(Exception):
-    '''Something in the API has changed'''
+    """Something in the API has changed"""
+
     pass
 
 
 class PermSpecConverterBase(object):
-
     _object_name = None
 
     def __init__(self, json, resource, parent=None):
         self._resource = resource
         self._parent = parent
         if parent == self:
-            raise Exception('bogus')
+            raise Exception("bogus")
         if json is not None:
             self._bind_json(json)
 
@@ -375,17 +341,17 @@ class PermSpecConverterBase(object):
         # generally, not required for override. instead use _bind_custom_json
         # if possible
         if not isinstance(json, dict):
-            self._binding_failed('expected dict, got %s', type(json))
+            self._binding_failed("expected dict, got %s", type(json))
         for binding in self._bindings:
             val = json.pop(binding.name, None)
             if binding.expected and val is None:
-                self._binding_failed('expected val for %s', binding.name)
+                self._binding_failed("expected val for %s", binding.name)
             if binding.binding and val is not None:
                 if issubclass(binding.binding, PermSpecConverterBase):
                     if isinstance(val, list):
-                        val = [binding.binding(v, getattr(self, '_resource', None), parent=self) for v in val]
+                        val = [binding.binding(v, getattr(self, "_resource", None), parent=self) for v in val]
                     else:
-                        val = binding.binding(val, getattr(self, '_resource', None), parent=self)
+                        val = binding.binding(val, getattr(self, "_resource", None), parent=self)
                 else:
                     if isinstance(val, list):
                         val = [binding.binding(v, parent=self) for v in val]
@@ -399,7 +365,7 @@ class PermSpecConverterBase(object):
         pass
 
     def _binding_failed(self, msg, args):
-        raise BindingFailed(f'[{type(self)}] {msg % args}')
+        raise BindingFailed(f"[{type(self)}] {msg % args}")
 
     def _to_json_object(self, deep=True, top_level=True):
         _json = {}
@@ -426,11 +392,10 @@ class PermSpecConverterBase(object):
 
 
 class PermSpec(PermSpecConverterBase):
-
-    _object_name = 'perm_spec'
+    _object_name = "perm_spec"
     _bindings = (
-        _binding('users'),
-        _binding('groups'),
+        _binding("users"),
+        _binding("groups"),
     )
 
     @property
@@ -486,55 +451,57 @@ class PermSpec(PermSpecConverterBase):
             _perms = self.users[_k]
             if isinstance(_k, str):
                 _k = get_user_model().objects.get(username=_k)
-            if not _k.is_anonymous and _k.username != 'AnonymousUser':
+            if not _k.is_anonymous and _k.username != "AnonymousUser":
                 avatar = build_absolute_uri(avatar_url(_k, 240))
                 user = _User(_k.id, _k.username, _k.last_name, _k.first_name, avatar, _k.is_superuser, _k.is_staff)
                 is_owner = _k == self._resource.owner
                 user_perms.append(
                     {
-                        'id': user.id,
-                        'username': user.username,
-                        'first_name': user.first_name,
-                        'last_name': user.last_name,
-                        'avatar': user.avatar,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype, is_owner),
-                        'is_superuser': user.is_superuser,
-                        'is_staff': user.is_staff
+                        "id": user.id,
+                        "username": user.username,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "avatar": user.avatar,
+                        "permissions": _to_compact_perms(
+                            _perms, self._resource.resource_type, self._resource.subtype, is_owner
+                        ),
+                        "is_superuser": user.is_superuser,
+                        "is_staff": user.is_staff,
                     }
                 )
             else:
                 anonymous_perms = {
-                    'id': Group.objects.get(name='anonymous').id,
-                    'title': 'anonymous',
-                    'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
+                    "id": Group.objects.get(name="anonymous").id,
+                    "title": "anonymous",
+                    "name": "anonymous",
+                    "permissions": _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype),
                 }
         # Let's make sure we don't lose control over the resource
-        if not any([_u.get('id', None) == self._resource.owner.id for _u in user_perms]):
+        if not any([_u.get("id", None) == self._resource.owner.id for _u in user_perms]):
             user_perms.append(
                 {
-                    'id': self._resource.owner.id,
-                    'username': self._resource.owner.username,
-                    'first_name': self._resource.owner.first_name,
-                    'last_name': self._resource.owner.last_name,
-                    'avatar': build_absolute_uri(avatar_url(self._resource.owner, 240)),
-                    'permissions': OWNER_RIGHTS,
-                    'is_superuser': self._resource.owner.is_superuser,
-                    'is_staff': self._resource.owner.is_staff
+                    "id": self._resource.owner.id,
+                    "username": self._resource.owner.username,
+                    "first_name": self._resource.owner.first_name,
+                    "last_name": self._resource.owner.last_name,
+                    "avatar": build_absolute_uri(avatar_url(self._resource.owner, 240)),
+                    "permissions": OWNER_RIGHTS,
+                    "is_superuser": self._resource.owner.is_superuser,
+                    "is_staff": self._resource.owner.is_staff,
                 }
             )
         for user in get_user_model().objects.filter(is_superuser=True):
-            if not any([_u.get('id', None) == user.id for _u in user_perms]):
+            if not any([_u.get("id", None) == user.id for _u in user_perms]):
                 user_perms.append(
                     {
-                        'id': user.id,
-                        'username': user.username,
-                        'first_name': user.first_name,
-                        'last_name': user.last_name,
-                        'avatar': build_absolute_uri(avatar_url(user, 240)),
-                        'permissions': MANAGE_RIGHTS,
-                        'is_superuser': user.is_superuser,
-                        'is_staff': user.is_staff
+                        "id": user.id,
+                        "username": user.username,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "avatar": build_absolute_uri(avatar_url(user, 240)),
+                        "permissions": MANAGE_RIGHTS,
+                        "is_superuser": user.is_superuser,
+                        "is_staff": user.is_staff,
                     }
                 )
 
@@ -542,46 +509,49 @@ class PermSpec(PermSpecConverterBase):
             _perms = self.groups[_k]
             if isinstance(_k, str):
                 _k = Group.objects.get(name=_k)
-            if _k.name == 'anonymous':
+            if _k.name == "anonymous":
                 anonymous_perms = {
-                    'id': _k.id,
-                    'title': 'anonymous',
-                    'name': 'anonymous',
-                    'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
+                    "id": _k.id,
+                    "title": "anonymous",
+                    "name": "anonymous",
+                    "permissions": _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype),
                 }
-            elif hasattr(_k, 'groupprofile'):
+            elif hasattr(_k, "groupprofile"):
                 group = _Group(_k.id, _k.groupprofile.title, _k.name, _k.groupprofile.logo_url)
                 if _k.name == groups_settings.REGISTERED_MEMBERS_GROUP_NAME:
                     contributors_perms = {
-                        'id': group.id,
-                        'title': group.title,
-                        'name': group.name,
-                        'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
+                        "id": group.id,
+                        "title": group.title,
+                        "name": group.name,
+                        "permissions": _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype),
                     }
                 else:
                     organization_perms.append(
                         {
-                            'id': group.id,
-                            'title': group.title,
-                            'name': group.name,
-                            'logo': group.logo,
-                            'permissions': _to_compact_perms(_perms, self._resource.resource_type, self._resource.subtype)
+                            "id": group.id,
+                            "title": group.title,
+                            "name": group.name,
+                            "logo": group.logo,
+                            "permissions": _to_compact_perms(
+                                _perms, self._resource.resource_type, self._resource.subtype
+                            ),
                         }
                     )
 
         if anonymous_perms:
             group_perms.append(anonymous_perms)
         else:
-            anonymous_group = Group.objects.get(name='anonymous')
+            anonymous_group = Group.objects.get(name="anonymous")
             group_perms.append(
                 {
-                    'id': anonymous_group.id,
-                    'title': 'anonymous',
-                    'name': 'anonymous',
-                    'permissions': _to_compact_perms(
+                    "id": anonymous_group.id,
+                    "title": "anonymous",
+                    "name": "anonymous",
+                    "permissions": _to_compact_perms(
                         get_group_perms(anonymous_group, self._resource),
                         self._resource.resource_type,
-                        self._resource.subtype)
+                        self._resource.subtype,
+                    ),
                 }
             )
         if contributors_perms:
@@ -590,55 +560,54 @@ class PermSpec(PermSpecConverterBase):
             contributors_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
             group_perms.append(
                 {
-                    'id': contributors_group.id,
-                    'title': 'Registered Members',
-                    'name': contributors_group.name,
-                    'permissions': _to_compact_perms(
+                    "id": contributors_group.id,
+                    "title": "Registered Members",
+                    "name": contributors_group.name,
+                    "permissions": _to_compact_perms(
                         get_group_perms(contributors_group, self._resource),
-                        self._resource.resource_type, self._resource.subtype)
+                        self._resource.resource_type,
+                        self._resource.subtype,
+                    ),
                 }
             )
 
-        json['users'] = user_perms
-        json['organizations'] = organization_perms
-        json['groups'] = group_perms
+        json["users"] = user_perms
+        json["organizations"] = organization_perms
+        json["groups"] = group_perms
         return json.copy()
 
 
 class PermSpecUserCompact(PermSpecConverterBase):
-
-    _object_name = 'perm_spec_user_compact'
+    _object_name = "perm_spec_user_compact"
     _bindings = (
-        _binding('id'),
-        _binding('username', expected=False),
-        _binding('first_name', expected=False),
-        _binding('last_name', expected=False),
-        _binding('avatar', expected=False),
-        _binding('permissions'),
-        _binding('is_superuser', expected=False),
-        _binding('is_staff', expected=False)
+        _binding("id"),
+        _binding("username", expected=False),
+        _binding("first_name", expected=False),
+        _binding("last_name", expected=False),
+        _binding("avatar", expected=False),
+        _binding("permissions"),
+        _binding("is_superuser", expected=False),
+        _binding("is_staff", expected=False),
     )
 
 
 class PermSpecGroupCompact(PermSpecConverterBase):
-
-    _object_name = 'perm_spec_group_compact'
+    _object_name = "perm_spec_group_compact"
     _bindings = (
-        _binding('id'),
-        _binding('title', expected=False),
-        _binding('name', expected=False),
-        _binding('logo', expected=False),
-        _binding('permissions'),
+        _binding("id"),
+        _binding("title", expected=False),
+        _binding("name", expected=False),
+        _binding("logo", expected=False),
+        _binding("permissions"),
     )
 
 
 class PermSpecCompact(PermSpecConverterBase):
-
-    _object_name = 'perm_spec_compact'
+    _object_name = "perm_spec_compact"
     _bindings = (
-        _binding('users', expected=False, binding=PermSpecUserCompact),
-        _binding('organizations', expected=False, binding=PermSpecGroupCompact),
-        _binding('groups', expected=False, binding=PermSpecGroupCompact),
+        _binding("users", expected=False, binding=PermSpecUserCompact),
+        _binding("organizations", expected=False, binding=PermSpecGroupCompact),
+        _binding("groups", expected=False, binding=PermSpecGroupCompact),
     )
 
     @classmethod
@@ -676,32 +645,37 @@ class PermSpecCompact(PermSpecConverterBase):
         }
         ```
         """
-        json = {
-            'users': {},
-            'groups': {}
-        }
+        json = {"users": {}, "groups": {}}
         for _u in self.users:
             _user_profile = get_user_model().objects.get(id=_u.id)
             _is_owner = _user_profile == self._resource.owner
             _perms = OWNER_RIGHTS if _is_owner else MANAGE_RIGHTS if _user_profile.is_superuser else _u.permissions
-            json['users'][_user_profile.username] = _to_extended_perms(_perms, self._resource.resource_type, self._resource.subtype, _is_owner)
+            json["users"][_user_profile.username] = _to_extended_perms(
+                _perms, self._resource.resource_type, self._resource.subtype, _is_owner
+            )
         for _go in self.organizations:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
+            json["groups"][_group.name] = _to_extended_perms(
+                _go.permissions, self._resource.resource_type, self._resource.subtype
+            )
         for _go in self.groups:
             _group = Group.objects.get(id=_go.id)
-            json['groups'][_group.name] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
-            if _go.name == 'anonymous':
+            json["groups"][_group.name] = _to_extended_perms(
+                _go.permissions, self._resource.resource_type, self._resource.subtype
+            )
+            if _go.name == "anonymous":
                 _user_profile = get_anonymous_user()
-                json['users'][_user_profile.username] = _to_extended_perms(_go.permissions, self._resource.resource_type, self._resource.subtype)
+                json["users"][_user_profile.username] = _to_extended_perms(
+                    _go.permissions, self._resource.resource_type, self._resource.subtype
+                )
         return json.copy()
 
     def merge(self, perm_spec_compact_patch: "PermSpecCompact"):
         """Merges 'perm_spec_compact_patch' to the current one.
 
-         - Existing elements will be overridden.
-         - Non existing elements will be added.
-         - If you need to delete elements you cannot use this method.
+        - Existing elements will be overridden.
+        - Non existing elements will be added.
+        - If you need to delete elements you cannot use this method.
         """
         for _elem in [_b.name for _b in self._bindings]:
             for _up in getattr(perm_spec_compact_patch, _elem, []) or []:
@@ -719,28 +693,32 @@ class PermSpecCompact(PermSpecConverterBase):
                         getattr(self, _elem).add(_up)
 
 
-def get_compact_perms_list(perms: list,
-                           resource_type: str = None,
-                           resource_subtype: str = None,
-                           is_owner: bool = False,
-                           is_none_allowed: bool = True,
-                           compact_perms_labels: dict = {}) -> list:
+def get_compact_perms_list(
+    perms: list,
+    resource_type: str = None,
+    resource_subtype: str = None,
+    is_owner: bool = False,
+    is_none_allowed: bool = True,
+    compact_perms_labels: dict = {},
+) -> list:
     """
     Transforms an extended "perm_spec" into a list of compact perms.
     """
+
     def _get_labeled_compact_perm(compact_perm: str):
-        return {
-            "name": compact_perm,
-            "label": compact_perms_labels.get(compact_perm, compact_perm)
-        }
+        return {"name": compact_perm, "label": compact_perms_labels.get(compact_perm, compact_perm)}
 
     _perms_list = []
     _perm = _to_compact_perms(perms, resource_type, resource_subtype, is_owner)
     if _perm:
         for _p in COMPACT_RIGHT_MODES:
-            if (_p[1] not in [DOWNLOAD_RIGHTS] + DATASET_ADMIN_PERMISSIONS or
-                    _p[1] in [DOWNLOAD_RIGHTS] and any(__p in DOWNLOAD_PERMISSIONS for __p in perms) or
-                    _p[1] in DATASET_ADMIN_PERMISSIONS and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES for __p in perms)):
+            if (
+                _p[1] not in [DOWNLOAD_RIGHTS] + DATASET_ADMIN_PERMISSIONS
+                or _p[1] in [DOWNLOAD_RIGHTS]
+                and any(__p in DOWNLOAD_PERMISSIONS for __p in perms)
+                or _p[1] in DATASET_ADMIN_PERMISSIONS
+                and any(__p in DATA_EDITABLE_RESOURCES_SUBTYPES + DATA_STYLABLE_RESOURCES_SUBTYPES for __p in perms)
+            ):
                 _perms_list.append(_get_labeled_compact_perm(_p[1]))
                 if _p[1] == _perm:
                     break

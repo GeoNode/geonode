@@ -38,28 +38,24 @@ class CreateServiceForm(forms.Form):
         max_length=512,
         widget=forms.TextInput(
             attrs={
-                'size': '65',
-                'class': 'inputText',
-                'required': '',
-                'type': 'url',
-
+                "size": "65",
+                "class": "inputText",
+                "required": "",
+                "type": "url",
             }
-        )
+        ),
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
         choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
-        initial='AUTO',
+        initial="AUTO",
     )
 
     def clean_url(self):
         proposed_url = self.cleaned_data["url"]
         existing = Service.objects.filter(base_url=proposed_url).exists()
         if existing:
-            raise ValidationError(
-                _("Service %(url)s is already registered"),
-                params={"url": proposed_url}
-            )
+            raise ValidationError(_("Service %(url)s is already registered"), params={"url": proposed_url})
         return proposed_url
 
     def clean(self):
@@ -69,28 +65,17 @@ class CreateServiceForm(forms.Form):
         service_type = self.cleaned_data.get("type")
         if url is not None and service_type is not None:
             try:
-                service_handler = get_service_handler(
-                    base_url=url, service_type=service_type)
+                service_handler = get_service_handler(base_url=url, service_type=service_type)
             except Exception as e:
                 logger.error(f"CreateServiceForm cleaning error: {e}")
-                raise ValidationError(
-                    _("Could not connect to the service at %(url)s"),
-                    params={"url": url}
-                )
+                raise ValidationError(_("Could not connect to the service at %(url)s"), params={"url": url})
             if not service_handler.probe():
-                raise ValidationError(
-                    _("Could not connect to the service at %(url)s"),
-                    params={"url": url}
-                )
+                raise ValidationError(_("Could not connect to the service at %(url)s"), params={"url": url})
             elif service_type not in (enumerations.AUTO, enumerations.OWS):
                 if service_handler.service_type != service_type:
                     raise ValidationError(
-                        _("Found service of type %(found_type)s instead "
-                          "of %(service_type)s"),
-                        params={
-                            "found_type": service_handler.service_type,
-                            "service_type": service_type
-                        }
+                        _("Found service of type %(found_type)s instead " "of %(service_type)s"),
+                        params={"found_type": service_handler.service_type, "service_type": service_type},
                     )
             self.cleaned_data["service_handler"] = service_handler
             self.cleaned_data["type"] = service_handler.service_type
@@ -98,38 +83,17 @@ class CreateServiceForm(forms.Form):
 
 class ServiceForm(forms.ModelForm):
     title = forms.CharField(
-        label=_('Title'),
-        max_length=255,
-        widget=forms.TextInput(
-            attrs={
-                'size': '60',
-                'class': 'inputText'
-            }
-        )
+        label=_("Title"), max_length=255, widget=forms.TextInput(attrs={"size": "60", "class": "inputText"})
     )
-    description = forms.CharField(
-        label=_('Description'),
-        widget=forms.Textarea(
-            attrs={
-                'cols': 60
-            }
-        )
-    )
-    abstract = forms.CharField(
-        label=_("Abstract"),
-        widget=forms.Textarea(
-            attrs={
-                'cols': 60
-            }
-        )
-    )
+    description = forms.CharField(label=_("Description"), widget=forms.Textarea(attrs={"cols": 60}))
+    abstract = forms.CharField(label=_("Abstract"), widget=forms.Textarea(attrs={"cols": 60}))
     keywords = taggit.forms.TagField(required=False)
 
     class Meta:
         model = Service
         fields = (
-            'title',
-            'description',
-            'abstract',
-            'keywords',
+            "title",
+            "description",
+            "abstract",
+            "keywords",
         )

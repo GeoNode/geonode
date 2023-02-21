@@ -37,20 +37,40 @@ from django.core.exceptions import ValidationError
 from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase, Link, Configuration
 from geonode.security.utils import AdvancedSecurityWorkflowManager
-from geonode.thumbs.utils import (
-    get_thumbs,
-    remove_thumb)
+from geonode.thumbs.utils import get_thumbs, remove_thumb
 from geonode.utils import get_legend_url
 
-logger = logging.getLogger('geonode.base.utils')
+logger = logging.getLogger("geonode.base.utils")
 
-_names = ['Zipped Shapefile', 'Zipped', 'Shapefile', 'GML 2.0', 'GML 3.1.1', 'CSV',
-          'GeoJSON', 'Excel', 'Legend', 'GeoTIFF', 'GZIP', 'Original Dataset',
-          'ESRI Shapefile', 'View in Google Earth', 'KML', 'KMZ', 'Atom', 'DIF',
-          'Dublin Core', 'ebRIM', 'FGDC', 'ISO', 'ISO with XSL']
+_names = [
+    "Zipped Shapefile",
+    "Zipped",
+    "Shapefile",
+    "GML 2.0",
+    "GML 3.1.1",
+    "CSV",
+    "GeoJSON",
+    "Excel",
+    "Legend",
+    "GeoTIFF",
+    "GZIP",
+    "Original Dataset",
+    "ESRI Shapefile",
+    "View in Google Earth",
+    "KML",
+    "KMZ",
+    "Atom",
+    "DIF",
+    "Dublin Core",
+    "ebRIM",
+    "FGDC",
+    "ISO",
+    "ISO with XSL",
+]
 
 thumb_filename_regex = re.compile(
-    r"^(document|map|layer|dataset|geoapp)-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})-thumb-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})\.png$")
+    r"^(document|map|layer|dataset|geoapp)-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})-thumb-([a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12})\.png$"
+)
 
 
 def get_thumb_uuid(filename):
@@ -99,35 +119,32 @@ def remove_duplicate_links(resource):
         if layer.default_style and not layer.get_legend_url(style_name=layer.default_style.name):
             Link.objects.update_or_create(
                 resource=layer.resourcebase_ptr,
-                name='Legend',
-                extension='png',
+                name="Legend",
+                extension="png",
                 url=get_legend_url(layer, layer.default_style.name),
-                mime='image/png',
-                link_type='image')
+                mime="image/png",
+                link_type="image",
+            )
 
 
 def configuration_session_cache(session):
     CONFIG_CACHE_TIMEOUT_SEC = 60
 
-    _config = session.get('config')
+    _config = session.get("config")
     _now = datetime.utcnow()
-    _dt = isoparse(_config.get('expiration')) if _config else _now
+    _dt = isoparse(_config.get("expiration")) if _config else _now
     if _config is None or _dt < _now:
         config = Configuration.load()
         _dt = _now + timedelta(seconds=CONFIG_CACHE_TIMEOUT_SEC)
-        cached_config = {
-            'configuration': {},
-            'expiration': _dt.isoformat()
-        }
+        cached_config = {"configuration": {}, "expiration": _dt.isoformat()}
 
-        for field_name in ['read_only', 'maintenance']:
-            cached_config['configuration'][field_name] = getattr(config, field_name)
+        for field_name in ["read_only", "maintenance"]:
+            cached_config["configuration"][field_name] = getattr(config, field_name)
 
-        session['config'] = cached_config
+        session["config"] = cached_config
 
 
 class OwnerRightsRequestViewUtils:
-
     @staticmethod
     def get_message_recipients(owner):
         User = get_user_model()
@@ -136,6 +153,7 @@ class OwnerRightsRequestViewUtils:
             allowed_users |= User.objects.filter(is_superuser=True).exclude(pk=owner.pk)
             try:
                 from geonode.groups.models import GroupProfile
+
                 groups = owner.groups.all()
                 obj_group_managers = []
                 for group in groups:
@@ -164,16 +182,10 @@ def validate_extra_metadata(data, instance):
 
     # starting validation of extra metadata passed via JSON
     # if schema for metadata validation is not defined, an error is raised
-    resource_type = (
-        instance.polymorphic_ctype.model
-        if instance.polymorphic_ctype
-        else instance.class_name.lower()
-    )
+    resource_type = instance.polymorphic_ctype.model if instance.polymorphic_ctype else instance.class_name.lower()
     extra_metadata_validation_schema = settings.EXTRA_METADATA_SCHEMA.get(resource_type, None)
     if not extra_metadata_validation_schema:
-        raise ValidationError(
-            f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {resource_type}"
-        )
+        raise ValidationError(f"EXTRA_METADATA_SCHEMA validation schema is not available for resource {resource_type}")
     # starting json structure validation. The Field can contain multiple metadata
     try:
         if isinstance(data, str):
@@ -192,7 +204,7 @@ def validate_extra_metadata(data, instance):
 
 
 def remove_country_from_languagecode(language: str):
-    """ Remove country code (us) from language name (en-us)
+    """Remove country code (us) from language name (en-us)
     >>> remove_country_from_lanugecode("en-us")
     'en'
     """

@@ -44,15 +44,14 @@ def prefix_xsl_line(req, id):
     resource = None
     try:
         resource = get_object_or_404(ResourceBase, pk=id)
-        query = {
-            'id': resource.get_real_instance().id
-        }
+        query = {"id": resource.get_real_instance().id}
         resource = resolve_object(
             req,
             resource.get_real_instance_class(),
             query,
-            permission='base.view_resourcebase',
-            permission_msg=_("You are not permitted to view this resource"))
+            permission="base.view_resourcebase",
+            permission_msg=_("You are not permitted to view this resource"),
+        )
         catalogue = get_catalogue()
         record = catalogue.get_record(resource.uuid)
         if record:
@@ -73,15 +72,10 @@ def prefix_xsl_line(req, id):
         xml = md_doc
     except Exception:
         logger.debug(traceback.format_exc())
-        return HttpResponse(
-            "Resource Metadata not available!"
-        )
-    site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
-    xsl_static = getattr(settings, 'CATALOG_METADATA_XSL', '/static/metadataxsl/metadata.xsl')
-    xsl_path = f'{site_url}{xsl_static}'
+        return HttpResponse("Resource Metadata not available!")
+    site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
+    xsl_static = getattr(settings, "CATALOG_METADATA_XSL", "/static/metadataxsl/metadata.xsl")
+    xsl_path = f"{site_url}{xsl_static}"
     xsl_line = f'<?xml-stylesheet type="text/xsl" href="{xsl_path}"?>'
 
-    return HttpResponse(
-        xsl_line + xml,
-        content_type="text/xml"
-    )
+    return HttpResponse(xsl_line + xml, content_type="text/xml")

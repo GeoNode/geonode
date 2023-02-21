@@ -39,7 +39,8 @@
 		"mrorz.language-gettext",
 		"eamodio.gitlens",
 		"bigonesystems.django",
-		"monosans.djlint"
+		"monosans.djlint",
+		"redhat.vscode-yaml"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

@@ -21,16 +21,41 @@ from geonode.notifications_helper import NotificationsAppConfigBase
 
 
 class GeoNodeAppsConfig(NotificationsAppConfigBase):
-    name = 'geonode.geoapps'
-    type = 'GEONODE_APP'
+    name = "geonode.geoapps"
+    type = "GEONODE_APP"
 
-    NOTIFICATIONS = (("geoapp_created", _("App Created"), _("A App was created"),),
-                     ("geoapp_updated", _("App Updated"), _("A App was updated"),),
-                     ("geoapp_approved", _("App Approved"), _("A App was approved by a Manager"),),
-                     ("geoapp_published", _("App Published"), _("A App was published"),),
-                     ("geoapp_deleted", _("App Deleted"), _("A App was deleted"),),
-                     ("geoapp_rated", _("Rating for App"), _("A rating was given to an App"),),
-                     )
+    NOTIFICATIONS = (
+        (
+            "geoapp_created",
+            _("App Created"),
+            _("A App was created"),
+        ),
+        (
+            "geoapp_updated",
+            _("App Updated"),
+            _("A App was updated"),
+        ),
+        (
+            "geoapp_approved",
+            _("App Approved"),
+            _("A App was approved by a Manager"),
+        ),
+        (
+            "geoapp_published",
+            _("App Published"),
+            _("A App was published"),
+        ),
+        (
+            "geoapp_deleted",
+            _("App Deleted"),
+            _("A App was deleted"),
+        ),
+        (
+            "geoapp_rated",
+            _("Rating for App"),
+            _("A rating was given to an App"),
+        ),
+    )
 
 
-default_app_config = 'geonode.geoapps.GeoNodeAppsConfig'
+default_app_config = "geonode.geoapps.GeoNodeAppsConfig"

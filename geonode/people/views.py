@@ -41,17 +41,16 @@ from dal import autocomplete
 
 class SetUserLayerPermission(View):
     def get(self, request):
-        return user_and_group_permission(request, 'profile')
+        return user_and_group_permission(request, "profile")
 
     def post(self, request):
-        return user_and_group_permission(request, 'profile')
+        return user_and_group_permission(request, "profile")
 
 
 class CustomSignupView(SignupView):
-
     def get_context_data(self, **kwargs):
         ret = super().get_context_data(**kwargs)
-        ret.update({'account_geonode_local_signup': settings.SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP})
+        ret.update({"account_geonode_local_signup": settings.SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP})
         return ret
 
 
@@ -72,21 +71,20 @@ def profile_edit(request, username=None):
             if form.is_valid():
                 form.save()
                 messages.success(request, (f"Profile {username} updated."))
-                return redirect(
-                    reverse(
-                        'profile_detail',
-                        args=[
-                            username]))
+                return redirect(reverse("profile_detail", args=[username]))
         else:
             form = ProfileForm(instance=profile)
 
-        return render(request, "people/profile_edit.html", {
-            "profile": profile,
-            "form": form,
-        })
+        return render(
+            request,
+            "people/profile_edit.html",
+            {
+                "profile": profile,
+                "form": form,
+            },
+        )
     else:
-        return HttpResponseForbidden(
-            'You are not allowed to edit other users profile')
+        return HttpResponseForbidden("You are not allowed to edit other users profile")
 
 
 @login_required
@@ -102,59 +100,63 @@ def profile_detail(request, username):
         else:
             access_token = None
 
-    return render(request, "people/profile_detail.html", {
-        'access_token': access_token,
-        "profile": profile,
-    })
+    return render(
+        request,
+        "people/profile_detail.html",
+        {
+            "access_token": access_token,
+            "profile": profile,
+        },
+    )
 
 
 def forgot_username(request):
-    """ Look up a username based on an email address, and send an email
+    """Look up a username based on an email address, and send an email
     containing the username if found"""
 
     username_form = ForgotUsernameForm()
 
-    message = ''
+    message = ""
 
     site = Site.objects.get_current()
 
     email_subject = _(f"Your username for {site.name}")
 
-    if request.method == 'POST':
+    if request.method == "POST":
         username_form = ForgotUsernameForm(request.POST)
         if username_form.is_valid():
-
-            users = get_user_model().objects.filter(
-                email=username_form.cleaned_data['email'])
+            users = get_user_model().objects.filter(email=username_form.cleaned_data["email"])
 
             if users:
                 username = users[0].username
                 email_message = f"{email_subject} : {username}"
-                send_email(email_subject, email_message, settings.DEFAULT_FROM_EMAIL,
-                           [username_form.cleaned_data['email']], fail_silently=False)
+                send_email(
+                    email_subject,
+                    email_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [username_form.cleaned_data["email"]],
+                    fail_silently=False,
+                )
                 message = _("Your username has been emailed to you.")
             else:
                 message = _("No user could be found with that email address.")
 
-    return render(request, 'people/forgot_username_form.html', context={
-        'message': message,
-        'form': username_form
-    })
+    return render(request, "people/forgot_username_form.html", context={"message": message, "form": username_form})
 
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
-
     def get_queryset(self):
-
         if self.request and self.request.user:
             qs = get_available_users(self.request.user)
         else:
             qs = get_user_model().objects.all()
 
         if self.q:
-            qs = qs.filter(Q(username__icontains=self.q)
-                           | Q(email__icontains=self.q)
-                           | Q(first_name__icontains=self.q)
-                           | Q(last_name__icontains=self.q))
+            qs = qs.filter(
+                Q(username__icontains=self.q)
+                | Q(email__icontains=self.q)
+                | Q(first_name__icontains=self.q)
+                | Q(last_name__icontains=self.q)
+            )
 
         return qs

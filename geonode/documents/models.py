@@ -34,13 +34,8 @@ from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
 from geonode.maps.signals import map_changed_signal
 from geonode.groups.conf import settings as groups_settings
-from geonode.documents.enumerations import (
-    DOCUMENT_TYPE_MAP,
-    DOCUMENT_MIMETYPE_MAP)
-from geonode.security.permissions import (
-    VIEW_PERMISSIONS,
-    OWNER_PERMISSIONS,
-    DOWNLOAD_PERMISSIONS)
+from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
+from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS, DOWNLOAD_PERMISSIONS
 from geonode.utils import build_absolute_uri
 
 logger = logging.getLogger(__name__)
@@ -58,8 +53,9 @@ class Document(ResourceBase):
         blank=True,
         null=True,
         max_length=255,
-        help_text=_('The URL of the document if it is external.'),
-        verbose_name=_('URL'))
+        help_text=_("The URL of the document if it is external."),
+        verbose_name=_("URL"),
+    )
 
     def __str__(self):
         return str(self.title)
@@ -72,7 +68,7 @@ class Document(ResourceBase):
         return {
             "anonymous": VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS,
             "default": OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS,
-            groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS
+            groups_settings.REGISTERED_MEMBERS_GROUP_NAME: OWNER_PERMISSIONS + DOWNLOAD_PERMISSIONS,
         }
 
     @classproperty
@@ -83,7 +79,7 @@ class Document(ResourceBase):
             "download": _("View and Download"),
             "edit": _("Edit"),
             "manage": _("Manage"),
-            "owner": _("Owner")
+            "owner": _("Owner"),
         }
 
     @property
@@ -98,17 +94,14 @@ class Document(ResourceBase):
         if not self.title:
             return str(self.id)
         else:
-            return f'{self.title} ({self.id})'
+            return f"{self.title} ({self.id})"
 
     @property
     def href(self):
         if self.doc_url:
             return self.doc_url
         elif self.files:
-            return urljoin(
-                settings.SITEURL,
-                reverse('document_link', args=(self.id,))
-            )
+            return urljoin(settings.SITEURL, reverse("document_link", args=(self.id,)))
 
     @property
     def is_file(self):
@@ -122,17 +115,17 @@ class Document(ResourceBase):
 
     @property
     def is_audio(self):
-        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'audio']
+        AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "audio"]
         return self.is_file and self.extension.lower() in AUDIOTYPES
 
     @property
     def is_image(self):
-        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'image']
+        IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "image"]
         return self.is_file and self.extension.lower() in IMGTYPES
 
     @property
     def is_video(self):
-        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == 'video']
+        VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "video"]
         return self.is_file and self.extension.lower() in VIDEOTYPES
 
     @property
@@ -141,41 +134,30 @@ class Document(ResourceBase):
 
     @property
     def embed_url(self):
-        return reverse('document_embed', args=(self.id,))
+        return reverse("document_embed", args=(self.id,))
 
     @property
     def download_url(self):
-        return build_absolute_uri(reverse('document_download', args=(self.id,)))
+        return build_absolute_uri(reverse("document_download", args=(self.id,)))
 
     class Meta(ResourceBase.Meta):
         pass
 
 
 class DocumentResourceLink(models.Model):
-
     # relation to the document model
-    document = models.ForeignKey(
-        Document,
-        null=True,
-        blank=True,
-        related_name='links',
-        on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, null=True, blank=True, related_name="links", on_delete=models.CASCADE)
 
     # relation to the resource model
-    content_type = models.ForeignKey(
-        ContentType,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    resource = GenericForeignKey('content_type', 'object_id')
+    resource = GenericForeignKey("content_type", "object_id")
 
 
 def get_related_documents(resource):
     if isinstance(resource, Dataset) or isinstance(resource, Map):
         content_type = ContentType.objects.get_for_model(resource)
-        return Document.objects.filter(links__content_type=content_type,
-                                       links__object_id=resource.pk)
+        return Document.objects.filter(links__content_type=content_type, links__object_id=resource.pk)
     else:
         return None
 

@@ -23,26 +23,25 @@ from geonode.utils import get_xpath_value
 
 
 class UtilsTestCase(GeoNodeBaseSimpleTestSupport):
-
     def test_get_xpath_value(self):
         fixtures = [
             (
                 "<ns1:myElement xmlns:ns1='fake1' xmlns:ns2='fake2'><ns2:anotherElement>phony</ns2:anotherElement></ns1:myElement>",
                 "/ns1:myElement/ns2:anotherElement",
                 None,
-                "phony"
+                "phony",
             ),
             (
                 "<ns1:myElement xmlns:ns1='fake1' xmlns:ns2='fake2'><ns2:anotherElement>phony</ns2:anotherElement></ns1:myElement>",
                 "ns2:anotherElement",
                 None,
-                "phony"
+                "phony",
             ),
             (
                 "<ns1:myElement xmlns:ns1='fake1' xmlns:ns2='fake2' xmlns:ns3='fake3'><ns2:anotherElement><ns3:additional>phony</ns3:additional></ns2:anotherElement></ns1:myElement>",
                 "ns2:anotherElement/ns3:additional",
                 None,
-                "phony"
+                "phony",
             ),
         ]
         for element, xpath_expr, nsmap, expected in fixtures:

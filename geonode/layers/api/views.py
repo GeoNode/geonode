@@ -53,9 +53,13 @@ class DatasetViewSet(DynamicModelViewSet):
     """
     API endpoint that allows layers to be viewed or edited.
     """
-    http_method_names = ['get', 'patch', 'put']
+
+    http_method_names = ["get", "patch", "put"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
+    permission_classes = [
+        IsAuthenticatedOrReadOnly,
+        UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
+    ]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -63,7 +67,7 @@ class DatasetViewSet(DynamicModelViewSet):
         ExtentFilter,
         DatasetPermissionsFilter,
     ]
-    queryset = Dataset.objects.all().order_by('-created')
+    queryset = Dataset.objects.all().order_by("-created")
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -201,17 +205,17 @@ class DatasetViewSet(DynamicModelViewSet):
                 storage_manager=storage_manager,
             )
 
-            xml_file = files.pop('xml_file', None)
-            sld_file = files.pop('sld_file', None)
+            xml_file = files.pop("xml_file", None)
+            sld_file = files.pop("sld_file", None)
 
             call_kwargs = {
                 "instance": dataset,
-                "vals": {'files': list(files.values()), 'user': request.user},
+                "vals": {"files": list(files.values()), "user": request.user},
                 "store_spatial_files": store_spatial_files,
                 "xml_file": xml_file,
                 "metadata_uploaded": True if xml_file is not None else False,
                 "sld_file": sld_file,
-                "sld_uploaded": True if sld_file is not None else False
+                "sld_uploaded": True if sld_file is not None else False,
             }
 
             getattr(resource_manager, action)(**call_kwargs)
@@ -219,15 +223,11 @@ class DatasetViewSet(DynamicModelViewSet):
         except Exception as e:
             raise GeneralDatasetException(e)
         finally:
-            '''
+            """
             Always keep the temporary folder under control.
-            '''
+            """
             if not store_spatial_files:
                 storage_manager.delete_retrieved_paths()
         # For now, we will return the input dataset
-        data = {
-            "alternate": dataset.alternate,
-            "state": "success",
-            "action": action
-        }
+        data = {"alternate": dataset.alternate, "state": "success", "action": action}
         return Response(data)

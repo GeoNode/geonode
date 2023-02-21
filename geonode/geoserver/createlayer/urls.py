@@ -20,6 +20,4 @@
 from django.conf.urls import url
 from . import views
 
-urlpatterns = [
-    url(r'$', views.dataset_create, name='dataset_create')
-]
+urlpatterns = [url(r"$", views.dataset_create, name="dataset_create")]

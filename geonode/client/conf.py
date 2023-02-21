@@ -26,7 +26,7 @@ from appconf import AppConf
 
 def load_path_attr(path):
     i = path.rfind(".")
-    module, attr = path[:i], path[i + 1:]
+    module, attr = path[:i], path[i + 1 :]
     try:
         mod = importlib.import_module(module)
     except ImportError as e:
@@ -47,8 +47,7 @@ def is_installed(package):
 
 
 class GeoNodeClientAppConf(AppConf):
-
-    LAYER_PREVIEW_LIBRARY = 'geonode'
+    LAYER_PREVIEW_LIBRARY = "geonode"
     HOOKSET = "geonode.client.hooksets.BaseHookSet"
 
     def configure_hookset(self, value):

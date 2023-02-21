@@ -26,8 +26,8 @@ from geonode.monitoring.widgets import MultiEmailWidget
 
 
 class MultiEmailField(forms.Field):
-    message = _('Enter valid email addresses.')
-    code = 'invalid'
+    message = _("Enter valid email addresses.")
+    code = "invalid"
     widget = MultiEmailWidget
 
     def to_python(self, value):

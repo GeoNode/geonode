@@ -31,14 +31,12 @@ from geonode.utils import get_geonode_app_types
 
 
 class FavoriteManager(models.Manager):
-
     def favorites_for_user(self, user):
         return self.filter(user=user)
 
     def _favorite_ct_for_user(self, user, model):
         content_type = ContentType.objects.get_for_model(model)
-        result = self.favorites_for_user(user).filter(
-            content_type=content_type).prefetch_related('content_object')
+        result = self.favorites_for_user(user).filter(content_type=content_type).prefetch_related("content_object")
         return result
 
     def favorite_documents_for_user(self, user):
@@ -60,10 +58,7 @@ class FavoriteManager(models.Manager):
         impl note: can only be 0 or 1, per the class's unique_together.
         """
         content_type = ContentType.objects.get_for_model(type(content_object))
-        result = self.filter(
-            user=user,
-            content_type=content_type,
-            object_id=content_object.pk)
+        result = self.filter(user=user, content_type=content_type, object_id=content_object.pk)
 
         if result and len(result) > 0:
             return result[0]
@@ -71,19 +66,19 @@ class FavoriteManager(models.Manager):
             return None
 
     def bulk_favorite_objects(self, user):
-        'get the actual favorite objects for a user as a dict by content_type'
+        "get the actual favorite objects for a user as a dict by content_type"
         favs = {}
         for m in (Document, Map, Dataset, get_user_model()):
             ct = ContentType.objects.get_for_model(m)
             f = self.favorites_for_user(user).filter(content_type=ct)
-            favs[ct.name] = m.objects.filter(id__in=f.values('object_id'))
+            favs[ct.name] = m.objects.filter(id__in=f.values("object_id"))
         return favs
 
     def create_favorite(self, content_object, user):
         if isinstance(content_object, ResourceBase):
             geoapp_types = get_geonode_app_types()
             if content_object.resource_type in geoapp_types:
-                content_type = ContentType.objects.get(model='geoapp')
+                content_type = ContentType.objects.get(model="geoapp")
             else:
                 content_type = ContentType.objects.get(model=content_object.resource_type)
         else:
@@ -101,16 +96,16 @@ class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")
 
     created_on = models.DateTimeField(auto_now_add=True)
 
     objects = FavoriteManager()
 
     class Meta:
-        verbose_name = 'favorite'
-        verbose_name_plural = 'favorites'
-        unique_together = (('user', 'content_type', 'object_id'),)
+        verbose_name = "favorite"
+        verbose_name_plural = "favorites"
+        unique_together = (("user", "content_type", "object_id"),)
 
     def __str__(self):
         if self.content_object:

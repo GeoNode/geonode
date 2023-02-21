@@ -27,74 +27,65 @@ from django.utils.translation import ugettext_noop as _
 
 
 class AbstractProcessingTaskMeta(ABCMeta, type(PolymorphicModel)):
-
     @abstractmethod
     def execute(self, resource):
         pass
 
 
 class AbstractProcessingTaskManager(PolymorphicManager):
-
     def get_real_instances(self):
         return super().get_queryset().get_real_instances()
 
 
 class AbstractProcessingTask(PolymorphicModel):
-
     objects = AbstractProcessingTaskManager()
 
     name = models.CharField(max_length=255, unique=True)
 
     is_enabled = models.BooleanField(
-        default=True,
-        help_text=_("Disabling this Task will make the Processing Workflow to skip it."))
+        default=True, help_text=_("Disabling this Task will make the Processing Workflow to skip it.")
+    )
 
     def __str__(self):
-        get_icon = (lambda arg: '[✓]' if arg else '[✗]')
+        get_icon = lambda arg: "[✓]" if arg else "[✗]"
         _enabled_icon = get_icon(self.is_enabled)
-        return f'{_enabled_icon} {self.name} | <{type(self).__name__}>'
+        return f"{_enabled_icon} {self.name} | <{type(self).__name__}>"
 
 
 class ProcessingWorkflow(models.Model):
-
     name = models.CharField(max_length=255, unique=True)
 
-    processing_tasks = models.ManyToManyField(
-        AbstractProcessingTask,
-        blank=True,
-        through='ProcessingWorkflowTasks')
+    processing_tasks = models.ManyToManyField(AbstractProcessingTask, blank=True, through="ProcessingWorkflowTasks")
 
     is_enabled = models.BooleanField(
-        default=True,
-        help_text=_("Disabling this Task will make the Processing Workflow to skip it."))
+        default=True, help_text=_("Disabling this Task will make the Processing Workflow to skip it.")
+    )
 
     def get_tasks(self):
         return list(self.processing_tasks.order_by("link_to_workflow__order"))
 
     def __str__(self):
-        get_icon = (lambda arg: '[✓]' if arg else '[✗]')
+        get_icon = lambda arg: "[✓]" if arg else "[✗]"
         _enabled_icon = get_icon(self.is_enabled)
-        return f'{_enabled_icon} {self.name}'
+        return f"{_enabled_icon} {self.name}"
 
 
 class ProcessingWorkflowTasks(models.Model):
-
     workflow = models.ForeignKey(ProcessingWorkflow, on_delete=models.DO_NOTHING)
-    task = models.ForeignKey(AbstractProcessingTask, related_name='link_to_workflow', on_delete=models.DO_NOTHING)
+    task = models.ForeignKey(AbstractProcessingTask, related_name="link_to_workflow", on_delete=models.DO_NOTHING)
     order = models.PositiveIntegerField()
 
     def __str__(self):
-        return f'{self.order} --- Workflow: {self.workflow} -- Task: {self.task}'
+        return f"{self.order} --- Workflow: {self.workflow} -- Task: {self.task}"
 
     class Meta:
         verbose_name_plural = _("Processing Workflow Tasks")
-        ordering = ('order',)
+        ordering = ("order",)
 
 
 # ##################################################################################### #
 # Samples
 # ##################################################################################### #
 class SampleProcessingTask(AbstractProcessingTask, metaclass=AbstractProcessingTaskMeta):
-
     def execute(self, resource):
         print(f"Executing {self.name} against {resource}")

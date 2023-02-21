@@ -37,14 +37,13 @@ from .queues import (
     queue_geoserver_catalog,
     queue_geoserver_data,
     queue_geoserver,
-    queue_dataset_viewers
+    queue_dataset_viewers,
 )
 
 logger = logging.getLogger(__package__)
 
 
 class Consumer(ConsumerMixin):
-
     def __init__(self, connection, messages_limit=None):
         self.last_message = None
         self.connection = connection
@@ -52,22 +51,14 @@ class Consumer(ConsumerMixin):
 
     def get_consumers(self, Consumer, channel):
         return [
-            Consumer(queue_all_events,
-                     callbacks=[self.on_message]),
-            Consumer(queue_email_events,
-                     callbacks=[self.on_email_messages]),
-            Consumer(queue_geoserver_events,
-                     callbacks=[self.on_geoserver_messages]),
-            Consumer(queue_notifications_events,
-                     callbacks=[self.on_notifications_messages]),
-            Consumer(queue_geoserver_catalog,
-                     callbacks=[self.on_geoserver_catalog]),
-            Consumer(queue_geoserver_data,
-                     callbacks=[self.on_geoserver_data]),
-            Consumer(queue_geoserver,
-                     callbacks=[self.on_geoserver_all]),
-            Consumer(queue_dataset_viewers,
-                     callbacks=[self.on_dataset_viewer]),
+            Consumer(queue_all_events, callbacks=[self.on_message]),
+            Consumer(queue_email_events, callbacks=[self.on_email_messages]),
+            Consumer(queue_geoserver_events, callbacks=[self.on_geoserver_messages]),
+            Consumer(queue_notifications_events, callbacks=[self.on_notifications_messages]),
+            Consumer(queue_geoserver_catalog, callbacks=[self.on_geoserver_catalog]),
+            Consumer(queue_geoserver_data, callbacks=[self.on_geoserver_data]),
+            Consumer(queue_geoserver, callbacks=[self.on_geoserver_all]),
+            Consumer(queue_dataset_viewers, callbacks=[self.on_dataset_viewer]),
         ]
 
     def _check_message_limit(self):
@@ -158,8 +149,7 @@ class Consumer(ConsumerMixin):
         logger.debug(f"{len(consumers)} consumers:")
         for i, consumer in enumerate(consumers, start=1):
             logger.debug(f"{i} {consumer}")
-        super().on_consume_ready(
-            connection, channel, consumers, **kwargs)
+        super().on_consume_ready(connection, channel, consumers, **kwargs)
 
     def on_dataset_viewer(self, body, message):
         logger.debug(f"on_dataset_viewer: RECEIVED MSG - body: {body}")
@@ -192,8 +182,8 @@ def _update_dataset_data(body, last_message):
     if (last_workspace, last_store, last_filter) != (workspace, store, filter):
         update_dataset = True
     else:
-        timestamp_t1 = datetime.strptime(last_message["timestamp"], '%Y-%m-%dT%H:%MZ')
-        timestamp_t2 = datetime.strptime(message["timestamp"], '%Y-%m-%dT%H:%MZ')
+        timestamp_t1 = datetime.strptime(last_message["timestamp"], "%Y-%m-%dT%H:%MZ")
+        timestamp_t2 = datetime.strptime(message["timestamp"], "%Y-%m-%dT%H:%MZ")
         timestamp_delta = timestamp_t2 - timestamp_t1
         if timestamp_t2 > timestamp_t1 and timestamp_delta.seconds > 60:
             update_dataset = True
@@ -215,18 +205,12 @@ def _wait_for_dataset(dataset_id, num_attempts=5, wait_seconds=1):
     for current in range(1, num_attempts + 1):
         try:
             instance = Dataset.objects.get(id=dataset_id)
-            logger.debug(
-                f"Attempt {current}/{num_attempts} - Found layer in the "
-                "database")
+            logger.debug(f"Attempt {current}/{num_attempts} - Found layer in the " "database")
             break
         except Dataset.DoesNotExist:
             time.sleep(wait_seconds)
-            logger.debug(
-                f"Attempt {current}/{num_attempts} - Could not find layer "
-                "instance")
+            logger.debug(f"Attempt {current}/{num_attempts} - Could not find layer " "instance")
     else:
-        logger.debug(
-            f"Reached maximum attempts and layer {dataset_id} is still not "
-            "saved. Exiting...")
+        logger.debug(f"Reached maximum attempts and layer {dataset_id} is still not " "saved. Exiting...")
         raise Dataset.DoesNotExist
     return instance

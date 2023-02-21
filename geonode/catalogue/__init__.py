@@ -25,11 +25,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from importlib import import_module
 
-DEFAULT_CATALOGUE_ALIAS = 'default'
+DEFAULT_CATALOGUE_ALIAS = "default"
 
 # GeoNode uses this if the CATALOGUE setting is empty (None).
-if not hasattr(settings, 'CATALOGUE'):
-    settings.CATALOGUE = {DEFAULT_CATALOGUE_ALIAS: 'geonode.backends.dummy'}
+if not hasattr(settings, "CATALOGUE"):
+    settings.CATALOGUE = {DEFAULT_CATALOGUE_ALIAS: "geonode.backends.dummy"}
 
 # If settings.CATALOGUE is defined, we expect it to be properly named
 if DEFAULT_CATALOGUE_ALIAS not in settings.CATALOGUE:
@@ -44,18 +44,25 @@ def load_backend(backend_name):
     except ImportError as e_user:
         # The CSW backend wasn't found. Display a helpful error message
         # listing all possible (built-in) CSW backends.
-        backend_dir = os.path.join(os.path.dirname(__file__), 'backends')
+        backend_dir = os.path.join(os.path.dirname(__file__), "backends")
         try:
-            available_backends = sorted([f for f in os.listdir(backend_dir) if os.path.isdir(os.path.join(backend_dir, f)) and
-                                         not f.startswith('.')])
+            available_backends = sorted(
+                [
+                    f
+                    for f in os.listdir(backend_dir)
+                    if os.path.isdir(os.path.join(backend_dir, f)) and not f.startswith(".")
+                ]
+            )
         except OSError:
             available_backends = []
 
         if backend_name not in available_backends:
             backend_reprs = list(map(repr, available_backends))
-            error_msg = (f"{backend_name!r} isn't an available catalogue backend.\n"
-                         "Try using geonode.catalogue.backends.BACKEND, where BACKEND is one of:\n"
-                         f"    {', '.join(backend_reprs)}\nError was: {e_user}")
+            error_msg = (
+                f"{backend_name!r} isn't an available catalogue backend.\n"
+                "Try using geonode.catalogue.backends.BACKEND, where BACKEND is one of:\n"
+                f"    {', '.join(backend_reprs)}\nError was: {e_user}"
+            )
             raise ImproperlyConfigured(error_msg)
         else:
             # If there's some other error, this must be an error in GeoNode
@@ -63,21 +70,18 @@ def load_backend(backend_name):
 
 
 def default_catalogue_backend():
-    """Get the default backend
-    """
+    """Get the default backend"""
     msg = f"There is no '{DEFAULT_CATALOGUE_ALIAS}' backend in CATALOGUE"
     assert DEFAULT_CATALOGUE_ALIAS in settings.CATALOGUE, msg
     return settings.CATALOGUE[DEFAULT_CATALOGUE_ALIAS]
 
 
 def get_catalogue(backend=None, skip_caps=True):
-    """Returns a catalogue object.
-    """
+    """Returns a catalogue object."""
     default_backend_config = backend or default_catalogue_backend()
-    backend_name = default_backend_config['ENGINE']
+    backend_name = default_backend_config["ENGINE"]
     catalog_module = load_backend(backend_name)
-    assert hasattr(catalog_module, 'CatalogueBackend'), \
-        '%s must define a CatalogueBackend class'
+    assert hasattr(catalog_module, "CatalogueBackend"), "%s must define a CatalogueBackend class"
     catalog_class = catalog_module.CatalogueBackend
     cat = catalog_class(skip_caps=skip_caps, **default_backend_config)
     return cat

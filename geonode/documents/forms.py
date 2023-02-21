@@ -35,9 +35,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.base.forms import ResourceBaseForm, get_tree_data
 from geonode.resource.utils import get_related_resources
-from geonode.documents.models import (
-    Document,
-    DocumentResourceLink)
+from geonode.documents.models import Document, DocumentResourceLink
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
 
@@ -64,9 +62,9 @@ class SizeRestrictedFileField(forms.FileField):
             max_size = self._get_max_size()
             # Validate
             if file_size is not None and file_size > max_size:
-                raise FileUploadLimitException(_(
-                    f'File size size exceeds {filesizeformat(max_size)}. Please try again with a smaller file.'
-                ))
+                raise FileUploadLimitException(
+                    _(f"File size size exceeds {filesizeformat(max_size)}. Please try again with a smaller file.")
+                )
         return data
 
     def _get_file_size(self, data):
@@ -85,9 +83,7 @@ class SizeRestrictedFileField(forms.FileField):
 
 
 class DocumentFormMixin:
-
     def generate_link_choices(self, resources=None):
-
         if resources is None:
             resources = list(Dataset.objects.all())
             resources += list(Map.objects.all())
@@ -96,10 +92,7 @@ class DocumentFormMixin:
         choices = []
         for obj in resources:
             type_id = ContentType.objects.get_for_model(obj.__class__).id
-            choices.append([
-                f"type:{type_id}-id:{obj.id}",
-                f"{obj.title} ({obj.polymorphic_ctype.model})"
-            ])
+            choices.append([f"type:{type_id}-id:{obj.id}", f"{obj.title} ({obj.polymorphic_ctype.model})"])
 
         return choices
 
@@ -107,7 +100,7 @@ class DocumentFormMixin:
         choices = self.generate_link_choices(resources=resources)
         return [choice[0] for choice in choices]
 
-    def save_many2many(self, links_field='links'):
+    def save_many2many(self, links_field="links"):
         # create and fetch desired links
         instances = []
         for link in self.cleaned_data[links_field]:
@@ -122,49 +115,46 @@ class DocumentFormMixin:
                 instances.append(instance)
 
         # delete remaining links
-        DocumentResourceLink.objects\
-            .filter(document_id=self.instance.id).exclude(pk__in=[i.pk for i in instances]).delete()
+        DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
+            pk__in=[i.pk for i in instances]
+        ).delete()
 
 
 class DocumentForm(ResourceBaseForm, DocumentFormMixin):
-
     title = forms.CharField(required=False)
 
-    links = forms.MultipleChoiceField(
-        label=_("Link to"),
-        required=False)
+    links = forms.MultipleChoiceField(label=_("Link to"), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['regions'].choices = get_tree_data()
-        self.fields['links'].choices = self.generate_link_choices()
-        self.fields['links'].initial = self.generate_link_values(
-            resources=get_related_resources(self.instance)
-        )
+        self.fields["regions"].choices = get_tree_data()
+        self.fields["links"].choices = self.generate_link_choices()
+        self.fields["links"].initial = self.generate_link_values(resources=get_related_resources(self.instance))
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None
-            if help_text != '':
+            if help_text != "":
                 self.fields[field].widget.attrs.update(
                     {
-                        'class': 'has-external-popover',
-                        'data-content': help_text,
-                        'placeholder': help_text,
-                        'data-placement': 'right',
-                        'data-container': 'body',
-                        'data-html': 'true'
+                        "class": "has-external-popover",
+                        "data-content": help_text,
+                        "placeholder": help_text,
+                        "data-placement": "right",
+                        "data-container": "body",
+                        "data-html": "true",
                     }
                 )
 
     class Meta(ResourceBaseForm.Meta):
         model = Document
         exclude = ResourceBaseForm.Meta.exclude + (
-            'content_type',
-            'object_id',
-            'doc_file',
-            'extension',
-            'subtype',
-            'doc_url')
+            "content_type",
+            "object_id",
+            "doc_file",
+            "extension",
+            "subtype",
+            "doc_url",
+        )
 
 
 class DocumentDescriptionForm(forms.Form):
@@ -178,41 +168,33 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
     """
     The document upload form.
     """
+
     permissions = forms.CharField(
-        widget=HiddenInput(
-            attrs={
-                'name': 'permissions',
-                'id': 'permissions'}),
-        required=False)
-
-    links = forms.MultipleChoiceField(
-        label=_("Link to"),
-        required=False)
-
-    doc_file = SizeRestrictedFileField(
-        label=_("File"),
-        required=False,
-        field_slug="document_upload_size"
+        widget=HiddenInput(attrs={"name": "permissions", "id": "permissions"}), required=False
     )
+
+    links = forms.MultipleChoiceField(label=_("Link to"), required=False)
+
+    doc_file = SizeRestrictedFileField(label=_("File"), required=False, field_slug="document_upload_size")
 
     class Meta:
         model = Document
-        fields = ['title', 'doc_file', 'doc_url']
+        fields = ["title", "doc_file", "doc_url"]
         widgets = {
-            'name': HiddenInput(attrs={'cols': 80, 'rows': 20}),
+            "name": HiddenInput(attrs={"cols": 80, "rows": 20}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['links'].choices = self.generate_link_choices()
+        self.fields["links"].choices = self.generate_link_choices()
 
     def clean_permissions(self):
         """
         Ensures the JSON field is JSON.
         """
-        permissions = self.cleaned_data['permissions']
+        permissions = self.cleaned_data["permissions"]
 
-        if not self.fields['permissions'].required and (permissions is None or permissions == ''):
+        if not self.fields["permissions"].required and (permissions is None or permissions == ""):
             return None
 
         try:
@@ -225,8 +207,8 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         Ensures the doc_file or the doc_url field is populated.
         """
         cleaned_data = super().clean()
-        doc_file = self.cleaned_data.get('doc_file')
-        doc_url = self.cleaned_data.get('doc_url')
+        doc_file = self.cleaned_data.get("doc_file")
+        doc_url = self.cleaned_data.get("doc_url")
 
         if not doc_file and not doc_url and "doc_file" not in self.errors and "doc_url" not in self.errors:
             logger.error("Document must be a file or url.")
@@ -234,8 +216,7 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
 
         if doc_file and doc_url:
             logger.error("A document cannot have both a file and a url.")
-            raise forms.ValidationError(
-                _("A document cannot have both a file and a url."))
+            raise forms.ValidationError(_("A document cannot have both a file and a url."))
 
         return cleaned_data
 
@@ -243,11 +224,9 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
         """
         Ensures the doc_file is valid.
         """
-        doc_file = self.cleaned_data.get('doc_file')
+        doc_file = self.cleaned_data.get("doc_file")
 
-        if doc_file and not os.path.splitext(
-                doc_file.name)[1].lower()[
-                1:] in settings.ALLOWED_DOCUMENT_TYPES:
+        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
             logger.debug("This file type is not allowed")
             raise forms.ValidationError(_("This file type is not allowed"))
 
@@ -258,22 +237,19 @@ class DocumentReplaceForm(forms.ModelForm):
     """
     The form used to replace a document.
     """
-    doc_file = SizeRestrictedFileField(
-        label=_("File"),
-        required=True,
-        field_slug="document_upload_size"
-    )
+
+    doc_file = SizeRestrictedFileField(label=_("File"), required=True, field_slug="document_upload_size")
 
     class Meta:
         model = Document
-        fields = ['doc_file']
+        fields = ["doc_file"]
 
     def clean(self):
         """
         Ensures the doc_file field is populated.
         """
         cleaned_data = super().clean()
-        doc_file = self.cleaned_data.get('doc_file')
+        doc_file = self.cleaned_data.get("doc_file")
 
         if not doc_file:
             raise forms.ValidationError(_("Document must be a file."))
@@ -284,11 +260,9 @@ class DocumentReplaceForm(forms.ModelForm):
         """
         Ensures the doc_file is valid.
         """
-        doc_file = self.cleaned_data.get('doc_file')
+        doc_file = self.cleaned_data.get("doc_file")
 
-        if doc_file and not os.path.splitext(
-                doc_file.name)[1].lower()[
-                1:] in settings.ALLOWED_DOCUMENT_TYPES:
+        if doc_file and not os.path.splitext(doc_file.name)[1].lower()[1:] in settings.ALLOWED_DOCUMENT_TYPES:
             raise forms.ValidationError(_("This file type is not allowed"))
 
         return doc_file

@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 
 class OIDCValidator(OAuth2Validator):
 
-    """ e.g.
+    """e.g.
         Check username and password correspond to a valid and active User, if fails
         try Facebook token authentication
     def validate_user(self, username, password, client, request, *args, **kwargs):
@@ -54,7 +54,6 @@ class OIDCValidator(OAuth2Validator):
         return None
 
     def get_id_token(self, token, token_handler, request):
-
         key = jwk.JWK.from_pem(oauth2_settings.OIDC_RSA_PRIVATE_KEY.encode("utf8"))
 
         # TODO: http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken2
@@ -72,7 +71,7 @@ class OIDCValidator(OAuth2Validator):
             "aud": request.client_id,
             "exp": int(dateformat.format(expiration_time, "U")),
             "iat": int(dateformat.format(datetime.utcnow(), "U")),
-            "auth_time": int(dateformat.format(request.user.last_login, "U"))
+            "auth_time": int(dateformat.format(request.user.last_login, "U")),
         }
 
         nonce = getattr(request, "nonce", None)
@@ -83,14 +82,16 @@ class OIDCValidator(OAuth2Validator):
         # http://openid.net/specs/openid-connect-core-1_0.html#CodeIDToken
         # http://openid.net/specs/openid-connect-core-1_0.html#ImplicitIDToken
         # if request.grant_type in 'authorization_code' and 'access_token' in token:
-        if (request.grant_type == "authorization_code" and "access_token" in token) or \
-                request.response_type == "code id_token token" or \
-                (request.response_type == "id_token token" and "access_token" in token):
+        if (
+            (request.grant_type == "authorization_code" and "access_token" in token)
+            or request.response_type == "code id_token token"
+            or (request.response_type == "id_token token" and "access_token" in token)
+        ):
             acess_token = token["access_token"]
             sha256 = hashlib.sha256(acess_token.encode("ascii"))
             bits128 = sha256.hexdigest()[:16]
             at_hash = base64.urlsafe_b64encode(bits128.encode("ascii"))
-            claims['at_hash'] = at_hash.decode("utf8")
+            claims["at_hash"] = at_hash.decode("utf8")
 
         # TODO: create a function to check if we should include c_hash
         # http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken

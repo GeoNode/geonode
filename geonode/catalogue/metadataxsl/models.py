@@ -28,37 +28,33 @@ from geonode.layers.models import Dataset
 from geonode.documents.models import Document
 
 
-ISO_XSL_NAME = 'ISO with XSL'
+ISO_XSL_NAME = "ISO with XSL"
 
 settings.DOWNLOAD_FORMATS_METADATA.append(ISO_XSL_NAME)
 
 
 def xsl_post_save(instance, sender, **kwargs):
-    """Add a link to the enriched ISO metadata
-    """
+    """Add a link to the enriched ISO metadata"""
     add_xsl_link(instance.resourcebase_ptr)
 
 
 def add_xsl_link(resourcebase):
-    """Add a link to the enriched ISO metadata
-    """
+    """Add a link to the enriched ISO metadata"""
     try:
-        urlpath = reverse('prefix_xsl_line', args=[resourcebase.id])
-        site_url = settings.SITEURL.rstrip('/') if settings.SITEURL.startswith('http') else settings.SITEURL
+        urlpath = reverse("prefix_xsl_line", args=[resourcebase.id])
+        site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
         url = urljoin(site_url, urlpath)
         link, created = Link.objects.get_or_create(
             resource=resourcebase,
             url=url,
-            defaults=dict(name=ISO_XSL_NAME,
-                          extension='xml',
-                          mime='text/xml',
-                          link_type='metadata'))
+            defaults=dict(name=ISO_XSL_NAME, extension="xml", mime="text/xml", link_type="metadata"),
+        )
         return created
     except Exception:
         return False
 
 
-if 'geonode.catalogue' in settings.INSTALLED_APPS:
+if "geonode.catalogue" in settings.INSTALLED_APPS:
     signals.post_save.connect(xsl_post_save, sender=Dataset)
     signals.post_save.connect(xsl_post_save, sender=Document)
     # TODO: maps as well?

@@ -31,7 +31,7 @@ connection = None
 
 
 class MessagingAppConfig(NotificationsAppConfigBase):
-    name = 'geonode.messaging'
+    name = "geonode.messaging"
 
     NOTIFICATIONS = (("message_received", _("Message received"), _("New message received in one of your threads")),)
 
@@ -54,14 +54,15 @@ class MessagingAppConfig(NotificationsAppConfigBase):
 
         # run in-memory if broker is not available
         # see producer code for synchronous queue
-        url = getattr(settings, 'BROKER_URL', 'memory://')
-        task_serializer = getattr(settings, 'CELERY_TASK_SERIALIZER', 'pickle')
-        broker_transport_options = getattr(settings, 'BROKER_TRANSPORT_OPTIONS', {'socket_timeout': 10})
-        broker_socket_timeout = broker_transport_options['socket_timeout']
+        url = getattr(settings, "BROKER_URL", "memory://")
+        task_serializer = getattr(settings, "CELERY_TASK_SERIALIZER", "pickle")
+        broker_transport_options = getattr(settings, "BROKER_TRANSPORT_OPTIONS", {"socket_timeout": 10})
+        broker_socket_timeout = broker_transport_options["socket_timeout"]
         connection = BrokerConnection(url, connect_timeout=broker_socket_timeout)
 
         from geonode.messaging.notifications import initialize_notification_signal
+
         initialize_notification_signal()
 
 
-default_app_config = 'geonode.messaging.MessagingAppConfig'
+default_app_config = "geonode.messaging.MessagingAppConfig"

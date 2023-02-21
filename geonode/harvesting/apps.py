@@ -25,16 +25,13 @@ from . import config
 
 
 class HarvestingAppConfig(AppConfig):
-
     name = "geonode.harvesting"
 
     def ready(self):
         from geonode.urls import urlpatterns
 
-        urlpatterns += [
-            url(r'^api/v2/', include('geonode.harvesting.api.urls'))
-        ]
-        settings.CELERY_BEAT_SCHEDULE['harvesting-scheduler'] = {
+        urlpatterns += [url(r"^api/v2/", include("geonode.harvesting.api.urls"))]
+        settings.CELERY_BEAT_SCHEDULE["harvesting-scheduler"] = {
             "task": "geonode.harvesting.tasks.harvesting_scheduler",
             "schedule": config.get_setting("HARVESTER_SCHEDULER_FREQUENCY_MINUTES") * 60,
         }

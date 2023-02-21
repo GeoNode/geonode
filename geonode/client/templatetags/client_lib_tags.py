@@ -132,111 +132,65 @@ class GeoNodeClientLibraryTag(template.Node):
         t = None
 
         # LAYERS
-        if self.tag_name == 'get_dataset_list':
-            t = context.template.engine.get_template(
-                hookset.dataset_list_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_detail':
-            t = context.template.engine.get_template('geonode-mapstore-client/legacy/dataset_detail.html')
-        elif self.tag_name == 'get_dataset_new':
-            t = context.template.engine.get_template(
-                hookset.dataset_new_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_view':
-            t = context.template.engine.get_template(
-                hookset.dataset_view_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_edit':
-            t = context.template.engine.get_template(
-                hookset.dataset_edit_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_update':
-            t = context.template.engine.get_template(
-                hookset.dataset_update_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_embed':
-            t = context.template.engine.get_template(
-                hookset.dataset_embed_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_download':
-            t = context.template.engine.get_template(
-                hookset.dataset_download_template(
-                    context=context))
-        elif self.tag_name == 'get_dataset_style_edit':
-            t = context.template.engine.get_template(
-                hookset.dataset_style_edit_template(
-                    context=context))
+        if self.tag_name == "get_dataset_list":
+            t = context.template.engine.get_template(hookset.dataset_list_template(context=context))
+        elif self.tag_name == "get_dataset_detail":
+            t = context.template.engine.get_template("geonode-mapstore-client/legacy/dataset_detail.html")
+        elif self.tag_name == "get_dataset_new":
+            t = context.template.engine.get_template(hookset.dataset_new_template(context=context))
+        elif self.tag_name == "get_dataset_view":
+            t = context.template.engine.get_template(hookset.dataset_view_template(context=context))
+        elif self.tag_name == "get_dataset_edit":
+            t = context.template.engine.get_template(hookset.dataset_edit_template(context=context))
+        elif self.tag_name == "get_dataset_update":
+            t = context.template.engine.get_template(hookset.dataset_update_template(context=context))
+        elif self.tag_name == "get_dataset_embed":
+            t = context.template.engine.get_template(hookset.dataset_embed_template(context=context))
+        elif self.tag_name == "get_dataset_download":
+            t = context.template.engine.get_template(hookset.dataset_download_template(context=context))
+        elif self.tag_name == "get_dataset_style_edit":
+            t = context.template.engine.get_template(hookset.dataset_style_edit_template(context=context))
 
         # MAPS
-        if self.tag_name == 'get_map_list':
-            t = context.template.engine.get_template(
-                hookset.map_list_template(
-                    context=context))
-        elif self.tag_name == 'get_map_detail':
-            t = context.template.engine.get_template(
-                hookset.map_detail_template(
-                    context=context))
-        elif self.tag_name == 'get_map_new':
-            t = context.template.engine.get_template(
-                hookset.map_new_template(
-                    context=context))
-        elif self.tag_name == 'get_map_view':
-            t = context.template.engine.get_template(
-                hookset.map_view_template(
-                    context=context))
-        elif self.tag_name == 'get_map_edit':
-            t = context.template.engine.get_template(
-                hookset.map_edit_template(
-                    context=context))
-        elif self.tag_name == 'get_map_update':
-            t = context.template.engine.get_template(
-                hookset.map_update_template(
-                    context=context))
-        elif self.tag_name == 'get_map_embed':
-            t = context.template.engine.get_template('geonode-mapstore-client/map_embed.html')
-        elif self.tag_name == 'get_map_download':
-            t = context.template.engine.get_template(
-                hookset.map_download_template(
-                    context=context))
+        if self.tag_name == "get_map_list":
+            t = context.template.engine.get_template(hookset.map_list_template(context=context))
+        elif self.tag_name == "get_map_detail":
+            t = context.template.engine.get_template(hookset.map_detail_template(context=context))
+        elif self.tag_name == "get_map_new":
+            t = context.template.engine.get_template(hookset.map_new_template(context=context))
+        elif self.tag_name == "get_map_view":
+            t = context.template.engine.get_template(hookset.map_view_template(context=context))
+        elif self.tag_name == "get_map_edit":
+            t = context.template.engine.get_template(hookset.map_edit_template(context=context))
+        elif self.tag_name == "get_map_update":
+            t = context.template.engine.get_template(hookset.map_update_template(context=context))
+        elif self.tag_name == "get_map_embed":
+            t = context.template.engine.get_template("geonode-mapstore-client/map_embed.html")
+        elif self.tag_name == "get_map_download":
+            t = context.template.engine.get_template(hookset.map_download_template(context=context))
 
         # GEONODE_APPS
-        if self.tag_name == 'get_geoapp_list':
-            t = context.template.engine.get_template(
-                hookset.geoapp_list_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_detail':
-            t = context.template.engine.get_template(
-                hookset.geoapp_detail_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_new':
-            t = context.template.engine.get_template(
-                hookset.geoapp_new_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_view':
-            t = context.template.engine.get_template(
-                hookset.geoapp_view_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_edit':
-            t = context.template.engine.get_template(
-                hookset.geoapp_edit_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_update':
-            t = context.template.engine.get_template(
-                hookset.geoapp_update_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_embed':
-            t = context.template.engine.get_template(
-                hookset.geoapp_embed_template(
-                    context=context))
-        elif self.tag_name == 'get_geoapp_download':
-            t = context.template.engine.get_template(
-                hookset.geoapp_download_template(
-                    context=context))
+        if self.tag_name == "get_geoapp_list":
+            t = context.template.engine.get_template(hookset.geoapp_list_template(context=context))
+        elif self.tag_name == "get_geoapp_detail":
+            t = context.template.engine.get_template(hookset.geoapp_detail_template(context=context))
+        elif self.tag_name == "get_geoapp_new":
+            t = context.template.engine.get_template(hookset.geoapp_new_template(context=context))
+        elif self.tag_name == "get_geoapp_view":
+            t = context.template.engine.get_template(hookset.geoapp_view_template(context=context))
+        elif self.tag_name == "get_geoapp_edit":
+            t = context.template.engine.get_template(hookset.geoapp_edit_template(context=context))
+        elif self.tag_name == "get_geoapp_update":
+            t = context.template.engine.get_template(hookset.geoapp_update_template(context=context))
+        elif self.tag_name == "get_geoapp_embed":
+            t = context.template.engine.get_template(hookset.geoapp_embed_template(context=context))
+        elif self.tag_name == "get_geoapp_download":
+            t = context.template.engine.get_template(hookset.geoapp_download_template(context=context))
 
         if t:
             return t.render(context)
         else:
-            return ''
+            return ""
 
 
 def do_get_client_library_template(parser, token):
@@ -244,30 +198,30 @@ def do_get_client_library_template(parser, token):
     return GeoNodeClientLibraryTag(tag_name, args, kwargs)
 
 
-register.tag('get_dataset_list', do_get_client_library_template)
-register.tag('get_dataset_detail', do_get_client_library_template)
-register.tag('get_dataset_new', do_get_client_library_template)
-register.tag('get_dataset_view', do_get_client_library_template)
-register.tag('get_dataset_edit', do_get_client_library_template)
-register.tag('get_dataset_update', do_get_client_library_template)
-register.tag('get_dataset_embed', do_get_client_library_template)
-register.tag('get_dataset_download', do_get_client_library_template)
-register.tag('get_dataset_style_edit', do_get_client_library_template)
+register.tag("get_dataset_list", do_get_client_library_template)
+register.tag("get_dataset_detail", do_get_client_library_template)
+register.tag("get_dataset_new", do_get_client_library_template)
+register.tag("get_dataset_view", do_get_client_library_template)
+register.tag("get_dataset_edit", do_get_client_library_template)
+register.tag("get_dataset_update", do_get_client_library_template)
+register.tag("get_dataset_embed", do_get_client_library_template)
+register.tag("get_dataset_download", do_get_client_library_template)
+register.tag("get_dataset_style_edit", do_get_client_library_template)
 
-register.tag('get_map_list', do_get_client_library_template)
-register.tag('get_map_detail', do_get_client_library_template)
-register.tag('get_map_new', do_get_client_library_template)
-register.tag('get_map_view', do_get_client_library_template)
-register.tag('get_map_edit', do_get_client_library_template)
-register.tag('get_map_update', do_get_client_library_template)
-register.tag('get_map_embed', do_get_client_library_template)
-register.tag('get_map_download', do_get_client_library_template)
+register.tag("get_map_list", do_get_client_library_template)
+register.tag("get_map_detail", do_get_client_library_template)
+register.tag("get_map_new", do_get_client_library_template)
+register.tag("get_map_view", do_get_client_library_template)
+register.tag("get_map_edit", do_get_client_library_template)
+register.tag("get_map_update", do_get_client_library_template)
+register.tag("get_map_embed", do_get_client_library_template)
+register.tag("get_map_download", do_get_client_library_template)
 
-register.tag('get_geoapp_list', do_get_client_library_template)
-register.tag('get_geoapp_detail', do_get_client_library_template)
-register.tag('get_geoapp_new', do_get_client_library_template)
-register.tag('get_geoapp_view', do_get_client_library_template)
-register.tag('get_geoapp_edit', do_get_client_library_template)
-register.tag('get_geoapp_update', do_get_client_library_template)
-register.tag('get_geoapp_embed', do_get_client_library_template)
-register.tag('get_geoapp_download', do_get_client_library_template)
+register.tag("get_geoapp_list", do_get_client_library_template)
+register.tag("get_geoapp_detail", do_get_client_library_template)
+register.tag("get_geoapp_new", do_get_client_library_template)
+register.tag("get_geoapp_view", do_get_client_library_template)
+register.tag("get_geoapp_edit", do_get_client_library_template)
+register.tag("get_geoapp_update", do_get_client_library_template)
+register.tag("get_geoapp_embed", do_get_client_library_template)
+register.tag("get_geoapp_download", do_get_client_library_template)

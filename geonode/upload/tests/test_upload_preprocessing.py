@@ -39,7 +39,6 @@ from geonode.upload.tasks import finalize_incomplete_session_uploads
 
 
 class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
-
     MOCK_PREFIX = "geonode.upload.upload_preprocessing"
 
     @mock.patch(MOCK_PREFIX + ".convert_kml_ground_overlay_to_geotiff", autospec=True)
@@ -53,7 +52,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
                 file_type=files.get_type("KML Ground Overlay"),
                 auxillary_files=[image_path],
                 sld_files=[],
-                xml_files=[]
+                xml_files=[],
             )
         ]
         spatial_files = files.SpatialFiles(dirname, data)
@@ -75,16 +74,13 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
             </kml>
         """.strip()
         kml_doc, ns = get_kml_doc(kml_bytes.encode())
-        result = upload_preprocessing._extract_bbox_param(
-            kml_doc, ns, "north")
+        result = upload_preprocessing._extract_bbox_param(kml_doc, ns, "north")
         self.assertEqual(result, fake_north)
 
     @mock.patch(MOCK_PREFIX + ".subprocess.check_output", autospec=True)
     @mock.patch(MOCK_PREFIX + ".get_kml_doc", autospec=True)
     @mock.patch(MOCK_PREFIX + "._extract_bbox_param", autospec=True)
-    def test_convert_kml_ground_overlay_to_geotiff(self, mock_extract_param,
-                                                   mock_get_kml_doc,
-                                                   mock_subprocess):
+    def test_convert_kml_ground_overlay_to_geotiff(self, mock_extract_param, mock_get_kml_doc, mock_subprocess):
         fake_other_file_path = "the_image.png"
         fake_kml_bytes = "nothing"
         mock_get_kml_doc.return_value = ("not_relevant", "for_this_test")
@@ -92,25 +88,29 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
         fake_south = "2"
         fake_east = "3"
         fake_west = "4"
-        mock_extract_param.side_effect = [fake_west, fake_north,
-                                          fake_east, fake_south]
+        mock_extract_param.side_effect = [fake_west, fake_north, fake_east, fake_south]
         mock_open = mock.mock_open(read_data=fake_kml_bytes)
         with mock.patch(self.MOCK_PREFIX + ".open", mock_open):
-            upload_preprocessing.convert_kml_ground_overlay_to_geotiff(
-                "fake_kml_path",
-                fake_other_file_path
+            upload_preprocessing.convert_kml_ground_overlay_to_geotiff("fake_kml_path", fake_other_file_path)
+            mock_subprocess.assert_called_with(
+                [
+                    "gdal_translate",
+                    "-of",
+                    "GTiff",
+                    "-a_srs",
+                    "EPSG:4326",
+                    "-a_ullr",
+                    fake_west,
+                    fake_north,
+                    fake_east,
+                    fake_south,
+                    fake_other_file_path,
+                    os.path.splitext(fake_other_file_path)[0] + ".tif",
+                ]
             )
-            mock_subprocess.assert_called_with([
-                "gdal_translate",
-                "-of", "GTiff",
-                "-a_srs", "EPSG:4326",
-                "-a_ullr", fake_west, fake_north, fake_east, fake_south,
-                fake_other_file_path,
-                os.path.splitext(fake_other_file_path)[0] + ".tif"
-            ])
 
     def test_only_expected_uploads_are_deleted(self):
-        UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, 'UPLOAD_SESSION_EXPIRY_HOURS', 24)
+        UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, "UPLOAD_SESSION_EXPIRY_HOURS", 24)
         expiry_time = now() - timedelta(hours=UPLOAD_SESSION_EXPIRY_HOURS)
         minutes_before = expiry_time - timedelta(minutes=2)
         minutes_after = expiry_time - timedelta(minutes=-2)
@@ -125,7 +125,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
             Upload.objects.create(state=enumerations.STATE_PENDING),
             Upload.objects.create(state=enumerations.STATE_READY),
             Upload.objects.create(state=enumerations.STATE_RUNNING),
-            Upload.objects.create(state=enumerations.STATE_WAITING)
+            Upload.objects.create(state=enumerations.STATE_WAITING),
         ]
         survived_upload_ids = {u.id for u in uploads_to_survive}
 
@@ -137,7 +137,7 @@ class UploadPreprocessingTestCase(GeoNodeBaseTestSupport):
             Upload.objects.create(state=enumerations.STATE_PENDING, date=minutes_before),
             Upload.objects.create(state=enumerations.STATE_READY, date=minutes_before),
             Upload.objects.create(state=enumerations.STATE_RUNNING, date=minutes_before),
-            Upload.objects.create(state=enumerations.STATE_WAITING, date=minutes_before)
+            Upload.objects.create(state=enumerations.STATE_WAITING, date=minutes_before),
         ]
         delete_upload_ids = {u.id for u in uploads_to_be_deleted}
 

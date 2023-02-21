@@ -23,11 +23,14 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
-from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
+from geonode.security.permissions import (
+    BASIC_MANAGE_PERMISSIONS,
+    DOWNLOAD_PERMISSIONS,
+    EDIT_PERMISSIONS,
+    VIEW_PERMISSIONS,
+)
 from distutils.util import strtobool
-from geonode.security.utils import (
-    get_users_with_perms,
-    get_visible_resources)
+from geonode.security.utils import get_users_with_perms, get_visible_resources
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
@@ -39,13 +42,13 @@ logger = logging.getLogger(__name__)
 
 class IsSelf(permissions.BasePermission):
 
-    """ Grant permission only if the current instance is the request user.
+    """Grant permission only if the current instance is the request user.
     Used to allow users to edit their own account, nothing to others (even
     superusers).
     """
 
     def has_permission(self, request, view):
-        """ Always return False here.
+        """Always return False here.
         The fine-grained permissions are handled in has_object_permission().
         """
         return False
@@ -60,7 +63,7 @@ class IsSelf(permissions.BasePermission):
 
 class IsSelfOrReadOnly(IsSelf):
 
-    """ Grant permissions if instance *IS* the request user, or read-only.
+    """Grant permissions if instance *IS* the request user, or read-only.
     Used to allow users to edit their own account, and others to read.
     """
 
@@ -73,7 +76,7 @@ class IsSelfOrReadOnly(IsSelf):
 
 class IsSelfOrAdmin(IsSelf):
 
-    """ Grant R/W to self and superusers/staff members. Deny others. """
+    """Grant R/W to self and superusers/staff members. Deny others."""
 
     def has_permission(self, request, view):
         user = request.user
@@ -92,7 +95,7 @@ class IsSelfOrAdmin(IsSelf):
 
 class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
 
-    """ Grant R/W to self and superusers/staff members, R/O to others. """
+    """Grant R/W to self and superusers/staff members, R/O to others."""
 
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -109,7 +112,7 @@ class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
 
 class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
 
-    """ Grant R/W to self and superusers/staff members, R/O to auth. """
+    """Grant R/W to self and superusers/staff members, R/O to auth."""
 
     def has_object_permission(self, request, view, obj):
         user = request.user
@@ -136,9 +139,9 @@ class IsOwnerOrAdmin(permissions.BasePermission):
         _request_matches = False
         if isinstance(obj, get_user_model()) and obj == request.user:
             _request_matches = True
-        elif hasattr(obj, 'owner'):
+        elif hasattr(obj, "owner"):
             _request_matches = obj.owner == request.user
-        elif hasattr(obj, 'user'):
+        elif hasattr(obj, "user"):
             _request_matches = obj.user == request.user
 
         if not _request_matches:
@@ -167,7 +170,7 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.method in ['POST', 'DELETE']:
+        if request.method in ["POST", "DELETE"]:
             user = request.user
             return user and (user.is_superuser or user.is_staff)
 
@@ -184,7 +187,7 @@ class IsManagerEditOrAdmin(permissions.BasePermission):
             return True
 
         is_group_manager = user and isinstance(obj, GroupProfile) and obj.user_is_role(user, "manager")
-        if is_group_manager and request.method == 'PATCH':
+        if is_group_manager and request.method == "PATCH":
             return True
 
         return False
@@ -197,7 +200,6 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-
         try:
             metadata_only = strtobool(request.query_params.get("filter{metadata_only}", "None"))
         except Exception:
@@ -209,17 +211,17 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
             metadata_only=metadata_only,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 
 
 class UserHasPerms(DjangoModelPermissions):
     perms_map = {
-        'GET': [f'base.{x}' for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
-        'POST': ['base.add_resourcebase'] + [f'base.{x}' for x in EDIT_PERMISSIONS],
-        'PUT': [f'base.{x}' for x in EDIT_PERMISSIONS],
-        'PATCH': [f'base.{x}' for x in EDIT_PERMISSIONS],
-        'DELETE': [f'base.{x}' for x in BASIC_MANAGE_PERMISSIONS],
+        "GET": [f"base.{x}" for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
+        "POST": ["base.add_resourcebase"] + [f"base.{x}" for x in EDIT_PERMISSIONS],
+        "PUT": [f"base.{x}" for x in EDIT_PERMISSIONS],
+        "PATCH": [f"base.{x}" for x in EDIT_PERMISSIONS],
+        "DELETE": [f"base.{x}" for x in BASIC_MANAGE_PERMISSIONS],
     }
 
     def __init__(self, perms_dict={}):
@@ -230,21 +232,26 @@ class UserHasPerms(DjangoModelPermissions):
 
     def has_permission(self, request, view):
         from geonode.base.models import ResourceBase
+
         queryset = self._queryset(view)
 
         if request.user.is_superuser:
             return True
 
-        if view.kwargs.get('pk'):
+        if view.kwargs.get("pk"):
             # if a single resource is called, we check the perms for that resource
-            res = get_object_or_404(ResourceBase, pk=view.kwargs.get('pk'))
+            res = get_object_or_404(ResourceBase, pk=view.kwargs.get("pk"))
             # if the request is for a single resource, we take the specific or the default. If none is defined we keep the original one defined above
-            resource_type_specific_perms = self.perms_dict.get(res.get_real_instance().resource_type, self.perms_dict.get('default', {}))
-            perms = resource_type_specific_perms.get(request.method, []) or self.get_required_permissions(request.method, queryset.model)
+            resource_type_specific_perms = self.perms_dict.get(
+                res.get_real_instance().resource_type, self.perms_dict.get("default", {})
+            )
+            perms = resource_type_specific_perms.get(request.method, []) or self.get_required_permissions(
+                request.method, queryset.model
+            )
 
             # getting the user permission for that resource
             resource_perms = list(res.get_user_perms(request.user))
-            if getattr(res, 'get_real_instance', None):
+            if getattr(res, "get_real_instance", None):
                 resource_perms.extend(list(res.get_real_instance().get_user_perms(request.user)))
 
             groups = get_groups_with_perms(res, attach_perms=True)
@@ -254,12 +261,12 @@ class UserHasPerms(DjangoModelPermissions):
                 if group.user_set.filter(username=request.user).exists():
                     resource_perms = list(chain(resource_perms, perm))
 
-            if request.user.has_perm('base.add_resourcebase'):
-                resource_perms.append('add_resourcebase')
+            if request.user.has_perm("base.add_resourcebase"):
+                resource_perms.append("add_resourcebase")
             # merging all available permissions into a single list
             available_perms = list(set(resource_perms))
             # fixup the permissions name
-            perms_without_base = [x.replace('base.', '') for x in perms]
+            perms_without_base = [x.replace("base.", "") for x in perms]
             # if at least one of the permissions is available the request is True
             rule = resource_type_specific_perms.get("rule", any)
             return rule([_perm in available_perms for _perm in perms_without_base])
@@ -273,7 +280,9 @@ class UserHasPerms(DjangoModelPermissions):
             rule = _default_defined_perms.get("rule", any)
             return rule([request.user.has_perm(_perm) for _perm in _defined_perms])
 
-        perms = self.perms_dict.get(request.method, None) or self.get_required_permissions(request.method, queryset.model)
+        perms = self.perms_dict.get(request.method, None) or self.get_required_permissions(
+            request.method, queryset.model
+        )
 
         # check if the user have one of the perms in all the resource available
         return get_objects_for_user(request.user, perms).exists()

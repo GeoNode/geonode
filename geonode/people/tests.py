@@ -35,7 +35,6 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod

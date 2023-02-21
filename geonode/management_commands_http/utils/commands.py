@@ -20,10 +20,7 @@ import io
 import logging
 
 from django.conf import settings
-from django.core.management import (
-    get_commands,
-    load_command_class
-)
+from django.core.management import get_commands, load_command_class
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +39,7 @@ def get_management_commands_apps():
     """
     mngmt_commands = get_commands()
     command_names = get_management_commands()
-    available_commands = {
-        name: mngmt_commands[name]
-        for name in command_names
-    }
+    available_commands = {name: mngmt_commands[name] for name in command_names}
     return available_commands
 
 

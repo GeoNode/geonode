@@ -38,21 +38,13 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.social.templatetags.social_tags import activity_item
 from geonode.layers.models import Dataset
-from geonode.base.populate_test_data import (
-    all_public,
-    create_models,
-    remove_models)
+from geonode.base.populate_test_data import all_public, create_models, remove_models
 
 
 class RecentActivityTest(GeoNodeBaseTestSupport):
-
     integration = True
 
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
     def setUpClass(cls):
@@ -71,7 +63,7 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         registry.register(Dataset)
         registry.register(get_user_model())
         create_dataset_data()
-        self.user = get_user_model().objects.filter(username='admin')[0]
+        self.user = get_user_model().objects.filter(username="admin")[0]
 
     def test_dataset_activity(self):
         """
@@ -90,20 +82,20 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         data = action.data
         if isinstance(data, (str, bytes)):
             data = json.loads(data)
-        self.assertEqual(data.get('raw_action'), 'created')
-        self.assertEqual(data.get('object_name'), dataset.name)
+        self.assertEqual(data.get("raw_action"), "created")
+        self.assertEqual(data.get("object_name"), dataset.name)
         self.assertTrue(isinstance(action.action_object, Dataset))
         self.assertIsNone(action.target)
 
         # Test the  activity_item template tag
         template_tag = activity_item(Action.objects.first())
 
-        self.assertEqual(template_tag.get('username'), action.actor.username)
-        self.assertEqual(template_tag.get('object_name'), dataset.name)
-        self.assertEqual(template_tag.get('actor'), action.actor)
-        self.assertEqual(template_tag.get('verb'), _('uploaded'))
-        self.assertEqual(template_tag.get('action'), action)
-        self.assertEqual(template_tag.get('activity_class'), 'upload')
+        self.assertEqual(template_tag.get("username"), action.actor.username)
+        self.assertEqual(template_tag.get("object_name"), dataset.name)
+        self.assertEqual(template_tag.get("actor"), action.actor)
+        self.assertEqual(template_tag.get("verb"), _("uploaded"))
+        self.assertEqual(template_tag.get("action"), action)
+        self.assertEqual(template_tag.get("activity_class"), "upload")
 
         dataset_name = dataset.name
         dataset.delete()
@@ -113,8 +105,8 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         data = action.data
         if isinstance(data, (str, bytes)):
             data = json.loads(data)
-        self.assertEqual(data.get('raw_action'), 'deleted')
-        self.assertEqual(data.get('object_name'), dataset_name)
+        self.assertEqual(data.get("raw_action"), "deleted")
+        self.assertEqual(data.get("object_name"), dataset_name)
 
         # objects are literally deleted so no action object or target should be related to a delete action.
         self.assertIsNone(action.action_object)
@@ -125,17 +117,17 @@ class RecentActivityTest(GeoNodeBaseTestSupport):
         template_tag = activity_item(action)
 
         # Make sure the 'delete' class is returned
-        self.assertEqual(template_tag.get('activity_class'), 'delete')
+        self.assertEqual(template_tag.get("activity_class"), "delete")
 
         # The layer's name should be returned
-        self.assertEqual(template_tag.get('object_name'), dataset_name)
-        self.assertEqual(template_tag.get('verb'), _('deleted'))
+        self.assertEqual(template_tag.get("object_name"), dataset_name)
+        self.assertEqual(template_tag.get("verb"), _("deleted"))
 
     def test_get_recent_activities(self):
-        url = reverse('recent-activity')
+        url = reverse("recent-activity")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsNotNone(response.context_data['action_list_geoapps'])
-        self.assertIsNotNone(response.context_data['action_list_datasets'])
-        self.assertIsNotNone(response.context_data['action_list_maps'])
-        self.assertIsNotNone(response.context_data['action_list_documents'])
+        self.assertIsNotNone(response.context_data["action_list_geoapps"])
+        self.assertIsNotNone(response.context_data["action_list_datasets"])
+        self.assertIsNotNone(response.context_data["action_list_maps"])
+        self.assertIsNotNone(response.context_data["action_list_documents"])

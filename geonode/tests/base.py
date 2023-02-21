@@ -19,16 +19,13 @@
 import logging
 import faulthandler
 
-from django.test.testcases import (
-    TestCase,
-    SimpleTestCase,
-    LiveServerTestCase)
+from django.test.testcases import TestCase, SimpleTestCase, LiveServerTestCase
 
 try:
     from django.utils.decorators import classproperty
 except Exception:
-    class classproperty:
 
+    class classproperty:
         def __init__(self, method=None):
             self.fget = method
 
@@ -39,6 +36,7 @@ except Exception:
             self.fget = method
             return self
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -47,16 +45,11 @@ class GeoNodeBaseSimpleTestSupport(SimpleTestCase):
 
 
 class GeoNodeBaseTestSupport(TestCase):
-
     type = None
     obj_ids = []
     integration = False
 
-    fixtures = [
-        'initial_data.json',
-        'group_test_data.json',
-        'default_oauth_apps.json'
-    ]
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classproperty
     def get_obj_ids(cls):
@@ -75,8 +68,6 @@ class GeoNodeBaseTestSupport(TestCase):
         faulthandler.enable()
 
 
-class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport,
-                             LiveServerTestCase):
-
+class GeoNodeLiveTestSupport(GeoNodeBaseTestSupport, LiveServerTestCase):
     integration = True
     port = 8000

@@ -29,7 +29,7 @@ class DatasetSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        permitted = get_objects_for_user(AnonymousUser(), 'base.view_resourcebase')
+        permitted = get_objects_for_user(AnonymousUser(), "base.view_resourcebase")
         return Dataset.objects.filter(id__in=permitted)
 
     def lastmod(self, obj):
@@ -41,5 +41,5 @@ class MapSitemap(Sitemap):
     priority = 0.5
 
     def items(self):
-        permitted = get_objects_for_user(AnonymousUser(), 'base.view_resourcebase')
+        permitted = get_objects_for_user(AnonymousUser(), "base.view_resourcebase")
         return Map.objects.filter(id__in=permitted)

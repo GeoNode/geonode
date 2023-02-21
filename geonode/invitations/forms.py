@@ -29,13 +29,10 @@ Invitation = get_invitation_model()
 
 
 class CleanEmailMixin:
-
     def validate_invitation(self, email):
-        if Invitation.objects.all_valid().filter(
-                email__iexact=email, accepted=False):
+        if Invitation.objects.all_valid().filter(email__iexact=email, accepted=False):
             raise AlreadyInvited
-        elif Invitation.objects.filter(
-                email__iexact=email, accepted=True):
+        elif Invitation.objects.filter(email__iexact=email, accepted=True):
             raise AlreadyAccepted
         elif get_user_model().objects.filter(email__iexact=email):
             raise UserRegisteredEmail
@@ -66,12 +63,9 @@ class CleanEmailMixin:
 
 
 class GeoNodeInviteForm(forms.Form, CleanEmailMixin):
-
     email = forms.CharField(
-        label=_("E-mail"),
-        required=True,
-        widget=forms.TextInput(
-            attrs={"type": "text", "size": "1200"}), initial="")
+        label=_("E-mail"), required=True, widget=forms.TextInput(attrs={"type": "text", "size": "1200"}), initial=""
+    )
 
     def save(self, emails):
         invitations = []

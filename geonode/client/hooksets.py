@@ -20,7 +20,6 @@ import json
 
 
 class BaseHookSet:
-
     # Layers
     def dataset_list_template(self, context=None):
         return NotImplemented
@@ -138,5 +137,5 @@ class BaseHookSet:
 
     def metadata_update_redirect(self, url, request=None):
         if "metadata_uri" in url:
-            return url.replace('/metadata_uri', '')
-        return url.replace('/metadata', '')
+            return url.replace("/metadata_uri", "")
+        return url.replace("/metadata", "")

@@ -33,7 +33,6 @@ logger = logging.getLogger(__name__)
 
 
 class MapsApiTests(APITestCase):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -162,10 +161,8 @@ class MapsApiTests(APITestCase):
 
         expected_error = {
             "success": False,
-            "errors": [
-                "serializer instance and object are different"
-            ],
-            "code": "maps_exception"
+            "errors": ["serializer instance and object are different"],
+            "code": "maps_exception",
         }
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected_error, response.json())
@@ -193,7 +190,7 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
-        self.assertIsNotNone(response.data["map"]['thumbnail_url'])
+        self.assertIsNotNone(response.data["map"]["thumbnail_url"])
 
 
 DUMMY_MAPDATA = {

@@ -39,7 +39,6 @@ from geonode.utils import forward_mercator, inverse_mercator
 
 
 class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
-
     GEOSERVER = False
 
     def setUp(self):
@@ -56,71 +55,67 @@ class GeoNodeSmokeTests(GeoNodeBaseTestSupport):
     # Basic Pages #
 
     def test_home_page(self):
-        '''Test if the homepage renders.'''
-        response = self.client.get(reverse('home'))
+        """Test if the homepage renders."""
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
 
     def test_help_page(self):
-        '''Test help page renders.'''
+        """Test help page renders."""
 
-        response = self.client.get(reverse('help'))
+        response = self.client.get(reverse("help"))
         self.assertEqual(response.status_code, 200)
 
     def test_developer_page(self):
-        '''Test help page renders.'''
+        """Test help page renders."""
 
-        response = self.client.get(reverse('help'))
+        response = self.client.get(reverse("help"))
         self.assertEqual(response.status_code, 200)
 
     # Dataset Pages #
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_acls(self):
-        'Test if the data/acls endpoint renders.'
-        response = self.client.get(reverse('dataset_acls'))
+        "Test if the data/acls endpoint renders."
+        response = self.client.get(reverse("dataset_acls"))
         self.assertEqual(response.status_code, 401)
 
     # People Pages #
 
     def test_profile_list(self):
-        '''Test the profiles page renders.'''
+        """Test the profiles page renders."""
 
-        response = self.client.get(reverse('profile_browse'))
+        response = self.client.get(reverse("profile_browse"))
         self.assertEqual(response.status_code, 200)
 
     @override_settings(USE_GEOSERVER=False)
     def test_profiles(self):
-        '''Test that user profile pages render.'''
-        self.client.login(username='admin', password='admin')
-        response = self.client.get(reverse('profile_detail', args=['admin']))
+        """Test that user profile pages render."""
+        self.client.login(username="admin", password="admin")
+        response = self.client.get(reverse("profile_detail", args=["admin"]))
         self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse('profile_detail', args=['norman']))
+        response = self.client.get(reverse("profile_detail", args=["norman"]))
         self.assertEqual(response.status_code, 200)
-        response = self.client.get(
-            reverse(
-                'profile_detail',
-                args=['a.fancy.username.123']))
+        response = self.client.get(reverse("profile_detail", args=["a.fancy.username.123"]))
         self.assertEqual(response.status_code, 404)
 
     def test_csw_endpoint(self):
-        '''Test that the CSW endpoint is correctly configured.'''
-        response = self.client.get(reverse('csw_global_dispatch'))
+        """Test that the CSW endpoint is correctly configured."""
+        response = self.client.get(reverse("csw_global_dispatch"))
         self.assertEqual(response.status_code, 200)
 
     def test_opensearch_description(self):
-        '''Test that the local OpenSearch endpoint is correctly configured.'''
-        response = self.client.get(reverse('opensearch_dispatch'))
+        """Test that the local OpenSearch endpoint is correctly configured."""
+        response = self.client.get(reverse("opensearch_dispatch"))
         self.assertEqual(response.status_code, 200)
 
     # Settings Tests #
 
     def test_settings_geoserver_location(self):
-        '''Ensure GEOSERVER_LOCATION variable ends with /'''
-        self.assertTrue(settings.GEOSERVER_LOCATION.endswith('/'))
+        """Ensure GEOSERVER_LOCATION variable ends with /"""
+        self.assertTrue(settings.GEOSERVER_LOCATION.endswith("/"))
 
 
 class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
-
     def setUp(self):
         pass
 
@@ -137,44 +132,22 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
         ne = forward_mercator((180, 90))
         sw = forward_mercator((-180, -90))
 
-        inf_test = forward_mercator(
-            (-8.988465674311579e+307, -8.988465674311579e+307)
-        )
+        inf_test = forward_mercator((-8.988465674311579e307, -8.988465674311579e307))
 
-        self.assertEqual(inf_test[0], float('-inf'))
-        self.assertEqual(inf_test[1], float('-inf'))
+        self.assertEqual(inf_test[0], float("-inf"))
+        self.assertEqual(inf_test[1], float("-inf"))
 
         self.assertEqual(round(arctic[0]), 0, "Arctic longitude is correct")
-        self.assertEqual(
-            round(
-                arctic[1]),
-            19971869,
-            "Arctic latitude is correct")
+        self.assertEqual(round(arctic[1]), 19971869, "Arctic latitude is correct")
 
-        self.assertEqual(
-            round(
-                antarctic[0]),
-            0,
-            "Antarctic longitude is correct")
-        self.assertEqual(
-            round(
-                antarctic[1]), -19971869, "Antarctic latitude is correct")
+        self.assertEqual(round(antarctic[0]), 0, "Antarctic longitude is correct")
+        self.assertEqual(round(antarctic[1]), -19971869, "Antarctic latitude is correct")
 
-        self.assertEqual(
-            round(
-                hawaii[0]), -20037508, "Hawaiian lon is correct")
+        self.assertEqual(round(hawaii[0]), -20037508, "Hawaiian lon is correct")
         self.assertEqual(round(hawaii[1]), 0, "Hawaiian lat is correct")
 
-        self.assertEqual(
-            round(
-                phillipines[0]),
-            20037508,
-            "Phillipines lon is correct")
-        self.assertEqual(
-            round(
-                phillipines[1]),
-            0,
-            "Phillipines lat is correct")
+        self.assertEqual(round(phillipines[0]), 20037508, "Phillipines lon is correct")
+        self.assertEqual(round(phillipines[1]), 0, "Phillipines lat is correct")
 
         self.assertEqual(round(ne[0]), 20037508, "NE lon is correct")
         self.assertTrue(ne[1] > 50000000, "NE lat is correct")
@@ -183,8 +156,8 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
         self.assertTrue(math.isinf(sw[1]), "SW lat is correct")
 
         # verify behavior for invalid y values
-        self.assertEqual(float('-inf'), forward_mercator((0, 135))[1])
-        self.assertEqual(float('-inf'), forward_mercator((0, -135))[1])
+        self.assertEqual(float("-inf"), forward_mercator((0, 135))[1])
+        self.assertEqual(float("-inf"), forward_mercator((0, -135))[1])
 
     def test_inverse_mercator(self):
         arctic = inverse_mercator(forward_mercator((0, 85)))
@@ -194,39 +167,17 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
         ne = inverse_mercator(forward_mercator((180, 90)))
         sw = inverse_mercator(forward_mercator((-180, -90)))
 
-        self.assertAlmostEqual(
-            arctic[0],
-            0.0,
-            places=3,
-            msg="Arctic longitude is correct")
-        self.assertAlmostEqual(
-            arctic[1],
-            85.0,
-            places=3,
-            msg="Arctic latitude is correct")
+        self.assertAlmostEqual(arctic[0], 0.0, places=3, msg="Arctic longitude is correct")
+        self.assertAlmostEqual(arctic[1], 85.0, places=3, msg="Arctic latitude is correct")
 
-        self.assertAlmostEqual(
-            antarctic[0],
-            0.0,
-            places=3,
-            msg="Antarctic longitude is correct")
-        self.assertAlmostEqual(
-            antarctic[1], -85.0, places=3, msg="Antarctic latitude is correct")
+        self.assertAlmostEqual(antarctic[0], 0.0, places=3, msg="Antarctic longitude is correct")
+        self.assertAlmostEqual(antarctic[1], -85.0, places=3, msg="Antarctic latitude is correct")
 
-        self.assertAlmostEqual(
-            hawaii[0], -180.0, msg="Hawaiian lon is correct")
+        self.assertAlmostEqual(hawaii[0], -180.0, msg="Hawaiian lon is correct")
         self.assertAlmostEqual(hawaii[1], 0.0, places=3, msg="Hawaiian lat is correct")
 
-        self.assertAlmostEqual(
-            phillipines[0],
-            180.0,
-            places=3,
-            msg="Phillipines lon is correct")
-        self.assertAlmostEqual(
-            phillipines[1],
-            0.0,
-            places=3,
-            msg="Phillipines lat is correct")
+        self.assertAlmostEqual(phillipines[0], 180.0, places=3, msg="Phillipines lon is correct")
+        self.assertAlmostEqual(phillipines[1], 0.0, places=3, msg="Phillipines lat is correct")
 
         self.assertAlmostEqual(ne[0], 180.0, places=3, msg="NE lon is correct")
         self.assertAlmostEqual(ne[1], 90.0, places=3, msg="NE lat is correct")
@@ -237,6 +188,7 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
     def test_split_query(self):
         query = 'alpha "beta gamma"   delta  '
         from geonode.utils import _split_query
+
         keywords = _split_query(query)
         self.assertEqual(keywords[0], "alpha")
         self.assertEqual(keywords[1], "beta gamma")
@@ -244,7 +196,6 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
 
 
 class PermissionViewTests(GeoNodeBaseTestSupport):
-
     def setUp(self):
         pass
 
@@ -253,36 +204,27 @@ class PermissionViewTests(GeoNodeBaseTestSupport):
 
 
 class UserMessagesTestCase(GeoNodeBaseTestSupport):
-
     def setUp(self):
         super().setUp()
 
         self.user_password = "somepass"
         self.first_user = get_user_model().objects.create_user(
-            "someuser",
-            "someuser@fakemail.com",
-            self.user_password,
-            is_active=True)
+            "someuser", "someuser@fakemail.com", self.user_password, is_active=True
+        )
         self.second_user = get_user_model().objects.create_user(
-            "otheruser",
-            "otheruser@fakemail.com",
-            self.user_password,
-            is_active=True)
+            "otheruser", "otheruser@fakemail.com", self.user_password, is_active=True
+        )
         first_message = Message.objects.new_message(
-            from_user=self.first_user,
-            subject="testing message",
-            content="some content",
-            to_users=[self.second_user]
+            from_user=self.first_user, subject="testing message", content="some content", to_users=[self.second_user]
         )
         self.thread = first_message.thread
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_inbox_renders(self):
-        logged_in = self.client.login(
-            username=self.first_user.username, password=self.user_password)
+        logged_in = self.client.login(username=self.first_user.username, password=self.user_password)
         self.assertTrue(logged_in)
         session = self.client.session
-        session['access_token'] = get_or_create_token(self.first_user)
+        session["access_token"] = get_or_create_token(self.first_user)
         session.save()
         response = self.client.get(reverse("messages_inbox"))
         self.assertTemplateUsed(response, "user_messages/inbox.html")
@@ -293,20 +235,17 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         account_login_url = reverse("account_login")
         self.assertRedirects(
-            response,
-            f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
+            response, f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
         )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_new_message_renders(self):
-        logged_in = self.client.login(
-            username=self.first_user.username, password=self.user_password)
+        logged_in = self.client.login(username=self.first_user.username, password=self.user_password)
         self.assertTrue(logged_in)
         session = self.client.session
-        session['access_token'] = get_or_create_token(self.first_user)
+        session["access_token"] = get_or_create_token(self.first_user)
         session.save()
-        response = self.client.get(
-            reverse("message_create", args=(self.first_user.id,)))
+        response = self.client.get(reverse("message_create", args=(self.first_user.id,)))
         self.assertTemplateUsed(response, "user_messages/message_create.html")
         self.assertEqual(response.status_code, 200)
 
@@ -315,20 +254,17 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         account_login_url = reverse("account_login")
         self.assertRedirects(
-            response,
-            f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
+            response, f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
         )
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_thread_detail_renders(self):
-        logged_in = self.client.login(
-            username=self.first_user.username, password=self.user_password)
+        logged_in = self.client.login(username=self.first_user.username, password=self.user_password)
         self.assertTrue(logged_in)
         session = self.client.session
-        session['access_token'] = get_or_create_token(self.first_user)
+        session["access_token"] = get_or_create_token(self.first_user)
         session.save()
-        response = self.client.get(
-            reverse("messages_thread_detail", args=(self.thread.id,)))
+        response = self.client.get(reverse("messages_thread_detail", args=(self.thread.id,)))
         self.assertTemplateUsed(response, "user_messages/thread_detail.html")
         self.assertEqual(response.status_code, 200)
 
@@ -337,12 +273,11 @@ class UserMessagesTestCase(GeoNodeBaseTestSupport):
         response = self.client.get(target_url)
         account_login_url = reverse("account_login")
         self.assertRedirects(
-            response,
-            f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
+            response, f"{settings.SITEURL[:-1]}{account_login_url}?next=http%3A//testserver{target_url}"
         )
 
 
-'''
+"""
 Smoke test to explain how the new function for multiple storer will work
 Is required to define a fuction that takes 2 parametersand return 2 parameters.
             Parameters:
@@ -351,12 +286,12 @@ Is required to define a fuction that takes 2 parametersand return 2 parameters.
 
             Returns:
                     None
-'''
+"""
 
 
 class TestMetadataStorers(TestCase):
     def setUp(self):
-        self.dataset = create_single_dataset('metadata-storer')
+        self.dataset = create_single_dataset("metadata-storer")
         self.uuid = self.dataset.uuid
         self.abstract = self.dataset.abstract
         self.custom = {
@@ -364,10 +299,10 @@ class TestMetadataStorers(TestCase):
             "second-stage": {"title": "Updated Title", "abstract": "another update"},
         }
 
-    @override_settings(METADATA_STORERS=['geonode.tests.smoke.dummy_metadata_storer'])
+    @override_settings(METADATA_STORERS=["geonode.tests.smoke.dummy_metadata_storer"])
     def test_will_use_single_storers_defined(self):
         metadata_storers(self.dataset, self.custom)
-        self.assertEqual('abc123cfde', self.dataset.uuid)
+        self.assertEqual("abc123cfde", self.dataset.uuid)
         self.assertEqual("updated abstract", self.dataset.abstract)
 
     @override_settings(
@@ -378,23 +313,23 @@ class TestMetadataStorers(TestCase):
     )
     def test_will_use_multiple_storers_defined(self):
         dataset = metadata_storers(self.dataset, self.custom)
-        self.assertEqual('abc123cfde', dataset.uuid)
+        self.assertEqual("abc123cfde", dataset.uuid)
         self.assertEqual("another update", dataset.abstract)
         self.assertEqual("Updated Title", dataset.title)
 
 
-'''
+"""
 Just a dummy function required for the smoke test above
-'''
+"""
 
 
 def dummy_metadata_storer(dataset, custom):
-    if custom.get('processes', None):
-        for key, value in custom['processes'].items():
+    if custom.get("processes", None):
+        for key, value in custom["processes"].items():
             setattr(dataset, key, value)
 
 
 def dummy_metadata_storer2(dataset, custom):
-    if custom.get('second-stage', None):
-        for key, value in custom['second-stage'].items():
+    if custom.get("second-stage", None):
+        for key, value in custom["second-stage"].items():
             setattr(dataset, key, value)
