@@ -361,10 +361,7 @@ def download_resource_file(url: str, target_name: str) -> Path:
 def _get_file_name(
     resource_info: HarvestedResourceInfo,
 ) -> typing.Optional[str]:
-    file_extension = {
-        "geotiff": ".tiff",
-        "shapefile": ".zip",
-    }.get(
+    file_extension = {"geotiff": ".tiff", "shapefile": ".zip"}.get(
         resource_info.resource_descriptor.identification.native_format,
         f".{resource_info.resource_descriptor.identification.native_format}",
     )

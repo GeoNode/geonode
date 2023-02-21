@@ -577,10 +577,12 @@ class LayerTests(GeoNodeBaseTestSupport):
                 "PRINT_NG_ENABLED": True,
                 "GEONODE_SECURITY_ENABLED": True,
                 "GEOFENCE_SECURITY_ENABLED": True,
+                "GEOFENCE_TIMEOUT": 60,
                 "WMST_ENABLED": False,
                 "BACKEND_WRITE_ENABLED": True,
                 "WPS_ENABLED": False,
                 "DATASTORE": "",
+                "TIMEOUT": 60,
             }
         }
 

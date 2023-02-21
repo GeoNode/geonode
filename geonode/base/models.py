@@ -1782,6 +1782,34 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def language_title(self):
         return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
+    def _set_poc(self, poc):
+        # reset any poc assignation to this resource
+        ContactRole.objects.filter(role="pointOfContact", resource=self).delete()
+        # create the new assignation
+        ContactRole.objects.create(role="pointOfContact", resource=self, contact=poc)
+
+    def _get_poc(self):
+        try:
+            the_poc = ContactRole.objects.get(role="pointOfContact", resource=self).contact
+        except ContactRole.DoesNotExist:
+            the_poc = None
+        return the_poc
+
+    poc = property(_get_poc, _set_poc)
+
+    def _set_metadata_author(self, metadata_author):
+        # reset any metadata_author assignation to this resource
+        ContactRole.objects.filter(role="author", resource=self).delete()
+        # create the new assignation
+        ContactRole.objects.create(role="author", resource=self, contact=metadata_author)
+
+    def _get_metadata_author(self):
+        try:
+            the_ma = ContactRole.objects.get(role="author", resource=self).contact
+        except ContactRole.DoesNotExist:
+            the_ma = None
+        return the_ma
+
     def add_missing_metadata_author_or_poc(self):
         """
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing

@@ -45,7 +45,7 @@ from geonode.maps.models import Map
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base import enumerations
-from geonode.groups.models import GroupProfile
+from geonode.groups.models import GroupMember, GroupProfile
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.layers.utils import get_files
 from geonode.base.models import (
@@ -231,6 +231,26 @@ class BaseApiTests(APITestCase):
         finally:
             group.delete()
 
+    def test_group_resources_shows_related_permissions(self):
+        """
+        Calling the resources endpoint of the groups should return also the
+        group permission on that specific resource
+        """
+        group = GroupProfile.objects.create(slug="group1", title="group1", access="public")
+        bobby = get_user_model().objects.filter(username="bobby").get()
+        GroupMember.objects.get_or_create(group=group, user=bobby, role="member")
+        dataset = Dataset.objects.first()
+        dataset.set_permissions({"groups": {group: ["base.view_resourcebase"]}})
+        try:
+            self.assertTrue(self.client.login(username="bobby", password="bob"))
+            url = f"{reverse('group-profiles-list')}/{group.id}/resources"
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+            perms = response.json().get("resources", [])[0].get("perms")
+            self.assertListEqual(["view_resourcebase"], perms)
+        finally:
+            group.delete()
+
     def test_users_list(self):
         """
         Ensure we can access the users list.
@@ -299,6 +319,21 @@ class BaseApiTests(APITestCase):
         finally:
             group_user.delete()
             groupx.delete()
+
+    def test_user_resources_shows_related_permissions(self):
+        """
+        Calling the resources endpoint of the user should return also the
+        user permission on that specific resource
+        """
+        bobby = get_user_model().objects.filter(username="bobby").get()
+        dataset = Dataset.objects.first()
+        dataset.set_permissions({"users": {bobby: ["base.view_resourcebase", "base.change_resourcebase"]}})
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        url = f"{reverse('users-list')}/{bobby.id}/resources"
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        perms = response.json().get("resources", [])[0].get("perms")
+        self.assertSetEqual({"view_resourcebase", "change_resourcebase"}, set(perms))
 
     def test_get_self_user_details_outside_registered_member(self):
         try:
@@ -429,9 +464,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data["total"], 28)
 
-        url = "{base_url}?{params}".format(
-            base_url=reverse("base-resources-list"), params="filter{metadata_only}=false"
-        )
+        url = f"{reverse('base-resources-list')}?filter{{metadata_only}}=false"
         # Anonymous
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
@@ -506,9 +539,7 @@ class BaseApiTests(APITestCase):
         resource = ResourceBase.objects.filter(owner__username="bobby").first()
         self.assertEqual(resource.owner.username, "bobby")
         # Admin
-        url_with_id = "{base_url}/{res_id}?{params}".format(
-            base_url=reverse("base-resources-list"), res_id=resource.id, params="filter{metadata_only}=false"
-        )
+        url_with_id = f"{reverse('base-resources-list')}/{resource.id}?filter{{metadata_only}}=false"
 
         response = self.client.get(f"{url_with_id}", format="json")
         self.assertEqual(response.data["resource"]["state"], enumerations.STATE_PROCESSED)
@@ -1516,10 +1547,7 @@ class BaseApiTests(APITestCase):
 
         resources = ResourceBase.objects.all()
         for resource in resources:
-            url = "{base_url}?{params}".format(
-                base_url=reverse("base-resources-detail", kwargs={"pk": resource.pk}),
-                params="filter{metadata_only}=false",
-            )
+            url = f"{reverse('base-resources-detail', kwargs={'pk': resource.pk})}?filter{{metadata_only}}=false"
             response = self.client.get(url, format="json")
             if resource.title.endswith("metadata true"):
                 self.assertEqual(response.status_code, 404)

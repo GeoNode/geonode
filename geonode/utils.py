@@ -259,6 +259,9 @@ class OGC_Servers_Handler:
         for option in ["WMST_ENABLED", "WPS_ENABLED"]:
             server.setdefault(option, False)
 
+        for option in ["TIMEOUT", "GEOFENCE_TIMEOUT"]:
+            server.setdefault(option, 60)
+
     def __getitem__(self, alias):
         if hasattr(self._servers, alias):
             return getattr(self._servers, alias)
@@ -350,8 +353,6 @@ def get_dataset_name(dataset):
 
 def get_dataset_workspace(dataset):
     """Get the workspace where the input layer belongs"""
-    alternate = None
-    workspace = None
     try:
         alternate = dataset.alternate
     except Exception:
@@ -361,7 +362,7 @@ def get_dataset_workspace(dataset):
     except Exception:
         workspace = None
     if not workspace and alternate and ":" in alternate:
-        workspace = alternate.split(":")[1]
+        workspace = alternate.split(":")[0]
     if not workspace:
         default_workspace = getattr(settings, "DEFAULT_WORKSPACE", "geonode")
         try:

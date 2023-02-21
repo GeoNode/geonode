@@ -152,7 +152,12 @@ class UserViewSet(DynamicModelViewSet):
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
-        return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
+
+        paginator = GeoNodeApiPagination()
+        paginator.page_size = request.GET.get("page_size", 10)
+        result_page = paginator.paginate_queryset(resources, request)
+        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
+        return paginator.get_paginated_response({"resources": serializer.data})
 
     @extend_schema(
         methods=["get"],
@@ -222,7 +227,11 @@ class GroupViewSet(DynamicModelViewSet):
     def resources(self, request, pk=None):
         group = self.get_object()
         resources = group.resources()
-        return Response(ResourceBaseSerializer(embed=True, many=True).to_representation(resources))
+        paginator = GeoNodeApiPagination()
+        paginator.page_size = request.GET.get("page_size", 10)
+        result_page = paginator.paginate_queryset(list(resources), request)
+        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
+        return paginator.get_paginated_response({"resources": serializer.data})
 
 
 class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):

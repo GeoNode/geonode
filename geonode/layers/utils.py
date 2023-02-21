@@ -490,7 +490,7 @@ def set_datasets_permissions(
                 final_perms_payload["groups"] = {
                     _group: _perms
                     for _group, _perms in perms_spec_compact_resource.extended["groups"].items()
-                    if _user not in copy_compact_perms.extended["groups"]
+                    if _group not in copy_compact_perms.extended["groups"]
                 }
                 if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get(
                     "anonymous"

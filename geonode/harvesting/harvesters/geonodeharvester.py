@@ -327,7 +327,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
         resource: typing.Dict,
         remote_resource_type: str,
         spatial_extent: geos.Polygon,
-    ) -> typing.Tuple[str, str, str, str, typing.Optional[str], typing.Optional[str], typing.Optional[str],]:
+    ) -> typing.Tuple[str, str, str, str, typing.Optional[str], typing.Optional[str], typing.Optional[str]]:
         embed_url = resource["embed_url"]
         thumbnail_url = resource["thumbnail_url"]
         if remote_resource_type == GeoNodeResourceTypeCurrent.DATASET.value:

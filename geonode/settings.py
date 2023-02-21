@@ -113,7 +113,6 @@ if EMAIL_ENABLE:
 else:
     EMAIL_BACKEND = os.getenv("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 
-
 # Make this unique, and don't share it with anybody.
 _DEFAULT_SECRET_KEY = "myv-y4#7j-d*p-__@j#*3z@!y24fz8%^z2v6atuy4bo9vqr1_a"
 SECRET_KEY = os.getenv("SECRET_KEY", _DEFAULT_SECRET_KEY)
@@ -196,8 +195,8 @@ geonode_data:geonode_data@localhost:5432/geonode_data",
                 "connect_timeout": GEONODE_DB_CONN_TOUT,
             }
         )
-    DATABASES[os.getenv("DEFAULT_BACKEND_DATASTORE")] = _geo_db
 
+    DATABASES[os.getenv("DEFAULT_BACKEND_DATASTORE")] = _geo_db
 
 # If set to 'True' it will refresh/regenrate all resource links everytime a 'migrate' will be performed
 UPDATE_RESOURCE_LINKS_AT_MIGRATE = ast.literal_eval(os.getenv("UPDATE_RESOURCE_LINKS_AT_MIGRATE", "False"))
@@ -1099,6 +1098,7 @@ OGC_SERVER = {
         "GEONODE_SECURITY_ENABLED": ast.literal_eval(os.getenv("GEONODE_SECURITY_ENABLED", "True")),
         "GEOFENCE_SECURITY_ENABLED": GEOFENCE_SECURITY_ENABLED,
         "GEOFENCE_URL": os.getenv("GEOFENCE_URL", "internal:/"),
+        "GEOFENCE_TIMEOUT": int(os.getenv("GEOFENCE_TIMEOUT", os.getenv("OGC_REQUEST_TIMEOUT", "60"))),
         "WMST_ENABLED": ast.literal_eval(os.getenv("WMST_ENABLED", "False")),
         "BACKEND_WRITE_ENABLED": ast.literal_eval(os.getenv("BACKEND_WRITE_ENABLED", "True")),
         "WPS_ENABLED": ast.literal_eval(os.getenv("WPS_ENABLED", "False")),
@@ -1340,7 +1340,7 @@ except ValueError:
     )
 
 # The proxy to use when making cross origin requests.
-PROXY_URL = "/?url="
+PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 
 # Haystack Search Backend Configuration. To enable,
 # first install the following:
@@ -1537,6 +1537,16 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
+    MAPSTORE_CATALOGUE_SERVICES = {}
+
+    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
+
+    if GEONODE_CATALOGUE_SERVICE:
+        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[
+            list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
+        ]  # noqa
+        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
+
     DEFAULT_MS2_BACKGROUNDS = [
         {
             "type": "osm",
@@ -1677,6 +1687,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
 
     # Extensions path to use in importing custom extensions into geonode
     MAPSTORE_EXTENSIONS_FOLDER_PATH = "/static/mapstore/extensions/"
+
+    # Supported Dataset file types for uploading Datasets. This setting is being from from the client
 
 # -- END Client Hooksets Setup
 
