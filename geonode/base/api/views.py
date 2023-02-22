@@ -609,7 +609,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         "created": request_params.get('created', False)
                     }
                 )
-            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
             return Response(
                 {
                     'status': _exec_request.status,
@@ -759,7 +759,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
                 }
             )
-            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
             return Response(
                 {
                     'status': _exec_request.status,
@@ -856,7 +856,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get('defaults', f"{{\"owner\":\"{request.user.username}\"}}")
                 }
             )
-            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
             return Response(
                 {
                     'status': _exec_request.status,
@@ -936,7 +936,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "uuid": resource.uuid
                 }
             )
-            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
             return Response(
                 {
                     'status': _exec_request.status,
@@ -1051,7 +1051,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "notify": request_params.get('notify', True)
                 }
             )
-            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
             return Response(
                 {
                     'status': _exec_request.status,
@@ -1159,7 +1159,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get('defaults', '{}')
                 }
             )
-            resouce_service_dispatcher.apply_async((_exec_request.exec_id,))
+            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
             return Response(
                 {
                     'status': _exec_request.status,

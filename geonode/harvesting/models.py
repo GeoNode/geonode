@@ -426,7 +426,7 @@ class AsynchronousHarvestingSession(models.Model):
             raise RuntimeError("Invalid selection")
         self.status = self.STATUS_PENDING
         self.save()
-        task_signature.apply_async()
+        task_signature.apply_async(args=(), expiration=30)
 
     def abort(self):
         """Abort a pending or on-going session."""

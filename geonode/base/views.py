@@ -132,7 +132,9 @@ def user_and_group_permission(request, model):
                         _errors = True
                 else:
                     set_permissions.apply_async(
-                        ([permissions_names], resources_names, users_usernames, groups_names, delete_flag))
+                        args=([permissions_names], resources_names, users_usernames, groups_names, delete_flag),
+                        expiration=30,
+                    )
                     if not _errors:
                         _message = f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
             else:

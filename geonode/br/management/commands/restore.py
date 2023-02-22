@@ -291,7 +291,9 @@ class Command(BaseCommand):
                 except Exception as exception:
                     if notify:
                         restore_notification.apply_async(
-                            (admin_emails, backup_file, backup_md5, str(exception)))
+                            args=(admin_emails, backup_file, backup_md5, str(exception)),
+                            expiration=30
+                        )
 
                     print("...Sanity Checks on Folder failed. Please make sure that the current user has full WRITE access to the above folders (and sub-folders or files).")  # noqa
                     print("Reason:")
@@ -321,7 +323,9 @@ class Command(BaseCommand):
                                 self.restore_geoserver_externals(config, settings, recovery_folder)
                         if notify:
                             restore_notification.apply_async(
-                                (admin_emails, backup_file, backup_md5, str(exception)))
+                                args=(admin_emails, backup_file, backup_md5, str(exception)),
+                                expiration=30
+                            )
                         raise exception
                 else:
                     print("Skipping geoserver backup restore")
@@ -503,7 +507,9 @@ class Command(BaseCommand):
                 except Exception as exception:
                     if notify:
                         restore_notification.apply_async(
-                            (admin_emails, backup_file, backup_md5, str(exception)))
+                            args=(admin_emails, backup_file, backup_md5, str(exception)),
+                            expiration=30
+                        )
 
                 finally:
                     call_command('makemigrations', interactive=False)
@@ -512,7 +518,9 @@ class Command(BaseCommand):
 
                 if notify:
                     restore_notification.apply_async(
-                        (admin_emails, backup_file, backup_md5))
+                        args=(admin_emails, backup_file, backup_md5),
+                        expiration=30
+                    )
 
                 print("HINT: If you migrated from another site, do not forget to run the command 'migrate_baseurl' to fix Links")  # noqa
                 print(

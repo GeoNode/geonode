@@ -235,7 +235,7 @@ class HarvesterSerializer(BriefHarvesterSerializer):
             post_update_task = None
         updated_instance = super().update(instance, validated_data)
         if post_update_task is not None:
-            post_update_task.apply_async()
+            post_update_task.apply_async(args=(), expiration=30)
         return updated_instance
 
 
