@@ -71,12 +71,9 @@ from geonode.geoserver.security import (
     delete_all_geofence_rules,
     sync_resources_with_guardian,
     _get_gwc_filters_and_formats,
-<<<<<<< HEAD
-=======
     has_geolimits,
     create_geofence_rules,
     delete_geofence_rules_for_layer,
->>>>>>> 0e89afe806f359a1a0b700c233f292999249af5f
 )
 
 
