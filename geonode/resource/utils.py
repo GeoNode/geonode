@@ -154,7 +154,10 @@ def update_resource(instance: ResourceBase, xml_file: str = None, regions: list 
                 instance.regions.clear()
                 instance.regions.add(*regions_resolved)
 
-    instance = KeywordHandler(instance, _keywords).set_keywords()
+    try:
+        instance = KeywordHandler(instance, _keywords).set_keywords()
+    except Exception as e:
+        logger.debug(e)
 
     # set model properties
     defaults = {}
