@@ -127,46 +127,48 @@ def _resolve_dataset(request, alternate, permission='base.view_resourcebase', ms
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = alternate.split(":", 1)
-    if Service.objects.filter(name=service_typename[0]).count() == 1:
+    for _s in Service.objects.filter(name__startswith=service_typename[0]):
         query = {
             'alternate': service_typename[1],
-            'remote_service': Service.objects.filter(name=service_typename[0]).get()
+            'remote_service': _s
         }
-        return resolve_object(
-            request,
-            Dataset,
-            query,
-            permission=permission,
-            permission_msg=msg,
-            **kwargs)
-    else:
-        if len(service_typename) > 1 and ':' in service_typename[1]:
-            if service_typename[0]:
-                query = {
-                    'store': service_typename[0],
-                    'alternate': service_typename[1]
-                }
-            else:
-                query = {
-                    'alternate': service_typename[1]
-                }
+        try:
+            return resolve_object(
+                request,
+                Dataset,
+                query,
+                permission=permission,
+                permission_msg=msg,
+                **kwargs)
+        except (Dataset.DoesNotExist, Http404) as e:
+            logger.debug(e)
+    if len(service_typename) > 1 and ':' in service_typename[1]:
+        if service_typename[0]:
+            query = {
+                'store': service_typename[0],
+                'alternate': service_typename[1]
+            }
         else:
-            query = {'alternate': alternate}
-        test_query = Dataset.objects.filter(**query)
-        if test_query.count() > 1 and test_query.exclude(subtype='remote').count() == 1:
             query = {
-                'id': test_query.exclude(subtype='remote').last().id
+                'alternate': service_typename[1]
             }
-        elif test_query.count() > 1:
-            query = {
-                'id': test_query.last().id
-            }
-        return resolve_object(request,
-                              Dataset,
-                              query,
-                              permission=permission,
-                              permission_msg=msg,
-                              **kwargs)
+    else:
+        query = {'alternate': alternate}
+    test_query = Dataset.objects.filter(**query)
+    if test_query.count() > 1 and test_query.exclude(subtype='remote').count() == 1:
+        query = {
+            'id': test_query.exclude(subtype='remote').last().id
+        }
+    elif test_query.count() > 1:
+        query = {
+            'id': test_query.last().id
+        }
+    return resolve_object(request,
+                          Dataset,
+                          query,
+                          permission=permission,
+                          permission_msg=msg,
+                          **kwargs)
 
 
 # Basic Dataset Views #
