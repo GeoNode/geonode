@@ -4,6 +4,7 @@
 
 ### Breaking Changes
 
+ - Based on GeoServer [2.20.7](https://geoserver.org/announcements/2023/02/20/geoserver-2-20-7-released.html)
  - Based on MapStore client [4.0.5](https://github.com/GeoNode/geonode-mapstore-client/releases/tag/4.0.5)
  - MapStore client is no more compatible with 3.x train
  - GeoNode 4.0.0 architecture is slightly different from the previous versions; please refer to:
