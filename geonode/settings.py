@@ -1558,11 +1558,12 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         ('it-it', 'Italiano'),
     )"""
 
-    LANGUAGES = ast.literal_eval(os.getenv("LANGUAGES", MAPSTORE_DEFAULT_LANGUAGES))
     if os.getenv("LANGUAGES"):
-        # Map given languages to mapstore supported languages
+        # Map given languages to mapstore supported languages.
         mapstore_lang = ast.literal_eval(MAPSTORE_DEFAULT_LANGUAGES)
         LANGUAGES = tuple((k, v) for k, v in dict(mapstore_lang).items() if any(m in k for m in dict(LANGUAGES).keys()))
+    else:
+        LANGUAGES = ast.literal_eval(MAPSTORE_DEFAULT_LANGUAGES)
 
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
