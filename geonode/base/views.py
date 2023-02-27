@@ -142,6 +142,9 @@ def user_and_group_permission(request, model):
             if not _errors:
                 _message = f"Some error has occured {form.errors}"
                 _errors = True
+            if "Select a valid choice" in _message:
+                _message = "The selected dataset is still in a dirty state or the upload process is not complete yet, Please try again later"
+
         messages.add_message(request, (messages.INFO if not _errors else messages.ERROR), _message)
         return HttpResponseRedirect(get_url_for_app_model(model, model_class))
 
@@ -315,16 +318,16 @@ class DatasetsAutocomplete(SimpleSelect2View):
     model = Dataset
     filter_arg = "title__icontains"
 
-    def get_queryset(self):
-        qs = super(views.BaseQuerySetView, self).get_queryset().order_by("pk")
-        return get_visible_resources(
-            qs,
-            self.request.user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        )
-
+    # def get_queryset(self):
+    #    qs = super(views.BaseQuerySetView, self).get_queryset().order_by("pk")
+    #    return get_visible_resources(
+    #        qs,
+    #        self.request.user,
+    #        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+    #        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+    #        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+    #    )
+    #
     def get_results(self, context):
         return [
             {
