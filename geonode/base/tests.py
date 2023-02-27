@@ -1087,3 +1087,24 @@ class TestHandleMetadataKeyword(TestCase):
         thesaurus = {"title": "Random Thesaurus Title"}
         actual = self.sut.is_thesaurus_available(thesaurus, keyword)
         self.assertEqual(0, len(actual))
+
+
+class TestDatasetAutocomplete(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.url = reverse("datasets_autocomplete")
+
+    def setUp(self):
+        self.admin = get_user_model().objects.get(username="admin")
+        self.good_vector = create_single_dataset(name="valid_dataset")
+        self.bad_vector = create_single_dataset(name="invalid_dataset")
+        Dataset.objects.filter(pk=self.bad_vector.pk).update(dirty_state=True)
+
+    def test_resource_in_diry_state_are_ignored(self):
+        self.client.force_login(self.admin)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        datasets_found = [x["text"] for x in response.json().get("results", [])]
+        self.assertTrue("valid_dataset" in datasets_found)
+        self.assertTrue("invalid_dataset" not in datasets_found)
