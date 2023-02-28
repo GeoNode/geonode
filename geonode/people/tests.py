@@ -33,7 +33,6 @@ from geonode.layers.models import Dataset
 from geonode.people import profileextractors
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models
-import unittest.mock
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
@@ -94,10 +93,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         message = list(response.context.get("messages"))[0]
         self.assertEqual(message.tags, "error")
-        self.assertTrue(
-            "The selected dataset is still in a dirty state or the upload process is not complete yet, Please try again later"
-            in message.message
-        )
+        self.assertTrue("The following dataset ID selected are not part of the available choices" in message.message)
 
     @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_user_dataset_permissions(self):

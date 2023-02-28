@@ -143,7 +143,10 @@ def user_and_group_permission(request, model):
                 _message = f"Some error has occured {form.errors}"
                 _errors = True
             if "Select a valid choice" in _message:
-                _message = "The selected dataset is still in a dirty state or the upload process is not complete yet, Please try again later"
+                _invalid_dataset_id = []
+                for el in form.errors["layers"]:
+                    _invalid_dataset_id.extend([x for x in el.split(" ") if x.isnumeric()])
+                _message = f"The following dataset ID selected are not part of the available choices: {','.join(_invalid_dataset_id)} They are probably in a dirty state, Please try again later"
 
         messages.add_message(request, (messages.INFO if not _errors else messages.ERROR), _message)
         return HttpResponseRedirect(get_url_for_app_model(model, model_class))
