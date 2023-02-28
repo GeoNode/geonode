@@ -1103,7 +1103,7 @@ PYCSW = {
             "home": ".",
             "url": CATALOGUE["default"]["URL"],
             "encoding": "UTF-8",
-            "language": LANGUAGE_CODE,
+            "language": LANGUAGE_CODE if LANGUAGE_CODE in ("en", "fr", "el") else "en",
             "maxrecords": "20",
             "pretty_print": "true",
             # 'domainquerytype': 'range',
