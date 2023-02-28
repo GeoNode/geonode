@@ -1551,16 +1551,18 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
     MAPSTORE_BASELAYERS_SOURCES = os.environ.get("MAPSTORE_BASELAYERS_SOURCES", {})
 
     MAPSTORE_DEFAULT_LANGUAGES = (
-        ('de-de', 'Deutsch'),
-        ('en-us', 'English'),
-        ('es-es', 'Español'),
-        ('fr-fr', 'Français'),
-        ('it-it', 'Italiano'),
+        ("de-de", "Deutsch"),
+        ("en-us", "English"),
+        ("es-es", "Español"),
+        ("fr-fr", "Français"),
+        ("it-it", "Italiano"),
     )
 
     if os.getenv("LANGUAGES"):
         # Map given languages to mapstore supported languages.
-        LANGUAGES = tuple((k, v) for k, v in dict(MAPSTORE_DEFAULT_LANGUAGES).items() if any(m in k for m in dict(LANGUAGES).keys()))
+        LANGUAGES = tuple(
+            (k, v) for k, v in dict(MAPSTORE_DEFAULT_LANGUAGES).items() if any(m in k for m in dict(LANGUAGES).keys())
+        )
     else:
         LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
 
