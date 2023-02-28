@@ -1550,15 +1550,22 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
     # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
     MAPSTORE_BASELAYERS_SOURCES = os.environ.get("MAPSTORE_BASELAYERS_SOURCES", {})
 
-    MAPSTORE_DEFAULT_LANGUAGES = """(
-        ('de-de', 'Deutsch'),
-        ('en-us', 'English'),
-        ('es-es', 'Español'),
-        ('fr-fr', 'Français'),
-        ('it-it', 'Italiano'),
-    )"""
+    MAPSTORE_DEFAULT_LANGUAGES = (
+        ("de-de", "Deutsch"),
+        ("en-us", "English"),
+        ("es-es", "Español"),
+        ("fr-fr", "Français"),
+        ("it-it", "Italiano"),
+    )
 
-    LANGUAGES = ast.literal_eval(os.getenv("LANGUAGES", MAPSTORE_DEFAULT_LANGUAGES))
+    if os.getenv("LANGUAGES"):
+        # Map given languages to mapstore supported languages.
+        LANGUAGES = tuple(
+            (k, v) for k, v in dict(MAPSTORE_DEFAULT_LANGUAGES).items() if any(m in k for m in dict(LANGUAGES).keys())
+        )
+    else:
+        LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
+
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
     MAPSTORE_TRANSLATIONS_PATH = os.environ.get(
