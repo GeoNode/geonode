@@ -318,16 +318,6 @@ class DatasetsAutocomplete(SimpleSelect2View):
     model = Dataset
     filter_arg = "title__icontains"
 
-    # def get_queryset(self):
-    #    qs = super(views.BaseQuerySetView, self).get_queryset().order_by("pk")
-    #    return get_visible_resources(
-    #        qs,
-    #        self.request.user,
-    #        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-    #        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-    #        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-    #    )
-    #
     def get_results(self, context):
         return [
             {
