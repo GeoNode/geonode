@@ -83,7 +83,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         is not part of the choices
         """
         form_valid.return_value = False
-        form_error.return_value = "Select a valid choice"
+        form_error.return_value = {"layers": "Select a valid choice"}
         self.client.login(username="admin", password="admin")
         response = self.client.post(
             path=reverse("set_user_dataset_permissions"),
