@@ -17,7 +17,7 @@
 #
 #########################################################################
 from django.test.utils import override_settings
-from mock import PropertyMock, patch
+from mock import MagicMock, PropertyMock, patch
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.core import mail
@@ -82,8 +82,9 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         The form should retrun a pre-defined message if the dataset
         is not part of the choices
         """
+        error_obj = MagicMock(data=[MagicMock(code="invalid_choice")])
         form_valid.return_value = False
-        form_error.return_value = {"layers": "Select a valid choice"}
+        form_error.return_value = {"layers": error_obj}
         self.client.login(username="admin", password="admin")
         response = self.client.post(
             path=reverse("set_user_dataset_permissions"),
