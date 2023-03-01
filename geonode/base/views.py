@@ -123,7 +123,7 @@ def user_and_group_permission(request, model):
             permissions_names = form.cleaned_data.get("permission_type")
 
             if permissions_names:
-                if "edit" in permissions_names and "AnonymousUser" in users_usernames:
+                if "edit" in permissions_names and users_usernames and "AnonymousUser" in users_usernames:
                     if not _errors:
                         _message = '"EDIT" permissions not allowed for the "AnonymousUser".'
                         _errors = True
