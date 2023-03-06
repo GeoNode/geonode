@@ -19,7 +19,7 @@ kombu==5.2.4
 vine==5.0.0
 tqdm==4.64.1
 Deprecated==1.2.13
-wrapt==1.14.1
+wrapt==1.15.0
 jsonschema==4.17.3
 zipstream-new==1.1.8
 schema==0.7.5
