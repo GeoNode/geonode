@@ -54,7 +54,7 @@ pyjwt==2.6.0
 
 # geopython dependencies
 pyproj<3.5.0
-OWSLib==0.27.2
+OWSLib==0.28.1
 pycsw==2.6.1
 SQLAlchemy==2.0.4 # required by PyCSW
 Shapely==1.8.5.post1
