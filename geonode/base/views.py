@@ -123,7 +123,7 @@ def user_and_group_permission(request, model):
             permissions_names = form.cleaned_data.get("permission_type")
 
             if permissions_names:
-                if "edit" in permissions_names and "AnonymousUser" in users_usernames:
+                if "edit" in permissions_names and users_usernames and "AnonymousUser" in users_usernames:
                     if not _errors:
                         _message = '"EDIT" permissions not allowed for the "AnonymousUser".'
                         _errors = True
@@ -142,6 +142,13 @@ def user_and_group_permission(request, model):
             if not _errors:
                 _message = f"Some error has occured {form.errors}"
                 _errors = True
+
+            if "layers" in form.errors and "invalid_choice" in (x.code for x in form.errors["layers"].data):
+                _invalid_dataset_id = []
+                for el in form.errors["layers"]:
+                    _invalid_dataset_id.extend([x for x in el.split(" ") if x.isnumeric()])
+                _message = f"The following dataset ID selected are not part of the available choices: {','.join(_invalid_dataset_id)}. They are probably in a dirty state, Please try again later"
+
         messages.add_message(request, (messages.INFO if not _errors else messages.ERROR), _message)
         return HttpResponseRedirect(get_url_for_app_model(model, model_class))
 
