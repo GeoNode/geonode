@@ -47,7 +47,7 @@ def geoserver_delete(typename):
     # cascading_delete should only be called if
     # ogc_server_settings.BACKEND_WRITE_ENABLED == True
     if getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
-        geoserver_cascading_delete.apply_async((typename,))
+        geoserver_cascading_delete.apply_async(args=(typename,), expiration=30)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
@@ -62,7 +62,7 @@ def geoserver_pre_delete(instance, sender, **kwargs):
             or instance.remote_service.method == CASCADED
         ):
             if instance.alternate:
-                geoserver_cascading_delete.apply_async((instance.alternate,))
+                geoserver_cascading_delete.apply_async(args=(instance.alternate,), expiration=30)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
@@ -78,7 +78,7 @@ def geoserver_post_save_local(instance, *args, **kwargs):
      * Metadata Links,
      * Point of Contact name and url
     """
-    geoserver_post_save_datasets.apply_async((instance.id, args, kwargs))
+    geoserver_post_save_datasets.apply_async(args=(instance.id, args, kwargs), expiration=30)
 
 
 @on_ogc_backend(BACKEND_PACKAGE)
@@ -117,11 +117,12 @@ def geoserver_post_save_map(instance, sender, created, **kwargs):
         if not instance.thumbnail_url:
             logger.debug(f"... Creating Thumbnail for Map [{instance.title}]")
             geoserver_create_thumbnail.apply_async(
-                (
+                args=(
                     instance.id,
                     False,
                     True,
-                )
+                ),
+                expiration=30,
             )
 
 
@@ -143,11 +144,12 @@ def geoserver_set_thumbnail(instance, **kwargs):
             _recreate_thumbnail = True
         if _recreate_thumbnail:
             geoserver_create_thumbnail.apply_async(
-                (
+                args=(
                     instance.id,
                     False,
                     True,
-                )
+                ),
+                expiration=30,
             )
         else:
             logger.debug(f"... Thumbnail for Dataset {instance.title} already exists: {instance.thumbnail_url}")

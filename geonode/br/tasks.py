@@ -29,7 +29,7 @@ from geonode.celery_app import app
     bind=True,
     name="geonode.br.tasks.restore_notification",
     queue="email",
-    expires=600,
+    expires=30,
     time_limit=600,
     acks_late=False,
     autoretry_for=(Exception,),
