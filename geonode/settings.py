@@ -334,7 +334,9 @@ STATICFILES_FINDERS = (
 CACHES = {
     # DUMMY CACHE FOR DEVELOPMENT
     "default": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        "django.core.cache.backends.dummy.DummyCache"
+        if DEBUG
+        else "django.core.cache.backends.locmem.LocMemCache"
     },
     # MEMCACHED EXAMPLE
     # 'default': {
@@ -2257,3 +2259,22 @@ SUPPORTED_DATASET_FILE_TYPES = [
         "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "xml"],
     },
 ]
+
+"""
+These all_auth rate limits apply if DEBUG is False
+5/m f.e. means 5 times per minute
+"""
+ACCOUNT_RATE_LIMITS = {
+    # Change password view (for users already logged in)
+    "change_password": "5/m",
+    # Email management (e.g. add, remove, change primary)
+    "manage_email": "10/m",
+    # Request a password reset, global rate limit per IP
+    "reset_password": "2/m",
+    # Rate limit measured per individual email address
+    "reset_password_email": "5/m",
+    # Password reset (the view the password reset email links to).
+    "reset_password_from_key": "20/m",
+    # Signups.
+    "signup": "20/m",
+}

@@ -1,0 +1,15 @@
+{% extends "geonode_base.html" %}
+{% load i18n %}
+
+{% block body %}
+    <div id="description">
+      <h3>
+          {% trans "Not Permitted" %}
+      </h3>
+        <p class="lead">
+            {% blocktrans %}
+            You reached the maximum attempts for account actions. Please try again later.
+            {% endblocktrans %}
+        </p>
+    </div>
+{% endblock %}
