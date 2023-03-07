@@ -137,7 +137,7 @@ django-cors-headers==3.13.0
 user-agents
 django-user-agents
 xmljson
-django-ipware<4.1
+django-ipware<5.1
 # no version here, use latest one with fresh data
 pycountry
 
