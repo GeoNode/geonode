@@ -37,6 +37,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0066_resourcebase_data'),
+        ('documents', '24_initial'),  # make sure documents_document exists
     ]
 
     operations = [
