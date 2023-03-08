@@ -22,7 +22,7 @@ from django.conf import settings
 from user_messages.models import Message
 from user_messages.signals import message_sent
 
-from geonode.notifications_helper import send_notification
+from geonode.notifications_helper import send_notification, notifications
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +36,15 @@ def message_received_notification(**kwargs):
     thread = message.thread
 
     recipients = _get_user_to_notify(message)
+
+    # Enable email notifications for reciepients
+    for user in recipients:
+        notifications.models.NoticeSetting.objects.get_or_create(
+            notice_type=notifications.models.NoticeType.objects.get(label=notice_type_label),
+            send=True,
+            user=user,
+            medium=0
+            )
 
     ctx = {
         "message": message.content,
