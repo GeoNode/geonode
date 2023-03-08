@@ -43,8 +43,8 @@ def message_received_notification(**kwargs):
             notice_type=notifications.models.NoticeType.objects.get(label=notice_type_label),
             send=True,
             user=user,
-            medium=0
-            )
+            medium=0,
+        )
 
     ctx = {
         "message": message.content,
