@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('layers', '0035_auto_20210525_0847'),
+        ('base', '0067_resourcebase_storetype'),
     ]
 
     operations = [
