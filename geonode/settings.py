@@ -1850,8 +1850,11 @@ NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get("NOTIFICATION_ENABLED", "
 
 # notifications backends
 NOTIFICATIONS_BACKEND = os.environ.get("NOTIFICATIONS_BACKEND", "geonode.notifications_backend.EmailBackend")
+
+# setting the spam sensitivity to a number greater than (2) the default sensitivity described in pinax
+# in order to have email notifications turned off by default.
 PINAX_NOTIFICATIONS_BACKENDS = [
-    ("email", NOTIFICATIONS_BACKEND, 0),
+    ("email", NOTIFICATIONS_BACKEND, 3),
 ]
 PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 
