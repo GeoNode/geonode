@@ -29,13 +29,14 @@ def update_thumbnail_urls_and_delete_curated_thumbs_folder(apps, schema_editor):
                 filename = _generate_thumbnail_name(resource.get_real_instance())
                 resource.save_thumbnail(filename, bytes_file)
             except Exception as e:
-                logger.error(f'Error during updating resource: {e.args[0]}')
+                logger.error(f'Error during updating resource: {e.args[0]}', exc_info=e)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('base', '0073_resourcebase_thumbnail_path'),
+        ('layers', '0044_alter_dataset_unique_together'),
     ]
 
     operations = [
