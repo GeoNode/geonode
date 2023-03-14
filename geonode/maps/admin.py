@@ -29,6 +29,9 @@ from geonode.base.admin import metadata_batch_edit
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
+    ordering = ("dataset_id",)
+    autocomplete_fields = ("dataset",)
+    show_change_link = True
 
 
 class MapAdminForm(ResourceBaseAdminForm):
@@ -65,6 +68,7 @@ class MapLayerAdmin(admin.ModelAdmin):
     list_filter = ('map',)
     search_fields = ('map__title', 'name',)
     form = forms.modelform_factory(MapLayer, fields='__all__')
+    autocomplete_fields = ("dataset",)
 
 
 admin.site.register(Map, MapAdmin)
