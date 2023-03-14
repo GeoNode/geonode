@@ -25,7 +25,7 @@ from django.core.management import call_command
     bind=True,
     name='geonode.monitoring.tasks.collect_metrics',
     queue='geoserver.events',
-    expires=600,
+    expires=30,
     time_limit=600,
     acks_late=False,
     autoretry_for=(Exception, ),

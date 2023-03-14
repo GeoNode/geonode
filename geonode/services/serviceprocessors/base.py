@@ -171,10 +171,17 @@ class ServiceHandlerBase(object):  # LGTM: @property will not work in old-style 
                     _h.status = _h.STATUS_PERFORMING_HARVESTING
                     _h.save()
                     _h_session = AsynchronousHarvestingSession.objects.create(
-                        harvester=_h,
-                        session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
+                        harvester=_h, session_type=AsynchronousHarvestingSession.TYPE_HARVESTING
                     )
-                    harvest_resources.apply_async(args=([resource_id, ], _h_session.pk))
+                    harvest_resources.apply_async(
+                        args=(
+                            [
+                                resource_id,
+                            ],
+                            _h_session.pk,
+                        ),
+                        expiration=30,
+                    )
             except Exception as e:
                 logger.exception(e)
         else:

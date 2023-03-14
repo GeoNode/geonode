@@ -116,9 +116,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 _real_instance = instance.get_real_instance()
                 if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
                     if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
-                        geoserver_cascading_delete.apply_async((_real_instance.alternate,))
+                        geoserver_cascading_delete.apply_async(args=(_real_instance.alternate,), expiration=30)
                 elif isinstance(_real_instance, Map):
-                    geoserver_delete_map.apply_async((_real_instance.id, ))
+                    geoserver_delete_map.apply_async(args=(_real_instance.id,), expiration=30)
             except Exception as e:
                 logger.exception(e)
 

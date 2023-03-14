@@ -348,7 +348,7 @@ class RequestsTestCase(MonitoringTestBase):
         from geonode.monitoring.tasks import collect_metrics
         execution_times = []
         for _r in range(10):
-            result = collect_metrics.apply_async()
+            result = collect_metrics.apply_async(args=(), expiration=30)
             exec_tuple = result.get()
             if exec_tuple:
                 execution_times.append(exec_tuple[0])
