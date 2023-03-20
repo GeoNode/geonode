@@ -85,7 +85,7 @@ class FavoriteManager(models.Manager):
             if content_object.resource_type in geoapp_types:
                 content_type = ContentType.objects.get(model='geoapp')
             else:
-                content_type = ContentType.objects.get(model=content_object.resource_type)
+                content_type = ContentType.objects.filter(model=content_object.resource_type).last()
         else:
             content_type = ContentType.objects.get_for_model(type(content_object))
 
