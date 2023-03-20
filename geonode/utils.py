@@ -1193,14 +1193,13 @@ class HttpClient:
         if action:
             _req_tout = timeout or self.timeout
             try:
-                response = action(
-                    url=url,
-                    data=data,
-                    headers=headers,
-                    timeout=_req_tout,
-                    stream=stream,
-                    verify=verify)
-            except (requests.exceptions.RequestException, ValueError, RetryError) as e:
+                response = action(url=url, data=data, headers=headers, timeout=_req_tout, stream=stream, verify=verify)
+            except (
+                requests.exceptions.ConnectTimeout,
+                requests.exceptions.RequestException,
+                ValueError,
+                RetryError,
+            ) as e:
                 msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
                 logger.exception(Exception(msg))
                 response = None
