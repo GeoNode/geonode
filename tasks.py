@@ -44,7 +44,7 @@ def waitfordbs(ctx):
 @task
 def waitforgeoserver(ctx):
     print("****************************geoserver********************************")
-    while not _rest_api_availability(f"{os.environ['GEOSERVER_LOCATION']}rest"):
+    while not _gs_service_availability(f"{os.environ['GEOSERVER_LOCATION']}ows"):
         print("Wait for GeoServer API availability...")
     print("GeoServer is available for HTTP calls!")
 
@@ -363,7 +363,7 @@ def _localsettings():
     return settings
 
 
-def _rest_api_availability(url):
+def _gs_service_availability(url):
     import requests
     try:
         r = requests.request('get', url, verify=False)
