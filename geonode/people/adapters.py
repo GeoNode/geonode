@@ -34,12 +34,13 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 from invitations.adapters import BaseInvitationsAdapter
 
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
-# from django.contrib.auth.models import Group
+
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
@@ -82,12 +83,11 @@ def update_profile(sociallogin):
             "position",
             "profile",
             "voice",
-            "zipcode"
+            "zipcode",
         )
         for field in profile_fields:
             try:
-                extractor_method = getattr(
-                    extractor, f"extract_{field}")
+                extractor_method = getattr(extractor, f"extract_{field}")
                 value = extractor_method(sociallogin.account.extra_data)
                 if not user_field(user, field):
                     user_field(user, field, value)
@@ -110,8 +110,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         return _site_allows_signup(request)
 
     def get_login_redirect_url(self, request):
-        profile_path = reverse(
-            "profile_detail", kwargs={"username": request.user.username})
+        profile_path = reverse("profile_detail", kwargs={"username": request.user.username})
         return profile_path
 
     def populate_username(self, request, user):
@@ -122,12 +121,9 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
             user.full_clean()
             safe_username = user_username(user)
         except ValidationError:
-            safe_username = self.generate_unique_username([
-                user_field(user, 'first_name'),
-                user_field(user, 'last_name'),
-                user_email(user),
-                user_username(user)
-            ])
+            safe_username = self.generate_unique_username(
+                [user_field(user, "first_name"), user_field(user, "last_name"), user_email(user), user_username(user)]
+            )
         user_username(user, safe_username)
 
     def send_invitation_email(self, email_template, email, context):
@@ -136,29 +132,37 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
     def send_mail(self, template_prefix, email, context):
         enh_context = self.enhanced_invitation_context(context)
         msg = self.render_mail(template_prefix, email, enh_context)
-        msg.send()
+        try:
+            msg.send()
+        except Exception as e:
+            logger.exception(e)
+            messages.warning(context.get("request"), f"An error occurred while trying to send the email: {e}")
 
     def enhanced_invitation_context(self, context):
         user = context.get("inviter") if context.get("inviter") else context.get("user")
-        full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
-        user_groups = GroupProfile.objects.filter(
-            slug__in=user.groupmember_set.values_list("group__slug", flat=True))
         enhanced_context = context.copy()
-        enhanced_context.update({
-            "username": user.username,
-            "inviter_name": full_name or str(user),
-            "inviter_first_name": user.first_name or str(user),
-            "inviter_id": user.id,
-            "groups": user_groups,
-            "MEDIA_URL": settings.MEDIA_URL,
-            "SITEURL": settings.SITEURL,
-            "STATIC_URL": settings.STATIC_URL
-        })
+        enhanced_context.update(
+            {"MEDIA_URL": settings.MEDIA_URL, "SITEURL": settings.SITEURL, "STATIC_URL": settings.STATIC_URL}
+        )
+        if user:
+            full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
+            user_groups = GroupProfile.objects.filter(
+                slug__in=user.groupmember_set.values_list("group__slug", flat=True)
+            )
+            enhanced_context = context.copy()
+            enhanced_context.update(
+                {
+                    "username": user.username,
+                    "inviter_name": full_name or str(user),
+                    "inviter_first_name": user.first_name or str(user),
+                    "inviter_id": user.id,
+                    "groups": user_groups,
+                }
+            )
         return enhanced_context
 
     def save_user(self, request, user, form, commit=True):
-        user = super().save_user(
-            request, user, form, commit=commit)
+        user = super().save_user(request, user, form, commit=commit)
         if settings.ACCOUNT_APPROVAL_REQUIRED:
             user.is_active = False
             user.save()
@@ -183,14 +187,12 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def populate_user(self, request, sociallogin, data):
         """This method is called when a new sociallogin is created"""
-        user = super().populate_user(
-            request, sociallogin, data)
+        user = super().populate_user(request, sociallogin, data)
         update_profile(sociallogin)
         return user
 
     def save_user(self, request, sociallogin, form=None):
-        user = super().save_user(
-            request, sociallogin, form=form)
+        user = super().save_user(request, sociallogin, form=form)
         extractor = get_data_extractor(sociallogin.account.provider)
         try:
             keywords = extractor.extract_keywords(sociallogin.account.extra_data)
@@ -219,6 +221,4 @@ def _site_allows_signup(django_request):
 
 
 def _respond_inactive_user(user):
-    return HttpResponseRedirect(
-        reverse("moderator_contacted", kwargs={"inactive_user": user.id})
-    )
+    return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
