@@ -34,13 +34,13 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 from invitations.adapters import BaseInvitationsAdapter
 
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.conf import settings
+from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
 
-# from django.contrib.auth.models import Group
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
@@ -132,25 +132,33 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
     def send_mail(self, template_prefix, email, context):
         enh_context = self.enhanced_invitation_context(context)
         msg = self.render_mail(template_prefix, email, enh_context)
-        msg.send()
+        try:
+            msg.send()
+        except Exception as e:
+            logger.exception(e)
+            messages.warning(context.get("request"), f"An error occurred while trying to send the email: {e}")
 
     def enhanced_invitation_context(self, context):
         user = context.get("inviter") if context.get("inviter") else context.get("user")
-        full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
-        user_groups = GroupProfile.objects.filter(slug__in=user.groupmember_set.values_list("group__slug", flat=True))
         enhanced_context = context.copy()
         enhanced_context.update(
-            {
-                "username": user.username,
-                "inviter_name": full_name or str(user),
-                "inviter_first_name": user.first_name or str(user),
-                "inviter_id": user.id,
-                "groups": user_groups,
-                "MEDIA_URL": settings.MEDIA_URL,
-                "SITEURL": settings.SITEURL,
-                "STATIC_URL": settings.STATIC_URL,
-            }
+            {"MEDIA_URL": settings.MEDIA_URL, "SITEURL": settings.SITEURL, "STATIC_URL": settings.STATIC_URL}
         )
+        if user:
+            full_name = " ".join((user.first_name, user.last_name)) if user.first_name or user.last_name else None
+            user_groups = GroupProfile.objects.filter(
+                slug__in=user.groupmember_set.values_list("group__slug", flat=True)
+            )
+            enhanced_context = context.copy()
+            enhanced_context.update(
+                {
+                    "username": user.username,
+                    "inviter_name": full_name or str(user),
+                    "inviter_first_name": user.first_name or str(user),
+                    "inviter_id": user.id,
+                    "groups": user_groups,
+                }
+            )
         return enhanced_context
 
     def save_user(self, request, user, form, commit=True):
