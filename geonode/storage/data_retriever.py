@@ -205,17 +205,33 @@ class DataRetriever(object):
         at the end the zip is deleted
         """
         zip_file = self.file_paths["base_file"]
-        the_zip = zipfile.ZipFile(zip_file, allowZip64=True)
-        the_zip.extractall(self.temporary_folder)
+        with zipfile.ZipFile(zip_file, allowZip64=True) as the_zip:
+            the_zip.extractall(self.temporary_folder)
+
         available_choices = get_allowed_extensions()
         not_main_files = ["xml", "sld", "zip", "kmz"]
         base_file_choices = [x for x in available_choices if x not in not_main_files]
         for _file in Path(self.temporary_folder).iterdir():
-            if any([_file.name.endswith(_ext) for _ext in base_file_choices]):
-                self.file_paths["base_file"] = Path(str(_file))
-            elif not zipfile.is_zipfile(str(_file)):
+            if not zipfile.is_zipfile(str(_file)):
+                if any([_file.name.endswith(_ext) for _ext in base_file_choices]):
+                    self.file_paths["base_file"] = Path(str(_file))
                 ext = _file.name.split(".")[-1]
-                self.file_paths[f"{ext}_file"] = Path(str(_file))
+                if f"{ext}_file" in self.file_paths:
+                    existing = self.file_paths[f"{ext}_file"]
+                    self.file_paths[f"{ext}_file"] = [
+                        Path(str(_file)),
+                        *(existing if type(existing) == list else [existing]),
+                    ]
+                else:
+                    self.file_paths[f"{ext}_file"] = Path(str(_file))
+
+        tmp = self.file_paths.copy()
+        for key, value in self.file_paths.items():
+            if type(value) == list:
+                for index, file_path in enumerate(value):
+                    n = f"{key}_{index}" if index > 0 else key
+                    tmp[n] = file_path
+        self.file_paths = tmp
 
         # remiving the zip file
         os.remove(zip_name)
