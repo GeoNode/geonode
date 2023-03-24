@@ -26,6 +26,7 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
+from django.http import QueryDict
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -37,6 +38,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
+from geonode.base.api.utils import to_internal_value
 from geonode.base.models import (
     Link,
     ResourceBase,
@@ -351,9 +353,6 @@ class DataBlobSerializer(DynamicModelSerializer):
         model = ResourceBase
         fields = ("pk", "blob")
 
-    def to_internal_value(self, data):
-        return data
-
     def to_representation(self, value):
         data = ResourceBase.objects.filter(id=value)
         if data.exists() and data.count() == 1:
@@ -592,10 +591,36 @@ class ResourceBaseSerializer(
         }
 
     def to_internal_value(self, data):
+        """to_internal_value() method is called to restore a primitive datatype into its internal python representation. Here its called scale of
+            ResourceBaseSerializer. Sadly somehow dynamic rest framework isnt capabable of calling to_internal_value function for each field within this object.
+            Somehow it still validates each field individually.
+
+            This function implements convertion into internal datatypes for the DynamicModelSerializer used in ResourceBaseSerializer and further removes blob data from the internals.
+        Args:
+            data (Optional([Dict, QueryDict, str])): data objects provided by http functions against Rest API.
+
+        Returns:
+            Dict: returns a prepared for internal django use data dict
+
+        TODOS:
+            It may be a good idea to not call the super to_internal_value and make the validation calls for each field individual in here.
+        """
         if isinstance(data, str):
             data = json.loads(data)
         if "data" in data:
             data["blob"] = data.pop("data")
+        if isinstance(data, QueryDict):
+            data = data.dict()
+        for field_name in [
+            "keywords",
+            "tkeywords",
+            "restriction_code_type",
+            "license",
+            "spatial_representation_type",
+            "category",
+        ]:
+            if field_name in data and data[field_name] is not None:
+                data[field_name] = to_internal_value(self.fields[field_name].serializer, data[field_name])
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
 
