@@ -27,6 +27,7 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.http import QueryDict
+from django.core.exceptions import ValidationError
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -38,7 +39,6 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 from avatar.templatetags.avatar_tags import avatar_url
 
 from geonode.favorite.models import Favorite
-from geonode.base.api.utils import to_internal_value
 from geonode.base.models import (
     Link,
     ResourceBase,
@@ -61,6 +61,38 @@ from geonode.resource.models import ExecutionRequest
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class ComplexDynamicRelationField(DynamicRelationField):
+    def to_internal_value_single(self, data, serializer):
+        """Overwrite of DynamicRelationField implementation to handle complex data structure initialization
+
+        Args:
+            data (Optional[str, Dict]}): serialized or deserialized data from http calls (POST, GET ...)
+            serializer (DynamicModelSerializer): Serializer for the given data
+
+        Raises:
+            ValidationError: raised when requested data does not exist
+
+            django.db.models.QuerySet: return QuerySet object of the request or set data
+        """
+        print(type(data))
+        related_model = serializer.Meta.model
+        if isinstance(data, str):
+            data = json.loads(data)
+
+        if isinstance(data, dict):
+            try:
+                if hasattr(serializer, "many") and serializer.many is True:
+                    return [serializer.get_model().objects.get(**d) for d in data]
+                return serializer.get_model().objects.get(**data)
+            except related_model.DoesNotExist:
+                raise ValidationError(
+                    "Invalid value for '%s': %s object with ID=%s not found"
+                    % (self.field_name, related_model.__name__, data)
+                )
+        else:
+            return super().to_internal_value_single(data, serializer)
 
 
 class BaseDynamicModelSerializer(DynamicModelSerializer):
@@ -443,7 +475,7 @@ class ResourceBaseSerializer(
         self.fields["bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["ll_bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["srid"] = serializers.CharField(required=False)
-        self.fields["group"] = DynamicRelationField(GroupSerializer, embed=True, many=False)
+        self.fields["group"] = ComplexDynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields["popular_count"] = serializers.CharField(required=False)
         self.fields["share_count"] = serializers.CharField(required=False)
         self.fields["rating"] = serializers.CharField(required=False)
@@ -462,28 +494,27 @@ class ResourceBaseSerializer(
         self.fields["processed"] = serializers.BooleanField(read_only=True)
         self.fields["state"] = serializers.CharField(read_only=True)
         self.fields["sourcetype"] = serializers.CharField(read_only=True)
-
         self.fields["embed_url"] = EmbedUrlField(required=False)
         self.fields["thumbnail_url"] = ThumbnailUrlField(read_only=True)
-        self.fields["keywords"] = DynamicRelationField(SimpleHierarchicalKeywordSerializer, embed=False, many=True)
-        self.fields["tkeywords"] = DynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
+        self.fields["keywords"] = ComplexDynamicRelationField(
+            SimpleHierarchicalKeywordSerializer, embed=False, many=True
+        )
+        self.fields["tkeywords"] = ComplexDynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
         self.fields["regions"] = DynamicRelationField(SimpleRegionSerializer, embed=True, many=True, read_only=True)
-        self.fields["category"] = DynamicRelationField(SimpleTopicCategorySerializer, embed=True, many=False)
-        self.fields["restriction_code_type"] = DynamicRelationField(
+        self.fields["category"] = ComplexDynamicRelationField(SimpleTopicCategorySerializer, embed=True, many=False)
+        self.fields["restriction_code_type"] = ComplexDynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=False
         )
-        self.fields["license"] = DynamicRelationField(LicenseSerializer, embed=True, many=False)
-        self.fields["spatial_representation_type"] = DynamicRelationField(
+        self.fields["license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
+        self.fields["spatial_representation_type"] = ComplexDynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False
         )
         self.fields["blob"] = serializers.JSONField(required=False, write_only=True)
         self.fields["is_copyable"] = serializers.BooleanField(read_only=True)
-
         self.fields["download_url"] = DownloadLinkField(read_only=True)
-
         self.fields["favorite"] = FavoriteField(read_only=True)
 
-    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
+    metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:
         model = ResourceBase
@@ -591,36 +622,12 @@ class ResourceBaseSerializer(
         }
 
     def to_internal_value(self, data):
-        """to_internal_value() method is called to restore a primitive datatype into its internal python representation. Here its called scale of
-            ResourceBaseSerializer. Sadly somehow dynamic rest framework isnt capabable of calling to_internal_value function for each field within this object.
-            Somehow it still validates each field individually.
-
-            This function implements convertion into internal datatypes for the DynamicModelSerializer used in ResourceBaseSerializer and further removes blob data from the internals.
-        Args:
-            data (Optional([Dict, QueryDict, str])): data objects provided by http functions against Rest API.
-
-        Returns:
-            Dict: returns a prepared for internal django use data dict
-
-        TODOS:
-            It may be a good idea to not call the super to_internal_value and make the validation calls for each field individual in here.
-        """
         if isinstance(data, str):
             data = json.loads(data)
         if "data" in data:
             data["blob"] = data.pop("data")
         if isinstance(data, QueryDict):
             data = data.dict()
-        for field_name in [
-            "keywords",
-            "tkeywords",
-            "restriction_code_type",
-            "license",
-            "spatial_representation_type",
-            "category",
-        ]:
-            if field_name in data and data[field_name] is not None:
-                data[field_name] = to_internal_value(self.fields[field_name].serializer, data[field_name])
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
 
