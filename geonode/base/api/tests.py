@@ -23,7 +23,6 @@ import sys
 import json
 import logging
 import gisdata
-import pytz
 
 from PIL import Image
 from io import BytesIO
@@ -737,8 +736,8 @@ class BaseApiTests(APITestCase):
             edition=1,
             maintenance_frequency=enumerations.UPDATE_FREQUENCIES[0],
             constraints_other="Test Constrains other",
-            temporal_extent_start=date.today(tzinfo=pytz.UTC) - timedelta(days=1),
-            temporal_extent_end=date.today(tzinfo=pytz.UTC),
+            temporal_extent_start=date.today() - timedelta(days=1),
+            temporal_extent_end=date.today(),
             data_quality_statement="Test data quality statement",
             purpose="Test Purpose",
             owner=owner,
