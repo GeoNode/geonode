@@ -7,7 +7,7 @@ Django==3.2.18
 # Other
 amqp==5.1.1
 beautifulsoup4==4.12.0
-httplib2<0.21.1
+httplib2<0.22.1
 hyperlink==21.0.0
 idna>=2.5,<3.5
 urllib3==1.26.15
@@ -32,7 +32,7 @@ pathvalidate==2.5.2
 django-allauth==0.53.1
 django-appconf==1.0.5
 django-celery-results==2.5.0
-django-filter==22.1
+django-filter==23.1
 django-imagekit==4.1.0
 django-taggit==1.5.1
 django-markdownify==0.9.3
@@ -43,7 +43,7 @@ django-guardian<2.4.1
 django-downloadview==2.3.0
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
-django-tinymce==3.6.0
+django-tinymce==3.6.1
 django-grappelli==3.0.5
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.4.12
