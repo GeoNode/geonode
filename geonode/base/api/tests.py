@@ -22,8 +22,8 @@ import re
 import sys
 import json
 import logging
-from django.test import override_settings
 import gisdata
+import pytz
 
 from PIL import Image
 from io import BytesIO
@@ -33,6 +33,7 @@ from unittest.mock import patch
 from urllib.parse import urljoin
 from datetime import date, timedelta
 
+from django.test import override_settings
 from django.urls import reverse
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -47,7 +48,6 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-
 from geonode.base import enumerations
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.groups.models import GroupMember, GroupProfile
@@ -60,6 +60,10 @@ from geonode.base.models import (
     TopicCategory,
     ThesaurusKeyword,
     ExtraMetadata,
+    RestrictionCodeType,
+    License,
+    HierarchicalKeyword,
+    Group,
 )
 
 from geonode.layers.models import Dataset
@@ -718,6 +722,10 @@ class BaseApiTests(APITestCase):
         """
         owner, _ = get_user_model().objects.get_or_create(username="delet-owner")
         title = "TEST DS TITLE"
+        HierarchicalKeyword.add_root(name="a")
+        keyword = HierarchicalKeyword.objects.get(slug="a")
+        keyword.add_child(name="a1")
+
         Dataset(
             title=title,
             abstract="abstract",
@@ -729,19 +737,21 @@ class BaseApiTests(APITestCase):
             edition=1,
             maintenance_frequency=enumerations.UPDATE_FREQUENCIES[0],
             constraints_other="Test Constrains other",
-            temporal_extent_start=date.today() - timedelta(days=1),
-            temporal_extent_end=date.today(),
+            temporal_extent_start=date.today(tzinfo=pytz.UTC) - timedelta(days=1),
+            temporal_extent_end=date.today(tzinfo=pytz.UTC),
             data_quality_statement="Test data quality statement",
             purpose="Test Purpose",
             owner=owner,
             subtype="raster",
             category=TopicCategory.objects.get(identifier="elevation"),
             resource_type="dataset",
-            # license=
-            # restriction_code_type=
-            # keywords=
+            license=License.objects.all().first(),
+            restriction_code_type=RestrictionCodeType.objects.all().first(),
+            group=Group.objects.all().first(),
         ).save()
+
         ds = ResourceBase.objects.get(title=title)
+        ds.keywords.add(HierarchicalKeyword.objects.get(slug="a1"))
 
         serialized = ResourceBaseSerializer(ds)
         json = JSONRenderer().render(serialized.data)

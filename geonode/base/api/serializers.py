@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
+import logging
 from slugify import slugify
 from urllib.parse import urljoin
 
@@ -27,7 +27,6 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.http import QueryDict
-from django.core.exceptions import ValidationError
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -53,46 +52,12 @@ from geonode.base.models import (
     ExtraMetadata,
 )
 from geonode.groups.models import GroupCategory, GroupProfile
-
+from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms
 from geonode.resource.models import ExecutionRequest
 
-import logging
-
 logger = logging.getLogger(__name__)
-
-
-class ComplexDynamicRelationField(DynamicRelationField):
-    def to_internal_value_single(self, data, serializer):
-        """Overwrite of DynamicRelationField implementation to handle complex data structure initialization
-
-        Args:
-            data (Optional[str, Dict]}): serialized or deserialized data from http calls (POST, GET ...)
-            serializer (DynamicModelSerializer): Serializer for the given data
-
-        Raises:
-            ValidationError: raised when requested data does not exist
-
-            django.db.models.QuerySet: return QuerySet object of the request or set data
-        """
-        print(type(data))
-        related_model = serializer.Meta.model
-        if isinstance(data, str):
-            data = json.loads(data)
-
-        if isinstance(data, dict):
-            try:
-                if hasattr(serializer, "many") and serializer.many is True:
-                    return [serializer.get_model().objects.get(**d) for d in data]
-                return serializer.get_model().objects.get(**data)
-            except related_model.DoesNotExist:
-                raise ValidationError(
-                    "Invalid value for '%s': %s object with ID=%s not found"
-                    % (self.field_name, related_model.__name__, data)
-                )
-        else:
-            return super().to_internal_value_single(data, serializer)
 
 
 class BaseDynamicModelSerializer(DynamicModelSerializer):
