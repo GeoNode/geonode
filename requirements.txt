@@ -32,7 +32,7 @@ pathvalidate==2.5.2
 django-allauth==0.53.1
 django-appconf==1.0.5
 django-celery-results==2.5.0
-django-filter==22.1
+django-filter==23.1
 django-imagekit==4.1.0
 django-taggit==1.5.1
 django-markdownify==0.9.3
