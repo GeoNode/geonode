@@ -36,7 +36,6 @@ from django.test import override_settings
 from django.urls import reverse
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework.test import APITestCase
@@ -61,7 +60,6 @@ from geonode.base.models import (
     ExtraMetadata,
     RestrictionCodeType,
     License,
-    HierarchicalKeyword,
     Group,
 )
 
