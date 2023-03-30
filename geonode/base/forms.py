@@ -53,10 +53,6 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     ThesaurusLabel,
     TopicCategory,
-    AlternateType,
-    DescriptionType,
-    FundingReference,
-    RelatedIdentifier,
 )
 from geonode.base.widgets import TaggitSelect2Custom
 from geonode.base.fields import MultiThesauriField
@@ -364,7 +360,15 @@ class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 
     abstract = forms.CharField(label=_("Abstract"), required=False, widget=TinyMCE())
+    abstract_translated = forms.CharField(label=_("translated abstract"), help_text=ResourceBase.abstract_translated_help_text ,required=False, widget=TinyMCE())
 
+    subtitle = forms.CharField(required=False, help_text=ResourceBase.subtitle_help_text ,widget=TinyMCE())
+    method_description = forms.CharField(required=False, help_text=ResourceBase.method_description_help_text, widget=TinyMCE())
+    series_information = forms.CharField(required=False, help_text=ResourceBase.series_information_help_text, widget=TinyMCE())
+    table_of_content = forms.CharField(required=False, help_text=ResourceBase.table_of_content_help_text, widget=TinyMCE())
+    technical_info = forms.CharField(required=False, help_text=ResourceBase.technical_info_help_text, widget=TinyMCE())
+    other_description = forms.CharField(required=False, help_text=ResourceBase.other_description_help_text, widget=TinyMCE())
+    
     purpose = forms.CharField(label=_("Purpose"), required=False, widget=TinyMCE())
 
     constraints_other = forms.CharField(label=_("Other constraints"), required=False, widget=TinyMCE())
@@ -376,25 +380,6 @@ class ResourceBaseForm(TranslationModelForm):
 
     data_quality_statement = forms.CharField(label=_("Data quality statement"), required=False, widget=TinyMCE())
 
-    ##################
-    # ZALF ADDITIONS #
-    ##################
-
-    abstract_de = forms.CharField(label=_("Abstract German"), required=False, widget=TinyMCE())
-
-    # Alternate = forms.CharField(
-    #     label=_("Alternate"),
-    #     required=False,
-    #     widget=TinyMCE())
-
-    alternate_type = forms.ModelChoiceField(
-        label=_("Alternate Type"), queryset=AlternateType.objects.all(), required=False
-    )
-
-    description_type = forms.ModelChoiceField(
-        label=_("Description Type"), queryset=DescriptionType.objects.all(), required=False
-    )
-    ##
     owner = forms.ModelChoiceField(
         empty_label=_("Owner"),
         label=_("Owner"),
@@ -593,11 +578,6 @@ class BatchEditForm(forms.Form):
     owner = forms.ModelChoiceField(label=_("Owner"), queryset=get_user_model().objects.all(), required=False)
     category = forms.ModelChoiceField(label=_("Category"), queryset=TopicCategory.objects.all(), required=False)
     license = forms.ModelChoiceField(label=_("License"), queryset=License.objects.all(), required=False)
-    ##################
-    # ZALF ADDITIONS #
-    ##################
-
-    ##
     regions = forms.ModelChoiceField(label=_("Regions"), queryset=Region.objects.all(), required=False)
     date = forms.DateTimeField(label=_("Date"), required=False)
     language = forms.ChoiceField(

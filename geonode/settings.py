@@ -37,12 +37,6 @@ from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
 
-# add these import lines to the top of your geonode settings file
-from django_auth_ldap import config as ldap_config
-from geonode_ldap.config import GeonodeNestedGroupOfNamesType
-import ldap
-import sentry_sdk
-
 from . import serializer
 
 SILENCED_SYSTEM_CHECKS = [
@@ -56,30 +50,6 @@ SILENCED_SYSTEM_CHECKS = [
 
 # GeoNode Version
 VERSION = get_version()
-BUILD_NUMBER = os.environ.get("BUILD_NUMBER", "0")
-
-
-# ZALF SENTRY ADDITIONS
-SENTRY_ENABLED = ast.literal_eval(os.getenv("SENTRY_ENABLED", "False"))
-if SENTRY_ENABLED:
-    import sentry_sdk
-
-    print("sentry enabled ...")
-    SENTRY_DSN = os.getenv("SENTRY_DSN")
-    print(SENTRY_DSN)
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        release="geonodex@{}.{}".format(VERSION, BUILD_NUMBER),
-        environment=os.getenv("SENTRY_ENVIRONMENT", "development"),
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=1.0,
-        # If you wish to associate users to errors (assuming you are using
-        # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True,
-    )
-
 
 DEFAULT_CHARSET = "utf-8"
 
@@ -869,51 +839,11 @@ AUTHENTICATION_BACKENDS = (
     # 'oauth2_provider.backends.OAuth2Backend',
     "django.contrib.auth.backends.ModelBackend",
     "guardian.backends.ObjectPermissionBackend",
-    # 'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
 
 if "announcements" in INSTALLED_APPS:
     AUTHENTICATION_BACKENDS += ("announcements.auth_backends.AnnouncementPermissionsBackend",)
-
-LDAP_ENABLED = strtobool(os.getenv("LDAP_ENABLED", "False"))
-if LDAP_ENABLED:
-    # add both standard ModelBackend auth and geonode.contrib.ldap auth
-    AUTHENTICATION_BACKENDS += ("geonode_ldap.backend.GeonodeLdapBackend",)
-
-# django_auth_ldap configuration
-AUTH_LDAP_SERVER_URI = os.getenv("LDAP_SERVER_URL")
-AUTH_LDAP_BIND_DN = os.getenv("LDAP_BIND_DN")
-AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD")
-AUTH_LDAP_USER_SEARCH = ldap_config.LDAPSearch(
-    os.getenv("LDAP_USER_SEARCH_DN"), ldap.SCOPE_SUBTREE, os.getenv("LDAP_USER_SEARCH_FILTERSTR")
-)
-
-# should LDAP groups be used to spawn groups in GeoNode?
-AUTH_LDAP_MIRROR_GROUPS = True
-AUTH_LDAP_GROUP_SEARCH = ldap_config.LDAPSearch(
-    os.getenv("LDAP_GROUP_SEARCH_DN"), ldap.SCOPE_SUBTREE, os.getenv("LDAP_GROUP_SEARCH_FILTERSTR")
-)
-
-AUTH_LDAP_GROUP_TYPE = GeonodeNestedGroupOfNamesType()
-AUTH_LDAP_USER_ATTR_MAP_FIRST_NAME = os.getenv("LDAP_USER_ATTR_MAP_FIRST_NAME", "givenName")
-AUTH_LDAP_USER_ATTR_MAP_LAST_NAME = os.getenv("LDAP_USER_ATTR_MAP_LAST_NAME", "sn")
-AUTH_LDAP_USER_ATTR_MAP_EMAIL_ADDR = os.getenv("LDAP_USER_ATTR_MAP_EMAIL_ADDR", "mailPrimaryAddress")
-AUTH_LDAP_USER_ATTR_MAP = {
-    "first_name": AUTH_LDAP_USER_ATTR_MAP_FIRST_NAME,
-    "last_name": AUTH_LDAP_USER_ATTR_MAP_LAST_NAME,
-    "email": AUTH_LDAP_USER_ATTR_MAP_EMAIL_ADDR,
-}
-
-AUTH_LDAP_FIND_GROUP_PERMS = True
-AUTH_LDAP_ALWAYS_UPDATE_USER = strtobool(os.getenv("LDAP_ALWAYS_UPDATE_USER", "True"))
-AUTH_LDAP_FIND_GROUP_PERMS = True
-AUTH_LDAP_CACHE_TIMEOUT = 3600
-
-# these are not needed by django_auth_ldap - we use them to find and match
-# GroupProfiles and GroupCategories
-# GEONODE_LDAP_GROUP_NAME_ATTRIBUTE = os.getenv("LDAP_GROUP_NAME_ATTRIBUTE", default="cn")
-# GEONODE_LDAP_GROUP_PROFILE_FILTERSTR = os.getenv("LDAP_GROUP_SEARCH_FILTERSTR", default='(ou=research group)')
-# GEONODE_LDAP_GROUP_PROFILE_MEMBER_ATTR = os.getenv("LDAP_GROUP_PROFILE_MEMBER_ATTR", default='member')
 
 OAUTH2_PROVIDER = {
     "SCOPES": {
@@ -1001,6 +931,7 @@ DEFAULT_SEARCH_SIZE = int(os.getenv("DEFAULT_SEARCH_SIZE", "10"))
 #
 # Settings for third party apps
 #
+
 # Pinax Ratings
 PINAX_RATINGS_CATEGORY_CHOICES = {
     "maps.Map": {"map": "How good is this map?"},
@@ -1406,9 +1337,6 @@ DOWNLOAD_FORMATS_RASTER = [
 ]
 
 
-SLACK_ENALBED = ast.literal_eval(os.getenv("SLACK_ENABLED", "True"))
-SLACK_WEBHOOK_URLS = eval(os.getenv("SLACK_WEBHOOK_URL", "[]"))
-
 DISPLAY_ORIGINAL_DATASET_LINK = ast.literal_eval(os.getenv("DISPLAY_ORIGINAL_DATASET_LINK", "True"))
 
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = ast.literal_eval(os.getenv("ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE", "False"))
@@ -1533,7 +1461,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
                     }
                 }
                 return pycsw_catalogue
-            return None
+        return None
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
@@ -1978,7 +1906,6 @@ if os.name == "nt":
 # Required: (boolean, optional, default false) mandatory while editing metadata (not implemented yet)
 # Filter: (boolean, optional, default false) a filter option on that thesaurus will appear in the main search page
 # THESAURUS = {'name': 'inspire_themes', 'required': True, 'filter': True}
-THESAURUS_DEFAULT_LANG = os.environ.get("THESAURUS_DEFAULT_LANG", "en")
 
 # ######################################################## #
 # Advanced Resource Publishing Worklow Settings - START    #
@@ -2273,11 +2200,13 @@ EXTRA_METADATA_SCHEMA = {
 Define the URLs patterns used by the SizeRestrictedFileUploadHandler
 to evaluate if the file is greater than the limit size defined
 """
+
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
     "uploads-upload",
     "document_upload",
 )
+
 SUPPORTED_DATASET_FILE_TYPES = [
     {
         "id": "shp",

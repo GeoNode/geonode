@@ -65,7 +65,17 @@ from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
 from geonode.groups.conf import settings as groups_settings
-from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
+from geonode.base.models import (
+      HierarchicalKeyword,
+      Region,
+      ResourceBase,
+      TopicCategory,
+      ThesaurusKeyword,
+      RelationType,
+      RelatedIdentifierType,
+      FundingReference,
+      RelatedProject
+)
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
@@ -95,6 +105,10 @@ from .serializers import (
     OwnerSerializer,
     HierarchicalKeywordSerializer,
     TopicCategorySerializer,
+    RelationTypeSerializer,
+    RelatedIdentifierTypeSerializer,
+    FundingReferenceSerializer,
+    RelatedProjectSerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
     ExtraMetadataSerializer,
@@ -302,6 +316,60 @@ class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveMode
     pagination_class = GeoNodeApiPagination
 
 
+class RelationTypeViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    API endpoint that lists relationtype.
+    """
+
+    permission_classes = [
+        AllowAny,
+    ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    queryset = RelationType.objects.all()
+    serializer_class = RelationTypeSerializer
+    pagination_class = GeoNodeApiPagination
+
+class RelatedIdentifierTypeViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    API endpoint that lists relatedidentifiertypes.
+    """
+
+    permission_classes = [
+        AllowAny,
+    ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    queryset = RelatedIdentifierType.objects.all()
+    serializer_class = RelatedIdentifierTypeSerializer
+    pagination_class = GeoNodeApiPagination
+
+class FundingReferenceViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    API endpoint that lists fundingreference.
+    """
+
+    permission_classes = [
+        AllowAny,
+    ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    queryset = FundingReference.objects.all()
+    serializer_class = FundingReferenceSerializer
+    pagination_class = GeoNodeApiPagination
+
+class RelatedProjectViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
+    """
+    API endpoint that lists relatedprojects.
+    """
+
+    permission_classes = [
+        AllowAny,
+    ]
+    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
+    queryset = RelatedProject.objects.all()
+    serializer_class = RelatedProjectSerializer
+    pagination_class = GeoNodeApiPagination
+
+
+RelatedProjectSerializer
 class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
     """
     API endpoint that lists all possible owners.
