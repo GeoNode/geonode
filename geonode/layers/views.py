@@ -524,7 +524,6 @@ def dataset_metadata(
         and tkeywords_form.is_valid()
         and timeseries_form.is_valid()
     ):
-
         new_category = None
         if (
             category_form
