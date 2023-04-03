@@ -330,8 +330,8 @@ class UserSerializer(BaseDynamicModelSerializer):
 
 
 class ContactRoleField(DynamicComputedField):
-    def __init__(self, contat_type, **kwargs):
-        self.contat_type = contat_type
+    def __init__(self, contact_type, **kwargs):
+        self.contact_type = contact_type
         super().__init__(**kwargs)
 
     def get_attribute(self, instance):
