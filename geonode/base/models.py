@@ -1585,10 +1585,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 pass
 
         if user:
-            if self.poc is None:
-                self.poc = user
-            if self.metadata_author is None:
-                self.metadata_author = user
+            if len(self.poc) == 0:
+                self.poc = [user]
+            if len(self.metadata_author) == 0:
+                self.metadata_author = [user]
 
         from guardian.models import UserObjectPermission
 
@@ -1613,10 +1613,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing
         """
-        if not self.metadata_author:
-            self.metadata_author = self.owner
-        if not self.poc:
-            self.poc = self.owner
+        if len(self.metadata_author) == 0:
+            self.metadata_author = [self.owner]
+        if len(self.poc) == 0:
+            self.poc = [self.owner]
 
     @staticmethod
     def get_multivalue_role_property_names() -> List[str]:

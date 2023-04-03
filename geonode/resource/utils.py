@@ -51,6 +51,7 @@ from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from ..people.utils import get_valid_user
+from geonode.people import Roles
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
@@ -181,8 +182,9 @@ def update_resource(
             else:
                 defaults[key] = value
 
-    poc = defaults.pop("poc", None)
-    metadata_author = defaults.pop("metadata_author", None)
+    contact_roles = {
+        contact_role.name: defaults.pop(contact_role.name, None) for contact_role in Roles.get_multivalue_ones()
+    }
 
     to_update = {}
     for _key in ("name",):
