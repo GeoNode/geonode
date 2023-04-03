@@ -23,7 +23,7 @@ wrapt==1.15.0
 jsonschema==4.17.3
 zipstream-new==1.1.8
 schema==0.7.5
-rdflib==6.1.1
+rdflib==6.3.2
 smart_open==6.3.0
 PyMuPDF==1.21.1
 pathvalidate==2.5.2
