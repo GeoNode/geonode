@@ -72,7 +72,6 @@ test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
 
 class BaseApiTests(APITestCase):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json", "test_thesaurus.json"]
 
     def setUp(self):

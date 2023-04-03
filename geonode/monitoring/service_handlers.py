@@ -30,7 +30,6 @@ log = logging.getLogger(__name__)
 
 
 class BaseServiceExpose:
-
     NAME = None
 
     def __init__(self, *args, **kwargs):
@@ -52,7 +51,6 @@ class BaseServiceExpose:
 
 
 class HostGeoNodeServiceExpose(BaseServiceExpose):
-
     NAME = "hostgeonode"
 
     def expose(self, *args, **kwargs):
@@ -77,7 +75,6 @@ class HostGeoNodeServiceExpose(BaseServiceExpose):
 
 
 class GeoNodeServiceExpose(BaseServiceExpose):
-
     NAME = "geonode"
 
     def expose(self, *args, **kwargs):
@@ -186,7 +183,6 @@ class GeoServerService(BaseServiceHandler):
 
 
 class HostGeoServerService(BaseServiceHandler):
-
     PATH = "/rest/about/system-status.json"
 
     def __init__(self, service, force_check=False):

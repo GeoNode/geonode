@@ -259,6 +259,9 @@ class OGC_Servers_Handler:
         for option in ["WMST_ENABLED", "WPS_ENABLED"]:
             server.setdefault(option, False)
 
+        for option in ["TIMEOUT", "GEOFENCE_TIMEOUT"]:
+            server.setdefault(option, 60)
+
     def __getitem__(self, alias):
         if hasattr(self._servers, alias):
             return getattr(self._servers, alias)
@@ -350,8 +353,6 @@ def get_dataset_name(dataset):
 
 def get_dataset_workspace(dataset):
     """Get the workspace where the input layer belongs"""
-    alternate = None
-    workspace = None
     try:
         alternate = dataset.alternate
     except Exception:
@@ -1191,7 +1192,12 @@ class HttpClient:
             _req_tout = timeout or self.timeout
             try:
                 response = action(url=url, data=data, headers=headers, timeout=_req_tout, stream=stream, verify=verify)
-            except (requests.exceptions.RequestException, ValueError, RetryError) as e:
+            except (
+                requests.exceptions.ConnectTimeout,
+                requests.exceptions.RequestException,
+                ValueError,
+                RetryError,
+            ) as e:
                 msg = f"Request exception [{e}] - TOUT [{_req_tout}] to URL: {url} - headers: {headers}"
                 logger.exception(Exception(msg))
                 response = None
@@ -1368,7 +1374,6 @@ def get_legend_url(
 
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
-
     from geonode.base.models import Link
     from django.urls import reverse
     from django.utils.translation import ugettext
@@ -1804,7 +1809,7 @@ def json_serializer_producer(dictionary):
         "user_permissions",
     ]
 
-    for (x, y) in dictionary.items():
+    for x, y in dictionary.items():
         if x not in _keys_to_skip:
             if x in json_serializer_k_map.keys():
                 instance = django_apps.get_model(json_serializer_k_map[x], require_ready=False)

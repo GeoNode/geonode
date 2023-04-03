@@ -19,21 +19,21 @@
 import json
 import logging
 from unittest.mock import MagicMock
+from urllib.parse import urljoin
 
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework.test import APITestCase
+
+from geonode.base.populate_test_data import create_models
 from geonode.geoapps.api.exceptions import DuplicateGeoAppException, InvalidGeoAppException
 from geonode.geoapps.api.serializers import GeoAppSerializer
-
 from geonode.geoapps.models import GeoApp
-from geonode.base.populate_test_data import create_models
 
 logger = logging.getLogger(__name__)
 
 
 class GeoAppsApiTests(APITestCase):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -75,6 +75,17 @@ class GeoAppsApiTests(APITestCase):
         self.assertEqual(
             json.loads(response.data["geoapps"][0]["data"]), {"test_data": {"test": ["test_1", "test_2", "test_3"]}}
         )
+
+    def test_extra_metadata_included_with_param(self):
+        _app = GeoApp.objects.first()
+        url = urljoin(f"{reverse('geoapps-list')}/", f"{_app.pk}")
+        data = {"include[]": "metadata"}
+
+        response = self.client.get(url, format="json", data=data)
+        self.assertIsNotNone(response.data["geoapp"].get("metadata"))
+
+        response = self.client.get(url, format="json")
+        self.assertNotIn("metadata", response.data["geoapp"])
 
     def test_geoapps_crud(self):
         """

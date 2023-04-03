@@ -30,7 +30,6 @@ from . import enumerations, forms
 
 
 class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
-
     selenium = None
 
     @classmethod

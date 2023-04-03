@@ -54,7 +54,6 @@ class OIDCValidator(OAuth2Validator):
         return None
 
     def get_id_token(self, token, token_handler, request):
-
         key = jwk.JWK.from_pem(oauth2_settings.OIDC_RSA_PRIVATE_KEY.encode("utf8"))
 
         # TODO: http://openid.net/specs/openid-connect-core-1_0.html#HybridIDToken2

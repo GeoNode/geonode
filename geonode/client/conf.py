@@ -47,7 +47,6 @@ def is_installed(package):
 
 
 class GeoNodeClientAppConf(AppConf):
-
     LAYER_PREVIEW_LIBRARY = "geonode"
     HOOKSET = "geonode.client.hooksets.BaseHookSet"
 

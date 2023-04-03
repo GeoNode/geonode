@@ -89,9 +89,7 @@ class LoginRequiredMiddleware(MiddlewareMixin):
         self.get_response = get_response
 
     def process_request(self, request):
-
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-
             if not any(path.match(request.path) for path in white_list):
                 return HttpResponseRedirect(f"{self.redirect_to}?next={request.path}")
 
@@ -106,7 +104,6 @@ class LoginFromApiKeyMiddleware(MiddlewareMixin):
         This middleware is deactivated by default, to activate it set ENABLE_APIKEY_LOGIN=True
         """
         if request.user and (not request.user.is_authenticated or request.user.is_anonymous):
-
             request.user = extract_user_from_headers(request)
 
             if request.user and not request.user.is_anonymous and request.user.is_authenticated:

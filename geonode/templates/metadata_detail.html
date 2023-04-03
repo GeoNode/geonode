@@ -348,6 +348,9 @@
         {% endif %}
         {% endblock supplemental_information %}
 
+        {% block extra_metadata %}
+        {% endblock extra_metadata %}
+
         {% block spatial_representation_type %}
         {% if resource.spatial_representation_type %}
         <dt>{% trans "Spatial Representation Type" %}</dt>

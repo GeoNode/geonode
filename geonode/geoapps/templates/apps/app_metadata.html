@@ -55,7 +55,7 @@
 
       {% csrf_token %}
         <div id="mdeditor_form" class="col-md-12 form-controls">
-          {% form geoapp_form using "layouts/app_panels.html" %}
+          {% form geoapp_form using panel_template %}
           {# geoapp_form|as_bootstrap #}
         </div>
 

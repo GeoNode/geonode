@@ -37,7 +37,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         model = GeoApp
         name = "geoapp"
         view_name = "geoapps-list"
-        fields = ("pk", "uuid", "data", "name", "executions")
+        fields = ("pk", "uuid", "data", "name", "executions", "metadata")
 
     def extra_update_checks(self, validated_data):
         _user_profiles = {}
@@ -84,7 +84,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
         return validated_data
 
     def _create_and_update(self, validated_data, instance=None):
-
         # Extract JSON blob
         _data = {}
         if "blob" in validated_data:

@@ -58,7 +58,6 @@ def geoserver_upload(
     keywords=(),
     charset="UTF-8",
 ):
-
     # Step 2. Check that it is uploading to the same resource type as
     # the existing resource
     logger.debug(

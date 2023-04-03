@@ -178,6 +178,7 @@ class DatasetSerializer(ResourceBaseSerializer):
             "styles",
             "attribute_set",
             "executions",
+            "metadata",
         )
 
     name = serializers.CharField(read_only=True)

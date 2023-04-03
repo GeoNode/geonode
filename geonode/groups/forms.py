@@ -30,7 +30,6 @@ from geonode.people.utils import get_available_users
 
 
 class GroupForm(TranslationModelForm):
-
     slug = forms.SlugField(
         help_text=_("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         widget=forms.HiddenInput,

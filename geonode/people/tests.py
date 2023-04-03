@@ -17,6 +17,7 @@
 #
 #########################################################################
 from django.test.utils import override_settings
+from mock import MagicMock, PropertyMock, patch
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.core import mail
@@ -35,7 +36,6 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 
 
 class PeopleAndProfileTests(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
@@ -74,6 +74,27 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.client.logout()
         response = self.client.get(reverse("set_user_dataset_permissions"))
         self.assertEqual(response.status_code, 302)
+
+    @patch("geonode.base.views.UserAndGroupPermissionsForm.is_valid")
+    @patch("geonode.base.views.UserAndGroupPermissionsForm.errors", new_callable=PropertyMock)
+    def test_invalid_form_return_the_expected_message(self, form_error, form_valid):
+        """
+        The form should retrun a pre-defined message if the dataset
+        is not part of the choices
+        """
+        error_obj = MagicMock(data=[MagicMock(code="invalid_choice")])
+        form_valid.return_value = False
+        form_error.return_value = {"layers": error_obj}
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(
+            path=reverse("set_user_dataset_permissions"),
+            data={"ids": [99999], "permission_type": "view", "mode": "set"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        message = list(response.context.get("messages"))[0]
+        self.assertEqual(message.tags, "error")
+        self.assertTrue("The following dataset ID selected are not part of the available choices" in message.message)
 
     @override_settings(ASYNC_SIGNALS=False)
     def test_set_unset_user_dataset_permissions(self):

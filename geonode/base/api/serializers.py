@@ -255,7 +255,6 @@ class ExtraMetadataSerializer(DynamicModelSerializer):
         fields = ("pk", "metadata")
 
     def to_representation(self, obj):
-
         if isinstance(obj, QuerySet):
             out = []
             for el in obj:

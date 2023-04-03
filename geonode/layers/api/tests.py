@@ -21,24 +21,23 @@ import logging
 
 from unittest.mock import patch
 from django.contrib.auth import get_user_model
-
 from urllib.parse import urljoin
 
+from django.conf import settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
-from geonode.geoserver.createlayer.utils import create_dataset
-from guardian.shortcuts import assign_perm, get_anonymous_user
 
-from django.conf import settings
-from geonode.layers.models import Dataset, Attribute
+from guardian.shortcuts import assign_perm, get_anonymous_user
+from geonode.geoserver.createlayer.utils import create_dataset
+
 from geonode.base.populate_test_data import create_models, create_single_dataset
+from geonode.layers.models import Attribute, Dataset
 from geonode.maps.models import Map, MapLayer
 
 logger = logging.getLogger(__name__)
 
 
 class DatasetsApiTests(APITestCase):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -120,6 +119,17 @@ class DatasetsApiTests(APITestCase):
             _dataset.featureinfo_custom_template = None
             _dataset.use_featureinfo_custom_template = False
             _dataset.save()
+
+    def test_extra_metadata_included_with_param(self):
+        _dataset = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
+        data = {"include[]": "metadata"}
+
+        response = self.client.get(url, format="json", data=data)
+        self.assertIsNotNone(response.data["dataset"].get("metadata"))
+
+        response = self.client.get(url, format="json")
+        self.assertNotIn("metadata", response.data["dataset"])
 
     def test_get_dataset_related_maps_and_maplayers(self):
         dataset = Dataset.objects.first()
@@ -260,7 +270,6 @@ class DatasetsApiTests(APITestCase):
 
     @patch("geonode.layers.api.views.validate_input_source")
     def test_layer_replace_should_work(self, _validate_input_source):
-
         _validate_input_source.return_value = True
 
         admin = get_user_model().objects.get(username="admin")

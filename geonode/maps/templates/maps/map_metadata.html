@@ -57,7 +57,7 @@
 
       {% csrf_token %}
         <div id="mdeditor_form" class="col-md-12 form-controls">
-          {% form map_form using "layouts/map_panels.html" %}
+          {% form map_form using panel_template %}
           {# map_form|as_bootstrap #}
         </div>
 

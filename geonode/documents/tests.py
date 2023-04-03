@@ -62,7 +62,6 @@ from .forms import DocumentCreateForm
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
-
     type = "document"
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
@@ -652,7 +651,6 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -800,3 +798,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
             ),
         )
         self.assertEqual(doc.href, "http://geonode.org/map.pdf")
+
+        # create original link to external
+        doc.link_set.create(resource=doc.resourcebase_ptr, link_type="original", url="http://google.com/test")
+        self.assertEqual(doc.download_url, "http://google.com/test")

@@ -389,7 +389,6 @@ def package(options):
     sh("python setup.py sdist --formats=zip")
 
     with pushd("package"):
-
         # Delete old tar files in that directory
         for f in glob.glob("GeoNode*.tar.gz"):
             old_package = path(f)
@@ -955,7 +954,6 @@ def deb(options):
     sh(f"ln -s {os.path.realpath('.git')} {os.path.realpath('package')}")
 
     with pushd("package"):
-
         # Install requirements
         # sh('sudo apt-get -y install debhelper devscripts git-buildpackage')
 

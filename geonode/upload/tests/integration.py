@@ -106,7 +106,6 @@ def get_wms(version="1.1.1", type_name=None, username=None, password=None):
 
 
 class UploaderBase(GeoNodeBaseTestSupport):
-
     type = "dataset"
 
     @classmethod
@@ -155,9 +154,9 @@ class UploaderBase(GeoNodeBaseTestSupport):
 
         # Cleanup
         if settings.OGC_SERVER["default"].get("GEOFENCE_SECURITY_ENABLED", False):
-            from geonode.geoserver.security import purge_geofence_all
+            from geonode.geoserver.security import delete_all_geofence_rules
 
-            purge_geofence_all()
+            delete_all_geofence_rules()
 
     def check_dataset_geonode_page(self, path):
         """Check that the final dataset page render's correctly after
@@ -334,7 +333,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
         self.assertTrue(resp.status_code, 400)
 
     def upload_folder_of_files(self, folder, final_check, session_ids=None):
-
         mains = (".tif", ".shp", ".zip", ".asc")
 
         def is_main(_file):

@@ -200,7 +200,6 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-
         try:
             metadata_only = strtobool(request.query_params.get("filter{metadata_only}", "None"))
         except Exception:

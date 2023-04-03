@@ -115,26 +115,28 @@ def _resolve_dataset(request, alternate, permission="base.view_resourcebase", ms
     Resolve the layer by the provided typename (which may include service name) and check the optional permission.
     """
     service_typename = alternate.split(":", 1)
-    if Service.objects.filter(name=service_typename[0]).count() == 1:
+    for _s in Service.objects.filter(name__startswith=service_typename[0]):
         query = {
             "alternate": service_typename[1],
-            "remote_service": Service.objects.filter(name=service_typename[0]).get(),
+            "remote_service": _s,
         }
-        return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
-    else:
-        if len(service_typename) > 1 and ":" in service_typename[1]:
-            if service_typename[0]:
-                query = {"store": service_typename[0], "alternate": service_typename[1]}
-            else:
-                query = {"alternate": service_typename[1]}
+        try:
+            return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
+        except (Dataset.DoesNotExist, Http404) as e:
+            logger.debug(e)
+    if len(service_typename) > 1 and ":" in service_typename[1]:
+        if service_typename[0]:
+            query = {"store": service_typename[0], "alternate": service_typename[1]}
         else:
-            query = {"alternate": alternate}
-        test_query = Dataset.objects.filter(**query)
-        if test_query.count() > 1 and test_query.exclude(subtype="remote").count() == 1:
-            query = {"id": test_query.exclude(subtype="remote").last().id}
-        elif test_query.count() > 1:
-            query = {"id": test_query.last().id}
-        return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
+            query = {"alternate": service_typename[1]}
+    else:
+        query = {"alternate": alternate}
+    test_query = Dataset.objects.filter(**query)
+    if test_query.count() > 1 and test_query.exclude(subtype="remote").count() == 1:
+        query = {"id": test_query.exclude(subtype="remote").last().id}
+    elif test_query.count() > 1:
+        query = {"id": test_query.last().id}
+    return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
 
 
 # Basic Dataset Views #
@@ -330,7 +332,14 @@ def dataset_feature_catalogue(request, layername, template="../../catalogue/temp
 
 @login_required
 @check_keyword_write_perms
-def dataset_metadata(request, layername, template="datasets/dataset_metadata.html", ajax=True):
+def dataset_metadata(
+    request,
+    layername,
+    template="datasets/dataset_metadata.html",
+    panel_template="layouts/panels.html",
+    custom_metadata=None,
+    ajax=True,
+):
     try:
         layer = _resolve_dataset(request, layername, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
     except PermissionDenied as e:
@@ -640,6 +649,8 @@ def dataset_metadata(request, layername, template="datasets/dataset_metadata.htm
         context={
             "resource": layer,
             "dataset": layer,
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
             "dataset_form": dataset_form,
             "attribute_form": attribute_form,
             "timeseries_form": timeseries_form,
@@ -895,7 +906,7 @@ def get_dataset(request, layername):
         )
 
 
-def dataset_metadata_detail(request, layername, template="datasets/dataset_metadata_detail.html"):
+def dataset_metadata_detail(request, layername, template="datasets/dataset_metadata_detail.html", custom_metadata=None):
     try:
         layer = _resolve_dataset(request, layername, "view_resourcebase", _PERMISSION_MSG_METADATA)
     except PermissionDenied:
@@ -917,7 +928,15 @@ def dataset_metadata_detail(request, layername, template="datasets/dataset_metad
     perms_list = list(layer.get_self_resource().get_user_perms(request.user).union(layer.get_user_perms(request.user)))
 
     return render(
-        request, template, context={"resource": layer, "perms_list": perms_list, "group": group, "SITEURL": site_url}
+        request,
+        template,
+        context={
+            "resource": layer,
+            "perms_list": perms_list,
+            "group": group,
+            "SITEURL": site_url,
+            "custom_metadata": custom_metadata,
+        },
     )
 
 

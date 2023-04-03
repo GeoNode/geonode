@@ -140,7 +140,6 @@ def update_resource(
     vals: dict = {},
     extra_metadata: list = [],
 ):
-
     if xml_file:
         instance.metadata_xml = open(xml_file).read()
 
@@ -158,7 +157,10 @@ def update_resource(
                 instance.regions.clear()
                 instance.regions.add(*regions_resolved)
 
-    instance = KeywordHandler(instance, _keywords).set_keywords()
+    try:
+        instance = KeywordHandler(instance, _keywords).set_keywords()
+    except Exception as e:
+        logger.debug(e)
 
     # set model properties
     defaults = {}

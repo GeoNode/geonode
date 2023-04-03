@@ -77,7 +77,6 @@ logger = logging.getLogger(__name__)
     DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER=5,
 )
 class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
-
     port = 0
 
     @classmethod

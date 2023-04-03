@@ -211,7 +211,6 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         return len(data["layers"])
 
     def list_resources(self, offset: typing.Optional[int] = 0) -> typing.List[base.BriefRemoteResource]:
-
         # look at `tasks.update_harvestable_resources()` in order to understand the purpose of the
         # `offset` parameter. Briefly, we try to retrieve resources in batches and we use `offset` to
         # control the pagination of the remote service. Unfortunately WMS does not really have the

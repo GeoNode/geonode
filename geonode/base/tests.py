@@ -614,7 +614,6 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 405, "User is allowed to post to forbidden URL")
 
     def test_maintenance_whitelist(self):
-
         web_client = Client()
 
         # set read-only flag
@@ -813,7 +812,6 @@ class TestHtmlTagRemoval(SimpleTestCase):
 
 
 class TestTagThesaurus(TestCase):
-
     #  loading test thesausurs
     fixtures = ["test_thesaurus.json"]
 
@@ -882,7 +880,6 @@ class TestTagThesaurus(TestCase):
 
 @override_settings(THESAURUS_DEFAULT_LANG="en")
 class TestThesaurusAvailableForm(TestCase):
-
     #  loading test thesausurs
     fixtures = ["test_thesaurus.json"]
 
@@ -1056,7 +1053,6 @@ class TestFacets(TestCase):
 
 
 class TestGenerateThesaurusReference(TestCase):
-
     fixtures = ["test_thesaurus.json"]
 
     def setUp(self):

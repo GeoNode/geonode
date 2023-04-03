@@ -138,6 +138,8 @@ class Document(ResourceBase):
 
     @property
     def download_url(self):
+        if self.link_set.filter(resource=self.get_self_resource(), link_type="original").exists():
+            return self.link_set.filter(resource=self.get_self_resource(), link_type="original").first().url
         return build_absolute_uri(reverse("document_download", args=(self.id,)))
 
     class Meta(ResourceBase.Meta):
@@ -145,7 +147,6 @@ class Document(ResourceBase):
 
 
 class DocumentResourceLink(models.Model):
-
     # relation to the document model
     document = models.ForeignKey(Document, null=True, blank=True, related_name="links", on_delete=models.CASCADE)
 

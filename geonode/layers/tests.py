@@ -374,6 +374,12 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
+            # get and update original link to external
+            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").update(
+                url="http://google.com/test"
+            )
+            self.assertEqual(lyr.download_url, "http://google.com/test")
+
     def test_get_valid_user(self):
         # Verify it accepts an admin user
         adminuser = get_user_model().objects.get(is_superuser=True)
@@ -1311,7 +1317,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
-
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     @classmethod
@@ -1470,7 +1475,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
 
 
 class LayerNotificationsTestCase(NotificationsTestsHelper):
-
     type = "dataset"
 
     @classmethod
@@ -1947,7 +1951,6 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertTrue(form.is_valid())
 
     def test_dataset_time_form_should_work(self):
-
         attr, _ = Attribute.objects.get_or_create(
             dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
         )
@@ -1967,7 +1970,6 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertDictEqual({}, form.errors)
 
     def test_dataset_time_form_should_raise_error_if_invalid_payload(self):
-
         attr, _ = Attribute.objects.get_or_create(
             dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
         )

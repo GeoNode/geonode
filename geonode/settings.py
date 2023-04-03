@@ -1029,6 +1029,7 @@ OGC_SERVER = {
         "GEONODE_SECURITY_ENABLED": ast.literal_eval(os.getenv("GEONODE_SECURITY_ENABLED", "True")),
         "GEOFENCE_SECURITY_ENABLED": GEOFENCE_SECURITY_ENABLED,
         "GEOFENCE_URL": os.getenv("GEOFENCE_URL", "internal:/"),
+        "GEOFENCE_TIMEOUT": int(os.getenv("GEOFENCE_TIMEOUT", os.getenv("OGC_REQUEST_TIMEOUT", "60"))),
         "WMST_ENABLED": ast.literal_eval(os.getenv("WMST_ENABLED", "False")),
         "BACKEND_WRITE_ENABLED": ast.literal_eval(os.getenv("BACKEND_WRITE_ENABLED", "True")),
         "WPS_ENABLED": ast.literal_eval(os.getenv("WPS_ENABLED", "False")),
@@ -1102,7 +1103,7 @@ PYCSW = {
             "home": ".",
             "url": CATALOGUE["default"]["URL"],
             "encoding": "UTF-8",
-            "language": LANGUAGE_CODE,
+            "language": LANGUAGE_CODE if LANGUAGE_CODE in ("en", "fr", "el") else "en",
             "maxrecords": "20",
             "pretty_print": "true",
             # 'domainquerytype': 'range',
@@ -1549,15 +1550,22 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
     # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
     MAPSTORE_BASELAYERS_SOURCES = os.environ.get("MAPSTORE_BASELAYERS_SOURCES", {})
 
-    MAPSTORE_DEFAULT_LANGUAGES = """(
-        ('de-de', 'Deutsch'),
-        ('en-us', 'English'),
-        ('es-es', 'Español'),
-        ('fr-fr', 'Français'),
-        ('it-it', 'Italiano'),
-    )"""
+    MAPSTORE_DEFAULT_LANGUAGES = (
+        ("de-de", "Deutsch"),
+        ("en-us", "English"),
+        ("es-es", "Español"),
+        ("fr-fr", "Français"),
+        ("it-it", "Italiano"),
+    )
 
-    LANGUAGES = ast.literal_eval(os.getenv("LANGUAGES", MAPSTORE_DEFAULT_LANGUAGES))
+    if os.getenv("LANGUAGES"):
+        # Map given languages to mapstore supported languages.
+        LANGUAGES = tuple(
+            (k, v) for k, v in dict(MAPSTORE_DEFAULT_LANGUAGES).items() if any(m in k for m in dict(LANGUAGES).keys())
+        )
+    else:
+        LANGUAGES = MAPSTORE_DEFAULT_LANGUAGES
+
     # The default mapstore client compiles the translations json files in the /static/mapstore directory
     # gn-translations are the custom translations for the client and ms-translations are the translations from the core framework
     MAPSTORE_TRANSLATIONS_PATH = os.environ.get(
@@ -1842,8 +1850,11 @@ NOTIFICATION_ENABLED = ast.literal_eval(os.environ.get("NOTIFICATION_ENABLED", "
 
 # notifications backends
 NOTIFICATIONS_BACKEND = os.environ.get("NOTIFICATIONS_BACKEND", "geonode.notifications_backend.EmailBackend")
+
+# setting the spam sensitivity to a number greater than (2) the default sensitivity described in pinax
+# in order to have email notifications turned off by default.
 PINAX_NOTIFICATIONS_BACKENDS = [
-    ("email", NOTIFICATIONS_BACKEND, 0),
+    ("email", NOTIFICATIONS_BACKEND, 3),
 ]
 PINAX_NOTIFICATIONS_HOOKSET = "pinax.notifications.hooks.DefaultHookSet"
 

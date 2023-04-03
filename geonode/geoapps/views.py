@@ -70,7 +70,6 @@ def _resolve_geoapp(request, id, permission="base.change_resourcebase", msg=_PER
 
 @login_required
 def new_geoapp(request, template="apps/app_new.html"):
-
     access_token = None
     if request and request.user:
         access_token = get_or_create_token(request.user)
@@ -153,7 +152,7 @@ def geoapp_edit(request, geoappid, template="apps/app_edit.html"):
     return render(request, template, context=_ctx)
 
 
-def geoapp_metadata_detail(request, geoappid, template="apps/app_metadata_detail.html"):
+def geoapp_metadata_detail(request, geoappid, template="apps/app_metadata_detail.html", custom_metadata=None):
     try:
         geoapp_obj = _resolve_geoapp(request, geoappid, "view_resourcebase", _PERMISSION_MSG_METADATA)
     except PermissionDenied:
@@ -171,12 +170,29 @@ def geoapp_metadata_detail(request, geoappid, template="apps/app_metadata_detail
             group = None
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
     register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
-    return render(request, template, context={"resource": geoapp_obj, "group": group, "SITEURL": site_url})
+
+    return render(
+        request,
+        template,
+        context={
+            "resource": geoapp_obj,
+            "group": group,
+            "SITEURL": site_url,
+            "custom_metadata": custom_metadata,
+        },
+    )
 
 
 @login_required
 @check_keyword_write_perms
-def geoapp_metadata(request, geoappid, template="apps/app_metadata.html", ajax=True):
+def geoapp_metadata(
+    request,
+    geoappid,
+    template="apps/app_metadata.html",
+    ajax=True,
+    panel_template="layouts/app_panels.html",
+    custom_metadata=None,
+):
     geoapp_obj = None
     try:
         geoapp_obj = _resolve_geoapp(request, geoappid, "base.change_resourcebase_metadata", _PERMISSION_MSG_METADATA)
@@ -357,6 +373,8 @@ def geoapp_metadata(request, geoappid, template="apps/app_metadata.html", ajax=T
         context={
             "resource": geoapp_obj,
             "geoapp": geoapp_obj,
+            "panel_template": panel_template,
+            "custom_metadata": custom_metadata,
             "geoapp_form": geoapp_form,
             "category_form": category_form,
             "tkeywords_form": tkeywords_form,

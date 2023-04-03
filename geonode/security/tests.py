@@ -41,6 +41,7 @@ from django.contrib.auth.models import AnonymousUser
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode import geoserver
+from geonode.geoserver.helpers import geofence, gf_utils
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
@@ -66,16 +67,15 @@ from geonode.base.populate_test_data import (
 )
 from geonode.geoserver.security import (
     _get_gf_services,
-    get_user_geolimits,
-    # get_geofence_rules,
-    # get_geofence_rules_count,
-    get_highest_priority,
-    set_geofence_all,
-    purge_geofence_all,
-    sync_geofence_with_guardian,
+    allow_layer_to_all,
+    delete_all_geofence_rules,
     sync_resources_with_guardian,
     _get_gwc_filters_and_formats,
+    has_geolimits,
+    create_geofence_rules,
+    delete_geofence_rules_for_layer,
 )
+
 
 from .utils import (
     get_users_with_perms,
@@ -89,18 +89,6 @@ logger = logging.getLogger(__name__)
 
 def _log(msg, *args):
     logger.debug(msg, *args)
-
-
-def get_geofence_rules_count():
-    from geonode.geoserver.helpers import gf_client
-
-    return gf_client.get_rules_count()
-
-
-def get_geofence_rules():
-    from geonode.geoserver.helpers import gf_client
-
-    return gf_client.get_rules()
 
 
 class StreamToLogger:
@@ -249,7 +237,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
-
                 from geonode.security import middleware as mw
 
                 # reload the middleware module to fetch overridden settings
@@ -360,12 +347,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     def test_set_bulk_permissions(self):
         """Test that after restrict view permissions on two layers
         bobby is unable to see them"""
-        geofence_rules_count = 0
+
+        rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            purge_geofence_all()
+            delete_all_geofence_rules()
             # Reset GeoFence Rules
-            geofence_rules_count = get_geofence_rules_count()
-            self.assertEqual(geofence_rules_count, 0)
+            rules_count = geofence.get_rules_count()
+            self.assertEqual(rules_count, 0)
 
         layers = Dataset.objects.all()[:2].values_list("id", flat=True)
         layers_id = [str(x) for x in layers]
@@ -380,13 +368,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Check GeoFence Rules have been correctly created
-            geofence_rules_count = get_geofence_rules_count()
-            _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 10)
-            set_geofence_all(test_perm_dataset)
-            geofence_rules_count = get_geofence_rules_count()
-            _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 11)
+            rules_count = geofence.get_rules_count()
+            _log(f"1. rules_count: {rules_count} ")
+            self.assertGreaterEqual(rules_count, 10)
+            allow_layer_to_all(test_perm_dataset)
+            rules_count = geofence.get_rules_count()
+            _log(f"2. rules_count: {rules_count} ")
+            self.assertGreaterEqual(rules_count, 11)
 
         self.client.logout()
 
@@ -395,33 +383,37 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             resp = self.client.get(self.list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)["objects"]), 6)
 
-            perms = get_users_with_perms(test_perm_dataset)
-            _log(f"3. perms: {perms} ")
-            sync_geofence_with_guardian(test_perm_dataset, perms, user="bobby")
+            # perms = get_users_with_perms(test_perm_dataset)
+            # _log(f"3. perms: {perms} ")
+            # batch = AutoPriorityBatch(get_first_available_priority(), f'test batch for {test_perm_dataset}')
+            # for u, p in perms.items():
+            #     create_geofence_rules(test_perm_dataset, p, user=u, batch=batch)
+            # geofence.run_batch(batch)
 
             # Check GeoFence Rules have been correctly created
-            geofence_rules_count = get_geofence_rules_count()
-            _log(f"4. geofence_rules_count: {geofence_rules_count} ")
-            self.assertGreaterEqual(geofence_rules_count, 13)
+            rules_count = geofence.get_rules_count()
+            _log(f"4. rules_count: {rules_count} ")
+            self.assertGreaterEqual(rules_count, 13)
 
             # Validate maximum priority
-            geofence_rules_highest_priority = get_highest_priority()
-            _log(f"5. geofence_rules_highest_priority: {geofence_rules_highest_priority} ")
-            self.assertTrue(geofence_rules_highest_priority > 0)
+            available_priority = gf_utils.get_first_available_priority()
+            _log(f"5. available_priority: {available_priority} ")
+            self.assertTrue(available_priority > 0)
 
             url = settings.OGC_SERVER["default"]["LOCATION"]
             user = settings.OGC_SERVER["default"]["USER"]
             passwd = settings.OGC_SERVER["default"]["PASSWORD"]
 
-            r = requests.get(f"{url}gwc/rest/seed/{test_perm_dataset.alternate}.json", auth=HTTPBasicAuth(user, passwd))
-            self.assertEqual(r.status_code, 400)
+            test_url = f"{url}gwc/rest/seed/{test_perm_dataset.alternate}.json"
+            r = requests.get(test_url, auth=HTTPBasicAuth(user, passwd))
+            self.assertEqual(r.status_code, 400, f"GWC error for user: {user} URL: {test_url}\n{r.text}")
 
-        geofence_rules_count = 0
+        rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            purge_geofence_all()
+            delete_all_geofence_rules()
             # Reset GeoFence Rules
-            geofence_rules_count = get_geofence_rules_count()
-            self.assertEqual(geofence_rules_count, 0)
+            rules_count = geofence.get_rules_count()
+            self.assertEqual(rules_count, 0)
 
     def test_bobby_cannot_set_all(self):
         """Test that Bobby can set the permissions only on the ones
@@ -486,26 +478,26 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
 
         # Reset GeoFence Rules
-        purge_geofence_all()
-        self.assertEqual(get_geofence_rules_count(), 0)
+        delete_all_geofence_rules()
+        self.assertEqual(geofence.get_rules_count(), 0)
 
         perm_spec = {"users": {"AnonymousUser": []}, "groups": []}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        _log(f"1. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 5)
+        rules_count = geofence.get_rules_count()
+        _log(f"1. rules_count: {rules_count} ")
+        self.assertEqual(rules_count, 5)
 
         perm_spec = {"users": {"admin": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        _log(f"2. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 7)
+        rules_count = geofence.get_rules_count()
+        _log(f"2. rules_count: {rules_count} ")
+        self.assertEqual(rules_count, 7, f"Bad rules count. Got rules: {geofence.get_rules()}")
 
         perm_spec = {"users": {"admin": ["change_dataset_data"]}, "groups": []}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        _log(f"3. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 7)
+        rules_count = geofence.get_rules_count()
+        _log(f"3. rules_count: {rules_count} ")
+        self.assertEqual(rules_count, 7)
 
         # FULL WFS-T
         perm_spec = {
@@ -515,10 +507,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             "groups": [],
         }
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 10)
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 10)
 
-        rules_objs = get_geofence_rules()
+        rules_objs = geofence.get_rules()
         _deny_wfst_rule_exists = False
         for rule in rules_objs["rules"]:
             if rule["service"] == "WFS" and rule["userName"] == "bobby" and rule["request"] == "TRANSACTION":
@@ -538,10 +530,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             "groups": [],
         }
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 13)
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 13)
 
-        rules_objs = get_geofence_rules()
+        rules_objs = geofence.get_rules()
         _deny_wfst_rule_exists = False
         _deny_wfst_rule_position = -1
         _allow_wfs_rule_position = -1
@@ -568,10 +560,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             "groups": [],
         }
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 7)
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 7)
 
-        rules_objs = get_geofence_rules()
+        rules_objs = geofence.get_rules()
         _deny_wfst_rule_exists = False
         for rule in rules_objs["rules"]:
             if rule["service"] == "WFS" and rule["userName"] == "bobby" and rule["request"] == "TRANSACTION":
@@ -581,26 +573,26 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         perm_spec = {"users": {}, "groups": {"bar": ["view_resourcebase"]}}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        _log(f"4. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 7)
+        rules_count = geofence.get_rules_count()
+        _log(f"4. rules_count: {rules_count} ")
+        self.assertEqual(rules_count, 7, f"Bad rule count, got rules {geofence.get_rules()}")
 
         perm_spec = {"users": {}, "groups": {"bar": ["change_resourcebase"]}}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        _log(f"5. geofence_rules_count: {geofence_rules_count} ")
-        self.assertEqual(geofence_rules_count, 5)
+        rules_count = geofence.get_rules_count()
+        _log(f"5. rules_count: {rules_count} ")
+        self.assertEqual(rules_count, 5)
 
         # Testing GeoLimits
         # Reset GeoFence Rules
-        purge_geofence_all()
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 0)
+        delete_all_geofence_rules()
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 0)
         layer = Dataset.objects.first()
         # grab bobby
         bobby = get_user_model().objects.get(username="bobby")
-        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(layer, None, None)
-        filters, formats = _get_gwc_filters_and_formats([_disable_dataset_cache])
+        _disable_dataset_cache = has_geolimits(layer, None, None)
+        filters, formats = _get_gwc_filters_and_formats(_disable_dataset_cache)
         self.assertListEqual(filters, [{"styleParameterFilter": {"STYLES": ""}}])
         self.assertListEqual(
             formats,
@@ -622,17 +614,17 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         geo_limit.save()
         layer.users_geolimits.add(geo_limit)
         self.assertEqual(layer.users_geolimits.all().count(), 1)
-        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(layer, bobby, None)
+        _disable_dataset_cache = has_geolimits(layer, bobby, None)
         filters, formats = _get_gwc_filters_and_formats([_disable_dataset_cache])
         self.assertIsNone(filters)
         self.assertIsNone(formats)
 
         perm_spec = {"users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 8)
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 8)
 
-        rules_objs = get_geofence_rules()
+        rules_objs = geofence.get_rules()
         self.assertEqual(len(rules_objs["rules"]), 8)
         # Order is important
         _limit_rule_position = -1
@@ -669,10 +661,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         perm_spec = {"users": {}, "groups": {"bar": ["change_resourcebase"]}}
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 6)
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 6)
 
-        rules_objs = get_geofence_rules()
+        rules_objs = geofence.get_rules()
         self.assertEqual(len(rules_objs["rules"]), 6)
         # Order is important
         _limit_rule_position = -1
@@ -706,9 +698,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.save()
 
         layer.set_permissions(perm_spec)
-        geofence_rules_count = get_geofence_rules_count()
+        rules_count = geofence.get_rules_count()
 
-        rules_objs = get_geofence_rules()
+        rules_objs = geofence.get_rules()
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs["rules"]):
@@ -739,9 +731,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.save()
 
         # Reset GeoFence Rules
-        purge_geofence_all()
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 0)
+        delete_all_geofence_rules()
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 0)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_upload_with_time(self):
@@ -1004,9 +996,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(layer.alternate, "geonode:san_andres_y_providencia_poi")
 
         # Reset GeoFence Rules
-        purge_geofence_all()
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertEqual(geofence_rules_count, 0)
+        delete_all_geofence_rules()
+        rules_count = geofence.get_rules_count()
+        self.assertEqual(rules_count, 0)
 
         layer = Dataset.objects.get(name="san_andres_y_providencia_poi")
         # removing duplicates
@@ -1015,9 +1007,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer = Dataset.objects.get(alternate=layer.alternate)
         layer.set_default_permissions(owner=bobby)
         check_dataset(layer)
-        geofence_rules_count = get_geofence_rules_count()
-        _log(f"0. geofence_rules_count: {geofence_rules_count} ")
-        self.assertGreaterEqual(geofence_rules_count, 4)
+        rules_count = geofence.get_rules_count()
+        _log(f"0. rules_count: {rules_count} ")
+        self.assertGreaterEqual(rules_count, 4)
 
         # Set the layer private for not authenticated users
         perm_spec = {"users": {"AnonymousUser": []}, "groups": []}
@@ -1103,9 +1095,9 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # self.assertEqual(_content_type, 'image/png')
 
         # Reset GeoFence Rules
-        purge_geofence_all()
-        geofence_rules_count = get_geofence_rules_count()
-        self.assertTrue(geofence_rules_count == 0)
+        delete_all_geofence_rules()
+        rules_count = geofence.get_rules_count()
+        self.assertTrue(rules_count == 0)
 
     def test_maplayers_default_permissions(self):
         """Verify that Dataset.set_default_permissions is behaving as expected"""
@@ -1276,13 +1268,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     # 7. change_dataset_style
 
     def test_not_superuser_permissions(self):
-
-        geofence_rules_count = 0
+        rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            purge_geofence_all()
+            delete_all_geofence_rules()
             # Reset GeoFence Rules
-            geofence_rules_count = get_geofence_rules_count()
-            self.assertTrue(geofence_rules_count == 0)
+            rules_count = geofence.get_rules_count()
+            self.assertTrue(rules_count == 0)
 
         # grab bobby
         bob = get_user_model().objects.get(username="bobby")
@@ -1299,8 +1290,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             # Check GeoFence Rules have been correctly created
-            geofence_rules_count = get_geofence_rules_count()
-            _log(f"1. geofence_rules_count: {geofence_rules_count} ")
+            rules_count = geofence.get_rules_count()
+            _log(f"1. rules_count: {rules_count} ")
 
         self.assertTrue(self.client.login(username="bobby", password="bob"))
 
@@ -1350,11 +1341,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             perms = get_users_with_perms(layer)
             _log(f"2. perms: {perms} ")
-            sync_geofence_with_guardian(layer, perms, user=bob, group=anonymous_group)
+            batch = create_geofence_rules(layer, perms, user=bob, group=anonymous_group)
+            geofence.run_batch(batch)
 
             # Check GeoFence Rules have been correctly created
-            geofence_rules_count = get_geofence_rules_count()
-            _log(f"3. geofence_rules_count: {geofence_rules_count} ")
+            rules_count = geofence.get_rules_count()
+            _log(f"3. rules_count: {rules_count} ")
 
         # 4. change_resourcebase_permissions
         # should be impossible for the user without change_resourcebase_permissions
@@ -1392,12 +1384,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
             self.assertEqual(response.status_code, 200, response.status_code)
 
-        geofence_rules_count = 0
+        rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            purge_geofence_all()
+            delete_all_geofence_rules()
             # Reset GeoFence Rules
-            geofence_rules_count = get_geofence_rules_count()
-            self.assertEqual(geofence_rules_count, 0, geofence_rules_count)
+            rules_count = geofence.get_rules_count()
+            self.assertEqual(rules_count, 0, rules_count)
 
     def test_anonymus_permissions(self):
         # grab a layer
@@ -2007,9 +1999,10 @@ class SecurityRulesTests(TestCase):
         self._l = create_single_dataset("test_dataset")
 
     def test_sync_resources_with_guardian_delay_false(self):
-        with self.settings(DELAYED_SECURITY_SIGNALS=False):
+        with self.settings(DELAYED_SECURITY_SIGNALS=False, GEOFENCE_SECURITY_ENABLED=True):
+            delete_geofence_rules_for_layer(self._l)
             # Set geofence (and so the dirty state)
-            set_geofence_all(self._l)
+            allow_layer_to_all(self._l)
             # Retrieve the same layer
             dirty_dataset = Dataset.objects.get(pk=self._l.id)
             # Check dirty state (True)
@@ -2022,9 +2015,10 @@ class SecurityRulesTests(TestCase):
 
     # TODO: DELAYED SECURITY MUST BE REVISED
     def test_sync_resources_with_guardian_delay_true(self):
-        with self.settings(DELAYED_SECURITY_SIGNALS=True):
+        with self.settings(DELAYED_SECURITY_SIGNALS=True, GEOFENCE_SECURITY_ENABLED=True):
+            delete_geofence_rules_for_layer(self._l)
             # Set geofence (and so the dirty state)
-            set_geofence_all(self._l)
+            allow_layer_to_all(self._l)
             # Retrieve the same layer
             dirty_dataset = Dataset.objects.get(pk=self._l.id)
             # Check dirty state (True)
@@ -2046,25 +2040,25 @@ class TestGetUserGeolimits(TestCase):
         self.gf_services = _get_gf_services(self.layer, self.perms)
 
     def test_should_not_disable_cache_for_user_without_geolimits(self):
-        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(self.layer, self.owner, None)
+        _disable_dataset_cache = has_geolimits(self.layer, self.owner, None)
         self.assertFalse(_disable_dataset_cache)
 
     def test_should_disable_cache_for_user_with_geolimits(self):
         geo_limit, _ = UserGeoLimit.objects.get_or_create(user=self.owner, resource=self.layer)
         self.layer.users_geolimits.set([geo_limit])
         self.layer.refresh_from_db()
-        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(self.layer, self.owner, None)
+        _disable_dataset_cache = has_geolimits(self.layer, self.owner, None)
         self.assertTrue(_disable_dataset_cache)
 
     def test_should_not_disable_cache_for_anonymous_without_geolimits(self):
-        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(self.layer, None, None)
+        _disable_dataset_cache = has_geolimits(self.layer, None, None)
         self.assertFalse(_disable_dataset_cache)
 
     def test_should_disable_cache_for_anonymous_with_geolimits(self):
         geo_limit, _ = UserGeoLimit.objects.get_or_create(user=get_anonymous_user(), resource=self.layer)
         self.layer.users_geolimits.set([geo_limit])
         self.layer.refresh_from_db()
-        _, _, _disable_dataset_cache, _, _, _ = get_user_geolimits(self.layer, None, None)
+        _disable_dataset_cache = has_geolimits(self.layer, None, None)
         self.assertTrue(_disable_dataset_cache)
 
 

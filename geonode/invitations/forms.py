@@ -63,7 +63,6 @@ class CleanEmailMixin:
 
 
 class GeoNodeInviteForm(forms.Form, CleanEmailMixin):
-
     email = forms.CharField(
         label=_("E-mail"), required=True, widget=forms.TextInput(attrs={"type": "text", "size": "1200"}), initial=""
     )
