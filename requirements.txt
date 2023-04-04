@@ -29,7 +29,7 @@ PyMuPDF==1.21.1
 pathvalidate==2.5.2
 
 # Django Apps
-django-allauth==0.53.1
+django-allauth==0.54.0
 django-appconf==1.0.5
 django-celery-results==2.5.0
 django-filter==23.1
@@ -144,7 +144,7 @@ pycountry
 # production
 uWSGI==2.0.21
 gunicorn==20.1.0
-ipython==8.11.0
+ipython==8.12.0
 docker==6.0.1
 invoke==2.0.0
 
