@@ -403,8 +403,8 @@ class _HierarchicalTagManager(_TaggableManager):
         we can easily handle the concurrency.
         DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
         """
-        existing = self.through.tag_model().objects.select_for_update().filter(name__in=str_tags, **tag_kwargs)
         with transaction.atomic():
+            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs)
             tag_objs.update(existing)
             new_ids = set()
             _new_keyword = str_tags - set(t.name for t in existing)
