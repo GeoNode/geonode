@@ -397,12 +397,7 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
-        """
-        To avoid concurrency with the keyword in case of a massive upload.
-        With the transaction block and the select_for_update,
-        we can easily handle the concurrency.
-        DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
-        """
+
         with transaction.atomic():
             existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs)
             tag_objs.update(existing)
