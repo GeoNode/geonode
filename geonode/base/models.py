@@ -35,6 +35,7 @@ from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
+from django.db.utils import IntegrityError
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -397,44 +398,49 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
+        try:
+            with transaction.atomic():
+                existing = self.through.tag_model().objects.all().filter(name__in=str_tags, **tag_kwargs)
+                tag_objs.update(existing)
+                new_ids = set()
+                _new_keyword = str_tags - set(t.name for t in existing)
+                for new_tag in list(_new_keyword):
+                    new_tag = escape(new_tag)
+                    try:
+                        new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                        tag_objs.add(new_tag_obj)
+                        new_ids.add(new_tag_obj.id)
+                    except Exception as e:
+                        logger.exception(e)
 
-        with transaction.atomic():
-            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs)
-            tag_objs.update(existing)
-            new_ids = set()
-            _new_keyword = str_tags - set(t.name for t in existing)
-            for new_tag in list(_new_keyword):
-                new_tag = escape(new_tag)
+            signals.m2m_changed.send(
+                sender=self.through,
+                action="pre_add",
+                instance=self.instance,
+                reverse=False,
+                model=self.through.tag_model(),
+                pk_set=new_ids,
+            )
+
+            for tag in tag_objs:
                 try:
-                    new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
-                    tag_objs.add(new_tag_obj)
-                    new_ids.add(new_tag_obj.id)
+                    self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
                 except Exception as e:
                     logger.exception(e)
 
-        signals.m2m_changed.send(
-            sender=self.through,
-            action="pre_add",
-            instance=self.instance,
-            reverse=False,
-            model=self.through.tag_model(),
-            pk_set=new_ids,
-        )
-
-        for tag in tag_objs:
-            try:
-                self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
-            except Exception as e:
-                logger.exception(e)
-
-        signals.m2m_changed.send(
-            sender=self.through,
-            action="post_add",
-            instance=self.instance,
-            reverse=False,
-            model=self.through.tag_model(),
-            pk_set=new_ids,
-        )
+            signals.m2m_changed.send(
+                sender=self.through,
+                action="post_add",
+                instance=self.instance,
+                reverse=False,
+                model=self.through.tag_model(),
+                pk_set=new_ids,
+            )
+        except IntegrityError as e:
+            logger.info("The keyword provided already exists", exc_info=e)
+            return
+        except Exception as e:
+            raise e
 
 
 class Thesaurus(models.Model):
