@@ -1028,6 +1028,7 @@ OGC_SERVER = {
         "PRINT_NG_ENABLED": ast.literal_eval(os.getenv("PRINT_NG_ENABLED", "True")),
         "GEONODE_SECURITY_ENABLED": ast.literal_eval(os.getenv("GEONODE_SECURITY_ENABLED", "True")),
         "GEOFENCE_SECURITY_ENABLED": GEOFENCE_SECURITY_ENABLED,
+        "GEOFENCE_WPS_SUBFIELD": ast.literal_eval(os.getenv("GEOFENCE_WPS_SUBFIELD", "True")),  # only for GS>=2.23
         "GEOFENCE_URL": os.getenv("GEOFENCE_URL", "internal:/"),
         "GEOFENCE_TIMEOUT": int(os.getenv("GEOFENCE_TIMEOUT", os.getenv("OGC_REQUEST_TIMEOUT", "60"))),
         "WMST_ENABLED": ast.literal_eval(os.getenv("WMST_ENABLED", "False")),

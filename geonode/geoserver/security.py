@@ -257,30 +257,23 @@ def allow_layer_to_all(instance):
 
 
 # def sync_geofence_with_guardian(dataset, perms, user=None, group=None, group_perms=None):
-def create_geofence_rules(dataset, perms, user=None, group=None, batch: Batch = None):
+def create_geofence_rules(layer, perms, user=None, group=None, batch: Batch = None):
     """
     Collect GeoFence rules related to passed perms into a Batch.
     If the batch does not exist, it is created and returned.
     """
-    layer_name = dataset.name if dataset and hasattr(dataset, "name") else dataset.alternate
-    workspace_name = get_dataset_workspace(dataset)
-    # Create new rule-set
-    gf_services = _get_gf_services(dataset, perms)
+    if user and group:
+        raise ValueError("Both user and group given")
 
-    gf_requests = {}
-    if "change_dataset_data" not in perms:
-        gf_requests["WFS"] = {"TRANSACTION": False, "LOCKFEATURE": False, "GETFEATUREWITHLOCK": False}
+    layer_name = layer.name if layer and hasattr(layer, "name") else layer.alternate
+    workspace_name = get_dataset_workspace(layer)
+    # Create new rule-set
+    gf_services = _get_gf_services(layer, perms)
 
     username = (user if isinstance(user, str) else user.username) if user else None
     groupname = (group if isinstance(group, str) else group.name) if group else None
 
-    users_geolimits, groups_geolimits, anonymous_geolimits = get_geolimits(dataset, username, groupname)
-    # _disable_cache = has_geolimits(dataset, user, group)
-    #
-    # if _disable_cache:
-    #     gf_services_limits_first = {"*": gf_services.pop('*')}
-    #     gf_services_limits_first.update(gf_services)
-    #     gf_services = gf_services_limits_first
+    users_geolimits, groups_geolimits, anonymous_geolimits = get_geolimits(layer, username, groupname)
 
     if not batch:
         batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync {workspace_name}:{layer_name}")
@@ -293,7 +286,7 @@ def create_geofence_rules(dataset, perms, user=None, group=None, batch: Batch = 
         (groups_geolimits, "GROUP", None, groupname),
     ):
         if limits and limits.exists():
-            logger.debug(f"Adding GeoFence {scope} GeoLimit rule: U:{u} G:{g} L:{dataset} ")
+            logger.debug(f"Adding GeoFence {scope} GeoLimit rule: U:{u} G:{g} L:{layer} ")
             wkt = limits.last().wkt
             batch.add_insert_rule(
                 Rule(
@@ -307,54 +300,30 @@ def create_geofence_rules(dataset, perms, user=None, group=None, batch: Batch = 
                 )
             )
 
+    if username:
+        msg = "Adding GeoFence USER rules: U:{username} S:{service} L:{layer} "
+    elif not groupname:
+        msg = "Adding GeoFence ANON rules: S:{service} L:{layer} "
+    if groupname:
+        msg = "Adding GeoFence GROUP rules: G:{groupname} S:{service} L:{layer} "
+
     # Set services rules
-    for service, allowed in gf_services.items():
-        if dataset and layer_name and allowed:
-            if username:
-                logger.debug(f"Adding GeoFence USER rules: U:{username} S:{service} L:{dataset} ")
-                if service in gf_requests:
-                    for request, enabled in gf_requests[service].items():
-                        batch.add_insert_rule(
-                            Rule(
-                                enabled,
-                                user=username,
-                                workspace=workspace_name,
-                                layer=layer_name,
-                                service=service,
-                                request=request,
-                            )
-                        )
-                batch.add_insert_rule(
-                    Rule(Rule.ALLOW, user=username, workspace=workspace_name, layer=layer_name, service=service)
+    for rule_fields in gf_services:
+        if layer and layer_name:
+            logger.debug(msg.format(username=username, groupname=groupname, layer=layer_name, **rule_fields))
+            batch.add_insert_rule(
+                Rule(
+                    rule_fields['access'],
+                    user=username,
+                    group=groupname,
+                    workspace=workspace_name,
+                    layer=layer_name,
+                    **rule_fields,  # access, service, request, subfield
+                    # service=service,
+                    # request=request,
                 )
-            elif not groupname:
-                logger.debug(f"Adding GeoFence ANON rules: S:{service} L:{dataset} ")
+            )
 
-                if service in gf_requests:
-                    for request, enabled in gf_requests[service].items():
-                        batch.add_insert_rule(
-                            Rule(enabled, workspace=workspace_name, layer=layer_name, service=service, request=request)
-                        )
-
-                batch.add_insert_rule(Rule(Rule.ALLOW, workspace=workspace_name, layer=layer_name, service=service))
-            if groupname:
-                logger.debug(f"Adding GeoFence GROUP rules: G:{groupname} S:{service} L:{dataset} ")
-
-                if service in gf_requests:
-                    for request, enabled in gf_requests[service].items():
-                        batch.add_insert_rule(
-                            Rule(
-                                enabled,
-                                group=groupname,
-                                workspace=workspace_name,
-                                layer=layer_name,
-                                service=service,
-                                request=request,
-                            )
-                        )
-                batch.add_insert_rule(
-                    Rule(Rule.ALLOW, group=groupname, workspace=workspace_name, layer=layer_name, service=service)
-                )
     return batch
 
 
@@ -447,15 +416,31 @@ def has_geolimits(layer, user, group):
 
 
 def _get_gf_services(layer, perms):
-    gf_services = {}
-    gf_services["WMS"] = "view_resourcebase" in perms or "change_dataset_style" in perms
-    gf_services["GWC"] = "view_resourcebase" in perms or "change_dataset_style" in perms
-    gf_services["WFS"] = ("download_resourcebase" in perms or "change_dataset_data" in perms) and layer.is_vector()
-    gf_services["WCS"] = ("download_resourcebase" in perms or "change_dataset_data" in perms) and not layer.is_vector()
-    gf_services["WPS"] = "download_resourcebase" in perms or "change_dataset_data" in perms
-    gf_services["*"] = "download_resourcebase" in perms and (
-        "view_resourcebase" in perms or "change_dataset_style" in perms
-    )
+    change_data = "change_dataset_data" in perms
+    download = "download_resourcebase" in perms
+    view = "view_resourcebase" in perms
+
+    gf_services = []
+
+    if view or "change_dataset_style" in perms:
+        gf_services.append({'service': 'WMS', 'access': True})
+        gf_services.append({'service': 'GWC', 'access': True})
+
+    if download or change_data:
+        if not download and settings.OGC_SERVER.get('default', {}).get('GEOFENCE_WPS_SUBFIELD', True):
+            gf_services.append({'service': 'WPS', 'subfield': 'download', 'access': False})
+        gf_services.append({'service': 'WPS', 'allowed': True})
+
+        if layer.is_vector():
+            if not change_data:
+                for request in ("TRANSACTION", "LOCKFEATURE", "GETFEATUREWITHLOCK"):
+                    gf_services.append({'service': 'WFS', 'request': request, 'access': False})
+            gf_services.append({'service': 'WFS', 'access': True})
+        else:
+            gf_services.append({'service': 'WCS', 'access': True})
+
+        if download and (view or change_data):  # TODO: check if this rule is really needed
+            gf_services.append({'access': True})
 
     return gf_services
 
