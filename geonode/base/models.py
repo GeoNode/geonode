@@ -35,7 +35,7 @@ from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -438,7 +438,8 @@ class _HierarchicalTagManager(_TaggableManager):
             )
         except IntegrityError as e:
             logger.info("The keyword provided already exists", exc_info=e)
-            return
+        except OperationalError as e:
+            logger.warning("An error has occured with the DB connection. Please try to re-add the keywords again", exc_info=e)
         except Exception as e:
             raise e
 
