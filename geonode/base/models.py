@@ -410,6 +410,11 @@ class _HierarchicalTagManager(_TaggableManager):
                         new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
                         tag_objs.add(new_tag_obj)
                         new_ids.add(new_tag_obj.id)
+                    except OperationalError as e:
+                        logger.warning(
+                            "An error has occured with the DB connection. Please try to re-add the keywords again",
+                            exc_info=e,
+                        )
                     except Exception as e:
                         logger.exception(e)
 
@@ -437,9 +442,11 @@ class _HierarchicalTagManager(_TaggableManager):
                 pk_set=new_ids,
             )
         except IntegrityError as e:
-            logger.info("The keyword provided already exists", exc_info=e)
+            logger.warning("The keyword provided already exists", exc_info=e)
         except OperationalError as e:
-            logger.warning("An error has occured with the DB connection. Please try to re-add the keywords again", exc_info=e)
+            logger.warning(
+                "An error has occured with the DB connection. Please try to re-add the keywords again", exc_info=e
+            )
         except Exception as e:
             raise e
 
