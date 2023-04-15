@@ -83,32 +83,32 @@ def iso2dict(exml):
     vals["date"] = sniff_date(mdata.datestamp)
 
     if hasattr(mdata, "identification"):
-        vals["title"] = mdata.identification.title
-        vals["abstract"] = mdata.identification.abstract
-        vals["purpose"] = mdata.identification.purpose
+        vals["title"] = mdata.identification[0].title
+        vals["abstract"] = mdata.identification[0].abstract
+        vals["purpose"] = mdata.identification[0].purpose
 
-        if mdata.identification.supplementalinformation is not None:
-            vals["supplemental_information"] = mdata.identification.supplementalinformation
+        if mdata.identification[0].supplementalinformation is not None:
+            vals["supplemental_information"] = mdata.identification[0].supplementalinformation
 
-        vals["temporal_extent_start"] = mdata.identification.temporalextent_start
-        vals["temporal_extent_end"] = mdata.identification.temporalextent_end
+        vals["temporal_extent_start"] = mdata.identification[0].temporalextent_start
+        vals["temporal_extent_end"] = mdata.identification[0].temporalextent_end
 
-        if len(mdata.identification.topiccategory) > 0:
-            vals["topic_category"] = mdata.identification.topiccategory[0]
+        if len(mdata.identification[0].topiccategory) > 0:
+            vals["topic_category"] = mdata.identification[0].topiccategory[0]
 
-        if hasattr(mdata.identification, "keywords") and len(mdata.identification.keywords) > 0:
-            for kw in mdata.identification.keywords:
+        if hasattr(mdata.identification, "keywords") and len(mdata.identification[0].keywords) > 0:
+            for kw in mdata.identification[0].keywords:
                 if kw["type"] == "place":
                     regions.extend(kw["keywords"])
                 else:
                     keywords.extend(kw["keywords"])
 
-            keywords = convert_keyword(mdata.identification.keywords, iso2dict=True)
+            keywords = convert_keyword(mdata.identification[0].keywords, iso2dict=True)
 
-        if len(mdata.identification.otherconstraints) > 0:
-            vals["constraints_other"] = mdata.identification.otherconstraints[0]
+        if len(mdata.identification[0].otherconstraints) > 0:
+            vals["constraints_other"] = mdata.identification[0].otherconstraints[0]
 
-        vals["purpose"] = mdata.identification.purpose
+        vals["purpose"] = mdata.identification[0].purpose
 
     if mdata.dataquality is not None:
         vals["data_quality_statement"] = mdata.dataquality.lineage
