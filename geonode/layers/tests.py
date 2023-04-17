@@ -1639,7 +1639,7 @@ class TestSetMetadata(TestCase):
             "title": "test_dataset",
         }
         expected_keywords = []
-        for kw in [kw.get('keywords') for kw in self.custom if kw['type'] != 'place']:
+        for kw in [kw.get("keywords") for kw in self.custom if kw["type"] != "place"]:
             for _kw in [_kw for _kw in kw]:
                 expected_keywords.append(_kw)
         self.assertEqual("7cfbc42c-efa7-431c-8daa-1399dff4cd19", identifier)
@@ -1729,7 +1729,7 @@ class TestCustomMetadataParser(TestCase):
     def test_will_use_only_the_default_metadata_parser(self):
         identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())
         expected_keywords = []
-        for kw in [kw.get('keywords') for kw in self.keywords if kw['type'] != 'place']:
+        for kw in [kw.get("keywords") for kw in self.keywords if kw["type"] != "place"]:
             for _kw in [_kw for _kw in kw]:
                 expected_keywords.append(_kw)
         self.assertEqual("7cfbc42c-efa7-431c-8daa-1399dff4cd19", identifier)
