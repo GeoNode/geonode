@@ -399,24 +399,26 @@ class _HierarchicalTagManager(_TaggableManager):
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         try:
-            with transaction.atomic():
-                existing = self.through.tag_model().objects.all().filter(name__in=str_tags, **tag_kwargs)
-                tag_objs.update(existing)
-                new_ids = set()
-                _new_keyword = str_tags - set(t.name for t in existing)
-                for new_tag in list(_new_keyword):
-                    new_tag = escape(new_tag)
+            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs)
+            new_ids = set()
+            _new_keywords = str_tags - set(t.name for t in existing)
+            for new_tag in list(_new_keywords):
+                new_tag = escape(new_tag)
+                new_tag_obj = None
+                with transaction.atomic():
                     try:
                         new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
-                        tag_objs.add(new_tag_obj)
-                        new_ids.add(new_tag_obj.id)
-                    except OperationalError as e:
-                        logger.warning(
-                            "An error has occured with the DB connection. Please try to re-add the keywords again",
-                            exc_info=e,
-                        )
                     except Exception as e:
                         logger.exception(e)
+                # HierarchicalKeyword.add_root didn't return, probably the keyword already exists
+                if not new_tag_obj:
+                    new_tag_obj = HierarchicalKeyword.objects.get(name=new_tag)
+                if new_tag_obj:
+                    tag_objs.add(new_tag_obj)
+                    new_ids.add(new_tag_obj.id)
+                else:
+                    # Something has gone seriously wrong and we cannot assign the tag to the resource
+                    logger.error(f"Error during the keyword creation for keyword: {new_tag}")
 
             signals.m2m_changed.send(
                 sender=self.through,
