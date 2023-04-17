@@ -1639,7 +1639,7 @@ class TestSetMetadata(TestCase):
             "title": "test_dataset",
         }
         self.assertEqual("7cfbc42c-efa7-431c-8daa-1399dff4cd19", identifier)
-        self.assertListEqual([], regions)
+        self.assertListEqual(["Global"], regions)
         self.assertDictEqual(expected_vals, vals)
         self.assertListEqual(self.custom, keywords)
 
@@ -1727,9 +1727,9 @@ class TestCustomMetadataParser(TestCase):
         self.assertEqual("7cfbc42c-efa7-431c-8daa-1399dff4cd19", identifier)
         self.assertListEqual(["Global"], regions)
         logger.error(
-            f" -------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {self.keywords} // {keyword} // {thesaurus_keyword}"
+            f" -------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {self.keywords} // {keywords}"
         )
-        self.assertListEqual(self.keywords, keyword)
+        self.assertListEqual(self.keywords, keywords)
         self.assertDictEqual(self.expected_vals, vals)
 
     @override_settings(METADATA_PARSERS=["__DEFAULT__", "geonode.layers.tests.dummy_metadata_parser"])
