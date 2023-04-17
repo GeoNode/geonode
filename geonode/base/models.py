@@ -399,7 +399,7 @@ class _HierarchicalTagManager(_TaggableManager):
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
         try:
-            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs)
+            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs).all()
             new_ids = set()
             _new_keywords = str_tags - set(t.name for t in existing)
             for new_tag in list(_new_keywords):
