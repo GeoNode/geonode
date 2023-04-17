@@ -205,8 +205,9 @@ class DataRetriever(object):
         at the end the zip is deleted
         """
         zip_file = self.file_paths["base_file"]
-        the_zip = zipfile.ZipFile(zip_file, allowZip64=True)
+        with zipfile.ZipFile(zip_file, allowZip64=True) as the_zip:
         the_zip.extractall(self.temporary_folder)
+
         available_choices = get_allowed_extensions()
         not_main_files = ["xml", "sld", "zip", "kmz"]
         base_file_choices = [x for x in available_choices if x not in not_main_files]
