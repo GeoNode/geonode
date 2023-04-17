@@ -497,7 +497,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"3. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7)
+        self.assertEqual(rules_count, 8)
+
+        rules_objs = geofence.get_rules()
+        wps_subfield_found = False
+        for rule in rules_objs["rules"]:
+            if rule["service"] == "WPS" and rule["subfield"] == "gs:download":
+                wps_subfield_found = rule["access"] == "DENY"
+                break
+        self.assertTrue(wps_subfield_found, "WPS download not blocked")
 
         # FULL WFS-T
         perm_spec = {
@@ -1016,7 +1024,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
 
         url = (
-            f"{settings.SITEURL}gs/ows?"
+            f"{settings.GEOSERVER_LOCATION}ows?"
             "LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES="
             "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"
             "&SRS=EPSG%3A4326"
@@ -1341,7 +1349,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             perms = get_users_with_perms(layer)
             _log(f"2. perms: {perms} ")
-            batch = create_geofence_rules(layer, perms, user=bob, group=anonymous_group)
+            batch = create_geofence_rules(layer, perms, user=bob)
             geofence.run_batch(batch)
 
             # Check GeoFence Rules have been correctly created

@@ -313,7 +313,7 @@ def create_geofence_rules(layer, perms, user=None, group=None, batch: Batch = No
             logger.debug(msg.format(username=username, groupname=groupname, layer=layer_name, **rule_fields))
             batch.add_insert_rule(
                 Rule(
-                    rule_fields['access'],
+                    # rule_fields['access'],
                     user=username,
                     group=groupname,
                     workspace=workspace_name,
@@ -428,8 +428,8 @@ def _get_gf_services(layer, perms):
 
     if download or change_data:
         if not download and settings.OGC_SERVER.get('default', {}).get('GEOFENCE_WPS_SUBFIELD', True):
-            gf_services.append({'service': 'WPS', 'subfield': 'download', 'access': False})
-        gf_services.append({'service': 'WPS', 'allowed': True})
+            gf_services.append({'service': 'WPS', 'subfield': 'gs:download', 'access': False})
+        gf_services.append({'service': 'WPS', 'access': True})
 
         if layer.is_vector():
             if not change_data:
@@ -440,7 +440,7 @@ def _get_gf_services(layer, perms):
             gf_services.append({'service': 'WCS', 'access': True})
 
         if download and (view or change_data):  # TODO: check if this rule is really needed
-            gf_services.append({'access': True})
+            gf_services.append({'service': '*', 'access': True})
 
     return gf_services
 
