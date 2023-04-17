@@ -89,7 +89,7 @@ class Catalogue(CatalogueServiceWeb):
                 return None
             record = list(self.records.values())[0]
             record.keywords = []
-            if hasattr(record, "identification[0]") and hasattr(record.identification[0], "keywords"):
+            if hasattr(record, "identification") and hasattr(record.identification[0], "keywords"):
                 for kw in record.identification[0].keywords:
                     record.keywords.extend(kw["keywords"])
             return record

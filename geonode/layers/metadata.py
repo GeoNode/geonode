@@ -30,7 +30,7 @@ from geonode import GeoNodeException
 
 # OWSLib functionality
 from owslib.csw import CswRecord
-from owslib.iso import MD_Metadata
+from owslib.iso import MD_Metadata, MD_Keywords
 from owslib.fgdc import Metadata
 from django.utils import timezone
 
@@ -96,14 +96,14 @@ def iso2dict(exml):
         if len(mdata.identification[0].topiccategory) > 0:
             vals["topic_category"] = mdata.identification[0].topiccategory[0]
 
-        if hasattr(mdata.identification, "keywords") and len(mdata.identification[0].keywords) > 0:
+        if hasattr(mdata.identification[0], "keywords") and len(mdata.identification[0].keywords) > 0:
             for kw in mdata.identification[0].keywords:
-                if kw["type"] == "place":
-                    regions.extend(kw["keywords"])
+                if kw.type == "place":
+                    regions.extend([_kw.name for _kw in kw.keywords])
                 else:
-                    keywords.extend(kw["keywords"])
+                    keywords.extend([_kw.name for _kw in kw.keywords])
 
-            keywords = convert_keyword(mdata.identification[0].keywords, iso2dict=True)
+            keywords = convert_keyword(keywords, iso2dict=True)
 
         if len(mdata.identification[0].otherconstraints) > 0:
             vals["constraints_other"] = mdata.identification[0].otherconstraints[0]
@@ -241,13 +241,23 @@ def parse_metadata(exml, uuid="", vals={}, regions=[], keywords=[], custom={}):
     return uuid, vals, regions, keywords, custom
 
 
-def convert_keyword(keyword, iso2dict=False, theme="theme"):
-    if not iso2dict and keyword:
+def convert_keyword(keywords, iso2dict=False, theme="theme"):
+    if not iso2dict and keywords:
         return [
             {
-                "keywords": keyword,
+                "keywords": convert_iso_keywords(keywords),
                 "thesaurus": {"date": None, "datetype": None, "title": None},
                 "type": theme,
             }
         ]
-    return keyword
+    return convert_iso_keywords(keywords)
+
+
+def convert_iso_keywords(keywords):
+    _keywords = []
+    for kw in keywords:
+        if isinstance(kw, MD_Keywords):
+            _keywords.append([_kw.name for _kw in kw.keywords])
+        else:
+            _keywords.append(kw)
+    return _keywords
