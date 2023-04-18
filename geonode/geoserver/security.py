@@ -314,14 +314,11 @@ def create_geofence_rules(layer, perms, user=None, group=None, batch: Batch = No
             logger.debug(msg.format(username=username, groupname=groupname, layer=layer_name, **rule_fields))
             batch.add_insert_rule(
                 Rule(
-                    # rule_fields['access'],
                     user=username,
                     group=groupname,
                     workspace=workspace_name,
                     layer=layer_name,
                     **rule_fields,  # access, service, request, subfield
-                    # service=service,
-                    # request=request,
                 )
             )
 
