@@ -2280,7 +2280,9 @@ def get_dataset_type(spatial_files):
     return the_dataset_type
 
 
-def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None, geoserver_url=f"{ogc_server_settings.LOCATION}"):
+def get_dataset_capabilities_url(
+    layer, version="1.3.0", access_token=None, geoserver_url=f"{ogc_server_settings.LOCATION}"
+):
     """
     Generate the layer-specific GetCapabilities URL
     """
