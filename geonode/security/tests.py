@@ -1313,7 +1313,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         layer.set_permissions({"users": {"AnonymousUser": []}, "groups": []})
-        anonymous_group = Group.objects.get(name="anonymous")
+        Group.objects.get(name="anonymous")
         response = self.client.get(reverse("dataset_embed", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
 
