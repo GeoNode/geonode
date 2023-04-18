@@ -502,7 +502,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         rules_objs = geofence.get_rules()
         wps_subfield_found = False
         for rule in rules_objs["rules"]:
-            if rule["service"] == "WPS" and rule["subfield"] == "gs:download":
+            if rule["service"] == "WPS" and rule["subfield"] == "GS_DOWNLOAD":
                 wps_subfield_found = rule["access"] == "DENY"
                 break
         self.assertTrue(wps_subfield_found, "WPS download not blocked")

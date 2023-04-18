@@ -20,6 +20,7 @@
 import logging
 import requests
 import traceback
+from packaging import version
 import typing
 import xml.etree.ElementTree as ET
 
@@ -32,7 +33,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from geonode.geoserver.geofence import Batch, Rule, AutoPriorityBatch
-from geonode.geoserver.helpers import geofence, gf_utils
+from geonode.geoserver.helpers import geofence, gf_utils, gs_catalog
 from geonode.groups.models import GroupProfile
 from geonode.utils import get_dataset_workspace
 
@@ -416,31 +417,36 @@ def has_geolimits(layer, user, group):
 
 
 def _get_gf_services(layer, perms):
-    change_data = "change_dataset_data" in perms
+    edit = "change_dataset_data" in perms
     download = "download_resourcebase" in perms
     view = "view_resourcebase" in perms
 
     gf_services = []
 
+    # view services
     if view or "change_dataset_style" in perms:
-        gf_services.append({'service': 'WMS', 'access': True})
-        gf_services.append({'service': 'GWC', 'access': True})
+        gf_services.append({"service": "WMS", "access": True})
+        gf_services.append({"service": "GWC", "access": True})
 
-    if download or change_data:
-        if not download and settings.OGC_SERVER.get('default', {}).get('GEOFENCE_WPS_SUBFIELD', True):
-            gf_services.append({'service': 'WPS', 'subfield': 'gs:download', 'access': False})
-        gf_services.append({'service': 'WPS', 'access': True})
+    # WPS
+    if view or download or edit:
+        if not download:
+            ver = gs_catalog.get_version()
+            if version.parse(ver) >= version.parse("2.23.0"):
+                gf_services.append({"service": "WPS", "subfield": "GS:DOWNLOAD", "access": False})
+        gf_services.append({"service": "WPS", "access": True})
 
-        if layer.is_vector():
-            if not change_data:
-                for request in ("TRANSACTION", "LOCKFEATURE", "GETFEATUREWITHLOCK"):
-                    gf_services.append({'service': 'WFS', 'request': request, 'access': False})
-            gf_services.append({'service': 'WFS', 'access': True})
-        else:
-            gf_services.append({'service': 'WCS', 'access': True})
+    if download and not edit and layer.is_vector():
+        for request in ("TRANSACTION", "LOCKFEATURE", "GETFEATUREWITHLOCK"):
+            gf_services.append({"service": "WFS", "request": request, "access": False})
 
-        if download and (view or change_data):  # TODO: check if this rule is really needed
-            gf_services.append({'service': '*', 'access': True})
+    if download or edit:
+        service = "WFS" if layer.is_vector() else "WCS"
+        gf_services.append({"service": service, "access": True})
+
+    # TODO: check if this rule is really needed
+    if download and (view or edit):
+        gf_services.append({"service": "*", "access": True})
 
     return gf_services
 
