@@ -30,6 +30,8 @@ from django.urls import reverse
 from geonode import geoserver, GeoNodeException
 from geonode.utils import safe_path_leaf
 from geonode.decorators import on_ogc_backend
+from geonode.base.populate_test_data import all_public, create_models, remove_models
+from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
 from geonode.geoserver.helpers import (
@@ -38,12 +40,10 @@ from geonode.geoserver.helpers import (
     get_dataset_storetype,
     extract_name_from_sld,
     get_dataset_capabilities_url,
+    ogc_server_settings,
 )
-from geonode.layers.populate_datasets_data import create_dataset_data
-
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 
-from geonode.base.populate_test_data import all_public, create_models, remove_models
 
 logger = logging.getLogger(__name__)
 
@@ -290,9 +290,9 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
     def test_dataset_capabilties_url(self):
         from geonode.layers.models import Dataset
 
-        ows_url = "http://foo.org/"
+        ows_url = ogc_server_settings.LOCATION
         identifier = "geonode:CA"
         dataset = Dataset.objects.get(alternate=identifier)
         expected_url = f"{ows_url}geonode/CA/wms?service=wms&version=1.3.0&request=GetCapabilities"
-        capabilities_url = get_dataset_capabilities_url(dataset, geoserver_url=ows_url)
+        capabilities_url = get_dataset_capabilities_url(dataset)
         self.assertEqual(capabilities_url, expected_url, capabilities_url)

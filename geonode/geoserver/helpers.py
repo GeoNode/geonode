@@ -2280,14 +2280,12 @@ def get_dataset_type(spatial_files):
     return the_dataset_type
 
 
-def get_dataset_capabilities_url(
-    layer, version="1.3.0", access_token=None, geoserver_url=f"{ogc_server_settings.LOCATION}"
-):
+def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
     """
     Generate the layer-specific GetCapabilities URL
     """
     workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-    wms_url = geoserver_url
+    wms_url = ogc_server_settings.LOCATION
     if not layer.remote_service:
         wms_url = f"{wms_url}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
         if access_token:
