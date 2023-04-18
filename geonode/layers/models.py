@@ -257,7 +257,7 @@ class Dataset(ResourceBase):
 
     @property
     def capabilities_url(self):
-        from geonode.geoserver.views import get_dataset_capabilities_url
+        from geonode.geoserver.helpers import get_dataset_capabilities_url
 
         return get_dataset_capabilities_url(self)
 

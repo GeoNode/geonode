@@ -2280,6 +2280,22 @@ def get_dataset_type(spatial_files):
     return the_dataset_type
 
 
+def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
+    """
+    Generate the layer-specific GetCapabilities URL
+    """
+    workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
+    wms_url = f"{ogc_server_settings.LOCATION}"
+    if not layer.remote_service:
+        wms_url = f"{wms_url}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
+        if access_token:
+            wms_url += f"&access_token={access_token}"
+    else:
+        wms_url = f"{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities"
+
+    return wms_url
+
+
 def wps_format_is_supported(_format, dataset_type):
     return (_format, dataset_type) in WPS_ACCEPTABLE_FORMATS
 

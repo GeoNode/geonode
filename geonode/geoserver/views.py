@@ -73,6 +73,7 @@ from .helpers import (
     set_dataset_style,
     ows_endpoint_in_path,
     temp_style_name_regex,
+    get_dataset_capabilities_url,
     _stylefilterparams_geowebcache_dataset,
     _invalidate_geowebcache_dataset,
 )
@@ -605,22 +606,6 @@ def dataset_acls(request):
         result["email"] = acl_user.email
 
     return HttpResponse(json.dumps(result), content_type="application/json")
-
-
-def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
-    """
-    Generate the layer-specific GetCapabilities URL
-    """
-    workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-    wms_url = f"{ogc_server_settings.LOCATION}"
-    if not layer.remote_service:
-        wms_url = f"{wms_url}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
-        if access_token:
-            wms_url += f"&access_token={access_token}"
-    else:
-        wms_url = f"{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities"
-
-    return wms_url
 
 
 # capabilities
