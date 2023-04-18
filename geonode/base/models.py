@@ -400,6 +400,7 @@ class _HierarchicalTagManager(_TaggableManager):
         # query.  Malcolm is very smart.
         try:
             existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs).all()
+            tag_objs.update(existing)
             new_ids = set()
             _new_keywords = str_tags - set(t.name for t in existing)
             for new_tag in list(_new_keywords):
