@@ -256,6 +256,12 @@ class Dataset(ResourceBase):
         return hookset.dataset_detail_url(self)
 
     @property
+    def capabilities_url(self):
+        from geonode.geoserver.views import get_dataset_capabilities_url
+
+        return get_dataset_capabilities_url(self)
+
+    @property
     def embed_url(self):
         try:
             if self.service_typename:
