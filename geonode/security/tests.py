@@ -491,21 +491,21 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"2. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7, f"Bad rules count. Got rules: {geofence.get_rules()}")
+        self.assertEqual(rules_count, 9, f"Bad rules count. Got rules: {geofence.get_rules()}")
 
         perm_spec = {"users": {"admin": ["change_dataset_data"]}, "groups": []}
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"3. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 8)
+        self.assertEqual(rules_count, 8, f"Bad rules count. Got rules: {geofence.get_rules()}")
 
         rules_objs = geofence.get_rules()
         wps_subfield_found = False
         for rule in rules_objs["rules"]:
-            if rule["service"] == "WPS" and rule["subfield"] == "GS_DOWNLOAD":
+            if rule["service"] == "WPS" and rule["subfield"] == "GS:DOWNLOAD":
                 wps_subfield_found = rule["access"] == "DENY"
                 break
-        self.assertTrue(wps_subfield_found, "WPS download not blocked")
+        self.assertTrue(wps_subfield_found, f"WPS download not blocked. Got rules: {geofence.get_rules()}")
 
         # FULL WFS-T
         perm_spec = {
@@ -569,7 +569,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
-        self.assertEqual(rules_count, 7)
+        self.assertEqual(rules_count, 9)
 
         rules_objs = geofence.get_rules()
         _deny_wfst_rule_exists = False
@@ -583,7 +583,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"4. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7, f"Bad rule count, got rules {geofence.get_rules()}")
+        self.assertEqual(rules_count, 9, f"Bad rule count, got rules {geofence.get_rules()}")
 
         perm_spec = {"users": {}, "groups": {"bar": ["change_resourcebase"]}}
         layer.set_permissions(perm_spec)
@@ -630,10 +630,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         perm_spec = {"users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
-        self.assertEqual(rules_count, 8)
+        self.assertEqual(rules_count, 10)
 
         rules_objs = geofence.get_rules()
-        self.assertEqual(len(rules_objs["rules"]), 8)
+        self.assertEqual(len(rules_objs["rules"]), 10)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs["rules"]):
