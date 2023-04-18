@@ -412,7 +412,9 @@ class _HierarchicalTagManager(_TaggableManager):
                         logger.exception(e)
                 # HierarchicalKeyword.add_root didn't return, probably the keyword already exists
                 if not new_tag_obj:
-                    new_tag_obj = HierarchicalKeyword.objects.get(name=new_tag)
+                    new_tag_obj = HierarchicalKeyword.objects.filter(name=new_tag)
+                    if new_tag_obj.exists():
+                        new_tag_obj.first()
                 if new_tag_obj:
                     tag_objs.add(new_tag_obj)
                     new_ids.add(new_tag_obj.id)

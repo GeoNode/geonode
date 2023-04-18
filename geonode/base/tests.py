@@ -1121,6 +1121,6 @@ class Test_HierarchicalTagManager(GeoNodeBaseTestSupport):
         with self.assertLogs(logger) as _log:
             self.sut.keywords.add("keyword2")
         self.assertIn(
-            "An error has occured with the DB connection. Please try to re-add the keywords again",
+            "Error during the keyword creation for keyword: keyword2",
             [x.message for x in _log.records],
         )
