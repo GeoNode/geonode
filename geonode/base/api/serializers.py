@@ -705,3 +705,10 @@ class OwnerSerializer(BaseResourceCountSerializer):
         fields = ("pk", "username", "first_name", "last_name", "avatar", "perms")
 
     avatar = AvatarUrlField(240, read_only=True)
+
+
+class SimpleResourceSerializer(DynamicModelSerializer):
+    class Meta:
+        name = "linked_resources"
+        model = ResourceBase
+        fields = ("pk", "title", "resource_type", "detail_url", "thumbnail_url")
