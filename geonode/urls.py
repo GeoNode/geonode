@@ -162,7 +162,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     urlpatterns += [  # '',
         # Upload views
         url(r"^upload/", include("geonode.upload.urls")),
-        # capabilities
+        # capabilities - DEPRECATED: these urls and views will be removed in future versions of GeoNode
         url(r"^capabilities/layer/(?P<layerid>\d+)/$", get_capabilities, name="capabilities_dataset"),
         url(r"^capabilities/map/(?P<mapid>\d+)/$", get_capabilities, name="capabilities_map"),
         url(r"^capabilities/user/(?P<user>[\w.@+-]+)/$", get_capabilities, name="capabilities_user"),
