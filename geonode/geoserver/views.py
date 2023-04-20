@@ -21,6 +21,7 @@ import os
 import re
 import json
 import logging
+import warnings
 import traceback
 from lxml import etree
 from owslib.etree import etree as dlxml
@@ -72,6 +73,7 @@ from .helpers import (
     set_dataset_style,
     ows_endpoint_in_path,
     temp_style_name_regex,
+    get_dataset_capabilities_url,
     _stylefilterparams_geowebcache_dataset,
     _invalidate_geowebcache_dataset,
 )
@@ -607,30 +609,19 @@ def dataset_acls(request):
 
 
 # capabilities
-def get_dataset_capabilities(layer, version="1.3.0", access_token=None, tolerant=False):
+def get_dataset_capabilities(layer, version="1.3.0", access_token=None):
     """
     Retrieve a layer-specific GetCapabilities document
     """
-    workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-    if not layer.remote_service:
-        wms_url = f"{ogc_server_settings.LOCATION}{workspace}/{layername}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
-        if access_token:
-            wms_url += f"&access_token={access_token}"
-    else:
-        wms_url = f"{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities"
+    warnings.warn(
+        "This method will be deprecated in future versions of GeoNode",
+        DeprecationWarning,
+    )
+    wms_url = get_dataset_capabilities_url(layer, version, access_token)
 
     _user, _password = ogc_server_settings.credentials
     req, content = http_client.get(wms_url, user=_user)
     getcap = ensure_string(content)
-    if not getattr(settings, "DELAYED_SECURITY_SIGNALS", False):
-        if tolerant and ("ServiceException" in getcap or req.status_code == 404):
-            # WARNING Please make sure to have enabled DJANGO CACHE as per
-            # https://docs.djangoproject.com/en/2.0/topics/cache/#filesystem-caching
-            wms_url = f"{ogc_server_settings.public_url}{workspace}/ows?service=wms&version={version}&request=GetCapabilities&layers={layer}"  # noqa
-            if access_token:
-                wms_url += f"&access_token={access_token}"
-            req, content = http_client.get(wms_url, user=_user)
-            getcap = ensure_string(content)
 
     if "ServiceException" in getcap or req.status_code == 404:
         return None
@@ -657,7 +648,7 @@ def format_online_resource(workspace, layer, element, namespaces):
         resource.attrib["{http://www.w3.org/1999/xlink}href"] = wtf.replace(replace_string, "")
 
 
-def get_capabilities(request, layerid=None, user=None, mapid=None, category=None, tolerant=False):
+def get_capabilities(request, layerid=None, user=None, mapid=None, category=None):
     """
     Compile a GetCapabilities document containing public layers
     filtered by layer, user, map, or category
@@ -694,7 +685,7 @@ def get_capabilities(request, layerid=None, user=None, mapid=None, category=None
                 access_token = None
             try:
                 workspace, layername = layer.alternate.split(":") if ":" in layer.alternate else (None, layer.alternate)
-                layercap = get_dataset_capabilities(layer, access_token=access_token, tolerant=tolerant)
+                layercap = get_dataset_capabilities(layer, access_token=access_token)
                 if layercap is not None:  # 1st one, seed with real GetCapabilities doc
                     try:
                         namespaces = {
