@@ -2284,7 +2284,7 @@ def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
     """
     Generate the layer-specific GetCapabilities URL
     """
-    workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ('', layer.alternate)
+    workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ("", layer.alternate)
     wms_url = ogc_server_settings.LOCATION
     if not layer.remote_service:
         wms_url = f"{wms_url}{'/'.join(workspace_layername)}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
