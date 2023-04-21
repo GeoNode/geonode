@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+from geonode.geoapps.models import GeoApp
 import json
 import re
 
@@ -70,7 +71,11 @@ from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVis
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
-from geonode.security.utils import get_visible_resources, get_resources_with_perms, get_user_visible_groups
+from geonode.security.utils import (
+    get_visible_resources,
+    get_resources_with_perms,
+    get_user_visible_groups,
+)
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -87,6 +92,7 @@ from .permissions import (
 )
 from .serializers import (
     FavoriteSerializer,
+    SimpleResourceSerializer,
     UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
@@ -1466,3 +1472,51 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             """
             logger.debug(e)
             return request.data
+
+    @extend_schema(methods=["get"], description="Get Linked Resources")
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
+        url_path=r"linked_resources",  # noqa
+        url_name="linked_resources",
+    )
+    def linked_resources(self, request, pk):
+        try:
+            _obj = self.get_object().get_real_instance()
+            if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
+                raise NotImplementedError("Not implemented: this endpoint is not available for GeoApps")
+
+            linked_resource_mapping = {"dataset": "maps", "map": "datasets", "document": "links"}
+
+            # getting the resource dynamically list based on the above mapping
+            resources = getattr(_obj, linked_resource_mapping[_obj.resource_type]).all()
+
+            if _obj.resource_type == "document":
+                # in case of documents, we need to filter again
+                # to get the resourcebase objects
+                resources = ResourceBase.objects.filter(pk__in=resources.values_list("object_id", flat=True))
+
+            additional_query_params = request.query_params
+            if additional_query_params:
+                resources = resources.filter(**{x: y for x, y in request.query_params.items()})
+
+            resources = get_visible_resources(
+                resources,
+                user=request.user,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            ).order_by("-pk")
+
+            paginator = GeoNodeApiPagination()
+            paginator.page_size = request.GET.get("page_size", 10)
+            result_page = paginator.paginate_queryset(resources, request)
+            serializer = SimpleResourceSerializer(result_page, embed=True, many=True)
+            return paginator.get_paginated_response({"resources": serializer.data})
+        except NotImplementedError as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0], "success": False}, status=501, exception=True)
+        except Exception as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
