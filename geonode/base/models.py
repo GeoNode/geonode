@@ -35,6 +35,7 @@ from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
+from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -397,49 +398,62 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
-        """
-        To avoid concurrency with the keyword in case of a massive upload.
-        With the transaction block and the select_for_update,
-        we can easily handle the concurrency.
-        DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
-        """
-        existing = self.through.tag_model().objects.select_for_update().filter(name__in=str_tags, **tag_kwargs)
-        with transaction.atomic():
+        try:
+            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs).all()
             tag_objs.update(existing)
             new_ids = set()
-            _new_keyword = str_tags - set(t.name for t in existing)
-            for new_tag in list(_new_keyword):
+            _new_keywords = str_tags - set(t.name for t in existing)
+            for new_tag in list(_new_keywords):
                 new_tag = escape(new_tag)
-                try:
-                    new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                new_tag_obj = None
+                with transaction.atomic():
+                    try:
+                        new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                    except Exception as e:
+                        logger.exception(e)
+                # HierarchicalKeyword.add_root didn't return, probably the keyword already exists
+                if not new_tag_obj:
+                    new_tag_obj = HierarchicalKeyword.objects.filter(name=new_tag)
+                    if new_tag_obj.exists():
+                        new_tag_obj.first()
+                if new_tag_obj:
                     tag_objs.add(new_tag_obj)
                     new_ids.add(new_tag_obj.id)
+                else:
+                    # Something has gone seriously wrong and we cannot assign the tag to the resource
+                    logger.error(f"Error during the keyword creation for keyword: {new_tag}")
+
+            signals.m2m_changed.send(
+                sender=self.through,
+                action="pre_add",
+                instance=self.instance,
+                reverse=False,
+                model=self.through.tag_model(),
+                pk_set=new_ids,
+            )
+
+            for tag in tag_objs:
+                try:
+                    self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
                 except Exception as e:
                     logger.exception(e)
 
-        signals.m2m_changed.send(
-            sender=self.through,
-            action="pre_add",
-            instance=self.instance,
-            reverse=False,
-            model=self.through.tag_model(),
-            pk_set=new_ids,
-        )
-
-        for tag in tag_objs:
-            try:
-                self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
-            except Exception as e:
-                logger.exception(e)
-
-        signals.m2m_changed.send(
-            sender=self.through,
-            action="post_add",
-            instance=self.instance,
-            reverse=False,
-            model=self.through.tag_model(),
-            pk_set=new_ids,
-        )
+            signals.m2m_changed.send(
+                sender=self.through,
+                action="post_add",
+                instance=self.instance,
+                reverse=False,
+                model=self.through.tag_model(),
+                pk_set=new_ids,
+            )
+        except IntegrityError as e:
+            logger.warning("The keyword provided already exists", exc_info=e)
+        except OperationalError as e:
+            logger.warning(
+                "An error has occured with the DB connection. Please try to re-add the keywords again", exc_info=e
+            )
+        except Exception as e:
+            raise e
 
 
 class Thesaurus(models.Model):
