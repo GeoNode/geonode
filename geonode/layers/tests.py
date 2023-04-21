@@ -1997,6 +1997,30 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             form.errors["presentation"][0],
         )
 
+    def test_resource_form_is_invalid_with_incompleted_timeserie_data(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
+        response = self.client.post(
+            url,
+            data={
+                "resource-owner": self.dataset.owner.id,
+                "resource-title": "layer_title",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng",
+                "resource-has_time": True,
+                "dataset_attribute_set-TOTAL_FORMS": 0,
+                "dataset_attribute_set-INITIAL_FORMS": 0,
+            },
+        )
+        expected = {
+            "success": False,
+            "errors": [
+                "The Timeseries configuration is invalid. Please select at least one option between the `attribute` and `end_attribute`, otherwise remove the 'has_time' flag"
+            ],
+        }
+        self.assertDictEqual(expected, response.json())
+
 
 class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
     """
