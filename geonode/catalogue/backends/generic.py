@@ -89,8 +89,8 @@ class Catalogue(CatalogueServiceWeb):
                 return None
             record = list(self.records.values())[0]
             record.keywords = []
-            if hasattr(record, "identification") and hasattr(record.identification, "keywords"):
-                for kw in record.identification.keywords:
+            if hasattr(record, "identification") and hasattr(record.identification[0], "keywords"):
+                for kw in record.identification[0].keywords:
                     record.keywords.extend(kw["keywords"])
             return record
         else:
@@ -193,11 +193,11 @@ class Catalogue(CatalogueServiceWeb):
         # Let owslib do some parsing for us...
         result = {}
         result["uuid"] = rec.identifier
-        result["title"] = rec.identification.title
-        result["abstract"] = rec.identification.abstract
+        result["title"] = rec.identification[0].title
+        result["abstract"] = rec.identification[0].abstract
 
         keywords = []
-        for kw in rec.identification.keywords:
+        for kw in rec.identification[0].keywords:
             keywords.extend(kw["keywords"])
 
         result["keywords"] = keywords
@@ -208,10 +208,10 @@ class Catalogue(CatalogueServiceWeb):
         result["name"] = result["uuid"]
 
         result["bbox"] = {
-            "minx": rec.identification.bbox.minx,
-            "maxx": rec.identification.bbox.maxx,
-            "miny": rec.identification.bbox.miny,
-            "maxy": rec.identification.bbox.maxy,
+            "minx": rec.identification[0].bbox.minx,
+            "maxx": rec.identification[0].bbox.maxx,
+            "miny": rec.identification[0].bbox.miny,
+            "maxy": rec.identification[0].bbox.maxy,
         }
 
         # locate all distribution links
