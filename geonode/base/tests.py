@@ -17,7 +17,9 @@
 #
 #########################################################################
 
+import logging
 import os
+from django.db.utils import IntegrityError, OperationalError
 import requests
 
 from uuid import uuid4
@@ -40,6 +42,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.templatetags.base_tags import display_change_perms_button
 from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.base.models import (
+    HierarchicalKeyword,
     ResourceBase,
     MenuPlaceholder,
     Menu,
@@ -1087,3 +1090,37 @@ class TestHandleMetadataKeyword(TestCase):
         thesaurus = {"title": "Random Thesaurus Title"}
         actual = self.sut.is_thesaurus_available(thesaurus, keyword)
         self.assertEqual(0, len(actual))
+
+
+class Test_HierarchicalTagManager(GeoNodeBaseTestSupport):
+    def setUp(self) -> None:
+        self.sut = create_single_dataset(name="dataset_for_keyword")
+        self.keyword = HierarchicalKeyword.objects.create(name="test_kw", slug="test_kw", depth=1)
+        self.keyword.save()
+
+    def tearDown(self) -> None:
+        self.sut.keywords.remove(self.keyword)
+
+    def test_keyword_are_correctly_saved(self):
+        self.assertFalse(self.sut.keywords.exists())
+        self.sut.keywords.add(self.keyword)
+        self.assertTrue(self.sut.keywords.exists())
+
+    @patch("django.db.models.query.QuerySet._fetch_all")
+    def test_keyword_raise_integrity_error(self, keyword_fetch_method):
+        keyword_fetch_method.side_effect = IntegrityError()
+        logger = logging.getLogger("geonode.base.models")
+        with self.assertLogs(logger, level="WARNING") as _log:
+            self.sut.keywords.add(self.keyword)
+        self.assertIn("The keyword provided already exists", [x.message for x in _log.records])
+
+    @patch("geonode.base.models.HierarchicalKeyword.add_root")
+    def test_keyword_raise_db_error(self, add_root_mocked):
+        add_root_mocked.side_effect = OperationalError()
+        logger = logging.getLogger("geonode.base.models")
+        with self.assertLogs(logger) as _log:
+            self.sut.keywords.add("keyword2")
+        self.assertIn(
+            "Error during the keyword creation for keyword: keyword2",
+            [x.message for x in _log.records],
+        )
