@@ -1992,7 +1992,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         )
         self.assertTrue(form.is_valid())
         self.assertDictEqual({}, form.errors)
-        expected_choises = [(None, '-----'), (self.dataset.attributes.first().id, 'field_date')]
+        expected_choises = [(None, "-----"), (self.dataset.attributes.first().id, "field_date")]
         actual_choices = form.fields.get("attribute").choices
         self.assertListEqual(expected_choises, actual_choices)
 
@@ -2015,9 +2015,9 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertFalse(form.is_valid())
         self.assertEqual(
             f"Select a valid choice. {self.dataset.attributes.first().id} is not one of the available choices.",
-            form.errors.get("attribute")[0]
+            form.errors.get("attribute")[0],
         )
-        expected_choises = [(None, '-----')]
+        expected_choises = [(None, "-----")]
         actual_choices = form.fields.get("attribute").choices
         self.assertListEqual(expected_choises, actual_choices)
 
