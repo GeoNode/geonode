@@ -1814,14 +1814,17 @@ def set_time_info(layer, attribute, end_attribute, presentation, precision_value
     info = DimensionInfo(
         "time", enabled, presentation, resolution, "ISO8601", None, attribute=attribute, end_attribute=end_attribute
     )
-    if resource and resource.metadata:
+    if resource and hasattr(resource, "metadata") and resource.metadata:
         metadata = dict(resource.metadata or {})
     else:
         metadata = dict({})
     metadata["time"] = info
 
-    if resource and resource.metadata:
+    if resource and hasattr(resource, "metadata") and resource.metadata:
         resource.metadata = metadata
+    else:
+        setattr(resource, "metadata", metadata)
+
     if resource:
         gs_catalog.save(resource)
 
