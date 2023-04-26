@@ -497,10 +497,6 @@ def dataset_metadata(
                     initial["precision_step"] = "seconds"
 
         timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries", initial=initial)
-        timeseries_form.fields.get("attribute").queryset = layer.attributes.filter(attribute_type__in=["xsd:dateTime"])
-        timeseries_form.fields.get("end_attribute").queryset = layer.attributes.filter(
-            attribute_type__in=["xsd:dateTime"]
-        )
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
