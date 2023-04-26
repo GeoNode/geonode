@@ -193,7 +193,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         self.assertEqual(locations, [[settings.OGC_SERVER["default"]["LOCATION"], [dataset.alternate], []]])
 
     def test_datasets_locations_dataset_default_bbox(self):
-        expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.093033709, 4984363.884452854, "EPSG:3857"]
+        expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]
         dataset = Dataset.objects.get(title_en="theaters_nyc")
 
         locations, bbox = thumbnails._datasets_locations(dataset, compute_bbox=True)
@@ -237,7 +237,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_datasets_locations_simple_map_default_bbox(self):
-        expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.093033709, 4984363.884452854, "EPSG:3857"]
+        expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]
 
         dataset = Dataset.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
