@@ -1974,6 +1974,53 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertTrue(form.is_valid())
         self.assertDictEqual({}, form.errors)
 
+    def test_dataset_time_form_should_work_with_date_attribute(self):
+        attr, _ = Attribute.objects.get_or_create(
+            dataset=self.dataset, attribute="field_date", attribute_type="xsd:date"
+        )
+        self.dataset.attribute_set.add(attr)
+        self.dataset.save()
+        form = self.time_form(
+            instance=self.dataset,
+            data={
+                "attribute": self.dataset.attributes.first().id,
+                "end_attribute": "",
+                "presentation": "DISCRETE_INTERVAL",
+                "precision_value": 12345,
+                "precision_step": "seconds",
+            },
+        )
+        self.assertTrue(form.is_valid())
+        self.assertDictEqual({}, form.errors)
+        expected_choises = [(None, "-----"), (self.dataset.attributes.first().id, "field_date")]
+        actual_choices = form.fields.get("attribute").choices
+        self.assertListEqual(expected_choises, actual_choices)
+
+    def test_timeserie_raise_error_if_not_valid_attribute(self):
+        attr, _ = Attribute.objects.get_or_create(
+            dataset=self.dataset, attribute="field_date", attribute_type="xsd:string"
+        )
+        self.dataset.attribute_set.add(attr)
+        self.dataset.save()
+        form = self.time_form(
+            instance=self.dataset,
+            data={
+                "attribute": self.dataset.attributes.first().id,
+                "end_attribute": "",
+                "presentation": "DISCRETE_INTERVAL",
+                "precision_value": 12345,
+                "precision_step": "seconds",
+            },
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            f"Select a valid choice. {self.dataset.attributes.first().id} is not one of the available choices.",
+            form.errors.get("attribute")[0],
+        )
+        expected_choises = [(None, "-----")]
+        actual_choices = form.fields.get("attribute").choices
+        self.assertListEqual(expected_choises, actual_choices)
+
     def test_dataset_time_form_should_raise_error_if_invalid_payload(self):
         attr, _ = Attribute.objects.get_or_create(
             dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
