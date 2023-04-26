@@ -159,7 +159,7 @@ splinter==0.19.0
 pytest-splinter==3.3.2
 pytest-django==4.5.2
 setuptools>=59.1.1,<67.7.0
-pip==23.1
+pip==23.1.1
 Twisted==22.10.0
 pixelmatch==0.3.0
 factory-boy==3.2.1
