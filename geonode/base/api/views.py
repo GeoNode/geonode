@@ -1484,8 +1484,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     def linked_resources(self, request, pk):
         try:
             """
-            For let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
-            because works on the resource and not on the linked one.
+            To let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
+            works on the resource and not on the linked one.
             So if we want to filter the linked resource by "resource_type"
             we have to search in the query params like in the following code:
             _filters = {
@@ -1495,7 +1495,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 if x not in ["page_size", "page"]
             }
             We have to exclude the paging code or will raise the:
-            "Cannot resolve keyword into the field..."  
+            "Cannot resolve keyword into the field..."
             """
             _obj = self.get_object().get_real_instance()
             if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
