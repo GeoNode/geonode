@@ -1483,6 +1483,19 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     )
     def linked_resources(self, request, pk):
         try:
+            """
+            For let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
+            works on the resource and not on the linked one.
+            So if we want to filter the linked resource by "resource_type"
+            we have to search in the query params like in the following code:
+            _filters = {
+                x: y
+                for x, y
+                in request.query_params.items()
+                if x not in ["page_size", "page"]
+            }
+
+            """
             _obj = self.get_object().get_real_instance()
             if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
                 raise NotImplementedError("Not implemented: this endpoint is not available for GeoApps")
@@ -1497,9 +1510,10 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 # to get the resourcebase objects
                 resources = ResourceBase.objects.filter(pk__in=resources.values_list("object_id", flat=True))
 
-            _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
-            if _filters:
-                resources = resources.filter(**_filters)
+            if request.query_params:
+                _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
+                if _filters:
+                    resources = resources.filter(**_filters)
 
             resources = get_visible_resources(
                 resources,
