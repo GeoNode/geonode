@@ -1497,9 +1497,9 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 # to get the resourcebase objects
                 resources = ResourceBase.objects.filter(pk__in=resources.values_list("object_id", flat=True))
 
-            additional_query_params = request.query_params
-            if additional_query_params:
-                resources = resources.filter(**{x: y for x, y in request.query_params.items()})
+            _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
+            if _filters:
+                resources = resources.filter(**_filters)
 
             resources = get_visible_resources(
                 resources,

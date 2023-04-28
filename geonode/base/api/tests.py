@@ -2549,6 +2549,39 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             if _d:
                 _d.delete()
 
+    def test_linked_resource_should_return_the_paginated_result(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.map)
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(document_id=self.doc.id, content_type=ctype, object_id=self.map.id)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.dataset.id
+            )
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?page_size=1")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            next_url = response.json().get("links", {}).get("next", None)
+            self.assertIsNotNone(next_url)
+            self.assertTrue("page=2" in next_url)
+            # calling next_page to be sure that the url works
+            response = self.client.get(next_url)
+            # verify that now it has a prev_page
+            prev_url = response.json().get("links", {}).get("previous", None)
+            self.assertIsNotNone(prev_url)
+
+            # verify that it works
+            # calling next_page to be sure that the url works
+            response = self.client.get(prev_url)
+            self.assertEqual(response.status_code, 200)
+
+        finally:
+            if _d:
+                _d.delete()
+
     def test_linked_resources_maps_should_return_the_expected_ouput(self):
         try:
             # data preparation
