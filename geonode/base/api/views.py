@@ -1485,7 +1485,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         try:
             """
             For let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
-            works on the resource and not on the linked one.
+            because works on the resource and not on the linked one.
             So if we want to filter the linked resource by "resource_type"
             we have to search in the query params like in the following code:
             _filters = {
