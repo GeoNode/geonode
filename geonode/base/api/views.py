@@ -1494,7 +1494,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 in request.query_params.items()
                 if x not in ["page_size", "page"]
             }
-
+            We have to exclude the paging code or will raise the:
+            "Cannot resolve keyword into the field..."  
             """
             _obj = self.get_object().get_real_instance()
             if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
