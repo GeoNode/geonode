@@ -1500,16 +1500,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             _obj = self.get_object().get_real_instance()
             if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
                 raise NotImplementedError("Not implemented: this endpoint is not available for GeoApps")
-
-            linked_resource_mapping = {"dataset": "maps", "map": "datasets", "document": "links"}
-
             # getting the resource dynamically list based on the above mapping
-            resources = getattr(_obj, linked_resource_mapping[_obj.resource_type]).all()
-
-            if _obj.resource_type == "document":
-                # in case of documents, we need to filter again
-                # to get the resourcebase objects
-                resources = ResourceBase.objects.filter(pk__in=resources.values_list("object_id", flat=True))
+            resources = _obj.linked_resources
 
             if request.query_params:
                 _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
