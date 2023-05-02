@@ -312,6 +312,14 @@ class Dataset(ResourceBase):
         return Map.objects.filter(id__in=map_ids)
 
     @property
+    def linked_resources(self):
+        from geonode.documents.models import DocumentResourceLink
+
+        _map_ids = list(self.maplayers.values_list("map__id", flat=True))
+        _doc_ids = list(DocumentResourceLink.objects.filter(object_id=self.pk).values_list("document__pk", flat=True))
+        return ResourceBase.objects.filter(id__in=list(set(_map_ids + _doc_ids)))
+
+    @property
     def download_url(self):
         if self.subtype not in ["vector", "raster", "vector_time"]:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")

@@ -2549,6 +2549,57 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             if _d:
                 _d.delete()
 
+    def test_linked_resource_for_maps_with_mixed_resources(self):
+        try:
+            # data preparation
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.map.id
+            )
+            # data preparation
+            MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.doc.detail_url,
+                        "pk": self.doc.id,
+                        "resource_type": self.doc.resource_type,
+                        "thumbnail_url": self.doc.thumbnail_url,
+                        "title": self.doc.title,
+                    },
+                    {
+                        "detail_url": self.dataset.detail_url,
+                        "pk": self.dataset.id,
+                        "resource_type": self.dataset.resource_type,
+                        "thumbnail_url": self.dataset.thumbnail_url,
+                        "title": self.dataset.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.map.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
+
     def test_linked_resource_should_return_the_paginated_result(self):
         try:
             # data preparation
@@ -2659,6 +2710,57 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         finally:
             if _m:
                 _m.delete()
+
+    def test_linked_resource_for_datasets_with_mixed_resources(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype, object_id=self.dataset.id
+            )
+            # data preparation
+            MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.doc.detail_url,
+                        "pk": self.doc.id,
+                        "resource_type": self.doc.resource_type,
+                        "thumbnail_url": self.doc.thumbnail_url,
+                        "title": self.doc.title,
+                    },
+                    {
+                        "detail_url": self.map.detail_url,
+                        "pk": self.map.id,
+                        "resource_type": self.map.resource_type,
+                        "thumbnail_url": self.map.thumbnail_url,
+                        "title": self.map.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.dataset.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
 
     def test_linked_resource_filter_should_work(self):
         try:
