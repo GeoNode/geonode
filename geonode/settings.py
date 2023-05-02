@@ -434,6 +434,7 @@ GEONODE_INTERNAL_APPS = (
     "geonode.messaging",
     "geonode.favorite",
     "geonode.monitoring",
+    "geonode.facets",
 )
 
 GEONODE_CONTRIB_APPS = (
