@@ -38,6 +38,16 @@ class GeoNodeFacetsConfig(AppConfig):
 
         urlpatterns += urls.urlpatterns
 
+        init_thesaurus_providers()
+
+
+def init_thesaurus_providers():
+    # should be called at startup and whenever records in Thesaurus or ThesaurusLabel change
+    from geonode.facets.providers.thesaurus import create_thesaurus_providers
+
+    for provider in create_thesaurus_providers():
+        register_facet_provider(provider)
+
 
 def register_facet_provider(provider: FacetProvider):
     logging.info(f"Registering {provider}")
