@@ -10,7 +10,7 @@ beautifulsoup4==4.12.2
 httplib2<0.22.1
 hyperlink==21.0.0
 idna>=2.5,<3.5
-urllib3==1.26.15
+urllib3==2.0.1
 Paver==1.3.4
 python-slugify==8.0.1
 decorator==5.1.1
