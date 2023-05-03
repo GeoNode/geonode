@@ -174,7 +174,7 @@ class GeoNodeUploader:
                     _exec = ExecutionRequest.objects.get(exec_id=exec_id)
 
                     while _exec.status.lower() in ['ready', 'running'] and start <= self.tentatives:
-                        self.log.info("Execution is not completed yet, waiting for 15 secods")
+                        print("Execution is not completed yet, waiting for 15 secods")
                         time.sleep(15)
                         start += 1
                         _exec.refresh_from_db()
