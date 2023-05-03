@@ -34,7 +34,9 @@ class FacetProvider:
         """
         pass
 
-    def get_facet_items(self, queryset, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en") -> (int, list):
+    def get_facet_items(
+        self, queryset, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en", topic_contains: str = None
+    ) -> (int, list):
         """
         Return the items of the facets, in a tuple:
         - int, total number of items matched
@@ -43,10 +45,12 @@ class FacetProvider:
           - label: a generic label for the item; the client should try and localize it whenever possible
           - localized_label: a localized label for the item
           - count: the count of such topic in the current facet
+          - other facet specific keys
         :param queryset: the prefiltered queryset (may be filtered for authorization or other filters)
         :param start: int: pagination, the index of the initial returned item
         :param end: int: pagination, the index of the last returned item
         :param lang: the preferred language for the labels
+        :param topic_contains: only returns matching topics
         :return: a tuple int:total count of record, list of items
         """
         pass

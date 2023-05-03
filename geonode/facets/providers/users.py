@@ -27,17 +27,25 @@ class OwnerFacetProvider(FacetProvider):
         }
 
     def get_facet_items(
-        self, queryset=None, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en"
+        self,
+        queryset=None,
+        start: int = 0,
+        end: int = DEFAULT_FACET_PAGE_SIZE,
+        lang="en",
+        topic_contains: str = None,
     ) -> (int, list):
-        logging.debug("Retrieving facets for OWNER")
+        logger.debug("Retrieving facets for OWNER")
 
-        q = queryset.values("owner", "owner__username").annotate(count=Count("owner")).order_by("-count")
+        q = queryset.values("owner", "owner__username")
+        if topic_contains:
+            q = q.filter(owner__username__icontains=topic_contains)
+        q = q.annotate(count=Count("owner")).order_by("-count")
 
         cnt = q.count()
 
-        logging.info("Found %d facets for %s", cnt, self.name)
-        logging.debug(" ---> %s\n\n", q.query)
-        logging.debug(" ---> %r\n\n", q.all())
+        logger.info("Found %d facets for %s", cnt, self.name)
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
 
         topics = [
             {

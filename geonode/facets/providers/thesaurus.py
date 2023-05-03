@@ -35,12 +35,26 @@ class ThesaurusFacetProvider(FacetProvider):
         }
 
     def get_facet_items(
-        self, queryset=None, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en"
+        self,
+        queryset=None,
+        start: int = 0,
+        end: int = DEFAULT_FACET_PAGE_SIZE,
+        lang="en",
+        topic_contains: str = None,
+        **kwargs,
     ) -> (int, list):
-        logging.debug("Retrieving facets for %s", self._name)
+        logger.debug("Retrieving facets for %s", self._name)
+
+        filter = {
+            "tkeywords__thesaurus__identifier": self._name,
+            "tkeywords__keyword__lang": lang,
+        }
+
+        if topic_contains:
+            filter["tkeywords__keyword__label__icontains"] = topic_contains
 
         q = (
-            queryset.filter(tkeywords__thesaurus__identifier=self._name, tkeywords__keyword__lang=lang)
+            queryset.filter(**filter)
             .values("tkeywords", "tkeywords__keyword__label", "tkeywords__alt_label")
             .annotate(count=Count("tkeywords"))
             .order_by("-count")
@@ -48,9 +62,9 @@ class ThesaurusFacetProvider(FacetProvider):
 
         cnt = q.count()
 
-        logging.info("Found %d facets for %s", cnt, self._name)
-        logging.debug(" ---> %s\n\n", q.query)
-        logging.debug(" ---> %r\n\n", q.all())
+        logger.info("Found %d facets for %s", cnt, self._name)
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
 
         topics = [
             {

@@ -47,6 +47,7 @@ def get_facet(request, facet):
     logger.debug("get_facet -> %r for user '%r'", facet, request.user.username)
     lang, lang_requested = _resolve_language(request)
     add_link = _resolve_boolean(request, "add_links", False)
+    topic_contains = request.GET.get("topic_contains", None)
 
     provider: FacetProvider = registered_facets.get(facet)
     if not provider:
@@ -58,7 +59,9 @@ def get_facet(request, facet):
     info = provider.get_info(lang)
 
     qs = _prefilter_topics(request)
-    topics = _get_topics(provider, queryset=qs, page=page, page_size=page_size, lang=lang)
+    topics = _get_topics(
+        provider, queryset=qs, page=page, page_size=page_size, lang=lang, topic_contains=topic_contains
+    )
 
     if add_link:
         exist_prev = page > 0
@@ -71,18 +74,31 @@ def get_facet(request, facet):
             link_param = {"page": p, "page_size": page_size, "lang": lang, "add_links": True}
             if lang_requested:  # only add lang param if specified in current call
                 link_param["lang"] = lang
+            if topic_contains:
+                link_param["topic_contains"] = topic_contains
             info[link_name] = f"{link}?{urlencode(link_param)}" if exist else None
+
+    if topic_contains:
+        # in the payload let's rmb this is a filtered output
+        info["topic_contains"] = topic_contains
 
     info["topics"] = topics
 
     return JsonResponse(info)
 
 
-def _get_topics(provider, queryset, page: int = 0, page_size: int = DEFAULT_FACET_PAGE_SIZE, lang: str = "en"):
+def _get_topics(
+    provider,
+    queryset,
+    page: int = 0,
+    page_size: int = DEFAULT_FACET_PAGE_SIZE,
+    lang: str = "en",
+    topic_contains: str = None,
+):
     start = page * page_size
     end = start + page_size
 
-    cnt, items = provider.get_facet_items(queryset, start=start, end=end, lang=lang)
+    cnt, items = provider.get_facet_items(queryset, start=start, end=end, lang=lang, topic_contains=topic_contains)
 
     return {"page": page, "page_size": page_size, "start": start, "total": cnt, "items": items}
 
