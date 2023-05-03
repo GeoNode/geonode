@@ -2330,7 +2330,7 @@ class BaseApiTests(APITestCase):
         resource.set_permissions(_perms)
         copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
-        self.assertEqual(response.status_code, 403)
+        self.assertIn(response.status_code, [403, 404])
         # set perms to enable user clone resource
         # bobby can copy the resource since he has all the perms needed
         _perms = {

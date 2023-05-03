@@ -783,7 +783,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertIsNotNone(name)
         ws = gs_catalog.get_workspace(workspace)
         self.assertIsNotNone(ws)
-        _gs_dataset_store = saved_dataset.store or 'geonode_data'
+        _gs_dataset_store = saved_dataset.store
         if not _gs_dataset_store:
             saved_dataset.alternate = f"{workspace}:boxes_with_date"
             _gs_dataset = gs_catalog.get_layer(saved_dataset.alternate.replace(".shp", ""))
