@@ -786,7 +786,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         _gs_dataset_store = saved_dataset.store
         if not _gs_dataset_store:
             saved_dataset.alternate = f"{workspace}:boxes_with_date"
-            _gs_dataset = gs_catalog.get_layer(saved_dataset.alternate)
+            _gs_dataset = gs_catalog.get_layer(saved_dataset.alternate.replace(".shp", ""))
             logger.error(f" ----> fetching layer {saved_dataset.alternate} from GeoServer...: '{_gs_dataset}'")
             self.assertIsNotNone(_gs_dataset)
             _gs_dataset_store = saved_dataset.store = _gs_dataset.resource.store.name
