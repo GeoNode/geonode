@@ -22,7 +22,6 @@ from django.apps import AppConfig
 
 from geonode.facets.models import FacetProvider
 
-
 logger = logging.getLogger(__name__)
 
 registered_facets = dict()
@@ -38,13 +37,16 @@ class GeoNodeFacetsConfig(AppConfig):
 
         urlpatterns += urls.urlpatterns
 
-        init_thesaurus_providers()
+        init_providers()
 
 
-def init_thesaurus_providers():
-    # should be called at startup and whenever records in Thesaurus or ThesaurusLabel change
+def init_providers():
     from geonode.facets.providers.thesaurus import create_thesaurus_providers
+    from geonode.facets.providers.users import OwnerFacetProvider
 
+    register_facet_provider(OwnerFacetProvider())
+
+    # Thesaurus providers initialiazion should be called at startup and whenever records in Thesaurus or ThesaurusLabel change
     for provider in create_thesaurus_providers():
         register_facet_provider(provider)
 
