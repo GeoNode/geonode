@@ -177,7 +177,6 @@ class GeoNodeUploader:
                         self.log.info(f"Execution is not completed yet, waiting for 15 secods")
                         time.sleep(15)
                         start += 1
-                        self.log.info(f"Calling status update")
                         _exec.refresh_from_db()
                                             
                     if _exec.status in ['finished']:
