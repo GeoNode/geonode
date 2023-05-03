@@ -735,6 +735,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         rules_count = geofence.get_rules_count()
         self.assertEqual(rules_count, 0)
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_upload_with_time(self):
         """Try uploading a layer and verify that the user can administrate
@@ -765,7 +766,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         fname = os.path.join(GOOD_DATA, "time", "boxes_with_date.shp")
         resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 201)
 
         saved_dataset = Dataset.objects.get(name="boxes_with_date.shp")
         check_dataset(saved_dataset)

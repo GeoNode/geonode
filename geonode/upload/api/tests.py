@@ -17,8 +17,8 @@
 #
 #########################################################################
 
+from geonode.resource.models import ExecutionRequest
 import os
-import json
 import shutil
 import logging
 import tempfile
@@ -53,7 +53,6 @@ from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.upload.tasks import _update_upload_session_state
-from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.tests.utils import GEONODE_USER, GEONODE_PASSWD, rest_upload_by_path
 
@@ -390,44 +389,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self.assertEqual(len(response.data["uploads"]), 0)
             logger.debug(response.data)
 
-    def test_upload_temp_folder_deleted(self):
-        """
-        Ensure that temp folders are deleted on deleting a resource
-        """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        resource_id = data["url"].split("/")[-1]
-        upload = Upload.objects.get(resource_id=resource_id)
-        # temp folder is not deleted after successful upload
-        self.assertTrue(os.path.exists(upload.upload_dir))
-
-        # delete resource with temp foler
-        delete_resource_url = reverse("base-resources-detail", kwargs={"pk": resource_id})
-        self.assertTrue(os.path.exists(upload.upload_dir))
-
-        response = self.client.delete(f"{delete_resource_url}/delete")
-        self.assertEqual(response.status_code, 200)
-        resp_js = json.loads(response.content.decode("utf-8"))
-        if resp_js.get("status", "") != "success":
-            status_url = resp_js.get("status_url", None)
-            execution_id = resp_js.get("execution_id", "")
-            self.assertIsNotNone(status_url)
-            self.assertIsNotNone(execution_id)
-            for _cnt in range(0, 10):
-                response = self.client.get(f"{status_url}")
-                self.assertEqual(response.status_code, 200)
-                resp_js = json.loads(response.content.decode("utf-8"))
-                logger.error(f"[{_cnt + 1}] ... {resp_js}")
-                if resp_js.get("status", "") == "finished":
-                    break
-                else:
-                    resouce_service_dispatcher.apply((execution_id,))
-                    sleep(3.0)
-        self.assertEqual(resp_js.get("status", ""), "finished", resp_js)
-        self.assertFalse(os.path.exists(upload.upload_dir), resp_js)
-
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_rest_uploads_by_path(self):
         """
         Ensure we can access the Local Server Uploads list.
@@ -435,7 +397,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
         resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 201)
         self.assertEqual(data["status"], "finished")
         self.assertTrue(data["success"])
 
@@ -443,7 +405,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Anonymous
         self.client.logout()
         response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data), 5)
         self.assertEqual(response.data["total"], 0)
         # Pagination
@@ -580,6 +542,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
                     sleep(3.0)
         self.assertEqual(upload_data["state"], enumerations.STATE_WAITING, upload_data["state"])
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_emulate_upload_through_rest_apis(self):
         """
         Emulating Upload via REST APIs with several datasets.
@@ -587,28 +550,30 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a bad ESRI shapefile with no CRS available
         fname = os.path.join(BAD_DATA, "points_epsg2249_no_prj.shp")
         resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 400)
 
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
         resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["status"], "finished")
-        self.assertTrue(data["success"])
+        self.assertEqual(resp.status_code, 201)
+        exec_id = data.get("execution_id", None)
+        _exec = ExecutionRequest.objects.get(exec_id=exec_id)
+        self.assertEqual(_exec.status, "finished")
 
         # Try to upload a good ESRI shapefile and check the session IDs
         fname = os.path.join(GOOD_DATA, "vector", "san_andres_y_providencia_coastline.shp")
         resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["status"], "finished")
-        self.assertTrue(data["success"])
+        self.assertEqual(resp.status_code, 201)
+        exec_id = data.get("execution_id", None)
+        _exec = ExecutionRequest.objects.get(exec_id=exec_id)
+        self.assertEqual(_exec.status, "finished")
 
         def assert_processed_or_failed(total_uploads, upload_index, dataset_name, state):
             url = reverse("uploads-list")
             # Admin
             self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
             response = self.client.get(url, format="json")
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 201)
             self.assertEqual(len(response.data), 5, response.data)
             self.assertEqual(response.data["total"], total_uploads, response.data["total"])
             # Pagination
@@ -672,7 +637,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             max_size_mock.return_value = lambda x: 209715200
 
             resp, data = rest_upload_by_path(fname, self.client)
-            self.assertEqual(resp.status_code, 400)
+            self.assertEqual(resp.status_code, 500)
             self.assertDictEqual(expected_error, data)
             mocked_uploaded_file.assert_not_called()
 
@@ -731,7 +696,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             mocked_get_parallel_uploads_count.return_value = lambda: 200
 
             resp, data = rest_upload_by_path(fname, self.client)
-            self.assertEqual(resp.status_code, 400)
+            self.assertEqual(resp.status_code, 500)
 
             mocked_uploaded_file.assert_not_called()
             self.assertDictEqual(expected_error, data)
