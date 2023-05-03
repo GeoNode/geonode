@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Count
 
-from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
+from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_USER
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class OwnerFacetProvider(FacetProvider):
             "name": "owner",
             "key": "owner",
             "label": "Owner",
-            "type": "users",
+            "type": FACET_TYPE_USER,
             "hierarchical": False,
             "order": 5,
         }

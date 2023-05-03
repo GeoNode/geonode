@@ -1,5 +1,6 @@
 import logging
 from urllib.parse import urlencode
+
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, authentication_classes
 
@@ -11,6 +12,13 @@ from geonode.facets.apps import registered_facets
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
 from geonode.security.utils import get_visible_resources
 
+PARAM_PAGE = "page"
+PARAM_PAGE_SIZE = "page_size"
+PARAM_LANG = "lang"
+PARAM_ADD_LINKS = "add_links"
+PARAM_INCLUDE_TOPICS = "include_topics"
+PARAM_TOPIC_CONTAINS = "topic_contains"
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,8 +26,8 @@ logger = logging.getLogger(__name__)
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 def list_facets(request, **kwargs):
     lang, lang_requested = _resolve_language(request)
-    add_links = _resolve_boolean(request, "add_links", False)
-    include_topics = _resolve_boolean(request, "include_topics", False)
+    add_links = _resolve_boolean(request, PARAM_ADD_LINKS, False)
+    include_topics = _resolve_boolean(request, PARAM_INCLUDE_TOPICS, False)
 
     facets = []
 
@@ -27,9 +35,9 @@ def list_facets(request, **kwargs):
         logger.debug("Fetching data from provider %r", provider)
         info = provider.get_info(lang=lang)
         if add_links:
-            link_args = {"add_links": True}
+            link_args = {PARAM_ADD_LINKS: True}
             if lang_requested:  # only add lang param if specified in current call
-                link_args["lang"] = lang
+                link_args[PARAM_LANG] = lang
             info["link"] = f"{reverse('get_facet', args=[info['name']])}?{urlencode(link_args)}"
 
         if include_topics:
@@ -45,16 +53,18 @@ def list_facets(request, **kwargs):
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 def get_facet(request, facet):
     logger.debug("get_facet -> %r for user '%r'", facet, request.user.username)
-    lang, lang_requested = _resolve_language(request)
-    add_link = _resolve_boolean(request, "add_links", False)
-    topic_contains = request.GET.get("topic_contains", None)
 
+    # retrieve provider for the requested facet
     provider: FacetProvider = registered_facets.get(facet)
     if not provider:
         return HttpResponseNotFound()
 
-    page = int(request.GET.get("page", 0))
-    page_size = int(request.GET.get("page_size", DEFAULT_FACET_PAGE_SIZE))
+    # parse some query params
+    lang, lang_requested = _resolve_language(request)
+    add_link = _resolve_boolean(request, PARAM_ADD_LINKS, False)
+    topic_contains = request.GET.get(PARAM_TOPIC_CONTAINS, None)
+    page = int(request.GET.get(PARAM_PAGE, 0))
+    page_size = int(request.GET.get(PARAM_PAGE_SIZE, DEFAULT_FACET_PAGE_SIZE))
 
     info = provider.get_info(lang)
 
@@ -71,11 +81,11 @@ def get_facet(request, facet):
             (exist_prev, "prev", page - 1),
             (exist_next, "next", page + 1),
         ):
-            link_param = {"page": p, "page_size": page_size, "lang": lang, "add_links": True}
+            link_param = {PARAM_PAGE: p, PARAM_PAGE_SIZE: page_size, PARAM_LANG: lang, PARAM_ADD_LINKS: True}
             if lang_requested:  # only add lang param if specified in current call
-                link_param["lang"] = lang
+                link_param[PARAM_LANG] = lang
             if topic_contains:
-                link_param["topic_contains"] = topic_contains
+                link_param[PARAM_TOPIC_CONTAINS] = topic_contains
             info[link_name] = f"{link}?{urlencode(link_param)}" if exist else None
 
     if topic_contains:
@@ -119,7 +129,7 @@ def _resolve_language(request) -> (str, bool):
     :return: the resolved language, a boolean telling if the language was requested
     """
     # first try with an explicit request using params
-    if lang := request.GET.get("lang", None):
+    if lang := request.GET.get(PARAM_LANG, None):
         return lang, True
     # 2nd try: use LANGUAGE_CODE
     return request.LANGUAGE_CODE.split("-")[0], False

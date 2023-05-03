@@ -1,5 +1,11 @@
 DEFAULT_FACET_PAGE_SIZE = 10
 
+# Well known types of facet - not an enum bc it needs to be extensible
+FACET_TYPE_PLACE = "place"
+FACET_TYPE_USER = "user"
+FACET_TYPE_THESAURUS = "thesaurus"
+FACET_TYPE_CATEGORY = "category"
+
 
 class FacetProvider:
     """

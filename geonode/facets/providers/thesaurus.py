@@ -3,7 +3,7 @@ import logging
 from django.db.models import Count
 
 from geonode.base.models import Thesaurus
-from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
+from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_THESAURUS
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class ThesaurusFacetProvider(FacetProvider):
             "key": "filter{tkeyword}",
             "label": self.label,
             "localized_label": self.labels.get(lang, None),
-            "type": "thesaurus",
+            "type": FACET_TYPE_THESAURUS,
             "hierarchical": False,
             "order": self.order,
         }
