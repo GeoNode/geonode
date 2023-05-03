@@ -8,14 +8,16 @@ from django.urls import reverse
 
 from geonode.base.models import ResourceBase
 from geonode.facets.apps import registered_facets
-from geonode.facets.models import FacetProvider, DEFAULT_FACET_TOPICS_LIMIT
+from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
 from geonode.security.utils import get_visible_resources
 
 logger = logging.getLogger(__name__)
 
 
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
 def list_facets(request, **kwargs):
-    lang = _resolve_language(request)
+    lang, lang_requested = _resolve_language(request)
     add_links = _resolve_boolean(request, "add_links", False)
     include_topics = _resolve_boolean(request, "include_topics", False)
 
@@ -25,11 +27,13 @@ def list_facets(request, **kwargs):
         logger.debug("Fetching data from provider %r", provider)
         info = provider.get_info(lang=lang)
         if add_links:
-            info["link"] = f"{reverse('get_facet', args=[info['name']])}?{urlencode({'add_links': True})}"
+            link_args = {"add_links": True}
+            if lang_requested:  # only add lang param if specified in current call
+                link_args["lang"] = lang
+            info["link"] = f"{reverse('get_facet', args=[info['name']])}?{urlencode(link_args)}"
 
         if include_topics:
-            content = provider.get_facet_items(queryset=_prefilter_topics(request))
-            info["topics"] = content
+            info["topics"] = _get_topics(provider, queryset=_prefilter_topics(request), lang=lang)
 
         facets.append(info)
 
@@ -40,8 +44,8 @@ def list_facets(request, **kwargs):
 @api_view(["GET"])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
 def get_facet(request, facet):
-    logger.debug("get_facet -> %r", facet)
-    lang = _resolve_language(request)
+    logger.debug("get_facet -> %r for user '%r'", facet, request.user.username)
+    lang, lang_requested = _resolve_language(request)
     add_link = _resolve_boolean(request, "add_links", False)
 
     provider: FacetProvider = registered_facets.get(facet)
@@ -49,39 +53,66 @@ def get_facet(request, facet):
         return HttpResponseNotFound()
 
     page = int(request.GET.get("page", 0))
-    limit = int(request.GET.get("limit", DEFAULT_FACET_TOPICS_LIMIT))
+    page_size = int(request.GET.get("page_size", DEFAULT_FACET_PAGE_SIZE))
 
     info = provider.get_info(lang)
-    info["user"] = request.user.username
 
     qs = _prefilter_topics(request)
-    content = provider.get_facet_items(queryset=qs, lang=lang, page=page, limit=limit)
+    topics = _get_topics(provider, queryset=qs, page=page, page_size=page_size, lang=lang)
 
     if add_link:
         exist_prev = page > 0
-        exist_next = content["total"] > (page + 1) * limit
+        exist_next = topics["total"] > (page + 1) * page_size
         link = reverse("get_facet", args=[info["name"]])
-        info["prev"] = f'{link}?{urlencode({"limit": limit, "page": page-1, "add_links":True})}' if exist_prev else None
-        info["next"] = f'{link}?{urlencode({"limit": limit, "page": page+1, "add_links":True})}' if exist_next else None
+        for exist, link_name, p in (
+            (exist_prev, "prev", page - 1),
+            (exist_next, "next", page + 1),
+        ):
+            link_param = {"page": p, "page_size": page_size, "lang": lang, "add_links": True}
+            if lang_requested:  # only add lang param if specified in current call
+                link_param["lang"] = lang
+            info[link_name] = f"{link}?{urlencode(link_param)}" if exist else None
 
-    info["topics"] = content
+    info["topics"] = topics
 
     return JsonResponse(info)
 
 
+def _get_topics(provider, queryset, page: int = 0, page_size: int = DEFAULT_FACET_PAGE_SIZE, lang: str = "en"):
+    start = page * page_size
+    end = start + page_size
+
+    cnt, items = provider.get_facet_items(queryset, start=start, end=end, lang=lang)
+
+    return {"page": page, "page_size": page_size, "start": start, "total": cnt, "items": items}
+
+
 def _prefilter_topics(request):
+    """
+    Perform some prefiltering on resources, such as
+      - auth visibility
+      - filtering by other facets already applied
+    :param request:
+    :return: a QuerySet on ResourceBase
+    """
     return get_visible_resources(ResourceBase.objects, request.user)
 
 
-def _resolve_language(request):
+def _resolve_language(request) -> (str, bool):
+    """
+    :return: the resolved language, a boolean telling if the language was requested
+    """
     # first try with an explicit request using params
     if lang := request.GET.get("lang", None):
-        return lang
+        return lang, True
     # 2nd try: use LANGUAGE_CODE
-    return request.LANGUAGE_CODE.split("-")[0]
+    return request.LANGUAGE_CODE.split("-")[0], False
 
 
 def _resolve_boolean(request, name, fallback=None):
+    """
+    Parse boolean query params
+    """
     val = request.GET.get(name, None)
     if val is None:
         return fallback

@@ -1,4 +1,4 @@
-DEFAULT_FACET_TOPICS_LIMIT = 10
+DEFAULT_FACET_PAGE_SIZE = 10
 
 
 class FacetProvider:
@@ -33,21 +33,18 @@ class FacetProvider:
         """
         pass
 
-    def get_facet_items(self, queryset=None, lang="en", page: int = 0, limit: int = DEFAULT_FACET_TOPICS_LIMIT):
+    def get_facet_items(self, queryset, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en") -> (int, list):
         """
-        Return the items of the facets, as a dict:
-        - total: int, number of items matched
-        - start: int: the index of the initial returned items
-        - page: int: the returned page (should be the same as the `page` param)
-        - limit: int: the page size  (should be the same as the `limit` param)
-        - items: list of topic record. A topic record is a dict having these keys:
+        Return the items of the facets, in a tuple:
+        - int, total number of items matched
+        - list, topic records. A topic record is a dict having these keys:
           - key: the key of the items that should be used for filtering
           - label: a possibly localized label for the item
           - count: the count of such topic in the current facet
         :param queryset: the prefiltered queryset (may be filtered for authorization or other filters)
+        :param start: int: pagination, the index of the initial returned item
+        :param end: int: pagination, the index of the last returned item
         :param lang: the preferred language for the labels
-        :param page: page pagination param
-        :param limit: limit pagination param
-        :return: a dict
+        :return: a tuple int:total count of record, list of items
         """
         pass

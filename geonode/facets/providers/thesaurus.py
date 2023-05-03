@@ -2,8 +2,8 @@ import logging
 
 from django.db.models import Count
 
-from geonode.base.models import Thesaurus, ResourceBase
-from geonode.facets.models import FacetProvider, DEFAULT_FACET_TOPICS_LIMIT
+from geonode.base.models import Thesaurus
+from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +33,10 @@ class ThesaurusFacetProvider(FacetProvider):
             "order": self.order,
         }
 
-    def get_facet_items(self, queryset=None, lang="en", page: int = 0, limit: int = DEFAULT_FACET_TOPICS_LIMIT) -> dict:
+    def get_facet_items(
+        self, queryset=None, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en"
+    ) -> (int, list):
         logging.debug("Retrieving facets for %s", self._name)
-
-        if not queryset:
-            queryset = ResourceBase.objects
 
         q = (
             queryset.filter(tkeywords__thesaurus__identifier=self._name, tkeywords__keyword__lang=lang)
@@ -47,17 +46,8 @@ class ThesaurusFacetProvider(FacetProvider):
         )
 
         cnt = q.count()
-        start = page * limit
-        end = start + limit
 
-        ret = {
-            "total": cnt,
-            "start": start,
-            "page": page,
-            "limit": limit,
-        }
-
-        logging.debug("Found %d facets for %s", cnt, self._name)
+        logging.info("Found %d facets for %s", cnt, self._name)
         logging.debug(" ---> %s\n\n", q.query)
         logging.debug(" ---> %r\n\n", q.all())
 
@@ -66,9 +56,7 @@ class ThesaurusFacetProvider(FacetProvider):
             for r in q[start:end].all()
         ]
 
-        ret["items"] = topics
-
-        return ret
+        return cnt, topics
 
 
 def create_thesaurus_providers() -> list:
