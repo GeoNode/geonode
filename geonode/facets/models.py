@@ -23,7 +23,8 @@ class FacetProvider:
         Get the basic info for this provider, as a dict with these keys:
         - 'name': the name of the provider (the one returned by name())
         - 'key': the filtering key to be used in a filter query
-        - 'label': a possibly localized label for this provider (localized according to the `lang` param
+        - 'label': a generic label for the facet; the client should try and localize it whenever possible
+        - 'localized_label': a localized label for the facet (localized according to the `lang` param)
         - 'type': the facet type (e.g. user, region, thesaurus, ...)
         - 'hierarchical': boolean value telling if the facet items are hierarchically organized
         - "order": an optional integer suggesting the relative ordering of the facets
@@ -39,7 +40,8 @@ class FacetProvider:
         - int, total number of items matched
         - list, topic records. A topic record is a dict having these keys:
           - key: the key of the items that should be used for filtering
-          - label: a possibly localized label for the item
+          - label: a generic label for the item; the client should try and localize it whenever possible
+          - localized_label: a localized label for the item
           - count: the count of such topic in the current facet
         :param queryset: the prefiltered queryset (may be filtered for authorization or other filters)
         :param start: int: pagination, the index of the initial returned item

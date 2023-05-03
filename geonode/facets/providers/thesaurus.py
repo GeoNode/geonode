@@ -26,8 +26,9 @@ class ThesaurusFacetProvider(FacetProvider):
     def get_info(self, lang="en") -> dict:
         return {
             "name": self._name,
-            "key": "tkeyword",
-            "label": self.labels.get(lang, self.label),
+            "key": "filter{tkeyword}",
+            "label": self.label,
+            "localized_label": self.labels.get(lang, None),
             "type": "thesaurus",
             "hierarchical": False,
             "order": self.order,
@@ -40,7 +41,7 @@ class ThesaurusFacetProvider(FacetProvider):
 
         q = (
             queryset.filter(tkeywords__thesaurus__identifier=self._name, tkeywords__keyword__lang=lang)
-            .values("tkeywords", "tkeywords__keyword__label")
+            .values("tkeywords", "tkeywords__keyword__label", "tkeywords__alt_label")
             .annotate(count=Count("tkeywords"))
             .order_by("-count")
         )
@@ -52,7 +53,12 @@ class ThesaurusFacetProvider(FacetProvider):
         logging.debug(" ---> %r\n\n", q.all())
 
         topics = [
-            {"key": r["tkeywords"], "label": r["tkeywords__keyword__label"], "count": r["count"]}
+            {
+                "key": r["tkeywords"],
+                "localized_label": r["tkeywords__keyword__label"],
+                "label": r["tkeywords__alt_label"],
+                "count": r["count"],
+            }
             for r in q[start:end].all()
         ]
 
