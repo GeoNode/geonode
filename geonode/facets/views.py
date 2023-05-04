@@ -8,8 +8,7 @@ from django.http import HttpResponseNotFound, JsonResponse
 from django.urls import reverse
 
 from geonode.base.models import ResourceBase
-from geonode.facets.apps import facet_registry
-from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
+from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, facet_registry
 from geonode.security.utils import get_visible_resources
 
 PARAM_PAGE = "page"

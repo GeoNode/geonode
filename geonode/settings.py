@@ -2261,3 +2261,9 @@ SUPPORTED_DATASET_FILE_TYPES = [
         "needsFiles": ["shp", "prj", "dbf", "shx", "csv", "tiff", "zip", "xml"],
     },
 ]
+
+FACET_PROVIDERS = (
+    "geonode.facets.providers.category.CategoryFacetProvider",
+    "geonode.facets.providers.users.OwnerFacetProvider",
+    "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
+)

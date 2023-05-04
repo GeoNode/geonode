@@ -2,7 +2,6 @@ import logging
 
 from django.db.models import Count
 
-from geonode.base.models import Thesaurus
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_THESAURUS
 
 logger = logging.getLogger(__name__)
@@ -78,26 +77,32 @@ class ThesaurusFacetProvider(FacetProvider):
 
         return cnt, topics
 
+    @classmethod
+    def register(cls, registry, **kwargs) -> None:
+        # registry.register_facet_provider(CategoryFacetProvider())
+        from geonode.base.models import Thesaurus
 
-def create_thesaurus_providers() -> list:
-    # this query return the list of thesaurus X the list of localized titles
-    q = (
-        Thesaurus.objects.filter(facet=True)
-        .values("identifier", "title", "order", "rel_thesaurus__label", "rel_thesaurus__lang")
-        .order_by("order")
-    )
+        # this query return the list of thesaurus X the list of localized titles
+        q = (
+            Thesaurus.objects.filter(facet=True)
+            .values("identifier", "title", "order", "rel_thesaurus__label", "rel_thesaurus__lang")
+            .order_by("order")
+        )
 
-    # coalesce the localized labels
-    ret = {}
-    for r in q.all():
-        identifier = r["identifier"]
-        t = ret.get(identifier, None)
-        if not t:
-            t = {k: r[k] for k in ("identifier", "title", "order")}
-            t["labels"] = {}
-        if r["rel_thesaurus__lang"] and r["rel_thesaurus__label"]:
-            t["labels"][r["rel_thesaurus__lang"]] = r["rel_thesaurus__label"]
-        ret[identifier] = t
+        # coalesce the localized labels
+        ret = {}
+        for r in q.all():
+            identifier = r["identifier"]
+            t = ret.get(identifier, None)
+            if not t:
+                t = {k: r[k] for k in ("identifier", "title", "order")}
+                t["labels"] = {}
+            if r["rel_thesaurus__lang"] and r["rel_thesaurus__label"]:
+                t["labels"][r["rel_thesaurus__lang"]] = r["rel_thesaurus__label"]
+            ret[identifier] = t
 
-    logging.info("Creating providers for %r", ret)
-    return [ThesaurusFacetProvider(t["identifier"], t["title"], t["order"], t["labels"]) for t in ret.values()]
+        logger.info("Creating providers for %r", ret)
+        for t in ret.values():
+            registry.register_facet_provider(
+                ThesaurusFacetProvider(t["identifier"], t["title"], t["order"], t["labels"])
+            )

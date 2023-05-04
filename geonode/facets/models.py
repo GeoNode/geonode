@@ -1,3 +1,7 @@
+import logging
+
+from django.conf import settings
+
 DEFAULT_FACET_PAGE_SIZE = 10
 
 # Well known types of facet - not an enum bc it needs to be extensible
@@ -5,6 +9,8 @@ FACET_TYPE_PLACE = "place"
 FACET_TYPE_USER = "user"
 FACET_TYPE_THESAURUS = "thesaurus"
 FACET_TYPE_CATEGORY = "category"
+
+logger = logging.getLogger(__name__)
 
 
 class FacetProvider:
@@ -60,3 +66,50 @@ class FacetProvider:
         :return: a tuple int:total count of record, list of items
         """
         pass
+
+    @classmethod
+    def register(cls, registry, **kwargs) -> None:
+        """
+        Perform registration of instances of this Provider
+        :param registry: the registry where instances shall be registered
+        :param kwargs: other args that may be needed by Providers
+        """
+        pass
+
+
+class FacetsRegistry:
+    def __init__(self):
+        self.facet_providers = None
+
+    def _load_facets_configuration(self) -> None:
+        """
+        Facet loading is done lazily because some FacetProvider may need to access the DB, which may not have been
+        initialized/created yet
+        """
+        from django.utils.module_loading import import_string
+
+        self.facet_providers = dict()
+
+        logger.info("Initializing Facets")
+
+        if providers := getattr(settings, "FACET_PROVIDERS", []):
+            _providers = [import_string(module_path) for module_path in providers]
+            for provider in _providers:
+                provider.register(self)
+
+    def register_facet_provider(self, provider: FacetProvider):
+        logger.info(f"Registering {provider}")
+        self.facet_providers[provider.get_info()["name"]] = provider
+
+    def get_providers(self):
+        if self.facet_providers is None:
+            self._load_facets_configuration()
+        return self.facet_providers.values()
+
+    def get_provider(self, name):
+        if self.facet_providers is None:
+            self._load_facets_configuration()
+        return self.facet_providers.get(name, None)
+
+
+facet_registry = FacetsRegistry()

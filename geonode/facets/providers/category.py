@@ -59,3 +59,7 @@ class CategoryFacetProvider(FacetProvider):
         ]
 
         return cnt, topics
+
+    @classmethod
+    def register(cls, registry, **kwargs) -> None:
+        registry.register_facet_provider(CategoryFacetProvider())
