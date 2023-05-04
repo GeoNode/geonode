@@ -743,6 +743,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
         try:
             from geonode.geoserver.signals import gs_catalog
+
             if Dataset.objects.filter(name="boxes_with_date").exists():
                 Dataset.objects.filter(name="boxes_with_date").delete()
             _gs_dataset = gs_catalog.get_layer("boxes_with_date")
@@ -758,8 +759,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
             self.assertTrue(self.client.login(username="bobby", password="bob"))
 
-            #title = "boxes_with_date_by_bobby"
-            #saved_dataset = create_single_dataset("boxes_with_date.shp")
+            # title = "boxes_with_date_by_bobby"
+            # saved_dataset = create_single_dataset("boxes_with_date.shp")
 
             # Test that layer owner can wipe GWC Cache
             workspace = "geonode"
@@ -834,7 +835,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             </metadata></featureType>"""
 
             r = requests.put(
-                url + rest_path, data=payload, headers={"Content-type": "application/xml"}, auth=HTTPBasicAuth(user, passwd)
+                url + rest_path,
+                data=payload,
+                headers={"Content-type": "application/xml"},
+                auth=HTTPBasicAuth(user, passwd),
             )
             self.assertEqual(r.status_code, 200)
 
@@ -991,9 +995,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             if saved_dataset:
                 _gs_dataset = gs_catalog.get_layer(saved_dataset.alternate.replace(".shp", ""))
                 if _gs_dataset:
-                    gs_catalog.delete(_gs_dataset)        
+                    gs_catalog.delete(_gs_dataset)
                 saved_dataset.delete()
-
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
