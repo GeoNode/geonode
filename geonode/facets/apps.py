@@ -51,7 +51,7 @@ class FacetsRegistry:
         from geonode.facets.providers.thesaurus import create_thesaurus_providers
         from geonode.facets.providers.users import OwnerFacetProvider
 
-        logger.info(f"Initializing Facets")
+        logger.info("Initializing Facets")
 
         self.register_facet_provider(CategoryFacetProvider())
         self.register_facet_provider(OwnerFacetProvider())
