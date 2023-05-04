@@ -8,7 +8,7 @@ from django.http import HttpResponseNotFound, JsonResponse
 from django.urls import reverse
 
 from geonode.base.models import ResourceBase
-from geonode.facets.apps import registered_facets
+from geonode.facets.apps import facet_registry
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE
 from geonode.security.utils import get_visible_resources
 
@@ -31,7 +31,7 @@ def list_facets(request, **kwargs):
 
     facets = []
 
-    for provider in registered_facets.values():
+    for provider in facet_registry.get_providers():
         logger.debug("Fetching data from provider %r", provider)
         info = provider.get_info(lang=lang)
         if add_links:
@@ -55,7 +55,7 @@ def get_facet(request, facet):
     logger.debug("get_facet -> %r for user '%r'", facet, request.user.username)
 
     # retrieve provider for the requested facet
-    provider: FacetProvider = registered_facets.get(facet)
+    provider: FacetProvider = facet_registry.get_provider(facet)
     if not provider:
         return HttpResponseNotFound()
 
