@@ -767,7 +767,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         fname = os.path.join(GOOD_DATA, "time", "boxes_with_date.shp")
         resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
         self.assertEqual(resp.status_code, 201)
-
+        self.log.info("Dataset created")
         saved_dataset = Dataset.objects.get(name="boxes_with_date.shp")
         check_dataset(saved_dataset)
         resource_manager.set_permissions(saved_dataset.uuid, instance=saved_dataset, permissions=permissions)
