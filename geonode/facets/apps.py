@@ -29,9 +29,4 @@ class GeoNodeFacetsConfig(AppConfig):
     verbose_name = "GeoNode Facets endpoints"
 
     def ready(self):
-        from geonode.urls import urlpatterns
-        from . import urls
-
-        urlpatterns += urls.urlpatterns
-
         super(GeoNodeFacetsConfig, self).ready()
