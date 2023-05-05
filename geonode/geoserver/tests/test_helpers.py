@@ -43,6 +43,7 @@ from geonode.geoserver.helpers import (
     ogc_server_settings,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
+from unittest.mock import patch
 
 
 logger = logging.getLogger(__name__)
@@ -290,7 +291,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
     def test_dataset_capabilties_url(self):
         from geonode.layers.models import Dataset
 
-        ows_url = ogc_server_settings.GEOSERVER_PUBLIC_LOCATION
+        ows_url = settings.GEOSERVER_PUBLIC_LOCATION
         identifier = "geonode:CA"
         dataset = Dataset.objects.get(alternate=identifier)
         expected_url = f"{ows_url}geonode/CA/wms?service=wms&version=1.3.0&request=GetCapabilities"
