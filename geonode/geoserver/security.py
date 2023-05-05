@@ -326,7 +326,7 @@ def create_geofence_rules(layer, perms, user=None, group=None, batch: Batch = No
     return batch
 
 
-def sync_resources_with_guardian(resource=None):
+def sync_resources_with_guardian(resource=None, force=False):
     """
     Sync resources with Guardian and clear their dirty state
     """
@@ -336,13 +336,16 @@ def sync_resources_with_guardian(resource=None):
     if resource:
         dirty_resources = ResourceBase.objects.filter(id=resource.id)
     else:
-        dirty_resources = ResourceBase.objects.filter(dirty_state=True)
-    if dirty_resources and dirty_resources.exists():
+        if force:
+            resources = ResourceBase.objects.all()
+        else:
+            resources = ResourceBase.objects.filter(dirty_state=True)
+    if resources and resources.exists():
         logger.debug(" --------------------------- synching with guardian!")
 
         rules_committed = False
 
-        for r in dirty_resources:
+        for r in resources:
             if r.polymorphic_ctype.name == "dataset":
                 layer = None
                 try:
