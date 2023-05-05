@@ -21,6 +21,7 @@ import logging
 import requests
 import traceback
 from packaging import version
+import re
 import typing
 import xml.etree.ElementTree as ET
 
@@ -428,8 +429,7 @@ def _get_gf_services(layer, perms):
     # WPS
     if view or download or edit:
         if not download:
-            ver = gs_catalog.get_version()
-            if version.parse(ver) >= version.parse("2.23.0"):
+            if geoserver_allows_wps_rules(gs_catalog.get_version()):
                 gf_services.append({"service": "WPS", "subfield": "GS:DOWNLOAD", "access": False})
         gf_services.append({"service": "WPS", "access": True})
 
@@ -446,6 +446,21 @@ def _get_gf_services(layer, perms):
         gf_services.append({"service": "*", "access": True})
 
     return gf_services
+
+
+def geoserver_allows_wps_rules(ver: str) -> bool:
+    try:
+        s = re.search(r"^[0-9]\.[0-9]*", ver)
+        if s:
+            ver_clean = s.group()
+            return version.parse(ver_clean) >= version.parse("2.23.0")
+        else:
+            logger.warning(f'Unparsable GeoServer version string "{ver}"')
+
+    except Exception as e:
+        logger.warning(f'Error evaluating GeoServer version "{ver}": {e}')
+
+    return False
 
 
 def _get_gwc_filters_and_formats(disable_cache: bool) -> typing.Tuple[list, list]:
