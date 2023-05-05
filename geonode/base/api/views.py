@@ -1483,23 +1483,30 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     )
     def linked_resources(self, request, pk):
         try:
+            """
+            To let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
+            works on the resource and not on the linked one.
+            So if we want to filter the linked resource by "resource_type"
+            we have to search in the query params like in the following code:
+            _filters = {
+                x: y
+                for x, y
+                in request.query_params.items()
+                if x not in ["page_size", "page"]
+            }
+            We have to exclude the paging code or will raise the:
+            "Cannot resolve keyword into the field..."
+            """
             _obj = self.get_object().get_real_instance()
             if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
                 raise NotImplementedError("Not implemented: this endpoint is not available for GeoApps")
-
-            linked_resource_mapping = {"dataset": "maps", "map": "datasets", "document": "links"}
-
             # getting the resource dynamically list based on the above mapping
-            resources = getattr(_obj, linked_resource_mapping[_obj.resource_type]).all()
+            resources = _obj.linked_resources
 
-            if _obj.resource_type == "document":
-                # in case of documents, we need to filter again
-                # to get the resourcebase objects
-                resources = ResourceBase.objects.filter(pk__in=resources.values_list("object_id", flat=True))
-
-            additional_query_params = request.query_params
-            if additional_query_params:
-                resources = resources.filter(**{x: y for x, y in request.query_params.items()})
+            if request.query_params:
+                _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
+                if _filters:
+                    resources = resources.filter(**_filters)
 
             resources = get_visible_resources(
                 resources,
