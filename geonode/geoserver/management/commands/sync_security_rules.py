@@ -18,7 +18,7 @@
 #########################################################################
 
 from django.core.management.base import BaseCommand
-from geonode.geoserver.security.utils import sync_resources_with_guardian
+from geonode.geoserver.security import sync_resources_with_guardian
 
 
 class Command(BaseCommand):
@@ -27,4 +27,4 @@ class Command(BaseCommand):
     """
 
     def handle(self, *args, **options):
-        sync_resources_with_guardian()
+        sync_resources_with_guardian(force=True)
