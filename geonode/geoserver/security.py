@@ -326,54 +326,53 @@ def create_geofence_rules(layer, perms, user=None, group=None, batch: Batch = No
     return batch
 
 
-def sync_resources_with_guardian(resource=None):
+def sync_resources_with_guardian(resource=None, force=False):
     """
     Sync resources with Guardian and clear their dirty state
     """
     from geonode.layers.models import Dataset
-    from geonode.base.models import ResourceBase
 
     if resource:
-        dirty_resources = ResourceBase.objects.filter(id=resource.id)
+        datasets = Dataset.objects.filter(id=resource.id)
     else:
-        dirty_resources = ResourceBase.objects.filter(dirty_state=True)
-    if dirty_resources and dirty_resources.exists():
+        if force:
+            datasets = Dataset.objects.all()
+        else:
+            datasets = Dataset.objects.filter(dirty_state=True)
+    if datasets and datasets.exists():
         logger.debug(" --------------------------- synching with guardian!")
 
         rules_committed = False
 
-        for r in dirty_resources:
-            if r.polymorphic_ctype.name == "dataset":
-                layer = None
-                try:
-                    layer = Dataset.objects.get(id=r.id)
-                    batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync resources {r}")
+        for dataset in datasets:
+            try:
+                batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync resources {dataset}")
 
-                    gf_utils.collect_delete_layer_rules(get_dataset_workspace(layer), layer.name, batch)
+                gf_utils.collect_delete_layer_rules(get_dataset_workspace(dataset), dataset.name, batch)
 
-                    perm_spec = layer.get_all_level_info()
-                    # All the other users
-                    if "users" in perm_spec:
-                        for user, perms in perm_spec["users"].items():
-                            user = get_user_model().objects.get(username=user)
-                            # Set the GeoFence User Rules
-                            geofence_user = str(user)
-                            if "AnonymousUser" in geofence_user or str(get_anonymous_user()) in geofence_user:
-                                geofence_user = None
-                            create_geofence_rules(layer, perms, user=geofence_user, batch=batch)
-                    # All the other groups
-                    if "groups" in perm_spec:
-                        for group, perms in perm_spec["groups"].items():
-                            group = Group.objects.get(name=group)
-                            # Set the GeoFence Group Rules
-                            create_geofence_rules(layer, perms, group=group, batch=batch)
+                perm_spec = dataset.get_all_level_info()
+                # All the other users
+                if "users" in perm_spec:
+                    for user, perms in perm_spec["users"].items():
+                        user = get_user_model().objects.get(username=user)
+                        # Set the GeoFence User Rules
+                        geofence_user = str(user)
+                        if "AnonymousUser" in geofence_user or str(get_anonymous_user()) in geofence_user:
+                            geofence_user = None
+                        create_geofence_rules(dataset, perms, user=geofence_user, batch=batch)
+                # All the other groups
+                if "groups" in perm_spec:
+                    for group, perms in perm_spec["groups"].items():
+                        group = Group.objects.get(name=group)
+                        # Set the GeoFence Group Rules
+                        create_geofence_rules(dataset, perms, group=group, batch=batch)
 
-                    logger.info(f"Going to synch permissions in GeoFence for resource {resource}")
-                    rules_committed = geofence.run_batch(batch)
-                    r.clear_dirty_state()
-                except Exception as e:
-                    logger.exception(e)
-                    logger.warning(f"!WARNING! - Failure Synching-up Security Rules for Resource [{r}]")
+                logger.info(f"Going to synch permissions in GeoFence for resource {dataset}")
+                rules_committed = geofence.run_batch(batch)
+                dataset.clear_dirty_state()
+            except Exception as e:
+                logger.exception(e)
+                logger.warning(f"!WARNING! - Failure Synching-up Security Rules for Resource [{dataset}]")
 
         if rules_committed:
             invalidate_geofence_cache()
