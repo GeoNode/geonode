@@ -40,10 +40,8 @@ from geonode.geoserver.helpers import (
     get_dataset_storetype,
     extract_name_from_sld,
     get_dataset_capabilities_url,
-    ogc_server_settings,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
-from unittest.mock import patch
 
 
 logger = logging.getLogger(__name__)
