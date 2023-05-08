@@ -331,7 +331,6 @@ def sync_resources_with_guardian(resource=None, force=False):
     Sync resources with Guardian and clear their dirty state
     """
     from geonode.layers.models import Dataset
-    from geonode.base.models import ResourceBase
 
     if resource:
         datasets = Dataset.objects.filter(id=resource.id)
