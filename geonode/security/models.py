@@ -114,6 +114,7 @@ class PermissionLevelMixin:
             for _kk in list(_v):
                 # Remove AnonymousUser if set for some reason (legacy code)
                 if _kk == get_anonymous_user():
+                    logger.warning("Guardian permisions for AnonymouUser on resource {resource.id} were found in the DB, which is unexpected")
                     del info[_k][_kk]
                     continue
                 _vv = _v[_kk]
