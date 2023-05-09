@@ -24,42 +24,34 @@ from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.core.management.base import BaseCommand, CommandError
 from rdflib import Graph, Literal
-from rdflib.namespace import RDF, SKOS, DC, DCTERMS
+from rdflib.namespace import RDF, RDFS, SKOS, DC, DCTERMS
 from rdflib.util import guess_format
 
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel, ThesaurusLabel
 
 
 class Command(BaseCommand):
-
-    help = 'Load a thesaurus in RDF format into DB'
+    help = "Load a thesaurus in RDF format into DB"
 
     def add_arguments(self, parser):
-
         # Named (optional) arguments
         parser.add_argument(
-            '-d',
-            '--dry-run',
+            "-d",
+            "--dry-run",
             action="store_true",
-            dest='dryrun',
+            dest="dryrun",
             default=False,
-            help='Only parse and print the thesaurus file, without perform insertion in the DB.')
+            help="Only parse and print the thesaurus file, without perform insertion in the DB.",
+        )
 
-        parser.add_argument(
-            '--name',
-            dest='name',
-            help='Identifier name for the thesaurus in this GeoNode instance.')
+        parser.add_argument("--name", dest="name", help="Identifier name for the thesaurus in this GeoNode instance.")
 
-        parser.add_argument(
-            '--file',
-            dest='file',
-            help='Full path to a thesaurus in RDF format.')
+        parser.add_argument("--file", dest="file", help="Full path to a thesaurus in RDF format.")
 
     def handle(self, **options):
-
-        input_file = options.get('file')
-        name = options.get('name')
-        dryrun = options.get('dryrun')
+        input_file = options.get("file")
+        name = options.get("name")
+        dryrun = options.get("dryrun")
 
         if not input_file:
             raise CommandError("Missing thesaurus rdf file path (--file)")
@@ -67,7 +59,7 @@ class Command(BaseCommand):
         if not name:
             raise CommandError("Missing identifier name for the thesaurus (--name)")
 
-        if name.startswith('fake'):
+        if name.startswith("fake"):
             self.create_fake_thesaurus(name)
         else:
             self.load_thesaurus(input_file, name, not dryrun)
@@ -90,14 +82,16 @@ class Command(BaseCommand):
         if scheme is None:
             raise CommandError("ConceptScheme not found in file")
 
-        default_lang = getattr(settings, 'THESAURUS_DEFAULT_LANG', None)
+        default_lang = getattr(settings, "THESAURUS_DEFAULT_LANG", None)
 
         available_titles = [t for t in g.objects(scheme, DC.title) if isinstance(t, Literal)]
         thesaurus_title = value_for_language(available_titles, default_lang)
         description = g.value(scheme, DC.description, None, default=thesaurus_title)
         date_issued = g.value(scheme, DCTERMS.issued, None, default="")
 
-        self.stderr.write(self.style.SUCCESS(f'Thesaurus "{thesaurus_title}", desc: {description} issued at {date_issued}'))
+        self.stderr.write(
+            self.style.SUCCESS(f'Thesaurus "{thesaurus_title}", desc: {description} issued at {date_issued}')
+        )
 
         thesaurus = Thesaurus()
         thesaurus.identifier = name
@@ -120,7 +114,7 @@ class Command(BaseCommand):
                     thesaurus_label.save()
 
         for concept in g.subjects(RDF.type, SKOS.Concept):
-            pref = g.preferredLabel(concept, default_lang)[0][1]
+            pref = preferredLabel(g, concept, default_lang)[0][1]
             about = str(concept)
             alt_label = g.value(concept, SKOS.altLabel, object=None, default=None)
             if alt_label is not None:
@@ -129,7 +123,7 @@ class Command(BaseCommand):
                 available_labels = [t for t in g.objects(concept, SKOS.prefLabel) if isinstance(t, Literal)]
                 alt_label = value_for_language(available_labels, default_lang)
 
-            self.stderr.write(self.style.SUCCESS(f'Concept {str(pref)}: {alt_label} ({about})'))
+            self.stderr.write(self.style.SUCCESS(f"Concept {str(pref)}: {alt_label} ({about})"))
 
             tk = ThesaurusKeyword()
             tk.thesaurus = thesaurus
@@ -139,10 +133,10 @@ class Command(BaseCommand):
             if store:
                 tk.save()
 
-            for _, pref_label in g.preferredLabel(concept):
+            for _, pref_label in preferredLabel(g, concept):
                 lang = pref_label.language
                 label = str(pref_label)
-                self.stderr.write(self.style.SUCCESS(f'    Label {lang}: {label}'))
+                self.stderr.write(self.style.SUCCESS(f"    Label {lang}: {label}"))
 
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk
@@ -162,14 +156,14 @@ class Command(BaseCommand):
 
         thesaurus.save()
 
-        for keyword in ['aaa', 'bbb', 'ccc']:
+        for keyword in ["aaa", "bbb", "ccc"]:
             tk = ThesaurusKeyword()
             tk.thesaurus = thesaurus
             tk.about = f"{keyword}_about"
             tk.alt_label = f"{keyword}_alt"
             tk.save()
 
-            for _l in ['it', 'en', 'es']:
+            for _l in ["it", "en", "es"]:
                 tkl = ThesaurusKeywordLabel()
                 tkl.keyword = tk
                 tkl.lang = _l
@@ -178,10 +172,60 @@ class Command(BaseCommand):
 
 
 def value_for_language(available: List[Literal], default_lang: str) -> str:
-    sorted_lang = sorted(available, key=lambda literal: '' if literal.language is None else literal.language)
+    sorted_lang = sorted(available, key=lambda literal: "" if literal.language is None else literal.language)
     for item in sorted_lang:
         if item.language is None:
             return str(item)
         elif item.language.split("-")[0] == default_lang:
             return str(item)
     return str(available[0])
+
+
+def preferredLabel(
+    g,
+    subject,
+    lang=None,
+    default=None,
+    label_properties=(SKOS.prefLabel, RDFS.label),
+):
+    """
+    Find the preferred label for subject.
+
+    By default prefers skos:prefLabels over rdfs:labels. In case at least
+    one prefLabel is found returns those, else returns labels. In case a
+    language string (e.g., "en", "de" or even "" for no lang-tagged
+    literals) is given, only such labels will be considered.
+
+    Return a list of (labelProp, label) pairs, where labelProp is either
+    skos:prefLabel or rdfs:label.
+
+    Copied from rdflib 6.1.1
+    """
+
+    if default is None:
+        default = []
+
+    # setup the language filtering
+    if lang is not None:
+        if lang == "":  # we only want not language-tagged literals
+
+            def langfilter(l_):
+                return l_.language is None
+
+        else:
+
+            def langfilter(l_):
+                return l_.language == lang
+
+    else:  # we don't care about language tags
+
+        def langfilter(l_):
+            return True
+
+    for labelProp in label_properties:
+        labels = list(filter(langfilter, g.objects(subject, labelProp)))
+        if len(labels) == 0:
+            continue
+        else:
+            return [(labelProp, l_) for l_ in labels]
+    return default
