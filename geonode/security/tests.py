@@ -2773,3 +2773,16 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             result = self.client.patch(url)
             # checking that the user cannot call the url in patch due the lack of permissions
             self.assertEqual(403, result.status_code, _case)
+
+    def test_anonymous_user_is_stripped_off(self):
+        from geonode.base.models import ResourceBase
+
+        perms = ["base.view_resourcebase", "base.download_resourcebase"]
+        resource = ResourceBase.objects.get(id=self.dataset.id)
+        for perm in perms:
+            assign_perm(perm, get_anonymous_user(), resource)
+            assign_perm(perm, Group.objects.get(name="anonymous"), resource)
+
+        perm_spec = resource.get_all_level_info()
+        anonymous_user_perm = perm_spec["users"].get(get_anonymous_user())
+        self.assertEqual(anonymous_user_perm, None, "Anynmous user wasn't removed")
