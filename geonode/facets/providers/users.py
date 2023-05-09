@@ -54,7 +54,7 @@ class OwnerFacetProvider(FacetProvider):
                 "localized_label": r["owner__username"],
                 "count": r["count"],
             }
-            for r in q[start:end].all()
+            for r in q[start:end]
         ]
 
         return cnt, topics

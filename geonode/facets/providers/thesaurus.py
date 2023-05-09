@@ -26,8 +26,8 @@ class ThesaurusFacetProvider(FacetProvider):
         return {
             "name": self._name,
             "key": "filter{tkeyword}",
-            "label": self.label,
-            "localized_label": self.labels.get(lang, None),
+            "label": self.labels.get(lang, self.label),
+            "is_localized": self.labels.get(lang, None) is not None,
             "type": FACET_TYPE_THESAURUS,
             "hierarchical": False,
             "order": self.order,
@@ -68,8 +68,8 @@ class ThesaurusFacetProvider(FacetProvider):
         topics = [
             {
                 "key": r["tkeywords"],
-                "localized_label": r["tkeywords__keyword__label"],
-                "label": r["tkeywords__alt_label"],
+                "label": r["tkeywords__keyword__label"] or r["tkeywords__alt_label"],
+                "is_localized": r["tkeywords__keyword__label"] is not None,
                 "count": r["count"],
             }
             for r in q[start:end].all()

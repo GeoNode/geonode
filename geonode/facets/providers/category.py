@@ -51,7 +51,6 @@ class CategoryFacetProvider(FacetProvider):
             {
                 "key": r["category__identifier"],
                 "label": r["category__gn_description"],
-                "localized_label": r["category__gn_description"],
                 "count": r["count"],
                 "fa_class": r["category__fa_class"],
             }

@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes
 from django.http import HttpResponseNotFound, JsonResponse
 from django.urls import reverse
 
+from django.conf import settings
 from geonode.base.models import ResourceBase
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, facet_registry
 from geonode.security.utils import get_visible_resources
@@ -120,6 +121,8 @@ def _prefilter_topics(request):
     :param request:
     :return: a QuerySet on ResourceBase
     """
+    logger.debug("Filtering by user '%s'", request.user)
+    # return ResourceBase.objects
     return get_visible_resources(ResourceBase.objects, request.user)
 
 
@@ -131,7 +134,10 @@ def _resolve_language(request) -> (str, bool):
     if lang := request.GET.get(PARAM_LANG, None):
         return lang, True
     # 2nd try: use LANGUAGE_CODE
-    return request.LANGUAGE_CODE.split("-")[0], False
+    try:
+        return request.LANGUAGE_CODE.split("-")[0], False
+    except AttributeError:
+        return settings.LANGUAGE_CODE
 
 
 def _resolve_boolean(request, name, fallback=None):
