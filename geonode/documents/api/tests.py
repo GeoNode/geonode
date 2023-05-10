@@ -147,3 +147,22 @@ class DocumentsApiTests(APITestCase):
 
         if cloned_path:
             os.remove(cloned_path)
+
+    def test_creation_from_url_should_create_the_doc(self):
+        """
+        If file_path is not available, should raise error
+        """
+        self.client.force_login(self.admin)
+        doc_url = "https://example.com/image"
+        payload = {
+            "document": {
+                "title": "New document from URL for testing",
+                "metadata_only": False,
+                "doc_url": doc_url,
+                "extension": "jpeg",
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        created_doc_url = actual.json().get("document", {}).get("doc_url", "")
+        self.assertEqual(created_doc_url, doc_url)
