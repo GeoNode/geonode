@@ -170,7 +170,7 @@ webdriver_manager==3.8.6
 
 # Security and audit
 mistune==2.0.5
-wandb==0.15.0
+wandb==0.15.2
 protobuf==3.20.3
 mako==1.2.4
 certifi>=2022.12.7 # not directly required, pinned by Snyk to avoid a vulnerability
