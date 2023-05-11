@@ -100,7 +100,7 @@ class DocumentViewSet(DynamicModelViewSet):
 
         if not file and not doc_url:
             raise DocumentException(detail="A file, file path or URL must be speficied")
-        
+
         if file and doc_url:
             raise DocumentException(detail="Either a file or a URL must be specified, not both")
 
