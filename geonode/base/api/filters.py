@@ -44,6 +44,23 @@ class ExtentFilter(BaseFilterBackend):
         return queryset
 
 
+class TKeywordsFilter(BaseFilterBackend):
+    """
+    TKeywords are a ManyToMany relation but DREST can't handle AND filtering the way we need.
+    We'll be using "filter{tkeywords}" to have Resources having all of the  tkeywords
+
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        f = request.GET.pop("filter{tkeywords}", None)
+        if f:
+            if not isinstance(f, list):
+                f = [f]
+            for v in f:
+                queryset = queryset.filter(tkeywords__id=v)
+        return queryset
+
+
 class FavoriteFilter(BaseFilterBackend):
     """
     Filter that only allows users to see their own objects.
