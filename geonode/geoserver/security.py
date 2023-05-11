@@ -364,6 +364,8 @@ def sync_resources_with_guardian(resource=None, force=False):
                 if "groups" in perm_spec:
                     for group, perms in perm_spec["groups"].items():
                         group = Group.objects.get(name=group)
+                        if group and group.name and group.name == "anonymous":
+                            group = None
                         # Set the GeoFence Group Rules
                         create_geofence_rules(dataset, perms, group=group, batch=batch)
 

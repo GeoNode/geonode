@@ -31,7 +31,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
-from guardian.shortcuts import get_perms, get_groups_with_perms
+from guardian.shortcuts import get_perms, get_groups_with_perms, get_anonymous_user
 
 from geonode.groups.models import GroupProfile
 from geonode.groups.conf import settings as groups_settings
@@ -109,12 +109,20 @@ class PermissionLevelMixin:
         except Exception:
             tb = traceback.format_exc()
             logger.debug(tb)
-        # Remove duplicated perms if any
-        if info:
-            for _k, _v in info.items():
-                for _kk, _vv in info[_k].items():
-                    if _vv and isinstance(_vv, list):
-                        info[_k][_kk] = list(set(_vv))
+
+        for _k, _v in info.items():
+            for _kk in list(_v):
+                # Remove AnonymousUser if set for some reason (legacy code)
+                if _kk == get_anonymous_user():
+                    logger.warning(
+                        "Guardian permisions for AnonymouUser on resource {resource.id} were found in the DB, which is unexpected"
+                    )
+                    del info[_k][_kk]
+                    continue
+                _vv = _v[_kk]
+                if _vv and isinstance(_vv, list):
+                    # Remove duplicated perms
+                    info[_k][_kk] = list(set(_vv))
         return info
 
     def get_self_resource(self):
