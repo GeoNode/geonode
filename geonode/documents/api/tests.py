@@ -178,7 +178,7 @@ class DocumentsApiTests(APITestCase):
                 "title": "New document from URL for testing",
                 "metadata_only": False,
                 "doc_url": doc_url,
-                "file_path": self.invalid_file_path,
+                "file_path": self.valid_file_path,
                 "extension": "jpeg",
             }
         }
