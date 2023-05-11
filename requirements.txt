@@ -126,7 +126,7 @@ jdcal==1.4.1
 mock<6.0.0
 python-dateutil==2.8.2
 pytz==2023.3
-requests==2.29.0
+requests==2.30.0
 timeout-decorator==0.5.0
 pylibmc==1.6.3
 sherlock==0.4.1
@@ -150,7 +150,7 @@ invoke==2.1.1
 
 # tests
 coverage==7.2.5
-requests-toolbelt==0.10.1
+requests-toolbelt==1.0.0
 flake8==6.0.0
 black==23.3.0
 pytest==7.3.1
