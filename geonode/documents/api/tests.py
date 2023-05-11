@@ -95,7 +95,7 @@ class DocumentsApiTests(APITestCase):
         payload = {"document": {"title": "New document", "metadata_only": True}}
         expected = {
             "success": False,
-            "errors": ["A file path or a file must be speficied"],
+            "errors": ["A file, file path or URL must be speficied"],
             "code": "document_exception",
         }
         actual = self.client.post(self.url, data=payload, format="json")
@@ -110,7 +110,7 @@ class DocumentsApiTests(APITestCase):
         payload = {"document": {"title": "New document", "metadata_only": True, "file_path": None, "doc_file": None}}
         expected = {
             "success": False,
-            "errors": ["A file path or a file must be speficied"],
+            "errors": ["A file, file path or URL must be speficied"],
             "code": "document_exception",
         }
         actual = self.client.post(self.url, data=payload, format="json")
@@ -122,7 +122,7 @@ class DocumentsApiTests(APITestCase):
         payload = {"document": {"title": "New document", "metadata_only": True, "file_path": self.invalid_file_path}}
         expected = {
             "success": False,
-            "errors": ["The file provided is not in the supported extension file list"],
+            "errors": ["The file provided is not in the supported extensions list"],
             "code": "document_exception",
         }
         actual = self.client.post(self.url, data=payload, format="json")
