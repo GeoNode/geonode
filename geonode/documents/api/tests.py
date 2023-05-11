@@ -166,7 +166,7 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual(201, actual.status_code)
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
         self.assertEqual(created_doc_url, doc_url)
-        
+
     def test_either_path_or_url_doc(self):
         """
         If file_path is not available, should raise error
