@@ -137,7 +137,7 @@ def _resolve_language(request) -> (str, bool):
     try:
         return request.LANGUAGE_CODE.split("-")[0], False
     except AttributeError:
-        return settings.LANGUAGE_CODE
+        return settings.LANGUAGE_CODE, False
 
 
 def _resolve_boolean(request, name, fallback=None):
