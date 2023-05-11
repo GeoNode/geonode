@@ -166,3 +166,28 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual(201, actual.status_code)
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
         self.assertEqual(created_doc_url, doc_url)
+        
+    def test_either_path_or_url_doc(self):
+        """
+        If file_path is not available, should raise error
+        """
+        self.client.force_login(self.admin)
+        doc_url = "https://example.com/image"
+        payload = {
+            "document": {
+                "title": "New document from URL for testing",
+                "metadata_only": False,
+                "doc_url": doc_url,
+                "file_path": self.invalid_file_path,
+                "extension": "jpeg",
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        expected = {
+            "success": False,
+            "errors": ["Either a file or a URL must be specified, not both"],
+            "code": "document_exception",
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(400, actual.status_code)
+        self.assertDictEqual(expected, actual.json())
