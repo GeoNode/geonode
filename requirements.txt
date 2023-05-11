@@ -110,9 +110,9 @@ django-bootstrap3-datetimepicker-2==2.8.3
 # storage manager dependencies
 django-storages==1.13.2
 dropbox==11.36.0
-google-cloud-storage==2.8.0
+google-cloud-storage==2.9.0
 google-cloud-core==2.3.2
-boto3==1.26.118
+boto3==1.26.131
 
 # Django Caches
 python-memcached<=1.59
@@ -144,8 +144,8 @@ pycountry
 # production
 uWSGI==2.0.21
 gunicorn==20.1.0
-ipython==8.13.1
-docker==6.0.1
+ipython==8.13.2
+docker==6.1.1
 invoke==2.1.1
 
 # tests
@@ -170,7 +170,7 @@ webdriver_manager==3.8.6
 
 # Security and audit
 mistune==2.0.5
-wandb==0.15.0
+wandb==0.15.2
 protobuf==3.20.3
 mako==1.2.4
 certifi>=2022.12.7 # not directly required, pinned by Snyk to avoid a vulnerability
