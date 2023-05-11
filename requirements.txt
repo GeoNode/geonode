@@ -150,7 +150,7 @@ invoke==2.1.1
 
 # tests
 coverage==7.2.5
-requests-toolbelt==0.10.1
+requests-toolbelt==1.0.0
 flake8==6.0.0
 black==23.3.0
 pytest==7.3.1
