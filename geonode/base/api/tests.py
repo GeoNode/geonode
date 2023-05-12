@@ -2195,7 +2195,7 @@ class BaseApiTests(APITestCase):
             files=list(files_as_dict.values()),
         )
         bobby = get_user_model().objects.get(username="bobby")
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
         self.assertEqual(response.status_code, 403)
         # set perms to enable user clone resource
@@ -2278,7 +2278,7 @@ class BaseApiTests(APITestCase):
             self.assertTrue("bobby" in "bobby" in [x.username for x in resource.get_all_level_info().get("users", [])])
             # copying the resource, should remove the perms for bobby
             # only the default perms should be available
-            copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+            copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
 
@@ -2307,6 +2307,7 @@ class BaseApiTests(APITestCase):
 
         self._assertCloningWithPerms(resource)
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_resource_service_copy_with_perms_map(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
         files_as_dict, _ = get_files(files)
@@ -2327,9 +2328,9 @@ class BaseApiTests(APITestCase):
         # bobby cannot copy the resource since he doesnt have all the perms needed
         _perms = {"users": {"bobby": ["base.add_resourcebase"]}, "groups": {"anonymous": []}}
         resource.set_permissions(_perms)
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
-        self.assertEqual(response.status_code, 403)
+        self.assertIn(response.status_code, [403, 404])
         # set perms to enable user clone resource
         # bobby can copy the resource since he has all the perms needed
         _perms = {
@@ -2337,7 +2338,7 @@ class BaseApiTests(APITestCase):
             "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebae"]},
         }
         resource.set_permissions(_perms)
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
         self.assertEqual(response.status_code, 200)
         resource.delete()

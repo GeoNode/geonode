@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import time
 import os
 import json
 import argparse
@@ -30,6 +31,7 @@ from requests.auth import HTTPBasicAuth
 from django.conf import settings
 from django.utils import timezone
 from django.core.management.base import BaseCommand
+from geonode.resource.models import ExecutionRequest
 
 parser = argparse.ArgumentParser()
 
@@ -51,6 +53,8 @@ class Command(BaseCommand):
 
         parser.add_argument("-p", "--password", dest="password", help="Geonode password")
 
+        parser.add_argument("-t", "--tentatives", dest="5", help="Number of checking on the import processing status")
+
     def handle(self, *args, **options):
         if not len(options["path"]) > 0:
             self.print_help('manage.py', 'importlayers')
@@ -59,11 +63,12 @@ class Command(BaseCommand):
         host = options.get("host") or getattr(settings, "SITEURL", "http://localhost:8000")
         username = options.get("username") or os.getenv("ADMIN_USERNAME", "admin")
         password = options.get("password") or os.getenv("ADMIN_PASSWORD", "admin")
+        tentatives = options.get("tentatives") or 5
 
         start = datetime.datetime.now(timezone.get_current_timezone())
         for path in options["path"]:
             success, errors = GeoNodeUploader(
-                host=host, username=username, password=password, folder_path=path
+                host=host, username=username, password=password, folder_path=path, tentatives=tentatives
             ).execute()
 
             finish = datetime.datetime.now(timezone.get_current_timezone())
@@ -85,6 +90,7 @@ class GeoNodeUploader:
         username: str,
         password: str,
         call_delay: int = 10,
+        tentatives: int = 5,
         **kwargs,
     ):
         self.host = host
@@ -92,6 +98,7 @@ class GeoNodeUploader:
         self.username = username
         self.password = password
         self.call_delay = call_delay
+        self.tentatives = tentatives
 
     def execute(self):
         success = []
@@ -157,22 +164,27 @@ class GeoNodeUploader:
                     if response.status_code in [500, 400, 403]:
                         raise Exception(response.content)
                     data = response.json()
-                    if not data.get('status', None):
-                        raise Exception(data)
-                    if data.get('status', '') == 'finished':
-                        if data['success']:
-                            success.append(file)
-                        else:
-                            errors.append(file)
+
+                    print("Getting execution_id")
+                    exec_id = data.get("execution_id", None)
+                    if not exec_id:
+                        raise Exception(f"Execution_id is missing: {data}")
+
+                    start = 1
+                    _exec = ExecutionRequest.objects.get(exec_id=exec_id)
+
+                    while _exec.status.lower() in ['ready', 'running'] and start <= self.tentatives:
+                        print("Execution is not completed yet, waiting for 15 secods")
+                        time.sleep(15)
+                        start += 1
+                        _exec.refresh_from_db()
+
+                    if _exec.status in ['finished']:
+                        success.append(file)
                     else:
                         errors.append(file)
+
                 except json.JSONDecodeError:
                     traceback.print_exc()
                     errors.append(file)
         return success, errors
-
-    @staticmethod
-    def _get_upload_id(upload_response, import_id):
-        for item in upload_response.json()["uploads"]:
-            if item.get("import_id", None) == import_id:
-                return item.get("id", None)
