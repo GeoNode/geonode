@@ -58,5 +58,6 @@ class DocumentSerializer(ResourceBaseSerializer):
             "executions",
             "file_path",
             "doc_file",
+            "doc_url",
             "metadata",
         )

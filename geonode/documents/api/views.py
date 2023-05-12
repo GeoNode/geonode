@@ -94,32 +94,37 @@ class DocumentViewSet(DynamicModelViewSet):
         """
         manager = None
         serializer.is_valid(raise_exception=True)
-        _has_file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
+        file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
+        doc_url = serializer.validated_data.pop("doc_url", None)
         extension = serializer.validated_data.pop("extension", None)
 
-        if not _has_file:
-            raise DocumentException(detail="A file path or a file must be speficied")
+        if not file and not doc_url:
+            raise DocumentException(detail="A file, file path or URL must be speficied")
+
+        if file and doc_url:
+            raise DocumentException(detail="Either a file or a URL must be specified, not both")
 
         if not extension:
-            filename = _has_file if isinstance(_has_file, str) else _has_file.name
+            filename = file if isinstance(file, str) else file.name
             extension = Path(filename).suffix.replace(".", "")
 
         if extension not in settings.ALLOWED_DOCUMENT_TYPES:
-            raise DocumentException("The file provided is not in the supported extension file list")
+            raise DocumentException("The file provided is not in the supported extensions list")
 
         try:
-            manager = StorageManager(remote_files={"base_file": _has_file})
-            manager.clone_remote_files()
-            files = manager.get_retrieved_paths()
+            payload = {
+                "owner": self.request.user,
+                "extension": extension,
+                "resource_type": "document",
+            }
+            if file:
+                manager = StorageManager(remote_files={"base_file": file})
+                manager.clone_remote_files()
+                payload["files"] = [manager.get_retrieved_paths().get("base_file")]
+            if doc_url:
+                payload["doc_url"] = doc_url
 
-            resource = serializer.save(
-                **{
-                    "owner": self.request.user,
-                    "extension": extension,
-                    "files": [files.get("base_file")],
-                    "resource_type": "document",
-                }
-            )
+            resource = serializer.save(**payload)
 
             resource.set_missing_info()
             resourcebase_post_save(resource.get_real_instance())
