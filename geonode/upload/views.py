@@ -126,8 +126,7 @@ def save_step_view(req, session):
         name, ext = os.path.splitext(os.path.basename(base_file))
         logger.debug(f"Name: {name}, ext: {ext}")
         logger.debug(f"base_file: {base_file}")
-        scan_hint = get_scan_hint(form.cleaned_data["valid_extensions"])
-        spatial_files = scan_file(base_file, scan_hint=scan_hint, charset=form.cleaned_data["charset"])
+        spatial_files = scan_file(base_file, scan_hint=None, charset=form.cleaned_data["charset"])
         logger.debug(f"spatial_files: {spatial_files}")
 
         if overwrite:
@@ -142,7 +141,7 @@ def save_step_view(req, session):
             spatial_files,
             overwrite=overwrite,
             store_spatial_files=form.cleaned_data.get("store_spatial_files", True),
-            mosaic=form.cleaned_data["mosaic"] or scan_hint == "zip-mosaic",
+            mosaic=form.cleaned_data["mosaic"] or get_scan_hint(form.cleaned_data["valid_extensions"]) == "zip-mosaic",
             append_to_mosaic_opts=form.cleaned_data["append_to_mosaic_opts"],
             append_to_mosaic_name=form.cleaned_data["append_to_mosaic_name"],
             mosaic_time_regex=form.cleaned_data["mosaic_time_regex"],
