@@ -488,13 +488,21 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"2. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7, f"Bad rules count. Got rules: {geofence.get_rules()}")
+        self.assertEqual(rules_count, 9, f"Bad rules count. Got rules: {geofence.get_rules()}")
 
         perm_spec = {"users": {"admin": ["change_dataset_data"]}, "groups": []}
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"3. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7)
+        self.assertEqual(rules_count, 8, f"Bad rules count. Got rules: {geofence.get_rules()}")
+
+        rules_objs = geofence.get_rules()
+        wps_subfield_found = False
+        for rule in rules_objs["rules"]:
+            if rule["service"] == "WPS" and rule["subfield"] == "GS:DOWNLOAD":
+                wps_subfield_found = rule["access"] == "DENY"
+                break
+        self.assertTrue(wps_subfield_found, f"WPS download not blocked. Got rules: {geofence.get_rules()}")
 
         # FULL WFS-T
         perm_spec = {
@@ -558,7 +566,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
-        self.assertEqual(rules_count, 7)
+        self.assertEqual(rules_count, 9)
 
         rules_objs = geofence.get_rules()
         _deny_wfst_rule_exists = False
@@ -572,7 +580,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"4. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7, f"Bad rule count, got rules {geofence.get_rules()}")
+        self.assertEqual(rules_count, 9, f"Bad rule count, got rules {geofence.get_rules()}")
 
         perm_spec = {"users": {}, "groups": {"bar": ["change_resourcebase"]}}
         layer.set_permissions(perm_spec)
@@ -619,10 +627,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         perm_spec = {"users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
-        self.assertEqual(rules_count, 8)
+        self.assertEqual(rules_count, 10)
 
         rules_objs = geofence.get_rules()
-        self.assertEqual(len(rules_objs["rules"]), 8)
+        self.assertEqual(len(rules_objs["rules"]), 10)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs["rules"]):
@@ -768,7 +776,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
 
         url = (
-            f"{settings.SITEURL}gs/ows?"
+            f"{settings.GEOSERVER_LOCATION}ows?"
             "LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES="
             "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"
             "&SRS=EPSG%3A4326"
@@ -1057,7 +1065,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         layer.set_permissions({"users": {"AnonymousUser": []}, "groups": []})
-        anonymous_group = Group.objects.get(name="anonymous")
+        Group.objects.get(name="anonymous")
         response = self.client.get(reverse("dataset_embed", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
 
@@ -1093,7 +1101,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             perms = get_users_with_perms(layer)
             _log(f"2. perms: {perms} ")
-            batch = create_geofence_rules(layer, perms, user=bob, group=anonymous_group)
+            batch = create_geofence_rules(layer, perms, user=bob)
             geofence.run_batch(batch)
 
             # Check GeoFence Rules have been correctly created
@@ -2517,3 +2525,16 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             result = self.client.patch(url)
             # checking that the user cannot call the url in patch due the lack of permissions
             self.assertEqual(403, result.status_code, _case)
+
+    def test_anonymous_user_is_stripped_off(self):
+        from geonode.base.models import ResourceBase
+
+        perms = ["base.view_resourcebase", "base.download_resourcebase"]
+        resource = ResourceBase.objects.get(id=self.dataset.id)
+        for perm in perms:
+            assign_perm(perm, get_anonymous_user(), resource)
+            assign_perm(perm, Group.objects.get(name="anonymous"), resource)
+
+        perm_spec = resource.get_all_level_info()
+        anonymous_user_perm = perm_spec["users"].get(get_anonymous_user())
+        self.assertEqual(anonymous_user_perm, None, "Anynmous user wasn't removed")
