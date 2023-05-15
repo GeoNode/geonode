@@ -60,7 +60,7 @@ def rest_upload_by_path(_file, client, username=GEONODE_USER, password=GEONODE_P
         params["base_file"] = base_file
         for name, value in params.items():
             if isinstance(value, IOBase):
-                params[name] = (os.path.basename(value.name), value)
+                params[name] = value
         url = urljoin(f"{reverse('uploads-list')}/", "upload/")
         if non_interactive:
             params["non_interactive"] = "true"
