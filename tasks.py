@@ -326,6 +326,7 @@ def update(ctx):
 def migrations(ctx):
     print("**************************migrations*******************************")
     ctx.run(f"python manage.py migrate --noinput --settings={_localsettings()}", pty=True)
+    ctx.run(f"python manage.py migrate --noinput --settings={_localsettings()} --database=datastore", pty=True)
     try:
         ctx.run(f"python manage.py rebuild_index --noinput --settings={_localsettings()}", pty=True)
     except Exception:

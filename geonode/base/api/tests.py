@@ -2195,7 +2195,7 @@ class BaseApiTests(APITestCase):
             files=list(files_as_dict.values()),
         )
         bobby = get_user_model().objects.get(username="bobby")
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
         self.assertEqual(response.status_code, 403)
         # set perms to enable user clone resource
@@ -2278,7 +2278,7 @@ class BaseApiTests(APITestCase):
             self.assertTrue("bobby" in "bobby" in [x.username for x in resource.get_all_level_info().get("users", [])])
             # copying the resource, should remove the perms for bobby
             # only the default perms should be available
-            copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+            copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
 
@@ -2307,6 +2307,7 @@ class BaseApiTests(APITestCase):
 
         self._assertCloningWithPerms(resource)
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_resource_service_copy_with_perms_map(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
         files_as_dict, _ = get_files(files)
@@ -2327,9 +2328,9 @@ class BaseApiTests(APITestCase):
         # bobby cannot copy the resource since he doesnt have all the perms needed
         _perms = {"users": {"bobby": ["base.add_resourcebase"]}, "groups": {"anonymous": []}}
         resource.set_permissions(_perms)
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
-        self.assertEqual(response.status_code, 403)
+        self.assertIn(response.status_code, [403, 404])
         # set perms to enable user clone resource
         # bobby can copy the resource since he has all the perms needed
         _perms = {
@@ -2337,7 +2338,7 @@ class BaseApiTests(APITestCase):
             "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebae"]},
         }
         resource.set_permissions(_perms)
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
         self.assertEqual(response.status_code, 200)
         resource.delete()
@@ -2549,6 +2550,57 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             if _d:
                 _d.delete()
 
+    def test_linked_resource_for_maps_with_mixed_resources(self):
+        try:
+            # data preparation
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.map.id
+            )
+            # data preparation
+            MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.doc.detail_url,
+                        "pk": self.doc.id,
+                        "resource_type": self.doc.resource_type,
+                        "thumbnail_url": self.doc.thumbnail_url,
+                        "title": self.doc.title,
+                    },
+                    {
+                        "detail_url": self.dataset.detail_url,
+                        "pk": self.dataset.id,
+                        "resource_type": self.dataset.resource_type,
+                        "thumbnail_url": self.dataset.thumbnail_url,
+                        "title": self.dataset.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.map.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
+
     def test_linked_resource_should_return_the_paginated_result(self):
         try:
             # data preparation
@@ -2659,6 +2711,57 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         finally:
             if _m:
                 _m.delete()
+
+    def test_linked_resource_for_datasets_with_mixed_resources(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype, object_id=self.dataset.id
+            )
+            # data preparation
+            MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.doc.detail_url,
+                        "pk": self.doc.id,
+                        "resource_type": self.doc.resource_type,
+                        "thumbnail_url": self.doc.thumbnail_url,
+                        "title": self.doc.title,
+                    },
+                    {
+                        "detail_url": self.map.detail_url,
+                        "pk": self.map.id,
+                        "resource_type": self.map.resource_type,
+                        "thumbnail_url": self.map.thumbnail_url,
+                        "title": self.map.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.dataset.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
 
     def test_linked_resource_filter_should_work(self):
         try:

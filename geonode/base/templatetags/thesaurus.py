@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import template
 from django.utils.translation import get_language
 from geonode.base.models import Thesaurus, ThesaurusKeywordLabel, ThesaurusLabel
+from geonode.base.utils import remove_country_from_languagecode
 
 register = template.Library()
 
@@ -24,6 +25,7 @@ def get_thesaurus_date(thesaurus_id):
 @register.filter
 def get_name_translation(tidentifier):
     lang = get_language()
+    lang = remove_country_from_languagecode(lang)
     available = Thesaurus.objects.filter(identifier=tidentifier)
     if not available.exists():
         raise ObjectDoesNotExist("Selected idenfifier does not exists")
@@ -48,6 +50,7 @@ def get_thesaurus_translation_by_id(id):
 @register.filter
 def get_thesaurus_localized_label(tkeyword):
     lang = get_language()
+    lang = remove_country_from_languagecode(lang)
     translation = (
         ThesaurusKeywordLabel.objects.values_list("label", flat=True).filter(keyword__id=tkeyword.id).filter(lang=lang)
     )

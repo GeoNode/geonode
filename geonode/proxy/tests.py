@@ -146,7 +146,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
             "Server": "nginx/1.17.2",
             "Set-Cookie": "sessionid = bogus-pocus; HttpOnly; Path=/; SameSite=Lax",
             "Strict-Transport-Security": "max-age=3600; includeSubDomains",
-            "Vary": "Authorization, Accept-Language, Cookie, Origin",
+            "Vary": "Authorization, Accept-Language, Cookie, origin",
             "X-Content-Type-Options": "nosniff",
             "X-XSS-Protection": "1; mode=block",
         }
@@ -167,7 +167,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
             dict(response.headers.copy()),
             {
                 "Content-Type": "text/plain",
-                "Vary": "Authorization, Accept-Language, Cookie, Origin",
+                "Vary": "Authorization, Accept-Language, Cookie, origin",
                 "X-Content-Type-Options": "nosniff",
                 "X-XSS-Protection": "1; mode=block",
                 "Referrer-Policy": "same-origin",
