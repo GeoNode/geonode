@@ -2314,6 +2314,10 @@ IMPORTER_HANDLERS = ast.literal_eval(
 )
 
 INSTALLED_APPS += ("geonode.facets",)
+GEONODE_APPS += ("geonode.facets",)
 
 FACET_PROVIDERS = (
+    "geonode.facets.providers.category.CategoryFacetProvider",
+    "geonode.facets.providers.users.OwnerFacetProvider",
+    "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
 )
