@@ -36,7 +36,14 @@ from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
-from geonode.base.models import ExtraMetadata, Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase
+from geonode.base.models import (
+    ExtraMetadata,
+    Thesaurus,
+    ThesaurusLabel,
+    ThesaurusKeyword,
+    ThesaurusKeywordLabel,
+    ResourceBase,
+)
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
@@ -882,8 +889,8 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
             t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}")
             cls.thesauri[tn] = t
             for tl in (
-                    "en",
-                    "it",
+                "en",
+                "it",
             ):
                 ThesaurusLabel.objects.create(thesaurus=t, lang=tl, label=f"TLabel {tn} {tl}")
 
@@ -891,8 +898,8 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
                 tk = ThesaurusKeyword.objects.create(thesaurus=t, alt_label=f"alt_tkn{tkn}_t{tn}")
                 cls.thesauri_k[f"{tn}_{tkn}"] = tk
                 for tkl in (
-                        "en",
-                        "it",
+                    "en",
+                    "it",
                 ):
                     ThesaurusKeywordLabel.objects.create(keyword=tk, lang=tkl, label=f"T{tn}_K{tkn}_{tkl}")
 
@@ -957,19 +964,19 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
         list_url = reverse("base-resources-list")
 
         for tks, exp, exp_and in (
-                # single filter
-                (("0_0",), 10, 10),
-                (("0_1",), 5, 5),
-                (("1_0",), 10, 10),
-                (("1_1",), 5, 5),
-                # same thesaurus: OR
-                (("0_0", "0_1"), 10, 5),
-                (("1_0", "1_1"), 13, 2),
-                # different thesauri: AND
-                (("0_0", "1_0"), 5, 5),
-                (("0_1", "1_0"), 0, 0),
-                (("0_1", "1_0", "1_1"), 1, 0),
-                (("0_0", "0_1", "1_0", "1_1"), 6, 0),
+            # single filter
+            (("0_0",), 10, 10),
+            (("0_1",), 5, 5),
+            (("1_0",), 10, 10),
+            (("1_1",), 5, 5),
+            # same thesaurus: OR
+            (("0_0", "0_1"), 10, 5),
+            (("1_0", "1_1"), 13, 2),
+            # different thesauri: AND
+            (("0_0", "1_0"), 5, 5),
+            (("0_1", "1_0"), 0, 0),
+            (("0_1", "1_0", "1_1"), 1, 0),
+            (("0_0", "0_1", "1_0", "1_1"), 6, 0),
         ):
             logger.debug(f"Testing filters for {tks}")
             filter = [("filter{tkeywords}", self.thesauri_k[tk].id) for tk in tks]
@@ -981,6 +988,3 @@ class ThesauriApiTests(GeoNodeBaseTestSupport):
             url = f"{list_url}?{urlencode(filter + [('force_and', True)])}"
             resp = self.api_client.get(url).json()
             self.assertEqual(exp_and, resp["total"], f"Unexpected number of resources for FORCE_AND filter {tks}")
-
-
-
