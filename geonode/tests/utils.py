@@ -41,7 +41,7 @@ import contextlib
 
 from io import IOBase
 from bs4 import BeautifulSoup
-from requests.packages.urllib3.util.retry import Retry
+from urllib3 import Retry
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from django.core import mail
