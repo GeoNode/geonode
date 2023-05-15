@@ -2312,3 +2312,8 @@ IMPORTER_HANDLERS = ast.literal_eval(
 ]",
     )
 )
+
+INSTALLED_APPS += ("geonode.facets",)
+
+FACET_PROVIDERS = (
+)
