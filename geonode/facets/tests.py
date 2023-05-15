@@ -1,13 +1,15 @@
 import logging
-from uuid import uuid4
 import json
+from tastypie.test import TestApiClient
+from urllib.parse import urlencode
+from uuid import uuid4
 
+from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.test import RequestFactory
 from django.urls import reverse
 
 from geonode.base.models import Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase
-from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 import geonode.facets.views as views
 
@@ -35,15 +37,10 @@ class FacetsTest(GeoNodeBaseTestSupport):
     def setUp(self):
         super().setUp()
 
-        # self.user = get_user_model().objects.create(username="user_00")
-        # self.admin = get_user_model().objects.get(username="admin")
-        #
-        # self.assertEqual(self.admin.username, "admin")
-        # self.assertEqual(self.admin.is_superuser, True)
-        #
-        # self._create_thesauri()
-        # self._create_resources()
-        # self.rf = RequestFactory()
+        self.api_client = TestApiClient()
+
+        self.assertEqual(self.admin.username, "admin")
+        self.assertEqual(self.admin.is_superuser, True)
 
     @classmethod
     def _create_thesauri(cls):
@@ -93,11 +90,11 @@ class FacetsTest(GeoNodeBaseTestSupport):
             # RB05 ->  T0K0      T1K0
             # RB06 ->            T1K0
             # RB07 ->  T0K0      T1K0
-            # RB08 ->            T1K0
-            # RB09 ->  T0K0      T1K0
-            # RB10 ->
-            # RB11 ->  T0K0 T0K1
-            # RB12 ->
+            # RB08 ->            T1K0 T1K1
+            # RB09 ->  T0K0      T1K0 T1K1
+            # RB10 ->                 T1K1
+            # RB11 ->  T0K0 T0K1      T1K1
+            # RB12 ->                 T1K1
             # RB13 ->  T0K0 T0K1
             # RB14 ->
             # RB15 ->  T0K0 T0K1
@@ -117,6 +114,9 @@ class FacetsTest(GeoNodeBaseTestSupport):
             if x < 10:
                 print(f"ADDING KEYWORDS {self.thesauri_k['1_0']} to RB {d}")
                 d.tkeywords.add(self.thesauri_k["1_0"])
+                d.save()
+            if 7 < x < 13:
+                d.tkeywords.add(self.thesauri_k["1_1"])
                 d.save()
 
             d.set_permissions(public_perm_spec)
@@ -205,6 +205,36 @@ class FacetsTest(GeoNodeBaseTestSupport):
                             self.assertEqual(_v, item[_k], f"Mismatch item key:{_k}")
 
         # print(json.dumps(json.loads(res.content), indent=True))
+
+    def test_resources_filtered(self):
+        # list_url = reverse("base-resources", kwargs={"api_name": "api", "resource_name": "base"})
+        list_url = reverse("base-resources-list")
+
+        for tks, exp, exp_and in (
+            # single filter
+            (("0_0",), 10, 10),
+            (("0_1",), 5, 5),
+            (("1_0",), 10, 10),
+            (("1_1",), 5, 5),
+            # same thesaurus: OR
+            (("0_0", "0_1"), 10, 5),
+            (("1_0", "1_1"), 13, 2),
+            # different thesauri: AND
+            (("0_0", "1_0"), 5, 5),
+            (("0_1", "1_0"), 0, 0),
+            (("0_1", "1_0", "1_1"), 1, 0),
+            (("0_0", "0_1", "1_0", "1_1"), 6, 0),
+        ):
+            logger.debug(f"Testing filters for {tks}")
+            filter = [("filter{tkeywords}", self.thesauri_k[tk].id) for tk in tks]
+            url = f"{list_url}?{urlencode(filter)}"
+            resp = self.api_client.get(url).json()
+            self.assertEqual(exp, resp["total"], f"Unexpected number of resources for default filter {tks}")
+
+            filter = [("filter{tkeywords}", self.thesauri_k[tk].id) for tk in tks]
+            url = f"{list_url}?{urlencode(filter+[('force_and', True)])}"
+            resp = self.api_client.get(url).json()
+            self.assertEqual(exp_and, resp["total"], f"Unexpected number of resources for FORCE_AND filter {tks}")
 
     def test_bad_lang(self):
         # for thesauri, make sure that by requesting a non-existent language the faceting is still working,

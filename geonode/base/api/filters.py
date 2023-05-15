@@ -17,13 +17,17 @@
 #
 #########################################################################
 import ast
-from geonode.favorite.models import Favorite
 import logging
+from distutils.util import strtobool
+from itertools import groupby
+
 from rest_framework.filters import SearchFilter, BaseFilterBackend
 
-from geonode.base.bbox_utils import filter_bbox
 from django.db.models import Subquery
-from distutils.util import strtobool
+
+from geonode.base.models import ThesaurusKeyword
+from geonode.favorite.models import Favorite
+from geonode.base.bbox_utils import filter_bbox
 
 logger = logging.getLogger(__name__)
 
@@ -47,17 +51,43 @@ class ExtentFilter(BaseFilterBackend):
 class TKeywordsFilter(BaseFilterBackend):
     """
     TKeywords are a ManyToMany relation but DREST can't handle AND filtering the way we need.
-    We'll be using "filter{tkeywords}" to have Resources having all of the  tkeywords
-
+    When the filter has more than one tkeyword, DREST by default will return Resources associated at least to one
+    of the keywords.
     """
 
     def filter_queryset(self, request, queryset, view):
-        f = request.GET.pop("filter{tkeywords}", None)
-        if f:
-            if not isinstance(f, list):
-                f = [f]
-            for v in f:
-                queryset = queryset.filter(tkeywords__id=v)
+        return (
+            self.filter_queryset_GROUP(request, queryset, view)
+            if "force_and" not in request.GET
+            else self.filter_queryset_AND(request, queryset, view)
+        )
+
+    def filter_queryset_AND(self, request, queryset, view):
+        """
+        This implementation requires all the tkeywords to be assigned to the Resource
+        """
+        for v in request.GET.pop("filter{tkeywords}", []):
+            queryset = queryset.filter(tkeywords__id=v)
+        return queryset
+
+    def filter_queryset_GROUP(self, request, queryset, view):
+        """
+        This implementation requires that at least one tkeyword for each thesaurus is assigned to the Resource
+        """
+        if tklist := request.GET.pop("filter{tkeywords}", None):
+            if len(tklist) == 1:
+                # if there's only one filtering keyword we don't need to tell to which thesaurus it belongs to
+                return queryset.filter(tkeywords__id=tklist[0])
+
+            tkinfo = (
+                ThesaurusKeyword.objects.filter(id__in=tklist).values("id", "thesaurus__id").order_by("thesaurus__id")
+            )
+
+            for t, tk in groupby(tkinfo, lambda r: r["thesaurus__id"]):
+                tklist_by_t = [x["id"] for x in tk]
+                logger.info("Filtering by %s - %r keywords", t, tklist_by_t)
+                queryset = queryset.filter(tkeywords__id__in=tklist_by_t)
+
         return queryset
 
 
