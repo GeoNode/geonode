@@ -25,13 +25,13 @@ zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.3.0
-PyMuPDF==1.22.2
+PyMuPDF==1.22.3
 pathvalidate==2.5.2
 
 # Django Apps
 django-allauth==0.54.0
 django-appconf==1.0.5
-django-celery-results==2.5.0
+django-celery-results==2.5.1
 django-filter==23.2
 django-imagekit==4.1.0
 django-taggit==1.5.1
@@ -50,16 +50,16 @@ django-widget-tweaks==1.4.12
 django-sequences==2.7
 oauthlib==3.2.2
 pyopenssl==23.1.1
-pyjwt==2.6.0
+pyjwt==2.7.0
 
 # geopython dependencies
 pyproj<3.6.0
 OWSLib==0.29.1
 pycsw==2.6.1
-SQLAlchemy==2.0.12 # required by PyCSW
+SQLAlchemy==2.0.13 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
-geoip2==4.6.0
+geoip2==4.7.0
 numpy==1.24.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
@@ -70,7 +70,7 @@ dj-pagination==2.5.0
 django-select2==8.1.1
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
-django-autocomplete-light==3.5.1
+django-autocomplete-light==3.9.7
 django-invitations<2.0.1
 django-recaptcha==3.0.0
 
@@ -113,7 +113,7 @@ django-storages==1.13.2
 dropbox==11.36.0
 google-cloud-storage==2.9.0
 google-cloud-core==2.3.2
-boto3==1.26.131
+boto3==1.26.133
 
 # Django Caches
 python-memcached<=1.59
@@ -134,7 +134,7 @@ sherlock==0.4.1
 
 # required by monitoring
 psutil==5.9.5
-django-cors-headers==3.14.0
+django-cors-headers==4.0.0
 user-agents
 django-user-agents
 xmljson
@@ -146,7 +146,7 @@ pycountry
 uWSGI==2.0.21
 gunicorn==20.1.0
 ipython==8.13.2
-docker==6.1.1
+docker==6.1.2
 invoke==2.1.1
 
 # tests
