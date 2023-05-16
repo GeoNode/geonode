@@ -67,7 +67,13 @@ from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
+from geonode.base.api.filters import (
+    DynamicSearchFilter,
+    ExtentFilter,
+    FacetVisibleResourceFilter,
+    FavoriteFilter,
+    TKeywordsFilter,
+)
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
@@ -346,6 +352,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
+        TKeywordsFilter,
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
