@@ -1349,7 +1349,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def get_absolute_url(self):
         try:
-            return self.get_real_instance().get_absolute_url()
+            return self.get_real_instance().get_absolute_url() if self != self.get_real_instance() else None
         except Exception as e:
             logger.exception(e)
             return None
@@ -1463,7 +1463,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def embed_url(self):
-        return self.get_real_instance().embed_url
+        return self.get_real_instance().embed_url if self != self.get_real_instance() else None
 
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist."""
