@@ -714,7 +714,7 @@ class Command(BaseCommand):
         }
         r = requests.post(f'{url}rest/br/restore/', data=json.dumps(data),
                           headers=headers, auth=HTTPBasicAuth(user, passwd))
-        error_backup = "Could not successfully restore GeoServer catalog [{{}}rest/br/restore/]: {{}} - {{}}"
+        error_backup = "Could not successfully restore GeoServer catalog [{}rest/br/restore/]: {} - {}"
 
         if r.status_code in (200, 201, 406):
             try:

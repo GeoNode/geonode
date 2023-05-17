@@ -332,7 +332,7 @@ class Command(BaseCommand):
         if r.status_code != 200:
             raise ValueError('Could not reload GeoServer catalog!')
 
-        error_backup = "Could not successfully backup GeoServer catalog [{{}}rest/br/backup/]: {{}} - {{}}"
+        error_backup = "Could not successfully backup GeoServer catalog [{}rest/br/backup/]: {} - {}"
 
         _options = [
             'BK_CLEANUP_TEMP=true',
