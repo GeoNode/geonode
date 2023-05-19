@@ -31,7 +31,7 @@ from geonode.layers.models import Dataset
 logger = logging.getLogger(__name__)
 
 
-REQ_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
+REQ_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 <GeoServerLayer>
    <enabled>true</enabled>
    <inMemoryCached>true</inMemoryCached>
@@ -66,20 +66,20 @@ REQ_TEMPLATE = '''<?xml version="1.0" encoding="UTF-8"?>
          <gridSetName>EPSG:900913</gridSetName>
       </gridSubset>
    </gridSubsets>
-</GeoServerLayer>'''
+</GeoServerLayer>"""
 
 
 class Command(BaseCommand):
-    help = 'Create missing TileLayers in GWC'
+    help = "Create missing TileLayers in GWC"
 
     def add_arguments(self, parser):
         pass
 
     def handle(self, **options):
         try:
-            baseurl = settings.OGC_SERVER['default']['LOCATION']
-            user = settings.OGC_SERVER['default']['USER']
-            passwd = settings.OGC_SERVER['default']['PASSWORD']
+            baseurl = settings.OGC_SERVER["default"]["LOCATION"]
+            user = settings.OGC_SERVER["default"]["USER"]
+            passwd = settings.OGC_SERVER["default"]["PASSWORD"]
             """
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
@@ -94,8 +94,7 @@ class Command(BaseCommand):
             for layer in layers:
                 i += 1
                 logger.info(f"- {i}/{tot} Processing layer: {layer.typename}")
-                r = requests.get(f'{baseurl}gwc/rest/layers/{layer.typename}.xml',
-                                 auth=HTTPBasicAuth(user, passwd))
+                r = requests.get(f"{baseurl}gwc/rest/layers/{layer.typename}.xml", auth=HTTPBasicAuth(user, passwd))
 
                 if r.status_code == 200:
                     logger.info("  - Layer already configured")
@@ -103,11 +102,11 @@ class Command(BaseCommand):
                     continue
                 try:
                     data = REQ_TEMPLATE.format(layer.name)
-                    url = f'{baseurl}gwc/rest/layers/{layer.typename}.xml'
-                    logger.info('  - Configuring...')
-                    response = requests.put(url, data=data,
-                                            headers={'Content-Type': 'text/xml'},
-                                            auth=HTTPBasicAuth(user, passwd))
+                    url = f"{baseurl}gwc/rest/layers/{layer.typename}.xml"
+                    logger.info("  - Configuring...")
+                    response = requests.put(
+                        url, data=data, headers={"Content-Type": "text/xml"}, auth=HTTPBasicAuth(user, passwd)
+                    )
 
                     if response.status_code == 200:
                         logger.info(f"  - Done {layer.name}")
@@ -121,7 +120,7 @@ class Command(BaseCommand):
         except Exception as e:
             raise e
 
-        logger.info('Work completed')
-        logger.info(f'- TileLayers configured: {cnt_new}')
-        logger.info(f'- TileLayers in error  : {cnt_bad}')
-        logger.info(f'- TileLayers found     : {cnt_old}')
+        logger.info("Work completed")
+        logger.info(f"- TileLayers configured: {cnt_new}")
+        logger.info(f"- TileLayers in error  : {cnt_bad}")
+        logger.info(f"- TileLayers found     : {cnt_old}")
