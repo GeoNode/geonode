@@ -85,9 +85,9 @@ class BackupCommandTests(GeoNodeBaseTestSupport):
                 call_command("backup", *args, **kwargs)
 
             self.assertIn(
-                'andatory option (-c / --config)',
+                "andatory option (-c / --config)",
                 exc.exception.args[0],
-                'Can not match message about mandatory option (-c / --config)" exception'
+                'Can not match message about mandatory option (-c / --config)" exception',
             )
 
     # force backup interruption before starting the procedure itself

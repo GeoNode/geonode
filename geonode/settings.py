@@ -682,9 +682,7 @@ LOGGING = {
         "simple": {
             "format": "%(message)s",
         },
-        'br': {
-            'format': '%(levelname)-7s %(asctime)s %(message)s'
-        },
+        "br": {"format": "%(levelname)-7s %(asctime)s %(message)s"},
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
@@ -694,22 +692,34 @@ LOGGING = {
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
         },
-        'br': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'br'
-        },
+        "br": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "br"},
     },
     "loggers": {
-        "django": {"level": "ERROR", },
-        "geonode": {"level": "WARN", },
-        "geonode.br": {"level": "INFO", 'handlers': ['br'], 'propagate': False},
-        "geoserver-restconfig.catalog": {"level": "ERROR", },
-        "owslib": {"level": "ERROR", },
-        "pycsw": {"level": "ERROR", },
-        "celery": {"level": "WARN", },
-        "mapstore2_adapter.plugins.serializers": {"level": "ERROR", },
-        "geonode_logstash.logstash": {"level": "ERROR", },
+        "django": {
+            "level": "ERROR",
+        },
+        "geonode": {
+            "level": "WARN",
+        },
+        "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
+        "geoserver-restconfig.catalog": {
+            "level": "ERROR",
+        },
+        "owslib": {
+            "level": "ERROR",
+        },
+        "pycsw": {
+            "level": "ERROR",
+        },
+        "celery": {
+            "level": "WARN",
+        },
+        "mapstore2_adapter.plugins.serializers": {
+            "level": "ERROR",
+        },
+        "geonode_logstash.logstash": {
+            "level": "ERROR",
+        },
     },
 }
 
