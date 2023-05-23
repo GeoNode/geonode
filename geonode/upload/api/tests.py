@@ -17,15 +17,14 @@
 #
 #########################################################################
 
+from geonode.resource.models import ExecutionRequest
 import os
-import json
 import shutil
 import logging
 import tempfile
 from io import IOBase
-from time import sleep
 from unittest import mock
-from gisdata import GOOD_DATA, BAD_DATA
+from gisdata import GOOD_DATA
 from urllib.request import urljoin
 
 from django.conf import settings
@@ -49,12 +48,9 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 from webdriver_manager.firefox import GeckoDriverManager
 
-from geonode.base import enumerations
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.upload.tasks import _update_upload_session_state
-from geonode.resource.api.tasks import resouce_service_dispatcher
-from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
+from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.tests.utils import GEONODE_USER, GEONODE_PASSWD, rest_upload_by_path
 
 LIVE_SERVER_URL = "http://localhost:8001/"
@@ -232,6 +228,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             logger.exception(ValueError(f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_rest_uploads(self):
         """
         Ensure we can access the Local Server Uploads list.
@@ -239,7 +236,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
         resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 201)
 
         url = reverse("uploads-list")
         # Anonymous
@@ -252,65 +249,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         self.assertEqual(len(response.data["uploads"]), 0)
         logger.debug(response.data)
 
-        # Admin
-        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 1)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 1)
-        logger.debug(response.data)
-        upload_data = response.data["uploads"][0]
-        self.assertIsNotNone(upload_data)
-        self.assertEqual(upload_data["name"], "relief_san_andres")
-
-        if upload_data["state"] != enumerations.STATE_PROCESSED:
-            self.assertGreaterEqual(upload_data["progress"], 90.0)
-            self.assertIsNone(upload_data["resume_url"])
-            self.assertIsNone(upload_data["delete_url"])
-            self.assertIsNotNone(upload_data["detail_url"])
-
-            self.assertIn("uploadfile_set", upload_data)
-            self.assertEqual(len(upload_data["uploadfile_set"]), 2)
-        else:
-            self.assertGreaterEqual(upload_data["progress"], 90.0)
-            self.assertIsNone(upload_data["resume_url"])
-            self.assertIsNone(upload_data["delete_url"])
-            self.assertIsNotNone(upload_data["detail_url"])
-
-        self.assertNotIn("resource", upload_data)
-        self.assertNotIn("session", upload_data)
-
-        url = reverse("uploads-detail", kwargs={"pk": upload_data["id"]})
-        response = self.client.get(f"{url}?full=true", format="json")
-        self.assertEqual(response.status_code, 200)
-        upload_data = response.data["upload"]
-        self.assertIsNotNone(upload_data)
-        self.assertIn("resource", upload_data)
-        self.assertIn("ptype", upload_data["resource"])
-        self.assertIn("ows_url", upload_data["resource"])
-        self.assertIn("subtype", upload_data["resource"])
-
-        self.assertIn("session", upload_data)
-
-        self.assertIn("uploadfile_set", upload_data)
-        self.assertGreaterEqual(len(upload_data["uploadfile_set"]), 1)
-
-        self.assertNotIn("upload_dir", upload_data)
-
-        if upload_data["delete_url"] is not None:
-            response = self.client.get(upload_data["delete_url"], format="json")
-            self.assertEqual(response.status_code, 200)
-
-            response = self.client.get(reverse("uploads-list"), format="json")
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data["total"], 0)
-            # Pagination
-            self.assertEqual(len(response.data["uploads"]), 0)
-            logger.debug(response.data)
-
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_rest_uploads_non_interactive(self):
         """
         Ensure we can access the Local Server Uploads list.
@@ -318,330 +257,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # Try to upload a good raster file and check the session IDs
         fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
         resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 201)
 
-        url = reverse("uploads-list")
-        # Anonymous
-        self.client.logout()
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 0)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 0)
-        logger.debug(response.data)
-
-        # Admin
-        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 1)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 1)
-        logger.debug(response.data)
-        upload_data = response.data["uploads"][0]
-        self.assertIsNotNone(upload_data)
-        self.assertEqual(upload_data["name"], "relief_san_andres")
-
-        if upload_data["state"] != enumerations.STATE_PROCESSED:
-            self.assertGreaterEqual(upload_data["progress"], 90.0)
-            self.assertIsNone(upload_data["resume_url"])
-            self.assertIsNone(upload_data["delete_url"])
-            self.assertIsNotNone(upload_data["detail_url"])
-
-            self.assertIn("uploadfile_set", upload_data)
-            self.assertEqual(len(upload_data["uploadfile_set"]), 2)
-        else:
-            self.assertGreaterEqual(upload_data["progress"], 90.0)
-            self.assertIsNone(upload_data["resume_url"])
-            self.assertIsNone(upload_data["delete_url"])
-            self.assertIsNotNone(upload_data["detail_url"])
-
-        self.assertNotIn("resource", upload_data)
-        self.assertNotIn("session", upload_data)
-
-        url = reverse("uploads-detail", kwargs={"pk": upload_data["id"]})
-        response = self.client.get(f"{url}?full=true", format="json")
-        self.assertEqual(response.status_code, 200)
-        upload_data = response.data["upload"]
-        self.assertIsNotNone(upload_data)
-        self.assertIn("resource", upload_data)
-        self.assertIn("ptype", upload_data["resource"])
-        self.assertIn("ows_url", upload_data["resource"])
-        self.assertIn("subtype", upload_data["resource"])
-
-        self.assertIn("session", upload_data)
-
-        self.assertIn("uploadfile_set", upload_data)
-        self.assertGreaterEqual(len(upload_data["uploadfile_set"]), 1)
-
-        self.assertNotIn("upload_dir", upload_data)
-
-        if upload_data["delete_url"] is not None:
-            response = self.client.get(upload_data["delete_url"], format="json")
-            self.assertEqual(response.status_code, 200)
-
-            response = self.client.get(reverse("uploads-list"), format="json")
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data["total"], 0)
-            # Pagination
-            self.assertEqual(len(response.data["uploads"]), 0)
-            logger.debug(response.data)
-
-    def test_upload_temp_folder_deleted(self):
-        """
-        Ensure that temp folders are deleted on deleting a resource
-        """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        resource_id = data["url"].split("/")[-1]
-        upload = Upload.objects.get(resource_id=resource_id)
-        # temp folder is not deleted after successful upload
-        self.assertTrue(os.path.exists(upload.upload_dir))
-
-        # delete resource with temp foler
-        delete_resource_url = reverse("base-resources-detail", kwargs={"pk": resource_id})
-        self.assertTrue(os.path.exists(upload.upload_dir))
-
-        response = self.client.delete(f"{delete_resource_url}/delete")
-        self.assertEqual(response.status_code, 200)
-        resp_js = json.loads(response.content.decode("utf-8"))
-        if resp_js.get("status", "") != "success":
-            status_url = resp_js.get("status_url", None)
-            execution_id = resp_js.get("execution_id", "")
-            self.assertIsNotNone(status_url)
-            self.assertIsNotNone(execution_id)
-            for _cnt in range(0, 10):
-                response = self.client.get(f"{status_url}")
-                self.assertEqual(response.status_code, 200)
-                resp_js = json.loads(response.content.decode("utf-8"))
-                logger.error(f"[{_cnt + 1}] ... {resp_js}")
-                if resp_js.get("status", "") == "finished":
-                    break
-                else:
-                    resouce_service_dispatcher.apply((execution_id,))
-                    sleep(3.0)
-        self.assertEqual(resp_js.get("status", ""), "finished", resp_js)
-        self.assertFalse(os.path.exists(upload.upload_dir), resp_js)
-
-    def test_rest_uploads_by_path(self):
-        """
-        Ensure we can access the Local Server Uploads list.
-        """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["status"], "finished")
-        self.assertTrue(data["success"])
-
-        url = reverse("uploads-list")
-        # Anonymous
-        self.client.logout()
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 0)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 0)
-        logger.debug(response.data)
-
-        # Admin
-        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 1)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 1)
-        logger.debug(response.data)
-        upload_data = response.data["uploads"][0]
-        self.assertIsNotNone(upload_data)
-        self.assertEqual(upload_data["name"], "relief_san_andres")
-
-        if upload_data["state"] != enumerations.STATE_PROCESSED:
-            self.assertGreaterEqual(upload_data["progress"], 90.0)
-            self.assertIsNone(upload_data["resume_url"])
-            self.assertIsNone(upload_data["delete_url"])
-            self.assertIsNotNone(upload_data["detail_url"])
-
-            self.assertIn("uploadfile_set", upload_data)
-            self.assertEqual(len(upload_data["uploadfile_set"]), 2)
-        else:
-            self.assertGreaterEqual(upload_data["progress"], 90.0)
-            self.assertIsNone(upload_data["resume_url"])
-            self.assertIsNone(upload_data["delete_url"])
-            self.assertIsNotNone(upload_data["detail_url"])
-
-        self.assertNotIn("resource", upload_data)
-        self.assertNotIn("session", upload_data)
-
-        url = reverse("uploads-detail", kwargs={"pk": upload_data["id"]})
-        response = self.client.get(f"{url}?full=true", format="json")
-        self.assertEqual(response.status_code, 200)
-        upload_data = response.data["upload"]
-        self.assertIsNotNone(upload_data)
-        self.assertIn("resource", upload_data)
-        self.assertIn("ptype", upload_data["resource"])
-        self.assertIn("ows_url", upload_data["resource"])
-        self.assertIn("subtype", upload_data["resource"])
-
-        self.assertIn("session", upload_data)
-
-        self.assertIn("uploadfile_set", upload_data)
-        self.assertGreaterEqual(len(upload_data["uploadfile_set"]), 1)
-
-        self.assertNotIn("upload_dir", upload_data)
-
-        if upload_data["delete_url"] is not None:
-            response = self.client.get(upload_data["delete_url"], format="json")
-            self.assertEqual(response.status_code, 200)
-
-            response = self.client.get(reverse("uploads-list"), format="json")
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data["total"], 0)
-            # Pagination
-            self.assertEqual(len(response.data["uploads"]), 0)
-            logger.debug(response.data)
-
-    def test_rest_uploads_no_crs(self):
-        """
-        Ensure the upload process turns to `WAITING` status whenever a `CRS` info is missing from the GIS backend.
-        """
-        # Try to upload a shapefile without a CRS def.
-        fname = os.path.join(os.getcwd(), "geonode/tests/data/san_andres_y_providencia_coastline_no_prj.zip")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-
-        url = reverse("uploads-list")
-        # Admin
-        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5, response.data)
-        self.assertEqual(response.data["total"], 1, response.data["total"])
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 1)
-        self.assertEqual(response.status_code, 200)
-        upload_data = response.data["uploads"][0]
-        self.assertIsNotNone(upload_data)
-        self.assertEqual(upload_data["name"], "san_andres_y_providencia_coastline_no_prj", upload_data["name"])
-        if upload_data["state"] != enumerations.STATE_WAITING:
-            for _cnt in range(0, 10):
-                response = self.client.get(url, format="json")
-                self.assertEqual(response.status_code, 200)
-                logger.error(f"[{_cnt + 1}] ... {response.data}")
-                upload_data = response.data["uploads"][0]
-                self.assertIsNotNone(upload_data)
-                self.assertEqual(upload_data["name"], "san_andres_y_providencia_coastline_no_prj", upload_data["name"])
-                if upload_data["state"] == enumerations.STATE_WAITING:
-                    break
-                else:
-                    for _upload in Upload.objects.filter(state=upload_data["state"]):
-                        _update_upload_session_state.apply((_upload.id,))
-                    sleep(3.0)
-        self.assertEqual(upload_data["state"], enumerations.STATE_WAITING, upload_data["state"])
-
-        # Try to upload a GeoTIFF without a CRS def.
-        fname = os.path.join(os.getcwd(), "geonode/tests/data/n32_1991_0001_123.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-
-        # Admin
-        self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5, response.data)
-        self.assertEqual(response.data["total"], 2, response.data["total"])
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 2)
-        self.assertEqual(response.status_code, 200)
-        upload_data = response.data["uploads"][0]
-        self.assertIsNotNone(upload_data)
-        self.assertEqual(upload_data["name"], "n32_1991_0001_123", upload_data["name"])
-        if upload_data["state"] != enumerations.STATE_WAITING:
-            for _cnt in range(0, 10):
-                response = self.client.get(url, format="json")
-                self.assertEqual(response.status_code, 200)
-                logger.error(f"[{_cnt + 1}] ... {response.data}")
-                upload_data = response.data["uploads"][0]
-                self.assertIsNotNone(upload_data)
-                self.assertEqual(upload_data["name"], "n32_1991_0001_123", upload_data["name"])
-                if upload_data["state"] == enumerations.STATE_WAITING:
-                    break
-                else:
-                    for _upload in Upload.objects.filter(state=upload_data["state"]):
-                        _update_upload_session_state.apply((_upload.id,))
-                    sleep(3.0)
-        self.assertEqual(upload_data["state"], enumerations.STATE_WAITING, upload_data["state"])
-
-    def test_emulate_upload_through_rest_apis(self):
-        """
-        Emulating Upload via REST APIs with several datasets.
-        """
-        # Try to upload a bad ESRI shapefile with no CRS available
-        fname = os.path.join(BAD_DATA, "points_epsg2249_no_prj.shp")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["status"], "finished")
-        self.assertTrue(data["success"])
-
-        # Try to upload a good ESRI shapefile and check the session IDs
-        fname = os.path.join(GOOD_DATA, "vector", "san_andres_y_providencia_coastline.shp")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["status"], "finished")
-        self.assertTrue(data["success"])
-
-        def assert_processed_or_failed(total_uploads, upload_index, dataset_name, state):
-            url = reverse("uploads-list")
-            # Admin
-            self.assertTrue(self.client.login(username=GEONODE_USER, password=GEONODE_PASSWD))
-            response = self.client.get(url, format="json")
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 5, response.data)
-            self.assertEqual(response.data["total"], total_uploads, response.data["total"])
-            # Pagination
-            self.assertEqual(len(response.data["uploads"]), total_uploads)
-            self.assertEqual(response.status_code, 200)
-
-            upload_data = response.data["uploads"][upload_index]
-            self.assertIsNotNone(upload_data)
-            self.assertEqual(upload_data["name"], dataset_name, upload_data["name"])
-            if upload_data["state"] != state:
-                for _cnt in range(0, 10):
-                    response = self.client.get(url, format="json")
-                    self.assertEqual(response.status_code, 200)
-                    logger.error(f"[{_cnt + 1}] ... {response.data}")
-                    upload_data = response.data["uploads"][upload_index]
-                    self.assertIsNotNone(upload_data)
-                    self.assertEqual(upload_data["name"], dataset_name, upload_data["name"])
-                    if upload_data["state"] == state:
-                        break
-                    else:
-                        for _upload in Upload.objects.filter(state=upload_data["state"]):
-                            _update_upload_session_state.apply((_upload.id,))
-                        sleep(3.0)
-            self.assertEqual(upload_data["state"], state, upload_data["state"])
-
-        # Vector
-        assert_processed_or_failed(3, 0, "san_andres_y_providencia_coastline", enumerations.STATE_PROCESSED)
-
-        # Raster
-        assert_processed_or_failed(3, 1, "relief_san_andres", enumerations.STATE_PROCESSED)
-
-        # Unsupported
-        assert_processed_or_failed(3, 2, "points_epsg2249_no_prj", enumerations.STATE_WAITING)
+        exec_id = data.get("execution_id", None)
+        _exec = ExecutionRequest.objects.get(exec_id=exec_id)
+        self.assertEqual(_exec.status, "finished")
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
@@ -652,7 +272,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         expected_error = {
             "success": False,
             "errors": ["Total upload size exceeds 1\xa0byte. Please try again with smaller files."],
-            "code": "total_upload_size_exceeded",
+            "code": "importer_exception",
         }
         upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
             slug="dataset_upload_size",
@@ -672,43 +292,9 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             max_size_mock.return_value = lambda x: 209715200
 
             resp, data = rest_upload_by_path(fname, self.client)
-            self.assertEqual(resp.status_code, 400)
+            self.assertEqual(resp.status_code, 500)
             self.assertDictEqual(expected_error, data)
             mocked_uploaded_file.assert_not_called()
-
-    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
-    def test_rest_uploads_with_size_limit_before_upload(self, mocked_uploaded_file):
-        """
-        Try to upload a file larger than allowed by ``file_upload_handler``.
-        """
-        expected_error = {
-            "success": False,
-            "errors": ["Total upload size exceeds 1\xa0byte. Please try again with smaller files."],
-            "code": "total_upload_size_exceeded",
-        }
-        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="dataset_upload_size",
-            defaults={
-                "description": "The sum of sizes for the files of a dataset upload.",
-                "max_size": 1,
-            },
-        )
-        upload_size_limit_obj.max_size = 1
-        upload_size_limit_obj.save()
-
-        # Try to upload and verify if it passed by both size validations
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"
-        with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
-            max_size_mock.return_value = lambda x: 1
-
-            resp, data = rest_upload_by_path(fname, self.client)
-            # Assertions
-            self.assertEqual(resp.status_code, 400)
-            self.assertDictEqual(expected_error, data)
-            mocked_uploaded_file.assert_called_with(
-                name="relief_san_andres.tif", content=b"", content_type="image/tiff"
-            )
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_parallelism_limit(self, mocked_uploaded_file):
@@ -719,7 +305,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         expected_error = {
             "success": False,
             "errors": ["The number of active parallel uploads exceeds 100. Wait for the pending ones to finish."],
-            "code": "upload_parallelism_limit_exceeded",
+            "code": "importer_exception",
         }
         # Try to upload and verify if it passed only by the form size validation
         fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
@@ -731,7 +317,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             mocked_get_parallel_uploads_count.return_value = lambda: 200
 
             resp, data = rest_upload_by_path(fname, self.client)
-            self.assertEqual(resp.status_code, 400)
+            self.assertEqual(resp.status_code, 500)
 
             mocked_uploaded_file.assert_not_called()
             self.assertDictEqual(expected_error, data)

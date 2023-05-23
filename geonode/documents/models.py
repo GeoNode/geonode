@@ -142,6 +142,10 @@ class Document(ResourceBase):
             return self.link_set.filter(resource=self.get_self_resource(), link_type="original").first().url
         return build_absolute_uri(reverse("document_download", args=(self.id,)))
 
+    @property
+    def linked_resources(self):
+        return ResourceBase.objects.filter(id__in=self.links.values_list("object_id", flat=True))
+
     class Meta(ResourceBase.Meta):
         pass
 

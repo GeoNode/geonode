@@ -304,7 +304,7 @@ class UserSerializer(BaseDynamicModelSerializer):
         model = get_user_model()
         name = "user"
         view_name = "users-list"
-        fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff")
+        fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff", "email")
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -703,3 +703,10 @@ class OwnerSerializer(BaseResourceCountSerializer):
         fields = ("pk", "username", "first_name", "last_name", "avatar", "perms")
 
     avatar = AvatarUrlField(240, read_only=True)
+
+
+class SimpleResourceSerializer(DynamicModelSerializer):
+    class Meta:
+        name = "linked_resources"
+        model = ResourceBase
+        fields = ("pk", "title", "resource_type", "detail_url", "thumbnail_url")

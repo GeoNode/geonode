@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2019 OSGeo
+# Copyright (C) 2023 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,15 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
 
-from django.core.management.base import BaseCommand
-from geonode.geoserver.security import sync_resources_with_guardian
+from django.apps import AppConfig
 
 
-class Command(BaseCommand):
-    """
-    Sync resources with Guardian and clear their dirty state
-    """
+logger = logging.getLogger(__name__)
 
-    def handle(self, *args, **options):
-        sync_resources_with_guardian(force=True)
+
+class GeoNodeFacetsConfig(AppConfig):
+    name = "geonode.facets"
+    verbose_name = "GeoNode Facets endpoints"
+
+    def ready(self):
+        super(GeoNodeFacetsConfig, self).ready()

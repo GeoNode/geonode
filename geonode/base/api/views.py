@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+from geonode.geoapps.models import GeoApp
 import json
 import re
 
@@ -66,11 +67,21 @@ from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.models import HierarchicalKeyword, Region, ResourceBase, TopicCategory, ThesaurusKeyword
-from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FacetVisibleResourceFilter, FavoriteFilter
+from geonode.base.api.filters import (
+    DynamicSearchFilter,
+    ExtentFilter,
+    FacetVisibleResourceFilter,
+    FavoriteFilter,
+    TKeywordsFilter,
+)
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.people.utils import get_available_users
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
-from geonode.security.utils import get_visible_resources, get_resources_with_perms, get_user_visible_groups
+from geonode.security.utils import (
+    get_visible_resources,
+    get_resources_with_perms,
+    get_user_visible_groups,
+)
 
 from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
@@ -87,6 +98,7 @@ from .permissions import (
 )
 from .serializers import (
     FavoriteSerializer,
+    SimpleResourceSerializer,
     UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
@@ -340,6 +352,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
     filter_backends = [
+        TKeywordsFilter,
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
@@ -1466,3 +1479,58 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             """
             logger.debug(e)
             return request.data
+
+    @extend_schema(methods=["get"], description="Get Linked Resources")
+    @action(
+        detail=True,
+        methods=["get"],
+        permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
+        url_path=r"linked_resources",  # noqa
+        url_name="linked_resources",
+    )
+    def linked_resources(self, request, pk):
+        try:
+            """
+            To let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
+            works on the resource and not on the linked one.
+            So if we want to filter the linked resource by "resource_type"
+            we have to search in the query params like in the following code:
+            _filters = {
+                x: y
+                for x, y
+                in request.query_params.items()
+                if x not in ["page_size", "page"]
+            }
+            We have to exclude the paging code or will raise the:
+            "Cannot resolve keyword into the field..."
+            """
+            _obj = self.get_object().get_real_instance()
+            if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
+                raise NotImplementedError("Not implemented: this endpoint is not available for GeoApps")
+            # getting the resource dynamically list based on the above mapping
+            resources = _obj.linked_resources
+
+            if request.query_params:
+                _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
+                if _filters:
+                    resources = resources.filter(**_filters)
+
+            resources = get_visible_resources(
+                resources,
+                user=request.user,
+                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            ).order_by("-pk")
+
+            paginator = GeoNodeApiPagination()
+            paginator.page_size = request.GET.get("page_size", 10)
+            result_page = paginator.paginate_queryset(resources, request)
+            serializer = SimpleResourceSerializer(result_page, embed=True, many=True)
+            return paginator.get_paginated_response({"resources": serializer.data})
+        except NotImplementedError as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0], "success": False}, status=501, exception=True)
+        except Exception as e:
+            logger.error(e)
+            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)

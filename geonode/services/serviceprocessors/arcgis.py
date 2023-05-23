@@ -211,8 +211,8 @@ class ArcImageServiceHandler(ArcMapServiceHandler):
 
     service_type = enumerations.REST_IMG
 
-    def __init__(self, url):
-        ArcMapServiceHandler.__init__(self, url)
+    def __init__(self, url, geonode_service_id=None):
+        ArcMapServiceHandler.__init__(self, url, geonode_service_id)
         self.url = url
         extent, srs = utils.get_esri_extent(self.parsed_service)
         try:

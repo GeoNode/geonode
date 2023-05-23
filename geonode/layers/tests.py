@@ -1638,10 +1638,14 @@ class TestSetMetadata(TestCase):
             "temporal_extent_start": None,
             "title": "test_dataset",
         }
+        expected_keywords = []
+        for kw in [kw.get("keywords") for kw in self.custom if kw["type"] != "place"]:
+            for _kw in [_kw for _kw in kw]:
+                expected_keywords.append(_kw)
         self.assertEqual("7cfbc42c-efa7-431c-8daa-1399dff4cd19", identifier)
         self.assertListEqual(["Global"], regions)
         self.assertDictEqual(expected_vals, vals)
-        self.assertListEqual(self.custom, keywords)
+        self.assertListEqual(expected_keywords, keywords)
 
     def test_convert_keyword_should_empty_list_for_empty_keyword(self):
         actual = convert_keyword([])
@@ -1724,9 +1728,13 @@ class TestCustomMetadataParser(TestCase):
 
     def test_will_use_only_the_default_metadata_parser(self):
         identifier, vals, regions, keywords, _ = parse_metadata(open(self.exml_path).read())
+        expected_keywords = []
+        for kw in [kw.get("keywords") for kw in self.keywords if kw["type"] != "place"]:
+            for _kw in [_kw for _kw in kw]:
+                expected_keywords.append(_kw)
         self.assertEqual("7cfbc42c-efa7-431c-8daa-1399dff4cd19", identifier)
         self.assertListEqual(["Global"], regions)
-        self.assertListEqual(self.keywords, keywords)
+        self.assertListEqual(expected_keywords, keywords)
         self.assertDictEqual(self.expected_vals, vals)
 
     @override_settings(METADATA_PARSERS=["__DEFAULT__", "geonode.layers.tests.dummy_metadata_parser"])
@@ -1966,6 +1974,53 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
         self.assertTrue(form.is_valid())
         self.assertDictEqual({}, form.errors)
 
+    def test_dataset_time_form_should_work_with_date_attribute(self):
+        attr, _ = Attribute.objects.get_or_create(
+            dataset=self.dataset, attribute="field_date", attribute_type="xsd:date"
+        )
+        self.dataset.attribute_set.add(attr)
+        self.dataset.save()
+        form = self.time_form(
+            instance=self.dataset,
+            data={
+                "attribute": self.dataset.attributes.first().id,
+                "end_attribute": "",
+                "presentation": "DISCRETE_INTERVAL",
+                "precision_value": 12345,
+                "precision_step": "seconds",
+            },
+        )
+        self.assertTrue(form.is_valid())
+        self.assertDictEqual({}, form.errors)
+        expected_choises = [(None, "-----"), (self.dataset.attributes.first().id, "field_date")]
+        actual_choices = form.fields.get("attribute").choices
+        self.assertListEqual(expected_choises, actual_choices)
+
+    def test_timeserie_raise_error_if_not_valid_attribute(self):
+        attr, _ = Attribute.objects.get_or_create(
+            dataset=self.dataset, attribute="field_date", attribute_type="xsd:string"
+        )
+        self.dataset.attribute_set.add(attr)
+        self.dataset.save()
+        form = self.time_form(
+            instance=self.dataset,
+            data={
+                "attribute": self.dataset.attributes.first().id,
+                "end_attribute": "",
+                "presentation": "DISCRETE_INTERVAL",
+                "precision_value": 12345,
+                "precision_step": "seconds",
+            },
+        )
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            f"Select a valid choice. {self.dataset.attributes.first().id} is not one of the available choices.",
+            form.errors.get("attribute")[0],
+        )
+        expected_choises = [(None, "-----")]
+        actual_choices = form.fields.get("attribute").choices
+        self.assertListEqual(expected_choises, actual_choices)
+
     def test_dataset_time_form_should_raise_error_if_invalid_payload(self):
         attr, _ = Attribute.objects.get_or_create(
             dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
@@ -1988,6 +2043,30 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             "Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.",
             form.errors["presentation"][0],
         )
+
+    def test_resource_form_is_invalid_with_incompleted_timeserie_data(self):
+        self.client.login(username="admin", password="admin")
+        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
+        response = self.client.post(
+            url,
+            data={
+                "resource-owner": self.dataset.owner.id,
+                "resource-title": "layer_title",
+                "resource-date": "2022-01-24 16:38 pm",
+                "resource-date_type": "creation",
+                "resource-language": "eng",
+                "resource-has_time": True,
+                "dataset_attribute_set-TOTAL_FORMS": 0,
+                "dataset_attribute_set-INITIAL_FORMS": 0,
+            },
+        )
+        expected = {
+            "success": False,
+            "errors": [
+                "The Timeseries configuration is invalid. Please select at least one option between the `attribute` and `end_attribute`, otherwise remove the 'has_time' flag"
+            ],
+        }
+        self.assertDictEqual(expected, response.json())
 
 
 class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):

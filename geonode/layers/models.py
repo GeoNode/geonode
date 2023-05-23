@@ -256,6 +256,12 @@ class Dataset(ResourceBase):
         return hookset.dataset_detail_url(self)
 
     @property
+    def capabilities_url(self):
+        from geonode.geoserver.helpers import get_dataset_capabilities_url
+
+        return get_dataset_capabilities_url(self)
+
+    @property
     def embed_url(self):
         try:
             if self.service_typename:
@@ -304,6 +310,14 @@ class Dataset(ResourceBase):
 
         map_ids = list(self.maplayers.values_list("map__id", flat=True))
         return Map.objects.filter(id__in=map_ids)
+
+    @property
+    def linked_resources(self):
+        from geonode.documents.models import DocumentResourceLink
+
+        _map_ids = list(self.maplayers.values_list("map__id", flat=True))
+        _doc_ids = list(DocumentResourceLink.objects.filter(object_id=self.pk).values_list("document__pk", flat=True))
+        return ResourceBase.objects.filter(id__in=list(set(_map_ids + _doc_ids)))
 
     @property
     def download_url(self):

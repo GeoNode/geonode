@@ -449,6 +449,20 @@ def dataset_metadata(
             }
             logger.error(f"{out.get('errors')}")
             return HttpResponse(json.dumps(out), content_type="application/json", status=400)
+        elif (
+            layer.has_time
+            and timeseries_form.is_valid()
+            and not timeseries_form.cleaned_data.get("attribute", "")
+            and not timeseries_form.cleaned_data.get("end_attribute", "")
+        ):
+            out = {
+                "success": False,
+                "errors": [
+                    "The Timeseries configuration is invalid. Please select at least one option between the `attribute` and `end_attribute`, otherwise remove the 'has_time' flag"
+                ],
+            }
+            logger.error(f"{out.get('errors')}")
+            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
     else:
         dataset_form = DatasetForm(instance=layer, prefix="resource", user=request.user)
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)
@@ -483,10 +497,6 @@ def dataset_metadata(
                     initial["precision_step"] = "seconds"
 
         timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries", initial=initial)
-        timeseries_form.fields.get("attribute").queryset = layer.attributes.filter(attribute_type__in=["xsd:dateTime"])
-        timeseries_form.fields.get("end_attribute").queryset = layer.attributes.filter(
-            attribute_type__in=["xsd:dateTime"]
-        )
 
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"

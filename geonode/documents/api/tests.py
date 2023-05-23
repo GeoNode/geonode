@@ -95,7 +95,7 @@ class DocumentsApiTests(APITestCase):
         payload = {"document": {"title": "New document", "metadata_only": True}}
         expected = {
             "success": False,
-            "errors": ["A file path or a file must be speficied"],
+            "errors": ["A file, file path or URL must be speficied"],
             "code": "document_exception",
         }
         actual = self.client.post(self.url, data=payload, format="json")
@@ -110,7 +110,7 @@ class DocumentsApiTests(APITestCase):
         payload = {"document": {"title": "New document", "metadata_only": True, "file_path": None, "doc_file": None}}
         expected = {
             "success": False,
-            "errors": ["A file path or a file must be speficied"],
+            "errors": ["A file, file path or URL must be speficied"],
             "code": "document_exception",
         }
         actual = self.client.post(self.url, data=payload, format="json")
@@ -122,7 +122,7 @@ class DocumentsApiTests(APITestCase):
         payload = {"document": {"title": "New document", "metadata_only": True, "file_path": self.invalid_file_path}}
         expected = {
             "success": False,
-            "errors": ["The file provided is not in the supported extension file list"],
+            "errors": ["The file provided is not in the supported extensions list"],
             "code": "document_exception",
         }
         actual = self.client.post(self.url, data=payload, format="json")
@@ -147,3 +147,47 @@ class DocumentsApiTests(APITestCase):
 
         if cloned_path:
             os.remove(cloned_path)
+
+    def test_creation_from_url_should_create_the_doc(self):
+        """
+        If file_path is not available, should raise error
+        """
+        self.client.force_login(self.admin)
+        doc_url = "https://example.com/image"
+        payload = {
+            "document": {
+                "title": "New document from URL for testing",
+                "metadata_only": False,
+                "doc_url": doc_url,
+                "extension": "jpeg",
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        created_doc_url = actual.json().get("document", {}).get("doc_url", "")
+        self.assertEqual(created_doc_url, doc_url)
+
+    def test_either_path_or_url_doc(self):
+        """
+        If file_path is not available, should raise error
+        """
+        self.client.force_login(self.admin)
+        doc_url = "https://example.com/image"
+        payload = {
+            "document": {
+                "title": "New document from URL for testing",
+                "metadata_only": False,
+                "doc_url": doc_url,
+                "file_path": self.valid_file_path,
+                "extension": "jpeg",
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        expected = {
+            "success": False,
+            "errors": ["Either a file or a URL must be specified, not both"],
+            "code": "document_exception",
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(400, actual.status_code)
+        self.assertDictEqual(expected, actual.json())

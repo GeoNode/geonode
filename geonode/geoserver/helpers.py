@@ -1814,14 +1814,17 @@ def set_time_info(layer, attribute, end_attribute, presentation, precision_value
     info = DimensionInfo(
         "time", enabled, presentation, resolution, "ISO8601", None, attribute=attribute, end_attribute=end_attribute
     )
-    if resource and resource.metadata:
+    if resource and hasattr(resource, "metadata") and resource.metadata:
         metadata = dict(resource.metadata or {})
     else:
         metadata = dict({})
     metadata["time"] = info
 
-    if resource and resource.metadata:
+    if resource and hasattr(resource, "metadata") and resource.metadata:
         resource.metadata = metadata
+    else:
+        setattr(resource, "metadata", metadata)
+
     if resource:
         gs_catalog.save(resource)
 
@@ -2226,14 +2229,12 @@ def select_relevant_files(allowed_extensions, files):
     :param allowed_extensions: list of strings with the extensions to keep
     :param files: list of django files with the files to be filtered
     """
-    from geonode.upload.files import get_scan_hint
-
     result = []
     if files:
         for django_file in files:
             _django_file_name = django_file if isinstance(django_file, str) else django_file.name
             extension = os.path.splitext(_django_file_name)[-1].lower()[1:]
-            if extension in allowed_extensions or get_scan_hint(allowed_extensions):
+            if extension in allowed_extensions:
                 already_selected = _django_file_name in (f if isinstance(f, str) else f.name for f in result)
                 if not already_selected:
                     result.append(django_file)
@@ -2250,20 +2251,19 @@ class SpatialFilesLayerType:
 
 def get_spatial_files_dataset_type(allowed_extensions, files, charset="UTF-8") -> SpatialFilesLayerType:
     """Reutnrs 'vector' or 'raster' whether a file from the allowed extensins has been identified."""
-    from geonode.upload.files import get_scan_hint, scan_file
+    from geonode.upload.files import scan_file
 
     allowed_file = select_relevant_files(allowed_extensions, files)
     if not allowed_file or len(allowed_file) != 1:
         return None
     base_file = allowed_file[0]
-    scan_hint = get_scan_hint(allowed_extensions)
-    spatial_files = scan_file(base_file, scan_hint=scan_hint, charset=charset)
+    spatial_files = scan_file(base_file, charset=charset)
     the_dataset_type = get_dataset_type(spatial_files)
     if the_dataset_type not in (FeatureType.resource_type, Coverage.resource_type):
         return None
     spatial_files_type = SpatialFilesLayerType(
         base_file=base_file,
-        scan_hint=scan_hint,
+        scan_hint=None,
         spatial_files=spatial_files,
         dataset_type="vector" if the_dataset_type == FeatureType.resource_type else "raster",
     )
@@ -2278,6 +2278,22 @@ def get_dataset_type(spatial_files):
     else:
         the_dataset_type = spatial_files[0].file_type.dataset_type
     return the_dataset_type
+
+
+def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
+    """
+    Generate the layer-specific GetCapabilities URL
+    """
+    workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ("", layer.alternate)
+    wms_url = settings.GEOSERVER_PUBLIC_LOCATION
+    if not layer.remote_service:
+        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
+        if access_token:
+            wms_url += f"&access_token={access_token}"
+    else:
+        wms_url = f"{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities"
+
+    return wms_url
 
 
 def wps_format_is_supported(_format, dataset_type):

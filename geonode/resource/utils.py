@@ -160,7 +160,7 @@ def update_resource(
     try:
         instance = KeywordHandler(instance, _keywords).set_keywords()
     except Exception as e:
-        logger.debug(e)
+        logger.error(e)
 
     # set model properties
     defaults = {}

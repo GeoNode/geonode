@@ -75,10 +75,10 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         csw = get_catalogue()
         record = csw.get_record(dataset.uuid)
         self.assertIsNotNone(record)
-        self.assertEqual(record.identification.title, dataset.title)
-        self.assertEqual(record.identification.abstract, dataset.raw_abstract)
-        if len(record.identification.otherconstraints) > 0:
-            self.assertEqual(record.identification.otherconstraints[0], dataset.raw_constraints_other)
+        self.assertEqual(record.identification[0].title, dataset.title)
+        self.assertEqual(record.identification[0].abstract, dataset.raw_abstract)
+        if len(record.identification[0].otherconstraints) > 0:
+            self.assertEqual(record.identification[0].otherconstraints[0], dataset.raw_constraints_other)
 
     def test_given_a_simple_request_should_return_200(self):
         actual = csw_global_dispatch(self.request)

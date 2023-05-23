@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2019 OSGeo
+# Copyright (C) 2023 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,14 +17,10 @@
 #
 #########################################################################
 
-from django.core.management.base import BaseCommand
-from geonode.geoserver.security import sync_resources_with_guardian
+from django.urls import path
+from . import views
 
-
-class Command(BaseCommand):
-    """
-    Sync resources with Guardian and clear their dirty state
-    """
-
-    def handle(self, *args, **options):
-        sync_resources_with_guardian(force=True)
+urlpatterns = [
+    path("facets", views.list_facets, name="list_facets"),
+    path("facets/<facet>", views.get_facet, name="get_facet"),
+]
