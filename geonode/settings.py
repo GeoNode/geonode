@@ -2323,4 +2323,5 @@ FACET_PROVIDERS = (
     "geonode.facets.providers.category.CategoryFacetProvider",
     "geonode.facets.providers.users.OwnerFacetProvider",
     "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
+    "geonode.facets.providers.region.RegionFacetProvider",
 )
