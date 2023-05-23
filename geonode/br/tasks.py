@@ -38,7 +38,7 @@ from geonode.celery_app import app
     retry_backoff_max=30,
     retry_jitter=False,
 )
-def restore_notification(recipients: List, backup_file: str, backup_md5: str, exception: str = None):
+def restore_notification(self, recipients: List, backup_file: str, backup_md5: str, exception: str = None):
     """
     Function sending a CC email report of the restore procedure to a provided emails.
     """

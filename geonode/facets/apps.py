@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2023 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,3 +16,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import logging
+
+from django.apps import AppConfig
+
+
+logger = logging.getLogger(__name__)
+
+
+class GeoNodeFacetsConfig(AppConfig):
+    name = "geonode.facets"
+    verbose_name = "GeoNode Facets endpoints"
+
+    def ready(self):
+        super(GeoNodeFacetsConfig, self).ready()
