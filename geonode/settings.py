@@ -2226,7 +2226,7 @@ SUPPORTED_DATASET_FILE_TYPES = [
         "id": "tiff",
         "label": "GeoTIFF",
         "format": "raster",
-        "ext": ["tiff", "tif"],
+        "ext": ["tiff", "tif", "geotiff", "geotif"],
         "mimeType": ["image/tiff"],
         "optional": ["xml", "sld"],
     },
