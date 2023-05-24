@@ -193,7 +193,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "category",
                 "topics": {
-                    "total": 1,
+                    "total": 0,
                 },
             },
             {

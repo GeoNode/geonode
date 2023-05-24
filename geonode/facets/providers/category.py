@@ -38,7 +38,7 @@ class CategoryFacetProvider(FacetProvider):
     def get_info(self, lang="en") -> dict:
         return {
             "name": self.name,
-            "key": "filter{category__identifier}",
+            "key": "filter{category.identifier}",
             "label": "Category",
             "type": FACET_TYPE_CATEGORY,
             "hierarchical": False,
@@ -55,7 +55,9 @@ class CategoryFacetProvider(FacetProvider):
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.values("category__identifier", "category__gn_description", "category__fa_class")
+        q = queryset.values("category__identifier", "category__gn_description", "category__fa_class").filter(
+            category__isnull=False
+        )
         if topic_contains:
             q = q.filter(category__gn_description=topic_contains)
         q = q.annotate(count=Count("owner")).order_by("-count")
