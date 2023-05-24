@@ -70,7 +70,6 @@ class OwnerFacetProvider(FacetProvider):
             {
                 "key": r["owner"],
                 "label": r["owner__username"],
-                "localized_label": r["owner__username"],
                 "count": r["count"],
             }
             for r in q[start:end]
