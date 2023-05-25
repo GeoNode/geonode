@@ -682,6 +682,7 @@ LOGGING = {
         "simple": {
             "format": "%(message)s",
         },
+        "br": {"format": "%(levelname)-7s %(asctime)s %(message)s"},
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
@@ -691,30 +692,32 @@ LOGGING = {
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
         },
+        "br": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "br"},
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
             "level": "ERROR",
         },
         "geonode": {
-            "handlers": ["console"],
-            "level": "ERROR",
+            "level": "WARN",
         },
+        "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
-            "handlers": ["console"],
             "level": "ERROR",
         },
         "owslib": {
-            "handlers": ["console"],
             "level": "ERROR",
         },
         "pycsw": {
-            "handlers": ["console"],
             "level": "ERROR",
         },
         "celery": {
-            "handlers": ["console"],
+            "level": "WARN",
+        },
+        "mapstore2_adapter.plugins.serializers": {
+            "level": "ERROR",
+        },
+        "geonode_logstash.logstash": {
             "level": "ERROR",
         },
     },
@@ -2223,7 +2226,7 @@ SUPPORTED_DATASET_FILE_TYPES = [
         "id": "tiff",
         "label": "GeoTIFF",
         "format": "raster",
-        "ext": ["tiff", "tif"],
+        "ext": ["tiff", "tif", "geotiff", "geotif"],
         "mimeType": ["image/tiff"],
         "optional": ["xml", "sld"],
     },
@@ -2320,4 +2323,5 @@ FACET_PROVIDERS = (
     "geonode.facets.providers.category.CategoryFacetProvider",
     "geonode.facets.providers.users.OwnerFacetProvider",
     "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
+    "geonode.facets.providers.region.RegionFacetProvider",
 )
