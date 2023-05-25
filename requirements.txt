@@ -54,7 +54,7 @@ pyjwt==2.7.0
 
 # geopython dependencies
 pyproj<3.6.0
-OWSLib==0.29.1
+OWSLib==0.29.2
 pycsw==2.6.1
 SQLAlchemy==2.0.13 # required by PyCSW
 Shapely==1.8.5.post1
@@ -97,7 +97,7 @@ geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.5
-geoserver-restconfig==2.0.8
+geoserver-restconfig==2.0.9
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
@@ -127,7 +127,7 @@ jdcal==1.4.1
 mock<6.0.0
 python-dateutil==2.8.2
 pytz==2023.3
-requests==2.30.0
+requests==2.31.0
 timeout-decorator==0.5.0
 pylibmc==1.6.3
 sherlock==0.4.1
