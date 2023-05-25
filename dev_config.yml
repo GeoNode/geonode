@@ -1,6 +1,6 @@
 ---
-GEOSERVER_URL: "https://artifacts.geonode.org/geoserver/2.23.0/geoserver.war"
-DATA_DIR_URL: "https://artifacts.geonode.org/geoserver/2.23.0/geonode-geoserver-ext-web-app-data.zip"
+GEOSERVER_URL: "https://artifacts.geonode.org/geoserver/2.23.1/geoserver.war"
+DATA_DIR_URL: "https://artifacts.geonode.org/geoserver/2.23.1/geonode-geoserver-ext-web-app-data.zip"
 JETTY_RUNNER_URL: "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-runner/9.4.31.v20200723/jetty-runner-9.4.31.v20200723.jar"
 WINDOWS:
   py2exe: "http://downloads.sourceforge.net/project/py2exe/py2exe/0.6.9/py2exe-0.6.9.win32-py2.7.exe"
