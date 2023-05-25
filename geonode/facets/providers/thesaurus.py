@@ -19,8 +19,9 @@
 
 import logging
 
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
 
+from geonode.base.models import ThesaurusKeywordLabel
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_THESAURUS
 
 logger = logging.getLogger(__name__)
@@ -65,7 +66,6 @@ class ThesaurusFacetProvider(FacetProvider):
 
         filter = {
             "tkeywords__thesaurus__identifier": self._name,
-            "tkeywords__keyword__lang": lang,
         }
 
         if topic_contains:
@@ -73,22 +73,28 @@ class ThesaurusFacetProvider(FacetProvider):
 
         q = (
             queryset.filter(**filter)
-            .values("tkeywords", "tkeywords__keyword__label", "tkeywords__alt_label")
+            .values("tkeywords", "tkeywords__alt_label")
             .annotate(count=Count("tkeywords"))
+            .annotate(
+                localized_label=Subquery(
+                    ThesaurusKeywordLabel.objects.filter(keyword=OuterRef("tkeywords"), lang=lang).values("label")
+                )
+            )
             .order_by("-count")
         )
+
+        logger.debug(" ---> %s\n\n", q.query)
 
         cnt = q.count()
 
         logger.info("Found %d facets for %s", cnt, self._name)
-        logger.debug(" ---> %s\n\n", q.query)
         logger.debug(" ---> %r\n\n", q.all())
 
         topics = [
             {
                 "key": r["tkeywords"],
-                "label": r["tkeywords__keyword__label"] or r["tkeywords__alt_label"],
-                "is_localized": r["tkeywords__keyword__label"] is not None,
+                "label": r["localized_label"] or r["tkeywords__alt_label"],
+                "is_localized": r["localized_label"] is not None,
                 "count": r["count"],
             }
             for r in q[start:end].all()
