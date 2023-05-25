@@ -2226,7 +2226,7 @@ SUPPORTED_DATASET_FILE_TYPES = [
         "id": "tiff",
         "label": "GeoTIFF",
         "format": "raster",
-        "ext": ["tiff", "tif"],
+        "ext": ["tiff", "tif", "geotiff", "geotif"],
         "mimeType": ["image/tiff"],
         "optional": ["xml", "sld"],
     },
@@ -2323,4 +2323,5 @@ FACET_PROVIDERS = (
     "geonode.facets.providers.category.CategoryFacetProvider",
     "geonode.facets.providers.users.OwnerFacetProvider",
     "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
+    "geonode.facets.providers.region.RegionFacetProvider",
 )
