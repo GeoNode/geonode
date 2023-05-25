@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
 import logging
 
 from django.contrib.auth import get_user_model
@@ -139,14 +138,20 @@ class DocumentsApiTests(APITestCase):
         }
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(201, actual.status_code)
-        cloned_path = actual.json().get("document", {}).get("file_path", "")[0]
         extension = actual.json().get("document", {}).get("extension", "")
-        self.assertTrue(os.path.exists(cloned_path))
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
 
-        if cloned_path:
-            os.remove(cloned_path)
+    def test_file_path_and_doc_path_are_not_returned(self):
+        """
+        If file_path and doc_path should not be visible
+        from the GET payload
+        """
+        actual = self.client.get(self.url)
+        self.assertEqual(200, actual.status_code)
+        _doc_payload = actual.json().get("document", {})
+        self.assertFalse("file_path" in _doc_payload)
+        self.assertFalse("doc_path" in _doc_payload)
 
     def test_creation_from_url_should_create_the_doc(self):
         """
