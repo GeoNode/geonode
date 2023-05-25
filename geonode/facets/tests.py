@@ -27,7 +27,7 @@ from django.http import JsonResponse
 from django.test import RequestFactory
 from django.urls import reverse
 
-from geonode.base.models import Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase
+from geonode.base.models import Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase, Region
 from geonode.tests.base import GeoNodeBaseTestSupport
 import geonode.facets.views as views
 
@@ -44,6 +44,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         cls.admin = get_user_model().objects.get(username="admin")
 
         cls._create_thesauri()
+        cls._create_regions()
         cls._create_resources()
         cls.rf = RequestFactory()
 
@@ -84,6 +85,17 @@ class TestFacets(GeoNodeBaseTestSupport):
                     ThesaurusKeywordLabel.objects.create(keyword=tk, lang=tkl, label=f"T{tn}_K{tkn}_{tkl}")
 
     @classmethod
+    def _create_regions(cls):
+        cls.regions = {}
+
+        for code, name in (
+            ("R0", "Region0"),
+            ("R1", "Region1"),
+            ("R2", "Region2"),
+        ):
+            cls.regions[code] = Region.objects.create(code=code, name=name)
+
+    @classmethod
     def _create_resources(self):
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
 
@@ -100,20 +112,20 @@ class TestFacets(GeoNodeBaseTestSupport):
 
             # These are the assigned keywords to the Resources
 
-            # RB00 ->            T1K0
-            # RB01 ->  T0K0      T1K0
-            # RB02 ->            T1K0
+            # RB00 ->            T1K0          R0,R1
+            # RB01 ->  T0K0      T1K0          R0
+            # RB02 ->            T1K0          R1
             # RB03 ->  T0K0      T1K0
             # RB04 ->            T1K0
             # RB05 ->  T0K0      T1K0
             # RB06 ->            T1K0
             # RB07 ->  T0K0      T1K0
-            # RB08 ->            T1K0 T1K1
+            # RB08 ->            T1K0 T1K1     R1
             # RB09 ->  T0K0      T1K0 T1K1
             # RB10 ->                 T1K1
             # RB11 ->  T0K0 T0K1      T1K1
             # RB12 ->                 T1K1
-            # RB13 ->  T0K0 T0K1
+            # RB13 ->  T0K0 T0K1               R1
             # RB14 ->
             # RB15 ->  T0K0 T0K1
             # RB16 ->
@@ -136,6 +148,12 @@ class TestFacets(GeoNodeBaseTestSupport):
             if 7 < x < 13:
                 d.tkeywords.add(self.thesauri_k["1_1"])
                 d.save()
+            if x in (0, 1):
+                d.regions.add(self.regions["R0"])
+                d.save()
+            if x in (0, 2, 8, 13):
+                d.regions.add(self.regions["R1"])
+                d.save()
 
             d.set_permissions(public_perm_spec)
 
@@ -149,7 +167,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         obj = json.loads(res.content)
         self.assertIn("facets", obj)
         facets_list = obj["facets"]
-        self.assertEqual(4, len(facets_list))
+        self.assertEqual(5, len(facets_list))
         fmap = self._facets_to_map(facets_list)
         for name in ("category", "owner", "t_0", "t_1"):
             self.assertIn(name, fmap)
@@ -169,7 +187,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         obj = json.loads(res.content)
 
         facets_list = obj["facets"]
-        self.assertEqual(4, len(facets_list))
+        self.assertEqual(5, len(facets_list))
         fmap = self._facets_to_map(facets_list)
         for expected in (
             {
@@ -203,6 +221,16 @@ class TestFacets(GeoNodeBaseTestSupport):
                     ],
                 },
             },
+            {
+                "name": "region",
+                "topics": {
+                    "total": 2,
+                    "items": [
+                        {"label": "Region0", "key": "R0", "count": 2},
+                        {"label": "Region1", "key": "R1", "count": 4},
+                    ],
+                },
+            },
         ):
             name = expected["name"]
             self.assertIn(name, fmap)
@@ -226,7 +254,9 @@ class TestFacets(GeoNodeBaseTestSupport):
 
                         self.assertIsNotNone(item, f"topic not found '{exp_label}'")
                         for exp_field in exp_item:
-                            self.assertEqual(exp_item[exp_field], found[exp_field], f"Mismatch item key:{exp_field}")
+                            self.assertEqual(
+                                exp_item[exp_field], found[exp_field], f"Mismatch item key:{exp_field} facet:{name}"
+                            )
 
     def test_bad_lang(self):
         # for thesauri, make sure that by requesting a non-existent language the faceting is still working,
