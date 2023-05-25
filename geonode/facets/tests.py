@@ -76,7 +76,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 ThesaurusLabel.objects.create(thesaurus=t, lang=tl, label=f"TLabel {tn} {tl}")
 
             for tkn in range(10):
-                tk = ThesaurusKeyword.objects.create(thesaurus=t, alt_label=f"alt_tkn{tkn}_t{tn}")
+                tk = ThesaurusKeyword.objects.create(thesaurus=t, alt_label=f"T{tn}_K{tkn}_ALT")
                 cls.thesauri_k[f"{tn}_{tkn}"] = tk
                 for tkl in (
                     "en",
@@ -261,8 +261,26 @@ class TestFacets(GeoNodeBaseTestSupport):
     def test_bad_lang(self):
         # for thesauri, make sure that by requesting a non-existent language the faceting is still working,
         # using the default labels
-        # TODO impl+test
-        pass
+
+        # run the request with a valid language
+        req = self.rf.get(reverse("get_facet", args=["t_0"]), data={"lang": "en"})
+        res: JsonResponse = views.get_facet(req, "t_0")
+        obj = json.loads(res.content)
+
+        self.assertEqual(2, obj["topics"]["total"])
+        self.assertEqual(10, obj["topics"]["items"][0]["count"])
+        self.assertEqual("T0_K0_en", obj["topics"]["items"][0]["label"])
+        self.assertTrue(obj["topics"]["items"][0]["is_localized"])
+
+        # run the request with an INVALID language
+        req = self.rf.get(reverse("get_facet", args=["t_0"]), data={"lang": "ZZ"})
+        res: JsonResponse = views.get_facet(req, "t_0")
+        obj = json.loads(res.content)
+
+        self.assertEqual(2, obj["topics"]["total"])
+        self.assertEqual(10, obj["topics"]["items"][0]["count"])  # make sure the count is still there
+        self.assertEqual("T0_K0_ALT", obj["topics"]["items"][0]["label"])  # check for the alternate label
+        self.assertFalse(obj["topics"]["items"][0]["is_localized"])  # check for the localization flag
 
     def test_user_auth(self):
         # make sure the user authorization pre-filters the visible resources
