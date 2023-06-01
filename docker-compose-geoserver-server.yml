@@ -2,7 +2,7 @@ version: '2.2'
 services:
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.23.1
+    image: geonode/geoserver_data:2.23.0
     restart: on-failure
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     labels:
@@ -13,7 +13,7 @@ services:
       - geoserver-data-dir:/geoserver_data/data
 
   geoserver:
-    image: geonode/geoserver:2.23.1
+    image: geonode/geoserver:2.23.0
     restart: unless-stopped
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     stdin_open: true
