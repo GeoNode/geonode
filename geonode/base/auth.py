@@ -260,7 +260,7 @@ def visitor_ip_address(request):
     else:
         ip = request.META.get("REMOTE_ADDR")
     if ip:
-        ip = re.match(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', ip)[0]
+        ip = re.match(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", ip)[0]
     return ip
 
 
