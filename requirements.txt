@@ -145,7 +145,7 @@ pycountry
 # production
 uWSGI==2.0.21
 gunicorn==20.1.0
-ipython==8.13.2
+ipython==8.14.0
 docker==6.1.2
 invoke==2.1.2
 
