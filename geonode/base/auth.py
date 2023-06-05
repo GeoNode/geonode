@@ -259,6 +259,8 @@ def visitor_ip_address(request):
         ip = x_forwarded_for.split(",")[0]
     else:
         ip = request.META.get("REMOTE_ADDR")
+    if ip:
+        ip = re.match(r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", ip)[0]
     return ip
 
 
