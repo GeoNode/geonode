@@ -222,3 +222,58 @@ def _site_allows_signup(django_request):
 
 def _respond_inactive_user(user):
     return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
+
+
+import jwt
+import requests
+
+from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2Error
+
+PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
+
+ACCESS_TOKEN_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("ACCESS_TOKEN_URL", "")
+
+AUTHORIZE_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("AUTHORIZE_URL", "")
+
+PROFILE_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("PROFILE_URL", "")
+
+ID_TOKEN_ISSUER = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("ID_TOKEN_ISSUER", "")
+
+
+class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
+    provider_id = PROVIDER_ID
+    access_token_url = ACCESS_TOKEN_URL
+    authorize_url = AUTHORIZE_URL
+    profile_url = PROFILE_URL
+    id_token_issuer = ID_TOKEN_ISSUER
+
+    def complete_login(self, request, app, token, response, **kwargs):
+        extra_data = {}
+        if self.profile_url:
+            headers = {"Authorization": "Bearer {0}".format(token.token)}
+            resp = requests.get(self.profile_url, headers=headers)
+            profile_data = resp.json()
+            extra_data.update(profile_data)
+        elif "id_token" in response:
+            try:
+                extra_data = jwt.decode(
+                    response["id_token"],
+                    # Since the token was received by direct communication
+                    # protected by TLS between this library and Google, we
+                    # are allowed to skip checking the token signature
+                    # according to the OpenID Connect Core 1.0
+                    # specification.
+                    # https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation
+                    options={
+                        "verify_signature": False,
+                        "verify_iss": True,
+                        "verify_aud": True,
+                        "verify_exp": True,
+                    },
+                    issuer=self.id_token_issuer,
+                    audience=app.client_id,
+                )
+            except jwt.PyJWTError as e:
+                raise OAuth2Error("Invalid id_token") from e
+        login = self.get_provider().sociallogin_from_response(request, extra_data)
+        return login

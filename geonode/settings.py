@@ -26,7 +26,6 @@ import subprocess
 import dj_database_url
 from schema import Optional
 from datetime import timedelta
-from distutils.util import strtobool  # noqa
 from urllib.parse import urlparse, urljoin
 
 #
@@ -1956,56 +1955,59 @@ ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get("ACCOUNT_SIGNUP_REDIRECT_URL", os.g
 ACCOUNT_LOGIN_ATTEMPTS_LIMIT = int(os.getenv("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", "3"))
 ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv("ACCOUNT_MAX_EMAIL_ADDRESSES", "2"))
 
-SOCIALACCOUNT_ADAPTER = "geonode.people.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get("SOCIALACCOUNT_AUTO_SIGNUP", "True"))
+SOCIALACCOUNT_LOGIN_ON_GET = ast.literal_eval(os.environ.get("SOCIALACCOUNT_LOGIN_ON_GET", "True"))
 # This will hide or show local registration form in allauth view. True will show form
-SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = strtobool(os.environ.get("SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP", "True"))
+SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = ast.literal_eval(
+    os.environ.get("SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP", "True")
+)
 
-# Uncomment this to enable Linkedin and Facebook login
-# INSTALLED_APPS += (
-#    'allauth.socialaccount.providers.linkedin_oauth2',
-#    'allauth.socialaccount.providers.facebook',
-# )
+# GeoNode Default Generic OIDC Provider
+SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
+SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
+
+INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
+
+_AZURE_TENANT_ID = os.getenv("MICROSOFT_TENANT_ID", "")
+_AZURE_SOCIALACCOUNT_PROVIDER = {
+    "NAME": "Microsoft Azure",
+    "SCOPE": [
+        "User.Read",
+        "openid",
+    ],
+    "AUTH_PARAMS": {
+        "access_type": "online",
+        "prompt": "select_account",
+    },
+    "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
+    "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
+    "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
+    "PROFILE_URL": "https://graph.microsoft.com/v1.0/me",
+}
+
+_GOOGLE_SOCIALACCOUNT_PROVIDER = {
+    "NAME": "Google",
+    "SCOPE": [
+        "profile",
+        "email",
+    ],
+    "AUTH_PARAMS": {
+        "access_type": "online",
+        "prompt": "select_account consent",
+    },
+    "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
+    "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",
+    "AUTHORIZE_URL": "https://accounts.google.com/o/oauth2/v2/auth",
+    "ID_TOKEN_ISSUER": "https://accounts.google.com",
+    "OAUTH_PKCE_ENABLED": True,
+}
 
 SOCIALACCOUNT_PROVIDERS = {
-    "linkedin_oauth2": {
-        "SCOPE": [
-            "r_emailaddress",
-            "r_liteprofile",
-        ],
-        "PROFILE_FIELDS": [
-            "id",
-            "email-address",
-            "first-name",
-            "last-name",
-            "picture-url",
-            "public-profile-url",
-        ],
-    },
-    "facebook": {
-        "METHOD": "oauth2",
-        "SCOPE": [
-            "email",
-            "public_profile",
-        ],
-        "FIELDS": [
-            "id",
-            "email",
-            "name",
-            "first_name",
-            "last_name",
-            "verified",
-            "locale",
-            "timezone",
-            "link",
-            "gender",
-        ],
-    },
+    "geonode_openid_connect": _AZURE_SOCIALACCOUNT_PROVIDER,
 }
 
 SOCIALACCOUNT_PROFILE_EXTRACTORS = {
-    "facebook": "geonode.people.profileextractors.FacebookExtractor",
-    "linkedin_oauth2": "geonode.people.profileextractors.LinkedInExtractor",
+    "geonode_openid_connect": "geonode.people.profileextractors.OpenIDExtractor",
 }
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
@@ -2117,7 +2119,7 @@ USER_ANALYTICS_GZIP = ast.literal_eval(os.getenv("USER_ANALYTICS_GZIP", "False")
 
 GEOIP_PATH = os.getenv("GEOIP_PATH", os.path.join(PROJECT_ROOT, "GeoIPCities.dat"))
 # This controls if tastypie search on resourches is performed only with titles
-SEARCH_RESOURCES_EXTENDED = strtobool(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
+SEARCH_RESOURCES_EXTENDED = ast.literal_eval(os.getenv("SEARCH_RESOURCES_EXTENDED", "True"))
 # -- END Settings for MONITORING plugin
 
 CATALOG_METADATA_TEMPLATE = os.getenv("CATALOG_METADATA_TEMPLATE", "catalogue/full_metadata.xml")
