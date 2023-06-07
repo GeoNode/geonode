@@ -1,5 +1,50 @@
 # Change Log
 
+## [4.1.0](https://github.com/GeoNode/geonode/tree/4.1.0) (2023-06-05)
+### New upload engine
+GeoNode integrates a brand new importer module based on [GDAL/OGR](https://gdal.org/), which offers increased robustness and reliability to the upload UI and API services. GeoPackage (vector), GeoJSON, KML/KMZ formats and a new CSV handler have been implemented.
+
+### Thesaurus faceting and date filtering
+If thesaurus and thesaurus keywords are configured and assigned to resources, they will be available inside the filters panel, along with the number of associated resources.
+Date filtering (from/top) has also been added.
+
+### Time series configurable after the upload
+The configuration of (potential) time series at upload time was confusing for users, and not very robust.
+With the new importer, the optional configuration of vector time series can be done afterward, through the Settings tab inside the Metadata editing page
+Only vector fomats that provide date(time) fields natively are supported. Conversion from string fields is not implemented.
+
+### Related resources
+This restore a functionality available in previous versions of GeoNode.
+A tab inside the info panel has been added where relationships between datasets, maps and documents are reported. 
+
+### Vector dataset attributes
+A tab inside the info panel has been added showing the attributes of vector datasets
+
+### Remote documents
+The API has been extended to permit the creation of document resources referencing remote URLs
+
+### ISO-19115 XML upload via API
+The API now supports the upload of a metadata XML file along with the resource data
+
+### Software upgrades
+
+ - [Geoserver 2.23.0](https://geoserver.org/announcements/2023/04/05/geoserver-2-23-0-released.html) is now the reference version. This version includes Geofence WPS rules which are employed by GeoNode to strengthen the security of the OGC/WPS processes.
+- [MapStore 2022.02.xx](https://github.com/geosolutions-it/MapStore2/tree/2022.02.xx)
+- [Django 3.2.19](https://docs.djangoproject.com/en/4.2/releases/3.2.19/)
+- PostgreSQL 13 and PostGIS 3.3.3
+
+
+## Security and Bug Fixes
+- [CVE-2023-26043](https://github.com/GeoNode/geonode/security/advisories/GHSA-mcmc-c59m-pqq8)
+Fixed a vulnerability to XML External Entity (XXE) injection
+- [CVE-2023-28442](https://github.com/GeoNode/geonode/security/advisories/GHSA-87mh-vw7c-5v6w)
+Fixed information leak
+
+You can see the **full list of closed issues [here](https://github.com/GeoNode/geonode/compare/4.1.0...4.0.3)**.
+
+## System requirements
+Python >3.9 is required to run GeoNode 4.1.0, since many of its dependencies have dropped support for older versions.
+
 ## [4.0.2](https://github.com/GeoNode/geonode/tree/4.0.2) (2022-12-20)
 
 ### Breaking Changes
