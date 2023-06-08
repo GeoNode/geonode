@@ -1979,6 +1979,11 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
         "access_type": "online",
         "prompt": "select_account",
     },
+    "COMMON_FIELDS": {
+        "email": "mail",
+        "last_name": "surname",
+        "first_name": "givenName"
+    },
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
     "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
@@ -1994,6 +1999,11 @@ _GOOGLE_SOCIALACCOUNT_PROVIDER = {
     "AUTH_PARAMS": {
         "access_type": "online",
         "prompt": "select_account consent",
+    },
+    "COMMON_FIELDS": {
+        "email": "email",
+        "last_name": "family_name",
+        "first_name": "given_name"
     },
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
     "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",

@@ -72,18 +72,21 @@ class GenericOpenIDConnectProvider(OAuth2Provider):
         return data.get("sub", data.get("id"))
 
     def extract_common_fields(self, data):
-        return dict(
-            email=data.get("email"),
-            last_name=data.get("family_name"),
-            first_name=data.get("given_name"),
-        )
+        _common_fields = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("COMMON_FIELDS", {})
+        return _common_fields
 
     def extract_email_addresses(self, data):
-        ret = []
+        addresses = []
         email = data.get("email")
-        if email and data.get("email_verified"):
-            ret.append(EmailAddress(email=email, verified=True, primary=True))
-        return ret
+        if email:
+            addresses.append(
+                EmailAddress(
+                    email=email,
+                    verified=data.get("email_verified", False),
+                    primary=True,
+                )
+            )
+        return addresses
 
 
 provider_classes = [GenericOpenIDConnectProvider]
