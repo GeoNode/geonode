@@ -282,7 +282,9 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
         user = super(SocialAccountAdapter, self).save_user(request, sociallogin, form=form)
         extractor = get_data_extractor(sociallogin.account.provider)
         try:
-            groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(sociallogin.account.extra_data)
+            groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(
+                sociallogin.account.extra_data
+            )
             for group_name in groups:
                 groupprofile = GroupProfile.objects.filter(slug=group_name).first()
                 if groupprofile:
