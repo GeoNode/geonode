@@ -277,3 +277,16 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                 raise OAuth2Error("Invalid id_token") from e
         login = self.get_provider().sociallogin_from_response(request, extra_data)
         return login
+
+    def save_user(self, request, sociallogin, form=None):
+        user = super(SocialAccountAdapter, self).save_user(request, sociallogin, form=form)
+        extractor = get_data_extractor(sociallogin.account.provider)
+        try:
+            groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(sociallogin.account.extra_data)
+            for group_name in groups:
+                groupprofile = GroupProfile.objects.filter(slug=group_name).first()
+                if groupprofile:
+                    groupprofile.join(user)
+        except (AttributeError, NotImplementedError):
+            pass  # extractor doesn't define a method for extracting field
+        return user
