@@ -374,8 +374,15 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             self.assertIsNotNone(links)
 
             # get and update original link to external
-            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").update(
-                url="http://google.com/test"
+            Link.objects.update_or_create(
+                resource=lyr.resourcebase_ptr,
+                url="http://google.com/test",
+                defaults=dict(
+                    extension="zip",
+                    name="Original Dataset",
+                    mime="application/octet-stream",
+                    link_type="original",
+                ),
             )
             self.assertEqual(lyr.download_url, "http://google.com/test")
 

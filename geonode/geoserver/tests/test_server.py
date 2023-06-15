@@ -1233,6 +1233,16 @@ class LayerTests(GeoNodeBaseTestSupport):
 
             for _lyr in _post_migrate_datasets:
                 # Check original links in csw_anytext
+                Link.objects.update_or_create(
+                    resource=_lyr.resourcebase_ptr,
+                    url="http://localhost:8000",
+                    defaults=dict(
+                        extension="zip",
+                        name="Original Dataset",
+                        mime="application/octet-stream",
+                        link_type="original",
+                    ),
+                )
                 _post_migrate_links_orig = Link.objects.filter(
                     resource=_lyr.resourcebase_ptr, resource_id=_lyr.resourcebase_ptr.id, link_type="original"
                 )
