@@ -373,17 +373,10 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
-            # get and update original link to external
-            Link.objects.update_or_create(
-                resource=lyr.resourcebase_ptr,
-                url="http://google.com/test",
-                defaults=dict(
-                    extension="zip",
-                    name="Original Dataset",
-                    mime="application/octet-stream",
-                    link_type="original",
-                ),
+            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").update(
+                url="http://google.com/test"
             )
+
             self.assertEqual(lyr.download_url, "http://google.com/test")
 
             # delete the files location and check that the WFS is returned
