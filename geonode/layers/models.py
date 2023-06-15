@@ -331,8 +331,10 @@ class Dataset(ResourceBase):
             return None
         if self.link_set.filter(resource=self.get_self_resource(), link_type="original").exists():
             original = self.link_set.filter(resource=self.get_self_resource(), link_type="original").first()
-            domain_exists = any(storage_manager.exists(x) for x in self.files) or current_domain not in original.url
-            if original and original.url != "" and original.url is not None and domain_exists:
+            file_exists_or_url = (
+                any(storage_manager.exists(x) for x in self.files) or current_domain not in original.url
+            )
+            if original and original.url != "" and original.url is not None and file_exists_or_url:
                 return original.url
         return build_absolute_uri(reverse("dataset_download", args=(self.alternate,)))
 
