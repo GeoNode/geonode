@@ -327,7 +327,7 @@ class Dataset(ResourceBase):
         current_domain = Site.objects.get_current().domain
 
         if self.subtype not in ["vector", "raster", "vector_time"]:
-            logger.error("Download URL is available only for datasets that have been harvested and copied locally")
+            logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
         if self.link_set.filter(resource=self.get_self_resource(), link_type="original").exists():
             original = self.link_set.filter(resource=self.get_self_resource(), link_type="original").first()
