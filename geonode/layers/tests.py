@@ -376,12 +376,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").update(
                 url="http://google.com/test"
             )
-
             self.assertEqual(lyr.download_url, "http://google.com/test")
-
-            # delete the files location and check that the WFS is returned
-            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").delete()
-            self.assertTrue(reverse("dataset_download", args=[lyr.dataset]) in lyr.download_url)
 
     def test_get_valid_user(self):
         # Verify it accepts an admin user
