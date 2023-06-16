@@ -28,14 +28,11 @@ from osgeo import ogr
 from unittest.mock import patch
 from datetime import datetime, timedelta
 
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import GEOSGeometry, Polygon
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
-from django.contrib.gis.geos import GEOSGeometry, Polygon
-
 from geonode.maps.models import Dataset
-from geonode.base.models import Region
 from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -301,11 +298,13 @@ class TestRegionsCrossingDateLine(TestCase):
         ]
 
         self.dataset_crossing = GEOSGeometry(
-            "POLYGON ((-179.30100799101168718 -17.31310259828852693, -170.41740336774466869 -9.63481116511300328, -164.30155495876181249 -19.7237289784715415, -177.91712988386967709 -30.43762400150689018, -179.30100799101168718 -17.31310259828852693))",
+            "POLYGON ((-179.30100799101168718 -17.31310259828852693, -170.41740336774466869 -9.63481116511300328, -164.30155495876181249 -19.7237289784715415, \
+            -177.91712988386967709 -30.43762400150689018, -179.30100799101168718 -17.31310259828852693))",
             srid=4326,
         )
         self.dataset_not_crossing = GEOSGeometry(
-            "POLYGON ((-41.86461347546176626 5.43160371103088835, 34.20404118809119609 4.3602142087273279, 9.56208263510924894 -48.8521310723496498, -42.22174330956295307 -32.42415870369499942, -41.86461347546176626 5.43160371103088835))",
+            "POLYGON ((-41.86461347546176626 5.43160371103088835, 34.20404118809119609 4.3602142087273279, 9.56208263510924894 -48.8521310723496498,  \
+            -42.22174330956295307 -32.42415870369499942, -41.86461347546176626 5.43160371103088835))",
             srid=4326,
         )
 
