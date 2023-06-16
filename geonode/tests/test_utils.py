@@ -32,12 +32,15 @@ from django.contrib.gis.geos import Polygon
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 
+from django.contrib.gis.geos import GEOSGeometry, Polygon
+
 from geonode.maps.models import Dataset
+from geonode.base.models import Region
 from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, fixup_shp_columnnames, get_supported_datasets_file_types, unzip_file
+from geonode.utils import copy_tree, fixup_shp_columnnames, get_supported_datasets_file_types, unzip_file, bbox_to_wkt
 from geonode import settings
 
 
@@ -286,3 +289,35 @@ class TestSupportedTypes(TestCase):
         self.assertEqual(len(supported_keys), prev_count)
         shp_type = [t for t in supported_types if t["id"] == "shp"][0]
         self.assertEqual(shp_type["label"], "Replaced type")
+
+
+class TestRegionsCrossingDateLine(TestCase):
+    def setUp(self):
+        self.test_region_coords = [
+            [112.921111999999994, -108.872910000000005, -54.640301000000001, 20.417120000000001],  # Pacific
+            [174.866196000000002, -178.203156000000007, -21.017119999999998, -12.466220000000000],  # Fiji
+            [158.418335000000013, -150.208359000000002, -11.437030000000000, 4.719560000000000],  # Kiribati
+            [165.883803999999998, -175.987198000000006, -52.618591000000002, -29.209969999999998],  # New Zeland
+        ]
+
+        self.dataset_crossing = GEOSGeometry(
+            "POLYGON ((-179.30100799101168718 -17.31310259828852693, -170.41740336774466869 -9.63481116511300328, -164.30155495876181249 -19.7237289784715415, -177.91712988386967709 -30.43762400150689018, -179.30100799101168718 -17.31310259828852693))",
+            srid=4326,
+        )
+        self.dataset_not_crossing = GEOSGeometry(
+            "POLYGON ((-41.86461347546176626 5.43160371103088835, 34.20404118809119609 4.3602142087273279, 9.56208263510924894 -48.8521310723496498, -42.22174330956295307 -32.42415870369499942, -41.86461347546176626 5.43160371103088835))",
+            srid=4326,
+        )
+
+    def test_region_across_dateline_do_not_intersect_areas_outside(self):
+        for i, region_coords in enumerate(self.test_region_coords):
+            geographic_bounding_box = bbox_to_wkt(
+                region_coords[0], region_coords[1], region_coords[2], region_coords[3]
+            )
+            _, wkt = geographic_bounding_box.split(";")
+            poly = GEOSGeometry(wkt, srid=4326)
+
+            self.assertFalse(
+                poly.intersection(self.dataset_crossing).empty, f"True intersection not detected for region {i}"
+            )
+            self.assertTrue(poly.intersection(self.dataset_not_crossing).empty, "False intersection detected")
