@@ -498,8 +498,8 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if None not in {x0, x1, y0, y1}:
         polys = []
 
-        # We assume that if x1 is less then x0 we're crossing the date line
-        crossing_idl = (x1 - x0) < 0
+        # We assume that if x1 is smaller then x0 we're crossing the date line
+        crossing_idl = x1 < x0
         if crossing_idl:
             polys.append(
                 [
