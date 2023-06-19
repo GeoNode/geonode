@@ -60,7 +60,7 @@ SQLAlchemy==2.0.15 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 geoip2==4.7.0
-numpy==1.24.*
+numpy==1.25.*
 
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
