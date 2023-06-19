@@ -53,7 +53,7 @@ pyopenssl==23.1.1
 pyjwt==2.7.0
 
 # geopython dependencies
-pyproj<3.6.0
+pyproj<3.7.0
 OWSLib==0.29.2
 pycsw==2.6.1
 SQLAlchemy==2.0.15 # required by PyCSW
