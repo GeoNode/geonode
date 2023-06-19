@@ -1455,8 +1455,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             else:
                 download_url = None
 
-            while Link.objects.filter(resource=instance.resourcebase_ptr, url=download_url).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, url=download_url).first().delete()
+            while Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").exists():
+                Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").delete()
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=download_url,
