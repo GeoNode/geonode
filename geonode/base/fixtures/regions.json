@@ -4335,23 +4335,6 @@
     }
   },
   {
-    "pk": 256,
-    "model": "base.region",
-    "fields": {
-      "rght": 515,
-      "code": "PAC",
-      "name": "Pacific",
-      "parent": null,
-      "level": 1,
-      "lft": 464,
-      "tree_id": 90,
-      "bbox_x0": 139.572356,
-      "bbox_x1": -74.531208,
-      "bbox_y0": -56.267241,
-      "bbox_y1": 62.0215969
-    }
-  },
-  {
     "pk": 257,
     "model": "base.region",
     "fields": {
