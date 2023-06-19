@@ -35,7 +35,7 @@ from geonode.utils import DisableDjangoSignals
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport, GeoNodeBaseSimpleTestSupport
 
-FIXTURES_DIR = "lib/geonode/geonode/thumbs/tests/fixtures/"
+FIXTURES_DIR = "geonode/thumbs/tests/fixtures/"
 
 
 class ThumbnailsUtilsUnitTest(GeoNodeBaseSimpleTestSupport):
