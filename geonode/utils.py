@@ -533,7 +533,7 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
         poly_wkts = ",".join(
             ["(({}))".format(",".join(["{:f} {:f}".format(coords[0], coords[1]) for coords in poly])) for poly in polys]
         )
-        wkt = f"MULTIPOLYGON({poly_wkts})"
+        wkt = f"MULTIPOLYGON({poly_wkts})" if len(polys) > 1 else f"POLYGON{poly_wkts}"
         if include_srid:
             wkt = f"SRID={srid};{wkt}"
     else:

@@ -297,6 +297,19 @@ class TestRegionsCrossingDateLine(TestCase):
             [165.883803999999998, -175.987198000000006, -52.618591000000002, -29.209969999999998],  # New Zeland
         ]
 
+        self.region_across_idl = [
+            112.921111999999994,
+            -108.872910000000005,
+            -54.640301000000001,
+            20.417120000000001,
+        ]  # Pacific
+        self.region_not_across_idl = [
+            -31.266000999999999,
+            39.869301000000000,
+            27.636310999999999,
+            81.008797000000001,
+        ]  # Europe
+
         self.dataset_crossing = GEOSGeometry(
             "POLYGON ((-179.30100799101168718 -17.31310259828852693, -170.41740336774466869 -9.63481116511300328, -164.30155495876181249 -19.7237289784715415, \
             -177.91712988386967709 -30.43762400150689018, -179.30100799101168718 -17.31310259828852693))",
@@ -320,3 +333,21 @@ class TestRegionsCrossingDateLine(TestCase):
                 poly.intersection(self.dataset_crossing).empty, f"True intersection not detected for region {i}"
             )
             self.assertTrue(poly.intersection(self.dataset_not_crossing).empty, "False intersection detected")
+
+    def test_region_wkt_multipolygon_if_across_idl(self):
+        bbox_across_idl = bbox_to_wkt(
+            self.region_not_across_idl[0],
+            self.region_not_across_idl[1],
+            self.region_not_across_idl[2],
+            self.region_not_across_idl[3],
+        )
+        _, wkt = bbox_across_idl.split(";")
+        poly = GEOSGeometry(wkt, srid=4326)
+        self.assertEqual(poly.geom_type, "Polygon", f"Expexted 'Polygon' type but received {poly.geom_type}")
+
+        bbox_across_idl = bbox_to_wkt(
+            self.region_across_idl[0], self.region_across_idl[1], self.region_across_idl[2], self.region_across_idl[3]
+        )
+        _, wkt = bbox_across_idl.split(";")
+        poly = GEOSGeometry(wkt, srid=4326)
+        self.assertEqual(poly.geom_type, "MultiPolygon", f"Expexted 'MultiPolygon' type but received {poly.geom_type}")
