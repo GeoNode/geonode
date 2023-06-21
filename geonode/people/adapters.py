@@ -286,7 +286,8 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                 sociallogin.account.extra_data
             )
             # check here if user is member already of other groups and remove it form the ones that are not declared here...
-            
+            for groupprofile in user.group_list_all():
+                groupprofile.leave(user)
             for group_name in groups:
                 groupprofile = GroupProfile.objects.filter(slug=group_name).first()
                 if groupprofile:
