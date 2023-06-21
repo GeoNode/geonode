@@ -496,9 +496,44 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith("EPSG:"):
         srid = srid[5:]
     if None not in {x0, x1, y0, y1}:
-        wkt = "POLYGON(({:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f}))".format(
-            float(x0), float(y0), float(x0), float(y1), float(x1), float(y1), float(x1), float(y0), float(x0), float(y0)
+        polys = []
+
+        # We assume that if x1 is smaller then x0 we're crossing the date line
+        crossing_idl = x1 < x0
+        if crossing_idl:
+            polys.append(
+                [
+                    (float(x0), float(y0)),
+                    (float(x0), float(y1)),
+                    (180.0, float(y1)),
+                    (180.0, float(y0)),
+                    (float(x0), float(y0)),
+                ]
+            )
+            polys.append(
+                [
+                    (-180.0, float(y0)),
+                    (-180.0, float(y1)),
+                    (float(x1), float(y1)),
+                    (float(x1), float(y0)),
+                    (-180.0, float(y0)),
+                ]
+            )
+        else:
+            polys.append(
+                [
+                    (float(x0), float(y0)),
+                    (float(x0), float(y1)),
+                    (float(x1), float(y1)),
+                    (float(x1), float(y0)),
+                    (float(x0), float(y0)),
+                ]
+            )
+
+        poly_wkts = ",".join(
+            ["(({}))".format(",".join(["{:f} {:f}".format(coords[0], coords[1]) for coords in poly])) for poly in polys]
         )
+        wkt = f"MULTIPOLYGON({poly_wkts})" if len(polys) > 1 else f"POLYGON{poly_wkts}"
         if include_srid:
             wkt = f"SRID={srid};{wkt}"
     else:
