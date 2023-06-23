@@ -405,6 +405,26 @@ class Attribute(models.Model):
         default="xsd:string",
         unique=False,
     )
+    # unit = models.CharField(
+    #     _("attribute unit"),
+    #     help_text=_("Unit of the data; Ideally SI-Unit."),
+    #     max_length=50,
+    #     blank=True,
+    #     null=True,
+    #     unique=True,  
+    # )
+    # quality = models.CharField(
+    #     _("attribute quality statement"),
+    #     help_text=_("If measures are taken to check the Quality of the data, please specify."),
+    #     max_length=2000,
+    #     blank=True,
+    #     null=True,
+    # )
+    # keywords
+    
+    
+
+    
     visible = models.BooleanField(
         _("visible?"), help_text=_("specifies if the attribute should be displayed in identify results"), default=True
     )

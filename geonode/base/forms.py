@@ -360,15 +360,91 @@ class ResourceBaseForm(TranslationModelForm):
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 
     abstract = forms.CharField(label=_("Abstract"), required=False, widget=TinyMCE())
-    abstract_translated = forms.CharField(label=_("translated abstract"), help_text=ResourceBase.abstract_translated_help_text ,required=False, widget=TinyMCE())
+    abstract_translated = forms.CharField(
+        label=_("translated abstract"),
+        help_text=ResourceBase.abstract_translated_help_text,
+        required=True,
+        widget=TinyMCE(),
+    )
 
-    subtitle = forms.CharField(required=False, help_text=ResourceBase.subtitle_help_text ,widget=TinyMCE())
-    method_description = forms.CharField(required=False, help_text=ResourceBase.method_description_help_text, widget=TinyMCE())
-    series_information = forms.CharField(required=False, help_text=ResourceBase.series_information_help_text, widget=TinyMCE())
-    table_of_content = forms.CharField(required=False, help_text=ResourceBase.table_of_content_help_text, widget=TinyMCE())
+    subtitle = forms.CharField(required=False, help_text=ResourceBase.subtitle_help_text, widget=TinyMCE())
+    method_description = forms.CharField(
+        required=False, help_text=ResourceBase.method_description_help_text, widget=TinyMCE()
+    )
+    series_information = forms.CharField(
+        required=False, help_text=ResourceBase.series_information_help_text, widget=TinyMCE()
+    )
+    table_of_content = forms.CharField(
+        required=False, help_text=ResourceBase.table_of_content_help_text, widget=TinyMCE()
+    )
     technical_info = forms.CharField(required=False, help_text=ResourceBase.technical_info_help_text, widget=TinyMCE())
-    other_description = forms.CharField(required=False, help_text=ResourceBase.other_description_help_text, widget=TinyMCE())
-    
+    other_description = forms.CharField(
+        required=False, help_text=ResourceBase.other_description_help_text, widget=TinyMCE()
+    )
+
+    date_available = forms.DateTimeField(
+        label=_("Date Available*"),
+        localize=True,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+    date_created = forms.DateTimeField(
+        label=_("Date Created*"),
+        localize=True,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+    date_issued = forms.DateTimeField(
+        label=_("Date Issued*"),
+        localize=True,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+    date_updated = forms.DateTimeField(
+        label=_("Date Updated"),
+        localize=True,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+    date_accepted = forms.DateTimeField(
+        label=_("Date Accepted"),
+        required=False,
+        localize=True,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+
+    date_collected = forms.DateTimeField(
+        label=_("Date Collected"),
+        required=False,
+        localize=True,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+    date_copyrighted = forms.DateTimeField(
+        label=_("Date Copyright"),
+        localize=True,
+        required=False,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+
+    date_submitted = forms.DateTimeField(
+        label=_("Date Submitted"),
+        localize=True,
+        required=False,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+
+    date_valid = forms.DateTimeField(
+        label=_("Date Valid"),
+        localize=True,
+        required=False,
+        input_formats=["%Y-%m-%d"],
+        widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
+    )
+
     purpose = forms.CharField(label=_("Purpose"), required=False, widget=TinyMCE())
 
     constraints_other = forms.CharField(label=_("Other constraints"), required=False, widget=TinyMCE())

@@ -21,5 +21,5 @@ from geonode.api.urls import router
 from . import views
 
 router.register(r"datasets", views.DatasetViewSet, "datasets")
-
+#router.register(r"datasets/(?P<pk>)/attributes",views.DatasetAttributesViewSet, "attributes")
 urlpatterns = []
