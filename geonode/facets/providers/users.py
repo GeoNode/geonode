@@ -19,6 +19,7 @@
 
 import logging
 
+from django.contrib.auth import get_user_model
 from django.db.models import Count
 
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_USER
@@ -76,6 +77,20 @@ class OwnerFacetProvider(FacetProvider):
         ]
 
         return cnt, topics
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = get_user_model().objects.filter(id__in=keys).values("id", "username")
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r["id"],
+                "label": r["username"],
+            }
+            for r in q.all()
+        ]
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:

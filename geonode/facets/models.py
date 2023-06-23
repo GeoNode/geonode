@@ -28,6 +28,7 @@ FACET_TYPE_PLACE = "place"
 FACET_TYPE_USER = "user"
 FACET_TYPE_THESAURUS = "thesaurus"
 FACET_TYPE_CATEGORY = "category"
+FACET_TYPE_RESOURCETYPE = "resourcetype"
 
 logger = logging.getLogger(__name__)
 
@@ -83,6 +84,20 @@ class FacetProvider:
         :param lang: the preferred language for the labels
         :param topic_contains: only returns matching topics
         :return: a tuple int:total count of record, list of items
+        """
+        pass
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        """
+        Return the topics with the requested ids as a list
+        - list, topic records. A topic record is a dict having these keys:
+          - key: the key of the items that should be used for filtering
+          - label: a generic label for the item; the client should try and localize it whenever possible
+          - localized_label: a localized label for the item
+          - other facet specific keys
+        :param keys: the list of the keys of the topics, as returned by the get_facet_items() method
+        :param lang: the preferred language for the labels
+        :return: list of items
         """
         pass
 

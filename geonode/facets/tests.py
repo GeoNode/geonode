@@ -282,6 +282,18 @@ class TestFacets(GeoNodeBaseTestSupport):
         self.assertEqual("T0_K0_ALT", obj["topics"]["items"][0]["label"])  # check for the alternate label
         self.assertFalse(obj["topics"]["items"][0]["is_localized"])  # check for the localization flag
 
+    def test_topics(self):
+        for facet, keys, exp in (
+            ("t_0", [self.thesauri_k["0_0"].id, self.thesauri_k["0_1"].id, -999], 2),
+            ("category", ["C1", "C2", "nomatch"], 0),
+            ("owner", [self.user.id, -100], 1),
+            ("region", ["R0", "R1", "nomatch"], 2),
+        ):
+            req = self.rf.get(reverse("get_facet_topics", args=[facet]), data={"lang": "en", "key": keys})
+            res: JsonResponse = views.get_facet_topics(req, facet)
+            obj = json.loads(res.content)
+            self.assertEqual(exp, len(obj["topics"]["items"]), f"Unexpected topic count {exp} for facet {facet}")
+
     def test_user_auth(self):
         # make sure the user authorization pre-filters the visible resources
         # TODO test

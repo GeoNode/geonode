@@ -21,6 +21,7 @@ import logging
 
 from django.db.models import Count
 
+from geonode.base.models import TopicCategory
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_CATEGORY
 
 logger = logging.getLogger(__name__)
@@ -79,6 +80,21 @@ class CategoryFacetProvider(FacetProvider):
         ]
 
         return cnt, topics
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = TopicCategory.objects.filter(identifier__in=keys)
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r.identifier,
+                "label": r.gn_description,
+                "fa_class": r.fa_class,
+            }
+            for r in q.all()
+        ]
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
