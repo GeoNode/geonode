@@ -21,7 +21,7 @@ import logging
 
 from django.db.models import Count, OuterRef, Subquery
 
-from geonode.base.models import ThesaurusKeywordLabel
+from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_THESAURUS
 
 logger = logging.getLogger(__name__)
@@ -101,6 +101,29 @@ class ThesaurusFacetProvider(FacetProvider):
         ]
 
         return cnt, topics
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = (
+            ThesaurusKeyword.objects.filter(id__in=keys)
+            .values("id", "alt_label")
+            .annotate(
+                localized_label=Subquery(
+                    ThesaurusKeywordLabel.objects.filter(keyword=OuterRef("id"), lang=lang).values("label")
+                )
+            )
+        )
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r["id"],
+                "label": r["localized_label"] or r["alt_label"],
+                "is_localized": r["localized_label"] is not None,
+            }
+            for r in q.all()
+        ]
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
