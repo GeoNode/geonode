@@ -1377,6 +1377,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
     from django.urls import reverse
     from django.utils.translation import ugettext
+    from geonode.layers.models import Dataset
+    from geonode.documents.models import Document
 
     # Prune old links
     if prune:
@@ -1446,9 +1448,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Create Raw Data download link
         if settings.DISPLAY_ORIGINAL_DATASET_LINK:
             logger.debug(" -- Resource Links[Create Raw Data download link]...")
-            download_url = urljoin(settings.SITEURL, reverse("download", args=[instance.id]))
-            while Link.objects.filter(resource=instance.resourcebase_ptr, url=download_url).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, url=download_url).first().delete()
+            if isinstance(instance, Dataset):
+                download_url = build_absolute_uri(reverse("dataset_download", args=(instance.alternate,)))
+            elif isinstance(instance, Document):
+                download_url = build_absolute_uri(reverse("document_download", args=(instance.id,)))
+            else:
+                download_url = None
+
+            while Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").exists():
+                Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").delete()
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=download_url,
