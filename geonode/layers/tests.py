@@ -373,7 +373,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
-            # get and update original link to external
             Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").update(
                 url="http://google.com/test"
             )
