@@ -18,7 +18,7 @@ RUN apt-get install -y \
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     gcc zip gettext geoip-bin cron \
-    postgresql-client-13 \
+    postgresql-client-15 \
     python3-all-dev python3-dev \
     python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-pil python3-lxml \
