@@ -26,7 +26,7 @@ schema==0.7.5
 rdflib==6.3.2
 smart_open==6.3.0
 PyMuPDF==1.22.3
-pathvalidate==2.5.2
+pathvalidate==3.0.0
 
 # Django Apps
 django-allauth==0.54.0
