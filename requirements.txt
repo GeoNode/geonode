@@ -18,7 +18,7 @@ celery==5.2.7
 kombu==5.2.4
 vine==5.0.0
 tqdm==4.65.0
-Deprecated==1.2.13
+Deprecated==1.2.14
 wrapt==1.15.0
 jsonschema==4.17.3
 zipstream-new==1.1.8
@@ -67,7 +67,7 @@ numpy==1.24.*
 # Django Apps
 dj-database-url==2.0.0
 dj-pagination==2.5.0
-django-select2==8.1.1
+django-select2==8.1.2
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.5.1
@@ -134,7 +134,7 @@ sherlock==0.4.1
 
 # required by monitoring
 psutil==5.9.5
-django-cors-headers==4.0.0
+django-cors-headers==4.1.0
 user-agents
 django-user-agents
 xmljson
