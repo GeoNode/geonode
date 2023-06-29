@@ -28,6 +28,8 @@ from django.test import RequestFactory
 from django.urls import reverse
 
 from geonode.base.models import Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase, Region
+from geonode.facets.models import facet_registry
+from geonode.facets.providers.region import RegionFacetProvider
 from geonode.tests.base import GeoNodeBaseTestSupport
 import geonode.facets.views as views
 
@@ -293,6 +295,27 @@ class TestFacets(GeoNodeBaseTestSupport):
             res: JsonResponse = views.get_facet_topics(req, facet)
             obj = json.loads(res.content)
             self.assertEqual(exp, len(obj["topics"]["items"]), f"Unexpected topic count {exp} for facet {facet}")
+
+    def test_prefiltering(self):
+        reginfo = RegionFacetProvider().get_info()
+        t0info = facet_registry.get_provider("t_0").get_info()
+        t1info = facet_registry.get_provider("t_1").get_info()
+
+        for facet, filters, totals, count0 in (
+            ("t_0", {}, 2, 10),
+            ("t_0", {reginfo["key"]: "R0"}, 1, 1),
+            ("t_1", {}, 2, 10),
+            ("t_1", {reginfo["key"]: "R0"}, 1, 2),
+            ("t_1", {reginfo["key"]: "R1"}, 2, 3),
+            (reginfo["name"], {}, 2, 4),
+            (reginfo["name"], {t0info["key"]: self.thesauri_k["0_0"].id}, 2, 1),
+            (reginfo["name"], {t1info["key"]: self.thesauri_k["1_0"].id}, 2, 3),
+        ):
+            req = self.rf.get(reverse("get_facet", args=[facet]), data=filters)
+            res: JsonResponse = views.get_facet(req, facet)
+            obj = json.loads(res.content)
+            self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and filter {filters}")
+            self.assertEqual(count0, obj["topics"]["items"][0]["count"], f"Bad count0 for facet '{facet}")
 
     def test_user_auth(self):
         # make sure the user authorization pre-filters the visible resources
