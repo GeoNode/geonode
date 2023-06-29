@@ -27,6 +27,8 @@ from django.http import HttpResponseNotFound, JsonResponse, HttpResponseBadReque
 from django.urls import reverse
 
 from django.conf import settings
+
+from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, facet_registry
 from geonode.security.utils import get_visible_resources
@@ -160,8 +162,15 @@ def _prefilter_topics(request):
     :return: a QuerySet on ResourceBase
     """
     logger.debug("Filtering by user '%s'", request.user)
-    # return ResourceBase.objects
-    return get_visible_resources(ResourceBase.objects, request.user)
+    filters = {k: vlist for k, vlist in request.query_params.lists() if k.startswith("filter{")}
+
+    if filters:
+        viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs=filters)
+        viewset.initial(request)
+        return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
+    else:
+        # return ResourceBase.objects
+        return get_visible_resources(ResourceBase.objects, request.user)
 
 
 def _resolve_language(request) -> (str, bool):
