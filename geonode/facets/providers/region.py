@@ -21,6 +21,7 @@ import logging
 
 from django.db.models import Count
 
+from geonode.base.models import Region
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_PLACE
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,20 @@ class RegionFacetProvider(FacetProvider):
         ]
 
         return cnt, topics
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = Region.objects.filter(code__in=keys).values("code", "name")
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r["code"],
+                "label": r["name"],
+            }
+            for r in q.all()
+        ]
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
