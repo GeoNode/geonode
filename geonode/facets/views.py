@@ -23,10 +23,12 @@ from urllib.parse import urlencode
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, authentication_classes
 
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
 
 from django.conf import settings
+
+from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, facet_registry
 from geonode.security.utils import get_visible_resources
@@ -116,6 +118,25 @@ def get_facet(request, facet):
     return JsonResponse(info)
 
 
+@api_view(["GET"])
+def get_facet_topics(request, facet):
+    logger.debug("get_facet_topics -> %r", facet)
+
+    # retrieve provider for the requested facet
+    provider: FacetProvider = facet_registry.get_provider(facet)
+    if not provider:
+        return HttpResponseNotFound("Facet not found")
+
+    # parse some query params
+    lang, lang_requested = _resolve_language(request)
+    keys = request.query_params.getlist("key")
+    if not keys:
+        return HttpResponseBadRequest("Missing key parameter")
+
+    ret = {"topics": {"items": provider.get_topics(keys, lang=lang)}}
+    return JsonResponse(ret)
+
+
 def _get_topics(
     provider,
     queryset,
@@ -141,8 +162,15 @@ def _prefilter_topics(request):
     :return: a QuerySet on ResourceBase
     """
     logger.debug("Filtering by user '%s'", request.user)
-    # return ResourceBase.objects
-    return get_visible_resources(ResourceBase.objects, request.user)
+    filters = {k: vlist for k, vlist in request.query_params.lists() if k.startswith("filter{")}
+
+    if filters:
+        viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs=filters)
+        viewset.initial(request)
+        return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
+    else:
+        # return ResourceBase.objects
+        return get_visible_resources(ResourceBase.objects, request.user)
 
 
 def _resolve_language(request) -> (str, bool):
