@@ -10,7 +10,7 @@ services:
         org.geonode.instance.name: geonode
     command: /bin/true
     volumes:
-      - geoserver-data-dir:/geoserver_data/data
+      - geoserver-data-dir:${GEOSERVER_DATA_DIR}
 
   geoserver:
     image: geonode/geoserver:2.23.0
@@ -24,7 +24,7 @@ services:
     depends_on:
       - data-dir-conf
     volumes:
-      - geoserver-data-dir:/geoserver_data/data
+      - geoserver-data-dir:${GEOSERVER_DATA_DIR}
     env_file:
       - .env
     ports:
