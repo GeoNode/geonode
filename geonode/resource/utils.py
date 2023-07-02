@@ -489,7 +489,7 @@ def metadata_post_save(instance, *args, **kwargs):
                     poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
                     poly2.transform(4326)
 
-                    if poly2.intersection(poly1):
+                    if not poly2.intersection(poly1).empty:
                         regions_to_add.append(region)
                     if region.level == 0 and region.parent is None:
                         global_regions.append(region)

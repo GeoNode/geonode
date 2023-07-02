@@ -56,11 +56,16 @@ class TKeywordsFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        return (
-            self.filter_queryset_GROUP(request, queryset, view)
-            if "force_and" not in request.GET
-            else self.filter_queryset_AND(request, queryset, view)
-        )
+        # we must make the GET mutable since in the filters, some queryparams are popped
+        request.GET._mutable = True
+        try:
+            return (
+                self.filter_queryset_GROUP(request, queryset, view)
+                if "force_and" not in request.GET
+                else self.filter_queryset_AND(request, queryset, view)
+            )
+        finally:
+            request.GET._mutable = False
 
     def filter_queryset_AND(self, request, queryset, view):
         """
