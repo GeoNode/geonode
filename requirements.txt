@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==9.5.0
+Pillow==10.0.0
 lxml==4.9.2
 psycopg2==2.9.6
 Django==3.2.19
@@ -91,7 +91,7 @@ pinax-ratings==4.0.0
 # django-geonode-mapstore-client==4.0.5
 -e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
 -e git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
-geonode-avatar==5.0.8
+django-avatar==7.1.1
 geonode-oauth-toolkit==2.2.2
 geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
