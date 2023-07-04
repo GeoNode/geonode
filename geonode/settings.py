@@ -1963,10 +1963,13 @@ SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = ast.literal_eval(
 )
 
 # GeoNode Default Generic OIDC Provider
+SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
 SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
 SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
 
-INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
+# Enable this in order to enable the OIDC SocialAccount Provider
+if SOCIALACCOUNT_OIDC_PROVIDER_ENABLED:
+    INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
 
 _AZURE_TENANT_ID = os.getenv("MICROSOFT_TENANT_ID", "")
 _AZURE_SOCIALACCOUNT_PROVIDER = {
