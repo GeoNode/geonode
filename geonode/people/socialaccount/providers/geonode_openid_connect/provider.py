@@ -28,7 +28,6 @@ from django.conf import settings
 from geonode.utils import import_class_module
 
 from allauth.account.models import EmailAddress
-from allauth.socialaccount.app_settings import QUERY_EMAIL
 from allauth.socialaccount.providers.base import AuthAction, ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 

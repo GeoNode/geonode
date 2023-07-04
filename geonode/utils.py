@@ -17,10 +17,10 @@
 #
 #########################################################################
 
-import itertools
 import os
 import gc
 import re
+import imp
 import json
 import time
 import base64
@@ -34,6 +34,7 @@ import tarfile
 import datetime
 import requests
 import tempfile
+import itertools
 import traceback
 import subprocess
 
@@ -1988,9 +1989,6 @@ def safe_path_leaf(path):
             f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"
         )
     return fullpath
-
-
-import imp
 
 
 def import_class_module(full_class_string):

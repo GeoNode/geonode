@@ -25,12 +25,15 @@ django-allauth.
 """
 
 import logging
+import jwt
+import requests
 
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.account.utils import user_field
 from allauth.account.utils import user_email
 from allauth.account.utils import user_username
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2Error
 
 from invitations.adapters import BaseInvitationsAdapter
 
@@ -223,11 +226,6 @@ def _site_allows_signup(django_request):
 def _respond_inactive_user(user):
     return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
 
-
-import jwt
-import requests
-
-from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2Error
 
 PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
 
