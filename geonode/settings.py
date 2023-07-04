@@ -2320,6 +2320,8 @@ INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)
 
 FACET_PROVIDERS = (
+    "geonode.facets.providers.baseinfo.ResourceTypeFacetProvider",
+    "geonode.facets.providers.baseinfo.FeaturedFacetProvider",
     "geonode.facets.providers.category.CategoryFacetProvider",
     "geonode.facets.providers.users.OwnerFacetProvider",
     "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
