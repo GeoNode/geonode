@@ -20,7 +20,6 @@
 import os
 import gc
 import re
-import imp
 import json
 import time
 import base64
@@ -34,6 +33,7 @@ import tarfile
 import datetime
 import requests
 import tempfile
+import importlib
 import itertools
 import traceback
 import subprocess
@@ -2007,21 +2007,13 @@ def import_class_module(full_class_string):
     if len(class_data) > 2:
         submodules_list = class_data[1:-1]
 
-    f, filename, description = imp.find_module(module_str)
-    module = imp.load_module(module_str, f, filename, description)
+    module = importlib.import_module(module_str)
 
     # Find each submodule
     for smod in submodules_list:
-        path = os.path.dirname(filename) if os.path.isfile(filename) else filename
+        path = os.path.dirname(module.__file__) if hasattr(module, "__file__") else None
 
-        f, filename, description = imp.find_module(smod, [path])
-
-        # Now we can load the module
-        try:
-            module = imp.load_module(" ".join(class_data[:-1]), f, filename, description)
-        finally:
-            if f:
-                f.close()
+        module = importlib.import_module(smod, path)
 
     # Finally, we retrieve the Class
     return getattr(module, class_str)
