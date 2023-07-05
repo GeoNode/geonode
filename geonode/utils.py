@@ -1998,22 +1998,7 @@ def import_class_module(full_class_string):
     >>> klass = load_class("module.submodule.ClassName")
     >>> klass2 = load_class("myfile.Class2")
     """
-    class_data = full_class_string.split(".")
-
-    module_str = class_data[0]
-    class_str = class_data[-1]
-    submodules_list = []
-
-    if len(class_data) > 2:
-        submodules_list = class_data[1:-1]
-
-    module = importlib.import_module(module_str)
-
-    # Find each submodule
-    for smod in submodules_list:
-        path = os.path.dirname(module.__file__) if hasattr(module, "__file__") else None
-
-        module = importlib.import_module(smod, path)
-
-    # Finally, we retrieve the Class
-    return getattr(module, class_str)
+    module_path, class_name = full_class_string.rsplit(".", 1)
+    module = importlib.import_module(module_path)
+    class_obj = getattr(module, class_name)
+    return class_obj

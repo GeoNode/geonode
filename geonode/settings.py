@@ -1966,7 +1966,7 @@ SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = ast.literal_eval(
 # GeoNode Default Generic OIDC Provider
 
 SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
-SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
+SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "True"))
 SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
 
 # Enable this in order to enable the OIDC SocialAccount Provider
@@ -1975,11 +1975,14 @@ if SOCIALACCOUNT_OIDC_PROVIDER_ENABLED:
 
 _SOCIALACCOUNT_PROVIDER = os.environ.get("SOCIALACCOUNT_PROVIDER", "google")
 SOCIALACCOUNT_PROVIDERS = {
-    "geonode_openid_connect": SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
+    SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
 
+_SOCIALACCOUNT_PROFILE_EXTRACTOR = os.environ.get(
+    "SOCIALACCOUNT_PROFILE_EXTRACTOR", "geonode.people.profileextractors.OpenIDExtractor"
+)
 SOCIALACCOUNT_PROFILE_EXTRACTORS = {
-    "geonode_openid_connect": "geonode.people.profileextractors.OpenIDExtractor",
+    SOCIALACCOUNT_OIDC_PROVIDER: _SOCIALACCOUNT_PROFILE_EXTRACTOR,
 }
 
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
