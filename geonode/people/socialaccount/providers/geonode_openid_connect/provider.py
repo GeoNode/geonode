@@ -72,7 +72,10 @@ class GenericOpenIDConnectProvider(OAuth2Provider):
 
     def extract_common_fields(self, data):
         _common_fields = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("COMMON_FIELDS", {})
-        return _common_fields
+        __common_fields_data = {}
+        for _common_field in _common_fields:
+            __common_fields_data[_common_field] = data.get(_common_fields.get(_common_field), "")
+        return __common_fields_data
 
     def extract_email_addresses(self, data):
         addresses = []
