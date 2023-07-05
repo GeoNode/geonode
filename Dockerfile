@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.10
 LABEL GeoNode development team
 
 RUN mkdir -p /usr/src/geonode
