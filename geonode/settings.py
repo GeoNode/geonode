@@ -37,6 +37,7 @@ from kombu import Queue, Exchange
 from kombu.serialization import register
 
 from . import serializer
+from .people.socialaccount.providers import SOCIALACCOUNT_PROVIDERS_DEFS
 
 SILENCED_SYSTEM_CHECKS = [
     "1_8.W001",
@@ -1963,52 +1964,18 @@ SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = ast.literal_eval(
 )
 
 # GeoNode Default Generic OIDC Provider
-SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
+
 SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
+SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
 SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
 
 # Enable this in order to enable the OIDC SocialAccount Provider
 if SOCIALACCOUNT_OIDC_PROVIDER_ENABLED:
     INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
 
-_AZURE_TENANT_ID = os.getenv("MICROSOFT_TENANT_ID", "")
-_AZURE_SOCIALACCOUNT_PROVIDER = {
-    "NAME": "Microsoft Azure",
-    "SCOPE": [
-        "User.Read",
-        "openid",
-    ],
-    "AUTH_PARAMS": {
-        "access_type": "online",
-        "prompt": "select_account",
-    },
-    "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
-    "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
-    "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
-    "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
-    "PROFILE_URL": "https://graph.microsoft.com/v1.0/me",
-}
-
-_GOOGLE_SOCIALACCOUNT_PROVIDER = {
-    "NAME": "Google",
-    "SCOPE": [
-        "profile",
-        "email",
-    ],
-    "AUTH_PARAMS": {
-        "access_type": "online",
-        "prompt": "select_account consent",
-    },
-    "COMMON_FIELDS": {"email": "email", "last_name": "family_name", "first_name": "given_name"},
-    "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
-    "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",
-    "AUTHORIZE_URL": "https://accounts.google.com/o/oauth2/v2/auth",
-    "ID_TOKEN_ISSUER": "https://accounts.google.com",
-    "OAUTH_PKCE_ENABLED": True,
-}
-
+_SOCIALACCOUNT_PROVIDER = os.environ.get("SOCIALACCOUNT_PROVIDER", "google")
 SOCIALACCOUNT_PROVIDERS = {
-    "geonode_openid_connect": _AZURE_SOCIALACCOUNT_PROVIDER,
+    "geonode_openid_connect": SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
 
 SOCIALACCOUNT_PROFILE_EXTRACTORS = {
