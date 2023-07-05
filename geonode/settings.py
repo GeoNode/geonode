@@ -1966,7 +1966,7 @@ SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP = ast.literal_eval(
 # GeoNode Default Generic OIDC Provider
 
 SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
-SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "True"))
+SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
 SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
 
 # Enable this in order to enable the OIDC SocialAccount Provider
