@@ -283,7 +283,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
             groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(
                 sociallogin.account.extra_data
             )
-            is_manager = extractor.extract_is_manager()
+            is_manager = extractor.extract_is_manager(sociallogin.account.extra_data)
 
             # check here if user is member already of other groups and remove it form the ones that are not declared here...
             for groupprofile in user.group_list_all():
