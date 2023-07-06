@@ -1980,8 +1980,7 @@ def get_supported_datasets_file_types():
         for resource_type in supported_types
         if resource_type.get("format") is None or resource_type.get("format") not in [f[0] for f in formats_order]
     ]
-    supported_types_ordered = ordered_resource_types + other_resource_types
-    return supported_types_ordered
+    return ordered_resource_types + other_resource_types
 
 
 def get_allowed_extensions():
