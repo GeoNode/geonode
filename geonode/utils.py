@@ -1966,7 +1966,6 @@ def get_supported_datasets_file_types():
 
     # Order the formats (to support their visualization)
     formats_order = [("vector", 0), ("raster", 1), ("archive", 2)]
-    ordered_formats = [f[0] for f in formats_order]
     ordered_payload = (
         (weight[1], resource_type)
         for resource_type in supported_types
@@ -1979,7 +1978,7 @@ def get_supported_datasets_file_types():
     other_resource_types = [
         resource_type
         for resource_type in supported_types
-        if resource_type.get("format") is None or resource_type.get("format") not in ordered_formats
+        if resource_type.get("format") is None or resource_type.get("format") not in [f[0] for f in formats_order]
     ]
     supported_types_ordered = ordered_resource_types + other_resource_types
     return supported_types_ordered
