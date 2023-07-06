@@ -1963,7 +1963,26 @@ def get_supported_datasets_file_types():
             supported_types[default_types_id.index(_type.get("id"))] = _type
         else:
             supported_types.extend([_type])
-    return supported_types
+
+    # Order the formats (to support their visualization)
+    formats_order = ["vector", "raster", "archive", "other"]
+    types_ordered = {"vector": [], "raster": [], "archive": [], "other": []}
+    for resource_type in supported_types:
+        format = resource_type.get("format")
+        if format:
+            ordered_format = format if format in types_ordered.keys() else None
+            if ordered_format:
+                types_ordered[format].append(resource_type)
+            else:
+                types_ordered["other"].append(resource_type)
+        else:
+            types_ordered["other"].append(resource_type)
+
+    # Flatten the lit
+    supported_types_ordered = []
+    for format in formats_order:
+        supported_types_ordered = supported_types_ordered + [resource_type for resource_type in types_ordered[format]]
+    return supported_types_ordered
 
 
 def get_allowed_extensions():
