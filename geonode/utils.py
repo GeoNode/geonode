@@ -1965,23 +1965,23 @@ def get_supported_datasets_file_types():
             supported_types.extend([_type])
 
     # Order the formats (to support their visualization)
-    formats_order = ["vector", "raster", "archive", "other"]
-    types_ordered = {"vector": [], "raster": [], "archive": [], "other": []}
-    for resource_type in supported_types:
-        format = resource_type.get("format")
-        if format:
-            ordered_format = format if format in types_ordered.keys() else None
-            if ordered_format:
-                types_ordered[format].append(resource_type)
-            else:
-                types_ordered["other"].append(resource_type)
-        else:
-            types_ordered["other"].append(resource_type)
+    formats_order = [("vector", 0), ("raster", 1), ("archive", 2)]
+    ordered_formats = [f[0] for f in formats_order]
+    ordered_payload = (
+        (weight[1], resource_type)
+        for resource_type in supported_types
+        for weight in formats_order
+        if resource_type.get("format") in weight[0]
+    )
 
     # Flatten the lit
-    supported_types_ordered = []
-    for format in formats_order:
-        supported_types_ordered = supported_types_ordered + [resource_type for resource_type in types_ordered[format]]
+    ordered_resource_types = [x[1] for x in sorted(ordered_payload, key=lambda x: x[0])]
+    other_resource_types = [
+        resource_type
+        for resource_type in supported_types
+        if resource_type.get("format") is None or resource_type.get("format") not in ordered_formats
+    ]
+    supported_types_ordered = ordered_resource_types + other_resource_types
     return supported_types_ordered
 
 
