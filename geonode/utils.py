@@ -1973,7 +1973,7 @@ def get_supported_datasets_file_types():
         if resource_type.get("format") in weight[0]
     )
 
-    # Flatten the lit
+    # Flatten the list
     ordered_resource_types = [x[1] for x in sorted(ordered_payload, key=lambda x: x[0])]
     other_resource_types = [
         resource_type
