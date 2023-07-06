@@ -1998,7 +1998,10 @@ def import_class_module(full_class_string):
     >>> klass = load_class("module.submodule.ClassName")
     >>> klass2 = load_class("myfile.Class2")
     """
-    module_path, class_name = full_class_string.rsplit(".", 1)
-    module = importlib.import_module(module_path)
-    class_obj = getattr(module, class_name)
-    return class_obj
+    try:
+        module_path, class_name = full_class_string.rsplit(".", 1)
+        module = importlib.import_module(module_path)
+        class_obj = getattr(module, class_name)
+        return class_obj
+    except Exception:
+        return None
