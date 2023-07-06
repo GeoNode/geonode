@@ -2323,6 +2323,7 @@ FACET_PROVIDERS = (
     "geonode.facets.providers.baseinfo.ResourceTypeFacetProvider",
     "geonode.facets.providers.baseinfo.FeaturedFacetProvider",
     "geonode.facets.providers.category.CategoryFacetProvider",
+    "geonode.facets.providers.keyword.KeywordFacetProvider",
     "geonode.facets.providers.users.OwnerFacetProvider",
     "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
     "geonode.facets.providers.region.RegionFacetProvider",
