@@ -53,7 +53,6 @@ class GoogleTests(OAuth2TestsMixin, TestCase):
         super().setUp()
         self.email = "raymond.penners@example.com"
         self.identity_overwrites = {}
-        settings.INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
 
     def get_google_id_token_payload(self):
         now = datetime.utcnow()
