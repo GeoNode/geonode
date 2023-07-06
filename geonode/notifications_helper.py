@@ -17,21 +17,28 @@
 #
 #########################################################################
 import logging
+from importlib import import_module
 
 from django.apps import AppConfig
 from django.conf import settings
 from django.db.models import signals
 from django.contrib.auth import get_user_model
 
-from geonode.utils import import_class_module
 from geonode.tasks.tasks import send_queued_notifications
 
 logger = logging.getLogger(__name__)
 
 E = getattr(settings, "NOTIFICATION_ENABLED", False)
 M = getattr(settings, "NOTIFICATIONS_MODULE", None)
-notifications = import_class_module(M)
-has_notifications = E and notifications
+notifications = None
+
+has_notifications = E and M and M in settings.INSTALLED_APPS
+
+if has_notifications:
+    try:
+        notifications = import_module(M)
+    except Exception as e:
+        logger.error(e)
 
 
 class NotificationsAppConfigBase(AppConfig):
