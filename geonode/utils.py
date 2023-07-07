@@ -1964,7 +1964,24 @@ def get_supported_datasets_file_types():
             supported_types[default_types_id.index(_type.get("id"))] = _type
         else:
             supported_types.extend([_type])
-    return supported_types
+
+    # Order the formats (to support their visualization)
+    formats_order = [("vector", 0), ("raster", 1), ("archive", 2)]
+    ordered_payload = (
+        (weight[1], resource_type)
+        for resource_type in supported_types
+        for weight in formats_order
+        if resource_type.get("format") in weight[0]
+    )
+
+    # Flatten the list
+    ordered_resource_types = [x[1] for x in sorted(ordered_payload, key=lambda x: x[0])]
+    other_resource_types = [
+        resource_type
+        for resource_type in supported_types
+        if resource_type.get("format") is None or resource_type.get("format") not in [f[0] for f in formats_order]
+    ]
+    return ordered_resource_types + other_resource_types
 
 
 def get_allowed_extensions():
