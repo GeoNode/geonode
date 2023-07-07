@@ -166,9 +166,9 @@ class TestFacets(GeoNodeBaseTestSupport):
         obj = json.loads(res.content)
         self.assertIn("facets", obj)
         facets_list = obj["facets"]
-        self.assertEqual(7, len(facets_list))
+        self.assertEqual(8, len(facets_list))
         fmap = self._facets_to_map(facets_list)
-        for name in ("category", "owner", "t_0", "t_1", "featured", "resourcetype"):
+        for name in ("category", "owner", "t_0", "t_1", "featured", "resourcetype", "keyword"):
             self.assertIn(name, fmap)
 
     def test_facets_rich(self):
@@ -186,7 +186,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         obj = json.loads(res.content)
 
         facets_list = obj["facets"]
-        self.assertEqual(7, len(facets_list))
+        self.assertEqual(8, len(facets_list))
         fmap = self._facets_to_map(facets_list)
         for expected in (
             {
