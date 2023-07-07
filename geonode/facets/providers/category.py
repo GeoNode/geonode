@@ -36,15 +36,13 @@ class CategoryFacetProvider(FacetProvider):
     def name(self) -> str:
         return "category"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
             "key": "filter{category.identifier}",  # deprecated
             "filter": "filter{category.identifier}",
             "label": "Category",
             "type": FACET_TYPE_CATEGORY,
-            "hierarchical": False,
-            "order": 2,
         }
 
     def get_facet_items(
@@ -99,4 +97,4 @@ class CategoryFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(CategoryFacetProvider())
+        registry.register_facet_provider(CategoryFacetProvider(**kwargs))

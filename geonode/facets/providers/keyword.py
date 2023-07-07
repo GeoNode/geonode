@@ -36,14 +36,13 @@ class KeywordFacetProvider(FacetProvider):
     def name(self) -> str:
         return "keyword"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
             "key": "filter{keywords.slug.in}",  # deprecated
             "filter": "filter{keywords.slug.in}",
             "label": "Keyword",
             "type": FACET_TYPE_KEYWORD,
-            "order": 2,
         }
 
     def get_facet_items(
@@ -94,4 +93,4 @@ class KeywordFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(KeywordFacetProvider())
+        registry.register_facet_provider(KeywordFacetProvider(**kwargs))

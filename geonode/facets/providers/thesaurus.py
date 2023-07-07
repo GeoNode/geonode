@@ -32,17 +32,20 @@ class ThesaurusFacetProvider(FacetProvider):
     Implements faceting for a given Thesaurus
     """
 
-    def __init__(self, identifier, title, order, labels: dict):
+    def __init__(self, identifier, title, order, labels: dict, **kwargs):
+        super().__init__(**kwargs)
+
         self._name = identifier
         self.label = title
-        self.order = order
         self.labels = labels
+
+        self.config["order"] = order
 
     @property
     def name(self) -> str:
         return self._name
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self._name,
             "key": "filter{tkeywords}",  # deprecated
@@ -50,8 +53,6 @@ class ThesaurusFacetProvider(FacetProvider):
             "label": self.labels.get(lang, self.label),
             "is_localized": self.labels.get(lang, None) is not None,
             "type": FACET_TYPE_THESAURUS,
-            "hierarchical": False,
-            "order": self.order,
         }
 
     def get_facet_items(
@@ -153,5 +154,5 @@ class ThesaurusFacetProvider(FacetProvider):
         logger.info("Creating providers for %r", ret)
         for t in ret.values():
             registry.register_facet_provider(
-                ThesaurusFacetProvider(t["identifier"], t["title"], t["order"], t["labels"])
+                ThesaurusFacetProvider(t["identifier"], t["title"], t["order"], t["labels"], **kwargs)
             )
