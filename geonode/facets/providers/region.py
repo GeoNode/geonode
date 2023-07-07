@@ -39,7 +39,8 @@ class RegionFacetProvider(FacetProvider):
     def get_info(self, lang="en") -> dict:
         return {
             "name": self.name,
-            "key": "filter{regions.code.in}",
+            "key": "filter{regions.code.in}",  # deprecated
+            "filter": "filter{regions.code.in}",
             "label": "Region",
             "type": FACET_TYPE_PLACE,
             "hierarchical": False,  # source data is hierarchical, but this implementation is flat

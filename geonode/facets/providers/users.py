@@ -39,7 +39,8 @@ class OwnerFacetProvider(FacetProvider):
     def get_info(self, lang="en") -> dict:
         return {
             "name": "owner",
-            "key": "owner",
+            "key": "owner",  # deprecated
+            "filter": "owner",
             "label": "Owner",
             "type": FACET_TYPE_USER,
             "hierarchical": False,
