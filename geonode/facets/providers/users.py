@@ -36,15 +36,13 @@ class OwnerFacetProvider(FacetProvider):
     def name(self) -> str:
         return "owner"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": "owner",
             "key": "owner",  # deprecated
             "filter": "owner",
             "label": "Owner",
             "type": FACET_TYPE_USER,
-            "hierarchical": False,
-            "order": 5,
         }
 
     def get_facet_items(
@@ -95,4 +93,4 @@ class OwnerFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(OwnerFacetProvider())
+        registry.register_facet_provider(OwnerFacetProvider(**kwargs))
