@@ -39,7 +39,8 @@ class CategoryFacetProvider(FacetProvider):
     def get_info(self, lang="en") -> dict:
         return {
             "name": self.name,
-            "key": "filter{category.identifier}",
+            "key": "filter{category.identifier}",  # deprecated
+            "filter": "filter{category.identifier}",
             "label": "Category",
             "type": FACET_TYPE_CATEGORY,
             "hierarchical": False,

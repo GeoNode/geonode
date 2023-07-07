@@ -45,7 +45,8 @@ class ThesaurusFacetProvider(FacetProvider):
     def get_info(self, lang="en") -> dict:
         return {
             "name": self._name,
-            "key": "filter{tkeywords}",
+            "key": "filter{tkeywords}",  # deprecated
+            "filter": "filter{tkeywords}",
             "label": self.labels.get(lang, self.label),
             "is_localized": self.labels.get(lang, None) is not None,
             "type": FACET_TYPE_THESAURUS,
