@@ -26,8 +26,6 @@ import fitz
 
 from celery.utils.log import get_task_logger
 
-from django.contrib.staticfiles import finders
-
 from geonode.celery_app import app
 from geonode.storage.manager import storage_manager
 
