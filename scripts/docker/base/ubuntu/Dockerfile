@@ -2,7 +2,7 @@ FROM ubuntu:22.10
 
 RUN mkdir -p /usr/src/geonode
 
-## Enable postgresql-client-13
+## Enable postgresql-client-15
 RUN apt-get update -y && apt-get install curl wget unzip gnupg2 -y
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 # will install python3.10 
@@ -17,7 +17,7 @@ RUN apt-get install -y \
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     gcc vim zip gettext geoip-bin cron \
-    postgresql-client-13 \
+    postgresql-client-15 \
     python3-all-dev python3-dev \
     python3-gdal python3-psycopg2 python3-ldap \
     python3-pip python3-pil python3-lxml \
