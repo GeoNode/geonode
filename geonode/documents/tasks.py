@@ -19,10 +19,14 @@
 import os
 import io
 
+import requests
+
 from PIL import Image
 import fitz
 
 from celery.utils.log import get_task_logger
+
+from django.contrib.staticfiles import finders
 
 from geonode.celery_app import app
 from geonode.storage.manager import storage_manager
@@ -101,21 +105,27 @@ def create_document_thumbnail(self, object_id):
     centering = (0.5, 0.5)
 
     if document.is_image:
-        dname = storage_manager.path(document.files[0])
-        if storage_manager.exists(dname):
-            image_file = storage_manager.open(dname, "rb")
+        if document.files:
+            dname = storage_manager.path(document.files[0])
+            if storage_manager.exists(dname):
+                image_file = storage_manager.open(dname, "rb")
+        elif document.doc_url:
+            response = requests.get(document.doc_url)
+            if response:
+                image_file = io.BytesIO(response.content)
 
-        try:
-            image = Image.open(image_file)
-            with io.BytesIO() as output:
-                image.save(output, format="PNG")
-                thumbnail_content = output.getvalue()
-                output.close()
-        except Exception as e:
-            logger.debug(f"Could not generate thumbnail: {e}")
-        finally:
-            if image_file is not None:
-                image_file.close()
+        if image_file:
+            try:
+                image = Image.open(image_file)
+                with io.BytesIO() as output:
+                    image.save(output, format="PNG")
+                    thumbnail_content = output.getvalue()
+                    output.close()
+            except Exception as e:
+                logger.debug(f"Could not generate thumbnail: {e}")
+            finally:
+                if image_file is not None:
+                    image_file.close()
 
     elif doc_renderer.supports(document.files[0]):
         try:
