@@ -27,7 +27,7 @@ import fitz
 from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
-from geonode.storage.manager import storage_manager
+from geonode.storage.manager import StorageManager
 
 from ..base.models import ResourceBase
 from .models import Document
@@ -92,6 +92,8 @@ def create_document_thumbnail(self, object_id):
     """
     logger.debug(f"Generating thumbnail for document #{object_id}.")
 
+    storage_manager = StorageManager()
+
     try:
         document = Document.objects.get(id=object_id)
     except Document.DoesNotExist:
@@ -100,17 +102,21 @@ def create_document_thumbnail(self, object_id):
 
     image_file = None
     thumbnail_content = None
+    remove_tmp_file = False
     centering = (0.5, 0.5)
 
+    doc_path = None
+    if document.files:
+        doc_path = storage_manager.path(document.files[0])
+    elif document.doc_url:
+        doc_path = document.doc_url
+        remove_tmp_file = True
+
     if document.is_image:
-        if document.files:
-            dname = storage_manager.path(document.files[0])
-            if storage_manager.exists(dname):
-                image_file = storage_manager.open(dname, "rb")
-        elif document.doc_url:
-            response = requests.get(document.doc_url)
-            if response:
-                image_file = io.BytesIO(response.content)
+        try:
+            image_file = storage_manager.open(doc_path)
+        except Exception as e:
+            logger.debug(f"Could not generate thumbnail from remote document {document.doc_url}: {e}")
 
         if image_file:
             try:
@@ -124,15 +130,24 @@ def create_document_thumbnail(self, object_id):
             finally:
                 if image_file is not None:
                     image_file.close()
+                    if remove_tmp_file:
+                        storage_manager.delete(doc_path)
 
-    elif doc_renderer.supports(document.files[0]):
+    elif doc_renderer.supports(doc_path):
+        # in case it's a remote document we want to retrieve it first
+        if document.doc_url:
+            doc_path = storage_manager.open(doc_path).name
+            remove_tmp_file = True
         try:
-            thumbnail_content = doc_renderer.render(document.files[0])
-            preferred_centering = doc_renderer.preferred_crop_centering(document.files[0])
+            thumbnail_content = doc_renderer.render(doc_path)
+            preferred_centering = doc_renderer.preferred_crop_centering(doc_path)
             if preferred_centering is not None:
                 centering = preferred_centering
         except Exception as e:
             print(e)
+        finally:
+            if remove_tmp_file:
+                storage_manager.delete(doc_path)
     if not thumbnail_content:
         logger.warning(f"Thumbnail for document #{object_id} empty.")
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
