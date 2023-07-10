@@ -108,7 +108,7 @@ workflows:
           name: geonode_test_suite
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a]))") geonode.thumbs.tests geonode.people.tests
+          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a]))") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests
       - build:
           name: geonode_test_security
           load_docker_cache: false
