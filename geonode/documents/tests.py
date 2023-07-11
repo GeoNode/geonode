@@ -253,7 +253,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         finally:
             Document.objects.filter(title="Non img File Doc").delete()
 
-    def test_image_documents_thumbnail(self):
+    def test_documents_thumbnail(self):
         self.client.login(username="admin", password="admin")
         try:
             # test image doc
@@ -274,6 +274,22 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     self.assertEqual(file.size, (400, 200))
                     # check thumbnail qualty and extention
                     self.assertEqual(file.format, "JPEG")
+            data = {
+                "title": "Remote img File Doc",
+                "doc_url": "https://raw.githubusercontent.com/GeoNode/geonode/master/geonode/documents/tests/data/img.gif",
+                "extension": "gif",
+            }
+            with self.settings(THUMBNAIL_SIZE={"width": 400, "height": 200}):
+                self.client.post(reverse("document_upload"), data=data)
+                d = Document.objects.get(title="Remote img File Doc")
+                self.assertIsNotNone(d.thumbnail_url)
+                thumb_file = os.path.join(
+                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
+                )
+                file = Image.open(thumb_file)
+                self.assertEqual(file.size, (400, 200))
+                # check thumbnail qualty and extention
+                self.assertEqual(file.format, "JPEG")
             # test pdf doc
             with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
                 data = {

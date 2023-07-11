@@ -249,7 +249,7 @@ class StorageManager(StorageManagerInterface):
         """
         Using the data retriever object clone the remote path into a local temporary storage
         """
-        self.data_retriever.get_paths(allow_transfer=True)
+        return self.data_retriever.get_paths(allow_transfer=True)
 
     def get_retrieved_paths(self) -> Mapping:
         """
