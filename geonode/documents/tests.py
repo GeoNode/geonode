@@ -150,7 +150,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(response.status_code, 302)
 
-        d = Document.objects.get(title="A remote document is remote")
+        d = Document.objects.get(title="A remote document through form is remote")
         self.assertEqual(d.sourcetype, SOURCE_TYPE_REMOTE)
 
     def test_create_document_url(self):
