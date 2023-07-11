@@ -69,7 +69,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         cls.thesauri_k = {}
 
         for tn in range(2):
-            t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}")
+            t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}", order=100 + tn * 10)
             cls.thesauri[tn] = t
             for tl in (
                 "en",
@@ -334,6 +334,30 @@ class TestFacets(GeoNodeBaseTestSupport):
             obj = json.loads(res.content)
             self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and filter {filters}")
             self.assertEqual(count0, obj["topics"]["items"][0]["count"], f"Bad count0 for facet '{facet}")
+
+    def test_config(self):
+        for facet, type, order in (
+            ("resourcetype", None, None),
+            ("t_0", "select", 100),
+            ("category", "select", 5),
+            ("region", "select", 7),
+            ("owner", "select", 8),
+        ):
+            req = self.rf.get(reverse("get_facet", args=[facet]), data={"include_config": True})
+            res: JsonResponse = views.get_facet(req, facet)
+            obj = json.loads(res.content)
+            self.assertIn("config", obj, "Config info not found in payload")
+            conf = obj["config"]
+
+            if type is None:
+                self.assertNotIn("type", conf)
+            else:
+                self.assertEqual(type, conf["type"], "Unexpected type")
+
+            if order is None:
+                self.assertNotIn("order", conf)
+            else:
+                self.assertEqual(order, conf["order"], "Unexpected order")
 
     def test_user_auth(self):
         # make sure the user authorization pre-filters the visible resources
