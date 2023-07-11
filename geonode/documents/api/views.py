@@ -31,6 +31,7 @@ from geonode import settings
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
+from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 
@@ -123,6 +124,7 @@ class DocumentViewSet(DynamicModelViewSet):
                 payload["files"] = [manager.get_retrieved_paths().get("base_file")]
             if doc_url:
                 payload["doc_url"] = doc_url
+                payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
             resource = serializer.save(**payload)
 
