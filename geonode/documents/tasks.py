@@ -19,8 +19,6 @@
 import os
 import io
 
-import requests
-
 from PIL import Image
 import fitz
 
