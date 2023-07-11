@@ -944,7 +944,7 @@ class ResourceManager(ResourceManagerInterface):
                         file_name = _generate_thumbnail_name(_resource.get_real_instance())
                         _resource.save_thumbnail(file_name, thumbnail)
                     else:
-                        if instance and instance.files and isinstance(instance.get_real_instance(), Document):
+                        if instance and isinstance(instance.get_real_instance(), Document):
                             if overwrite or not instance.thumbnail_url:
                                 create_document_thumbnail.apply((instance.id,))
                         self._concrete_resource_manager.set_thumbnail(
