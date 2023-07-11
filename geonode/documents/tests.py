@@ -47,6 +47,7 @@ from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.base.models import License, Region
+from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents import DocumentsAppConfig
 from geonode.resource.manager import resource_manager
 from geonode.documents.forms import DocumentFormMixin
@@ -136,6 +137,21 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(Document.objects.get(pk=c.id).title, "theimg")
         self.assertEqual(DocumentResourceLink.objects.get(pk=_d.id).object_id, m.id)
+
+    def test_remote_document_is_marked_remote(self):
+        """Tests creating an external document set its sourcetype to REMOTE."""
+        self.client.login(username="admin", password="admin")
+        form_data = {
+            "title": "A remote document through form is remote",
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+
+        self.assertEqual(response.status_code, 302)
+
+        d = Document.objects.get(title="A remote document is remote")
+        self.assertEqual(d.sourcetype, SOURCE_TYPE_REMOTE)
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""

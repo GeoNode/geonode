@@ -28,6 +28,7 @@ from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
 
 from geonode.base.populate_test_data import create_models
+from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
 
 logger = logging.getLogger(__name__)
@@ -171,6 +172,22 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual(201, actual.status_code)
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
         self.assertEqual(created_doc_url, doc_url)
+
+    def test_remote_document_is_marked_remote(self):
+        """Tests creating an external document set its sourcetype to REMOTE."""
+        self.client.force_login(self.admin)
+        doc_url = "https://example.com/image"
+        payload = {
+            "document": {
+                "title": "A remote document is remote",
+                "doc_url": doc_url,
+                "extension": "jpeg",
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        created_sourcetype = actual.json().get("document", {}).get("sourcetype", "")
+        self.assertEqual(created_sourcetype, SOURCE_TYPE_REMOTE)
 
     def test_either_path_or_url_doc(self):
         """
