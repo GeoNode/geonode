@@ -55,10 +55,16 @@ class KeywordFacetProvider(FacetProvider):
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.values("keywords__slug", "keywords__name").filter(keywords__isnull=False)
+        filters = {"keywords__isnull": False}
         if topic_contains:
-            q = q.filter(keywords__name=topic_contains)
-        q = q.annotate(count=Count("keywords__slug")).order_by("-count")
+            filters["keywords__name__icontains"] = topic_contains
+
+        q = (
+            queryset.filter(**filters)
+            .values("keywords__slug", "keywords__name")
+            .annotate(count=Count("keywords__slug"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 
