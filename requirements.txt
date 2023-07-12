@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==10.0.0
-lxml==4.9.2
+lxml==4.9.3
 psycopg2==2.9.6
 Django==3.2.20
 
@@ -20,7 +20,7 @@ vine==5.0.0
 tqdm==4.65.0
 Deprecated==1.2.14
 wrapt==1.15.0
-jsonschema==4.17.3
+jsonschema==4.18.0
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
@@ -56,7 +56,7 @@ pyjwt==2.7.0
 pyproj<3.7.0
 OWSLib==0.29.2
 pycsw==2.6.1
-SQLAlchemy==2.0.17 # required by PyCSW
+SQLAlchemy==2.0.18 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 geoip2==4.7.0
@@ -112,7 +112,7 @@ django-bootstrap3-datetimepicker-2==2.8.3
 django-storages==1.13.2
 dropbox==11.36.2
 google-cloud-storage==2.10.0
-google-cloud-core==2.3.2
+google-cloud-core==2.3.3
 boto3==1.28.1
 
 # Django Caches
@@ -171,7 +171,7 @@ webdriver_manager==3.8.6
 
 # Security and audit
 mistune==3.0.1
-wandb==0.15.4
+wandb==0.15.5
 protobuf==3.20.3
 mako==1.2.4
 certifi>=2022.12.7 # not directly required, pinned by Snyk to avoid a vulnerability

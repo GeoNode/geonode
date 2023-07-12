@@ -127,6 +127,13 @@ class LinkedInExtractor(BaseExtractor):
         return result
 
 
+PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
+
+IS_MANAGER_FIELD = (
+    getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("IS_MANAGER_FIELD", "is_manager")
+)
+
+
 class OpenIDExtractor(BaseExtractor):
     def extract_email(self, data):
         return data.get("email", "")
@@ -182,14 +189,17 @@ class OpenIDExtractor(BaseExtractor):
     def extract_voice(self, data):
         return data.get("phone", "")
 
+    def extract_keywords(self, data):
+        return data.get("keywords", "")
+
     def extract_groups(self, data):
         return data.get("groups", "")
 
     def extract_roles(self, data):
         return data.get("roles", "")
 
-    def extract_keywords(self, data):
-        return data.get("keywords", "")
+    def extract_is_manager(self, data):
+        return data.get(IS_MANAGER_FIELD, "")
 
 
 def _get_latest_position(data):

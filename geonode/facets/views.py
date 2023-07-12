@@ -38,6 +38,7 @@ PARAM_PAGE_SIZE = "page_size"
 PARAM_LANG = "lang"
 PARAM_ADD_LINKS = "add_links"
 PARAM_INCLUDE_TOPICS = "include_topics"
+PARAM_INCLUDE_CONFIG = "include_config"
 PARAM_TOPIC_CONTAINS = "topic_contains"
 
 logger = logging.getLogger(__name__)
@@ -49,12 +50,17 @@ def list_facets(request, **kwargs):
     lang, lang_requested = _resolve_language(request)
     add_links = _resolve_boolean(request, PARAM_ADD_LINKS, False)
     include_topics = _resolve_boolean(request, PARAM_INCLUDE_TOPICS, False)
+    include_config = _resolve_boolean(request, PARAM_INCLUDE_CONFIG, False)
 
     facets = []
 
     for provider in facet_registry.get_providers():
         logger.debug("Fetching data from provider %r", provider)
         info = provider.get_info(lang=lang)
+
+        if include_config:
+            info["config"] = provider.config
+
         if add_links:
             link_args = {PARAM_ADD_LINKS: True}
             if lang_requested:  # only add lang param if specified in current call
@@ -83,11 +89,15 @@ def get_facet(request, facet):
     # parse some query params
     lang, lang_requested = _resolve_language(request)
     add_link = _resolve_boolean(request, PARAM_ADD_LINKS, False)
+    include_config = _resolve_boolean(request, PARAM_INCLUDE_CONFIG, False)
+
     topic_contains = request.GET.get(PARAM_TOPIC_CONTAINS, None)
     page = int(request.GET.get(PARAM_PAGE, 0))
     page_size = int(request.GET.get(PARAM_PAGE_SIZE, DEFAULT_FACET_PAGE_SIZE))
 
     info = provider.get_info(lang)
+    if include_config:
+        info["config"] = provider.config
 
     qs = _prefilter_topics(request)
     topics = _get_topics(
