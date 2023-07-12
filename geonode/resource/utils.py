@@ -489,7 +489,7 @@ def metadata_post_save(instance, *args, **kwargs):
                     poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
                     poly2.transform(4326)
 
-                    if not poly2.intersection(poly1).empty:
+                    if poly2.contains(poly1) or poly2.overlaps(poly1):
                         regions_to_add.append(region)
                     if region.level == 0 and region.parent is None:
                         global_regions.append(region)
@@ -498,7 +498,7 @@ def metadata_post_save(instance, *args, **kwargs):
                     if tb:
                         logger.debug(tb)
             if regions_to_add or global_regions:
-                if regions_to_add and len(regions_to_add) > 0 and len(regions_to_add) <= 30:
+                if regions_to_add:
                     instance.regions.add(*regions_to_add)
                 else:
                     instance.regions.add(*global_regions)
