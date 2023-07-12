@@ -483,13 +483,7 @@ def metadata_post_save(instance, *args, **kwargs):
             regions_to_add = []
             for region in queryset:
                 try:
-                    srid2, wkt2 = region.geographic_bounding_box.split(";")
-                    srid2 = re.findall(r"\d+", srid2)
-
-                    poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
-                    poly2.transform(4326)
-
-                    if poly2.contains(poly1) or poly2.overlaps(poly1):
+                    if region.is_assignable_to_geom(poly1):
                         regions_to_add.append(region)
                     if region.level == 0 and region.parent is None:
                         global_regions.append(region)
