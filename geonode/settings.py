@@ -2335,12 +2335,12 @@ IMPORTER_HANDLERS = ast.literal_eval(
 INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)
 
-FACET_PROVIDERS = (
-    "geonode.facets.providers.baseinfo.ResourceTypeFacetProvider",
-    "geonode.facets.providers.baseinfo.FeaturedFacetProvider",
-    "geonode.facets.providers.category.CategoryFacetProvider",
-    "geonode.facets.providers.keyword.KeywordFacetProvider",
-    "geonode.facets.providers.users.OwnerFacetProvider",
-    "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
-    "geonode.facets.providers.region.RegionFacetProvider",
-)
+FACET_PROVIDERS = [
+    {"class": "geonode.facets.providers.baseinfo.ResourceTypeFacetProvider"},
+    {"class": "geonode.facets.providers.baseinfo.FeaturedFacetProvider"},
+    {"class": "geonode.facets.providers.category.CategoryFacetProvider", "config": {"order": 5, "type": "select"}},
+    {"class": "geonode.facets.providers.keyword.KeywordFacetProvider", "config": {"order": 6, "type": "select"}},
+    {"class": "geonode.facets.providers.region.RegionFacetProvider", "config": {"order": 7, "type": "select"}},
+    {"class": "geonode.facets.providers.users.OwnerFacetProvider", "config": {"order": 8, "type": "select"}},
+    {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
+]
