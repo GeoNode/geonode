@@ -52,13 +52,26 @@ class OwnerFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for OWNER")
 
-        q = queryset.values("owner", "owner__username")
+        filters = dict()
+
         if topic_contains:
-            q = q.filter(owner__username__icontains=topic_contains)
-        q = q.annotate(count=Count("owner")).order_by("-count")
+            filters["owner__username__icontains"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["owner__in"] = keys
+
+        q = (
+            queryset.values("owner", "owner__username")
+            .filter(**filters)
+            .annotate(count=Count("owner"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 

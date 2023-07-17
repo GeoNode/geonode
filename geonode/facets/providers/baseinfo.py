@@ -52,6 +52,8 @@ class ResourceTypeFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
@@ -120,6 +122,8 @@ class FeaturedFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 

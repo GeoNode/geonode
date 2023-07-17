@@ -52,12 +52,18 @@ class KeywordFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
         filters = {"keywords__isnull": False}
         if topic_contains:
             filters["keywords__name__icontains"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["keywords__slug__in"] = keys
 
         q = (
             queryset.filter(**filters)
