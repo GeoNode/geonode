@@ -62,6 +62,7 @@ class ThesaurusFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
         **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self._name)
@@ -72,6 +73,10 @@ class ThesaurusFacetProvider(FacetProvider):
 
         if topic_contains:
             filter["tkeywords__keyword__label__icontains"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r\n", keys)
+            filter["tkeywords__in"] = keys
 
         q = (
             queryset.filter(**filter)
