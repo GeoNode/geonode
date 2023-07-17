@@ -53,6 +53,7 @@ def list_facets(request, **kwargs):
     include_config = _resolve_boolean(request, PARAM_INCLUDE_CONFIG, False)
 
     facets = []
+    prefiltered = None
 
     for provider in facet_registry.get_providers():
         logger.debug("Fetching data from provider %r", provider)
@@ -68,7 +69,8 @@ def list_facets(request, **kwargs):
             info["link"] = f"{reverse('get_facet', args=[info['name']])}?{urlencode(link_args)}"
 
         if include_topics:
-            info["topics"] = _get_topics(provider, queryset=_prefilter_topics(request), lang=lang)
+            prefiltered = prefiltered or _prefilter_topics(request)
+            info["topics"] = _get_topics(provider, queryset=prefiltered, lang=lang)
 
         facets.append(info)
 
