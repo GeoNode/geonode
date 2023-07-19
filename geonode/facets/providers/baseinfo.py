@@ -35,14 +35,14 @@ class ResourceTypeFacetProvider(FacetProvider):
     def name(self) -> str:
         return "resourcetype"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{resource_type.in}",
+            "key": "filter{resource_type.in}",  # deprecated
+            "filter": "filter{resource_type.in}",
             "label": "Resource type",
             "type": FACET_TYPE_BASE,
             "hierarchical": True,
-            "order": 0,
         }
 
     def get_facet_items(
@@ -91,7 +91,7 @@ class ResourceTypeFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(ResourceTypeFacetProvider())
+        registry.register_facet_provider(ResourceTypeFacetProvider(**kwargs))
 
 
 class FeaturedFacetProvider(FacetProvider):
@@ -103,7 +103,7 @@ class FeaturedFacetProvider(FacetProvider):
     def name(self) -> str:
         return "featured"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
             "key": "filter{featured}",
@@ -144,4 +144,4 @@ class FeaturedFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(FeaturedFacetProvider())
+        registry.register_facet_provider(FeaturedFacetProvider(**kwargs))

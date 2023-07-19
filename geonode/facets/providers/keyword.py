@@ -36,13 +36,13 @@ class KeywordFacetProvider(FacetProvider):
     def name(self) -> str:
         return "keyword"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{keywords.slug.in}",
+            "key": "filter{keywords.slug.in}",  # deprecated
+            "filter": "filter{keywords.slug.in}",
             "label": "Keyword",
             "type": FACET_TYPE_KEYWORD,
-            "order": 2,
         }
 
     def get_facet_items(
@@ -55,10 +55,16 @@ class KeywordFacetProvider(FacetProvider):
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.values("keywords__slug", "keywords__name").filter(keywords__isnull=False)
+        filters = {"keywords__isnull": False}
         if topic_contains:
-            q = q.filter(keywords__name=topic_contains)
-        q = q.annotate(count=Count("keywords__slug")).order_by("-count")
+            filters["keywords__name__icontains"] = topic_contains
+
+        q = (
+            queryset.filter(**filters)
+            .values("keywords__slug", "keywords__name")
+            .annotate(count=Count("keywords__slug"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 
@@ -93,4 +99,4 @@ class KeywordFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(KeywordFacetProvider())
+        registry.register_facet_provider(KeywordFacetProvider(**kwargs))

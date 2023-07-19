@@ -116,17 +116,17 @@ class Document(ResourceBase):
     @property
     def is_audio(self):
         AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "audio"]
-        return self.is_file and self.extension.lower() in AUDIOTYPES
+        return self.extension and self.extension.lower() in AUDIOTYPES
 
     @property
     def is_image(self):
         IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "image"]
-        return self.is_file and self.extension.lower() in IMGTYPES
+        return self.extension and self.extension.lower() in IMGTYPES
 
     @property
     def is_video(self):
         VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "video"]
-        return self.is_file and self.extension.lower() in VIDEOTYPES
+        return self.extension and self.extension.lower() in VIDEOTYPES
 
     @property
     def class_name(self):

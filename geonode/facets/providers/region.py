@@ -36,14 +36,13 @@ class RegionFacetProvider(FacetProvider):
     def name(self) -> str:
         return "region"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{regions.code.in}",
+            "key": "filter{regions.code.in}",  # deprecated
+            "filter": "filter{regions.code.in}",
             "label": "Region",
             "type": FACET_TYPE_PLACE,
-            "hierarchical": False,  # source data is hierarchical, but this implementation is flat
-            "order": 2,
         }
 
     def get_facet_items(
@@ -94,4 +93,4 @@ class RegionFacetProvider(FacetProvider):
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(RegionFacetProvider())
+        registry.register_facet_provider(RegionFacetProvider(**kwargs))

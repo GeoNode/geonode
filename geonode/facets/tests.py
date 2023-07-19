@@ -29,6 +29,7 @@ from django.urls import reverse
 
 from geonode.base.models import Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase, Region
 from geonode.facets.models import facet_registry
+from geonode.facets.providers.baseinfo import FeaturedFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
 from geonode.tests.base import GeoNodeBaseTestSupport
 import geonode.facets.views as views
@@ -69,7 +70,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         cls.thesauri_k = {}
 
         for tn in range(2):
-            t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}")
+            t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}", order=100 + tn * 10)
             cls.thesauri[tn] = t
             for tl in (
                 "en",
@@ -136,13 +137,13 @@ class TestFacets(GeoNodeBaseTestSupport):
             # RB19 ->  T0K0 T0K1                       FEAT
 
             if x % 2 == 1:
-                print(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
+                logger.debug(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
                 d.tkeywords.add(self.thesauri_k["0_0"])
             if x % 2 == 1 and x > 10:
-                print(f"ADDING KEYWORDS {self.thesauri_k['0_1']} to RB {d}")
+                logger.debug(f"ADDING KEYWORDS {self.thesauri_k['0_1']} to RB {d}")
                 d.tkeywords.add(self.thesauri_k["0_1"])
             if x < 10:
-                print(f"ADDING KEYWORDS {self.thesauri_k['1_0']} to RB {d}")
+                logger.debug(f"ADDING KEYWORDS {self.thesauri_k['1_0']} to RB {d}")
                 d.tkeywords.add(self.thesauri_k["1_0"])
             if 7 < x < 13:
                 d.tkeywords.add(self.thesauri_k["1_1"])
@@ -334,6 +335,79 @@ class TestFacets(GeoNodeBaseTestSupport):
             obj = json.loads(res.content)
             self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and filter {filters}")
             self.assertEqual(count0, obj["topics"]["items"][0]["count"], f"Bad count0 for facet '{facet}")
+
+    def test_prefiltering_tkeywords(self):
+        regname = RegionFacetProvider().name
+        featname = FeaturedFacetProvider().name
+        t1filter = facet_registry.get_provider("t_1").get_info()["filter"]
+        tkey_1_1 = self.thesauri_k["1_1"].id
+
+        expected_region = {"R1": 1}
+        expected_feat = {True: 2, False: 3}
+
+        # Run the single requests
+        for facet, params, items in (
+            (regname, {t1filter: tkey_1_1}, expected_region),
+            (featname, {t1filter: tkey_1_1}, expected_feat),
+        ):
+            req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
+            res: JsonResponse = views.get_facet(req, facet)
+            obj = json.loads(res.content)
+
+            self.assertEqual(
+                len(items),
+                len(obj["topics"]["items"]),
+                f"Bad count for items '{facet} \n PARAMS: {params} \n RESULT: {obj} \n EXPECTED: {items}",
+            )
+            # search item
+            for item in items.keys():
+                found = next((i for i in obj["topics"]["items"] if i["key"] == item), None)
+                self.assertIsNotNone(found, f"Topic '{item}' not found in facet {facet} -- {obj}")
+                self.assertEqual(items[item], found.get("count", None), f"Bad count for facet '{facet}:{item}")
+
+        # Run the single request
+        req = self.rf.get(reverse("list_facets"), data={"include_topics": 1, t1filter: tkey_1_1})
+        res: JsonResponse = views.list_facets(req)
+        obj = json.loads(res.content)
+
+        facets_list = obj["facets"]
+        fmap = self._facets_to_map(facets_list)
+
+        for name, items in (
+            (regname, expected_region),
+            (featname, expected_feat),
+        ):
+            self.assertIn(name, fmap)
+            facet = fmap[name]
+
+            for item in items.keys():
+                found = next((i for i in facet["topics"]["items"] if i["key"] == item), None)
+                self.assertIsNotNone(found, f"Topic '{item}' not found in facet {facet} -- {facet}")
+                self.assertEqual(items[item], found.get("count", None), f"Bad count for facet '{facet}:{item}")
+
+    def test_config(self):
+        for facet, type, order in (
+            ("resourcetype", None, None),
+            ("t_0", "select", 100),
+            ("category", "select", 5),
+            ("region", "select", 7),
+            ("owner", "select", 8),
+        ):
+            req = self.rf.get(reverse("get_facet", args=[facet]), data={"include_config": True})
+            res: JsonResponse = views.get_facet(req, facet)
+            obj = json.loads(res.content)
+            self.assertIn("config", obj, "Config info not found in payload")
+            conf = obj["config"]
+
+            if type is None:
+                self.assertNotIn("type", conf)
+            else:
+                self.assertEqual(type, conf["type"], "Unexpected type")
+
+            if order is None:
+                self.assertNotIn("order", conf)
+            else:
+                self.assertEqual(order, conf["order"], "Unexpected order")
 
     def test_user_auth(self):
         # make sure the user authorization pre-filters the visible resources
