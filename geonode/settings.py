@@ -1984,6 +1984,7 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
         "prompt": "select_account",
     },
     "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
+    "UID_FIELD": "unique_name",
     "IS_MANAGER_FIELD": "is_manager",
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",

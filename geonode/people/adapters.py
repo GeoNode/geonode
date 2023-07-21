@@ -248,11 +248,14 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     def complete_login(self, request, app, token, response, **kwargs):
         extra_data = {}
         if self.profile_url:
-            headers = {"Authorization": "Bearer {0}".format(token.token)}
-            resp = requests.get(self.profile_url, headers=headers)
-            profile_data = resp.json()
-            extra_data.update(profile_data)
-        elif "id_token" in response:
+            try:
+                headers = {"Authorization": f"Bearer {token.token}"}
+                resp = requests.get(self.profile_url, headers=headers)
+                profile_data = resp.json()
+                extra_data.update(profile_data)
+            except Exception as e:
+                logger.exception(OAuth2Error("Invalid profile_url, falling back to id_token checks..."))
+        if not extra_data and "id_token" in response:
             try:
                 extra_data = jwt.decode(
                     response["id_token"],
