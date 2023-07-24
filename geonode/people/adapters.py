@@ -253,7 +253,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                 resp = requests.get(self.profile_url, headers=headers)
                 profile_data = resp.json()
                 extra_data.update(profile_data)
-            except Exception as e:
+            except Exception:
                 logger.exception(OAuth2Error("Invalid profile_url, falling back to id_token checks..."))
         if not extra_data and "id_token" in response:
             try:
