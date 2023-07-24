@@ -10,7 +10,7 @@ x-common-django:
   volumes:
     # - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
-    - geoserver-data-dir:/geoserver_data/data
+    - geoserver-data-dir:${GEOSERVER_DATA_DIR}
     - backup-restore:/backup_restore
     - data:/data
     - tmp:/tmp
@@ -97,7 +97,7 @@ services:
       - .env
     volumes:
       - statics:/mnt/volumes/statics
-      - geoserver-data-dir:/geoserver_data/data
+      - geoserver-data-dir:${GEOSERVER_DATA_DIR}
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
@@ -113,10 +113,10 @@ services:
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
-      - geoserver-data-dir:/geoserver_data/data
+      - geoserver-data-dir:${GEOSERVER_DATA_DIR}
     restart: on-failure
     healthcheck:
-      test: "ls -A '/geoserver_data/data' | wc -l"
+      test: "ls -A '${GEOSERVER_DATA_DIR}' | wc -l"
 
   # PostGIS database.
   db:

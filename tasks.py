@@ -356,7 +356,7 @@ def prepare(ctx):
     new_ext_ip = os.environ["SITEURL"]
     client_id = os.environ["OAUTH2_CLIENT_ID"]
     client_secret = os.environ["OAUTH2_CLIENT_SECRET"]
-    oauth_config = "/geoserver_data/data/security/filter/geonode-oauth2/config.xml"
+    oauth_config = f"{os.environ['GEOSERVER_DATA_DIR']}/security/filter/geonode-oauth2/config.xml"
     ctx.run(f'sed -i "s|<cliendId>.*</cliendId>|<cliendId>{client_id}</cliendId>|g" {oauth_config}', pty=True)
     ctx.run(
         f'sed -i "s|<clientSecret>.*</clientSecret>|<clientSecret>{client_secret}</clientSecret>|g" {oauth_config}',
