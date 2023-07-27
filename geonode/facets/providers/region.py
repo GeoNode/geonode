@@ -52,13 +52,26 @@ class RegionFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.filter(regions__isnull=False).values("regions__code", "regions__name")
+        filters = {"regions__isnull": False}
+
         if topic_contains:
-            q = q.filter(regions__name=topic_contains)
-        q = q.annotate(count=Count("regions__code")).order_by("-count")
+            filters["regions__name"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["regions__code__in"] = keys
+
+        q = (
+            queryset.filter(**filters)
+            .values("regions__code", "regions__name")
+            .annotate(count=Count("regions__code"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 
