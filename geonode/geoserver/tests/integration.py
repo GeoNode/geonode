@@ -54,14 +54,14 @@ def _log(msg, *args):
     logger.debug(msg, *args)
 
 
-@override_settings(SITEURL="http://localhost:8001/")
+@override_settings(SITEURL="http://localhost:8000/")
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
     """
     Tests GeoNode/GeoServer syncronization
     """
 
-    port = 8001
+    port = 8000
 
     def setUp(self):
         super(GeoNodeLiveTestSupport, self).setUp()

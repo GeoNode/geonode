@@ -53,7 +53,7 @@ from geonode.geoserver.helpers import ogc_server_settings
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.tests.utils import GEONODE_USER, GEONODE_PASSWD, rest_upload_by_path
 
-LIVE_SERVER_URL = "http://localhost:8001/"
+LIVE_SERVER_URL = "http://localhost:8000/"
 GEOSERVER_URL = ogc_server_settings.LOCATION
 GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
 
@@ -304,7 +304,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
 
         expected_error = {
             "success": False,
-            "errors": ["The number of active parallel uploads exceeds 100. Wait for the pending ones to finish."],
+            "errors": ["The number of active parallel uploads exceeds 5. Wait for the pending ones to finish."],
             "code": "importer_exception",
         }
         # Try to upload and verify if it passed only by the form size validation
