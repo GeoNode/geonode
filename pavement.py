@@ -361,8 +361,8 @@ def sync(options):
     sh(f"{settings} python -W ignore manage.py makemigrations --noinput")
     sh(f"{settings} python -W ignore manage.py migrate --noinput")
     sh(f"{settings} python -W ignore manage.py loaddata sample_admin.json")
-    sh(f"{settings} python -W ignore manage.py loaddata geonode/base/fixtures/default_oauth_apps.json")
-    sh(f"{settings} python -W ignore manage.py loaddata geonode/base/fixtures/initial_data.json")
+    sh(f"{settings} python -W ignore manage.py loaddata default_oauth_apps.json")
+    sh(f"{settings} python -W ignore manage.py loaddata initial_data.json")
     sh(f"{settings} python -W ignore manage.py set_all_datasets_alternate")
     sh(f"{settings} python -W ignore manage.py collectstatic --noinput")
 
@@ -783,9 +783,7 @@ def test_integration(options):
                 bind = options.get("bind", "0.0.0.0:8000")
                 foreground = "" if options.get("foreground", False) else "&"
                 sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runmessaging {foreground}")
-                sh(
-                    f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver {bind} {foreground}"
-                )
+                sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver {bind} {foreground}")
                 sh("sleep 30")
                 settings = f"REUSE_DB=1 DJANGO_SETTINGS_MODULE={settings}"
             else:

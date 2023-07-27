@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #########################################################################
 #
 # Copyright (C) 2016 OSGeo
@@ -62,13 +63,13 @@ def update(ctx):
         pub_port = None
     db_url = _update_db_connstring()
     geodb_url = _update_geodb_connstring()
-    service_ready = False
-    while not service_ready:
+    geonode_docker_host = None
+    for _cnt in range(1,29):
         try:
-            socket.gethostbyname("geonode")
-            service_ready = True
+            geonode_docker_host = str(socket.gethostbyname("geonode"))
         except Exception:
-            time.sleep(10)
+            print(f"...waiting for NGINX to pop-up...{_cnt}")
+            time.sleep(1)
 
     override_env = "$HOME/.override_env"
     if os.path.exists(override_env):
@@ -85,7 +86,7 @@ def update(ctx):
     envs = {
         "local_settings": str(_localsettings()),
         "siteurl": os.environ.get("SITEURL", siteurl),
-        "geonode_docker_host": str(socket.gethostbyname("geonode")),
+        "geonode_docker_host": geonode_docker_host,
         "public_protocol": pub_protocol,
         "public_fqdn": str(pub_ip) + str(f":{pub_port}" if pub_port else ""),
         "public_host": str(pub_ip),
@@ -94,7 +95,7 @@ def update(ctx):
         "static_root": os.environ.get("STATIC_ROOT", "/mnt/volumes/statics/static/"),
         "media_root": os.environ.get("MEDIA_ROOT", "/mnt/volumes/statics/uploaded/"),
         "geoip_path": os.environ.get("GEOIP_PATH", "/mnt/volumes/statics/geoip.db"),
-        "monitoring": os.environ.get("MONITORING_ENABLED", True),
+        "monitoring": os.environ.get("MONITORING_ENABLED", False),
         "monitoring_host_name": os.environ.get("MONITORING_HOST_NAME", "geonode"),
         "monitoring_service_name": os.environ.get("MONITORING_SERVICE_NAME", "local-geonode"),
         "monitoring_data_ttl": os.environ.get("MONITORING_DATA_TTL", 7),
@@ -390,7 +391,7 @@ def fixtures(ctx):
         pty=True,
     )
     ctx.run(
-        f"python manage.py loaddata geonode/base/fixtures/initial_data.json \
+        f"python manage.py loaddata initial_data.json \
 --settings={_localsettings()}",
         pty=True,
     )

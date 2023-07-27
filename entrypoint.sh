@@ -45,27 +45,52 @@ invoke waitfordbs
 
 cmd="$@"
 
-if [ ${IS_CELERY} = "true" ]  || [ ${IS_CELERY} = "True" ]
+echo DOCKER_ENV=$DOCKER_ENV
+
+if [ -z ${DOCKER_ENV} ] || [ ${DOCKER_ENV} = "development" ]
 then
-    echo "Executing Celery server $cmd for Production"
-else
 
     invoke migrations
     invoke prepare
+    invoke fixtures
 
-    if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-        invoke updategeoip
-        invoke fixtures
-        invoke monitoringfixture
-        invoke initialized
-        invoke updateadmin
+    if [ ${IS_CELERY} = "true" ] || [ ${IS_CELERY} = "True" ]
+    then
+
+        echo "Executing Celery server $cmd for Development"
+
+    else
+
+        invoke devrequirements
+        invoke statics
+
+        echo "Executing standard Django server $cmd for Development"
+
     fi
 
-    invoke statics
-    invoke waitforgeoserver
-    invoke geoserverfixture
+else
+    if [ ${IS_CELERY} = "true" ]  || [ ${IS_CELERY} = "True" ]
+    then
+        echo "Executing Celery server $cmd for Production"
+    else
 
-    echo "Executing UWSGI server $cmd for Production"
+        invoke migrations
+        invoke prepare
+
+        if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
+            invoke updategeoip
+            invoke fixtures
+            invoke monitoringfixture
+            invoke initialized
+            invoke updateadmin
+        fi
+
+        invoke statics
+        invoke waitforgeoserver
+        invoke geoserverfixture
+
+        echo "Executing UWSGI server $cmd for Production"
+    fi
 fi
 
 echo "-----------------------------------------------------"
