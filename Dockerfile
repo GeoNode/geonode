@@ -32,6 +32,8 @@ RUN pip install --upgrade --no-cache-dir  --src /usr/src -r requirements.txt
 RUN pip install --upgrade  -e .
 
 # Cleanup apt update lists
+RUN apt-get autoremove --purge
+RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # Export ports
