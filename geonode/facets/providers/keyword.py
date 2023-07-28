@@ -39,7 +39,6 @@ class KeywordFacetProvider(FacetProvider):
     def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{keywords.slug.in}",  # deprecated
             "filter": "filter{keywords.slug.in}",
             "label": "Keyword",
             "type": FACET_TYPE_KEYWORD,
