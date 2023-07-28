@@ -23,21 +23,18 @@ import decimal
 import logging
 import warnings
 import traceback
-from django.urls import reverse
 
 from owslib.wfs import WebFeatureService
-import xml.etree.ElementTree as ET
 
 from django.conf import settings
 
 from django.db.models import F
-from django.http import Http404, JsonResponse
+from django.http import Http404
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
 from django.forms.utils import ErrorList
 from django.contrib.auth import get_user_model
-from django.template.loader import get_template
 from django.utils.translation import ugettext as _
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
@@ -50,9 +47,8 @@ from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
 from geonode.layers.metadata import parse_metadata
-from geonode.proxy.views import fetch_response_headers
 from geonode.resource.manager import resource_manager
-from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
+from geonode.geoserver.helpers import set_dataset_style
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
@@ -70,9 +66,10 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
 from geonode.people.forms import ProfileForm
-from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
+from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import ogc_server_settings, select_relevant_files, write_uploaded_files_to_disk
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
+from django.utils.module_loading import import_string
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -736,69 +733,8 @@ def dataset_metadata_advanced(request, layername):
 
 @csrf_exempt
 def dataset_download(request, layername):
-    try:
-        dataset = _resolve_dataset(request, layername, "base.download_resourcebase", _PERMISSION_MSG_GENERIC)
-    except Exception as e:
-        raise Http404(Exception(_("Not found"), e))
-
-    if not settings.USE_GEOSERVER:
-        # if GeoServer is not used, we redirect to the proxy download
-        return HttpResponseRedirect(reverse("download", args=[dataset.id]))
-
-    download_format = request.GET.get("export_format")
-
-    if download_format and not wps_format_is_supported(download_format, dataset.subtype):
-        logger.error("The format provided is not valid for the selected resource")
-        return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
-
-    _format = "application/zip" if dataset.is_vector() else "image/tiff"
-    # getting default payload
-    tpl = get_template("geoserver/dataset_download.xml")
-    ctx = {"alternate": dataset.alternate, "download_format": download_format or _format}
-    # applying context for the payload
-    payload = tpl.render(ctx)
-
-    # init of Client
-    client = HttpClient()
-
-    headers = {"Content-type": "application/xml", "Accept": "application/xml"}
-
-    # defining the URL needed fr the download
-    url = f"{settings.OGC_SERVER['default']['LOCATION']}ows?service=WPS&version=1.0.0&REQUEST=Execute"
-    if not request.user.is_anonymous:
-        # define access token for the user
-        access_token = get_or_create_token(request.user)
-        url += f"&access_token={access_token}"
-
-    # request to geoserver
-    response, content = client.request(url=url, data=payload, method="post", headers=headers)
-
-    if response.status_code != 200:
-        logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
-        return JsonResponse(
-            {"error": f"Download dataset exception: error during call with GeoServer: {response.content}"}, status=500
-        )
-
-    # error handling
-    namespaces = {"ows": "http://www.opengis.net/ows/1.1", "wps": "http://www.opengis.net/wps/1.0.0"}
-    response_type = response.headers.get("Content-Type")
-    if response_type == "text/xml":
-        # parsing XML for get exception
-        content = ET.fromstring(response.text)
-        exc = content.find("*//ows:Exception", namespaces=namespaces) or content.find(
-            "ows:Exception", namespaces=namespaces
-        )
-        if exc:
-            exc_text = exc.find("ows:ExceptionText", namespaces=namespaces)
-            logger.error(f"{exc.attrib.get('exceptionCode')} {exc_text.text}")
-            return JsonResponse({"error": f"{exc.attrib.get('exceptionCode')}: {exc_text.text}"}, status=500)
-
-    return_response = fetch_response_headers(
-        HttpResponse(content=response.content, status=response.status_code, content_type=download_format),
-        response.headers,
-    )
-    return_response.headers["Content-Type"] = download_format or _format
-    return return_response
+    DownloadHandler = import_string(settings.DATASET_DOWNLOAD_HANDLER)
+    return DownloadHandler(request, layername).get_download_response()
 
 
 @login_required
