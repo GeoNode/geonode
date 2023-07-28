@@ -27,9 +27,20 @@ from django.http import JsonResponse
 from django.test import RequestFactory
 from django.urls import reverse
 
-from geonode.base.models import Thesaurus, ThesaurusLabel, ThesaurusKeyword, ThesaurusKeywordLabel, ResourceBase, Region
+from geonode.base.models import (
+    Thesaurus,
+    ThesaurusLabel,
+    ThesaurusKeyword,
+    ThesaurusKeywordLabel,
+    ResourceBase,
+    Region,
+    TopicCategory,
+    HierarchicalKeyword,
+)
 from geonode.facets.models import facet_registry
 from geonode.facets.providers.baseinfo import FeaturedFacetProvider
+from geonode.facets.providers.category import CategoryFacetProvider
+from geonode.facets.providers.keyword import KeywordFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
 from geonode.tests.base import GeoNodeBaseTestSupport
 import geonode.facets.views as views
@@ -48,6 +59,8 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         cls._create_thesauri()
         cls._create_regions()
+        cls._create_categories()
+        cls._create_keywords()
         cls._create_resources()
         cls.rf = RequestFactory()
 
@@ -99,6 +112,28 @@ class TestFacets(GeoNodeBaseTestSupport):
             cls.regions[code] = Region.objects.create(code=code, name=name)
 
     @classmethod
+    def _create_categories(cls):
+        cls.cats = {}
+
+        for code, name in (
+            ("C0", "Cat0"),
+            ("C1", "Cat1"),
+            ("C2", "Cat2"),
+        ):
+            cls.cats[code] = TopicCategory.objects.create(identifier=code, description=name, gn_description=name)
+
+    @classmethod
+    def _create_keywords(cls):
+        cls.kw = {}
+
+        for code, name in (
+            ("K0", "Keyword0"),
+            ("K1", "Keyword1"),
+            ("K2", "Keyword2"),
+        ):
+            cls.kw[code] = HierarchicalKeyword.objects.create(slug=code, name=name)
+
+    @classmethod
     def _create_resources(self):
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
 
@@ -115,12 +150,12 @@ class TestFacets(GeoNodeBaseTestSupport):
 
             # These are the assigned keywords to the Resources
 
-            # RB00 ->            T1K0          R0,R1   FEAT
-            # RB01 ->  T0K0      T1K0          R0      FEAT
-            # RB02 ->            T1K0          R1      FEAT
-            # RB03 ->  T0K0      T1K0
-            # RB04 ->            T1K0
-            # RB05 ->  T0K0      T1K0
+            # RB00 ->            T1K0          R0,R1   FEAT  K0      C0
+            # RB01 ->  T0K0      T1K0          R0      FEAT  K1
+            # RB02 ->            T1K0          R1      FEAT  K2      C0
+            # RB03 ->  T0K0      T1K0                        K0
+            # RB04 ->            T1K0                        K0,K1   C0
+            # RB05 ->  T0K0      T1K0                        K0,K2   C1
             # RB06 ->            T1K0                  FEAT
             # RB07 ->  T0K0      T1K0                  FEAT
             # RB08 ->            T1K0 T1K1     R1      FEAT
@@ -130,11 +165,11 @@ class TestFacets(GeoNodeBaseTestSupport):
             # RB12 ->                 T1K1             FEAT
             # RB13 ->  T0K0 T0K1               R1      FEAT
             # RB14 ->                                  FEAT
-            # RB15 ->  T0K0 T0K1
-            # RB16 ->
+            # RB15 ->  T0K0 T0K1                                     C1
+            # RB16 ->                                                C1
             # RB17 ->  T0K0 T0K1
-            # RB18 ->                                  FEAT
-            # RB19 ->  T0K0 T0K1                       FEAT
+            # RB18 ->                                  FEAT          C2
+            # RB19 ->  T0K0 T0K1                       FEAT          C2
 
             if x % 2 == 1:
                 logger.debug(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
@@ -147,12 +182,32 @@ class TestFacets(GeoNodeBaseTestSupport):
                 d.tkeywords.add(self.thesauri_k["1_0"])
             if 7 < x < 13:
                 d.tkeywords.add(self.thesauri_k["1_1"])
-            if x in (0, 1):
-                d.regions.add(self.regions["R0"])
-            if x in (0, 2, 8, 13):
-                d.regions.add(self.regions["R1"])
+
             if (x % 6) in (0, 1, 2):
                 d.featured = True
+
+            for reg, idx in (
+                ("R0", (0, 1)),
+                ("R1", (0, 2, 8, 13)),
+            ):
+                if x in idx:
+                    d.regions.add(self.regions[reg])
+
+            for kw, idx in (
+                ("K0", (0, 3, 4, 5)),
+                ("K1", [1, 4]),
+                ("K2", [2, 5]),
+            ):
+                if x in idx:
+                    d.keywords.add(self.kw[kw])
+
+            for cat, idx in (
+                ("C0", [0, 2, 4]),
+                ("C1", [5, 15, 16]),
+                ("C2", [18, 19]),
+            ):
+                if x in idx:
+                    d.category = self.cats[cat]
 
             d.save()
             d.set_permissions(public_perm_spec)
@@ -193,7 +248,23 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "category",
                 "topics": {
-                    "total": 0,
+                    "total": 3,
+                    "items": [
+                        {"label": "Cat0", "count": 3},
+                        {"label": "Cat1", "count": 3},
+                        {"label": "Cat2", "count": 2},
+                    ],
+                },
+            },
+            {
+                "name": "keyword",
+                "topics": {
+                    "total": 3,
+                    "items": [
+                        {"label": "Keyword0", "count": 4},
+                        {"label": "Keyword1", "count": 2},
+                        {"label": "Keyword2", "count": 2},
+                    ],
                 },
             },
             {
@@ -306,7 +377,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def test_topics(self):
         for facet, keys, exp in (
             ("t_0", [self.thesauri_k["0_0"].id, self.thesauri_k["0_1"].id, -999], 2),
-            ("category", ["C1", "C2", "nomatch"], 0),
+            ("category", ["C1", "C2", "nomatch"], 2),
             ("owner", [self.user.id, -100], 1),
             ("region", ["R0", "R1", "nomatch"], 2),
         ):
@@ -408,6 +479,65 @@ class TestFacets(GeoNodeBaseTestSupport):
                 self.assertNotIn("order", conf)
             else:
                 self.assertEqual(order, conf["order"], "Unexpected order")
+
+    def test_count0(self):
+        reginfo = RegionFacetProvider().get_info()
+        regfilter = reginfo["filter"]
+        regname = reginfo["name"]
+
+        catinfo = CategoryFacetProvider().get_info()
+        catname = catinfo["name"]
+
+        kwinfo = KeywordFacetProvider().get_info()
+        kwfilter = kwinfo["filter"]
+        kwname = kwinfo["name"]
+
+        t0filter = facet_registry.get_provider("t_0").get_info()["filter"]
+        t1filter = facet_registry.get_provider("t_1").get_info()["filter"]
+
+        def t(tk):
+            return self.thesauri_k[tk].id
+
+        for facet, params, items in (
+            # thesauri
+            ("t_1", {regfilter: "R0"}, {t("1_0"): 2}),
+            ("t_1", {regfilter: "R0", "key": [t("1_0")]}, {t("1_0"): 2}),
+            ("t_1", {regfilter: "R0", t0filter: t("0_1")}, {}),
+            ("t_1", {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_0")]}, {t("1_0"): None}),
+            (
+                "t_1",
+                {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_1"), t("1_0")]},
+                {t("1_0"): None, t("1_1"): None},
+            ),
+            # regions
+            (regname, {t1filter: t("1_1")}, {"R1": 1}),
+            (regname, {t1filter: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
+            (regname, {t1filter: t("1_1"), "key": ["R0"]}, {"R0": None}),
+            # category
+            (catname, {t1filter: t("1_0")}, {"C0": 3, "C1": 1}),
+            (catname, {t1filter: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
+            (catname, {kwfilter: "K1"}, {"C0": 1}),
+            (catname, {kwfilter: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
+            # keyword
+            (kwname, {t0filter: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1}),
+            (kwname, {t0filter: t("0_0"), regfilter: "R0"}, {"K1": 1}),
+            (kwname, {t0filter: t("0_0"), regfilter: "R0", "key": ["K0"]}, {"K0": None}),
+        ):
+            req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
+            res: JsonResponse = views.get_facet(req, facet)
+            obj = json.loads(res.content)
+            # self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and params {params}")
+
+            self.assertEqual(
+                len(items),
+                len(obj["topics"]["items"]),
+                f"Bad count for items '{facet} \n PARAMS: {params} \n RESULT: {obj} \n EXPECTED: {items}",
+            )
+            # search item
+            for item in items.keys():
+                found = next((i for i in obj["topics"]["items"] if i["key"] == item), None)
+                self.assertIsNotNone(found, f"Topic '{item}' not found in facet {facet} -- {obj}")
+                self.assertEqual(items[item], found.get("count", None), f"Bad count for facet '{facet}:{item}")
 
     def test_user_auth(self):
         # make sure the user authorization pre-filters the visible resources
