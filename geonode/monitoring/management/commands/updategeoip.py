@@ -27,7 +27,7 @@ from django.utils.translation import ugettext_noop as _
 
 logger = logging.getLogger(__name__)
 
-URL = 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLite2-City.tar.gz'
+URL = os.environ.get(GEOIP_DATABASE_URL, 'https://build.geo-solutions.it/geonode/geoserver/latest/GeoLite2-City.tar.gz')
 OLD_FORMAT = False
 
 
@@ -65,7 +65,8 @@ class Command(BaseCommand):
         block_size = 1024
         wrote = 0
         with open('output.bin', 'wb') as f:
-            for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size // block_size), unit='KB', unit_scale=False):  # noqa
+            for data in tqdm(r.iter_content(block_size), total=math.ceil(total_size // block_size), unit='KB',
+                             unit_scale=False):  # noqa
                 wrote = wrote + len(data)
                 f.write(data)
         logger.info(f" total_size [{total_size}] / wrote [{wrote}] ")
