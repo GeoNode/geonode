@@ -1,4 +1,4 @@
-FROM alpine:3.16
+FROM alpine:latest
 
 RUN apk add --no-cache certbot 
 

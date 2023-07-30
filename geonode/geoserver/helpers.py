@@ -2287,7 +2287,7 @@ def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
     workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ("", layer.alternate)
     wms_url = settings.GEOSERVER_PUBLIC_LOCATION
     if not layer.remote_service:
-        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
+        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/ows?service=wms&version={version}&request=GetCapabilities"  # noqa
         if access_token:
             wms_url += f"&access_token={access_token}"
     else:

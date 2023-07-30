@@ -52,15 +52,26 @@ class CategoryFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.values("category__identifier", "category__gn_description", "category__fa_class").filter(
-            category__isnull=False
-        )
+        filters = {"category__isnull": False}
+
         if topic_contains:
-            q = q.filter(category__gn_description=topic_contains)
-        q = q.annotate(count=Count("owner")).order_by("-count")
+            filters["category__gn_description"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["category__identifier__in"] = keys
+
+        q = (
+            queryset.values("category__identifier", "category__gn_description", "category__fa_class")
+            .filter(**filters)
+            .annotate(count=Count("owner"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 

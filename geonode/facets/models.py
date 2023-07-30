@@ -71,7 +71,14 @@ class FacetProvider:
         pass
 
     def get_facet_items(
-        self, queryset, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en", topic_contains: str = None
+        self,
+        queryset,
+        start: int = 0,
+        end: int = DEFAULT_FACET_PAGE_SIZE,
+        lang="en",
+        topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         """
         Return the items of the facets, in a tuple:
@@ -87,6 +94,7 @@ class FacetProvider:
         :param end: int: pagination, the index of the last returned item
         :param lang: the preferred language for the labels
         :param topic_contains: only returns matching topics
+        :param keys: only returns topics with given keys, even if their count is 0
         :return: a tuple int:total count of record, list of items
         """
         pass
