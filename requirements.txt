@@ -152,7 +152,7 @@ invoke==2.2.0
 # tests
 coverage==7.2.7
 requests-toolbelt==1.0.0
-flake8==6.0.0
+flake8==6.1.0
 black==23.7.0
 pytest==7.4.0
 pytest-bdd==6.1.1
