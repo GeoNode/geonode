@@ -17,8 +17,6 @@ x-common-django:
   depends_on:
     db:
       condition: service_healthy
-    geoserver:
-      condition: service_healthy
 
 services:
 
@@ -27,11 +25,11 @@ services:
     << : *default-common-django
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
-      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
+      test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
       start_period: 60s
       interval: 60s
       timeout: 10s
-      retries: 10
+      retries: 2
     environment:
       - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
@@ -42,7 +40,8 @@ services:
     << : *default-common-django
     container_name: celery4${COMPOSE_PROJECT_NAME}
     depends_on:
-      - django
+      django:
+        condition: service_healthy
     environment:
       - IS_CELERY=True
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
@@ -50,15 +49,12 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:4.1.0
+    image: geonode/nginx:latest
     build: ./scripts/docker/nginx/
     container_name: nginx4${COMPOSE_PROJECT_NAME}
+    env_file:
+      - .env
     environment:
-      - HTTPS_HOST=${HTTPS_HOST}
-      - HTTP_HOST=${HTTP_HOST}
-      - HTTPS_PORT=${HTTPS_PORT}
-      - HTTP_PORT=${HTTP_PORT}
-      - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
       - RESOLVER=127.0.0.11
     ports:
       - "${HTTP_PORT}:80"
@@ -71,14 +67,11 @@ services:
 
   # Gets and installs letsencrypt certificates
   letsencrypt:
-    image: geonode/letsencrypt:4.1.0
+    image: geonode/letsencrypt:latest
     build: ./scripts/docker/letsencrypt/
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
-    environment:
-      - HTTPS_HOST=${HTTPS_HOST}
-      - HTTP_HOST=${HTTP_HOST}
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
+    env_file:
+      - .env
     volumes:
       - nginx-certificates:/geonode-certificates
     restart: unless-stopped
@@ -88,13 +81,15 @@ services:
     image: geonode/geoserver:2.23.0
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
-      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/ows"
+      test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
       start_period: 60s
       interval: 60s
       timeout: 10s
-      retries: 10
+      retries: 2
     env_file:
       - .env
+    ports:
+      - "8080:8080"
     volumes:
       - statics:/mnt/volumes/statics
       - geoserver-data-dir:/geoserver_data/data
@@ -103,9 +98,9 @@ services:
       - tmp:/tmp
     restart: unless-stopped
     depends_on:
-      db:
-        condition: service_healthy
       data-dir-conf:
+        condition: service_healthy
+      django:
         condition: service_healthy
 
   data-dir-conf:
