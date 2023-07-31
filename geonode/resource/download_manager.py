@@ -25,7 +25,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonRespons
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.translation import ugettext as _
-from geonode import settings
+from django.conf import settings
 from geonode.base.auth import get_or_create_token
 from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
