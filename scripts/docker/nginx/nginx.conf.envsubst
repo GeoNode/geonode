@@ -23,7 +23,7 @@ http {
     # TODO : do not use unencrypted connection even on LAN, but is it possible to have browser not complaining about unknown authority ?
     server {
         listen              80;
-        server_name         $HTTP_HOST 127.0.0.1 geonode;
+        server_name         $HTTP_HOST 127.0.0.1;
 
         include sites-enabled/*.conf;
     }

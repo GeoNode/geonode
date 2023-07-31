@@ -7,6 +7,7 @@ Table of Contents
 - [Table of Contents](#table-of-contents)
   - [What is GeoNode?](#what-is-geonode)
   - [Try out GeoNode](#try-out-geonode)
+  - [Quick Docker Start](#quick-docker-start)
   - [Install](#install)
   - [Learn GeoNode](#learn-geonode)
   - [Development](#development)
@@ -47,17 +48,49 @@ maps, editing metadata, styles and much more. To get an overview what
 GeoNode can do we recommend to have a look at the [Users
 Workshop](https://docs.geonode.org/en/master/usage/index.html).
 
+Quick Docker Start
+------------------
+
+  ```bash
+    python3.10 -m venv ~/.venvs/geonode
+    source ~/.venvs/geonode/bin/activate
+
+    pip install Django==3.2.*
+  ```
+  ```bash
+    cd ~/{{ project_name }}
+
+    python create-envfile.py \
+        --https \
+        --env_type test \
+        --hostname localhost \
+        --email admin@email.com \
+        --geonodepwd admin \
+        --geoserverpwd geoserver \
+        --pgpwd postgres \
+        --dbpwd geonode \
+        --geodbpwd geonode \
+        --clientid Jrchz2oPY3akmzndmgUTYrs9gczlgoV20YPSvqaV \
+        --clientsecret rCnp5txobUo83EpQEblM8fVj3QT5zb5qRfxNsuPzCqZaiRyIoxM4jdgMiZKFfePBHYXCLd7B8NlkfDBY9HKeIQPcy5Cp08KQNpRHQbjpLItDHv12GvkSeXp6OxaUETv3
+  ```
+
+  ```bash
+    docker compose build
+
+    docker compose up -d
+  ```
+
 Install
 -------
 
-    The latest official release is 4.0.2!
+    The latest official release is 4.1.0!
 
 GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
 the offical GeoNode installation documentation:
 
 - [Docker](https://docs.geonode.org/en/master/install/advanced/core/index.html#docker)
-- [Ubuntu 20.04 LTS](https://docs.geonode.org/en/master/install/advanced/core/index.html#ubuntu-20-04lts)
+- [Ubuntu 22.04](https://docs.geonode.org/en/master/install/advanced/core/index.html#ubuntu-22-04)
 
 Learn GeoNode
 -------------
