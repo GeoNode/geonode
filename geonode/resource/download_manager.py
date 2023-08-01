@@ -62,9 +62,9 @@ class DownloadHandler:
         return response
 
     def get_resource(self):
-        '''
+        """
         Returnt the object needed
-        '''
+        """
         try:
             return _resolve_dataset(
                 self.request,
@@ -76,9 +76,9 @@ class DownloadHandler:
             raise Http404(Exception(_("Not found"), e))
 
     def process_dowload(self, resource):
-        '''
+        """
         Generate the response object
-        '''
+        """
         if not settings.USE_GEOSERVER:
             # if GeoServer is not used, we redirect to the proxy download
             return HttpResponseRedirect(reverse("download", args=[resource.id]))
