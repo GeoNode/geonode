@@ -50,18 +50,21 @@ class DownloadHandler:
         Basic method. Should return the Response object
         that allow the resource download
         """
-        dataset = self.get_resource()
-        response = self.process_dowload(dataset)
-        response = self.perform_last_step(dataset, response)
+        resource = self.get_resource()
+        response = self.process_dowload(resource)
+        response = self.perform_last_step(resource, response)
         return response
 
-    def perform_last_step(self, dataset, response):
+    def perform_last_step(self, resource, response):
         """
         Override this function to perform any additional step required
         """
         return response
 
     def get_resource(self):
+        '''
+        Returnt the object needed
+        '''
         try:
             return _resolve_dataset(
                 self.request,
@@ -72,21 +75,24 @@ class DownloadHandler:
         except Exception as e:
             raise Http404(Exception(_("Not found"), e))
 
-    def process_dowload(self, dataset):
+    def process_dowload(self, resource):
+        '''
+        Generate the response object
+        '''
         if not settings.USE_GEOSERVER:
             # if GeoServer is not used, we redirect to the proxy download
-            return HttpResponseRedirect(reverse("download", args=[dataset.id]))
+            return HttpResponseRedirect(reverse("download", args=[resource.id]))
 
         download_format = self.request.GET.get("export_format")
 
-        if download_format and not wps_format_is_supported(download_format, dataset.subtype):
+        if download_format and not wps_format_is_supported(download_format, resource.subtype):
             logger.error("The format provided is not valid for the selected resource")
             return JsonResponse({"error": "The format provided is not valid for the selected resource"}, status=500)
 
-        _format = "application/zip" if dataset.is_vector() else "image/tiff"
+        _format = "application/zip" if resource.is_vector() else "image/tiff"
         # getting default payload
         tpl = get_template("geoserver/dataset_download.xml")
-        ctx = {"alternate": dataset.alternate, "download_format": download_format or _format}
+        ctx = {"alternate": resource.alternate, "download_format": download_format or _format}
         # applying context for the payload
         payload = tpl.render(ctx)
 
