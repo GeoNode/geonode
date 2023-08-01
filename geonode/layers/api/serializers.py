@@ -173,6 +173,7 @@ class DatasetSerializer(ResourceBaseSerializer):
             "featureinfo_custom_template",
             "ows_url",
             "capabilities_url",
+            "dataset_ows_url",
             "workspace",
             "default_style",
             "styles",
