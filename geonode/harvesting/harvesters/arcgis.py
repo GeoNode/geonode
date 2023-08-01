@@ -205,8 +205,8 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
         ows_url = harvestable_resource.unique_identifier.rpartition("/")[0]
         store = slugify(ows_url)
-        name = layer_representation["id"]
-        title = layer_representation["name"]
+        name = layer_representation.get("id", layer_representation.get("name", "Undefined"))
+        title = layer_representation.get("name", layer_representation.get("title", "Undefined"))
         workspace = "remoteWorkspace"
         alternate = f"{workspace}:{name}"
         return resourcedescriptor.RecordDescription(
@@ -307,8 +307,8 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
         ows_url = harvestable_resource.unique_identifier.rpartition("/")[0]
         store = slugify(ows_url)
-        name = layer_representation["id"]
-        title = layer_representation["name"]
+        name = layer_representation.get("id", layer_representation.get("name", "Undefined"))
+        title = layer_representation.get("name", layer_representation.get("title", "Undefined"))
         workspace = "remoteWorkspace"
         alternate = f"{workspace}:{name}"
         return resourcedescriptor.RecordDescription(
