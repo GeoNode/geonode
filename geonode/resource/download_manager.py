@@ -19,7 +19,6 @@
 
 import logging
 import xml.etree.ElementTree as ET
-from abc import ABC
 
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import get_template
@@ -35,7 +34,7 @@ from geonode.utils import HttpClient
 logger = logging.getLogger("geonode.resource.download_manager")
 
 
-class BaseDownloadHandler(ABC):
+class DownloadHandler:
     def __str__(self):
         return f"{self.__module__}.{self.__class__.__name__}"
 
@@ -46,17 +45,25 @@ class BaseDownloadHandler(ABC):
         self.request = request
         self.resource_name = resource_name
 
-    def get_download_response():
+    def get_download_response(self):
         """
         Basic method. Should return the Response object
         that allow the resource download
         """
+        dataset = self.get_resource()
+        response = self.process_dowload(dataset)
+        response = self.perform_last_step(dataset, response)
+        return response
 
+    def perform_last_step(self, dataset, response):
+        """
+        Override this function to perform any additional step required
+        """
+        return response
 
-class WPSDownloadHandler(BaseDownloadHandler):
-    def get_download_response(self):
+    def get_resource(self):
         try:
-            dataset = _resolve_dataset(
+            return _resolve_dataset(
                 self.request,
                 self.resource_name,
                 "base.download_resourcebase",
@@ -65,6 +72,7 @@ class WPSDownloadHandler(BaseDownloadHandler):
         except Exception as e:
             raise Http404(Exception(_("Not found"), e))
 
+    def process_dowload(self, dataset):
         if not settings.USE_GEOSERVER:
             # if GeoServer is not used, we redirect to the proxy download
             return HttpResponseRedirect(reverse("download", args=[dataset.id]))
@@ -97,10 +105,10 @@ class WPSDownloadHandler(BaseDownloadHandler):
         # request to geoserver
         response, content = client.request(url=url, data=payload, method="post", headers=headers)
 
-        if response.status_code != 200:
-            logger.error(f"Download dataset exception: error during call with GeoServer: {response.content}")
+        if not response or response.status_code != 200:
+            logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
             return JsonResponse(
-                {"error": f"Download dataset exception: error during call with GeoServer: {response.content}"},
+                {"error": f"Download dataset exception: error during call with GeoServer: {content}"},
                 status=500,
             )
 
