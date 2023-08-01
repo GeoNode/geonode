@@ -21,7 +21,7 @@ from unittest import TestCase
 
 from django.http import HttpResponse
 from geonode.base.populate_test_data import create_single_dataset
-from geonode.resource.download_manager import DownloadHandler
+from geonode.resource.download_handler import DownloadHandler
 from geonode.resource.utils import metadata_storers
 from geonode.tests.base import GeoNodeBaseTestSupport
 
