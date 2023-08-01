@@ -52,13 +52,6 @@ class DownloadHandler:
         """
         resource = self.get_resource()
         response = self.process_dowload(resource)
-        response = self.perform_last_step(resource, response)
-        return response
-
-    def perform_last_step(self, resource, response):
-        """
-        Override this function to perform any additional step required
-        """
         return response
 
     def get_resource(self):
