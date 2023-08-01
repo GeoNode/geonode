@@ -31,7 +31,7 @@ from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
 
-logger = logging.getLogger("geonode.resource.download_manager")
+logger = logging.getLogger("geonode.resource.download_handler")
 
 
 class DownloadHandler:
