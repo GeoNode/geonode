@@ -260,6 +260,12 @@ class Dataset(ResourceBase):
         from geonode.geoserver.helpers import get_dataset_capabilities_url
 
         return get_dataset_capabilities_url(self)
+    
+    @property
+    def dataset_ows_url(self):
+        from geonode.geoserver.helpers import get_layer_ows_url
+
+        return get_layer_ows_url(self)
 
     @property
     def embed_url(self):
