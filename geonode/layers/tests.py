@@ -1220,9 +1220,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         url = reverse("dataset_download", args=[dataset.alternate])
         response = self.client.get(url)
         self.assertEqual(500, response.status_code)
-        self.assertDictEqual(
-            {"error": "Download dataset exception: error during call with GeoServer"}, response.json()
-        )
+        self.assertDictEqual({"error": "Download dataset exception: error during call with GeoServer"}, response.json())
 
     def test_dataset_download_call_the_catalog_raise_error_for_error_content(self):
         content = """<?xml version="1.0" encoding="UTF-8"?>
