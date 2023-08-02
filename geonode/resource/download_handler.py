@@ -107,7 +107,7 @@ class DownloadHandler:
         if not response or response.status_code != 200:
             logger.error(f"Download dataset exception: error during call with GeoServer: {content}")
             return JsonResponse(
-                {"error": f"Download dataset exception: error during call with GeoServer: {content}"},
+                {"error": f"Download dataset exception: error during call with GeoServer"},
                 status=500,
             )
 
