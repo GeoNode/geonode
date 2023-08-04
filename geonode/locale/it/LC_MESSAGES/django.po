@@ -786,7 +786,7 @@ msgstr ""
 "controllo, zone postali e servizi, nomi di luoghi."
 
 msgid "Location"
-msgstr "Contatto"
+msgstr "Recapito"
 
 msgid ""
 "Features and characteristics of salt water bodies (excluding inland waters). Examples: "
