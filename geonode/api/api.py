@@ -631,7 +631,7 @@ class OwnersResource(TypeFilteredResource):
             "username": ALL,
         }
         serializer = CountJSONSerializer()
-        authorization = ApiLockdownAuthorization()
+        authorization = GeoNodePeopleAuthorization()
 
 
 class GeoserverStyleResource(ModelResource):
