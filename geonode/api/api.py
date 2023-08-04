@@ -586,7 +586,7 @@ class OwnersResource(TypeFilteredResource):
 
     def apply_filters(self, request, applicable_filters):
         """filter by group if applicable by group functionality"""
-
+        
         semi_filtered = super().apply_filters(request, applicable_filters)
 
         if request.user and not request.user.is_superuser:
@@ -631,7 +631,7 @@ class OwnersResource(TypeFilteredResource):
             "username": ALL,
         }
         serializer = CountJSONSerializer()
-        authorization = GeoNodePeopleAuthorization()
+        authorization = ApiLockdownAuthorization()
 
 
 class GeoserverStyleResource(ModelResource):
