@@ -16,8 +16,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
-import re
 import uuid
 import logging
 import datetime
@@ -30,15 +30,14 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
-
+from django.contrib.gis.geos import MultiPolygon
+from django.utils.module_loading import import_string
 from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
     ExtraMetadata,
     Link,
-    Region,
     License,
     ResourceBase,
     TopicCategory,
@@ -471,31 +470,10 @@ def metadata_post_save(instance, *args, **kwargs):
     ResourceBase.objects.filter(id=instance.id).update(**defaults)
 
     try:
-        if not instance.regions or instance.regions.count() == 0:
-            srid1, wkt1 = instance.geographic_bounding_box.split(";")
-            srid1 = re.findall(r"\d+", srid1)
-
-            poly1 = GEOSGeometry(wkt1, srid=int(srid1[0]))
-            poly1.transform(4326)
-
-            queryset = Region.objects.all().order_by("name")
-            global_regions = []
-            regions_to_add = []
-            for region in queryset:
-                try:
-                    if region.is_assignable_to_geom(poly1):
-                        regions_to_add.append(region)
-                    if region.level == 0 and region.parent is None:
-                        global_regions.append(region)
-                except Exception:
-                    tb = traceback.format_exc()
-                    if tb:
-                        logger.debug(tb)
-            if regions_to_add or global_regions:
-                if regions_to_add:
-                    instance.regions.add(*regions_to_add)
-                else:
-                    instance.regions.add(*global_regions)
+        region_handler = getattr(settings, "REGION_HANDLER", None)
+        if region_handler:
+            handler = import_string(region_handler)(instance)
+            instance = handler.assign_regions()
     except Exception:
         tb = traceback.format_exc()
         if tb:
