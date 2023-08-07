@@ -38,7 +38,8 @@ logger = logging.getLogger(__name__)
 def waitfordbs(ctx):
     print("**************************databases*******************************")
     db_host = os.getenv("DATABASE_HOST", "db")
-    ctx.run(f"/usr/bin/wait-for-databases {db_host}", pty=True)
+    db_port = os.getenv("DATABASE_PORT", "5432")
+    ctx.run(f"/usr/bin/wait-for-databases {db_host} {db_port}", pty=True)
 
 
 @task
