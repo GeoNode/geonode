@@ -31,6 +31,7 @@ class ServiceAdminForm(ResourceBaseAdminForm):
 
 
 class ServiceAdmin(admin.ModelAdmin):
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display = ("id", "name", "base_url", "type", "method")
     list_display_links = ("id", "name")
     list_filter = ("id", "name", "type", "method")
