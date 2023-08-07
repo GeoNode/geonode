@@ -1,5 +1,3 @@
-
-
 import re
 import logging
 import traceback
@@ -19,7 +17,6 @@ class BaseRegionHandler(object):
 
 
 class GeoNodeRegionsHandler(BaseRegionHandler):
-
     def assign_regions(self):
         if not self.instance.regions or self.instance.regions.count() == 0:
             poly1 = self._get_poly_from_instance()
