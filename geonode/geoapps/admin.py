@@ -32,6 +32,7 @@ class GeoAppAdminForm(ResourceBaseAdminForm):
 
 
 class GeoAppAdmin(TabbedTranslationAdmin):
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display_links = ("title",)
     list_display = (
         "id",
@@ -65,6 +66,7 @@ class GeoAppAdmin(TabbedTranslationAdmin):
         "is_approved",
         "is_published",
     )
+    readonly_fields = ("geographic_bounding_box",)
     form = GeoAppAdminForm
 
     def delete_queryset(self, request, queryset):
