@@ -74,12 +74,16 @@
       </tr>
       {% endif %}
       <tr>
-        <td class="table-user-profile-attribute">{% trans 'Position' %}</td>
-        <td>{{ profile.position | default:_('Not provided.') }}</td>
-      </tr>
-      <tr>
         <td class="table-user-profile-attribute">{% trans 'Organization'  %}</td>
         <td>{{ profile.organization | default:_('Not provided.') }}</td>
+      </tr>
+      <tr>
+        <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
+        <td>{{ profile.profile | default:_('Not provided.') }}</td>
+      </tr>
+      <tr>
+        <td class="table-user-profile-attribute">{% trans 'Position Name' %}</td>
+        <td>{{ profile.position | default:_('Not provided.') }}</td>
       </tr>
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Location' %}</td>
@@ -96,10 +100,6 @@
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Fax' %}</td>
         <td>{{ profile.fax | default:_('Not provided.') }}</td>
-      </tr>
-      <tr>
-        <td class="table-user-profile-attribute">{% trans 'Description' %}</td>
-        <td>{{ profile.profile | default:_('Not provided.') }}</td>
       </tr>
       <tr>
         <td class="table-user-profile-attribute">{% trans 'Keywords' %}</td>

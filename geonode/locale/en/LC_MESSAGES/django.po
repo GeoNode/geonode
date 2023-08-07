@@ -3982,7 +3982,7 @@ msgid "introduce yourself"
 msgstr "introduce yourself"
 
 msgid "Position Name"
-msgstr "Position Name"
+msgstr "Position"
 
 msgid "role or position of the responsible person"
 msgstr "role or position of the responsible person"
