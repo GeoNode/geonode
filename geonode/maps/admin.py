@@ -44,6 +44,7 @@ class MapAdmin(TabbedTranslationAdmin):
     inlines = [
         MapLayerInline,
     ]
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display_links = ("title",)
     list_display = (
         "id",
@@ -78,6 +79,7 @@ class MapAdmin(TabbedTranslationAdmin):
         "is_approved",
         "is_published",
     )
+    readonly_fields = ("geographic_bounding_box",)
     form = MapAdminForm
     actions = [metadata_batch_edit]
 
