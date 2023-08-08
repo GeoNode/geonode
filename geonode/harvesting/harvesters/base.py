@@ -25,12 +25,12 @@ import logging
 import typing
 from pathlib import Path
 
-import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
 
 from geonode.base import enumerations
 from geonode.base.models import ResourceBase
+from geonode.layers.utils import _clean_string
 from geonode.resource.manager import resource_manager
 from geonode.storage.manager import storage_manager
 
@@ -372,7 +372,7 @@ def _get_file_name(
     else:
         result = f"harvested_{resource_info.resource_descriptor.uuid}_{base_name}{file_extension}"
     # FIXME: geonode.upload.files._clean_string ought to be renamed in order to not indicate it is private
-    sanitized = geonode.upload.files._clean_string(result)  # noqa
+    sanitized = _clean_string(result)  # noqa
     return sanitized
 
 

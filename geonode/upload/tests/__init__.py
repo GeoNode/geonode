@@ -17,16 +17,11 @@
 #
 #########################################################################
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-
 import os
 import zipfile
 import contextlib
 
-import geonode.upload.files as files
 from geonode.utils import mkdtemp
-from geonode.upload.files import SpatialFiles, scan_file
-from geonode.upload.files import _rename_files, _contains_bad_names
 
 
 @contextlib.contextmanager
@@ -56,87 +51,3 @@ def create_files(names, zipped=False):
             os.unlink(f)
         names = [basefile]
     yield names
-
-
-class FilesTests(GeoNodeBaseTestSupport):
-    def test_types(self):
-        for t in files.types:
-            self.assertTrue(t.code is not None)
-            self.assertTrue(t.name is not None)
-            self.assertTrue(t.dataset_type is not None)
-
-    def test_contains_bad_names(self):
-        self.assertTrue(_contains_bad_names(["1", "a"]))
-        self.assertTrue(_contains_bad_names(["a", "foo-bar"]))
-
-    def test_rename_files(self):
-        with create_files(["junk<y>", "notjunky"]) as tests:
-            try:
-                renamed = files._rename_files(tests)
-                self.assertTrue(renamed[0].endswith("junk_y_"))
-            except OSError:
-                pass
-
-    def test_rename_and_prepare(self):
-        with create_files(["109029_23.tiff", "notjunk<y>"]) as tests:
-            tests = _rename_files(tests)
-            self.assertTrue(tests[0].endswith("_109029_23.tiff"))
-            self.assertTrue(tests[1].endswith("junk_y_"))
-
-    def test_scan_file(self):
-        """
-        Tests the scan_file function.
-        """
-        exts = (".shp", ".shx", ".sld", ".xml", ".prj", ".dbf")
-
-        with create_files([f"san_andres_y_providencia_location{s}" for s in exts]) as tests:
-            shp = [s for s in tests if s.endswith(".shp")][0]
-            spatial_files = scan_file(shp)
-            self.assertTrue(isinstance(spatial_files, SpatialFiles))
-
-            spatial_file = spatial_files[0]
-            self.assertEqual(shp, spatial_file.base_file)
-            self.assertTrue(spatial_file.file_type.matches("shp"))
-            self.assertEqual(len(spatial_file.auxillary_files), 3)
-            self.assertEqual(len(spatial_file.xml_files), 1)
-            self.assertTrue(all(s.endswith("xml") for s in spatial_file.xml_files))
-            self.assertEqual(len(spatial_file.sld_files), 1)
-            self.assertTrue(all(s.endswith("sld") for s in spatial_file.sld_files))
-
-        # Test the scan_file function with a zipped spatial file that needs to
-        # be renamed.
-        file_names = [
-            "109029_23.shp",
-            "109029_23.shx",
-            "109029_23.dbf",
-            "109029_23.prj",
-            "109029_23.xml",
-            "109029_23.sld",
-        ]
-        with create_files(file_names, zipped=True) as tests:
-            spatial_files = scan_file(tests[0])
-            self.assertTrue(isinstance(spatial_files, SpatialFiles))
-
-            spatial_file = spatial_files[0]
-            self.assertTrue(spatial_file.file_type.matches("shp"))
-            self.assertEqual(len(spatial_file.auxillary_files), 3)
-            self.assertEqual(len(spatial_file.xml_files), 1)
-            self.assertEqual(len(spatial_file.sld_files), 1)
-            self.assertTrue(all(s.endswith("xml") for s in spatial_file.xml_files))
-
-            basedir = os.path.dirname(spatial_file.base_file)
-            for f in file_names:
-                path = os.path.join(basedir, f"_{f}")
-                self.assertTrue(os.path.exists(path))
-
-        # Test the scan_file function with a raster spatial file takes SLD also.
-        file_names = ["109029_24.tif", "109029_24.sld"]
-        with create_files(file_names) as tests:
-            spatial_files = scan_file(tests[0])
-            self.assertTrue(isinstance(spatial_files, SpatialFiles))
-
-            spatial_file = spatial_files[0]
-            self.assertTrue(spatial_file.file_type.matches("tif"))
-            self.assertEqual(len(spatial_file.auxillary_files), 0)
-            self.assertEqual(len(spatial_file.xml_files), 0)
-            self.assertEqual(len(spatial_file.sld_files), 1)

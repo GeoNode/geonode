@@ -47,7 +47,7 @@ from geonode.storage.manager import storage_manager
 
 # Geonode functionality
 from geonode.base.models import Region
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, get_allowed_extensions
 from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
@@ -117,13 +117,12 @@ def get_files(filename):
         if not _filename:
             # We need to iterate files as filename could be the zipfile
             import ntpath
-            from geonode.upload.utils import _SUPPORTED_EXT
 
             file_basename, file_ext = ntpath.splitext(filename)
             for item in os.listdir(tempdir):
                 item_basename, item_ext = ntpath.splitext(item)
                 if ntpath.basename(item_basename) == ntpath.basename(file_basename) and (
-                    item_ext.lower() in _SUPPORTED_EXT
+                    item_ext.lower() in get_allowed_extensions()
                 ):
                     filename = os.path.join(tempdir, item)
                     break
