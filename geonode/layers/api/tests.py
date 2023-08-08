@@ -19,7 +19,6 @@
 from io import BytesIO
 import logging
 
-from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
@@ -28,9 +27,8 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
-from geonode.geoserver.createlayer.utils import create_dataset
 
-from geonode.base.populate_test_data import create_models, create_single_dataset
+from geonode.base.populate_test_data import create_models
 from geonode.layers.models import Attribute, Dataset
 from geonode.maps.models import Map, MapLayer
 
@@ -195,133 +193,6 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.data["dataset"]["raw_constraints_other"], "None")
         self.assertEqual(response.data["dataset"]["raw_supplemental_information"], "No information provided í £682m")
         self.assertEqual(response.data["dataset"]["raw_data_quality_statement"], "OK    1 2   a b")
-
-    def test_layer_replace_anonymous_should_raise_error(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-replace-dataset", args=(layer.id,))
-
-        expected = {
-            "success": False,
-            "errors": ["Authentication credentials were not provided."],
-            "code": "not_authenticated",
-        }
-
-        response = self.client.patch(url)
-        self.assertEqual(403, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_layer_replace_should_redirect_for_not_accepted_method(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-replace-dataset", args=(layer.id,))
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.post(url)
-        self.assertEqual(405, response.status_code)
-
-        response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
-
-    def test_layer_replace_should_raise_error_if_layer_does_not_exists(self):
-        url = reverse("datasets-replace-dataset", args=(999999999999999,))
-
-        expected = {"success": False, "errors": ["Layer with ID 999999999999999 is not available"], "code": "not_found"}
-
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.patch(url)
-        self.assertEqual(404, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_dataset_append_anonymous_should_raise_error(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-append-dataset", args=(layer.id,))
-
-        expected = {
-            "success": False,
-            "errors": ["Authentication credentials were not provided."],
-            "code": "not_authenticated",
-        }
-
-        response = self.client.patch(url)
-        self.assertEqual(403, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_dataset_append_should_redirect_for_not_accepted_method(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-append-dataset", args=(layer.id,))
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.post(url)
-        self.assertEqual(405, response.status_code)
-
-        response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
-
-    def test_dataset_append_should_raise_error_if_layer_does_not_exists(self):
-        url = reverse("datasets-append-dataset", args=(999999999999999,))
-
-        expected = {"success": False, "errors": ["Layer with ID 999999999999999 is not available"], "code": "not_found"}
-
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.patch(url)
-        self.assertEqual(404, response.status_code, response.json())
-        self.assertDictEqual(expected, response.json())
-
-    @patch("geonode.layers.api.views.validate_input_source")
-    def test_layer_replace_should_work(self, _validate_input_source):
-        _validate_input_source.return_value = True
-
-        admin = get_user_model().objects.get(username="admin")
-
-        if Dataset.objects.filter(name="single_point").exists():
-            """
-            If the dataset already exists in the test env, we dont want that the test fail
-            so we rename it and then we will rollback the cnahge
-            """
-            _dataset = Dataset.objects.get(name="single_point")
-            _dataset.name = "single_point_2"
-            _dataset.save()
-
-        try:
-            layer = create_dataset(
-                "single_point",
-                "single_point",
-                admin,
-                "Point",
-            )
-        except Exception as e:
-            if "There is already a layer named" not in e.args[0]:
-                raise e
-            else:
-                layer = create_single_dataset("single_point")
-
-        cnt = Dataset.objects.count()
-
-        layer.refresh_from_db()
-        logger.error(layer.alternate)
-        # renaming the file in the same way as the lasyer name
-        # the filename must be consiste with the layer name
-
-        github_path = "https://github.com/GeoNode/gisdata/tree/master/gisdata/data/good/vector/"
-        payload = {
-            "store_spatial_files": False,
-            "base_file": f"{github_path}/single_point.shp",
-            "dbf_file": f"{github_path}/single_point.dbf",
-            "shx_file": f"{github_path}/single_point.shx",
-            "prj_file": f"{github_path}/single_point.prj",
-        }
-
-        url = reverse("datasets-replace-dataset", args=(layer.id,))
-
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.patch(url, data=payload)
-        self.assertEqual(200, response.status_code, response.json())
-
-        layer.refresh_from_db()
-        # evaluate that the number of available layer is not changed
-        self.assertEqual(Dataset.objects.count(), cnt)
 
     def test_metadata_update_for_not_supported_method(self):
         layer = Dataset.objects.first()

@@ -24,12 +24,10 @@ import time
 import uuid
 import json
 import errno
-import typing
 import logging
 import datetime
 import tempfile
 import traceback
-import dataclasses
 
 from shutil import copyfile
 from itertools import cycle
@@ -2239,36 +2237,6 @@ def select_relevant_files(allowed_extensions, files):
                 if not already_selected:
                     result.append(django_file)
     return result
-
-
-@dataclasses.dataclass()
-class SpatialFilesLayerType:
-    base_file: str
-    scan_hint: str
-    spatial_files: typing.List
-    dataset_type: typing.Optional[str] = None
-
-
-def get_spatial_files_dataset_type(allowed_extensions, files, charset="UTF-8") -> SpatialFilesLayerType:
-    """Reutnrs 'vector' or 'raster' whether a file from the allowed extensins has been identified."""
-    from geonode.upload.files import scan_file
-
-    allowed_file = select_relevant_files(allowed_extensions, files)
-    if not allowed_file or len(allowed_file) != 1:
-        return None
-    base_file = allowed_file[0]
-    spatial_files = scan_file(base_file, charset=charset)
-    the_dataset_type = get_dataset_type(spatial_files)
-    if the_dataset_type not in (FeatureType.resource_type, Coverage.resource_type):
-        return None
-    spatial_files_type = SpatialFilesLayerType(
-        base_file=base_file,
-        scan_hint=None,
-        spatial_files=spatial_files,
-        dataset_type="vector" if the_dataset_type == FeatureType.resource_type else "raster",
-    )
-
-    return spatial_files_type
 
 
 def get_dataset_type(spatial_files):

@@ -37,7 +37,6 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 from geonode.utils import resolve_object, check_ogc_backend, get_headers, http_client, json_response
@@ -330,7 +329,7 @@ def download(request, resourceid, sender=Dataset):
             response = StreamingHttpResponse(target_zip, content_type="application/zip")
             response["Content-Disposition"] = f'attachment; filename="{target_file_name}"'
             return response
-        except (NotImplementedError, Upload.DoesNotExist):
+        except NotImplementedError:
             traceback.print_exc()
             tb = traceback.format_exc()
             logger.debug(tb)

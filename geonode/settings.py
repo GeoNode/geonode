@@ -1051,18 +1051,7 @@ USE_GEOSERVER = "geonode.geoserver" in INSTALLED_APPS and OGC_SERVER["default"][
 
 # Uploader Settings
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
-"""
-    DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
-"""
-UPLOADER = {
-    "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.importer"),
-    "OPTIONS": {
-        "TIME_ENABLED": ast.literal_eval(os.getenv("TIME_ENABLED", "False")),
-        "MOSAIC_ENABLED": ast.literal_eval(os.getenv("MOSAIC_ENABLED", "False")),
-    },
-    "SUPPORTED_CRS": ["EPSG:4326", "EPSG:3785", "EPSG:3857", "EPSG:32647", "EPSG:32736"],
-    "SUPPORTED_EXT": [".shp", ".csv", ".kml", ".kmz", ".json", ".geojson", ".tif", ".tiff", ".geotiff", ".gml", ".xml"],
-}
+
 
 EPSG_CODE_MATCHES = {
     "EPSG:4326": "(4326) WGS 84",
@@ -2155,7 +2144,6 @@ UI_DEFAULT_MANDATORY_FIELDS = [
 ]
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv("UI_REQUIRED_FIELDS ", "[]"))
 
-UPLOAD_SESSION_EXPIRY_HOURS = os.getenv("UPLOAD_SESSION_EXPIRY_HOURS ", 24)
 
 # If a command name is listed here, the command will be available to admins over http
 # This list is used by the management_commands_http app

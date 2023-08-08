@@ -59,11 +59,10 @@ from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus, TopicCategory
-from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm, NewLayerUploadForm
 from geonode.layers.models import Dataset, Attribute
-from geonode.layers.utils import is_sld_upload_only, is_xml_upload_only, validate_input_source
+from geonode.layers.utils import is_sld_upload_only, is_xml_upload_only
 from geonode.services.models import Service
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
@@ -72,7 +71,6 @@ from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWork
 from geonode.people.forms import ProfileForm
 from geonode.utils import HttpClient, check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import ogc_server_settings, select_relevant_files, write_uploaded_files_to_disk
-from geonode.geoserver.security import set_geowebcache_invalidate_cache
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -605,12 +603,6 @@ def dataset_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
-        from geonode.upload.models import Upload
-
-        up_sessions = Upload.objects.filter(resource_id=layer.resourcebase_ptr_id)
-        if up_sessions.exists() and up_sessions[0].user != layer.owner:
-            up_sessions.update(user=layer.owner)
-
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
         if not ajax:
             return HttpResponseRedirect(layer.get_absolute_url())
@@ -799,94 +791,6 @@ def dataset_download(request, layername):
     )
     return_response.headers["Content-Type"] = download_format or _format
     return return_response
-
-
-@login_required
-def dataset_replace(request, layername, template="datasets/dataset_replace.html"):
-    return dataset_append_replace_view(request, layername, template, action_type="replace")
-
-
-@login_required
-def dataset_append(request, layername, template="datasets/dataset_append.html"):
-    return dataset_append_replace_view(request, layername, template, action_type="append")
-
-
-def dataset_append_replace_view(request, layername, template, action_type):
-    try:
-        dataset = _resolve_dataset(request, layername, "base.change_resourcebase", _PERMISSION_MSG_MODIFY)
-    except PermissionDenied:
-        return HttpResponse("Not allowed", status=403)
-    except Exception:
-        raise Http404("Not found")
-    if not dataset:
-        raise Http404("Not found")
-
-    if request.method == "GET":
-        ctx = {
-            "charsets": CHARSETS,
-            "resource": dataset,
-            "is_featuretype": dataset.is_vector(),
-            "is_dataset": True,
-        }
-        return render(request, template, context=ctx)
-    elif request.method == "POST":
-        from geonode.upload.forms import LayerUploadForm as UploadForm
-
-        form = UploadForm(request.POST, request.FILES, user=request.user)
-        out = {}
-        if form.is_valid():
-            storage_manager = form.cleaned_data.get("storage_manager")
-            try:
-                store_spatial_files = form.cleaned_data.get("store_spatial_files", True)
-
-                file_paths = storage_manager.get_retrieved_paths()
-                base_file = file_paths.get("base_file")
-                files = {_file.split(".")[1]: _file for _file in file_paths.values()}
-
-                resource_is_valid = validate_input_source(
-                    layer=dataset, filename=base_file, files=files, action_type=action_type
-                )
-                out = {}
-                if resource_is_valid:
-                    xml_file = file_paths.pop("xml_file", None)
-                    sld_file = file_paths.pop("sld_file", None)
-
-                    call_kwargs = {
-                        "instance": dataset,
-                        "vals": {"files": list(files.values()), "user": request.user},
-                        "store_spatial_files": store_spatial_files,
-                        "xml_file": xml_file,
-                        "metadata_uploaded": True if xml_file is not None else False,
-                        "sld_file": sld_file,
-                        "sld_uploaded": True if sld_file is not None else False,
-                    }
-
-                    getattr(resource_manager, action_type)(**call_kwargs)
-
-                    out["success"] = True
-                    out["url"] = dataset.get_absolute_url()
-                    #  invalidating resource chache
-                    set_geowebcache_invalidate_cache(dataset.typename)
-            except Exception as e:
-                logger.exception(e)
-                raise e
-            finally:
-                if not store_spatial_files:
-                    storage_manager.delete_retrieved_paths(force=True)
-        else:
-            errormsgs = []
-            for e in form.errors.values():
-                errormsgs.append([escape(v) for v in e])
-            out["errors"] = form.errors
-            out["errormsgs"] = errormsgs
-
-        if out["success"]:
-            status_code = 200
-            register_event(request, "change", dataset)
-        else:
-            status_code = 400
-
-        return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
 
 
 @login_required

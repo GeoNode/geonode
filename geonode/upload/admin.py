@@ -18,7 +18,6 @@
 #########################################################################
 
 from geonode.upload.models import (
-    Upload,
     UploadParallelismLimit,
     UploadSizeLimit,
 )
@@ -31,22 +30,6 @@ def import_link(obj):
 
 import_link.short_description = "Link"
 import_link.allow_tags = True
-
-
-class UploadAdmin(admin.ModelAdmin):
-    list_display = ("id", "import_id", "name", "resource", "user", "date", "state", import_link)
-    list_display_links = ("id",)
-    date_hierarchy = "date"
-    list_filter = ("name", "resource", "user", "date", "state")
-    search_fields = ("name", "resource__title", "user__username", "date", "state")
-
-    def delete_queryset(self, request, queryset):
-        """
-        We need to invoke the 'Upload.delete' method even when deleting
-        through the admin batch action
-        """
-        for obj in queryset:
-            obj.delete()
 
 
 class UploadSizeLimitAdmin(admin.ModelAdmin):
@@ -75,6 +58,5 @@ class UploadParallelismLimitAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(Upload, UploadAdmin)
 admin.site.register(UploadSizeLimit, UploadSizeLimitAdmin)
 admin.site.register(UploadParallelismLimit, UploadParallelismLimitAdmin)
