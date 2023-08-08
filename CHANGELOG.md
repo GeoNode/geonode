@@ -1,5 +1,14 @@
 # Change Log
 
+## [4.1.1](https://github.com/GeoNode/geonode/tree/4.1.0) (2023-06-05)
+## Security and Bug Fixes
+- Upgrade to Ubuntu 22.10
+- Upgrade to Django 3.2.20
+- Fixed direct download URL not working in some cases when local files are not available
+- Fixed assignment of regions crossing the dateline
+- Fixed harvesting of ArcGIS REST ImageServer services
+- Fixed some italian translations
+- Disabling of the (deprecated) Monitoring module
 ## [4.1.0](https://github.com/GeoNode/geonode/tree/4.1.0) (2023-06-05)
 ### New upload engine
 GeoNode integrates a brand new importer module based on [GDAL/OGR](https://gdal.org/), which offers increased robustness and reliability to the upload UI and API services. GeoPackage (vector), GeoJSON, KML/KMZ formats and a new CSV handler have been implemented.
