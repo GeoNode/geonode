@@ -463,11 +463,6 @@ def _get_basic_auth_info(request):
     return username, password
 
 
-def batch_delete(request):
-    # TODO
-    pass
-
-
 def _split_query(query):
     """
     split and strip keywords, preserve space

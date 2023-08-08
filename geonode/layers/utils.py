@@ -64,8 +64,6 @@ OWNER_PERMISSIONS = [
 
 logger = logging.getLogger("geonode.layers.utils")
 
-_separator = f"\n{'-' * 100}\n"
-
 
 def _clean_string(str, regex=r"(^[^a-zA-Z\._]+)|([^a-zA-Z\._0-9]+)", replace="_"):
     """

@@ -1863,8 +1863,6 @@ def get_time_info(layer):
 
 ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
-_wms = None
-_csw = None
 _user, _password = ogc_server_settings.credentials
 
 url = ogc_server_settings.rest
