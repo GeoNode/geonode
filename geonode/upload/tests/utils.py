@@ -21,7 +21,6 @@ import os
 import logging
 
 from io import IOBase
-from urllib.request import urljoin
 
 from django.urls import reverse
 from django.contrib.auth import authenticate
@@ -61,7 +60,7 @@ def rest_upload_by_path(_file, client, username=GEONODE_USER, password=GEONODE_P
         for name, value in params.items():
             if isinstance(value, IOBase):
                 params[name] = value
-        url = urljoin(f"{reverse('uploads-list')}/", "upload/")
+        url = reverse("importer_upload")
         if non_interactive:
             params["non_interactive"] = "true"
         logger.error(f" ---- UPLOAD URL: {url}")

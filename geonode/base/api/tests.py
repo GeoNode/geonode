@@ -2269,6 +2269,12 @@ class BaseApiTests(APITestCase):
                 uuid=str(uuid4()),
                 files=list(files_as_dict.values()),
             )
+            from importer.models import ResourceHandlerInfo
+
+            ResourceHandlerInfo.objects.create(
+                resource=resource,
+                handler_module_path="importer.handlers.shapefile.handler.ShapeFileHandler",
+            )
             _perms = {
                 "users": {"bobby": ["base.add_resourcebase", "base.download_resourcebase"]},
                 "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebae"]},
@@ -2281,11 +2287,9 @@ class BaseApiTests(APITestCase):
             copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
-
-            response = self.client.put(copy_url)
+            payload = {"defaults": '{"title":"stili_di_vita_4scenari"}'}
+            response = self.client.put(copy_url, data=json.dumps(payload), content_type="application/json")
             self.assertEqual(response.status_code, 200)
-
-            resouce_service_dispatcher.apply((response.json().get("execution_id"),))
 
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()

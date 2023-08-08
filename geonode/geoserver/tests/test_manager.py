@@ -19,6 +19,7 @@
 import os
 import base64
 import shutil
+from unittest import skip
 import gisdata
 import requests
 
@@ -53,11 +54,17 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
             shutil.rmtree(self.tmpdir, ignore_errors=True)
         return super().tearDown()
 
+    @skip("Geoserver Manager with the new importer will not be responsible anymore for importing the data")
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_append_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
-        _gs_import_session_info = self.geoserver_manager._execute_resource_import(
-            layer, list(self.files_as_dict.values()), self.user, action_type="append"
+        _gs_import_session_info = self.geoserver_manager.import_dataset(
+            "import_dataset",
+            layer.uuid,
+            instance=layer,
+            files=list(self.files_as_dict.values()),
+            user=self.user,
+            action_type="append",
         )
         basic_auth = base64.b64encode(b"admin:geoserver")
         result = requests.get(
@@ -67,11 +74,17 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json().get("import").get("state"), enumerations.STATE_COMPLETE)
 
+    @skip("Geoserver Manager with the new importer will not be responsible anymore for importing the data")
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
-        _gs_import_session_info = self.geoserver_manager._execute_resource_import(
-            layer, list(self.files_as_dict.values()), self.user, action_type="replace"
+        _gs_import_session_info = self.geoserver_manager.import_dataset(
+            "import_dataset",
+            layer.uuid,
+            instance=layer,
+            files=list(self.files_as_dict.values()),
+            user=self.user,
+            action_type="replace",
         )
         basic_auth = base64.b64encode(b"admin:geoserver")
         result = requests.get(
@@ -81,10 +94,16 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json().get("import").get("state"), enumerations.STATE_COMPLETE)
 
+    @skip("Geoserver Manager with the new importer will not be responsible anymore for importing the data")
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_revise_resource_value_in_replace_should_return_none_for_not_existing_dataset(self):
         layer = create_single_dataset("fake_dataset")
-        _gs_import_session_info = self.geoserver_manager._execute_resource_import(
-            layer, list(self.files_as_dict.values()), self.user, action_type="replace"
+        _gs_import_session_info = self.geoserver_manager.import_dataset(
+            "import_dataset",
+            layer.uuid,
+            instance=layer,
+            files=list(self.files_as_dict.values()),
+            user=self.user,
+            action_type="replace",
         )
         self.assertEqual(_gs_import_session_info.import_session.state, enumerations.STATE_COMPLETE)
