@@ -8,16 +8,16 @@ from django.contrib.gis.geos import GEOSGeometry
 logger = logging.getLogger(__name__)
 
 
-class BaseRegionHandler(object):
+class BaseRegionAssignor(object):
     def __init__(self, instance) -> None:
         self.instance = instance
 
-    def assign_regions(self):
+    def assign_regions(self, *args, **kwargs):
         return self.instance
 
 
-class GeoNodeRegionsHandler(BaseRegionHandler):
-    def assign_regions(self):
+class SpatialPredicateRegionAssignor(BaseRegionAssignor):
+    def assign_regions(self, *args, **kwargs):
         if not self.instance.regions or self.instance.regions.count() == 0:
             poly1 = self._get_poly_from_instance()
 
