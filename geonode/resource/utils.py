@@ -473,7 +473,7 @@ def metadata_post_save(instance, *args, **kwargs):
         region_handler = getattr(settings, "REGION_HANDLER", None)
         if region_handler:
             handler = import_string(region_handler)(instance)
-            instance = handler.assign_regions()
+            instance = handler.assign_regions(*args, **kwargs)
     except Exception:
         tb = traceback.format_exc()
         if tb:
