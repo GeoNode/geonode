@@ -52,6 +52,7 @@ from geonode.geoserver.helpers import (
     set_time_dimension,
 )  # mosaic_delete_first_granule
 from geonode.resource.models import ExecutionRequest
+from django.db.models import Sum
 
 ogr.UseExceptions()
 
@@ -691,9 +692,14 @@ class UploadLimitValidator:
         return parallelism_limit.max_number
 
     def _get_parallel_uploads_count(self):
-        return (
-            ExecutionRequest.objects.filter(user=self.user)
-            .exclude(status=ExecutionRequest.STATUS_RUNNING)
-            .exclude(status=ExecutionRequest.STATUS_READY)
-            .count()
+        """
+        Count the total layers that are part of the running import
+        """
+        return sum(
+            filter(
+                None,
+                ExecutionRequest.objects.filter(
+                    user=self.user, status__in=[ExecutionRequest.STATUS_RUNNING, ExecutionRequest.STATUS_READY]
+                ).values_list("input_params__total_layers", flat=True),
+            )
         )
