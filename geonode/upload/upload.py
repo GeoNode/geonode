@@ -33,7 +33,6 @@ State is stored in a UploaderSession object stored in the user's session.
 This needs to be made more stateful by adding a model.
 """
 import logging
-from django.utils.translation import ugettext_lazy as _
 
 
 logger = logging.getLogger(__name__)

@@ -30,21 +30,19 @@ from owslib.etree import etree as dlxml
 
 from django.conf import settings
 from django.urls import reverse
-from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.template.defaultfilters import filesizeformat
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
-from geonode.base import enumerations
 
 from geonode.upload.api.exceptions import (
     FileUploadLimitException,
     GeneralUploadException,
     UploadParallelismLimitException,
 )
-from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
+from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.utils import json_response as do_json_response, unzip_file, mkdtemp
 from geonode.geoserver.helpers import (
     gs_catalog,
@@ -242,6 +240,7 @@ def _advance_step(req, upload_session):
         upload_session.completed_step = get_next_step(upload_session)
     else:
         return "error"
+
 
 def is_async_step(upload_session):
     return _ASYNC_UPLOAD and get_next_step(upload_session, offset=2) == "run"
@@ -692,8 +691,9 @@ class UploadLimitValidator:
         return parallelism_limit.max_number
 
     def _get_parallel_uploads_count(self):
-        return ExecutionRequest.objects\
-            .filter(user=self.user)\
-            .exclude(status=ExecutionRequest.STATUS_RUNNING)\
-            .exclude(status=ExecutionRequest.STATUS_READY)\
+        return (
+            ExecutionRequest.objects.filter(user=self.user)
+            .exclude(status=ExecutionRequest.STATUS_RUNNING)
+            .exclude(status=ExecutionRequest.STATUS_READY)
             .count()
+        )

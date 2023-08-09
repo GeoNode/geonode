@@ -17,12 +17,7 @@
 #
 #########################################################################
 from datetime import datetime
-import json
 import logging
-
-from celery import chord
-from celery.result import allow_join_result
-from gsimporter.api import NotFound
 
 from django.conf import settings
 from django.utils.timezone import timedelta

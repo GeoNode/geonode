@@ -34,7 +34,6 @@ This needs to be made more stateful by adding a model.
 import logging
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
 from .models import Upload
