@@ -793,6 +793,13 @@ TEMPLATES = [
     },
 ]
 
+OPTIONS = {
+    "libraries": {
+        "contact_roles": "geonode.layers.templatetags.contact_roles",
+    },
+}
+
+
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",

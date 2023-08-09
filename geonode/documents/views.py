@@ -468,7 +468,6 @@ def document_metadata(
         contact_role_forms_context[f"{role}_form"] = role_form
 
     metadata_author_groups = get_user_visible_groups(request.user)
-
     if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, document):
         document_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
     if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, document):
@@ -493,8 +492,9 @@ def document_metadata(
                 set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
                 | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
             ),
-        }
-        | contact_role_forms_context,
+            **contact_role_forms_context,
+            "UI_ROLES_IN_TOGGLE_VIEW": document.get_ui_toggled_role_property_names(),
+        },
     )
 
 

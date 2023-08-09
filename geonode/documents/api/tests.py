@@ -446,6 +446,7 @@ class DocumentsApiTests(APITestCase):
                 for user_id in user_ids
             )
         )
+
     def test_file_path_and_doc_path_are_not_returned(self):
         """
         If file_path and doc_path should not be visible

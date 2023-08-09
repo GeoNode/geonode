@@ -2079,6 +2079,7 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
                 },
             )
             self.assertTrue(form.is_valid())
+
     def test_resource_form_is_invalid_with_incompleted_timeserie_data(self):
         self.client.login(username="admin", password="admin")
         url = reverse("dataset_metadata", args=(self.dataset.alternate,))

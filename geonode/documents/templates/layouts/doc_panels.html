@@ -1,6 +1,8 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load base_tags %}
+{% load contact_roles %}
 
 <!-- Required to make select2 fields work for autocomplete -->
 <link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
@@ -558,14 +560,14 @@ span.grippy::after {
             <!-- Contact Roles -->
             <div class="col-xs-12 col-lg-3" >
               <div class="panel panel-default" class="collapse" style="margin-top: 5px">
-                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                    {% block document_poc %}
-                    <div class="panel-body check-select">
-                        <span><label for="{{ document_form.poc|id }}">{{ document_form.poc.label }}</label></span>
-                        {{ document_form.poc }}
-                    </div>
-                    {% endblock document_poc %}
-              </div>
+                <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                  {% block document_poc %}
+                  <div class="panel-body check-select">
+                      <span><label for="{{ document_form.poc|id }}">{{ document_form.poc.label }}</label></span>
+                      {{ document_form.poc }}
+                  </div>
+                  {% endblock document_poc %}
+            </div>
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">
@@ -578,84 +580,23 @@ span.grippy::after {
                   </div>
                 </div>
               <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              {% block document_more_contact_roles %}
               <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
-                  <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
-                  <div class="panel-body">
-                    {% block document_metadata_author %}
-                      <div>
-                          <span><label for="{{ document_form.metadata_author|id }}">{{ document_form.metadata_author.label }}</label></span>
-                          {{ document_form.metadata_author }}
-                      </div>
-                    {% endblock document_metadata_author %}
-                  </div>
-                  <div class="panel-body">
-                    {% block document_processor %}
-                      <div>
-                          <span><label for="{{ document_form.processor|id }}">{{ document_form.processor.label }}</label></span>
-                          {{ document_form.processor }}
-                      </div>
-                    {% endblock document_processor %}
-                    </div>
+                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                  {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                    {% getattribute document_form contact_role as cr %}
                     <div class="panel-body">
-                    {% block document_publisher %}
                       <div>
-                          <span><label for="{{ document_form.publisher|id }}">{{ document_form.publisher.label }}</label></span>
-                          {{ document_form.publisher }}
+                        <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                        {{ cr}}
                       </div>
-                    {% endblock document_publisher %}
                     </div>
-                    <div class="panel-body">
-                    {% block document_custodian %}
-                      <div>
-                          <span><label for="{{ document_form.custodian|id }}">{{ document_form.custodian.label }}</label></span>
-                          {{ document_form.custodian }}
-                      </div>
-                    {% endblock document_custodian %}
-                    </div>
-                    <div class="panel-body">
-                    {% block document_distributor %}
-                      <div>
-                          <span><label for="{{ document_form.distributor|id }}">{{ document_form.distributor.label }}</label></span>
-                          {{ document_form.distributor }}
-                      </div>
-                    {% endblock document_distributor %}
-                    </div>
-                    <div class="panel-body">
-                    {% block document_resource_user %}
-                      <div>
-                          <span><label for="{{ document_form.resource_user|id }}">{{ document_form.resource_user.label }}</label></span>
-                          {{ document_form.resource_user }}
-                      </div>
-                    {% endblock document_resource_user %}
-                    </div>
-                    <div class="panel-body">
-                    {% block document_resource_provider %}
-                      <div>
-                          <span><label for="{{ document_form.resource_provider|id }}">{{ document_form.resource_provider.label }}</label></span>
-                          {{ document_form.resource_provider }}
-                      </div>
-                    {% endblock document_resource_provider %}
-                    </div>
-                    <div class="panel-body">
-                    {% block document_originator %}
-                      <div>
-                          <span><label for="{{ document_form.originator|id }}">{{ document_form.originator.label }}</label></span>
-                          {{ document_form.originator }}
-                      </div>
-                    {% endblock document_originator %}
-                    </div>
-                    <div class="panel-body">
-                    {% block document_principal_investigator %}
-                      <div>
-                          <span><label for="{{ document_form.principal_investigator|id }}">{{ document_form.principal_investigator.label }}</label></span>
-                          {{ document_form.principal_investigator }}
-                      </div>
-                    {% endblock document_principal_investigator %}
-                    </div>
-                  </div>
+                  {% endfor %}
                 </div>
               </div>
+              {% endblock document_more_contact_roles %}
             </div>
+            <!--End Contact Roles -->
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load contact_roles %}
 
 <!-- Required to make select2 fields work for autocomplete -->
 <link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
@@ -485,108 +486,46 @@ span.grippy::after {
                     {% endblock geoapp_extra_metadata %}
                 </div>
             </div>
-            <!-- Contact Roles -->
-            <div class="col-xs-12 col-lg-3" >
-              <div class="panel panel-default" class="collapse" style="margin-top: 5px">
-                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                    {% block geoapp_poc %}
-                    <div class="panel-body check-select">
-                        <span><label for="{{ geoapp_form.poc|id }}">{{ geoapp_form.poc.label }}</label></span>
-                        {{ geoapp_form.poc }}
+          <!-- Contact Roles -->
+          <div class="col-xs-12 col-lg-3" >
+            <div class="panel panel-default" class="collapse" style="margin-top: 5px">
+              <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                {% block geoapp_poc %}
+                <div class="panel-body check-select">
+                    <span><label for="{{ geoapp_form.poc|id }}">{{ geoapp_form.poc.label }}</label></span>
+                    {{ geoapp_form.poc }}
+                </div>
+                {% endblock geoapp_poc %}
+          </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                <div class="panel-body">
+                  {% block geoapp_owner %}
+                    <div>
+                        <span><label for="{{ geoapp_form.owner|id }}">{{ geoapp_form.owner.label }}</label></span>
+                        {{ geoapp_form.owner }}
                     </div>
-                    {% endblock geoapp_poc %}
+                  {% endblock geoapp_owner %}
+                </div>
               </div>
-              <div class="panel panel-default">
-                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+            <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+            {% block geoapp_more_contact_roles %}
+            <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+              <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                  {% getattribute geoapp_form contact_role as cr %}
                   <div class="panel-body">
-                    {% block geoapp_owner %}
-                      <div>
-                          <span><label for="{{ geoapp_form.owner|id }}">{{ geoapp_form.owner.label }}</label></span>
-                          {{ geoapp_form.owner }}
-                      </div>
-                    {% endblock geoapp_owner %}
-                  </div>
-                </div>
-              <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
-              <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
-                  <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
-                  <div class="panel-body">
-                    {% block geoapp_metadata_author %}
-                      <div>
-                          <span><label for="{{ geoapp_form.metadata_author|id }}">{{ geoapp_form.metadata_author.label }}</label></span>
-                          {{ geoapp_form.metadata_author }}
-                      </div>
-                    {% endblock geoapp_metadata_author %}
-                  </div>
-                  <div class="panel-body">
-                    {% block geoapp_processor %}
-                      <div>
-                          <span><label for="{{ geoapp_form.processor|id }}">{{ geoapp_form.processor.label }}</label></span>
-                          {{ geoapp_form.processor }}
-                      </div>
-                    {% endblock geoapp_processor %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_publisher %}
-                      <div>
-                          <span><label for="{{ geoapp_form.publisher|id }}">{{ geoapp_form.publisher.label }}</label></span>
-                          {{ geoapp_form.publisher }}
-                      </div>
-                    {% endblock geoapp_publisher %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_custodian %}
-                      <div>
-                          <span><label for="{{ geoapp_form.custodian|id }}">{{ geoapp_form.custodian.label }}</label></span>
-                          {{ geoapp_form.custodian }}
-                      </div>
-                    {% endblock geoapp_custodian %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_distributor %}
-                      <div>
-                          <span><label for="{{ geoapp_form.distributor|id }}">{{ geoapp_form.distributor.label }}</label></span>
-                          {{ geoapp_form.distributor }}
-                      </div>
-                    {% endblock geoapp_distributor %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_resource_user %}
-                      <div>
-                          <span><label for="{{ geoapp_form.resource_user|id }}">{{ geoapp_form.resource_user.label }}</label></span>
-                          {{ geoapp_form.resource_user }}
-                      </div>
-                    {% endblock geoapp_resource_user %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_resource_provider %}
-                      <div>
-                          <span><label for="{{ geoapp_form.resource_provider|id }}">{{ geoapp_form.resource_provider.label }}</label></span>
-                          {{ geoapp_form.resource_provider }}
-                      </div>
-                    {% endblock geoapp_resource_provider %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_originator %}
-                      <div>
-                          <span><label for="{{ geoapp_form.originator|id }}">{{ geoapp_form.originator.label }}</label></span>
-                          {{ geoapp_form.originator }}
-                      </div>
-                    {% endblock geoapp_originator %}
-                    </div>
-                    <div class="panel-body">
-                    {% block geoapp_principal_investigator %}
-                      <div>
-                          <span><label for="{{ geoapp_form.principal_investigator|id }}">{{ geoapp_form.principal_investigator.label }}</label></span>
-                          {{ geoapp_form.principal_investigator }}
-                      </div>
-                    {% endblock geoapp_principal_investigator %}
+                    <div>
+                      <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                      {{ cr}}
                     </div>
                   </div>
-                </div>
+                {% endfor %}
               </div>
             </div>
+            {% endblock geoapp_more_contact_roles %}
           </div>
+          <!--End Contact Roles -->
         </div>
       </div>
     </div>

@@ -281,8 +281,9 @@ def map_metadata(
                 set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
                 | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
             ),
-        }
-        | contact_role_forms_context,
+            **contact_role_forms_context,
+            "UI_ROLES_IN_TOGGLE_VIEW": map_obj.get_ui_toggled_role_property_names(),
+        },
     )
 
 

@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load contact_roles %}
 <script type="text/javascript">
     // this is used by thumbnail.js to POST to the thumbnail update view
     window.thumbnailUpdateUrl = '{% url 'base-resources-set-thumb-from-bbox' resource.id %}';
@@ -551,96 +552,36 @@ span.grippy::after {
                       {{ map_form.poc }}
                   </div>
                   {% endblock map_poc %}
-              </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
-                <div class="panel-body">
-                  {% block map_owner %}
-                    <div>
-                        <span><label for="{{ map_form.owner|id }}">{{ map_form.owner.label }}</label></span>
-                        {{ map_form.owner }}
-                    </div>
-                  {% endblock map_owner %}
-                </div>
-              </div>
-            <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
-            <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
-                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
-                <div class="panel-body">
-                  {% block map_metadata_author %}
-                    <div>
-                        <span><label for="{{ map_form.metadata_author|id }}">{{ map_form.metadata_author.label }}</label></span>
-                        {{ map_form.metadata_author }}
-                    </div>
-                  {% endblock map_metadata_author %}
-                </div>
-                <div class="panel-body">
-                  {% block map_processor %}
-                    <div>
-                        <span><label for="{{ map_form.processor|id }}">{{ map_form.processor.label }}</label></span>
-                        {{ map_form.processor }}
-                    </div>
-                  {% endblock map_processor %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_publisher %}
-                    <div>
-                        <span><label for="{{ map_form.publisher|id }}">{{ map_form.publisher.label }}</label></span>
-                        {{ map_form.publisher }}
-                    </div>
-                  {% endblock map_publisher %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_custodian %}
-                    <div>
-                        <span><label for="{{ map_form.custodian|id }}">{{ map_form.custodian.label }}</label></span>
-                        {{ map_form.custodian }}
-                    </div>
-                  {% endblock map_custodian %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_distributor %}
-                    <div>
-                        <span><label for="{{ map_form.distributor|id }}">{{ map_form.distributor.label }}</label></span>
-                        {{ map_form.distributor }}
-                    </div>
-                  {% endblock map_distributor %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_resource_user %}
-                    <div>
-                        <span><label for="{{ map_form.resource_user|id }}">{{ map_form.resource_user.label }}</label></span>
-                        {{ map_form.resource_user }}
-                    </div>
-                  {% endblock map_resource_user %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_resource_provider %}
-                    <div>
-                        <span><label for="{{ map_form.resource_provider|id }}">{{ map_form.resource_provider.label }}</label></span>
-                        {{ map_form.resource_provider }}
-                    </div>
-                  {% endblock map_resource_provider %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_originator %}
-                    <div>
-                        <span><label for="{{ map_form.originator|id }}">{{ map_form.originator.label }}</label></span>
-                        {{ map_form.originator }}
-                    </div>
-                  {% endblock map_originator %}
-                  </div>
-                  <div class="panel-body">
-                  {% block map_principal_investigator %}
-                    <div>
-                        <span><label for="{{ map_form.principal_investigator|id }}">{{ map_form.principal_investigator.label }}</label></span>
-                        {{ map_form.principal_investigator }}
-                    </div>
-                  {% endblock map_principal_investigator %}
-                  </div>
-                </div>
-              </div>
             </div>
+              <div class="panel panel-default">
+                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  <div class="panel-body">
+                    {% block map_owner %}
+                      <div>
+                          <span><label for="{{ map_form.owner|id }}">{{ map_form.owner.label }}</label></span>
+                          {{ map_form.owner }}
+                      </div>
+                    {% endblock map_owner %}
+                  </div>
+                </div>
+              <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              {% block map_more_contact_roles %}
+              <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                  {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                    {% getattribute map_form contact_role as cr %}
+                    <div class="panel-body">
+                      <div>
+                        <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                        {{ cr}}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endblock map_more_contact_roles %}
+            </div>
+            <!--End Contact Roles -->
           </div>
         </div>
       </div>

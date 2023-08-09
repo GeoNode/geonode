@@ -49,29 +49,30 @@ default_app_config = "geonode.people.PeopleAppConfig"
 
 
 class Role:
-    def __init__(self, label, is_required, is_multivalue):
+    def __init__(self, label, is_required, is_multivalue, is_toggled_in_metadata_editor):
         self.label = label
         self.is_required = is_required
         self.is_multivalue = is_multivalue
+        self.is_toggled_in_metadata_editor = is_toggled_in_metadata_editor
 
     def __repr__(self):
         return self.label
 
 
 class Roles(enum.Enum):
-    """Roles with their `label`, `is_required`, and `is_multivalue`"""
+    """Roles with their `label`, `is_required`, `is_multivalue`, `is_toggled_in_metadata_editor"""
 
-    OWNER = Role("Owner", True, False)
-    METADATA_AUTHOR = Role("Metadata Author", True, True)
-    PROCESSOR = Role("Processor", False, True)
-    PUBLISHER = Role("Publisher", False, True)
-    CUSTODIAN = Role("Custodian", False, True)
-    POC = Role("Point of Contact", True, True)
-    DISTRIBUTOR = Role("Distributor", False, True)
-    RESOURCE_USER = Role("Resource User", False, True)
-    RESOURCE_PROVIDER = Role("Resource Provider", False, True)
-    ORIGINATOR = Role("Originator", False, True)
-    PRINCIPAL_INVESTIGATOR = Role("Principal Investigator", False, True)
+    OWNER = Role("Owner", True, False, False)
+    METADATA_AUTHOR = Role("Metadata Author", True, True, False)
+    PROCESSOR = Role("Processor", False, True, True)
+    PUBLISHER = Role("Publisher", False, True, True)
+    CUSTODIAN = Role("Custodian", False, True, True)
+    POC = Role("Point of Contact", True, True, False)
+    DISTRIBUTOR = Role("Distributor", False, True, True)
+    RESOURCE_USER = Role("Resource User", False, True, True)
+    RESOURCE_PROVIDER = Role("Resource Provider", False, True, True)
+    ORIGINATOR = Role("Originator", False, True, True)
+    PRINCIPAL_INVESTIGATOR = Role("Principal Investigator", False, True, True)
 
     @property
     def name(self):
@@ -89,6 +90,10 @@ class Roles(enum.Enum):
     def is_multivalue(self):
         return self.value.is_multivalue
 
+    @property
+    def is_toggled_in_metadata_editor(self):
+        return self.value.is_toggled_in_metadata_editor
+
     def __repr__(self):
         return self.name
 
@@ -99,3 +104,7 @@ class Roles(enum.Enum):
     @classmethod
     def get_multivalue_ones(cls):
         return [role for role in cls if role.is_multivalue]
+
+    @classmethod
+    def get_toggled_ones(cls):
+        return [role for role in cls if role.is_toggled_in_metadata_editor]

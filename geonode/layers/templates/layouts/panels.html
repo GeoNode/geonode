@@ -1,6 +1,8 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load contact_roles %}
+
 <script type="text/javascript">
     // this is used by thumbnail.js to POST to the thumbnail update view
     window.thumbnailUpdateUrl = '{% url 'base-resources-set-thumb-from-bbox' resource.id %}';
@@ -561,14 +563,14 @@ span.grippy::after {
             <!-- Contact Roles -->
             <div class="col-xs-12 col-lg-3" >
               <div class="panel panel-default" class="collapse" style="margin-top: 5px">
-                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                    {% block dataset_poc %}
-                    <div class="panel-body check-select">
-                        <span><label for="{{ dataset_form.poc|id }}">{{ dataset_form.poc.label }}</label></span>
-                        {{ dataset_form.poc }}
-                    </div>
-                    {% endblock dataset_poc %}
-              </div>
+                <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                  {% block dataset_poc %}
+                  <div class="panel-body check-select">
+                      <span><label for="{{ dataset_form.poc|id }}">{{ dataset_form.poc.label }}</label></span>
+                      {{ dataset_form.poc }}
+                  </div>
+                  {% endblock dataset_poc %}
+            </div>
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">
@@ -581,84 +583,24 @@ span.grippy::after {
                   </div>
                 </div>
               <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              {% block dataset_more_contact_roles %}
               <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
-                  <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
-                  <div class="panel-body">
-                    {% block dataset_metadata_author %}
-                      <div>
-                          <span><label for="{{ dataset_form.metadata_author|id }}">{{ dataset_form.metadata_author.label }}</label></span>
-                          {{ dataset_form.metadata_author }}
-                      </div>
-                    {% endblock dataset_metadata_author %}
-                  </div>
-                  <div class="panel-body">
-                    {% block dataset_processor %}
-                      <div>
-                          <span><label for="{{ dataset_form.processor|id }}">{{ dataset_form.processor.label }}</label></span>
-                          {{ dataset_form.processor }}
-                      </div>
-                    {% endblock dataset_processor %}
-                    </div>
+                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                  {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                    {% getattribute dataset_form contact_role as cr %}
                     <div class="panel-body">
-                    {% block dataset_publisher %}
                       <div>
-                          <span><label for="{{ dataset_form.publisher|id }}">{{ dataset_form.publisher.label }}</label></span>
-                          {{ dataset_form.publisher }}
+                        <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                        {{ cr}}
                       </div>
-                    {% endblock dataset_publisher %}
                     </div>
-                    <div class="panel-body">
-                    {% block dataset_custodian %}
-                      <div>
-                          <span><label for="{{ dataset_form.custodian|id }}">{{ dataset_form.custodian.label }}</label></span>
-                          {{ dataset_form.custodian }}
-                      </div>
-                    {% endblock dataset_custodian %}
-                    </div>
-                    <div class="panel-body">
-                    {% block dataset_distributor %}
-                      <div>
-                          <span><label for="{{ dataset_form.distributor|id }}">{{ dataset_form.distributor.label }}</label></span>
-                          {{ dataset_form.distributor }}
-                      </div>
-                    {% endblock dataset_distributor %}
-                    </div>
-                    <div class="panel-body">
-                    {% block dataset_resource_user %}
-                      <div>
-                          <span><label for="{{ dataset_form.resource_user|id }}">{{ dataset_form.resource_user.label }}</label></span>
-                          {{ dataset_form.resource_user }}
-                      </div>
-                    {% endblock dataset_resource_user %}
-                    </div>
-                    <div class="panel-body">
-                    {% block dataset_resource_provider %}
-                      <div>
-                          <span><label for="{{ dataset_form.resource_provider|id }}">{{ dataset_form.resource_provider.label }}</label></span>
-                          {{ dataset_form.resource_provider }}
-                      </div>
-                    {% endblock dataset_resource_provider %}
-                    </div>
-                    <div class="panel-body">
-                    {% block dataset_originator %}
-                      <div>
-                          <span><label for="{{ dataset_form.originator|id }}">{{ dataset_form.originator.label }}</label></span>
-                          {{ dataset_form.originator }}
-                      </div>
-                    {% endblock dataset_originator %}
-                    </div>
-                    <div class="panel-body">
-                    {% block dataset_principal_investigator %}
-                      <div>
-                          <span><label for="{{ dataset_form.principal_investigator|id }}">{{ dataset_form.principal_investigator.label }}</label></span>
-                          {{ dataset_form.principal_investigator }}
-                      </div>
-                    {% endblock dataset_principal_investigator %}
-                    </div>
-                  </div>
+                  {% endfor %}
                 </div>
               </div>
+              {% endblock dataset_more_contact_roles %}
             </div>
+            <!--End Contact Roles -->
+          </div>
         </div>
       </div>
     </div>

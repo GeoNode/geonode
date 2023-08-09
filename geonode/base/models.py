@@ -1649,7 +1649,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @staticmethod
     def get_multivalue_role_property_names() -> List[str]:
-        """_summary_: returns list of property names for all contact roles able to
+        """returns list of property names for all contact roles able to
             handle multiple profile_users
 
         Returns:
@@ -1660,7 +1660,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @staticmethod
     def get_multivalue_required_role_property_names() -> List[str]:
-        """_summary_: returns list of property names for all contact roles that are required
+        """returns list of property names for all contact roles that are required
 
         Returns:
             _type_: List(str)
@@ -1668,9 +1668,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         """
         return [role.name for role in (set(Roles.get_multivalue_ones()) & set(Roles.get_required_ones()))]
 
+    @staticmethod
+    def get_ui_toggled_role_property_names() -> List[str]:
+        """returns list of property names for all contact roles that are toggled of in metadata_editor
+
+        Returns:
+            _type_: List(str)
+            _description: list of names
+        """
+        return [role.name for role in (set(Roles.get_toggled_ones()) & set(Roles.get_toggled_ones()))]
+
     # typing not possible due to: from geonode.base.forms import ResourceBaseForm; unable due to circular ...
     def set_contact_roles_from_metadata_edit(self, resource_base_form) -> bool:
-        """_summary_: gets a ResourceBaseForm and extracts the Contact Role elements from it
+        """gets a ResourceBaseForm and extracts the Contact Role elements from it
 
         Args:
             resource_base_form (ResourceBaseForm): ResourceBaseForm with contact roles set
@@ -1688,7 +1698,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return failed
 
     def __get_contact_role_elements__(self, role: str) -> Optional[List[settings.AUTH_USER_MODEL]]:
-        """_summary_: general getter of for all contact roles except owner
+        """general getter of for all contact roles except owner
 
         Args:
             role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested
@@ -1706,7 +1716,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     CONTACT_ROLE_USER_PROFILES_ALLOWED_TYPES = Union[settings.AUTH_USER_MODEL, QuerySet, List[settings.AUTH_USER_MODEL]]
 
     def __set_contact_role_element__(self, user_profile: CONTACT_ROLE_USER_PROFILES_ALLOWED_TYPES, role: str):
-        """_summary_: general setter for all contact roles except owner in resource base
+        """general setter for all contact roles except owner in resource base
 
         Args:
             user_profile (CONTACT_ROLE_USER_PROFILES_ALLOWED_TYPES): _description_
@@ -1727,11 +1737,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         elif isinstance(user_profile, list) and all(isinstance(x, get_user_model()) for x in user_profile):
             ContactRole.objects.filter(role=role, resource=self).delete()
             return [__create_role__(self, role, profile) for profile in user_profile]
+        elif user_profile is None:
+            ContactRole.objects.filter(role=role, resource=self).delete()
         else:
             logger.error(f"Bad profile format for role: {role} ...")
 
     def get_defined_multivalue_contact_roles(self) -> List[Tuple[List[settings.AUTH_USER_MODEL], str]]:
-        """_summary_: Returns all set contact roles of the ressource with additional ROLE_VALUES from geonode.people.enumarations.ROLE_VALUES. Mainly used to generate output xml more easy.
+        """Returns all set contact roles of the ressource with additional ROLE_VALUES from geonode.people.enumarations.ROLE_VALUES. Mainly used to generate output xml more easy.
 
         Returns:
               _type_: List[Tuple[List[people object], roles_label_name]]
@@ -1743,6 +1755,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             if self.__getattribute__(role.name)
         }
 
+    def get_first_contact_of_role(self, role: str) -> Optional[ContactRole]:
+        """
+        Get the first contact from the specified role.
+
+        Parameters:
+            role (str): The role of the contact.
+
+        Returns:
+            ContactRole or None: The first contact with the specified role, or None if not found.
+        """
+        if contact := ContactRole.objects.filter(role=role).first():
+            return contact
+        else:
+            return None
+
+    # Contact Role: POC (pointOfContact)
     def __get_poc__(self) -> List[settings.AUTH_USER_MODEL]:
         return self.__get_contact_role_elements__(role="pointOfContact")
 
@@ -1755,6 +1783,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def poc_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.poc)
 
+    # Contact Role: metadata_author
     def _get_metadata_author(self):
         return self.__get_contact_role_elements__(role="author")
 
@@ -1767,6 +1796,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def metadata_author_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.metadata_author)
 
+    # Contact Role: PROCESSOR
     def _get_processor(self):
         return self.__get_contact_role_elements__(role=Roles.PROCESSOR.name)
 
@@ -1779,6 +1809,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def processor_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.processor)
 
+    # Contact Role: PUBLISHER
     def _get_publisher(self):
         return self.__get_contact_role_elements__(role=Roles.PUBLISHER.name)
 
@@ -1791,6 +1822,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def publisher_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.publisher)
 
+    # Contact Role: CUSTODIAN
     def _get_custodian(self):
         return self.__get_contact_role_elements__(role=Roles.CUSTODIAN.name)
 
@@ -1803,6 +1835,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def custodian_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.custodian)
 
+    # Contact Role: DISTRIBUTOR
     def _get_distributor(self):
         return self.__get_contact_role_elements__(role=Roles.DISTRIBUTOR.name)
 
@@ -1815,6 +1848,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def distributor_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.distributor)
 
+    # Contact Role: RESOURCE_USER
     def _get_resource_user(self):
         return self.__get_contact_role_elements__(role=Roles.RESOURCE_USER.name)
 
@@ -1827,6 +1861,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def resource_user_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.resource_user)
 
+    # Contact Role: RESOURCE_PROVIDER
     def _get_resource_provider(self):
         return self.__get_contact_role_elements__(role=Roles.RESOURCE_PROVIDER.name)
 
@@ -1839,6 +1874,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def resource_provider_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.resource_provider)
 
+    # Contact Role: ORIGINATOR
     def _get_originator(self):
         return self.__get_contact_role_elements__(role=Roles.ORIGINATOR.name)
 
@@ -1851,6 +1887,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def originator_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.originator)
 
+    # Contact Role: PRINCIPAL_INVESTIGATOR
     def _get_principal_investigator(self):
         return self.__get_contact_role_elements__(role=Roles.PRINCIPAL_INVESTIGATOR.name)
 

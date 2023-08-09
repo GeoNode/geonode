@@ -497,6 +497,7 @@ def dataset_metadata(
         timeseries_form.fields.get("end_attribute").queryset = layer.attributes.filter(
             attribute_type__in=["xsd:dateTime"]
         )
+
         # Create THESAURUS widgets
         lang = settings.THESAURUS_DEFAULT_LANG if hasattr(settings, "THESAURUS_DEFAULT_LANG") else "en"
         if hasattr(settings, "THESAURUS") and settings.THESAURUS:
@@ -680,8 +681,9 @@ def dataset_metadata(
                 set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
                 | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
             ),
-        }
-        | contact_role_forms_context,
+            **contact_role_forms_context,
+            "UI_ROLES_IN_TOGGLE_VIEW": layer.get_ui_toggled_role_property_names(),
+        },
     )
 
 
