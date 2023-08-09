@@ -428,13 +428,6 @@ def monitoringfixture(ctx):
 
 
 @task
-def updategeoip(ctx):
-    print("**************************update geoip*******************************")
-    if ast.literal_eval(os.environ.get("MONITORING_ENABLED", "False")):
-        ctx.run(f"django-admin.py updategeoip --settings={_localsettings()}", pty=True)
-
-
-@task
 def updateadmin(ctx):
     print("***********************update admin details**************************")
     ctx.run("rm -rf /tmp/django_admin_docker.json", pty=True)

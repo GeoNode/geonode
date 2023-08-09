@@ -701,39 +701,6 @@ class RequestEvent(models.Model):
         sensitive_data = cls._get_user_data_gn(request)
         event_type = cls._get_event_type(request)
 
-        # ua = request.META.get('HTTP_USER_AGENT') or ''
-        # ua_family = cls._get_ua_family(ua)
-        #
-        # ip, is_routable = get_client_ip(request)
-        # lat = lon = None
-        # country = region = city = None
-        # if ip and is_routable:
-        #     ip = ip.split(':')[0]
-        #     if settings.TEST and ip == 'testserver':
-        #         ip = '127.0.0.1'
-        #     try:
-        #         ip = gethostbyname(ip)
-        #     except Exception as err:
-        #         pass
-        #
-        #     geoip = get_geoip()
-        #     try:
-        #         client_loc = geoip.city(ip)
-        #     except Exception as err:
-        #         log.warning("Cannot resolve %s: %s", ip, err)
-        #         client_loc = None
-        #
-        #     if client_loc:
-        #         lat, lon = client_loc['latitude'], client_loc['longitude'],
-        #         country = client_loc.get(
-        #             'country_code3') or client_loc['country_code']
-        #         if len(country) == 2:
-        #             _c = pycountry.countries.get(alpha_2=country)
-        #             country = _c.alpha_3
-        #
-        #         region = client_loc['region']
-        #         city = client_loc['city']
-
         data = {
             "received": received,
             "created": created,
