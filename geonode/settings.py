@@ -2345,4 +2345,4 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 
-REGION_HANDLER = "geonode.resource.region_handlers.GeoNodeRegionsHandler"
+REGION_HANDLER = "geonode.resource.region_handlers.BaseRegionHandler"
