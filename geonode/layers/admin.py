@@ -55,6 +55,7 @@ class DatasetAdminForm(ResourceBaseAdminForm):
 
 
 class DatasetAdmin(TabbedTranslationAdmin):
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display = (
         "id",
         "alternate",
@@ -86,7 +87,7 @@ class DatasetAdmin(TabbedTranslationAdmin):
     search_fields = ("alternate", "title", "abstract", "purpose", "is_approved", "is_published", "state")
     filter_horizontal = ("contacts",)
     date_hierarchy = "date"
-    readonly_fields = ("uuid", "alternate", "workspace")
+    readonly_fields = ("uuid", "alternate", "workspace", "geographic_bounding_box")
     inlines = [AttributeInline]
     form = DatasetAdminForm
     actions = [metadata_batch_edit]
