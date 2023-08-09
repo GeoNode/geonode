@@ -52,7 +52,6 @@ from geonode.geoserver.helpers import (
     set_time_dimension,
 )  # mosaic_delete_first_granule
 from geonode.resource.models import ExecutionRequest
-from django.db.models import Sum
 
 ogr.UseExceptions()
 
