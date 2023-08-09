@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+
+  postgis:
+    image: geonode/postgis:13
+    ports:
+      - "25432:5432"
+    volumes:
+      - /srv/docker/geoserver/postgis:/var/lib/postgresql
+    #volumes_from:
+      #- pgstore
+    healthcheck:
+      test: "pg_isready -d postgres -U postgres"
+    restart: on-failure
+
+  geoserver:
+    image: geonode/geoserver:2.23.0
+    build:
+      context: .
+      args:
+        - DOCKERHOST
+        - GEONODE_HOST_IP
+        - PUBLIC_PORT=80
+    links:
+      - postgis
+    ports:
+      - "8080:8080"
+    volumes:
+      - /geoserver_data/data
+    environment:
+      - DOCKERHOST
+      - GEONODE_HOST_IP
+      - PUBLIC_PORT=80
+      - DOCKER_HOST_IP
+      - DJANGO_URL=http://localhost/
+    depends_on:
+      postgis:
+        condition: service_completed_successfully
+      data-dir-conf:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/geoserver/rest/workspaces/geonode.html || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    restart: on-failure
+
+  data-dir-conf:
+    image: geonode/geoserver_data:2.23.0
+    container_name: geoserver_data_dir # named data container
+    entrypoint: sleep infinity
+    volumes:
+      - /geoserver_data/data
+    healthcheck:
+      test: "ls -A '/geoserver_data/data' | wc -l"
+    restart: on-failure
+
+volumes:
+  # reference to the named data container that holds the preloaded geoserver data directory
+  geoserver_data_dir:

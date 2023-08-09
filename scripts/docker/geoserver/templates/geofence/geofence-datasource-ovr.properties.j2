@@ -1,0 +1,12 @@
+geofenceVendorAdapter.databasePlatform=org.hibernatespatial.postgis.PostgisDialect
+geofenceDataSource.driverClassName=org.postgresql.Driver
+geofenceDataSource.url=jdbc:postgresql://{{ DATABASE_HOST }}:{{ DATABASE_PORT }}/{{ GEONODE_GEODATABASE }}
+geofenceDataSource.username={{ GEONODE_GEODATABASE }}
+geofenceDataSource.password={{ GEONODE_GEODATABASE_PASSWORD }}
+geofenceEntityManagerFactory.jpaPropertyMap[hibernate.default_schema]={{ GEONODE_GEODATABASE_SCHEMA }}
+
+# avoid hibernate transaction issues
+geofenceDataSource.testOnBorrow=true
+geofenceDataSource.validationQuery=SELECT 1
+geofenceEntityManagerFactory.jpaPropertyMap[hibernate.testOnBorrow]=true
+geofenceEntityManagerFactory.jpaPropertyMap[hibernate.validationQuery]=SELECT 1
