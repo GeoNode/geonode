@@ -78,11 +78,11 @@ class Command(BaseCommand):
                     """
                     curl -v -u admin:geoserver -XPOST \
                         -H "Content-type: text/xml" -d @poi.xml \
-                            "http://localhost:8080/geoserver/gwc/rest/datasets/tiger:poi.xml"
+                            "http://localhost:8080/geoserver/gwc/rest/layers/tiger:poi.xml"
                     """
                     headers = {'Content-type': 'text/xml'}
                     payload = ET.tostring(tree)
-                    r = requests.post(f'{url}gwc/rest/datasets/{layer.typename}.xml',
+                    r = requests.post(f'{url}gwc/rest/layers/{layer.typename}.xml',
                                       headers=headers,
                                       data=payload,
                                       auth=HTTPBasicAuth(user, passwd))

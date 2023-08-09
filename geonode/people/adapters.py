@@ -25,12 +25,15 @@ django-allauth.
 """
 
 import logging
+import jwt
+import requests
 
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.account.utils import user_field
 from allauth.account.utils import user_email
 from allauth.account.utils import user_username
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2Error
 
 from invitations.adapters import BaseInvitationsAdapter
 
@@ -222,3 +225,75 @@ def _site_allows_signup(django_request):
 
 def _respond_inactive_user(user):
     return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
+
+
+PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
+
+ACCESS_TOKEN_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("ACCESS_TOKEN_URL", "")
+
+AUTHORIZE_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("AUTHORIZE_URL", "")
+
+PROFILE_URL = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("PROFILE_URL", "")
+
+ID_TOKEN_ISSUER = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("ID_TOKEN_ISSUER", "")
+
+
+class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
+    provider_id = PROVIDER_ID
+    access_token_url = ACCESS_TOKEN_URL
+    authorize_url = AUTHORIZE_URL
+    profile_url = PROFILE_URL
+    id_token_issuer = ID_TOKEN_ISSUER
+
+    def complete_login(self, request, app, token, response, **kwargs):
+        extra_data = {}
+        if self.profile_url:
+            headers = {"Authorization": "Bearer {0}".format(token.token)}
+            resp = requests.get(self.profile_url, headers=headers)
+            profile_data = resp.json()
+            extra_data.update(profile_data)
+        elif "id_token" in response:
+            try:
+                extra_data = jwt.decode(
+                    response["id_token"],
+                    # Since the token was received by direct communication
+                    # protected by TLS between this library and Google, we
+                    # are allowed to skip checking the token signature
+                    # according to the OpenID Connect Core 1.0
+                    # specification.
+                    # https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation
+                    options={
+                        "verify_signature": False,
+                        "verify_iss": True,
+                        "verify_aud": True,
+                        "verify_exp": True,
+                    },
+                    issuer=self.id_token_issuer,
+                    audience=app.client_id,
+                )
+            except jwt.PyJWTError as e:
+                raise OAuth2Error("Invalid id_token") from e
+        login = self.get_provider().sociallogin_from_response(request, extra_data)
+        return login
+
+    def save_user(self, request, sociallogin, form=None):
+        user = super(SocialAccountAdapter, self).save_user(request, sociallogin, form=form)
+        extractor = get_data_extractor(sociallogin.account.provider)
+        try:
+            groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(
+                sociallogin.account.extra_data
+            )
+            is_manager = extractor.extract_is_manager(sociallogin.account.extra_data)
+
+            # check here if user is member already of other groups and remove it form the ones that are not declared here...
+            for groupprofile in user.group_list_all():
+                groupprofile.leave(user)
+            for group_name in groups:
+                groupprofile = GroupProfile.objects.filter(slug=group_name).first()
+                if groupprofile:
+                    groupprofile.join(user)
+                    if is_manager:
+                        groupprofile.promote()
+        except (AttributeError, NotImplementedError):
+            pass  # extractor doesn't define a method for extracting field
+        return user

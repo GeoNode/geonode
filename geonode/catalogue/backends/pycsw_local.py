@@ -86,9 +86,9 @@ class CatalogueBackend(GenericCatalogueBackend):
 
         record = MD_Metadata(result)
         record.keywords = []
-        if hasattr(record, "identification") and hasattr(record.identification, "keywords"):
-            for kw in record.identification.keywords:
-                record.keywords.extend(kw["keywords"])
+        if hasattr(record, "identification") and hasattr(record.identification[0], "keywords"):
+            for kw in record.identification[0].keywords:
+                record.keywords.extend([_kw.name for _kw in kw.keywords])
 
         record.links = {}
         record.links["metadata"] = self.catalogue.urls_for_uuid(uuid)

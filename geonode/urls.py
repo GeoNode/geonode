@@ -120,6 +120,7 @@ urlpatterns += [
     url(r"^api/v2/", include("geonode.api.urls")),
     url(r"^api/v2/", include("geonode.management_commands_http.urls")),
     url(r"^api/v2/api-auth/", include("rest_framework.urls", namespace="geonode_rest_framework")),
+    url(r"^api/v2/", include("geonode.facets.urls")),
     url(r"", include(api.urls)),
 ]
 
@@ -162,7 +163,7 @@ if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     urlpatterns += [  # '',
         # Upload views
         url(r"^upload/", include("geonode.upload.urls")),
-        # capabilities
+        # capabilities - DEPRECATED: these urls and views will be removed in future versions of GeoNode
         url(r"^capabilities/layer/(?P<layerid>\d+)/$", get_capabilities, name="capabilities_dataset"),
         url(r"^capabilities/map/(?P<mapid>\d+)/$", get_capabilities, name="capabilities_map"),
         url(r"^capabilities/user/(?P<user>[\w.@+-]+)/$", get_capabilities, name="capabilities_user"),

@@ -445,6 +445,20 @@ def dataset_metadata(
             }
             logger.error(f"{out.get('errors')}")
             return HttpResponse(json.dumps(out), content_type="application/json", status=400)
+        elif (
+            layer.has_time
+            and timeseries_form.is_valid()
+            and not timeseries_form.cleaned_data.get("attribute", "")
+            and not timeseries_form.cleaned_data.get("end_attribute", "")
+        ):
+            out = {
+                "success": False,
+                "errors": [
+                    "The Timeseries configuration is invalid. Please select at least one option between the `attribute` and `end_attribute`, otherwise remove the 'has_time' flag"
+                ],
+            }
+            logger.error(f"{out.get('errors')}")
+            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
     else:
         dataset_form = DatasetForm(instance=layer, prefix="resource", user=request.user)
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)

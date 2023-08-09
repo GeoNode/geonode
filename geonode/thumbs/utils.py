@@ -429,7 +429,10 @@ def getmap(
     if headers.get("content-type", "").split(";")[0] in ["application/vnd.ogc.se_xml", "text/xml"]:
         se_xml = u.read()
         se_tree = etree.fromstring(se_xml)
-        err_message = str(se_tree.find(nspath("ServiceException", n.get_namespace("ogc"))).text).strip()
+        try:
+            err_message = str(se_tree.find(nspath("ServiceException", n.get_namespace("ogc"))).text).strip()
+        except Exception:
+            err_message = se_xml
         raise ServiceException(err_message)
     return u
 

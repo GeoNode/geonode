@@ -261,10 +261,6 @@ def static(options):
 )
 def setup(options):
     """Get dependencies and prepare a GeoNode development environment."""
-
-    if MONITORING_ENABLED:
-        updategeoip(options)
-
     info(
         "GeoNode development environment successfully set up."
         "If you have not set up an administrative account,"
@@ -332,20 +328,6 @@ def upgradedb(options):
         print("Please specify your GeoNode version")
     else:
         print(f"Upgrades from version {version} are not yet supported.")
-
-
-@task
-@cmdopts([("settings=", "s", "Specify custom DJANGO_SETTINGS_MODULE")])
-def updategeoip(options):
-    """
-    Update geoip db
-    """
-    if MONITORING_ENABLED:
-        settings = options.get("settings", "")
-        if settings and "DJANGO_SETTINGS_MODULE" not in settings:
-            settings = f"DJANGO_SETTINGS_MODULE={settings}"
-
-        sh(f"{settings} python -W ignore manage.py updategeoip -o")
 
 
 @task
@@ -521,7 +503,7 @@ def start_django(options):
     bind = options.get("bind", "0.0.0.0:8000")
     port = bind.split(":")[1]
     foreground = "" if options.get("foreground", False) else "&"
-    sh(f"{settings} python -W ignore manage.py runserver --nostatic {bind} {foreground}")
+    sh(f"{settings} python -W ignore manage.py runserver {bind} {foreground}")
 
     if ASYNC_SIGNALS:
         sh(
@@ -784,7 +766,7 @@ def test_integration(options):
                 foreground = "" if options.get("foreground", False) else "&"
                 sh(f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runmessaging {foreground}")
                 sh(
-                    f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver --nostatic {bind} {foreground}"
+                    f"DJANGO_SETTINGS_MODULE={settings} python -W ignore manage.py runserver {bind} {foreground}"
                 )
                 sh("sleep 30")
                 settings = f"REUSE_DB=1 DJANGO_SETTINGS_MODULE={settings}"

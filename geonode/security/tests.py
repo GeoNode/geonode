@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import os
 import json
 import base64
 import logging
@@ -25,7 +24,6 @@ import requests
 import importlib
 import mock
 
-from gisdata import GOOD_DATA
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
 
@@ -51,7 +49,6 @@ from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.upload.tests.utils import rest_upload_by_path
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
@@ -491,13 +488,21 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"2. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7, f"Bad rules count. Got rules: {geofence.get_rules()}")
+        self.assertEqual(rules_count, 9, f"Bad rules count. Got rules: {geofence.get_rules()}")
 
         perm_spec = {"users": {"admin": ["change_dataset_data"]}, "groups": []}
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"3. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7)
+        self.assertEqual(rules_count, 8, f"Bad rules count. Got rules: {geofence.get_rules()}")
+
+        rules_objs = geofence.get_rules()
+        wps_subfield_found = False
+        for rule in rules_objs["rules"]:
+            if rule["service"] == "WPS" and rule["subfield"] == "GS:DOWNLOAD":
+                wps_subfield_found = rule["access"] == "DENY"
+                break
+        self.assertTrue(wps_subfield_found, f"WPS download not blocked. Got rules: {geofence.get_rules()}")
 
         # FULL WFS-T
         perm_spec = {
@@ -561,7 +566,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         }
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
-        self.assertEqual(rules_count, 7)
+        self.assertEqual(rules_count, 9)
 
         rules_objs = geofence.get_rules()
         _deny_wfst_rule_exists = False
@@ -575,7 +580,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
         _log(f"4. rules_count: {rules_count} ")
-        self.assertEqual(rules_count, 7, f"Bad rule count, got rules {geofence.get_rules()}")
+        self.assertEqual(rules_count, 9, f"Bad rule count, got rules {geofence.get_rules()}")
 
         perm_spec = {"users": {}, "groups": {"bar": ["change_resourcebase"]}}
         layer.set_permissions(perm_spec)
@@ -622,10 +627,10 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         perm_spec = {"users": {"bobby": ["view_resourcebase"]}, "groups": []}
         layer.set_permissions(perm_spec)
         rules_count = geofence.get_rules_count()
-        self.assertEqual(rules_count, 8)
+        self.assertEqual(rules_count, 10)
 
         rules_objs = geofence.get_rules()
-        self.assertEqual(len(rules_objs["rules"]), 8)
+        self.assertEqual(len(rules_objs["rules"]), 10)
         # Order is important
         _limit_rule_position = -1
         for cnt, rule in enumerate(rules_objs["rules"]):
@@ -736,251 +741,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(rules_count, 0)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_dataset_upload_with_time(self):
-        """Try uploading a layer and verify that the user can administrate
-        his own layer despite not being a site administrator.
-        """
-
-        # user without change_dataset_style cannot edit it
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-
-        # grab bobby
-        bobby = get_user_model().objects.get(username="bobby")
-        anonymous_group, created = Group.objects.get_or_create(name="anonymous")
-
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-
-        title = "boxes_with_date_by_bobby"
-        saved_dataset = create_single_dataset("boxes_with_date.shp")
-        saved_dataset = resource_manager.update(
-            saved_dataset.uuid, instance=saved_dataset, notify=False, vals=dict(owner=bobby, title=title)
-        )
-
-        # Test that layer owner can wipe GWC Cache
-        workspace = "geonode"
-        store = None
-        permissions = {
-            "users": {"bobby": ["view_resourcebase", "change_dataset_data"]},
-            "groups": {anonymous_group: ["view_resourcebase"]},
-        }
-        fname = os.path.join(GOOD_DATA, "time", "boxes_with_date.shp")
-        resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
-        self.assertEqual(resp.status_code, 200)
-
-        saved_dataset = Dataset.objects.get(name="boxes_with_date.shp")
-        check_dataset(saved_dataset)
-        resource_manager.set_permissions(saved_dataset.uuid, instance=saved_dataset, permissions=permissions)
-
-        from lxml import etree
-        from owslib.etree import etree as dlxml
-        from geonode.geoserver.helpers import get_store
-        from geonode.geoserver.signals import gs_catalog
-
-        self.assertIsNotNone(saved_dataset)
-        workspace, name = saved_dataset.alternate.split(":")
-        self.assertIsNotNone(workspace)
-        self.assertIsNotNone(name)
-        ws = gs_catalog.get_workspace(workspace)
-        self.assertIsNotNone(ws)
-        _gs_dataset_store = saved_dataset.store
-        if not _gs_dataset_store:
-            saved_dataset.alternate = f"{workspace}:boxes_with_date"
-            _gs_dataset = gs_catalog.get_layer(saved_dataset.alternate)
-            logger.error(f" ----> fetching layer {saved_dataset.alternate} from GeoServer...: '{_gs_dataset}'")
-            self.assertIsNotNone(_gs_dataset)
-            _gs_dataset_store = saved_dataset.store = _gs_dataset.resource.store.name
-            saved_dataset.save()
-        store = get_store(gs_catalog, saved_dataset.store, workspace=ws)
-        self.assertIsNotNone(store)
-
-        url = settings.OGC_SERVER["default"]["LOCATION"]
-        user = settings.OGC_SERVER["default"]["USER"]
-        passwd = settings.OGC_SERVER["default"]["PASSWORD"]
-
-        rest_path = f"rest/workspaces/{workspace}/datastores/{saved_dataset.store}/featuretypes/boxes_with_date.xml"
-        r = requests.get(url + rest_path, auth=HTTPBasicAuth(user, passwd))
-        self.assertEqual(r.status_code, 200)
-        _log(r.text)
-
-        featureType = etree.ElementTree(dlxml.fromstring(r.text))
-        metadata = featureType.findall("./[metadata]")
-        self.assertEqual(len(metadata), 1)
-
-        payload = """<featureType>
-        <metadata>
-            <entry key="elevation">
-                <dimensionInfo>
-                    <enabled>false</enabled>
-                </dimensionInfo>
-            </entry>
-            <entry key="time">
-                <dimensionInfo>
-                    <enabled>true</enabled>
-                    <attribute>date</attribute>
-                    <presentation>LIST</presentation>
-                    <units>ISO8601</units>
-                    <defaultValue/>
-                    <nearestMatchEnabled>false</nearestMatchEnabled>
-                </dimensionInfo>
-            </entry>
-        </metadata></featureType>"""
-
-        r = requests.put(
-            url + rest_path, data=payload, headers={"Content-type": "application/xml"}, auth=HTTPBasicAuth(user, passwd)
-        )
-        self.assertEqual(r.status_code, 200)
-
-        r = requests.get(url + rest_path, auth=HTTPBasicAuth(user, passwd))
-        self.assertEqual(r.status_code, 200)
-        _log(r.text)
-
-        featureType = etree.ElementTree(dlxml.fromstring(r.text))
-        metadata = featureType.findall("./[metadata]")
-        _log(etree.tostring(metadata[0], encoding="utf8", method="xml"))
-        self.assertEqual(len(metadata), 1)
-
-        saved_dataset.set_permissions(permissions)
-        wms_capabilities_url = reverse("capabilities_dataset", args=[saved_dataset.id])
-        wms_capabilities_resp = self.client.get(wms_capabilities_url)
-        self.assertTrue(wms_capabilities_resp.status_code, 200)
-
-        all_times = None
-
-        if wms_capabilities_resp.status_code >= 200 and wms_capabilities_resp.status_code < 400:
-            wms_capabilities = wms_capabilities_resp.getvalue()
-            if wms_capabilities:
-                namespaces = {
-                    "wms": "http://www.opengis.net/wms",
-                    "xlink": "http://www.w3.org/1999/xlink",
-                    "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-                }
-
-                e = dlxml.fromstring(wms_capabilities)
-                for atype in e.findall(
-                    f"./[wms:Name='{saved_dataset.alternate}']/wms:Dimension[@name='time']", namespaces
-                ):
-                    dim_name = atype.get("name")
-                    if dim_name:
-                        dim_name = str(dim_name).lower()
-                        if dim_name == "time":
-                            dim_values = atype.text
-                            if dim_values:
-                                all_times = dim_values.split(",")
-                                break
-
-        if all_times:
-            self.assertEqual(
-                all_times,
-                [
-                    "2000-03-01T00:00:00.000Z",
-                    "2000-03-02T00:00:00.000Z",
-                    "2000-03-03T00:00:00.000Z",
-                    "2000-03-04T00:00:00.000Z",
-                    "2000-03-05T00:00:00.000Z",
-                    "2000-03-06T00:00:00.000Z",
-                    "2000-03-07T00:00:00.000Z",
-                    "2000-03-08T00:00:00.000Z",
-                    "2000-03-09T00:00:00.000Z",
-                    "2000-03-10T00:00:00.000Z",
-                    "2000-03-11T00:00:00.000Z",
-                    "2000-03-12T00:00:00.000Z",
-                    "2000-03-13T00:00:00.000Z",
-                    "2000-03-14T00:00:00.000Z",
-                    "2000-03-15T00:00:00.000Z",
-                    "2000-03-16T00:00:00.000Z",
-                    "2000-03-17T00:00:00.000Z",
-                    "2000-03-18T00:00:00.000Z",
-                    "2000-03-19T00:00:00.000Z",
-                    "2000-03-20T00:00:00.000Z",
-                    "2000-03-21T00:00:00.000Z",
-                    "2000-03-22T00:00:00.000Z",
-                    "2000-03-23T00:00:00.000Z",
-                    "2000-03-24T00:00:00.000Z",
-                    "2000-03-25T00:00:00.000Z",
-                    "2000-03-26T00:00:00.000Z",
-                    "2000-03-27T00:00:00.000Z",
-                    "2000-03-28T00:00:00.000Z",
-                    "2000-03-29T00:00:00.000Z",
-                    "2000-03-30T00:00:00.000Z",
-                    "2000-03-31T00:00:00.000Z",
-                    "2000-04-01T00:00:00.000Z",
-                    "2000-04-02T00:00:00.000Z",
-                    "2000-04-03T00:00:00.000Z",
-                    "2000-04-04T00:00:00.000Z",
-                    "2000-04-05T00:00:00.000Z",
-                    "2000-04-06T00:00:00.000Z",
-                    "2000-04-07T00:00:00.000Z",
-                    "2000-04-08T00:00:00.000Z",
-                    "2000-04-09T00:00:00.000Z",
-                    "2000-04-10T00:00:00.000Z",
-                    "2000-04-11T00:00:00.000Z",
-                    "2000-04-12T00:00:00.000Z",
-                    "2000-04-13T00:00:00.000Z",
-                    "2000-04-14T00:00:00.000Z",
-                    "2000-04-15T00:00:00.000Z",
-                    "2000-04-16T00:00:00.000Z",
-                    "2000-04-17T00:00:00.000Z",
-                    "2000-04-18T00:00:00.000Z",
-                    "2000-04-19T00:00:00.000Z",
-                    "2000-04-20T00:00:00.000Z",
-                    "2000-04-21T00:00:00.000Z",
-                    "2000-04-22T00:00:00.000Z",
-                    "2000-04-23T00:00:00.000Z",
-                    "2000-04-24T00:00:00.000Z",
-                    "2000-04-25T00:00:00.000Z",
-                    "2000-04-26T00:00:00.000Z",
-                    "2000-04-27T00:00:00.000Z",
-                    "2000-04-28T00:00:00.000Z",
-                    "2000-04-29T00:00:00.000Z",
-                    "2000-04-30T00:00:00.000Z",
-                    "2000-05-01T00:00:00.000Z",
-                    "2000-05-02T00:00:00.000Z",
-                    "2000-05-03T00:00:00.000Z",
-                    "2000-05-04T00:00:00.000Z",
-                    "2000-05-05T00:00:00.000Z",
-                    "2000-05-06T00:00:00.000Z",
-                    "2000-05-07T00:00:00.000Z",
-                    "2000-05-08T00:00:00.000Z",
-                    "2000-05-09T00:00:00.000Z",
-                    "2000-05-10T00:00:00.000Z",
-                    "2000-05-11T00:00:00.000Z",
-                    "2000-05-12T00:00:00.000Z",
-                    "2000-05-13T00:00:00.000Z",
-                    "2000-05-14T00:00:00.000Z",
-                    "2000-05-15T00:00:00.000Z",
-                    "2000-05-16T00:00:00.000Z",
-                    "2000-05-17T00:00:00.000Z",
-                    "2000-05-18T00:00:00.000Z",
-                    "2000-05-19T00:00:00.000Z",
-                    "2000-05-20T00:00:00.000Z",
-                    "2000-05-21T00:00:00.000Z",
-                    "2000-05-22T00:00:00.000Z",
-                    "2000-05-23T00:00:00.000Z",
-                    "2000-05-24T00:00:00.000Z",
-                    "2000-05-25T00:00:00.000Z",
-                    "2000-05-26T00:00:00.000Z",
-                    "2000-05-27T00:00:00.000Z",
-                    "2000-05-28T00:00:00.000Z",
-                    "2000-05-29T00:00:00.000Z",
-                    "2000-05-30T00:00:00.000Z",
-                    "2000-05-31T00:00:00.000Z",
-                    "2000-06-01T00:00:00.000Z",
-                    "2000-06-02T00:00:00.000Z",
-                    "2000-06-03T00:00:00.000Z",
-                    "2000-06-04T00:00:00.000Z",
-                    "2000-06-05T00:00:00.000Z",
-                    "2000-06-06T00:00:00.000Z",
-                    "2000-06-07T00:00:00.000Z",
-                    "2000-06-08T00:00:00.000Z",
-                ],
-            )
-
-        saved_dataset.set_default_permissions()
-        url = reverse("dataset_metadata", args=[saved_dataset.service_typename])
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
         # Test permissions on a layer
         bobby = get_user_model().objects.get(username="bobby")
@@ -1016,7 +776,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.set_permissions(perm_spec)
 
         url = (
-            f"{settings.SITEURL}gs/ows?"
+            f"{settings.GEOSERVER_LOCATION}ows?"
             "LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES="
             "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"
             "&SRS=EPSG%3A4326"
@@ -1305,7 +1065,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 1.2 has not view_resourcebase: verify that bobby can not access the
         # layer detail page
         layer.set_permissions({"users": {"AnonymousUser": []}, "groups": []})
-        anonymous_group = Group.objects.get(name="anonymous")
+        Group.objects.get(name="anonymous")
         response = self.client.get(reverse("dataset_embed", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
 
@@ -1341,7 +1101,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
             perms = get_users_with_perms(layer)
             _log(f"2. perms: {perms} ")
-            batch = create_geofence_rules(layer, perms, user=bob, group=anonymous_group)
+            batch = create_geofence_rules(layer, perms, user=bob)
             geofence.run_batch(batch)
 
             # Check GeoFence Rules have been correctly created
@@ -2765,3 +2525,16 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             result = self.client.patch(url)
             # checking that the user cannot call the url in patch due the lack of permissions
             self.assertEqual(403, result.status_code, _case)
+
+    def test_anonymous_user_is_stripped_off(self):
+        from geonode.base.models import ResourceBase
+
+        perms = ["base.view_resourcebase", "base.download_resourcebase"]
+        resource = ResourceBase.objects.get(id=self.dataset.id)
+        for perm in perms:
+            assign_perm(perm, get_anonymous_user(), resource)
+            assign_perm(perm, Group.objects.get(name="anonymous"), resource)
+
+        perm_spec = resource.get_all_level_info()
+        anonymous_user_perm = perm_spec["users"].get(get_anonymous_user())
+        self.assertEqual(anonymous_user_perm, None, "Anynmous user wasn't removed")

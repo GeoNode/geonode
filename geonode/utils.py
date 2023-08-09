@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import itertools
 import os
 import gc
 import re
@@ -34,6 +33,8 @@ import tarfile
 import datetime
 import requests
 import tempfile
+import importlib
+import itertools
 import traceback
 import subprocess
 
@@ -496,9 +497,44 @@ def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith("EPSG:"):
         srid = srid[5:]
     if None not in {x0, x1, y0, y1}:
-        wkt = "POLYGON(({:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f},{:f} {:f}))".format(
-            float(x0), float(y0), float(x0), float(y1), float(x1), float(y1), float(x1), float(y0), float(x0), float(y0)
+        polys = []
+
+        # We assume that if x1 is smaller then x0 we're crossing the date line
+        crossing_idl = x1 < x0
+        if crossing_idl:
+            polys.append(
+                [
+                    (float(x0), float(y0)),
+                    (float(x0), float(y1)),
+                    (180.0, float(y1)),
+                    (180.0, float(y0)),
+                    (float(x0), float(y0)),
+                ]
+            )
+            polys.append(
+                [
+                    (-180.0, float(y0)),
+                    (-180.0, float(y1)),
+                    (float(x1), float(y1)),
+                    (float(x1), float(y0)),
+                    (-180.0, float(y0)),
+                ]
+            )
+        else:
+            polys.append(
+                [
+                    (float(x0), float(y0)),
+                    (float(x0), float(y1)),
+                    (float(x1), float(y1)),
+                    (float(x1), float(y0)),
+                    (float(x0), float(y0)),
+                ]
+            )
+
+        poly_wkts = ",".join(
+            ["(({}))".format(",".join(["{:f} {:f}".format(coords[0], coords[1]) for coords in poly])) for poly in polys]
         )
+        wkt = f"MULTIPOLYGON({poly_wkts})" if len(polys) > 1 else f"POLYGON{poly_wkts}"
         if include_srid:
             wkt = f"SRID={srid};{wkt}"
     else:
@@ -1377,6 +1413,8 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
     from django.urls import reverse
     from django.utils.translation import ugettext
+    from geonode.layers.models import Dataset
+    from geonode.documents.models import Document
 
     # Prune old links
     if prune:
@@ -1446,9 +1484,15 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Create Raw Data download link
         if settings.DISPLAY_ORIGINAL_DATASET_LINK:
             logger.debug(" -- Resource Links[Create Raw Data download link]...")
-            download_url = urljoin(settings.SITEURL, reverse("download", args=[instance.id]))
-            while Link.objects.filter(resource=instance.resourcebase_ptr, url=download_url).count() > 1:
-                Link.objects.filter(resource=instance.resourcebase_ptr, url=download_url).first().delete()
+            if isinstance(instance, Dataset):
+                download_url = build_absolute_uri(reverse("dataset_download", args=(instance.alternate,)))
+            elif isinstance(instance, Document):
+                download_url = build_absolute_uri(reverse("document_download", args=(instance.id,)))
+            else:
+                download_url = None
+
+            while Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").exists():
+                Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").delete()
             Link.objects.update_or_create(
                 resource=instance.resourcebase_ptr,
                 url=download_url,
@@ -1920,7 +1964,24 @@ def get_supported_datasets_file_types():
             supported_types[default_types_id.index(_type.get("id"))] = _type
         else:
             supported_types.extend([_type])
-    return supported_types
+
+    # Order the formats (to support their visualization)
+    formats_order = [("vector", 0), ("raster", 1), ("archive", 2)]
+    ordered_payload = (
+        (weight[1], resource_type)
+        for resource_type in supported_types
+        for weight in formats_order
+        if resource_type.get("format") in weight[0]
+    )
+
+    # Flatten the list
+    ordered_resource_types = [x[1] for x in sorted(ordered_payload, key=lambda x: x[0])]
+    other_resource_types = [
+        resource_type
+        for resource_type in supported_types
+        if resource_type.get("format") is None or resource_type.get("format") not in [f[0] for f in formats_order]
+    ]
+    return ordered_resource_types + other_resource_types
 
 
 def get_allowed_extensions():
@@ -1945,3 +2006,19 @@ def safe_path_leaf(path):
             f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"
         )
     return fullpath
+
+
+def import_class_module(full_class_string):
+    """
+    Dynamically load a class from a string
+
+    >>> klass = load_class("module.submodule.ClassName")
+    >>> klass2 = load_class("myfile.Class2")
+    """
+    try:
+        module_path, class_name = full_class_string.rsplit(".", 1)
+        module = importlib.import_module(module_path)
+        class_obj = getattr(module, class_name)
+        return class_obj
+    except Exception:
+        return None

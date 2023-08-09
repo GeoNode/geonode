@@ -36,13 +36,14 @@ from django.conf import settings
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.db.models import Q, signals
+from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.db.models.fields.json import JSONField
 from django.utils.functional import cached_property, classproperty
-from django.contrib.gis.geos import Polygon, Point
+from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
@@ -174,6 +175,21 @@ class Region(MPTTModel):
     def geographic_bounding_box(self):
         """BBOX is in the format: [x0,x1,y0,y1]."""
         return bbox_to_wkt(self.bbox_x0, self.bbox_x1, self.bbox_y0, self.bbox_y1, srid=self.srid)
+
+    @property
+    def geom(self):
+        srid, wkt = self.geographic_bounding_box.split(";")
+        srid = re.findall(r"\d+", srid)
+        geom = GEOSGeometry(wkt, srid=int(srid[0]))
+        geom.transform(4326)
+        return geom
+
+    def is_assignable_to_geom(self, extent_geom: GEOSGeometry):
+        region_geom = self.geom
+
+        if region_geom.contains(extent_geom) or region_geom.overlaps(extent_geom):
+            return True
+        return False
 
     class Meta:
         ordering = ("name",)
@@ -369,49 +385,62 @@ class _HierarchicalTagManager(_TaggableManager):
         tag_objs = set(tags) - str_tags
         # If str_tags has 0 elements Django actually optimizes that to not do a
         # query.  Malcolm is very smart.
-        """
-        To avoid concurrency with the keyword in case of a massive upload.
-        With the transaction block and the select_for_update,
-        we can easily handle the concurrency.
-        DOC: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#select-for-update
-        """
-        existing = self.through.tag_model().objects.select_for_update().filter(name__in=str_tags, **tag_kwargs)
-        with transaction.atomic():
+        try:
+            existing = self.through.tag_model().objects.filter(name__in=str_tags, **tag_kwargs).all()
             tag_objs.update(existing)
             new_ids = set()
-            _new_keyword = str_tags - set(t.name for t in existing)
-            for new_tag in list(_new_keyword):
+            _new_keywords = str_tags - set(t.name for t in existing)
+            for new_tag in list(_new_keywords):
                 new_tag = escape(new_tag)
-                try:
-                    new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                new_tag_obj = None
+                with transaction.atomic():
+                    try:
+                        new_tag_obj = HierarchicalKeyword.add_root(name=new_tag)
+                    except Exception as e:
+                        logger.exception(e)
+                # HierarchicalKeyword.add_root didn't return, probably the keyword already exists
+                if not new_tag_obj:
+                    new_tag_obj = HierarchicalKeyword.objects.filter(name=new_tag)
+                    if new_tag_obj.exists():
+                        new_tag_obj.first()
+                if new_tag_obj:
                     tag_objs.add(new_tag_obj)
                     new_ids.add(new_tag_obj.id)
+                else:
+                    # Something has gone seriously wrong and we cannot assign the tag to the resource
+                    logger.error(f"Error during the keyword creation for keyword: {new_tag}")
+
+            signals.m2m_changed.send(
+                sender=self.through,
+                action="pre_add",
+                instance=self.instance,
+                reverse=False,
+                model=self.through.tag_model(),
+                pk_set=new_ids,
+            )
+
+            for tag in tag_objs:
+                try:
+                    self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
                 except Exception as e:
                     logger.exception(e)
 
-        signals.m2m_changed.send(
-            sender=self.through,
-            action="pre_add",
-            instance=self.instance,
-            reverse=False,
-            model=self.through.tag_model(),
-            pk_set=new_ids,
-        )
-
-        for tag in tag_objs:
-            try:
-                self.through.objects.get_or_create(tag=tag, **self._lookup_kwargs(), defaults=through_defaults)
-            except Exception as e:
-                logger.exception(e)
-
-        signals.m2m_changed.send(
-            sender=self.through,
-            action="post_add",
-            instance=self.instance,
-            reverse=False,
-            model=self.through.tag_model(),
-            pk_set=new_ids,
-        )
+            signals.m2m_changed.send(
+                sender=self.through,
+                action="post_add",
+                instance=self.instance,
+                reverse=False,
+                model=self.through.tag_model(),
+                pk_set=new_ids,
+            )
+        except IntegrityError as e:
+            logger.warning("The keyword provided already exists", exc_info=e)
+        except OperationalError as e:
+            logger.warning(
+                "An error has occured with the DB connection. Please try to re-add the keywords again", exc_info=e
+            )
+        except Exception as e:
+            raise e
 
 
 class Thesaurus(models.Model):
@@ -1299,7 +1328,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     def get_absolute_url(self):
         try:
-            return self.get_real_instance().get_absolute_url()
+            return self.get_real_instance().get_absolute_url() if self != self.get_real_instance() else None
         except Exception as e:
             logger.exception(e)
             return None
@@ -1413,7 +1442,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def embed_url(self):
-        return self.get_real_instance().embed_url
+        return self.get_real_instance().embed_url if self != self.get_real_instance() else None
 
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist."""

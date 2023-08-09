@@ -161,7 +161,7 @@ def update_resource(
     try:
         instance = KeywordHandler(instance, _keywords).set_keywords()
     except Exception as e:
-        logger.debug(e)
+        logger.error(e)
 
     # set model properties
     defaults = {}
@@ -487,13 +487,7 @@ def metadata_post_save(instance, *args, **kwargs):
             regions_to_add = []
             for region in queryset:
                 try:
-                    srid2, wkt2 = region.geographic_bounding_box.split(";")
-                    srid2 = re.findall(r"\d+", srid2)
-
-                    poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
-                    poly2.transform(4326)
-
-                    if poly2.intersection(poly1):
+                    if region.is_assignable_to_geom(poly1):
                         regions_to_add.append(region)
                     if region.level == 0 and region.parent is None:
                         global_regions.append(region)
@@ -502,7 +496,7 @@ def metadata_post_save(instance, *args, **kwargs):
                     if tb:
                         logger.debug(tb)
             if regions_to_add or global_regions:
-                if regions_to_add and len(regions_to_add) > 0 and len(regions_to_add) <= 30:
+                if regions_to_add:
                     instance.regions.add(*regions_to_add)
                 else:
                     instance.regions.add(*global_regions)

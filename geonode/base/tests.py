@@ -17,7 +17,9 @@
 #
 #########################################################################
 
+import logging
 import os
+from django.db.utils import IntegrityError, OperationalError
 import requests
 
 from uuid import uuid4
@@ -40,18 +42,20 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.templatetags.base_tags import display_change_perms_button
 from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.base.models import (
+    HierarchicalKeyword,
     ResourceBase,
     MenuPlaceholder,
     Menu,
     MenuItem,
     Configuration,
+    Region,
     TopicCategory,
     Thesaurus,
     ThesaurusKeyword,
     generate_thesaurus_reference,
 )
 from django.conf import settings
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import Polygon, GEOSGeometry
 from django.template import Template, Context
 from django.contrib.auth import get_user_model
 from geonode.storage.manager import storage_manager
@@ -1187,3 +1191,75 @@ class TestHandleMetadataKeyword(TestCase):
         thesaurus = {"title": "Random Thesaurus Title"}
         actual = self.sut.is_thesaurus_available(thesaurus, keyword)
         self.assertEqual(0, len(actual))
+
+
+class Test_HierarchicalTagManager(GeoNodeBaseTestSupport):
+    def setUp(self) -> None:
+        self.sut = create_single_dataset(name="dataset_for_keyword")
+        self.keyword = HierarchicalKeyword.objects.create(name="test_kw", slug="test_kw", depth=1)
+        self.keyword.save()
+
+    def tearDown(self) -> None:
+        self.sut.keywords.remove(self.keyword)
+
+    def test_keyword_are_correctly_saved(self):
+        self.assertFalse(self.sut.keywords.exists())
+        self.sut.keywords.add(self.keyword)
+        self.assertTrue(self.sut.keywords.exists())
+
+    @patch("django.db.models.query.QuerySet._fetch_all")
+    def test_keyword_raise_integrity_error(self, keyword_fetch_method):
+        keyword_fetch_method.side_effect = IntegrityError()
+        logger = logging.getLogger("geonode.base.models")
+        with self.assertLogs(logger, level="WARNING") as _log:
+            self.sut.keywords.add(self.keyword)
+        self.assertIn("The keyword provided already exists", [x.message for x in _log.records])
+
+    @patch("geonode.base.models.HierarchicalKeyword.add_root")
+    def test_keyword_raise_db_error(self, add_root_mocked):
+        add_root_mocked.side_effect = OperationalError()
+        logger = logging.getLogger("geonode.base.models")
+        with self.assertLogs(logger) as _log:
+            self.sut.keywords.add("keyword2")
+        self.assertIn(
+            "Error during the keyword creation for keyword: keyword2",
+            [x.message for x in _log.records],
+        )
+
+
+class TestRegions(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.dataset_inside_region = GEOSGeometry(
+            "POLYGON ((-4.01799226543944599 57.18451093931114571, 8.89409253052255622 56.91828238681708285, \
+            9.29343535926363984 47.73339732577194638, -3.75176371294537603 48.13274015451304422,   \
+            -4.01799226543944599 57.18451093931114571))",
+            srid=4326,
+        )
+
+        self.dataset_overlapping_region = GEOSGeometry(
+            "POLYGON ((15.28357779038003628 33.6232840435866791, 28.19566258634203848 33.35705549109261625, \
+            28.5950054150831221 24.17217043004747978, 15.54980634287410624 24.57151325878857762, \
+            15.28357779038003628 33.6232840435866791))",
+            srid=4326,
+        )
+
+        self.dataset_outside_region = GEOSGeometry(
+            "POLYGON ((-3.75176371294537603 23.10725622007123548, 9.16032108301662618 22.84102766757717262, \
+            9.5596639117577098 13.65614260653203615, -3.48553516045130607 14.05548543527313399, \
+            -3.75176371294537603 23.10725622007123548))",
+            srid=4326,
+        )
+
+    def test_region_assignment_for_extent(self):
+        region = Region.objects.get(code="EUR")
+
+        self.assertTrue(
+            region.is_assignable_to_geom(self.dataset_inside_region), "Extent inside a region shouldn't be assigned"
+        )
+        self.assertTrue(
+            region.is_assignable_to_geom(self.dataset_overlapping_region),
+            "Extent overlapping a region should be assigned",
+        )
+        self.assertFalse(
+            region.is_assignable_to_geom(self.dataset_outside_region), "Extent outside a region should be assigned"
+        )

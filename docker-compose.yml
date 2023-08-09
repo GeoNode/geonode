@@ -3,8 +3,8 @@ version: '3.9'
 # Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
-  image: geonode/geonode:4.0
-  restart: on-failure
+  image: geonode/geonode:latest-ubuntu-22.10
+  restart: unless-stopped
   env_file:
     - .env
   volumes:
@@ -25,9 +25,6 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     << : *default-common-django
-    build:
-      context: ./
-      dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8001/"
@@ -43,7 +40,6 @@ services:
   # Celery worker that executes celery tasks created by Django.
   celery:
     << : *default-common-django
-    image: geonode/geonode:4.0
     container_name: celery4${COMPOSE_PROJECT_NAME}
     depends_on:
       - django
@@ -54,7 +50,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:4.0
+    image: geonode/nginx:4.1.0
     build: ./scripts/docker/nginx/
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     environment:
@@ -71,11 +67,11 @@ services:
       - nginx-confd:/etc/nginx
       - nginx-certificates:/geonode-certificates
       - statics:/mnt/volumes/statics
-    restart: on-failure
+    restart: unless-stopped
 
   # Gets and installs letsencrypt certificates
   letsencrypt:
-    image: geonode/letsencrypt:4.0
+    image: geonode/letsencrypt:4.1.0
     build: ./scripts/docker/letsencrypt/
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
     environment:
@@ -85,7 +81,7 @@ services:
       - LETSENCRYPT_MODE=${LETSENCRYPT_MODE}
     volumes:
       - nginx-certificates:/geonode-certificates
-    restart: on-failure
+    restart: unless-stopped
 
   # Geoserver backend
   geoserver:
@@ -105,7 +101,7 @@ services:
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
-    restart: on-failure
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -118,14 +114,14 @@ services:
     entrypoint: sleep infinity
     volumes:
       - geoserver-data-dir:/geoserver_data/data
-    restart: on-failure
+    restart: unless-stopped
     healthcheck:
       test: "ls -A '/geoserver_data/data' | wc -l"
 
   # PostGIS database.
   db:
-    # use geonode official postgis 13 image
-    image: geonode/postgis:13
+    # use geonode official postgis 15 image
+    image: geonode/postgis:15
     command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS}"
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
@@ -133,7 +129,7 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data
       - dbbackups:/pg_backups
-    restart: on-failure
+    restart: unless-stopped
     healthcheck:
       test: "pg_isready -d postgres -U postgres"
     # uncomment to enable remote connections to postgres
@@ -142,11 +138,11 @@ services:
 
   # Vanilla RabbitMQ service. This is needed by celery
   rabbitmq:
-    image: rabbitmq:3.7-alpine
+    image: rabbitmq:3-alpine
     container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
     volumes:
       - rabbitmq:/var/lib/rabbitmq
-    restart: on-failure
+    restart: unless-stopped
 
 volumes:
   statics:

@@ -111,6 +111,10 @@ class MapsApiTests(APITestCase):
                 self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
                 self.assertEqual(response.data["map"]["maplayers"][0]["extra_params"], {"foo": "bar"})
                 self.assertIsNotNone(response.data["map"]["maplayers"][0]["dataset"])
+                self.assertEqual(response.data["map"]["maplayers"][0]["extra_params"], {"foo": "bar"})
+                self.assertEqual(response.data["map"]["maplayers"][0]["visibility"], 1)
+                self.assertEqual(response.data["map"]["maplayers"][0]["order"], 0)
+                self.assertEqual(response.data["map"]["maplayers"][0]["opacity"], 1.0)
 
     def test_extra_metadata_included_with_param(self):
         resource = Map.objects.first()
@@ -148,6 +152,36 @@ class MapsApiTests(APITestCase):
         response_maplayer = response.data["map"]["maplayers"][0]
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertIsNotNone(response_maplayer["dataset"])
+
+    def test_patch_map_with_extra_maplayer_info(self):
+        """
+        Patch to maps/<pk>/
+        """
+        # Get Layers List (backgrounds)
+        resource = Map.objects.first()
+        url = reverse("maps-detail", kwargs={"pk": resource.pk})
+
+        data = {
+            "title": f"{resource.title}-edited",
+            "abstract": resource.abstract,
+            "data": DUMMY_MAPDATA,
+            "id": resource.id,
+            "maplayers": DUMMY_MAPLAYERS_DATA_WITH_EXTRA_INFO,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.patch(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
+        self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertEqual(response_maplayer["visibility"], False)
+        self.assertEqual(response_maplayer["order"], 99)
+        self.assertEqual(response_maplayer["opacity"], 1.3)
         self.assertIsNotNone(response_maplayer["dataset"])
 
     @patch("geonode.maps.api.views.resolve_object")
@@ -202,6 +236,34 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
         self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
         self.assertIsNotNone(response_maplayer["dataset"])
+        self.assertIsNotNone(response.data["map"]["thumbnail_url"])
+
+    def test_create_map_with_extra_maplayer_info(self):
+        """
+        Post to maps/
+        """
+        # Get Layers List (backgrounds)
+        url = reverse("maps-list")
+
+        data = {
+            "title": "Some created map",
+            "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA_WITH_EXTRA_INFO,
+        }
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(len(response.data) > 0)
+        self.assertTrue("data" in response.data["map"])
+        self.assertTrue(len(response.data["map"]["data"]["map"]["layers"]) == 7)
+        response_maplayer = response.data["map"]["maplayers"][0]
+        self.assertEqual(response_maplayer["extra_params"], {"msId": "Stamen.Watercolor__0"})
+        self.assertEqual(response_maplayer["current_style"], "some-style-first-layer")
+        self.assertIsNotNone(response_maplayer["dataset"])
+        self.assertEqual(response_maplayer["visibility"], False)
+        self.assertEqual(response_maplayer["order"], 99)
+        self.assertEqual(response_maplayer["opacity"], 1.3)
         self.assertIsNotNone(response.data["map"]["thumbnail_url"])
 
 
@@ -363,5 +425,16 @@ DUMMY_MAPLAYERS_DATA = [
         "extra_params": {"msId": "Stamen.Watercolor__0"},
         "current_style": "some-style-first-layer",
         "name": "geonode:CA",
+    }
+]
+
+DUMMY_MAPLAYERS_DATA_WITH_EXTRA_INFO = [
+    {
+        "extra_params": {"msId": "Stamen.Watercolor__0"},
+        "current_style": "some-style-first-layer",
+        "name": "geonode:CA",
+        "opacity": 1.3,
+        "visibility": False,
+        "order": 99,
     }
 ]

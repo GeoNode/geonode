@@ -16,12 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest.mock import patch
-from django.conf import settings
-
+import logging
 from datetime import datetime, timedelta
-from tastypie.test import ResourceTestCaseMixin
+from tastypie.test import ResourceTestCaseMixin, TestApiClient
+from unittest.mock import patch
+from urllib.parse import urlencode
+from uuid import uuid4
 
+from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
@@ -34,13 +36,23 @@ from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
-from geonode.base.models import ExtraMetadata
+from geonode.base.models import (
+    ExtraMetadata,
+    Thesaurus,
+    ThesaurusLabel,
+    ThesaurusKeyword,
+    ThesaurusKeywordLabel,
+    ResourceBase,
+)
 from geonode.utils import check_ogc_backend
 from geonode.decorators import on_ogc_backend
 from geonode.groups.models import GroupProfile
 from geonode.base.auth import get_or_create_token
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import all_public, create_models, remove_models
+
+
+logger = logging.getLogger(__name__)
 
 
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
@@ -842,3 +854,137 @@ class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # by adding a new layer, the total should increase
         actual = sum([x["count"] for x in resp.json()["objects"]])
         self.assertEqual(0, actual)
+
+
+class ThesauriApiTests(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.user = get_user_model().objects.create(username="user_00")
+        cls.admin = get_user_model().objects.get(username="admin")
+
+        cls._create_thesauri()
+        cls._create_resources()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        # remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
+    def setUp(self):
+        super().setUp()
+
+        self.api_client = TestApiClient()
+
+        self.assertEqual(self.admin.username, "admin")
+        self.assertEqual(self.admin.is_superuser, True)
+
+    @classmethod
+    def _create_thesauri(cls):
+        cls.thesauri = {}
+        cls.thesauri_k = {}
+
+        for tn in range(2):
+            t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}")
+            cls.thesauri[tn] = t
+            for tl in (
+                "en",
+                "it",
+            ):
+                ThesaurusLabel.objects.create(thesaurus=t, lang=tl, label=f"TLabel {tn} {tl}")
+
+            for tkn in range(10):
+                tk = ThesaurusKeyword.objects.create(thesaurus=t, alt_label=f"alt_tkn{tkn}_t{tn}")
+                cls.thesauri_k[f"{tn}_{tkn}"] = tk
+                for tkl in (
+                    "en",
+                    "it",
+                ):
+                    ThesaurusKeywordLabel.objects.create(keyword=tk, lang=tkl, label=f"T{tn}_K{tkn}_{tkl}")
+
+    @classmethod
+    def _create_resources(self):
+        public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
+
+        for x in range(20):
+            d: ResourceBase = ResourceBase.objects.create(
+                title=f"dataset_{x:02}",
+                uuid=str(uuid4()),
+                owner=self.user,
+                abstract=f"Abstract for dataset {x:02}",
+                subtype="vector",
+                is_approved=True,
+                is_published=True,
+            )
+
+            # These are the assigned keywords to the Resources
+
+            # RB00 ->            T1K0
+            # RB01 ->  T0K0      T1K0
+            # RB02 ->            T1K0
+            # RB03 ->  T0K0      T1K0
+            # RB04 ->            T1K0
+            # RB05 ->  T0K0      T1K0
+            # RB06 ->            T1K0
+            # RB07 ->  T0K0      T1K0
+            # RB08 ->            T1K0 T1K1
+            # RB09 ->  T0K0      T1K0 T1K1
+            # RB10 ->                 T1K1
+            # RB11 ->  T0K0 T0K1      T1K1
+            # RB12 ->                 T1K1
+            # RB13 ->  T0K0 T0K1
+            # RB14 ->
+            # RB15 ->  T0K0 T0K1
+            # RB16 ->
+            # RB17 ->  T0K0 T0K1
+            # RB18 ->
+            # RB19 ->  T0K0 T0K1
+
+            if x % 2 == 1:
+                print(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
+                d.tkeywords.add(self.thesauri_k["0_0"])
+                d.save()
+            if x % 2 == 1 and x > 10:
+                print(f"ADDING KEYWORDS {self.thesauri_k['0_1']} to RB {d}")
+                d.tkeywords.add(self.thesauri_k["0_1"])
+                d.save()
+            if x < 10:
+                print(f"ADDING KEYWORDS {self.thesauri_k['1_0']} to RB {d}")
+                d.tkeywords.add(self.thesauri_k["1_0"])
+                d.save()
+            if 7 < x < 13:
+                d.tkeywords.add(self.thesauri_k["1_1"])
+                d.save()
+
+            d.set_permissions(public_perm_spec)
+
+    def test_resources_filtered(self):
+        # list_url = reverse("base-resources", kwargs={"api_name": "api", "resource_name": "base"})
+        list_url = reverse("base-resources-list")
+
+        for tks, exp, exp_and in (
+            # single filter
+            (("0_0",), 10, 10),
+            (("0_1",), 5, 5),
+            (("1_0",), 10, 10),
+            (("1_1",), 5, 5),
+            # same thesaurus: OR
+            (("0_0", "0_1"), 10, 5),
+            (("1_0", "1_1"), 13, 2),
+            # different thesauri: AND
+            (("0_0", "1_0"), 5, 5),
+            (("0_1", "1_0"), 0, 0),
+            (("0_1", "1_0", "1_1"), 1, 0),
+            (("0_0", "0_1", "1_0", "1_1"), 6, 0),
+        ):
+            logger.debug(f"Testing filters for {tks}")
+            filter = [("filter{tkeywords}", self.thesauri_k[tk].id) for tk in tks]
+            url = f"{list_url}?{urlencode(filter)}"
+            resp = self.api_client.get(url).json()
+            self.assertEqual(exp, resp["total"], f"Unexpected number of resources for default filter {tks}")
+
+            filter = [("filter{tkeywords}", self.thesauri_k[tk].id) for tk in tks]
+            url = f"{list_url}?{urlencode(filter + [('force_and', True)])}"
+            resp = self.api_client.get(url).json()
+            self.assertEqual(exp_and, resp["total"], f"Unexpected number of resources for FORCE_AND filter {tks}")

@@ -93,8 +93,8 @@ class DatasetsApiTests(APITestCase):
             self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
             self.assertEqual(
                 response.data["dataset"].get("featureinfo_custom_template"),
-                '<div><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>',
+                '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
+                             <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
             )
 
             _dataset.featureinfo_custom_template = "<div>Foo Bar</div>"
@@ -104,8 +104,8 @@ class DatasetsApiTests(APITestCase):
             self.assertIsNotNone(response.data["dataset"].get("featureinfo_custom_template"))
             self.assertEqual(
                 response.data["dataset"].get("featureinfo_custom_template"),
-                '<div><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
-                             <div class="col-xs-6" style="word-wrap: break-word;">${properties.name}</div></div></div>',
+                '<div style="overflow-x:hidden"><div class="row"><div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">Name:</div>\
+                             <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'name\']}</div></div></div>',
             )
 
             _dataset.use_featureinfo_custom_template = True
