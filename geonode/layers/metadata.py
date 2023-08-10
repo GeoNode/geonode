@@ -81,7 +81,7 @@ def iso2dict(exml):
     vals["language"] = mdata.language or mdata.languagecode or "eng"
     if mdata.identification[0].spatialrepresentationtype:
         vals["spatial_representation_type"] = mdata.identification[0].spatialrepresentationtype[0]
-  
+
     vals["date"] = sniff_date(mdata.datestamp)
 
     if hasattr(mdata, "identification"):
