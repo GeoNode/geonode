@@ -406,7 +406,7 @@
          </gmd:MD_LegalConstraints>
        </gmd:resourceConstraints>
        <gmd:spatialRepresentationType>
-         <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue=""/>
+         <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="vector">vector</gmd:MD_SpatialRepresentationTypeCode>
        </gmd:spatialRepresentationType>
        <gmd:language>
          <gco:CharacterString>eng</gco:CharacterString>
