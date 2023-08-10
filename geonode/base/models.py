@@ -1691,7 +1691,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         failed = False
         for role in self.get_multivalue_role_property_names():
             try:
-                self.__setattr__(role, resource_base_form.cleaned_data[role])
+                self.__set_contact_role_element__(resource_base_form.cleaned_data[role], role)
             except AttributeError:
                 logger.warning(f"unable to set contact role {role} for {self} ...")
                 failed = True
@@ -1728,15 +1728,19 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         ) -> List[settings.AUTH_USER_MODEL]:
             return ContactRole.objects.create(role=role, resource=resource, contact=user_profile)
 
+        # breakpoint()
         if isinstance(user_profile, QuerySet):
             ContactRole.objects.filter(role=role, resource=self).delete()
             return [__create_role__(self, role, user) for user in user_profile]
+
         elif isinstance(user_profile, get_user_model()):
             ContactRole.objects.filter(role=role, resource=self).delete()
             return __create_role__(self, role, user_profile)
+
         elif isinstance(user_profile, list) and all(isinstance(x, get_user_model()) for x in user_profile):
             ContactRole.objects.filter(role=role, resource=self).delete()
             return [__create_role__(self, role, profile) for profile in user_profile]
+
         elif user_profile is None:
             ContactRole.objects.filter(role=role, resource=self).delete()
         else:
@@ -1765,8 +1769,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Returns:
             ContactRole or None: The first contact with the specified role, or None if not found.
         """
-        if contact := ContactRole.objects.filter(role=role).first():
-            return contact
+        if contact := self.__get_contact_role_elements__(role):
+            return contact[0]
         else:
             return None
 

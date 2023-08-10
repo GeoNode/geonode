@@ -347,7 +347,7 @@ class ThesaurusAvailableForm(forms.Form):
 
 
 class ContactRoleMultipleChoiceField(forms.ModelMultipleChoiceField):
-    def clean(self, value):
+    def clean(self, value) -> QuerySet:
         try:
             users = get_user_model().objects.filter(username__in=value)
         except TypeError:
