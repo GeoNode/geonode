@@ -169,7 +169,7 @@ def update_resource(
             if key == "spatial_representation_type":
                 spatial_repr = SpatialRepresentationType.objects.filter(identifier=value)
                 if value is not None and spatial_repr.exists():
-                    value = SpatialRepresentationType(identifier=value)
+                    value = spatial_repr.first()
                 # if the SpatialRepresentationType is not available in the DB, we just set it as None
                 elif value is not None and not spatial_repr.exists():
                     value = None
