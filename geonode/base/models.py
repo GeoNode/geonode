@@ -1691,7 +1691,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         failed = False
         for role in self.get_multivalue_role_property_names():
             try:
-                self.__set_contact_role_element__(resource_base_form.cleaned_data[role], role)
+                if resource_base_form.cleaned_data[role].exists():
+                    self.__setattr__(role, resource_base_form.cleaned_data[role])
             except AttributeError:
                 logger.warning(f"unable to set contact role {role} for {self} ...")
                 failed = True
@@ -1728,7 +1729,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         ) -> List[settings.AUTH_USER_MODEL]:
             return ContactRole.objects.create(role=role, resource=resource, contact=user_profile)
 
-        # breakpoint()
         if isinstance(user_profile, QuerySet):
             ContactRole.objects.filter(role=role, resource=self).delete()
             return [__create_role__(self, role, user) for user in user_profile]

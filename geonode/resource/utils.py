@@ -185,7 +185,8 @@ def update_resource(
                 defaults[key] = value
 
     contact_roles = {
-        contact_role.name: defaults.pop(contact_role.name, None) for contact_role in Roles.get_multivalue_ones()
+        contact_role.name: defaults.pop(contact_role.name, getattr(instance, contact_role.name))
+        for contact_role in Roles.get_multivalue_ones()
     }
 
     to_update = {}
