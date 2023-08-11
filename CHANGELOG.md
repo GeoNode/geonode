@@ -1,6 +1,10 @@
 # Change Log
 
-## [4.1.1](https://github.com/GeoNode/geonode/tree/4.1.0) (2023-06-05)
+## [4.1.2](https://github.com/GeoNode/geonode/tree/4.1.2) (2023-08-11)
+## Bug Fixes
+- Upgrade to importer 1.0.5 which fixes the import with filenames longer then 63 chars
+- Fixed parsing and rendering of ISO TC211 spatial representetion type
+## [4.1.1](https://github.com/GeoNode/geonode/tree/4.1.1) (2023-06-05)
 ## Security and Bug Fixes
 - Upgrade to Ubuntu 22.10
 - Upgrade to Django 3.2.20
