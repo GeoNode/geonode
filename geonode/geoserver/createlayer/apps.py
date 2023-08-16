@@ -19,6 +19,6 @@
 from django.apps import AppConfig
 
 
-class GeoNodeGeoserverCreatelayerExifAppConfig(AppConfig):
+class GeoNodeGeoserverCreatelayerAppConfig(AppConfig):
     name = "geonode.geoserver.createlayer"
     verbose_name = "GeoNode Geoserver Createlayer"
