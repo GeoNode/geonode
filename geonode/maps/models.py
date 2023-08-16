@@ -262,6 +262,11 @@ class MapLayer(models.Model):
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
 
+    # Extend MapLayer model with visualization properties #11251
+    order = models.IntegerField(default=0)
+    visibility = models.BooleanField(default=True)
+    opacity = models.FloatField(default=1.0)
+
     @property
     def dataset_title(self):
         """
