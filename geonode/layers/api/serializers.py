@@ -88,20 +88,20 @@ class FeatureInfoTemplateField(DynamicComputedField):
         else:
             _attributes = instance.attributes.filter(visible=True).order_by("display_order")
             if _attributes.exists():
-                _template = "<div>"
+                _template = '<div style="overflow-x:hidden">'
                 for _field in _attributes:
                     _label = _field.attribute_label or _field.attribute
                     _template += '<div class="row">'
                     if _field.featureinfo_type == Attribute.TYPE_HREF:
                         _template += (
                             '<div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">%s:</div> \
-                            <div class="col-xs-6" style="word-wrap: break-word;"><a href="${properties.%s}" target="_new">${properties.%s}</a></div>'
+                            <div class="col-xs-6" style="word-wrap: break-word;"><a href="${properties[\'%s\']}" target="_new">${properties[\'%s\']}</a></div>'
                             % (_label, _field, _field)
                         )
                     elif _field.featureinfo_type == Attribute.TYPE_IMAGE:
                         _template += (
                             '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
-                            <a href="${properties.%s}" target="_new"><img width="100%%" height="auto" src="${properties.%s}" title="%s" alt="%s"/></a></div>'
+                            <a href="${properties[\'%s\']}" target="_new"><img width="100%%" height="auto" src="${propertiess[\'%s\']}" title="%s" alt="%s"/></a></div>'
                             % (_field.attribute, _field.attribute, _label, _label)
                         )
                     elif _field.featureinfo_type in (
@@ -115,32 +115,32 @@ class FeatureInfoTemplateField(DynamicComputedField):
                         if "youtube" in _field.featureinfo_type:
                             _template += (
                                 '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
-                                <iframe src="${properties.%s}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>'
+                                <iframe src="${properties[\'%s\']}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>'
                                 % (_field.attribute)
                             )
                         else:
                             _type = f"video/{_field.featureinfo_type[11:]}"
                             _template += (
                                 '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
-                                <video width="100%%" height="360" controls><source src="${properties.%s}" type="%s">Your browser does not support the video tag.</video></div>'
+                                <video width="100%%" height="360" controls><source src="${properties[\'%s\']}" type="%s">Your browser does not support the video tag.</video></div>'
                                 % (_field.attribute, _type)
                             )
                     elif _field.featureinfo_type == Attribute.TYPE_AUDIO:
                         _template += (
                             '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
-                            <audio controls><source src="${properties.%s}" type="audio/mpeg">Your browser does not support the audio element.</audio></div>'
+                            <audio controls><source src="${properties[\'%s\']}" type="audio/mpeg">Your browser does not support the audio element.</audio></div>'
                             % (_field.attribute)
                         )
                     elif _field.featureinfo_type == Attribute.TYPE_IFRAME:
                         _template += (
                             '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
-                            <iframe src="/proxy/?url=${properties.%s}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>'
+                            <iframe src="/proxy/?url=${properties[\'%s\']}" width="100%%" height="360" frameborder="0" allowfullscreen></iframe></div>'
                             % (_field.attribute)
                         )
                     elif _field.featureinfo_type == Attribute.TYPE_PROPERTY:
                         _template += (
                             '<div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">%s:</div> \
-                            <div class="col-xs-6" style="word-wrap: break-word;">${properties.%s}</div>'
+                            <div class="col-xs-6" style="word-wrap: break-word;">${properties[\'%s\']}</div>'
                             % (_label, _field.attribute)
                         )
                     _template += "</div>"
@@ -173,6 +173,7 @@ class DatasetSerializer(ResourceBaseSerializer):
             "featureinfo_custom_template",
             "ows_url",
             "capabilities_url",
+            "dataset_ows_url",
             "workspace",
             "default_style",
             "styles",

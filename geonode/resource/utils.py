@@ -167,13 +167,7 @@ def update_resource(
     if vals:
         for key, value in vals.items():
             if key == "spatial_representation_type":
-                spatial_repr = SpatialRepresentationType.objects.filter(identifier=value)
-                if value is not None and spatial_repr.exists():
-                    value = SpatialRepresentationType(identifier=value)
-                # if the SpatialRepresentationType is not available in the DB, we just set it as None
-                elif value is not None and not spatial_repr.exists():
-                    value = None
-                defaults[key] = value
+                defaults[key] = SpatialRepresentationType.objects.filter(identifier=value).first() if value else None
             elif key == "topic_category":
                 value, created = TopicCategory.objects.get_or_create(
                     identifier=value, defaults={"description": "", "gn_description": value}

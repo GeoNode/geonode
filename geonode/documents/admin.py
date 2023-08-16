@@ -36,6 +36,7 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 
 class DocumentAdmin(TabbedTranslationAdmin):
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display = ("id", "title", "date", "category", "group", "is_approved", "is_published", "metadata_completeness")
     list_display_links = ("id",)
     list_editable = ("title", "category", "group", "is_approved", "is_published")
@@ -55,6 +56,7 @@ class DocumentAdmin(TabbedTranslationAdmin):
         "is_approved",
         "is_published",
     )
+    readonly_fields = ("geographic_bounding_box",)
     date_hierarchy = "date"
     form = DocumentAdminForm
     actions = [metadata_batch_edit]
