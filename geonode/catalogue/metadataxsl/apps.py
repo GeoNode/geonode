@@ -21,4 +21,4 @@ from django.apps import AppConfig
 
 class GeoNodeCatalogueMetadataxslAppConfig(AppConfig):
     name = "geonode.catalogue.metadataxsl"
-    verbose_name = "GeoNode Calogue metadataxsl"
+    verbose_name = "GeoNode Catalogue metadataxsl"
