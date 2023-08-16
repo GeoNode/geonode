@@ -584,6 +584,16 @@ class OwnersResource(TypeFilteredResource):
 
     full_name = fields.CharField(null=True)
 
+    def apply_filters(self, request, applicable_filters):
+        """filter by group if applicable by group functionality"""
+
+        semi_filtered = super().apply_filters(request, applicable_filters)
+
+        if request.user and not request.user.is_superuser:
+            semi_filtered = get_available_users(request.user)
+
+        return semi_filtered
+
     def dehydrate_full_name(self, bundle):
         return bundle.obj.get_full_name() or bundle.obj.username
 
