@@ -9,7 +9,7 @@
 </div>
 <div class="row">
   <div class="col-md-12">
-    <p class="lead">{% trans "Are you sure you want to remove"  %} <strong>{{ service.name }}</strong>?</p>
+    <p class="lead">{% trans "Are you sure you want to remove"  %} <strong>{{ service.title }}</strong>?</p>
     <form action="/services/{{service.id}}/remove" method="POST" class="inline">
       {% csrf_token %}
       <input type="hidden" value="{{next}}" id="next" name="next">
