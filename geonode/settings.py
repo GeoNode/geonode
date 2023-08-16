@@ -1968,6 +1968,18 @@ SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geo
 SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
 SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
 
+_SOCIALACCOUNT_PROFILE_EXTRACTOR = os.environ.get(
+    "SOCIALACCOUNT_PROFILE_EXTRACTOR", "geonode.people.profileextractors.OpenIDExtractor"
+)
+SOCIALACCOUNT_PROFILE_EXTRACTORS = {
+    SOCIALACCOUNT_OIDC_PROVIDER: _SOCIALACCOUNT_PROFILE_EXTRACTOR,
+}
+
+SOCIALACCOUNT_GROUP_ROLE_MAPPER = os.environ.get(
+    "SOCIALACCOUNT_GROUP_ROLE_MAPPER",
+    "geonode.people.profileextractors.OpenIDGroupRoleMapper"
+)
+
 # Enable this in order to enable the OIDC SocialAccount Provider
 if SOCIALACCOUNT_OIDC_PROVIDER_ENABLED:
     INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
@@ -1984,7 +1996,8 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
         "prompt": "select_account",
     },
     "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
-    "IS_MANAGER_FIELD": "is_manager",
+    "UID_FIELD": "unique_name",
+    "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
     "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
@@ -2002,7 +2015,7 @@ _GOOGLE_SOCIALACCOUNT_PROVIDER = {
         "prompt": "select_account consent",
     },
     "COMMON_FIELDS": {"email": "email", "last_name": "family_name", "first_name": "given_name"},
-    "IS_MANAGER_FIELD": "is_manager",
+    "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
     "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",
     "AUTHORIZE_URL": "https://accounts.google.com/o/oauth2/v2/auth",
@@ -2017,13 +2030,7 @@ SOCIALACCOUNT_PROVIDERS = {
     SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
 
-_SOCIALACCOUNT_PROFILE_EXTRACTOR = os.environ.get(
-    "SOCIALACCOUNT_PROFILE_EXTRACTOR", "geonode.people.profileextractors.OpenIDExtractor"
-)
-SOCIALACCOUNT_PROFILE_EXTRACTORS = {
-    SOCIALACCOUNT_OIDC_PROVIDER: _SOCIALACCOUNT_PROFILE_EXTRACTOR,
-}
-
+# Invitation Adapter
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 INVITATIONS_CONFIRMATION_URL_NAME = "geonode.invitations:accept-invite"
 
