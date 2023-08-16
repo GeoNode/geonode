@@ -54,7 +54,6 @@ else
     invoke prepare
 
     if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-        invoke updategeoip
         invoke fixtures
         invoke monitoringfixture
         invoke initialized
