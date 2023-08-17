@@ -19,6 +19,6 @@
 from django.apps import AppConfig
 
 
-class GeoNodeFavoriteAppConfig(AppConfig):
-    name = "geonode.favorite"
-    verbose_name = "GeoNode Favorite"
+class GeoNodeOpenIdConnectAppConfig(AppConfig):
+    name = "geonode.people.socialaccount.providers.geonode_openid_connect"
+    verbose_name = "GeoNode OpenId Connect"
