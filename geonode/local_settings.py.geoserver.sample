@@ -26,6 +26,7 @@
 
 import ast
 import os
+
 try:  # python2
     from urlparse import urlparse, urlunparse, urlsplit, urljoin
 except ImportError:
@@ -35,159 +36,129 @@ from geonode.settings import *
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
-MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PROJECT_ROOT, "uploaded"))
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", os.path.join(PROJECT_ROOT, "uploaded"))
 
-STATIC_ROOT = os.getenv('STATIC_ROOT',
-                        os.path.join(PROJECT_ROOT, "static_root")
-                        )
+STATIC_ROOT = os.getenv("STATIC_ROOT", os.path.join(PROJECT_ROOT, "static_root"))
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 # Login and logout urls override
-LOGIN_URL = os.getenv('LOGIN_URL', '{}account/login/'.format(SITEURL))
-LOGOUT_URL = os.getenv('LOGOUT_URL', '{}account/logout/'.format(SITEURL))
+LOGIN_URL = os.getenv("LOGIN_URL", "{}account/login/".format(SITEURL))
+LOGOUT_URL = os.getenv("LOGOUT_URL", "{}account/logout/".format(SITEURL))
 
-ACCOUNT_LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL', SITEURL)
-ACCOUNT_LOGOUT_REDIRECT_URL =  os.getenv('LOGOUT_REDIRECT_URL', SITEURL)
+ACCOUNT_LOGIN_REDIRECT_URL = os.getenv("LOGIN_REDIRECT_URL", SITEURL)
+ACCOUNT_LOGOUT_REDIRECT_URL = os.getenv("LOGOUT_REDIRECT_URL", SITEURL)
 
-AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv('AVATAR_GRAVATAR_SSL', 'True'))
+AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv("AVATAR_GRAVATAR_SSL", "True"))
 
 # Backend
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'geonode',
-        'USER': 'geonode',
-        'PASSWORD': 'geonode',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 0,
-        'CONN_TOUT': 5,
-        'OPTIONS': {
-            'connect_timeout': 5,
-        }
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "NAME": "geonode",
+        "USER": "geonode",
+        "PASSWORD": "geonode",
+        "HOST": "localhost",
+        "PORT": "5432",
+        "CONN_MAX_AGE": 0,
+        "CONN_TOUT": 5,
+        "OPTIONS": {
+            "connect_timeout": 5,
+        },
     },
     # vector datastore for uploads
-    'datastore': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    "datastore": {
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
         # 'ENGINE': '', # Empty ENGINE name disables
-        'NAME': 'geonode_data',
-        'USER': 'geonode',
-        'PASSWORD': 'geonode',
-        'HOST': 'localhost',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 0,
-        'CONN_TOUT': 5,
-        'OPTIONS': {
-            'connect_timeout': 5,
-        }
-    }
+        "NAME": "geonode_data",
+        "USER": "geonode",
+        "PASSWORD": "geonode",
+        "HOST": "localhost",
+        "PORT": "5432",
+        "CONN_MAX_AGE": 0,
+        "CONN_TOUT": 5,
+        "OPTIONS": {
+            "connect_timeout": 5,
+        },
+    },
 }
 
-GEOSERVER_LOCATION = os.getenv(
-    'GEOSERVER_LOCATION', 'http://localhost:8080/geoserver/'
+GEOSERVER_LOCATION = os.getenv("GEOSERVER_LOCATION", "http://localhost:8080/geoserver/")
+
+GEOSERVER_PUBLIC_HOST = os.getenv("GEOSERVER_PUBLIC_HOST", SITE_HOST_NAME)
+
+GEOSERVER_PUBLIC_PORT = os.getenv("GEOSERVER_PUBLIC_PORT", 8080)
+
+_default_public_location = (
+    "http://{}:{}/geoserver/".format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT)
+    if GEOSERVER_PUBLIC_PORT
+    else "http://{}/geoserver/".format(GEOSERVER_PUBLIC_HOST)
 )
 
-GEOSERVER_PUBLIC_HOST = os.getenv(
-    'GEOSERVER_PUBLIC_HOST', SITE_HOST_NAME
-)
+GEOSERVER_WEB_UI_LOCATION = os.getenv("GEOSERVER_WEB_UI_LOCATION", GEOSERVER_LOCATION)
 
-GEOSERVER_PUBLIC_PORT = os.getenv(
-    'GEOSERVER_PUBLIC_PORT', 8080
-)
+GEOSERVER_PUBLIC_LOCATION = os.getenv("GEOSERVER_PUBLIC_LOCATION", _default_public_location)
 
-_default_public_location = 'http://{}:{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST, GEOSERVER_PUBLIC_PORT) if GEOSERVER_PUBLIC_PORT else 'http://{}/geoserver/'.format(GEOSERVER_PUBLIC_HOST)
+OGC_SERVER_DEFAULT_USER = os.getenv("GEOSERVER_ADMIN_USER", "admin")
 
-GEOSERVER_WEB_UI_LOCATION = os.getenv(
-    'GEOSERVER_WEB_UI_LOCATION', GEOSERVER_LOCATION
-)
-
-GEOSERVER_PUBLIC_LOCATION = os.getenv(
-    'GEOSERVER_PUBLIC_LOCATION', _default_public_location
-)
-
-OGC_SERVER_DEFAULT_USER = os.getenv(
-    'GEOSERVER_ADMIN_USER', 'admin'
-)
-
-OGC_SERVER_DEFAULT_PASSWORD = os.getenv(
-    'GEOSERVER_ADMIN_PASSWORD', 'geoserver'
-)
+OGC_SERVER_DEFAULT_PASSWORD = os.getenv("GEOSERVER_ADMIN_PASSWORD", "geoserver")
 
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
-    'default': {
-        'BACKEND': 'geonode.geoserver',
-        'LOCATION': GEOSERVER_LOCATION,
-        'WEB_UI_LOCATION': GEOSERVER_WEB_UI_LOCATION,
-        'LOGIN_ENDPOINT': 'j_spring_oauth2_geonode_login',
-        'LOGOUT_ENDPOINT': 'j_spring_oauth2_geonode_logout',
+    "default": {
+        "BACKEND": "geonode.geoserver",
+        "LOCATION": GEOSERVER_LOCATION,
+        "WEB_UI_LOCATION": GEOSERVER_WEB_UI_LOCATION,
+        "LOGIN_ENDPOINT": "j_spring_oauth2_geonode_login",
+        "LOGOUT_ENDPOINT": "j_spring_oauth2_geonode_logout",
         # PUBLIC_LOCATION needs to be kept like this because in dev mode
         # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
-        'PUBLIC_LOCATION': GEOSERVER_PUBLIC_LOCATION,
-        'USER': OGC_SERVER_DEFAULT_USER,
-        'PASSWORD': OGC_SERVER_DEFAULT_PASSWORD,
-        'MAPFISH_PRINT_ENABLED': True,
-        'PRINT_NG_ENABLED': True,
-        'GEONODE_SECURITY_ENABLED': True,
-        'GEOFENCE_SECURITY_ENABLED': True,
-        'GEOFENCE_TIMEOUT': int(os.getenv('GEOFENCE_TIMEOUT', os.getenv('OGC_REQUEST_TIMEOUT', '60'))),
-        'WMST_ENABLED': False,
-        'BACKEND_WRITE_ENABLED': True,
-        'WPS_ENABLED': False,
-        'LOG_FILE': '%s/geoserver/data/logs/geoserver.log' % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
+        "PUBLIC_LOCATION": GEOSERVER_PUBLIC_LOCATION,
+        "USER": OGC_SERVER_DEFAULT_USER,
+        "PASSWORD": OGC_SERVER_DEFAULT_PASSWORD,
+        "MAPFISH_PRINT_ENABLED": True,
+        "PRINT_NG_ENABLED": True,
+        "GEONODE_SECURITY_ENABLED": True,
+        "GEOFENCE_SECURITY_ENABLED": True,
+        "GEOFENCE_TIMEOUT": int(os.getenv("GEOFENCE_TIMEOUT", os.getenv("OGC_REQUEST_TIMEOUT", "60"))),
+        "WMST_ENABLED": False,
+        "BACKEND_WRITE_ENABLED": True,
+        "WPS_ENABLED": False,
+        "LOG_FILE": "%s/geoserver/data/logs/geoserver.log" % os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir)),
         # Set to dictionary identifier of database containing spatial data in DATABASES dictionary to enable
-        'DATASTORE': 'datastore',
-        'TIMEOUT': int(os.getenv('OGC_REQUEST_TIMEOUT', '60')),
-        'MAX_RETRIES': int(os.getenv('OGC_REQUEST_MAX_RETRIES', '5')),
-        'BACKOFF_FACTOR': float(os.getenv('OGC_REQUEST_BACKOFF_FACTOR', '0.3')),
-        'POOL_MAXSIZE': int(os.getenv('OGC_REQUEST_POOL_MAXSIZE', '10')),
-        'POOL_CONNECTIONS': int(os.getenv('OGC_REQUEST_POOL_CONNECTIONS', '10')),
+        "DATASTORE": "datastore",
+        "TIMEOUT": int(os.getenv("OGC_REQUEST_TIMEOUT", "60")),
+        "MAX_RETRIES": int(os.getenv("OGC_REQUEST_MAX_RETRIES", "5")),
+        "BACKOFF_FACTOR": float(os.getenv("OGC_REQUEST_BACKOFF_FACTOR", "0.3")),
+        "POOL_MAXSIZE": int(os.getenv("OGC_REQUEST_POOL_MAXSIZE", "10")),
+        "POOL_CONNECTIONS": int(os.getenv("OGC_REQUEST_POOL_CONNECTIONS", "10")),
     }
 }
 
 # If you want to enable Mosaics use the following configuration
 UPLOADER = {
-    'BACKEND': 'geonode.importer',
-    'OPTIONS': {
-        'TIME_ENABLED': True,
-        'MOSAIC_ENABLED': False,
+    "BACKEND": "geonode.importer",
+    "OPTIONS": {
+        "TIME_ENABLED": True,
+        "MOSAIC_ENABLED": False,
     },
-    'SUPPORTED_CRS': [
-        'EPSG:4326',
-        'EPSG:3785',
-        'EPSG:3857',
-        'EPSG:32647',
-        'EPSG:32736'
-    ],
-    'SUPPORTED_EXT': [
-        '.shp',
-        '.csv',
-        '.kml',
-        '.kmz',
-        '.json',
-        '.geojson',
-        '.tif',
-        '.tiff',
-        '.geotiff',
-        '.gml',
-        '.xml'
-    ]
+    "SUPPORTED_CRS": ["EPSG:4326", "EPSG:3785", "EPSG:3857", "EPSG:32647", "EPSG:32736"],
+    "SUPPORTED_EXT": [".shp", ".csv", ".kml", ".kmz", ".json", ".geojson", ".tif", ".tiff", ".geotiff", ".gml", ".xml"],
 }
 
 # CSW settings
 CATALOGUE = {
-    'default': {
+    "default": {
         # The underlying CSW implementation
         # default is pycsw in local mode (tied directly to GeoNode Django DB)
-        'ENGINE': 'geonode.catalogue.backends.pycsw_local',
+        "ENGINE": "geonode.catalogue.backends.pycsw_local",
         # pycsw in non-local mode
         # 'ENGINE': 'geonode.catalogue.backends.pycsw_http',
         # deegree and others
         # 'ENGINE': 'geonode.catalogue.backends.generic',
         # The FULLY QUALIFIED base url to the CSW instance for this GeoNode
-        'URL': urljoin(SITEURL, '/catalogue/csw'),
+        "URL": urljoin(SITEURL, "/catalogue/csw"),
         # 'URL': 'http://localhost:8080/deegree-csw-demo-3.0.4/services',
         # 'ALTERNATES_ONLY': True,
     }
@@ -196,69 +167,67 @@ CATALOGUE = {
 # pycsw settings
 PYCSW = {
     # pycsw configuration
-    'CONFIGURATION': {
+    "CONFIGURATION": {
         # uncomment / adjust to override server config system defaults
         # 'server': {
         #    'maxrecords': '10',
         #    'pretty_print': 'true',
         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
         # },
-        'server': {
-            'home': '.',
-            'url': CATALOGUE['default']['URL'],
-            'encoding': 'UTF-8',
-            'language': LANGUAGE_CODE,
-            'maxrecords': '20',
-            'pretty_print': 'true',
+        "server": {
+            "home": ".",
+            "url": CATALOGUE["default"]["URL"],
+            "encoding": "UTF-8",
+            "language": LANGUAGE_CODE,
+            "maxrecords": "20",
+            "pretty_print": "true",
             # 'domainquerytype': 'range',
-            'domaincounts': 'true',
-            'profiles': 'apiso,ebrim',
+            "domaincounts": "true",
+            "profiles": "apiso,ebrim",
         },
-        'manager': {
+        "manager": {
             # authentication/authorization is handled by Django
-            'transactions': 'false',
-            'allowed_ips': '*',
+            "transactions": "false",
+            "allowed_ips": "*",
             # 'csw_harvest_pagesize': '10',
         },
-        'metadata:main': {
-            'identification_title': 'GeoNode Catalogue',
-            'identification_abstract': 'GeoNode is an open source platform' \
-            ' that facilitates the creation, sharing, and collaborative use' \
-            ' of geospatial data',
-            'identification_keywords': 'sdi, catalogue, discovery, metadata,' \
-            ' GeoNode',
-            'identification_keywords_type': 'theme',
-            'identification_fees': 'None',
-            'identification_accessconstraints': 'None',
-            'provider_name': 'Organization Name',
-            'provider_url': SITEURL,
-            'contact_name': 'Lastname, Firstname',
-            'contact_position': 'Position Title',
-            'contact_address': 'Mailing Address',
-            'contact_city': 'City',
-            'contact_stateorprovince': 'Administrative Area',
-            'contact_postalcode': 'Zip or Postal Code',
-            'contact_country': 'Country',
-            'contact_phone': '+xx-xxx-xxx-xxxx',
-            'contact_fax': '+xx-xxx-xxx-xxxx',
-            'contact_email': 'Email Address',
-            'contact_url': 'Contact URL',
-            'contact_hours': 'Hours of Service',
-            'contact_instructions': 'During hours of service. Off on ' \
-            'weekends.',
-            'contact_role': 'pointOfContact',
+        "metadata:main": {
+            "identification_title": "GeoNode Catalogue",
+            "identification_abstract": "GeoNode is an open source platform"
+            " that facilitates the creation, sharing, and collaborative use"
+            " of geospatial data",
+            "identification_keywords": "sdi, catalogue, discovery, metadata," " GeoNode",
+            "identification_keywords_type": "theme",
+            "identification_fees": "None",
+            "identification_accessconstraints": "None",
+            "provider_name": "Organization Name",
+            "provider_url": SITEURL,
+            "contact_name": "Lastname, Firstname",
+            "contact_position": "Position Title",
+            "contact_address": "Mailing Address",
+            "contact_city": "City",
+            "contact_stateorprovince": "Administrative Area",
+            "contact_postalcode": "Zip or Postal Code",
+            "contact_country": "Country",
+            "contact_phone": "+xx-xxx-xxx-xxxx",
+            "contact_fax": "+xx-xxx-xxx-xxxx",
+            "contact_email": "Email Address",
+            "contact_url": "Contact URL",
+            "contact_hours": "Hours of Service",
+            "contact_instructions": "During hours of service. Off on " "weekends.",
+            "contact_role": "pointOfContact",
         },
-        'metadata:inspire': {
-            'enabled': 'true',
-            'languages_supported': 'eng,gre',
-            'default_language': 'eng',
-            'date': 'YYYY-MM-DD',
-            'gemet_keywords': 'Utility and governmental services',
-            'conformity_service': 'notEvaluated',
-            'contact_name': 'Organization Name',
-            'contact_email': 'Email Address',
-            'temp_extent': 'YYYY-MM-DD/YYYY-MM-DD',
-        }
+        "metadata:inspire": {
+            "enabled": "true",
+            "languages_supported": "eng,gre",
+            "default_language": "eng",
+            "date": "YYYY-MM-DD",
+            "gemet_keywords": "Utility and governmental services",
+            "conformity_service": "notEvaluated",
+            "contact_name": "Organization Name",
+            "contact_email": "Email Address",
+            "temp_extent": "YYYY-MM-DD/YYYY-MM-DD",
+        },
     }
 }
 
@@ -268,50 +237,51 @@ PYCSW = {
 
 # default map projection
 # Note: If set to EPSG:4326, then only EPSG:4326 basemaps will work.
-DEFAULT_MAP_CRS = os.environ.get('DEFAULT_MAP_CRS', "EPSG:3857")
+DEFAULT_MAP_CRS = os.environ.get("DEFAULT_MAP_CRS", "EPSG:3857")
 
-DEFAULT_LAYER_FORMAT = os.environ.get('DEFAULT_LAYER_FORMAT', "image/png")
+DEFAULT_LAYER_FORMAT = os.environ.get("DEFAULT_LAYER_FORMAT", "image/png")
 
 # Where should newly created maps be focused?
-DEFAULT_MAP_CENTER = (os.environ.get('DEFAULT_MAP_CENTER_X', 0), os.environ.get('DEFAULT_MAP_CENTER_Y', 0))
+DEFAULT_MAP_CENTER = (os.environ.get("DEFAULT_MAP_CENTER_X", 0), os.environ.get("DEFAULT_MAP_CENTER_Y", 0))
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
-DEFAULT_MAP_ZOOM = int(os.environ.get('DEFAULT_MAP_ZOOM', 3))
+DEFAULT_MAP_ZOOM = int(os.environ.get("DEFAULT_MAP_ZOOM", 3))
 
-MAPBOX_ACCESS_TOKEN = os.environ.get('MAPBOX_ACCESS_TOKEN', None)
-BING_API_KEY = os.environ.get('BING_API_KEY', None)
-GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY', None)
+MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", None)
+BING_API_KEY = os.environ.get("BING_API_KEY", None)
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", None)
 
-GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv('GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY', 'mapstore')
+GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY = os.getenv("GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore")
 
 MAP_BASELAYERS = [{}]
 
 """
 MapStore2 REACT based Client parameters
 """
-if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
-    GEONODE_CLIENT_HOOKSET = os.getenv('GEONODE_CLIENT_HOOKSET', 'geonode_mapstore_client.hooksets.MapStoreHookSet')
+if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
+    GEONODE_CLIENT_HOOKSET = os.getenv("GEONODE_CLIENT_HOOKSET", "geonode_mapstore_client.hooksets.MapStoreHookSet")
 
-    if 'geonode_mapstore_client' not in INSTALLED_APPS:
+    if "geonode_mapstore_client" not in INSTALLED_APPS:
         INSTALLED_APPS += (
-            'mapstore2_adapter',
-            'geonode_mapstore_client',)
+            "mapstore2_adapter",
+            "geonode_mapstore_client",
+        )
 
     def get_geonode_catalogue_service():
         if PYCSW:
             pycsw_config = PYCSW["CONFIGURATION"]
             if pycsw_config:
-                    pycsw_catalogue = {
-                        ("%s" % pycsw_config['metadata:main']['identification_title']): {
-                            "url": CATALOGUE['default']['URL'],
-                            "type": "csw",
-                            "title": pycsw_config['metadata:main']['identification_title'],
-                            "autoload": True
-                         }
+                pycsw_catalogue = {
+                    ("%s" % pycsw_config["metadata:main"]["identification_title"]): {
+                        "url": CATALOGUE["default"]["URL"],
+                        "type": "csw",
+                        "title": pycsw_config["metadata:main"]["identification_title"],
+                        "autoload": True,
                     }
-                    return pycsw_catalogue
+                }
+                return pycsw_catalogue
         return None
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
@@ -321,7 +291,9 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
     MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
 
     if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[list(GEONODE_CATALOGUE_SERVICE.keys())[0]]
+        MAPSTORE_CATALOGUE_SERVICES[list(GEONODE_CATALOGUE_SERVICE.keys())[0]] = GEONODE_CATALOGUE_SERVICE[
+            list(GEONODE_CATALOGUE_SERVICE.keys())[0]
+        ]
         MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(GEONODE_CATALOGUE_SERVICE.keys())[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
@@ -333,7 +305,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "source": "Stamen",
             "group": "background",
             "thumbURL": "https://stamen-tiles-c.a.ssl.fastly.net/watercolor/0/0/0.jpg",
-            "visibility": False
+            "visibility": False,
         },
         {
             "type": "tileprovider",
@@ -343,7 +315,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "source": "Stamen",
             "group": "background",
             "thumbURL": "https://stamen-tiles-d.a.ssl.fastly.net/terrain/0/0/0.png",
-            "visibility": False
+            "visibility": False,
         },
         {
             "type": "tileprovider",
@@ -353,7 +325,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "source": "Stamen",
             "group": "background",
             "thumbURL": "https://stamen-tiles-d.a.ssl.fastly.net/toner/0/0/0.png",
-            "visibility": False
+            "visibility": False,
         },
         {
             "type": "osm",
@@ -361,7 +333,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "mapnik",
             "source": "osm",
             "group": "background",
-            "visibility": True
+            "visibility": True,
         },
         {
             "type": "tileprovider",
@@ -370,7 +342,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "OpenTopoMap",
             "source": "OpenTopoMap",
             "group": "background",
-            "visibility": False
+            "visibility": False,
         },
         {
             "type": "wms",
@@ -384,14 +356,14 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "https://maps3.geosolutionsgroup.com/geoserver/wms",
                 "https://maps4.geosolutionsgroup.com/geoserver/wms",
                 "https://maps5.geosolutionsgroup.com/geoserver/wms",
-                "https://maps6.geosolutionsgroup.com/geoserver/wms"
+                "https://maps6.geosolutionsgroup.com/geoserver/wms",
             ],
             "group": "background",
             "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
             "visibility": False,
             "credits": {
-            "title": "<a class=\"a-light\" xmlns:dct=\"http://purl.org/dc/terms/\" href=\"https://s2maps.eu\" property=\"dct:title\">Sentinel-2 cloudless 2016</a> by <a class=\"a-light\" xmlns:cc=\"http://creativecommons.org/ns#\" href=\"https://eox.at\" property=\"cc:attributionName\" rel=\"cc:attributionURL\">EOX IT Services GmbH</a>"
-            }
+                "title": '<a class="a-light" xmlns:dct="http://purl.org/dc/terms/" href="https://s2maps.eu" property="dct:title">Sentinel-2 cloudless 2016</a> by <a class="a-light" xmlns:cc="http://creativecommons.org/ns#" href="https://eox.at" property="cc:attributionName" rel="cc:attributionURL">EOX IT Services GmbH</a>'
+            },
         },
         {
             "source": "ol",
@@ -401,8 +373,8 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "title": "Empty Background",
             "type": "empty",
             "visibility": False,
-            "args": ["Empty Background", {"visibility": False}]
-        }
+            "args": ["Empty Background", {"visibility": False}],
+        },
     ]
 
     if MAPBOX_ACCESS_TOKEN:
@@ -413,11 +385,14 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
             "name": "MapBox streets-v11",
             "accessToken": "%s" % MAPBOX_ACCESS_TOKEN,
             "source": "streets-v11",
-            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s" % MAPBOX_ACCESS_TOKEN,
+            "thumbURL": "https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/6/33/23?access_token=%s"
+            % MAPBOX_ACCESS_TOKEN,
             "group": "background",
-            "visibility": True
+            "visibility": True,
         }
-        DEFAULT_MS2_BACKGROUNDS = [MAPBOX_BASEMAPS,] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [
+            MAPBOX_BASEMAPS,
+        ] + DEFAULT_MS2_BACKGROUNDS
 
     if BING_API_KEY:
         BING_BASEMAPS = [
@@ -428,7 +403,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "source": "bing",
                 "group": "background",
                 "apiKey": "{{apiKey}}",
-                "visibility": True
+                "visibility": True,
             },
             {
                 "type": "bing",
@@ -438,7 +413,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "group": "background",
                 "apiKey": "{{apiKey}}",
                 "thumbURL": "%sstatic/mapstorestyle/img/bing_road_on_demand.png" % SITEURL,
-                "visibility": False
+                "visibility": False,
             },
             {
                 "type": "bing",
@@ -448,7 +423,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "group": "background",
                 "apiKey": "{{apiKey}}",
                 "thumbURL": "%sstatic/mapstorestyle/img/bing_aerial_w_labels.png" % SITEURL,
-                "visibility": False
+                "visibility": False,
             },
             {
                 "type": "bing",
@@ -458,64 +433,67 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == 'mapstore':
                 "group": "background",
                 "apiKey": "{{apiKey}}",
                 "thumbURL": "%sstatic/mapstorestyle/img/bing_canvas_dark.png" % SITEURL,
-                "visibility": False
-            }
+                "visibility": False,
+            },
         ]
-        DEFAULT_MS2_BACKGROUNDS = [BING_BASEMAPS, ] + DEFAULT_MS2_BACKGROUNDS
+        DEFAULT_MS2_BACKGROUNDS = [
+            BING_BASEMAPS,
+        ] + DEFAULT_MS2_BACKGROUNDS
 
     MAPSTORE_BASELAYERS = DEFAULT_MS2_BACKGROUNDS
     # MAPSTORE_BASELAYERS_SOURCES allow to configure tilematrix sets for wmts layers
-    MAPSTORE_BASELAYERS_SOURCES = os.environ.get('MAPSTORE_BASELAYERS_SOURCES', {})
+    MAPSTORE_BASELAYERS_SOURCES = os.environ.get("MAPSTORE_BASELAYERS_SOURCES", {})
 
 # -- END Client Hooksets Setup
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d '
-                      '%(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(message)s',
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d " "%(thread)d %(message)s"},
+        "simple": {
+            "format": "%(message)s",
         },
     },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "handlers": {
+        "console": {"level": "INFO", "class": "logging.StreamHandler", "formatter": "simple"},
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
-        }
     },
     "loggers": {
         "django": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
         "geonode": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"],
+            "level": "INFO",
+        },
         "geoserver-restconfig.catalog": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
         "owslib": {
-            "handlers": ["console"], "level": "ERROR", },
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
         "pycsw": {
-            "handlers": ["console"], "level": "INFO", },
+            "handlers": ["console"],
+            "level": "INFO",
+        },
         "celery": {
-            'handlers': ["console"], 'level': 'ERROR', },
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
     },
 }
 
 # Additional settings
-X_FRAME_OPTIONS = 'ALLOW-FROM %s' % SITEURL
+X_FRAME_OPTIONS = "ALLOW-FROM %s" % SITEURL
 CORS_ALLOW_ALL_ORIGINS = True
 
 GEOIP_PATH = "/usr/local/share/GeoIP"
