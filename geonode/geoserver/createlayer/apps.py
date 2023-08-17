@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeGeoserverCreatelayerAppConfig(AppConfig):
+    name = "geonode.geoserver.createlayer"
+    verbose_name = "GeoNode Geoserver Createlayer"
