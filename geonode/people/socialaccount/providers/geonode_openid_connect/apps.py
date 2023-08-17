@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeOpenIdConnectAppConfig(AppConfig):
+    name = "geonode.people.socialaccount.providers.geonode_openid_connect"
+    verbose_name = "GeoNode OpenId Connect"
