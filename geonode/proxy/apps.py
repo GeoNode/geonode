@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeProxyAppConfig(AppConfig):
+    name = "geonode.proxy"
+    verbose_name = "GeoNode Proxy"

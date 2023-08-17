@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeCatalogueAppConfig(AppConfig):
+    name = "geonode.catalogue"
+    verbose_name = "GeoNode CSW Catalogue"
