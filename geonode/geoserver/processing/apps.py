@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeGeoserverProcessingAppConfig(AppConfig):
+    name = "geonode.geoserver.processing"
+    verbose_name = "GeoNode Geoserver Processing"
