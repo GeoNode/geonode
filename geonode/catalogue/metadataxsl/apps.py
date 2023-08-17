@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeCatalogueMetadataxslAppConfig(AppConfig):
+    name = "geonode.catalogue.metadataxsl"
+    verbose_name = "GeoNode Catalogue metadataxsl"

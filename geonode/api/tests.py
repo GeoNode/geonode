@@ -321,7 +321,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.api_client.client.login(username="bobby", password="bob")
         resp = self.api_client.get(filter_url)
         self.assertValidJSONResponse(resp)
-        self.assertEqual(len(self.deserialize(resp)["objects"]), 9)
+        self.assertEqual(len(self.deserialize(resp)["objects"]), 6)
         # Returns limitted info about other users
         bobby = get_user_model().objects.get(username="bobby")
         owners = self.deserialize(resp)["objects"]
@@ -331,6 +331,12 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             else:
                 self.assertIsNone(owner.get("email"))
                 self.assertIsNone(owner.get("first_name"))
+
+        # now test with logged in admin
+        self.api_client.client.login(username="admin", password="admin")
+        resp = self.api_client.get(filter_url)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)["objects"]), 9)
 
     @override_settings(API_LOCKDOWN=True)
     def test_groups_lockdown(self):
