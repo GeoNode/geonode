@@ -652,6 +652,7 @@ except ValueError:
             "glb",
             "pcd",
             "gltf",
+            "ifc",
         ]
         if os.getenv("ALLOWED_DOCUMENT_TYPES") is None
         else re.split(r" *[,|:;] *", os.getenv("ALLOWED_DOCUMENT_TYPES"))
