@@ -1976,8 +1976,7 @@ SOCIALACCOUNT_PROFILE_EXTRACTORS = {
 }
 
 SOCIALACCOUNT_GROUP_ROLE_MAPPER = os.environ.get(
-    "SOCIALACCOUNT_GROUP_ROLE_MAPPER",
-    "geonode.people.profileextractors.OpenIDGroupRoleMapper"
+    "SOCIALACCOUNT_GROUP_ROLE_MAPPER", "geonode.people.profileextractors.OpenIDGroupRoleMapper"
 )
 
 # Enable this in order to enable the OIDC SocialAccount Provider
