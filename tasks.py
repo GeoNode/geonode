@@ -60,6 +60,7 @@ def update(ctx):
     for _cnt in range(1, 29):
         try:
             geonode_docker_host = str(socket.gethostbyname("geonode"))
+            break
         except Exception:
             print(f"...waiting for NGINX to pop-up...{_cnt}")
             time.sleep(1)
