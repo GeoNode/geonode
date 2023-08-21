@@ -1009,7 +1009,7 @@ GEOSERVER_ADMIN_USER = os.getenv("GEOSERVER_ADMIN_USER", "admin")
 GEOSERVER_ADMIN_PASSWORD = os.getenv("GEOSERVER_ADMIN_PASSWORD", "geoserver")
 
 # This is the password from Geoserver factory data-dir. It's only used at install time to perform the very first configurfation of GEOSERVER_ADMIN_PASSWORD 
-OGC_SERVER_FACTORY_PASSWORD = os.getenv("GEOSERVER_FACTORY_PASSWORD", "geoserver")
+GEOSERVER_FACTORY_PASSWORD = os.getenv("GEOSERVER_FACTORY_PASSWORD", "geoserver")
 
 GEOFENCE_SECURITY_ENABLED = (
     False if TEST and not INTEGRATION else ast.literal_eval(os.getenv("GEOFENCE_SECURITY_ENABLED", "True"))
