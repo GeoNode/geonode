@@ -112,7 +112,7 @@ def update(ctx):
         )
     except ValueError:
         current_allowed = []
-    current_allowed.extend([str(pub_ip), f"{pub_ip}:{pub_port}"])
+    current_allowed.extend([str(pub_host), f"{pub_host}:{pub_port}"])
     allowed_hosts = [str(c) for c in current_allowed] + ['"geonode"', '"django"']
 
     ctx.run(
@@ -526,22 +526,6 @@ def _localsettings():
     settings = os.getenv("DJANGO_SETTINGS_MODULE", "geonode.settings")
     return settings
 
-
-def _gs_service_availability(url):
-    import requests
-
-    try:
-        r = requests.request("get", url, verify=False)
-        r.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-        logger.error(f"GeoServer connection error is {e}")
-        return False
-    except requests.exceptions.HTTPError as er:
-        logger.error(f"GeoServer HTTP error is {er}")
-        return False
-    else:
-        logger.info("GeoServer API are available!")
-        return True
 
 def _geonode_public_host():
     gn_pub_hostip = os.getenv("GEONODE_LB_HOST_IP", None)
