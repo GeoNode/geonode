@@ -86,7 +86,6 @@ def generate_env_file(args):
         _vals_to_replace["https_host"] = _jsfile.get("hostname", args.hostname) if tcp == "https" else ""
 
         _vals_to_replace["siteurl"] = f"{tcp}://{_jsfile.get('hostname', args.hostname)}"
-        _vals_to_replace["geoserver_ui"] = f"{tcp}://{_jsfile.get('hostname', args.hostname)}"
         _vals_to_replace["secret_key"] = _jsfile.get("secret_key", args.secret_key) or "".join(
             random.choice(_strong_chars) for _ in range(50)
         )
