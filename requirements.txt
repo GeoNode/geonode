@@ -65,7 +65,7 @@ numpy==1.25.*
 # # Apps with packages provided in GeoNode's PPA on Launchpad.
 
 # Django Apps
-dj-database-url==2.0.0
+dj-database-url==2.1.0
 dj-pagination==2.5.0
 django-select2==8.1.2
 django-floppyforms<1.10.0
