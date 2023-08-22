@@ -52,7 +52,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:latest
+    image: geonode/nginx:1.25.1
     build: ./scripts/docker/nginx/
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
