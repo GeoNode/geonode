@@ -16,3 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.apps import AppConfig
+
+
+class GeoNodeApiAppConfig(AppConfig):
+    name = "geonode.api"
+    verbose_name = "GeoNode API v1"
