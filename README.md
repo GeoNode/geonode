@@ -8,7 +8,6 @@ Table of Contents
   - [What is GeoNode?](#what-is-geonode)
   - [Try out GeoNode](#try-out-geonode)
   - [Quick Docker Start](#quick-docker-start)
-  - [Install](#install)
   - [Learn GeoNode](#learn-geonode)
   - [Development](#development)
   - [Contributing](#contributing)
@@ -42,7 +41,7 @@ Try out GeoNode
 ---------------
 
 If you just want to try out GeoNode visit our official Demo online at:
-http://master.demo.geonode.org. After your registration you will be able
+[http://development.demo.geonode.org[(http://development.demo.geonode.org). After your registration you will be able
 to test all basic functionalities like uploading layers, creation of
 maps, editing metadata, styles and much more. To get an overview what
 GeoNode can do we recommend to have a look at the [Users
@@ -51,12 +50,6 @@ Workshop](https://docs.geonode.org/en/master/usage/index.html).
 Quick Docker Start
 ------------------
 
-  ```bash
-    python3.10 -m venv ~/.venvs/geonode
-    source ~/.venvs/geonode/bin/activate
-
-    pip install Django==3.2.*
-  ```
   ```bash
     python create-envfile.py
   ```
@@ -81,18 +74,6 @@ Quick Docker Start
   docker compose build
   docker compose up -d
 ```
-
-Install
--------
-
-    The latest official release is 4.1.0!
-
-GeoNode can be setup in different ways, flavors and plattforms. If
-you´re planning to do development or install for production please visit
-the offical GeoNode installation documentation:
-
-- [Docker](https://docs.geonode.org/en/master/install/advanced/core/index.html#docker)
-- [Ubuntu 22.04](https://docs.geonode.org/en/master/install/advanced/core/index.html#ubuntu-22-04)
 
 Learn GeoNode
 -------------

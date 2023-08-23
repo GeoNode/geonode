@@ -388,18 +388,19 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     def test_prefiltering(self):
         reginfo = RegionFacetProvider().get_info()
-        t0info = facet_registry.get_provider("t_0").get_info()
-        t1info = facet_registry.get_provider("t_1").get_info()
+        regfilter = reginfo["filter"]
+        t0filter = facet_registry.get_provider("t_0").get_info()["filter"]
+        t1filter = facet_registry.get_provider("t_1").get_info()["filter"]
 
         for facet, filters, totals, count0 in (
             ("t_0", {}, 2, 10),
-            ("t_0", {reginfo["key"]: "R0"}, 1, 1),
+            ("t_0", {regfilter: "R0"}, 1, 1),
             ("t_1", {}, 2, 10),
-            ("t_1", {reginfo["key"]: "R0"}, 1, 2),
-            ("t_1", {reginfo["key"]: "R1"}, 2, 3),
+            ("t_1", {regfilter: "R0"}, 1, 2),
+            ("t_1", {regfilter: "R1"}, 2, 3),
             (reginfo["name"], {}, 2, 4),
-            (reginfo["name"], {t0info["key"]: self.thesauri_k["0_0"].id}, 2, 1),
-            (reginfo["name"], {t1info["key"]: self.thesauri_k["1_0"].id}, 2, 3),
+            (reginfo["name"], {t0filter: self.thesauri_k["0_0"].id}, 2, 1),
+            (reginfo["name"], {t1filter: self.thesauri_k["1_0"].id}, 2, 3),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=filters)
             res: JsonResponse = views.get_facet(req, facet)
