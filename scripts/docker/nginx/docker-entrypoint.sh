@@ -15,7 +15,7 @@ echo "Creating autoissued certificates for HTTP host"
 if [ ! -f "/geonode-certificates/autoissued/privkey.pem" ] || [[ $(find /geonode-certificates/autoissued/privkey.pem -mtime +365 -print) ]]; then
         echo "Autoissued certificate does not exist or is too old, we generate one"
         mkdir -p "/geonode-certificates/autoissued/"
-        openssl req -x509 -nodes -days 1825 -newkey rsa:2048 -keyout "/geonode-certificates/autoissued/privkey.pem" -out "/geonode-certificates/autoissued/fullchain.pem" -subj "/CN=${HTTP_HOST:-null}" 
+        openssl req -x509 -nodes -days 1825 -newkey rsa:2048 -keyout "/geonode-certificates/autoissued/privkey.pem" -out "/geonode-certificates/autoissued/fullchain.pem" -subj "/CN=${HTTP_HOST:-HTTPS_HOST}" 
 else
         echo "Autoissued certificate already exists"
 fi
@@ -32,18 +32,25 @@ else
         ln -sf "/geonode-certificates/autoissued" /certificate_symlink
 fi
 
-echo "Sanity checks on http/s ports configuration"
-if [ -z "${JENKINS_HTTP_PORT}" ]; then
-        JENKINS_HTTP_PORT=9080
+if [ -z "${HTTPS_HOST}" ]; then
+        HTTP_SCHEME="http"
+else
+        HTTP_SCHEME="https"
 fi
 
+export HTTP_SCHEME=${HTTP_SCHEME:-http}
+export GEONODE_LB_HOST_IP=${GEONODE_LB_HOST_IP:-django}
+export GEONODE_LB_PORT=${GEONODE_LB_PORT:-8000}
+export GEOSERVER_LB_HOST_IP=${GEOSERVER_LB_HOST_IP:-geoserver}
+export GEOSERVER_LB_PORT=${GEOSERVER_LB_PORT:-8080}
+
 echo "Replacing environement variables"
-envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
-envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
-envsubst '\$HTTP_HOST \$HTTPS_HOST \$JENKINS_HTTP_PORT' < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
+envsubst '\$HTTP_HOST \$HTTPS_HOST \$HTTP_SCHEME \$GEONODE_LB_HOST_IP \$GEONODE_LB_PORT \$GEOSERVER_LB_HOST_IP \$GEOSERVER_LB_PORT \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
+envsubst '\$HTTP_HOST \$HTTPS_HOST \$HTTP_SCHEME \$GEONODE_LB_HOST_IP \$GEONODE_LB_PORT \$GEOSERVER_LB_HOST_IP \$GEOSERVER_LB_PORT \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
+envsubst '\$HTTP_HOST \$HTTPS_HOST \$HTTP_SCHEME \$GEONODE_LB_HOST_IP \$GEONODE_LB_PORT \$GEOSERVER_LB_HOST_IP \$GEOSERVER_LB_PORT' < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
 
 echo "Enabling or not https configuration"
-if [ -z "${HTTPS_HOST}" ]; then 
+if [ -z "${HTTPS_HOST}" ]; then
         echo "" > /etc/nginx/nginx.https.enabled.conf
 else
         ln -sf /etc/nginx/nginx.https.available.conf /etc/nginx/nginx.https.enabled.conf
