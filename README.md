@@ -8,7 +8,6 @@ Table of Contents
   - [What is GeoNode?](#what-is-geonode)
   - [Try out GeoNode](#try-out-geonode)
   - [Quick Docker Start](#quick-docker-start)
-  - [Install](#install)
   - [Learn GeoNode](#learn-geonode)
   - [Development](#development)
   - [Contributing](#contributing)
@@ -75,18 +74,6 @@ Quick Docker Start
   docker compose build
   docker compose up -d
 ```
-
-Install
--------
-
-    The latest official release is 4.1.0!
-
-GeoNode can be setup in different ways, flavors and plattforms. If
-you´re planning to do development or install for production please visit
-the offical GeoNode installation documentation:
-
-- [Docker](https://docs.geonode.org/en/master/install/advanced/core/index.html#docker)
-- [Ubuntu 22.04](https://docs.geonode.org/en/master/install/advanced/core/index.html#ubuntu-22-04)
 
 Learn GeoNode
 -------------
