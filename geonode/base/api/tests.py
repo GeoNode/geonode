@@ -34,7 +34,6 @@ from unittest.mock import patch
 from urllib.parse import urljoin
 from datetime import date, timedelta
 
-from django.test import override_settings
 from django.urls import reverse
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
