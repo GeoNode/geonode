@@ -52,12 +52,6 @@ Quick Docker Start
 ------------------
 
   ```bash
-    python3.10 -m venv ~/.venvs/geonode
-    source ~/.venvs/geonode/bin/activate
-
-    pip install Django==3.2.*
-  ```
-  ```bash
     python create-envfile.py
   ```
 `create-envfile.py` accepts the following arguments:
