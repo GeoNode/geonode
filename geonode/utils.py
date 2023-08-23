@@ -2012,8 +2012,8 @@ def import_class_module(full_class_string):
     """
     Dynamically load a class from a string
 
-    >>> klass = load_class("module.submodule.ClassName")
-    >>> klass2 = load_class("myfile.Class2")
+    >>> klass = import_class_module("module.submodule.ClassName")
+    >>> klass2 = import_class_module("myfile.Class2")
     """
     try:
         module_path, class_name = full_class_string.rsplit(".", 1)
