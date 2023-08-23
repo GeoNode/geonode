@@ -86,7 +86,6 @@ def generate_env_file(args):
         _vals_to_replace["https_host"] = _jsfile.get("hostname", args.hostname) if tcp == "https" else ""
 
         _vals_to_replace["siteurl"] = f"{tcp}://{_jsfile.get('hostname', args.hostname)}"
-        _vals_to_replace["geoserver_ui"] = f"{tcp}://{_jsfile.get('hostname', args.hostname)}"
         _vals_to_replace["secret_key"] = _jsfile.get("secret_key", args.secret_key) or "".join(
             random.choice(_strong_chars) for _ in range(50)
         )
@@ -125,6 +124,7 @@ if __name__ == "__main__":
         prog="ENV file builder",
         description="Tool for generate environment file automatically. The information can be passed or via CLI or via JSON file ( --file /path/env.json)",
         usage="python create-envfile.py localhost -f /path/to/json/file.json",
+        allow_abbrev=False
     )
     parser.add_argument(
         "--noinput",

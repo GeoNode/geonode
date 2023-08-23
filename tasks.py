@@ -24,6 +24,7 @@ import json
 import time
 import docker
 import socket
+import ipaddress
 import logging
 import datetime
 
@@ -46,8 +47,8 @@ def waitfordbs(ctx):
 def update(ctx):
     print("***************************setting env*********************************")
     ctx.run("env", pty=True)
-    pub_ip = _geonode_public_host_ip()
-    print(f"Public Hostname or IP is {pub_ip}")
+    pub_host = _geonode_public_host()
+    print(f"Public Hostname is {pub_host}")
     pub_port = _geonode_public_port()
     print(f"Public PORT is {pub_port}")
     pub_protocol = "https" if pub_port == "443" else "http"
@@ -59,6 +60,7 @@ def update(ctx):
     for _cnt in range(1, 29):
         try:
             geonode_docker_host = str(socket.gethostbyname("geonode"))
+            break
         except Exception:
             print(f"...waiting for NGINX to pop-up...{_cnt}")
             time.sleep(1)
@@ -70,18 +72,18 @@ def update(ctx):
         print(f"Can not delete the {override_env} file as it doesn't exists")
 
     if pub_port:
-        siteurl = f"{pub_protocol}://{pub_ip}:{pub_port}/"
-        gs_pub_loc = f"http://{pub_ip}:{pub_port}/geoserver/"
+        siteurl = f"{pub_protocol}://{pub_host}:{pub_port}/"
+        gs_pub_loc = f"http://{pub_host}:{pub_port}/geoserver/"
     else:
-        siteurl = f"{pub_protocol}://{pub_ip}/"
-        gs_pub_loc = f"http://{pub_ip}/geoserver/"
+        siteurl = f"{pub_protocol}://{pub_host}/"
+        gs_pub_loc = f"http://{pub_host}/geoserver/"
     envs = {
         "local_settings": str(_localsettings()),
         "siteurl": os.environ.get("SITEURL", siteurl),
         "geonode_docker_host": geonode_docker_host,
         "public_protocol": pub_protocol,
-        "public_fqdn": str(pub_ip) + str(f":{pub_port}" if pub_port else ""),
-        "public_host": str(pub_ip),
+        "public_fqdn": str(pub_host) + str(f":{pub_port}" if pub_port else ""),
+        "public_host": str(pub_host),
         "dburl": os.environ.get("DATABASE_URL", db_url),
         "geodburl": os.environ.get("GEODATABASE_URL", geodb_url),
         "static_root": os.environ.get("STATIC_ROOT", "/mnt/volumes/statics/static/"),
@@ -111,7 +113,7 @@ def update(ctx):
         )
     except ValueError:
         current_allowed = []
-    current_allowed.extend([str(pub_ip), f"{pub_ip}:{pub_port}"])
+    current_allowed.extend([str(pub_host), f"{pub_host}:{pub_port}"])
     allowed_hosts = [str(c) for c in current_allowed] + ['"geonode"', '"django"']
 
     ctx.run(
@@ -380,7 +382,7 @@ def fixtures(ctx):
 def collectstatic(ctx):
     print("************************static artifacts******************************")
     ctx.run(
-        f"django-admin.py collectstatic --noinput \
+        f"django-admin collectstatic --noinput \
 --settings={_localsettings()}",
         pty=True,
     )
@@ -388,17 +390,28 @@ def collectstatic(ctx):
 
 @task
 def monitoringfixture(ctx):
-    print("*******************monitoring fixture********************************")
-    ctx.run("rm -rf /tmp/default_monitoring_apps_docker.json", pty=True)
-    _prepare_monitoring_fixture()
-    try:
-        ctx.run(
-            f"django-admin.py loaddata /tmp/default_monitoring_apps_docker.json \
---settings={_localsettings()}",
-            pty=True,
-        )
-    except Exception as e:
-        logger.error(f"ERROR installing monitoring fixture: {str(e)}")
+    if ast.literal_eval(os.environ.get("MONITORING_ENABLED", "False")):
+        print("*******************monitoring fixture********************************")
+        ctx.run("rm -rf /tmp/default_monitoring_apps_docker.json", pty=True)
+        _prepare_monitoring_fixture()
+        try:
+            ctx.run(
+                f"django-admin loaddata geonode/monitoring/fixtures/metric_data.json \
+    --settings={_localsettings()}",
+                pty=True,
+            )
+            ctx.run(
+                f"django-admin loaddata geonode/monitoring/fixtures/notifications.json \
+    --settings={_localsettings()}",
+                pty=True,
+            )
+            ctx.run(
+                f"django-admin loaddata /tmp/default_monitoring_apps_docker.json \
+    --settings={_localsettings()}",
+                pty=True,
+            )
+        except Exception as e:
+            logger.error(f"ERROR installing monitoring fixture: {str(e)}")
 
 
 @task
@@ -410,7 +423,7 @@ def updateadmin(ctx):
         os.environ.get("ADMIN_EMAIL", "admin@example.org"),
     )
     ctx.run(
-        f"django-admin.py loaddata /tmp/django_admin_docker.json \
+        f"django-admin loaddata /tmp/django_admin_docker.json \
 --settings={_localsettings()}",
         pty=True,
     )
@@ -455,6 +468,14 @@ address {ip_list}"
 address {ip_list[0]}"
         )
     return ip_list[0]
+
+
+def _is_valid_ip(ip):
+    try:
+        ipaddress.IPv4Address(ip)
+        return True
+    except Exception as e:
+        return False
 
 
 def _container_exposed_port(component, instname):
@@ -507,26 +528,16 @@ def _localsettings():
     return settings
 
 
-def _gs_service_availability(url):
-    import requests
-
-    try:
-        r = requests.request("get", url, verify=False)
-        r.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-        logger.error(f"GeoServer connection error is {e}")
-        return False
-    except requests.exceptions.HTTPError as er:
-        logger.error(f"GeoServer HTTP error is {er}")
-        return False
-    else:
-        logger.info("GeoServer API are available!")
-        return True
+def _geonode_public_host():
+    gn_pub_hostip = os.getenv("GEONODE_LB_HOST_IP", None)
+    if not gn_pub_hostip:
+        gn_pub_hostip = _docker_host_ip()
+    return gn_pub_hostip
 
 
 def _geonode_public_host_ip():
     gn_pub_hostip = os.getenv("GEONODE_LB_HOST_IP", None)
-    if not gn_pub_hostip:
+    if not gn_pub_hostip or not _is_valid_ip(gn_pub_hostip):
         gn_pub_hostip = _docker_host_ip()
     return gn_pub_hostip
 

@@ -8,7 +8,6 @@ x-common-django:
   env_file:
     - .env
   volumes:
-    # - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
@@ -52,7 +51,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:latest
+    image: geonode/nginx:1.25.1
     build: ./scripts/docker/nginx/
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
