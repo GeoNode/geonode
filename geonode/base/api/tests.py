@@ -32,20 +32,23 @@ from time import sleep
 from uuid import uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
+from datetime import date, timedelta
 
 from django.urls import reverse
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework.test import APITestCase
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 
 from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base import enumerations
+from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.groups.models import GroupMember, GroupProfile
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.layers.utils import get_files
@@ -56,6 +59,9 @@ from geonode.base.models import (
     TopicCategory,
     ThesaurusKeyword,
     ExtraMetadata,
+    RestrictionCodeType,
+    License,
+    Group,
 )
 
 from geonode.layers.models import Dataset
@@ -706,6 +712,52 @@ class BaseApiTests(APITestCase):
             )
             self.assertEqual("321-12345-987654321", response.data["resource"]["doi"], response.data["resource"]["doi"])
             self.assertEqual(True, response.data["resource"]["is_published"], response.data["resource"]["is_published"])
+
+    def test_resource_serializer_validation(self):
+        """
+        Testing serializing and deserializing of a Dataset base on django-rest description:
+        https://www.django-rest-framework.org/api-guide/serializers/#deserializing-objects
+        """
+        owner, _ = get_user_model().objects.get_or_create(username="delet-owner")
+        title = "TEST DS TITLE"
+        HierarchicalKeyword.add_root(name="a")
+        keyword = HierarchicalKeyword.objects.get(slug="a")
+        keyword.add_child(name="a1")
+
+        Dataset(
+            title=title,
+            abstract="abstract",
+            name="test dataset",
+            alternate="Test Remove User",
+            attribution="Test Attribution",
+            uuid=str(uuid4()),
+            doi="test DOI",
+            edition=1,
+            maintenance_frequency=enumerations.UPDATE_FREQUENCIES[0],
+            constraints_other="Test Constrains other",
+            temporal_extent_start=date.today() - timedelta(days=1),
+            temporal_extent_end=date.today(),
+            data_quality_statement="Test data quality statement",
+            purpose="Test Purpose",
+            owner=owner,
+            subtype="raster",
+            category=TopicCategory.objects.get(identifier="elevation"),
+            resource_type="dataset",
+            license=License.objects.all().first(),
+            restriction_code_type=RestrictionCodeType.objects.all().first(),
+            group=Group.objects.all().first(),
+        ).save()
+
+        ds = ResourceBase.objects.get(title=title)
+        ds.keywords.add(HierarchicalKeyword.objects.get(slug="a1"))
+
+        serialized = ResourceBaseSerializer(ds)
+        json = JSONRenderer().render(serialized.data)
+        stream = BytesIO(json)
+        data = JSONParser().parse(stream)
+        self.assertIsInstance(data, dict)
+        se = ResourceBaseSerializer(data=data)
+        self.assertTrue(se.is_valid())
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username="delet-owner")
