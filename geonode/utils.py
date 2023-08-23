@@ -1932,8 +1932,8 @@ def build_absolute_uri(url):
 
 
 def extract_ip_or_domain(url):
-    ip_regex = re.compile("^(?:http\:\/\/|https\:\/\/)(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})")
-    domain_regex = re.compile("^(?:http\:\/\/|https\:\/\/)([a-zA-Z0-9.-]+)")
+    ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
+    domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
 
     match = ip_regex.findall(url)
     if len(match):

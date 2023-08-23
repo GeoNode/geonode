@@ -203,23 +203,23 @@ class ProxyTest(GeoNodeBaseTestSupport):
 
         # Non-Legit requests attempting SSRF
         geonode.proxy.views.http_client.request = request_mock
-        url = f"http://example.org\@%23{urlsplit(settings.SITEURL).hostname}"
+        url = f"http://example.org\\@%23{urlsplit(settings.SITEURL).hostname}"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 403)
 
-        url = f"http://125.126.127.128\@%23{urlsplit(settings.SITEURL).hostname}"
+        url = f"http://125.126.127.128\\@%23{urlsplit(settings.SITEURL).hostname}"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 403)
 
         # Legit requests using the local host (SITEURL)
-        url = f"/\@%23{urlsplit(settings.SITEURL).hostname}"
+        url = f"/\\@%23{urlsplit(settings.SITEURL).hostname}"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 200)
 
-        url = f"{settings.SITEURL}\@%23{urlsplit(settings.SITEURL).hostname}"
+        url = f"{settings.SITEURL}\\@%23{urlsplit(settings.SITEURL).hostname}"
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 200)
