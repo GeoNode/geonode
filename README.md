@@ -41,7 +41,7 @@ Try out GeoNode
 ---------------
 
 If you just want to try out GeoNode visit our official Demo online at:
-http://master.demo.geonode.org. After your registration you will be able
+[http://development.demo.geonode.org[(http://development.demo.geonode.org). After your registration you will be able
 to test all basic functionalities like uploading layers, creation of
 maps, editing metadata, styles and much more. To get an overview what
 GeoNode can do we recommend to have a look at the [Users
