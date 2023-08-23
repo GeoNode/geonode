@@ -31,6 +31,7 @@ from geonode.people import Roles
 from rest_framework import serializers
 from rest_framework_gis import fields
 from rest_framework.reverse import reverse, NoReverseMatch
+from rest_framework.exceptions import ParseError
 
 from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSerializer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
@@ -340,8 +341,30 @@ class ContactRoleField(DynamicComputedField):
     def to_representation(self, value):
         return [UserSerializer(embed=True, many=False).to_representation(v) for v in value]
 
+    def get_pks_of_users_to_set(self, value):
+        pks_of_users_to_set = []
+        for val in value:
+            # make it possible to set contact roles via username or pk through API
+            if "username" in val and "pk" in val:
+                pk = val["pk"]
+                username = val["username"]
+                pk_user = get_user_model().objects.get(pk=pk)
+                username_user = get_user_model().objects.get(username=username)
+                if pk_user.pk != username_user.pk:
+                    raise ParseError(
+                        detail=f"user with pk: {pk} and username: {username} is not the same ... ", code=403
+                    )
+                pks_of_users_to_set.append(pk)
+            elif "username" in val:
+                username = val["username"]
+                username_user = get_user_model().objects.get(username=[username])
+                pks_of_users_to_set.append(username_user.pk)
+            elif "pk" in val:
+                pks_of_users_to_set.append(val["pk"])
+            return pks_of_users_to_set
+
     def to_internal_value(self, value):
-        return get_user_model().objects.filter(pk__in=[val.get("id") for val in value])
+        return get_user_model().objects.filter(pk__in=self.get_pks_of_users_to_set(value))
 
 
 class DataBlobField(DynamicRelationField):
@@ -425,16 +448,24 @@ class ResourceBaseSerializer(
         self.fields["resource_type"] = serializers.CharField(required=False)
         self.fields["polymorphic_ctype_id"] = serializers.CharField(read_only=True)
         self.fields["owner"] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
-        self.fields["metadata_author"] = ContactRoleField(Roles.METADATA_AUTHOR.name, required=False)
-        self.fields["processor"] = ContactRoleField(Roles.PROCESSOR.name, required=False)
-        self.fields["publisher"] = ContactRoleField(Roles.PUBLISHER.name, required=False)
-        self.fields["custodian"] = ContactRoleField(Roles.CUSTODIAN.name, required=False)
-        self.fields["poc"] = ContactRoleField(Roles.POC.name, required=False)
-        self.fields["distributor"] = ContactRoleField(Roles.DISTRIBUTOR.name, required=False)
-        self.fields["resource_user"] = ContactRoleField(Roles.RESOURCE_USER.name, required=False)
-        self.fields["resource_provider"] = ContactRoleField(Roles.RESOURCE_PROVIDER.name, required=False)
-        self.fields["originator"] = ContactRoleField(Roles.ORIGINATOR.name, required=False)
-        self.fields["principal_investigator"] = ContactRoleField(Roles.PRINCIPAL_INVESTIGATOR.name, required=False)
+        self.fields["metadata_author"] = ContactRoleField(
+            Roles.METADATA_AUTHOR.name, required=Roles.METADATA_AUTHOR.is_required
+        )
+        self.fields["processor"] = ContactRoleField(Roles.PROCESSOR.name, required=Roles.PROCESSOR.is_required)
+        self.fields["publisher"] = ContactRoleField(Roles.PUBLISHER.name, required=Roles.PUBLISHER.is_required)
+        self.fields["custodian"] = ContactRoleField(Roles.CUSTODIAN.name, required=Roles.CUSTODIAN.is_required)
+        self.fields["poc"] = ContactRoleField(Roles.POC.name, required=Roles.POC.is_required)
+        self.fields["distributor"] = ContactRoleField(Roles.DISTRIBUTOR.name, required=Roles.DISTRIBUTOR.is_required)
+        self.fields["resource_user"] = ContactRoleField(
+            Roles.RESOURCE_USER.name, required=Roles.RESOURCE_USER.is_required
+        )
+        self.fields["resource_provider"] = ContactRoleField(
+            Roles.RESOURCE_PROVIDER.name, required=Roles.RESOURCE_PROVIDER.is_required
+        )
+        self.fields["originator"] = ContactRoleField(Roles.ORIGINATOR.name, required=Roles.ORIGINATOR.is_required)
+        self.fields["principal_investigator"] = ContactRoleField(
+            Roles.PRINCIPAL_INVESTIGATOR.name, required=Roles.PRINCIPAL_INVESTIGATOR.is_required
+        )
         self.fields["title"] = serializers.CharField()
         self.fields["abstract"] = serializers.CharField(required=False)
         self.fields["attribution"] = serializers.CharField(required=False)
