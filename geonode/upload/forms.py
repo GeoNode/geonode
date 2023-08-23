@@ -243,13 +243,3 @@ class TimeForm(forms.Form):
         return self.cleaned_data
 
     # @todo implement clean
-
-
-class SRSForm(forms.Form):
-    source = forms.CharField(required=True)
-
-    target = forms.CharField(required=False)
-
-
-def _supported_type(ext, supported_types):
-    return any([type_.matches(ext) for type_ in supported_types])
