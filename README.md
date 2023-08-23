@@ -7,7 +7,7 @@ Table of Contents
 - [Table of Contents](#table-of-contents)
   - [What is GeoNode?](#what-is-geonode)
   - [Try out GeoNode](#try-out-geonode)
-  - [Install](#install)
+  - [Quick Docker Start](#quick-docker-start)
   - [Learn GeoNode](#learn-geonode)
   - [Development](#development)
   - [Contributing](#contributing)
@@ -41,23 +41,39 @@ Try out GeoNode
 ---------------
 
 If you just want to try out GeoNode visit our official Demo online at:
-http://master.demo.geonode.org. After your registration you will be able
+[https://development.demo.geonode.org](https://development.demo.geonode.org). After your registration, you will be able
 to test all basic functionalities like uploading layers, creation of
-maps, editing metadata, styles and much more. To get an overview what
-GeoNode can do we recommend to have a look at the [Users
+maps, editing metadata, styles, and much more. To get an overview what
+GeoNode can do we recommend having a look at the [Users
 Workshop](https://docs.geonode.org/en/master/usage/index.html).
 
-Install
--------
+Quick Docker Start
+------------------
 
-    The latest official release is 4.0.2!
+  ```bash
+    python create-envfile.py
+  ```
+`create-envfile.py` accepts the following arguments:
 
-GeoNode can be setup in different ways, flavors and plattforms. If
-you´re planning to do development or install for production please visit
-the offical GeoNode installation documentation:
+- `--https`: Enable SSL. It's disabled by default
+- `--env_type`: 
+   - When set to `prod` `DEBUG` is disabled and the creation of a valid `SSL` is requested to Letsencrypt's ACME server
+   - When set to `test`  `DEBUG` is disabled and a test `SSL` certificate is generated for local testing
+   - When set to `dev`  `DEBUG` is enabled and no `SSL` certificate is generated
+- `--hostname`: The URL that will serve GeoNode (`localhost` by default)
+- `--email`: The administrator's email. Notice that a real email and valid SMPT configurations are required if  `--env_type` is set to `prod`. Letsencrypt uses email for issuing the SSL certificate 
+- `--geonodepwd`: GeoNode's administrator password. A random value is set if left empty
+- `--geoserverpwd`: GeoNode's administrator password. A random value is set if left empty
+- `--pgpwd`: PostgreSQL's administrator password. A random value is set if left empty
+- `--dbpwd`: GeoNode DB user role's password. A random value is set if left empty
+- `--geodbpwd`: GeoNode data DB user role's password. A random value is set if left empty
+- `--clientid`: Client id of Geoserver's GeoNode Oauth2 client. A random value is set if left empty
+- `--clientsecret`: Client secret of Geoserver's GeoNode Oauth2 client. A random value is set if left empty
 
-- [Docker](https://docs.geonode.org/en/master/install/advanced/core/index.html#docker)
-- [Ubuntu 20.04 LTS](https://docs.geonode.org/en/master/install/advanced/core/index.html#ubuntu-20-04lts)
+```bash
+  docker compose build
+  docker compose up -d
+```
 
 Learn GeoNode
 -------------
@@ -73,24 +89,22 @@ and configuration settings.
 Development
 -----------
 
-GeoNode is a web based GIS tool, and as such, in order to do development
+GeoNode is a web-based GIS tool, and as such, in order to do development
 on GeoNode itself or to integrate it into your own application, you
 should be familiar with basic web development concepts as well as with
 general GIS concepts.
 
-For development GeoNode can be run in a 'development environment'. In
+For development, GeoNode can be run in a 'development environment'. In
 contrast to a 'production environment' development differs as it uses
 lightweight components to speed up things.
 
-To get you started have a look at the [Install
-instructions](#install) which cover all what is needed to run GeoNode
-for development. Further visit the the [Developer
+To get started visit the [Developer
 workshop](https://docs.geonode.org/en/master/devel/index.html)
 for a basic overview.
 
-If you're planning of customizing your GeoNode instance, or to extend
-it's functionalities it's not advisable to change core files in any
-case. In this case it's common to use setup a [GeoNode Project
+If you're planning to customize your GeoNode instance or to extend
+its functionalities it's not advisable to change core files in any
+case. In this case, it's common to setup a [GeoNode Project
 Template](https://github.com/GeoNode/geonode-project).
 
 Contributing
@@ -107,9 +121,9 @@ Roadmap
 GeoNode's development roadmap is documented in a series of GeoNode
 Improvement Projects (GNIPS). They are documented at [GeoNode Wiki](https://github.com/GeoNode/geonode/wiki/GeoNode-Improvement-Proposals).
 
-GNIPS are considered to be large undertakings which will add a large
-amount of features to the project. As such they are the topic of
-community dicussion and guidance. The community discusses these on the
+GNIPS are considered to be large undertakings that will add a large
+number of features to the project. As such they are the topic of
+community discussion and guidance. The community discusses these on the
 developer mailing list: http://lists.osgeo.org/pipermail/geonode-devel/
 
 Showcase
@@ -131,12 +145,12 @@ Most useful links
 
 - Project homepage: https://geonode.org
 - Repository: https://github.com/GeoNode/geonode
-- Offical Demo: http://master.demo.geonode.org
+- Official Demos: https://demo.geonode.org
 - GeoNode Wiki: https://github.com/GeoNode/geonode/wiki
 - Issue tracker: https://github.com/GeoNode/geonode-project/issues
 
     In case of sensitive bugs like security vulnerabilities, please
-    contact a GeoNode Core Developer directly instead of using issue
+    contact a GeoNode Core Developer directly instead of using an issue
     tracker. We value your effort to improve the security and privacy of
     this project!
 

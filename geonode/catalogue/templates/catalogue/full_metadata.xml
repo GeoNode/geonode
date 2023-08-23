@@ -436,9 +436,11 @@
            </gmd:otherConstraints>
          </gmd:MD_LegalConstraints>
        </gmd:resourceConstraints>
+       {% if layer.spatial_representation_type %}
        <gmd:spatialRepresentationType>
          <gmd:MD_SpatialRepresentationTypeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="{{layer.spatial_representation_type.identifier}}">{{layer.spatial_representation_type.identifier}}</gmd:MD_SpatialRepresentationTypeCode>
        </gmd:spatialRepresentationType>
+       {% endif %}
        <gmd:language>
          <gco:CharacterString>{{layer.language}}</gco:CharacterString>
        </gmd:language>

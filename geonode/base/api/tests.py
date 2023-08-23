@@ -22,6 +22,7 @@ import re
 import sys
 import json
 import logging
+from django.contrib.contenttypes.models import ContentType
 from django.test import override_settings
 import gisdata
 
@@ -31,20 +32,23 @@ from time import sleep
 from uuid import uuid4
 from unittest.mock import patch
 from urllib.parse import urljoin
+from datetime import date, timedelta
 
 from django.urls import reverse
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework.test import APITestCase
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 
 from guardian.shortcuts import get_anonymous_user
-from geonode.maps.models import Map
+from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from geonode.base import enumerations
+from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.groups.models import GroupMember, GroupProfile
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.layers.utils import get_files
@@ -55,15 +59,18 @@ from geonode.base.models import (
     TopicCategory,
     ThesaurusKeyword,
     ExtraMetadata,
+    RestrictionCodeType,
+    License,
+    Group,
 )
 
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.documents.models import Document
+from geonode.documents.models import Document, DocumentResourceLink
 from geonode.geoapps.models import GeoApp
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
-from geonode.base.populate_test_data import create_models, create_single_dataset
+from geonode.base.populate_test_data import create_models, create_single_dataset, create_single_doc, create_single_map
 from geonode.resource.api.tasks import resouce_service_dispatcher
 
 logger = logging.getLogger(__name__)
@@ -621,15 +628,15 @@ class BaseApiTests(APITestCase):
                     },
                     {
                         "name": "",
-                        "slug": "http-localhost-8001-thesaurus-no-about-thesauro-38",
-                        "uri": "http://localhost:8001//thesaurus/no-about-thesauro#38",
+                        "slug": "http-localhost-8000-thesaurus-no-about-thesauro-38",
+                        "uri": "http://localhost:8000//thesaurus/no-about-thesauro#38",
                         "thesaurus": {"name": "Thesauro without the about", "slug": "no-about-thesauro", "uri": ""},
                         "i18n": {},
                     },
                     {
                         "name": "bar_keyword",
-                        "slug": "http-localhost-8001-thesaurus-no-about-thesauro-bar-keyword",
-                        "uri": "http://localhost:8001//thesaurus/no-about-thesauro#bar_keyword",
+                        "slug": "http-localhost-8000-thesaurus-no-about-thesauro-bar-keyword",
+                        "uri": "http://localhost:8000//thesaurus/no-about-thesauro#bar_keyword",
                         "thesaurus": {"name": "Thesauro without the about", "slug": "no-about-thesauro", "uri": ""},
                         "i18n": {},
                     },
@@ -705,6 +712,52 @@ class BaseApiTests(APITestCase):
             )
             self.assertEqual("321-12345-987654321", response.data["resource"]["doi"], response.data["resource"]["doi"])
             self.assertEqual(True, response.data["resource"]["is_published"], response.data["resource"]["is_published"])
+
+    def test_resource_serializer_validation(self):
+        """
+        Testing serializing and deserializing of a Dataset base on django-rest description:
+        https://www.django-rest-framework.org/api-guide/serializers/#deserializing-objects
+        """
+        owner, _ = get_user_model().objects.get_or_create(username="delet-owner")
+        title = "TEST DS TITLE"
+        HierarchicalKeyword.add_root(name="a")
+        keyword = HierarchicalKeyword.objects.get(slug="a")
+        keyword.add_child(name="a1")
+
+        Dataset(
+            title=title,
+            abstract="abstract",
+            name="test dataset",
+            alternate="Test Remove User",
+            attribution="Test Attribution",
+            uuid=str(uuid4()),
+            doi="test DOI",
+            edition=1,
+            maintenance_frequency=enumerations.UPDATE_FREQUENCIES[0],
+            constraints_other="Test Constrains other",
+            temporal_extent_start=date.today() - timedelta(days=1),
+            temporal_extent_end=date.today(),
+            data_quality_statement="Test data quality statement",
+            purpose="Test Purpose",
+            owner=owner,
+            subtype="raster",
+            category=TopicCategory.objects.get(identifier="elevation"),
+            resource_type="dataset",
+            license=License.objects.all().first(),
+            restriction_code_type=RestrictionCodeType.objects.all().first(),
+            group=Group.objects.all().first(),
+        ).save()
+
+        ds = ResourceBase.objects.get(title=title)
+        ds.keywords.add(HierarchicalKeyword.objects.get(slug="a1"))
+
+        serialized = ResourceBaseSerializer(ds)
+        json = JSONRenderer().render(serialized.data)
+        stream = BytesIO(json)
+        data = JSONParser().parse(stream)
+        self.assertIsInstance(data, dict)
+        se = ResourceBaseSerializer(data=data)
+        self.assertTrue(se.is_valid())
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username="delet-owner")
@@ -2194,7 +2247,7 @@ class BaseApiTests(APITestCase):
             files=list(files_as_dict.values()),
         )
         bobby = get_user_model().objects.get(username="bobby")
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
         self.assertEqual(response.status_code, 403)
         # set perms to enable user clone resource
@@ -2277,7 +2330,7 @@ class BaseApiTests(APITestCase):
             self.assertTrue("bobby" in "bobby" in [x.username for x in resource.get_all_level_info().get("users", [])])
             # copying the resource, should remove the perms for bobby
             # only the default perms should be available
-            copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+            copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
 
@@ -2306,6 +2359,7 @@ class BaseApiTests(APITestCase):
 
         self._assertCloningWithPerms(resource)
 
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_resource_service_copy_with_perms_map(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
         files_as_dict, _ = get_files(files)
@@ -2326,9 +2380,9 @@ class BaseApiTests(APITestCase):
         # bobby cannot copy the resource since he doesnt have all the perms needed
         _perms = {"users": {"bobby": ["base.add_resourcebase"]}, "groups": {"anonymous": []}}
         resource.set_permissions(_perms)
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
-        self.assertEqual(response.status_code, 403)
+        self.assertIn(response.status_code, [403, 404])
         # set perms to enable user clone resource
         # bobby can copy the resource since he has all the perms needed
         _perms = {
@@ -2336,7 +2390,7 @@ class BaseApiTests(APITestCase):
             "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebae"]},
         }
         resource.set_permissions(_perms)
-        copy_url = reverse("base-resources-resource-service-copy", kwargs={"pk": resource.pk})
+        copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
         response = self.client.put(copy_url, data={"title": "cloned_resource"})
         self.assertEqual(response.status_code, 200)
         resource.delete()
@@ -2461,3 +2515,343 @@ class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
         url = reverse("base-resources-extra-metadata", args=[self.layer.id])
         response = self.client.get(url, content_type="application/json")
         self.assertTrue(200, response.status_code)
+
+
+class TestApiLinkedResources(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.dataset = create_single_dataset("single_layer")
+        cls.map = create_single_map("single_map")
+        cls.doc = create_single_doc("single_doc")
+
+    def test_only_get_method_is_available(self):
+        url = reverse("base-resources-linked_resources", args=[self.dataset.id])
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.patch(url)
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.put(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_linked_resource_raise_error_for_geoapps(self):
+        geo_app = GeoApp.objects.create(
+            title="Test GeoApp",
+            owner=get_user_model().objects.first(),
+            resource_type="geostory",
+            blob='{"test_data": {"test": ["test_1","test_2","test_3"]}}',
+        )
+        geo_app.set_default_permissions()
+        url = reverse("base-resources-linked_resources", args=[geo_app.id])
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 501)
+
+    def test_linked_resource_for_document_should_return_the_expected_ouput(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.map)
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(document_id=self.doc.id, content_type=ctype, object_id=self.map.id)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.dataset.id
+            )
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.map.detail_url,
+                        "pk": self.map.id,
+                        "resource_type": self.map.resource_type,
+                        "thumbnail_url": self.map.thumbnail_url,
+                        "title": self.map.title,
+                    },
+                    {
+                        "detail_url": self.dataset.detail_url,
+                        "pk": self.dataset.id,
+                        "resource_type": self.dataset.resource_type,
+                        "thumbnail_url": self.dataset.thumbnail_url,
+                        "title": self.dataset.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
+
+    def test_linked_resource_for_maps_with_mixed_resources(self):
+        try:
+            # data preparation
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.map.id
+            )
+            # data preparation
+            MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.doc.detail_url,
+                        "pk": self.doc.id,
+                        "resource_type": self.doc.resource_type,
+                        "thumbnail_url": self.doc.thumbnail_url,
+                        "title": self.doc.title,
+                    },
+                    {
+                        "detail_url": self.dataset.detail_url,
+                        "pk": self.dataset.id,
+                        "resource_type": self.dataset.resource_type,
+                        "thumbnail_url": self.dataset.thumbnail_url,
+                        "title": self.dataset.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.map.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
+
+    def test_linked_resource_should_return_the_paginated_result(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.map)
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(document_id=self.doc.id, content_type=ctype, object_id=self.map.id)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.dataset.id
+            )
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?page_size=1")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            next_url = response.json().get("links", {}).get("next", None)
+            self.assertIsNotNone(next_url)
+            self.assertTrue("page=2" in next_url)
+            # calling next_page to be sure that the url works
+            response = self.client.get(next_url)
+            # verify that now it has a prev_page
+            prev_url = response.json().get("links", {}).get("previous", None)
+            self.assertIsNotNone(prev_url)
+
+            # verify that it works
+            # calling next_page to be sure that the url works
+            response = self.client.get(prev_url)
+            self.assertEqual(response.status_code, 200)
+
+        finally:
+            if _d:
+                _d.delete()
+
+    def test_linked_resources_maps_should_return_the_expected_ouput(self):
+        try:
+            # data preparation
+            _m = MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 1,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.dataset.detail_url,
+                        "pk": self.dataset.id,
+                        "resource_type": self.dataset.resource_type,
+                        "thumbnail_url": self.dataset.thumbnail_url,
+                        "title": self.dataset.title,
+                    }
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.map.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _m:
+                _m.delete()
+
+    def test_linked_resource_dataset_should_return_the_expected_ouput(self):
+        try:
+            # data preparation
+            _m = MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 1,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.map.detail_url,
+                        "pk": self.map.id,
+                        "resource_type": self.map.resource_type,
+                        "thumbnail_url": self.map.thumbnail_url,
+                        "title": self.map.title,
+                    }
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.dataset.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _m:
+                _m.delete()
+
+    def test_linked_resource_for_datasets_with_mixed_resources(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype, object_id=self.dataset.id
+            )
+            # data preparation
+            MapLayer(
+                map=self.map,
+                dataset=self.dataset,
+                name=self.dataset.name,
+                current_style="test_style",
+                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+            ).save()
+
+            # expected output from api
+            expected_payload = {
+                "links": {"next": None, "previous": None},
+                "total": 2,
+                "page": 1,
+                "page_size": 10,
+                "resources": [
+                    {
+                        "detail_url": self.doc.detail_url,
+                        "pk": self.doc.id,
+                        "resource_type": self.doc.resource_type,
+                        "thumbnail_url": self.doc.thumbnail_url,
+                        "title": self.doc.title,
+                    },
+                    {
+                        "detail_url": self.map.detail_url,
+                        "pk": self.map.id,
+                        "resource_type": self.map.resource_type,
+                        "thumbnail_url": self.map.thumbnail_url,
+                        "title": self.map.title,
+                    },
+                ],
+            }
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.dataset.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            self.assertDictEqual(expected_payload, response.json())
+        finally:
+            if _d:
+                _d.delete()
+
+    def test_linked_resource_filter_should_work(self):
+        try:
+            # data preparation
+            ctype = ContentType.objects.get_for_model(self.map)
+            ctype_dataset = ContentType.objects.get_for_model(self.dataset)
+            _d = DocumentResourceLink.objects.create(document_id=self.doc.id, content_type=ctype, object_id=self.map.id)
+            _d = DocumentResourceLink.objects.create(
+                document_id=self.doc.id, content_type=ctype_dataset, object_id=self.dataset.id
+            )
+
+            # call the API
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(url)
+            # validation
+            self.assertEqual(response.status_code, 200, msg="no_filter_validation")
+            self.assertEqual(2, response.json().get("total", 0), msg="no_filter_validation")
+
+            response = self.client.get(url + "?resource_type=map")
+            # validation
+            self.assertEqual(response.status_code, 200, msg="map_filter_validation")
+            self.assertEqual(1, response.json().get("total", 0), msg="map_filter_validation")
+
+            response = self.client.get(url + "?title=single_layer")
+            # validation
+            self.assertEqual(response.status_code, 200, msg="dataset_filter_validation")
+            self.assertEqual(1, response.json().get("total", 0), msg="dataset_filter_validation")
+
+            response = self.client.get(url + "?resource_type=geoapp")
+            # validation
+            self.assertEqual(response.status_code, 200, msg="geoapp_filter_validation")
+            self.assertEqual(0, response.json().get("total", 0), msg="geoapp_filter_validation")
+
+            response = self.client.get(url + "?invalid_filter=invalid")
+            # validation
+            self.assertEqual(response.status_code, 500, msg="invalid_filter_validation")
+            self.assertEqual(0, response.json().get("total", 0), msg="invalid_filter_validation")
+
+        finally:
+            if _d:
+                _d.delete()

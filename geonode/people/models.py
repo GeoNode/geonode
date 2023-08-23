@@ -261,6 +261,7 @@ class Profile(AbstractUser):
                     "site_name": current_site.name,
                     "email": self.email,
                     "inviter": self,
+                    "LOGIN_URL": settings.LOGIN_URL,
                 }
 
                 email_template = "pinax/notifications/account_active/account_active"

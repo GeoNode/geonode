@@ -29,6 +29,9 @@ from geonode.base.admin import metadata_batch_edit
 
 class MapLayerInline(admin.TabularInline):
     model = MapLayer
+    ordering = ("dataset_id",)
+    autocomplete_fields = ("dataset",)
+    show_change_link = True
 
 
 class MapAdminForm(ResourceBaseAdminForm):
@@ -41,6 +44,7 @@ class MapAdmin(TabbedTranslationAdmin):
     inlines = [
         MapLayerInline,
     ]
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display_links = ("title",)
     list_display = (
         "id",
@@ -75,6 +79,7 @@ class MapAdmin(TabbedTranslationAdmin):
         "is_approved",
         "is_published",
     )
+    readonly_fields = ("geographic_bounding_box",)
     form = MapAdminForm
     actions = [metadata_batch_edit]
 
@@ -96,6 +101,7 @@ class MapLayerAdmin(admin.ModelAdmin):
         "map__title",
         "name",
     )
+    autocomplete_fields = ("dataset",)
     form = forms.modelform_factory(MapLayer, fields="__all__")
 
 

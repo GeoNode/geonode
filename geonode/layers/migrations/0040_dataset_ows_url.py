@@ -30,6 +30,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('layers', '0039_auto_20210720_1311'),
+        ('base', '0071_remove_resourcebase_ows_url'),
     ]
 
     operations = [

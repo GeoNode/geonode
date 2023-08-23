@@ -116,17 +116,17 @@ class Document(ResourceBase):
     @property
     def is_audio(self):
         AUDIOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "audio"]
-        return self.is_file and self.extension.lower() in AUDIOTYPES
+        return self.extension and self.extension.lower() in AUDIOTYPES
 
     @property
     def is_image(self):
         IMGTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "image"]
-        return self.is_file and self.extension.lower() in IMGTYPES
+        return self.extension and self.extension.lower() in IMGTYPES
 
     @property
     def is_video(self):
         VIDEOTYPES = [_e for _e, _t in DOCUMENT_TYPE_MAP.items() if _t == "video"]
-        return self.is_file and self.extension.lower() in VIDEOTYPES
+        return self.extension and self.extension.lower() in VIDEOTYPES
 
     @property
     def class_name(self):
@@ -138,7 +138,13 @@ class Document(ResourceBase):
 
     @property
     def download_url(self):
+        if self.link_set.filter(resource=self.get_self_resource(), link_type="original").exists():
+            return self.link_set.filter(resource=self.get_self_resource(), link_type="original").first().url
         return build_absolute_uri(reverse("document_download", args=(self.id,)))
+
+    @property
+    def linked_resources(self):
+        return ResourceBase.objects.filter(id__in=self.links.values_list("object_id", flat=True))
 
     class Meta(ResourceBase.Meta):
         pass

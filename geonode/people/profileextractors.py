@@ -127,6 +127,9 @@ class LinkedInExtractor(BaseExtractor):
         return result
 
 
+PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
+
+
 class OpenIDExtractor(BaseExtractor):
     def extract_email(self, data):
         return data.get("email", "")
@@ -182,16 +185,29 @@ class OpenIDExtractor(BaseExtractor):
     def extract_voice(self, data):
         return data.get("phone", "")
 
+    def extract_keywords(self, data):
+        return data.get("keywords", "")
+
     def extract_groups(self, data):
         return data.get("groups", "")
 
     def extract_roles(self, data):
         return data.get("roles", "")
 
-    def extract_keywords(self, data):
-        return data.get("keywords", "")
-
 
 def _get_latest_position(data):
     all_positions = data.get("positions", {"values": []})["values"]
     return all_positions[0] if any(all_positions) else None
+
+
+class OpenIDGroupRoleMapper:
+    """GeoNode will look for names like: ["GroupProfile1.Role", "GroupProfile2.Role", ..., "GroupProfileN.Role"]"""
+
+    def parse_group_and_role(self, group_role_name):
+        _group_role_name = group_role_name if "." in group_role_name else f"{group_role_name}.None"
+        group_name, role_name = _group_role_name.rsplit(".", 1)
+        return (group_name, role_name)
+
+    def is_manager(role_name):
+        _role_name = role_name or ""
+        return "manager" in _role_name.lower()

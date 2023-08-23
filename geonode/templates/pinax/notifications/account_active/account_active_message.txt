@@ -1,3 +1,3 @@
 {% load i18n %}
 {% trans "Your account has been approved and is now active." %} ({{ username }})<br/>
-{% trans "You can use the login form at" %}: http://{{ current_site.name }}
+{% trans "You can use the login form at" %}: {{ LOGIN_URL }}
