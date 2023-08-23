@@ -6,8 +6,14 @@ charset     utf-8;
 # max upload size
 client_max_body_size 100G;
 client_body_buffer_size 256K;
+client_body_timeout 600s;
 large_client_header_buffers 4 64k;
-proxy_read_timeout 600s;
+
+proxy_connect_timeout       600;
+proxy_send_timeout          600;
+proxy_read_timeout          600;
+uwsgi_read_timeout          600;
+send_timeout                600;
 
 fastcgi_hide_header Set-Cookie;
 
@@ -35,33 +41,23 @@ gzip_types
 
 # GeoServer
 location /geoserver {
+  # Using a variable is a trick to let Nginx start even if upstream host is not up yet
+  # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
+  set $upstream $GEOSERVER_LB_HOST_IP:$GEOSERVER_LB_PORT;
 
-    # Using a variable is a trick to let Nginx start even if upstream host is not up yet
-    # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
-    set $upstream geoserver:8080;
-
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-
-    proxy_pass http://$upstream;
-}
-
-# Jenkins
-location /jenkins {
-
-    # Using a variable is a trick to let Nginx start even if upstream host is not up yet
-    # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
-    set $upstream jenkins:$JENKINS_HTTP_PORT;
-    # set $upstream $HTTP_HOST$HTTPS_HOST:$JENKINS_HTTP_PORT;
-
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-
-    proxy_pass http://$upstream;
+  proxy_set_header X-Forwarded-Host $host;
+  proxy_set_header X-Forwarded-Server $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-Proto $HTTP_SCHEME;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "upgrade";
+  proxy_hide_header X-Frame-Options;
+  proxy_pass http://$upstream;
+  proxy_http_version 1.1;
+  proxy_redirect http://$upstream $HTTP_SCHEME://$HTTP_HOST;
+  proxy_request_buffering  off;
+  client_max_body_size 0;
 }
 
 # GeoNode
@@ -89,31 +85,10 @@ location /uploaded/ {
   }
 }
 
-location ~ ^/celery-monitor/? {
-
-    # Using a variable is a trick to let Nginx start even if upstream host is not up yet
-    # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
-    set $upstream celerymonitor:5555;
-
-    rewrite ^/celery-monitor/?(.*)$ /$1 break;
-
-    sub_filter '="/' '="/celery-monitor/';
-    sub_filter_last_modified on;
-    sub_filter_once off;
-
-    # proxy_pass http://unix:/tmp/flower.sock:/;
-    proxy_pass http://$upstream;
-    proxy_redirect off;
-    proxy_set_header Host $host;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_http_version 1.1;
-}
-
 location / {
   # Using a variable is a trick to let Nginx start even if upstream host is not up yet
   # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
-  set $upstream django:8000;
+  set $upstream $GEONODE_LB_HOST_IP:$GEONODE_LB_PORT;
 
   if ($request_method = OPTIONS) {
       add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, OPTIONS";
@@ -128,27 +103,26 @@ location / {
   add_header Access-Control-Allow-Credentials false;
   add_header Access-Control-Allow-Headers "Content-Type, Accept, Authorization, Origin, User-Agent";
   add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, OPTIONS";
-
-  proxy_connect_timeout       600;
-  proxy_send_timeout          600;
-  proxy_read_timeout          600;
-  send_timeout                600;
+  
   proxy_redirect              off;
   proxy_set_header            Host $host;
+  proxy_set_header            Origin $HTTP_SCHEME://$host;
   proxy_set_header            X-Real-IP $remote_addr;
   proxy_set_header            X-Forwarded-Host $server_name;
   proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
-  proxy_set_header            X-Forwarded-Proto $scheme;
+  proxy_set_header            X-Forwarded-Proto $HTTP_SCHEME;
   proxy_hide_header           X-Frame-Options;
+  proxy_request_buffering     off;
 
   # uwsgi_params
   include /etc/nginx/uwsgi_params;
 
-  # proxy_pass http://$upstream;
-  uwsgi_pass $upstream;
+  proxy_pass http://$upstream;
+  # uwsgi_pass $upstream;
 
   # when a client closes the connection then keep the channel to uwsgi open. Otherwise uwsgi throws an IOError
   uwsgi_ignore_client_abort on;
+  uwsgi_request_buffering off;
 
   location ~* \.(?:js|jpg|jpeg|gif|png|tgz|gz|rar|bz2|doc|pdf|ppt|tar|wav|bmp|ttf|rtf|swf|ico|flv|woff|woff2|svg|xml)$ {
       gzip_static always;

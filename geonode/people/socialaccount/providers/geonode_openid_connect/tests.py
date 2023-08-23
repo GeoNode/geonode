@@ -213,7 +213,6 @@ class GoogleTests(OAuth2TestsMixin, TestCase):
                 "prompt": "select_account consent",
             },
             "COMMON_FIELDS": {"email": "email", "last_name": "family_name", "first_name": "given_name"},
-            "IS_MANAGER_FIELD": "is_manager",
             "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
             "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",
             "AUTHORIZE_URL": "https://accounts.google.com/o/oauth2/v2/auth",
