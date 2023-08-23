@@ -89,9 +89,13 @@ class Catalogue(CatalogueServiceWeb):
                 return None
             record = list(self.records.values())[0]
             record.keywords = []
-            if hasattr(record, "identification") and hasattr(record.identification, "keywords"):
-                for kw in record.identification.keywords:
-                    record.keywords.extend(kw["keywords"])
+            if (
+                hasattr(record, "identification")
+                and len(record.identification) > 0
+                and hasattr(record.identification[0], "keywords")
+            ):
+                for kw in record.identification[0].keywords:
+                    record.keywords.extend(kw.keywords)
             return record
         else:
             return None
@@ -111,7 +115,6 @@ class Catalogue(CatalogueServiceWeb):
 
     def urls_for_uuid(self, uuid):
         """returns list of valid GetRecordById URLs for a given record"""
-
         urls = []
         for mformat in self.formats:
             urls.append(("text/xml", mformat, self.url_for_uuid(uuid, METADATA_FORMATS[mformat][1])))
@@ -124,6 +127,7 @@ class Catalogue(CatalogueServiceWeb):
         site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
         tpl = get_template(template)
         ctx = {
+            "CATALOG_METADATA_TEMPLATE": settings.CATALOG_METADATA_TEMPLATE,
             "layer": layer,
             "SITEURL": site_url,
             "id_pname": id_pname,
@@ -193,11 +197,11 @@ class Catalogue(CatalogueServiceWeb):
         # Let owslib do some parsing for us...
         result = {}
         result["uuid"] = rec.identifier
-        result["title"] = rec.identification.title
-        result["abstract"] = rec.identification.abstract
+        result["title"] = rec.identification[0].title
+        result["abstract"] = rec.identification[0].abstract
 
         keywords = []
-        for kw in rec.identification.keywords:
+        for kw in rec.identification[0].keywords:
             keywords.extend(kw["keywords"])
 
         result["keywords"] = keywords
@@ -208,10 +212,10 @@ class Catalogue(CatalogueServiceWeb):
         result["name"] = result["uuid"]
 
         result["bbox"] = {
-            "minx": rec.identification.bbox.minx,
-            "maxx": rec.identification.bbox.maxx,
-            "miny": rec.identification.bbox.miny,
-            "maxy": rec.identification.bbox.maxy,
+            "minx": rec.identification[0].bbox.minx,
+            "maxx": rec.identification[0].bbox.maxx,
+            "miny": rec.identification[0].bbox.miny,
+            "maxy": rec.identification[0].bbox.maxy,
         }
 
         # locate all distribution links

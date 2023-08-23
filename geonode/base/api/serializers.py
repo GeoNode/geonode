@@ -16,9 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
+import logging
 from slugify import slugify
 from urllib.parse import urljoin
+import json
 
 from django.db.models import Q
 from django.conf import settings
@@ -26,6 +27,7 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
+from django.http import QueryDict
 
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -57,12 +59,10 @@ from geonode.base.models import (
     ##
 )
 from geonode.groups.models import GroupCategory, GroupProfile
-
+from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms
 from geonode.resource.models import ExecutionRequest
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -310,7 +310,7 @@ class UserSerializer(BaseDynamicModelSerializer):
         model = get_user_model()
         name = "user"
         view_name = "users-list"
-        fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff")
+        fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff", "email")
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -356,9 +356,6 @@ class DataBlobSerializer(DynamicModelSerializer):
     class Meta:
         model = ResourceBase
         fields = ("pk", "blob")
-
-    def to_internal_value(self, data):
-        return data
 
     def to_representation(self, value):
         data = ResourceBase.objects.filter(id=value)
@@ -491,7 +488,7 @@ class ResourceBaseSerializer(
         self.fields["bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["ll_bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["srid"] = serializers.CharField(required=False)
-        self.fields["group"] = DynamicRelationField(GroupSerializer, embed=True, many=False)
+        self.fields["group"] = ComplexDynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields["popular_count"] = serializers.CharField(required=False)
         self.fields["share_count"] = serializers.CharField(required=False)
         self.fields["rating"] = serializers.CharField(required=False)
@@ -510,25 +507,24 @@ class ResourceBaseSerializer(
         self.fields["processed"] = serializers.BooleanField(read_only=True)
         self.fields["state"] = serializers.CharField(read_only=True)
         self.fields["sourcetype"] = serializers.CharField(read_only=True)
-
         self.fields["embed_url"] = EmbedUrlField(required=False)
         self.fields["thumbnail_url"] = ThumbnailUrlField(read_only=True)
-        self.fields["keywords"] = DynamicRelationField(SimpleHierarchicalKeywordSerializer, embed=False, many=True)
-        self.fields["tkeywords"] = DynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
+        self.fields["keywords"] = ComplexDynamicRelationField(
+            SimpleHierarchicalKeywordSerializer, embed=False, many=True
+        )
+        self.fields["tkeywords"] = ComplexDynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
         self.fields["regions"] = DynamicRelationField(SimpleRegionSerializer, embed=True, many=True, read_only=True)
-        self.fields["category"] = DynamicRelationField(SimpleTopicCategorySerializer, embed=True, many=False)
-        self.fields["restriction_code_type"] = DynamicRelationField(
+        self.fields["category"] = ComplexDynamicRelationField(SimpleTopicCategorySerializer, embed=True, many=False)
+        self.fields["restriction_code_type"] = ComplexDynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=False
         )
-        self.fields["license"] = DynamicRelationField(LicenseSerializer, embed=True, many=False)
-        self.fields["spatial_representation_type"] = DynamicRelationField(
+        self.fields["license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
+        self.fields["spatial_representation_type"] = ComplexDynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False
         )
         self.fields["blob"] = serializers.JSONField(required=False, write_only=True)
         self.fields["is_copyable"] = serializers.BooleanField(read_only=True)
-
         self.fields["download_url"] = DownloadLinkField(read_only=True)
-
         self.fields["favorite"] = FavoriteField(read_only=True)
 
         ##################
@@ -548,7 +544,7 @@ class ResourceBaseSerializer(
 
         ##
 
-    metadata = DynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
+    metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
     class Meta:
         model = ResourceBase
@@ -672,6 +668,8 @@ class ResourceBaseSerializer(
             data = json.loads(data)
         if "data" in data:
             data["blob"] = data.pop("data")
+        if isinstance(data, QueryDict):
+            data = data.dict()
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
 
@@ -781,3 +779,10 @@ class OwnerSerializer(BaseResourceCountSerializer):
         fields = ("pk", "username", "first_name", "last_name", "avatar", "perms")
 
     avatar = AvatarUrlField(240, read_only=True)
+
+
+class SimpleResourceSerializer(DynamicModelSerializer):
+    class Meta:
+        name = "linked_resources"
+        model = ResourceBase
+        fields = ("pk", "title", "resource_type", "detail_url", "thumbnail_url")

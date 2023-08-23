@@ -58,5 +58,13 @@ class DocumentSerializer(ResourceBaseSerializer):
             "executions",
             "file_path",
             "doc_file",
+            "doc_url",
             "metadata",
         )
+
+    def to_representation(self, obj):
+        _doc = super(DocumentSerializer, self).to_representation(obj)
+        # better to hide internal server file path
+        _doc.pop("file_path")
+        _doc.pop("doc_file")
+        return _doc

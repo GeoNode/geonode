@@ -168,18 +168,18 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
         record = list(csw.catalogue.records.values())[0]
 
         # test that the ISO title maps correctly in Dublin Core
-        self.assertTrue(record.identification.title in "san_andres_y_providencia_location.shp")
+        self.assertTrue(record.identification[0].title in "san_andres_y_providencia_location.shp")
 
         # test that the ISO abstract maps correctly in Dublin Core
-        self.assertEqual(record.identification.abstract, "No abstract provided")
+        self.assertEqual(record.identification[0].abstract, "No abstract provided")
 
         # test BBOX properties in Dublin Core
         from decimal import Decimal
 
-        self.assertAlmostEqual(Decimal(record.identification.bbox.minx), Decimal("-81.8593555"), places=3)
-        self.assertAlmostEqual(Decimal(record.identification.bbox.miny), Decimal("12.1665322"), places=3)
-        self.assertAlmostEqual(Decimal(record.identification.bbox.maxx), Decimal("-81.356409"), places=3)
-        self.assertAlmostEqual(Decimal(record.identification.bbox.maxy), Decimal("13.396306"), places=3)
+        self.assertAlmostEqual(Decimal(record.identification[0].bbox.minx), Decimal("-81.8593555"), places=3)
+        self.assertAlmostEqual(Decimal(record.identification[0].bbox.miny), Decimal("12.1665322"), places=3)
+        self.assertAlmostEqual(Decimal(record.identification[0].bbox.maxx), Decimal("-81.356409"), places=3)
+        self.assertAlmostEqual(Decimal(record.identification[0].bbox.maxy), Decimal("13.396306"), places=3)
 
         # test for correct link articulation
         for link in record.distribution.online:
@@ -310,7 +310,7 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
             record = list(csw.catalogue.records.values())[0]
 
             # test that the FGDC title maps correctly in ISO
-            self.assertEqual(record.identification.title, "Census_Blockgroup_Pop_Housing")
+            self.assertEqual(record.identification[0].title, "Census_Blockgroup_Pop_Housing")
 
             # cleanup and delete inserted FGDC metadata document
             csw.catalogue.transaction(

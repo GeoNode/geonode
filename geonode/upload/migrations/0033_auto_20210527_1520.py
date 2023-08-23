@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('upload', '0033_upload_store_spatial_files'),
+        ('base', '0062_resourcebase_files'),
     ]
 
     operations = [

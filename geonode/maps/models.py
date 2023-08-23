@@ -59,6 +59,14 @@ class Map(ResourceBase):
         dataset_names = MapLayer.objects.filter(map__id=self.id).values("name")
         return Dataset.objects.filter(alternate__in=dataset_names) | Dataset.objects.filter(name__in=dataset_names)
 
+    @property
+    def linked_resources(self):
+        from geonode.documents.models import DocumentResourceLink
+
+        _dataset_id = list(self.datasets.values_list("pk", flat=True))
+        _doc_ids = list(DocumentResourceLink.objects.filter(object_id=self.pk).values_list("document__pk", flat=True))
+        return ResourceBase.objects.filter(id__in=list(set(_dataset_id + _doc_ids)))
+
     def json(self, dataset_filter):
         """
         Get a JSON representation of this map suitable for sending to geoserver
@@ -253,6 +261,11 @@ class MapLayer(models.Model):
 
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
+
+    # Extend MapLayer model with visualization properties #11251
+    order = models.IntegerField(default=0)
+    visibility = models.BooleanField(default=True)
+    opacity = models.FloatField(default=1.0)
 
     @property
     def dataset_title(self):

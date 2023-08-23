@@ -18,7 +18,10 @@
 #########################################################################
 
 from unittest import TestCase
+
+from django.http import HttpResponse
 from geonode.base.populate_test_data import create_single_dataset
+from geonode.resource.download_handler import DownloadHandler
 from geonode.resource.utils import metadata_storers
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -333,3 +336,21 @@ def dummy_metadata_storer2(dataset, custom):
     if custom.get("second-stage", None):
         for key, value in custom["second-stage"].items():
             setattr(dataset, key, value)
+
+
+class DummyDownloadManager(DownloadHandler):
+    def get_download_response(self):
+        return HttpResponse(content=b"abcsfd2")
+
+
+class TestDownloadManager(GeoNodeBaseTestSupport):
+    def setUp(self):
+        self.sut = DownloadHandler
+
+    @override_settings(DATASET_DOWNLOAD_HANDLER="geonode.tests.smoke.DummyDownloadManager")
+    def test_download_handler(self):
+        dataset = create_single_dataset("test_dataset")
+        url = reverse("dataset_download", args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertTrue(response.status_code == 200)
+        self.assertEqual(response.content, b"abcsfd2")
