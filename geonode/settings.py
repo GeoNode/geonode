@@ -652,6 +652,7 @@ except ValueError:
             "glb",
             "pcd",
             "gltf",
+            "ifc",
         ]
         if os.getenv("ALLOWED_DOCUMENT_TYPES") is None
         else re.split(r" *[,|:;] *", os.getenv("ALLOWED_DOCUMENT_TYPES"))
@@ -1003,9 +1004,12 @@ GEOSERVER_PUBLIC_LOCATION = os.getenv("GEOSERVER_PUBLIC_LOCATION", _default_publ
 
 GEOSERVER_WEB_UI_LOCATION = os.getenv("GEOSERVER_WEB_UI_LOCATION", GEOSERVER_PUBLIC_LOCATION)
 
-OGC_SERVER_DEFAULT_USER = os.getenv("GEOSERVER_ADMIN_USER", "admin")
+GEOSERVER_ADMIN_USER = os.getenv("GEOSERVER_ADMIN_USER", "admin")
 
-OGC_SERVER_DEFAULT_PASSWORD = os.getenv("GEOSERVER_ADMIN_PASSWORD", "geoserver")
+GEOSERVER_ADMIN_PASSWORD = os.getenv("GEOSERVER_ADMIN_PASSWORD", "geoserver")
+
+# This is the password from Geoserver factory data-dir. It's only used at install time to perform the very first configurfation of GEOSERVER_ADMIN_PASSWORD
+GEOSERVER_FACTORY_PASSWORD = os.getenv("GEOSERVER_FACTORY_PASSWORD", "geoserver")
 
 GEOFENCE_SECURITY_ENABLED = (
     False if TEST and not INTEGRATION else ast.literal_eval(os.getenv("GEOFENCE_SECURITY_ENABLED", "True"))
@@ -1024,8 +1028,8 @@ OGC_SERVER = {
         # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
         "PUBLIC_LOCATION": GEOSERVER_PUBLIC_LOCATION,
-        "USER": OGC_SERVER_DEFAULT_USER,
-        "PASSWORD": OGC_SERVER_DEFAULT_PASSWORD,
+        "USER": GEOSERVER_ADMIN_USER,
+        "PASSWORD": GEOSERVER_ADMIN_PASSWORD,
         "MAPFISH_PRINT_ENABLED": ast.literal_eval(os.getenv("MAPFISH_PRINT_ENABLED", "True")),
         "PRINT_NG_ENABLED": ast.literal_eval(os.getenv("PRINT_NG_ENABLED", "True")),
         "GEONODE_SECURITY_ENABLED": ast.literal_eval(os.getenv("GEONODE_SECURITY_ENABLED", "True")),
@@ -1968,6 +1972,17 @@ SOCIALACCOUNT_OIDC_PROVIDER = os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER", "geo
 SOCIALACCOUNT_OIDC_PROVIDER_ENABLED = ast.literal_eval(os.environ.get("SOCIALACCOUNT_OIDC_PROVIDER_ENABLED", "False"))
 SOCIALACCOUNT_ADAPTER = os.environ.get("SOCIALACCOUNT_ADAPTER", "geonode.people.adapters.GenericOpenIDConnectAdapter")
 
+_SOCIALACCOUNT_PROFILE_EXTRACTOR = os.environ.get(
+    "SOCIALACCOUNT_PROFILE_EXTRACTOR", "geonode.people.profileextractors.OpenIDExtractor"
+)
+SOCIALACCOUNT_PROFILE_EXTRACTORS = {
+    SOCIALACCOUNT_OIDC_PROVIDER: _SOCIALACCOUNT_PROFILE_EXTRACTOR,
+}
+
+SOCIALACCOUNT_GROUP_ROLE_MAPPER = os.environ.get(
+    "SOCIALACCOUNT_GROUP_ROLE_MAPPER", "geonode.people.profileextractors.OpenIDGroupRoleMapper"
+)
+
 # Enable this in order to enable the OIDC SocialAccount Provider
 if SOCIALACCOUNT_OIDC_PROVIDER_ENABLED:
     INSTALLED_APPS += ("geonode.people.socialaccount.providers.geonode_openid_connect",)
@@ -1984,7 +1999,8 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
         "prompt": "select_account",
     },
     "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
-    "IS_MANAGER_FIELD": "is_manager",
+    "UID_FIELD": "unique_name",
+    "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
     "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
@@ -2002,7 +2018,7 @@ _GOOGLE_SOCIALACCOUNT_PROVIDER = {
         "prompt": "select_account consent",
     },
     "COMMON_FIELDS": {"email": "email", "last_name": "family_name", "first_name": "given_name"},
-    "IS_MANAGER_FIELD": "is_manager",
+    "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
     "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",
     "AUTHORIZE_URL": "https://accounts.google.com/o/oauth2/v2/auth",
@@ -2017,13 +2033,7 @@ SOCIALACCOUNT_PROVIDERS = {
     SOCIALACCOUNT_OIDC_PROVIDER: SOCIALACCOUNT_PROVIDERS_DEFS.get(_SOCIALACCOUNT_PROVIDER),
 }
 
-_SOCIALACCOUNT_PROFILE_EXTRACTOR = os.environ.get(
-    "SOCIALACCOUNT_PROFILE_EXTRACTOR", "geonode.people.profileextractors.OpenIDExtractor"
-)
-SOCIALACCOUNT_PROFILE_EXTRACTORS = {
-    SOCIALACCOUNT_OIDC_PROVIDER: _SOCIALACCOUNT_PROFILE_EXTRACTOR,
-}
-
+# Invitation Adapter
 INVITATIONS_ADAPTER = ACCOUNT_ADAPTER
 INVITATIONS_CONFIRMATION_URL_NAME = "geonode.invitations:accept-invite"
 
@@ -2346,3 +2356,4 @@ FACET_PROVIDERS = [
 ]
 
 REGION_HANDLER = "geonode.resource.region_handlers.BaseRegionAssignor"
+DATASET_DOWNLOAD_HANDLER = os.getenv("DATASET_DOWNLOAD_HANDLER", "geonode.resource.download_handler.DownloadHandler")
