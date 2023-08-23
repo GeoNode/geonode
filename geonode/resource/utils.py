@@ -167,13 +167,7 @@ def update_resource(
     if vals:
         for key, value in vals.items():
             if key == "spatial_representation_type":
-                spatial_repr = SpatialRepresentationType.objects.filter(identifier=value)
-                if value is not None and spatial_repr.exists():
-                    value = SpatialRepresentationType(identifier=value)
-                # if the SpatialRepresentationType is not available in the DB, we just set it as None
-                elif value is not None and not spatial_repr.exists():
-                    value = None
-                defaults[key] = value
+                defaults[key] = SpatialRepresentationType.objects.filter(identifier=value).first() if value else None
             elif key == "topic_category":
                 value, created = TopicCategory.objects.get_or_create(
                     identifier=value, defaults={"description": "", "gn_description": value}
@@ -483,13 +477,7 @@ def metadata_post_save(instance, *args, **kwargs):
             regions_to_add = []
             for region in queryset:
                 try:
-                    srid2, wkt2 = region.geographic_bounding_box.split(";")
-                    srid2 = re.findall(r"\d+", srid2)
-
-                    poly2 = GEOSGeometry(wkt2, srid=int(srid2[0]))
-                    poly2.transform(4326)
-
-                    if not poly2.intersection(poly1).empty:
+                    if region.is_assignable_to_geom(poly1):
                         regions_to_add.append(region)
                     if region.level == 0 and region.parent is None:
                         global_regions.append(region)
@@ -498,7 +486,7 @@ def metadata_post_save(instance, *args, **kwargs):
                     if tb:
                         logger.debug(tb)
             if regions_to_add or global_regions:
-                if regions_to_add and len(regions_to_add) > 0 and len(regions_to_add) <= 30:
+                if regions_to_add:
                     instance.regions.add(*regions_to_add)
                 else:
                     instance.regions.add(*global_regions)

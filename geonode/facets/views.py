@@ -23,10 +23,12 @@ from urllib.parse import urlencode
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, authentication_classes
 
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseNotFound, JsonResponse, HttpResponseBadRequest
 from django.urls import reverse
 
 from django.conf import settings
+
+from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, facet_registry
 from geonode.security.utils import get_visible_resources
@@ -36,6 +38,7 @@ PARAM_PAGE_SIZE = "page_size"
 PARAM_LANG = "lang"
 PARAM_ADD_LINKS = "add_links"
 PARAM_INCLUDE_TOPICS = "include_topics"
+PARAM_INCLUDE_CONFIG = "include_config"
 PARAM_TOPIC_CONTAINS = "topic_contains"
 
 logger = logging.getLogger(__name__)
@@ -47,12 +50,18 @@ def list_facets(request, **kwargs):
     lang, lang_requested = _resolve_language(request)
     add_links = _resolve_boolean(request, PARAM_ADD_LINKS, False)
     include_topics = _resolve_boolean(request, PARAM_INCLUDE_TOPICS, False)
+    include_config = _resolve_boolean(request, PARAM_INCLUDE_CONFIG, False)
 
     facets = []
+    prefiltered = None
 
     for provider in facet_registry.get_providers():
         logger.debug("Fetching data from provider %r", provider)
         info = provider.get_info(lang=lang)
+
+        if include_config:
+            info["config"] = provider.config
+
         if add_links:
             link_args = {PARAM_ADD_LINKS: True}
             if lang_requested:  # only add lang param if specified in current call
@@ -60,7 +69,8 @@ def list_facets(request, **kwargs):
             info["link"] = f"{reverse('get_facet', args=[info['name']])}?{urlencode(link_args)}"
 
         if include_topics:
-            info["topics"] = _get_topics(provider, queryset=_prefilter_topics(request), lang=lang)
+            prefiltered = prefiltered or _prefilter_topics(request)
+            info["topics"] = _get_topics(provider, queryset=prefiltered, lang=lang)
 
         facets.append(info)
 
@@ -81,15 +91,21 @@ def get_facet(request, facet):
     # parse some query params
     lang, lang_requested = _resolve_language(request)
     add_link = _resolve_boolean(request, PARAM_ADD_LINKS, False)
+    include_config = _resolve_boolean(request, PARAM_INCLUDE_CONFIG, False)
+
     topic_contains = request.GET.get(PARAM_TOPIC_CONTAINS, None)
+    keys = set(request.query_params.getlist("key"))
+
     page = int(request.GET.get(PARAM_PAGE, 0))
     page_size = int(request.GET.get(PARAM_PAGE_SIZE, DEFAULT_FACET_PAGE_SIZE))
 
     info = provider.get_info(lang)
+    if include_config:
+        info["config"] = provider.config
 
     qs = _prefilter_topics(request)
     topics = _get_topics(
-        provider, queryset=qs, page=page, page_size=page_size, lang=lang, topic_contains=topic_contains
+        provider, queryset=qs, page=page, page_size=page_size, lang=lang, topic_contains=topic_contains, keys=keys
     )
 
     if add_link:
@@ -116,6 +132,25 @@ def get_facet(request, facet):
     return JsonResponse(info)
 
 
+@api_view(["GET"])
+def get_facet_topics(request, facet):
+    logger.debug("get_facet_topics -> %r", facet)
+
+    # retrieve provider for the requested facet
+    provider: FacetProvider = facet_registry.get_provider(facet)
+    if not provider:
+        return HttpResponseNotFound("Facet not found")
+
+    # parse some query params
+    lang, lang_requested = _resolve_language(request)
+    keys = request.query_params.getlist("key")
+    if not keys:
+        return HttpResponseBadRequest("Missing key parameter")
+
+    ret = {"topics": {"items": provider.get_topics(keys, lang=lang)}}
+    return JsonResponse(ret)
+
+
 def _get_topics(
     provider,
     queryset,
@@ -123,11 +158,23 @@ def _get_topics(
     page_size: int = DEFAULT_FACET_PAGE_SIZE,
     lang: str = "en",
     topic_contains: str = None,
+    keys: set = {},
+    **kwargs,
 ):
     start = page * page_size
     end = start + page_size
 
-    cnt, items = provider.get_facet_items(queryset, start=start, end=end, lang=lang, topic_contains=topic_contains)
+    cnt, items = provider.get_facet_items(
+        queryset, start=start, end=end, lang=lang, topic_contains=topic_contains, keys=keys
+    )
+
+    if keys:
+        keys.difference_update({str(t["key"]) for t in items})
+        if keys:
+            ext = provider.get_topics(keys, lang)
+            items.extend(ext)
+            cnt += len(ext)
+            logger.debug("Extending facets to %d for %s", cnt, provider.name)
 
     return {"page": page, "page_size": page_size, "start": start, "total": cnt, "items": items}
 
@@ -141,8 +188,16 @@ def _prefilter_topics(request):
     :return: a QuerySet on ResourceBase
     """
     logger.debug("Filtering by user '%s'", request.user)
-    # return ResourceBase.objects
-    return get_visible_resources(ResourceBase.objects, request.user)
+    filters = {k: vlist for k, vlist in request.query_params.lists() if k.startswith("filter{")}
+    logger.warning(f"FILTERING BY {filters}")
+
+    if filters:
+        viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs=filters)
+        viewset.initial(request)
+        return get_visible_resources(queryset=viewset.filter_queryset(viewset.get_queryset()), user=request.user)
+    else:
+        # return ResourceBase.objects
+        return get_visible_resources(ResourceBase.objects, request.user)
 
 
 def _resolve_language(request) -> (str, bool):

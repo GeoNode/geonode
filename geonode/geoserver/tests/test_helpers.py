@@ -40,6 +40,7 @@ from geonode.geoserver.helpers import (
     get_dataset_storetype,
     extract_name_from_sld,
     get_dataset_capabilities_url,
+    get_layer_ows_url,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
 
@@ -292,6 +293,17 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         ows_url = settings.GEOSERVER_PUBLIC_LOCATION
         identifier = "geonode:CA"
         dataset = Dataset.objects.get(alternate=identifier)
-        expected_url = f"{ows_url}geonode/CA/wms?service=wms&version=1.3.0&request=GetCapabilities"
+        expected_url = f"{ows_url}geonode/CA/ows?service=wms&version=1.3.0&request=GetCapabilities"
         capabilities_url = get_dataset_capabilities_url(dataset)
+        self.assertEqual(capabilities_url, expected_url, capabilities_url)
+
+    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    def test_layer_ows_url(self):
+        from geonode.layers.models import Dataset
+
+        ows_url = settings.GEOSERVER_PUBLIC_LOCATION
+        identifier = "geonode:CA"
+        dataset = Dataset.objects.get(alternate=identifier)
+        expected_url = f"{ows_url}geonode/CA/ows"
+        capabilities_url = get_layer_ows_url(dataset)
         self.assertEqual(capabilities_url, expected_url, capabilities_url)

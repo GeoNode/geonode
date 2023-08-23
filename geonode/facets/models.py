@@ -28,6 +28,8 @@ FACET_TYPE_PLACE = "place"
 FACET_TYPE_USER = "user"
 FACET_TYPE_THESAURUS = "thesaurus"
 FACET_TYPE_CATEGORY = "category"
+FACET_TYPE_BASE = "base"
+FACET_TYPE_KEYWORD = "keyword"
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +38,9 @@ class FacetProvider:
     """
     Provides access to the facet information and the related topics
     """
+
+    def __init__(self, **kwargs):
+        self.config = kwargs.get("config", {}).copy()
 
     def __str__(self):
         return f"{self.__class__.__name__}[{self.name}]"
@@ -49,7 +54,7 @@ class FacetProvider:
         """
         self.get_info()["name"]
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         """
         Get the basic info for this provider, as a dict with these keys:
         - 'name': the name of the provider (the one returned by name())
@@ -66,7 +71,14 @@ class FacetProvider:
         pass
 
     def get_facet_items(
-        self, queryset, start: int = 0, end: int = DEFAULT_FACET_PAGE_SIZE, lang="en", topic_contains: str = None
+        self,
+        queryset,
+        start: int = 0,
+        end: int = DEFAULT_FACET_PAGE_SIZE,
+        lang="en",
+        topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         """
         Return the items of the facets, in a tuple:
@@ -82,7 +94,22 @@ class FacetProvider:
         :param end: int: pagination, the index of the last returned item
         :param lang: the preferred language for the labels
         :param topic_contains: only returns matching topics
+        :param keys: only returns topics with given keys, even if their count is 0
         :return: a tuple int:total count of record, list of items
+        """
+        pass
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        """
+        Return the topics with the requested ids as a list
+        - list, topic records. A topic record is a dict having these keys:
+          - key: the key of the items that should be used for filtering
+          - label: a generic label for the item; the client should try and localize it whenever possible
+          - localized_label: a localized label for the item
+          - other facet specific keys
+        :param keys: the list of the keys of the topics, as returned by the get_facet_items() method
+        :param lang: the preferred language for the labels
+        :return: list of items
         """
         pass
 
@@ -111,10 +138,10 @@ class FacetsRegistry:
 
         logger.info("Initializing Facets")
 
-        if providers := getattr(settings, "FACET_PROVIDERS", []):
-            _providers = [import_string(module_path) for module_path in providers]
-            for provider in _providers:
-                provider.register(self)
+        for providerconf in getattr(settings, "FACET_PROVIDERS", []):
+            clz = providerconf["class"]
+            provider = import_string(clz)
+            provider.register(self, config=providerconf.get("config", {}))
 
     def register_facet_provider(self, provider: FacetProvider):
         logger.info(f"Registering {provider}")

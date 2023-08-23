@@ -2287,13 +2287,29 @@ def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
     workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ("", layer.alternate)
     wms_url = settings.GEOSERVER_PUBLIC_LOCATION
     if not layer.remote_service:
-        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
+        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/ows?service=wms&version={version}&request=GetCapabilities"  # noqa
         if access_token:
             wms_url += f"&access_token={access_token}"
     else:
         wms_url = f"{layer.remote_service.service_url}?service=wms&version={version}&request=GetCapabilities"
 
     return wms_url
+
+
+def get_layer_ows_url(layer, access_token=None):
+    """
+    Generate the layer-specific GetCapabilities URL
+    """
+    workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ("", layer.alternate)
+    ows_url = settings.GEOSERVER_PUBLIC_LOCATION
+    if not layer.remote_service:
+        ows_url = f"{ows_url}{'/'.join(workspace_layername)}/ows"  # noqa
+        if access_token:
+            ows_url += f"?access_token={access_token}"
+    else:
+        ows_url = f"{layer.remote_service.service_url}"
+
+    return ows_url
 
 
 def wps_format_is_supported(_format, dataset_type):

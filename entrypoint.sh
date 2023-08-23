@@ -41,7 +41,7 @@ echo MONITORING_HOST_NAME=$MONITORING_HOST_NAME
 echo MONITORING_SERVICE_NAME=$MONITORING_SERVICE_NAME
 echo MONITORING_DATA_TTL=$MONITORING_DATA_TTL
 
-invoke waitfordbs
+# invoke waitfordbs
 
 cmd="$@"
 
@@ -54,7 +54,6 @@ else
     invoke prepare
 
     if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "/mnt/volumes/statics/geonode_init.lock" ]; then
-        invoke updategeoip
         invoke fixtures
         invoke monitoringfixture
         invoke initialized
@@ -62,8 +61,6 @@ else
     fi
 
     invoke statics
-    invoke waitforgeoserver
-    invoke geoserverfixture
 
     echo "Executing UWSGI server $cmd for Production"
 fi

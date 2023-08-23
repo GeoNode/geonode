@@ -19,8 +19,9 @@
 
 import logging
 
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery
 
+from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_THESAURUS
 
 logger = logging.getLogger(__name__)
@@ -31,25 +32,27 @@ class ThesaurusFacetProvider(FacetProvider):
     Implements faceting for a given Thesaurus
     """
 
-    def __init__(self, identifier, title, order, labels: dict):
+    def __init__(self, identifier, title, order, labels: dict, **kwargs):
+        super().__init__(**kwargs)
+
         self._name = identifier
         self.label = title
-        self.order = order
         self.labels = labels
+
+        self.config["order"] = order
 
     @property
     def name(self) -> str:
         return self._name
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self._name,
-            "key": "filter{tkeywords}",
+            "key": "filter{tkeywords}",  # deprecated
+            "filter": "filter{tkeywords}",
             "label": self.labels.get(lang, self.label),
             "is_localized": self.labels.get(lang, None) is not None,
             "type": FACET_TYPE_THESAURUS,
-            "hierarchical": False,
-            "order": self.order,
         }
 
     def get_facet_items(
@@ -59,42 +62,75 @@ class ThesaurusFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
         **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self._name)
 
         filter = {
             "tkeywords__thesaurus__identifier": self._name,
-            "tkeywords__keyword__lang": lang,
         }
 
         if topic_contains:
             filter["tkeywords__keyword__label__icontains"] = topic_contains
 
+        if keys:
+            logger.debug("Filtering by keys %r\n", keys)
+            filter["tkeywords__in"] = keys
+
         q = (
             queryset.filter(**filter)
-            .values("tkeywords", "tkeywords__keyword__label", "tkeywords__alt_label")
+            .values("tkeywords", "tkeywords__alt_label")
             .annotate(count=Count("tkeywords"))
+            .annotate(
+                localized_label=Subquery(
+                    ThesaurusKeywordLabel.objects.filter(keyword=OuterRef("tkeywords"), lang=lang).values("label")
+                )
+            )
             .order_by("-count")
         )
+
+        logger.debug(" ---> %s\n\n", q.query)
 
         cnt = q.count()
 
         logger.info("Found %d facets for %s", cnt, self._name)
-        logger.debug(" ---> %s\n\n", q.query)
         logger.debug(" ---> %r\n\n", q.all())
 
         topics = [
             {
                 "key": r["tkeywords"],
-                "label": r["tkeywords__keyword__label"] or r["tkeywords__alt_label"],
-                "is_localized": r["tkeywords__keyword__label"] is not None,
+                "label": r["localized_label"] or r["tkeywords__alt_label"],
+                "is_localized": r["localized_label"] is not None,
                 "count": r["count"],
             }
             for r in q[start:end].all()
         ]
 
         return cnt, topics
+
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = (
+            ThesaurusKeyword.objects.filter(id__in=keys)
+            .values("id", "alt_label")
+            .annotate(
+                localized_label=Subquery(
+                    ThesaurusKeywordLabel.objects.filter(keyword=OuterRef("id"), lang=lang).values("label")
+                )
+            )
+        )
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r["id"],
+                "label": r["localized_label"] or r["alt_label"],
+                "is_localized": r["localized_label"] is not None,
+            }
+            for r in q.all()
+        ]
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
@@ -123,5 +159,5 @@ class ThesaurusFacetProvider(FacetProvider):
         logger.info("Creating providers for %r", ret)
         for t in ret.values():
             registry.register_facet_provider(
-                ThesaurusFacetProvider(t["identifier"], t["title"], t["order"], t["labels"])
+                ThesaurusFacetProvider(t["identifier"], t["title"], t["order"], t["labels"], **kwargs)
             )

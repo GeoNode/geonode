@@ -19,6 +19,7 @@
 
 import logging
 
+from django.contrib.auth import get_user_model
 from django.db.models import Count
 
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_USER
@@ -35,14 +36,13 @@ class OwnerFacetProvider(FacetProvider):
     def name(self) -> str:
         return "owner"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": "owner",
-            "key": "owner",
+            "key": "filter{owner.pk.in}",  # deprecated
+            "filter": "filter{owner.pk.in}",
             "label": "Owner",
             "type": FACET_TYPE_USER,
-            "hierarchical": False,
-            "order": 5,
         }
 
     def get_facet_items(
@@ -52,13 +52,26 @@ class OwnerFacetProvider(FacetProvider):
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for OWNER")
 
-        q = queryset.values("owner", "owner__username")
+        filters = dict()
+
         if topic_contains:
-            q = q.filter(owner__username__icontains=topic_contains)
-        q = q.annotate(count=Count("owner")).order_by("-count")
+            filters["owner__username__icontains"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["owner__in"] = keys
+
+        q = (
+            queryset.values("owner", "owner__username")
+            .filter(**filters)
+            .annotate(count=Count("owner"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 
@@ -70,7 +83,6 @@ class OwnerFacetProvider(FacetProvider):
             {
                 "key": r["owner"],
                 "label": r["owner__username"],
-                "localized_label": r["owner__username"],
                 "count": r["count"],
             }
             for r in q[start:end]
@@ -78,6 +90,20 @@ class OwnerFacetProvider(FacetProvider):
 
         return cnt, topics
 
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = get_user_model().objects.filter(id__in=keys).values("id", "username")
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r["id"],
+                "label": r["username"],
+            }
+            for r in q.all()
+        ]
+
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(OwnerFacetProvider())
+        registry.register_facet_provider(OwnerFacetProvider(**kwargs))
