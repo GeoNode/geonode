@@ -44,6 +44,7 @@ from django.http import HttpResponseRedirect
 from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
 
+from geonode.utils import import_class_module
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
@@ -65,6 +66,18 @@ def get_data_extractor(provider_id):
     else:
         extractor = None
     return extractor
+
+
+def get_group_role_mapper(provider_id):
+    group_role_mapper_class = import_class_module(
+        getattr(settings, "SOCIALACCOUNT_PROVIDERS", {})
+        .get(PROVIDER_ID, {})
+        .get(
+            "GROUP_ROLE_MAPPER_CLASS",
+            "geonode.people.profileextractors.OpenIDGroupRoleMapper",
+        )
+    )
+    return group_role_mapper_class()
 
 
 def update_profile(sociallogin):
@@ -248,11 +261,14 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     def complete_login(self, request, app, token, response, **kwargs):
         extra_data = {}
         if self.profile_url:
-            headers = {"Authorization": "Bearer {0}".format(token.token)}
-            resp = requests.get(self.profile_url, headers=headers)
-            profile_data = resp.json()
-            extra_data.update(profile_data)
-        elif "id_token" in response:
+            try:
+                headers = {"Authorization": f"Bearer {token.token}"}
+                resp = requests.get(self.profile_url, headers=headers)
+                profile_data = resp.json()
+                extra_data.update(profile_data)
+            except Exception:
+                logger.exception(OAuth2Error("Invalid profile_url, falling back to id_token checks..."))
+        if not extra_data and "id_token" in response:
             try:
                 extra_data = jwt.decode(
                     response["id_token"],
@@ -279,20 +295,21 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         user = super(SocialAccountAdapter, self).save_user(request, sociallogin, form=form)
         extractor = get_data_extractor(sociallogin.account.provider)
+        group_role_mapper = get_group_role_mapper(sociallogin.account.provider)
         try:
             groups = extractor.extract_groups(sociallogin.account.extra_data) or extractor.extract_roles(
                 sociallogin.account.extra_data
             )
-            is_manager = extractor.extract_is_manager(sociallogin.account.extra_data)
 
             # check here if user is member already of other groups and remove it form the ones that are not declared here...
             for groupprofile in user.group_list_all():
                 groupprofile.leave(user)
-            for group_name in groups:
+            for group_role_name in groups:
+                group_name, role_name = group_role_mapper.parse_group_and_role(group_role_name)
                 groupprofile = GroupProfile.objects.filter(slug=group_name).first()
                 if groupprofile:
                     groupprofile.join(user)
-                    if is_manager:
+                    if group_role_mapper.is_manager(role_name):
                         groupprofile.promote()
         except (AttributeError, NotImplementedError):
             pass  # extractor doesn't define a method for extracting field
