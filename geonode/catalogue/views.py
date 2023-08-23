@@ -330,7 +330,7 @@ def csw_render_extra_format_html(request, layeruuid, resname):
     extra_res_md["roles"] = []
     for role in Roles:
         cr = resource.__getattribute__(role.name)
-        if not type(cr) == list:
+        if not isinstance(cr, list):
             cr = [cr]
         users = [{"pk": user.id, "last_name": user.last_name, "email": user.email} for user in cr]
         if users:

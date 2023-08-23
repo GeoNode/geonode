@@ -143,9 +143,6 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
 
-        if cloned_path:
-            os.remove(cloned_path)
-
     def test_patch_point_of_contact(self):
         document = Document.objects.first()
         url = urljoin(f"{reverse('documents-list')}/", f"{document.id}")
