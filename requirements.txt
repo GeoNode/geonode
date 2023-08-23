@@ -27,6 +27,7 @@ rdflib==6.3.2
 smart_open==6.3.0
 PyMuPDF==1.22.5
 pathvalidate==3.1.0
+ipaddress==1.0.23
 
 # Django Apps
 django-allauth==0.54.0
