@@ -58,7 +58,7 @@ class FacetProvider:
         """
         Get the basic info for this provider, as a dict with these keys:
         - 'name': the name of the provider (the one returned by name())
-        - 'key': the filtering key to be used in a filter query
+        - 'filter': the filtering key to be used in a filter query
         - 'label': a generic label for the facet; the client should try and localize it whenever possible
         - 'localized_label': a localized label for the facet (localized according to the `lang` param)
         - 'type': the facet type (e.g. user, region, thesaurus, ...)

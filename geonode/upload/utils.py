@@ -30,10 +30,9 @@ from owslib.etree import etree as dlxml
 
 from django.conf import settings
 from django.urls import reverse
-from django.shortcuts import render
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.template.defaultfilters import filesizeformat
 
 from geoserver.catalog import FailedRequestError, ConflictingDataError
@@ -43,7 +42,7 @@ from geonode.upload.api.exceptions import (
     GeneralUploadException,
     UploadParallelismLimitException,
 )
-from geonode.upload.models import Upload, UploadSizeLimit, UploadParallelismLimit
+from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.utils import json_response as do_json_response, unzip_file, mkdtemp
 from geonode.geoserver.helpers import (
     gs_catalog,
@@ -52,6 +51,7 @@ from geonode.geoserver.helpers import (
     get_store,
     set_time_dimension,
 )  # mosaic_delete_first_granule
+from geonode.resource.models import ExecutionRequest
 
 ogr.UseExceptions()
 
@@ -235,19 +235,6 @@ def get_next_step(upload_session, offset=1):
     return pages[max(min(len(pages) - 1, index + offset), 0)]
 
 
-def get_previous_step(upload_session, post_to):
-    assert upload_session.upload_type is not None
-
-    pages = _pages[upload_session.upload_type]
-    if post_to == "undefined":
-        post_to = "final"
-    index = pages.index(post_to) - 1
-
-    if index < 0:
-        return "save"
-    return pages[index]
-
-
 def _advance_step(req, upload_session):
     if upload_session.completed_step != "error":
         upload_session.completed_step = get_next_step(upload_session)
@@ -255,188 +242,8 @@ def _advance_step(req, upload_session):
         return "error"
 
 
-def next_step_response(req, upload_session, force_ajax=True):
-    _force_ajax = "&force_ajax=true" if req and force_ajax and "force_ajax" not in req.GET else ""
-    if not upload_session:
-        return json_response(
-            {
-                "status": "error",
-                "success": False,
-                "id": None,
-                "error_msg": "No Upload Session provided.",
-            }
-        )
-
-    import_session = upload_session.import_session
-    # if the current step is the view POST for this step, advance one
-    if req and req.method == "POST":
-        if upload_session.completed_step:
-            _advance_step(req, upload_session)
-        else:
-            upload_session.completed_step = "save"
-
-    next = get_next_step(upload_session)
-
-    if next == "error":
-        return json_response(
-            {
-                "status": "error",
-                "success": False,
-                "id": import_session.id,
-                "error_msg": str(upload_session.error_msg),
-            }
-        )
-
-    if next == "check" and import_session.tasks:
-        store_type = import_session.tasks[0].target.store_type
-        if store_type == "coverageStore" or _force_ajax:
-            # @TODO we skip time steps for coverages currently
-            upload_session.completed_step = "check"
-            return next_step_response(req, upload_session, force_ajax=True)
-        if force_ajax:
-            url = f"{reverse('data_upload')}?id={import_session.id}"
-            return json_response(
-                {
-                    "url": url,
-                    "status": "incomplete",
-                    "success": True,
-                    "id": import_session.id,
-                    "redirect_to": f"{settings.SITEURL}upload/check?id={import_session.id}{_force_ajax}",
-                }
-            )
-
-    if next == "time" and import_session.tasks:
-        store_type = import_session.tasks[0].target.store_type
-        layer = import_session.tasks[0].layer
-        (has_time_dim, dataset_values) = dataset_eligible_for_time_dimension(req, layer, upload_session=upload_session)
-        if store_type == "coverageStore" or not has_time_dim:
-            # @TODO we skip time steps for coverages currently
-            upload_session.completed_step = "time"
-            return next_step_response(req, upload_session, False)
-        if upload_session.time is None or not upload_session.time:
-            upload_session.completed_step = "time"
-        if force_ajax:
-            url = f"{reverse('data_upload')}?id={import_session.id}"
-            return json_response(
-                {
-                    "url": url,
-                    "status": "incomplete",
-                    "required_input": has_time_dim,
-                    "success": True,
-                    "id": import_session.id,
-                    "redirect_to": f"{settings.SITEURL}upload/time?id={import_session.id}{_force_ajax}",
-                }
-            )
-        else:
-            return next_step_response(req, upload_session, force_ajax)
-
-    if next == "mosaic" and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {
-                "url": url,
-                "status": "incomplete",
-                "required_input": len(_force_ajax) == 0,
-                "success": True,
-                "id": import_session.id,
-                "redirect_to": f"{settings.SITEURL}upload/mosaic?id={import_session.id}{_force_ajax}",
-            }
-        )
-
-    if next == "srs" and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {
-                "url": url,
-                "status": "incomplete",
-                "required_input": len(_force_ajax) == 0,
-                "success": True,
-                "id": import_session.id,
-                "redirect_to": f"{settings.SITEURL}upload/srs?id={import_session.id}{_force_ajax}",
-            }
-        )
-
-    if next == "csv" and force_ajax:
-        url = f"{reverse('data_upload')}?id={import_session.id}"
-        return json_response(
-            {
-                "url": url,
-                "status": "incomplete",
-                "required_input": len(_force_ajax) == 0,
-                "success": True,
-                "id": import_session.id,
-                "redirect_to": f"{settings.SITEURL}upload/csv?id={import_session.id}{_force_ajax}",
-            }
-        )
-
-    # @todo this is not handled cleanly - run is not a real step in that it
-    # has no corresponding view served by the 'view' function.
-    if next == "run" and import_session.tasks:
-        upload_session.completed_step = next
-        if (_ASYNC_UPLOAD and not req) or (req and req.is_ajax()):
-            return run_response(req, upload_session)
-        else:
-            # on sync we want to run the import and advance to the next step
-            run_import(upload_session, async_upload=False)
-            return next_step_response(req, upload_session, force_ajax=force_ajax)
-    session_id = None
-    if req and "id" in req.GET:
-        session_id = f"?id={req.GET['id']}"
-    elif import_session and import_session.id:
-        session_id = f"?id={import_session.id}"
-
-    if req and req.is_ajax() or force_ajax:
-        content_type = "text/html" if req and not req.is_ajax() else None
-        if session_id:
-            return json_response(
-                redirect_to=reverse("data_upload", args=[next]) + session_id, content_type=content_type
-            )
-        else:
-            return json_response(url=reverse("data_upload", args=[next]), content_type=content_type)
-
-    return HttpResponseRedirect(reverse("data_upload", args=[next]))
-
-
-def is_latitude(colname):
-    return any([_l in colname.lower() for _l in _latitude_names])
-
-
-def is_longitude(colname):
-    return any([_l in colname.lower() for _l in _longitude_names])
-
-
 def is_async_step(upload_session):
     return _ASYNC_UPLOAD and get_next_step(upload_session, offset=2) == "run"
-
-
-def check_import_session_is_valid(request, upload_session, import_session):
-    # check for failing Import Session and Import Tasks
-    assert import_session is not None
-    assert len(import_session.tasks) > 0
-
-    for task in import_session.tasks:
-        if task.state == "ERROR":
-            progress = task.get_progress()
-            upload_session.completed_step = "error"
-            upload_session.error_msg = progress.get("message")
-            return None
-
-    # check for invalid attribute names
-    store_type = import_session.tasks[0].target.store_type
-    if store_type == "dataStore":
-        try:
-            layer = import_session.tasks[0].layer
-            invalid = [a for a in layer.attributes if str(a.name).find(" ") >= 0]
-            if invalid:
-                att_list = f"<pre>{'. '.join([a.name for a in invalid])}</pre>"
-                msg = f"Attributes with spaces are not supported : {att_list}"
-                upload_session.completed_step = "error"
-                upload_session.error_msg = msg
-            return layer
-        except Exception as e:
-            return render(request, "upload/dataset_upload_error.html", context={"error_msg": str(e)})
-    elif store_type == "coverageStore":
-        return True
 
 
 def _get_time_dimensions(layer, upload_session, values=None):
@@ -580,16 +387,6 @@ def progress_redirect(step, upload_id):
             progress=f"{reverse('data_upload_progress')}?id={upload_id}",
         )
     )
-
-
-def run_response(req, upload_session):
-    run_import(upload_session)
-
-    if _ASYNC_UPLOAD:
-        next = get_next_step(upload_session)
-        return progress_redirect(next, upload_session.import_session.id)
-
-    return next_step_response(req, upload_session)
 
 
 def get_max_upload_size(slug):
@@ -894,4 +691,14 @@ class UploadLimitValidator:
         return parallelism_limit.max_number
 
     def _get_parallel_uploads_count(self):
-        return Upload.objects.get_incomplete_uploads(self.user).count()
+        """
+        Count the total layers that are part of the running import
+        """
+        return sum(
+            filter(
+                None,
+                ExecutionRequest.objects.filter(
+                    user=self.user, status__in=[ExecutionRequest.STATUS_RUNNING, ExecutionRequest.STATUS_READY]
+                ).values_list("input_params__total_layers", flat=True),
+            )
+        )

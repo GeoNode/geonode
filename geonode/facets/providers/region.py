@@ -39,7 +39,6 @@ class RegionFacetProvider(FacetProvider):
     def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{regions.code.in}",  # deprecated
             "filter": "filter{regions.code.in}",
             "label": "Region",
             "type": FACET_TYPE_PLACE,

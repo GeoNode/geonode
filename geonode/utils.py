@@ -34,6 +34,7 @@ import datetime
 import requests
 import tempfile
 import importlib
+import ipaddress
 import itertools
 import traceback
 import subprocess
@@ -1928,6 +1929,26 @@ def build_absolute_uri(url):
     if url and "http" not in url:
         url = urljoin(settings.SITEURL, url)
     return url
+
+
+def extract_ip_or_domain(url):
+    ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
+    domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
+
+    match = ip_regex.findall(url)
+    if len(match):
+        ip_address = match[0]
+        try:
+            ipaddress.ip_address(ip_address)  # Validate the IP address
+            return ip_address
+        except ValueError:
+            pass
+
+    match = domain_regex.findall(url)
+    if len(match):
+        return match[0]
+
+    return None
 
 
 def get_xpath_value(
