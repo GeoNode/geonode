@@ -32,7 +32,7 @@ from allauth.account.adapter import DefaultAccountAdapter
 from allauth.account.utils import user_field
 from allauth.account.utils import user_email
 from allauth.account.utils import user_username
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.socialaccount.adapter import get_adapter, DefaultSocialAccountAdapter
 from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2Error
 
 from invitations.adapters import BaseInvitationsAdapter
@@ -257,6 +257,12 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     authorize_url = AUTHORIZE_URL
     profile_url = PROFILE_URL
     id_token_issuer = ID_TOKEN_ISSUER
+
+    def __init__(self, request):
+        self.request = request
+
+    def get_provider(self):
+        return get_adapter(self.request).get_provider(self.request, provider=self.provider_id)
 
     def complete_login(self, request, app, token, response, **kwargs):
         extra_data = {}
