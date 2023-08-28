@@ -2069,6 +2069,7 @@ class BaseApiTests(APITestCase):
         """
         REST API must not forbid saving maps and apps to non-admin and non-owners.
         """
+        self.maxDiff = None
         from geonode.maps.models import Map
 
         _map = Map.objects.filter(uuid__isnull=False, owner__username="admin").first()
