@@ -20,7 +20,7 @@
 import logging
 import xml.etree.ElementTree as ET
 
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -52,7 +52,7 @@ class DatasetDownloadHandler:
         """
         resource = self.get_resource()
         if not resource:
-            return []
+            raise Http404("Resource requested is not available")
         response = self.process_dowload(resource)
         return response
 
