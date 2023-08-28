@@ -20,7 +20,7 @@
 import logging
 import xml.etree.ElementTree as ET
 
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.translation import ugettext as _
@@ -51,6 +51,8 @@ class DatasetDownloadHandler:
         that allow the resource download
         """
         resource = self.get_resource()
+        if not resource:
+            return []
         response = self.process_dowload(resource)
         return response
 
@@ -71,6 +73,8 @@ class DatasetDownloadHandler:
     @property
     def download_url(self):
         resource = self.get_resource()
+        if not resource:
+            return None
         if resource.subtype not in ["vector", "raster", "vector_time"]:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
@@ -89,10 +93,11 @@ class DatasetDownloadHandler:
                 self.request,
                 self.resource_name,
                 "base.download_resourcebase",
-                _("You do not have permissions for this dataset."),
+                _("You do not have download permissions for this dataset."),
             )
         except Exception as e:
-            raise Http404(Exception(_("Not found"), e))
+            logger.exception(e)
+            return None
 
     def process_dowload(self, resource):
         """

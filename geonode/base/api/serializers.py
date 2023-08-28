@@ -57,7 +57,7 @@ from geonode.base.models import (
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.utils import build_absolute_uri
-from geonode.security.utils import get_resources_with_perms
+from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
 
 logger = logging.getLogger(__name__)
@@ -304,7 +304,7 @@ class DownloadArrayLinkField(DynamicComputedField):
             logger.exception(e)
             raise e
         download_urls = []
-        if _instance.resource_type in ["map"]:
+        if _instance.resource_type in ["map"] + get_geoapp_subtypes():
             return []
         elif _instance.resource_type in ["document"]:
             return [
@@ -313,7 +313,7 @@ class DownloadArrayLinkField(DynamicComputedField):
                     "ajax_safe": _instance.download_is_ajax_safe,
                 }
             ]
-        else:
+        elif _instance.resource_type in ["dataset"]:
             for item in settings.DATASET_DOWNLOAD_HANDLERS:
                 handler = import_string(item)
                 obj = handler(self.context.get("request"), _instance.alternate)
@@ -321,6 +321,8 @@ class DownloadArrayLinkField(DynamicComputedField):
                     {"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": obj.is_default}
                 )
             return download_urls
+        else:
+            return []
 
 
 class FavoriteField(DynamicComputedField):

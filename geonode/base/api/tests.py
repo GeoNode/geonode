@@ -23,7 +23,7 @@ import sys
 import json
 import logging
 from django.contrib.contenttypes.models import ContentType
-from django.test import override_settings
+from django.test import RequestFactory, override_settings
 import gisdata
 
 from PIL import Image
@@ -751,12 +751,16 @@ class BaseApiTests(APITestCase):
         ds = ResourceBase.objects.get(title=title)
         ds.keywords.add(HierarchicalKeyword.objects.get(slug="a1"))
 
-        serialized = ResourceBaseSerializer(ds)
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = owner
+
+        serialized = ResourceBaseSerializer(ds, context={"request": rq})
         json = JSONRenderer().render(serialized.data)
         stream = BytesIO(json)
         data = JSONParser().parse(stream)
         self.assertIsInstance(data, dict)
-        se = ResourceBaseSerializer(data=data)
+        se = ResourceBaseSerializer(data=data, context={"request": rq})
         self.assertTrue(se.is_valid())
 
     def test_delete_user_with_resource(self):

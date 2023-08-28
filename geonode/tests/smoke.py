@@ -347,7 +347,7 @@ class TestDownloadManager(GeoNodeBaseTestSupport):
     def setUp(self):
         self.sut = DatasetDownloadHandler
 
-    @override_settings(DATASET_DOWNLOAD_HANDLERS="geonode.tests.smoke.DummyDownloadManager")
+    @override_settings(DATASET_DOWNLOAD_HANDLERS=["geonode.tests.smoke.DummyDownloadManager"])
     def test_download_handler(self):
         dataset = create_single_dataset("test_dataset")
         url = reverse("dataset_download", args=[dataset.alternate])
