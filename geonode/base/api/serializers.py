@@ -28,7 +28,9 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.http import QueryDict
+from django.utils.module_loading import import_string
 
+from deprecated import deprecated
 from rest_framework import serializers
 from rest_framework_gis import fields
 from rest_framework.reverse import reverse, NoReverseMatch
@@ -278,13 +280,47 @@ class DownloadLinkField(DynamicComputedField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    @deprecated(version="4.2.0", reason="Will be replaced by download_urls")
     def get_attribute(self, instance):
         try:
+            logger.info(
+                "This field is deprecated, and will be removed in the future GeoNode version. Please refer to download_urls"
+            )
             _instance = instance.get_real_instance()
             return _instance.download_url if hasattr(_instance, "download_url") else None
         except Exception as e:
             logger.exception(e)
             return None
+
+
+class DownloadArrayLinkField(DynamicComputedField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        try:
+            _instance = instance.get_real_instance()
+        except Exception as e:
+            logger.exception(e)
+            raise e
+        download_urls = []
+        if _instance.resource_type in ["map"]:
+            return []
+        elif _instance.resource_type in ["document"]:
+            return [
+                {
+                    "url": _instance.download_url,
+                    "ajax_safe": _instance.download_is_ajax_safe,
+                }
+            ]
+        else:
+            for item in settings.DATASET_DOWNLOAD_HANDLERS:
+                handler = import_string(item)
+                obj = handler(self.context.get("request"), _instance.alternate)
+                download_urls.append(
+                    {"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": obj.is_default}
+                )
+            return download_urls
 
 
 class FavoriteField(DynamicComputedField):
@@ -479,6 +515,7 @@ class ResourceBaseSerializer(
         self.fields["is_copyable"] = serializers.BooleanField(read_only=True)
         self.fields["download_url"] = DownloadLinkField(read_only=True)
         self.fields["favorite"] = FavoriteField(read_only=True)
+        self.fields["download_urls"] = DownloadArrayLinkField(read_only=True)
 
     metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 

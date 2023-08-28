@@ -31,10 +31,10 @@ from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
 
-logger = logging.getLogger("geonode.resource.download_handler")
+logger = logging.getLogger("geonode.layers.download_handler")
 
 
-class DownloadHandler:
+class DatasetDownloadHandler:
     def __str__(self):
         return f"{self.__module__}.{self.__class__.__name__}"
 
@@ -54,6 +54,32 @@ class DownloadHandler:
         response = self.process_dowload(resource)
         return response
 
+    @property
+    def is_default(self):
+        return "DatasetDownloadHandler" in str(self)
+
+    @property
+    def is_ajax_safe(self):
+        """
+        We use that USE_GEOSERVER boolean to decide if use the default
+        WPS download method or use the fallback on the proxy.
+        This means that by default if geoserver is used, the WPS
+        is used
+        """
+        return settings.USE_GEOSERVER
+
+    @property
+    def download_url(self):
+        resource = self.get_resource()
+        if resource.subtype not in ["vector", "raster", "vector_time"]:
+            logger.info("Download URL is available only for datasets that have been harvested and copied locally")
+            return None
+
+        if resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").exists():
+            return resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").first().url
+
+        return reverse("dataset_download", args=[resource.alternate])
+
     def get_resource(self):
         """
         Returnt the object needed
@@ -72,6 +98,7 @@ class DownloadHandler:
         """
         Generate the response object
         """
+
         if not settings.USE_GEOSERVER:
             # if GeoServer is not used, we redirect to the proxy download
             return HttpResponseRedirect(reverse("download", args=[resource.id]))

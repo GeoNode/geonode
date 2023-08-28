@@ -81,6 +81,7 @@ from geonode.layers.utils import (
 )
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
+from geonode.layers.download_handler import DatasetDownloadHandler
 
 logger = logging.getLogger(__name__)
 
@@ -2219,3 +2220,40 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             self.assertSetEqual(expected_perms, actual)
         else:
             self.assertFalse(username in [user.username for user in perms["users"]])
+
+
+class TestDatasetDownloadHandler(GeoNodeBaseTestSupport):
+    def setUp(self):
+        user = get_user_model().objects.first()
+        request = RequestFactory().get("http://test_url.com")
+        request.user = user
+        self.dataset = create_single_dataset("test_dataset_for_download")
+        self.sut = DatasetDownloadHandler(request, self.dataset.alternate)
+
+    def test_is_default(self):
+        self.assertTrue(self.sut.is_default)
+
+    def test_download_url_without_original_link(self):
+        expected_url = reverse("dataset_download", args=[self.dataset.alternate])
+        self.assertEqual(expected_url, self.sut.download_url)
+
+    def test_download_url_with_original_link(self):
+        Link.objects.update_or_create(
+            resource=self.dataset.resourcebase_ptr,
+            url="https://custom_dowonload_url.com",
+            defaults=dict(
+                extension="zip",
+                name="Original Dataset",
+                mime="application/octet-stream",
+                link_type="original",
+            ),
+        )
+        expected_url = "https://custom_dowonload_url.com"
+        self.assertEqual(expected_url, self.sut.download_url)
+
+    def test_get_resource_exists(self):
+        self.assertIsNotNone(self.sut.get_resource())
+
+    def test_process_dowload(self):
+        response = self.sut.get_download_response()
+        self.assertIsNotNone(response)

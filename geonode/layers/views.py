@@ -733,8 +733,8 @@ def dataset_metadata_advanced(request, layername):
 
 @csrf_exempt
 def dataset_download(request, layername):
-    DownloadHandler = import_string(settings.DATASET_DOWNLOAD_HANDLER)
-    return DownloadHandler(request, layername).get_download_response()
+    DatasetDownloadHandler = import_string(settings.DATASET_DOWNLOAD_HANDLERS[0])
+    return DatasetDownloadHandler(request, layername).get_download_response()
 
 
 @login_required
