@@ -178,6 +178,52 @@ class ProxyTest(GeoNodeBaseTestSupport):
             },
         )
 
+    def test_proxy_url_forgery(self):
+        """The GeoNode Proxy should preserve the original request headers."""
+        import geonode.proxy.views
+        from urllib.parse import urlsplit
+
+        class Response:
+            status_code = 200
+            content = "Hello World"
+            headers = {
+                "Content-Type": "text/plain",
+                "Vary": "Authorization, Accept-Language, Cookie, origin",
+                "X-Content-Type-Options": "nosniff",
+                "X-XSS-Protection": "1; mode=block",
+                "Referrer-Policy": "same-origin",
+                "X-Frame-Options": "SAMEORIGIN",
+                "Content-Language": "en-us",
+                "Content-Length": "119",
+                "Content-Disposition": 'attachment; filename="filename.tif"',
+            }
+
+        request_mock = MagicMock()
+        request_mock.return_value = (Response(), None)
+
+        # Non-Legit requests attempting SSRF
+        geonode.proxy.views.http_client.request = request_mock
+        url = f"http://example.org\\@%23{urlsplit(settings.SITEURL).hostname}"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
+
+        url = f"http://125.126.127.128\\@%23{urlsplit(settings.SITEURL).hostname}"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
+
+        # Legit requests using the local host (SITEURL)
+        url = f"/\\@%23{urlsplit(settings.SITEURL).hostname}"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 200)
+
+        url = f"{settings.SITEURL}\\@%23{urlsplit(settings.SITEURL).hostname}"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 200)
+
 
 class DownloadResourceTestCase(GeoNodeBaseTestSupport):
     def setUp(self):
