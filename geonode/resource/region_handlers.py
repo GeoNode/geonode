@@ -21,10 +21,21 @@ import re
 import logging
 import traceback
 
+from django.conf import settings
+from django.utils.module_loading import import_string
+
 from geonode.base.models import Region
 from django.contrib.gis.geos import GEOSGeometry
 
 logger = logging.getLogger(__name__)
+
+
+def assign_regions(instance, *args, **kwargs):
+    region_handler = getattr(settings, "DEFAULT_REGION_HANDLER", None)
+    if region_handler:
+        handler = import_string(region_handler)(instance)
+        instance = handler.assign_regions(*args, **kwargs)
+    return instance
 
 
 class BaseRegionAssignor(object):

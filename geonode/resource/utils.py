@@ -21,7 +21,6 @@ import os
 import uuid
 import logging
 import datetime
-import traceback
 
 from urllib.parse import urlparse, urljoin
 
@@ -31,7 +30,6 @@ from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.geos import MultiPolygon
-from django.utils.module_loading import import_string
 from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
@@ -463,20 +461,9 @@ def metadata_post_save(instance, *args, **kwargs):
 
     ResourceBase.objects.filter(id=instance.id).update(**defaults)
 
-    try:
-        region_handler = getattr(settings, "REGION_HANDLER", None)
-        if region_handler:
-            handler = import_string(region_handler)(instance)
-            instance = handler.assign_regions(*args, **kwargs)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
-    finally:
-        # refresh catalogue metadata records
-        from ..catalogue.models import catalogue_post_save
+    from ..catalogue.models import catalogue_post_save
 
-        catalogue_post_save(instance=instance, sender=instance.__class__)
+    catalogue_post_save(instance=instance, sender=instance.__class__)
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
@@ -485,6 +472,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Has to be called by the children
     """
     if instance:
+        instance = metadata_storers(instance.get_real_instance(), kwargs.get("custom", {}))
         if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
             instance.abstract = _("No abstract provided")
         if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":

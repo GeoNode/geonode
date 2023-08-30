@@ -1172,7 +1172,7 @@ class TestRegions(GeoNodeBaseTestSupport):
         )
         self.assertListEqual([], list(dataset.regions.all()))
 
-    @override_settings(REGION_HANDLER="geonode.resource.region_handlers.SpatialPredicateRegionAssignor")
+    @override_settings(DEFAULT_REGION_HANDLER="geonode.resource.region_handlers.SpatialPredicateRegionAssignor")
     def test_regions_are_assigned_if_handler_is_used(self):
         dataset = resource_manager.create(
             None,
