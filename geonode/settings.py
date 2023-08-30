@@ -2355,9 +2355,6 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 
-DEFAULT_REGION_HANDLER = "geonode.resource.region_handlers.BaseRegionAssignor"
-METADATA_STORERS = ["geonode.resource.region_handlers.assign_regions"]
-
 DATASET_DOWNLOAD_HANDLER = os.getenv("DATASET_DOWNLOAD_HANDLER", "geonode.resource.download_handler.DownloadHandler")
 
 CACHES["geonode_local_caches"] = {
