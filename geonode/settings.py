@@ -2359,3 +2359,9 @@ DEFAULT_REGION_HANDLER = "geonode.resource.region_handlers.BaseRegionAssignor"
 METADATA_STORERS = ["geonode.resource.region_handlers.assign_regions"]
 
 DATASET_DOWNLOAD_HANDLER = os.getenv("DATASET_DOWNLOAD_HANDLER", "geonode.resource.download_handler.DownloadHandler")
+
+CACHES["geonode_local_caches"] = {
+    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    "TIMEOUT": 600,
+    "OPTIONS": {"MAX_ENTRIES": 1000},
+}

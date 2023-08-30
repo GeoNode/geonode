@@ -31,6 +31,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.geos import MultiPolygon
 from geonode.utils import OGC_Servers_Handler
+from django.core.cache import caches
 
 from ..base import enumerations
 from ..base.models import (
@@ -54,6 +55,8 @@ from ..layers.metadata import convert_keyword
 logger = logging.getLogger(__name__)
 
 ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
+
+geonode_local_cache = caches["geonode_local_caches"]
 
 
 class KeywordHandler:
@@ -279,9 +282,14 @@ def update_resource(
 def metadata_storers(instance, custom={}):
     from django.utils.module_loading import import_string
 
-    available_storers = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
-    for storer_path in available_storers:
-        storer = import_string(storer_path)
+    if geonode_local_cache.get("metadata_storer_modules"):
+        available_storers = geonode_local_cache.get("metadata_storer_modules")
+    else:
+        storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
+        available_storers = [import_string(storer_path) for storer_path in storer_module_path]
+        geonode_local_cache.add("metadata_storer_modules", available_storers)
+
+    for storer in available_storers:
         storer(instance, custom)
     return instance
 
