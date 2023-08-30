@@ -40,7 +40,9 @@ from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
+from django.utils.module_loading import import_string
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
+
 from geonode.layers.api.exceptions import InvalidDatasetException
 from geonode.security.permissions import PermSpec, PermSpecCompact
 from geonode.storage.manager import storage_manager
@@ -502,8 +504,6 @@ def set_datasets_permissions(
 
 
 def get_uuid_handler():
-    from django.utils.module_loading import import_string
-
     return import_string(settings.LAYER_UUID_HANDLER)
 
 
