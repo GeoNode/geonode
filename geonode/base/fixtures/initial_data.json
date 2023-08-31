@@ -278,91 +278,165 @@
             "identifier": "video",
             "description": "scene from a video recording"
         }
-    },
-    {
-        "pk": 1,
+      },
+
+      {
+          "pk": 1,
+          "model": "base.license",
+          "fields": {
+              "identifier": "not_specified",
+              "name":"Not Specified",
+              "abbreviation":"",
+              "description":"The original author did not specify a license.",
+              "url":"",
+              "license_text":"Not applicable"
+          }
+      },
+      {
+          "pk": 2,
+          "model": "base.license",
+          "fields": {
+              "identifier":"varied_original",
+              "name":"Varied / Original",
+              "abbreviation":"",
+              "description":"This item is either licensed under multiple licenses.  See the item's abstract for more information or contact the distributor.",
+              "url":"",
+              "license_text":"Not applicable"
+          }
+      },
+      {
+          "pk": 3,
+          "model": "base.license",
+          "fields": {
+              "identifier":"varied_derived",
+              "name":"Varied / Derived",
+              "abbreviation":"",
+              "description":"The constituent parts of this item have different licenses.  Go to each part to see license information.",
+              "url":"",
+              "license_text":"Not applicable"
+          }
+      },
+      {
+          "pk": 4,
+          "model": "base.license",
+          "fields": {
+              "identifier":"public_domain",
+              "name":"Public Domain",
+              "abbreviation":"PD",
+              "description":"Works in the public domain may be used freely without the permission of the former copyright owner.",
+              "url":"http://www.copyright.gov/help/faq/faq-definitions.html",
+              "license_text":"The public domain is not a place. A work of authorship is in the “public domain” if it is no longer under copyright protection or if it failed to meet the requirements for copyright protection. Works in the public domain may be used freely without the permission of the former copyright owner."
+          }
+      },
+      {
+          "pk": 5,
+          "model": "base.license",
+          "fields": {
+              "identifier":"public_domain_usg",
+              "name":"Public Domain / USG",
+              "abbreviation":"PD/USG",
+              "description":"This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105.",
+              "url":"https://raw.githubusercontent.com/state-hiu/cybergis-licenses/master/licenses/PUBLICDOMAIN-LICENSE-RAW.txt",
+              "license_text":"This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105."
+          }
+      },
+      {
+          "pk": 6,
+          "model": "base.license",
+          "fields": {
+              "identifier":"odbl",
+              "name":"Open Data Commons Open Database License / OSM",
+              "abbreviation":"ODbL/OSM",
+              "description":"You are free to copy, distribute, transmit and adapt our data, as long as you credit OpenStreetMap and its contributors\nIf you alter or build upon our data, you may distribute the result only under the same licence.",
+              "url":"http://www.openstreetmap.org/copyright",
+              "license_text":""
+          }
+      },
+      {
+          "pk": 7,
+          "model": "base.license",
+          "fields": {
+              "identifier":"nextview",
+              "name":"NextView",
+              "abbreviation":"NV",
+              "description":"This data is licensed for use by the US Government (USG) under the NextView (NV) license and copyrighted by Digital Globe or GeoEye. The NV license allows the USG to share the imagery and Literal Imagery Derived Products (LIDP) with entities outside the USG when that entity is working directly with the USG, for the USG, or in a manner that is directly beneficial to the USG. The party receiving the data can only use the imagery or LIDP for the original purpose or only as otherwise agreed to by the USG. The party receiving the data cannot share the imagery or LIDP with a third party without express permission from the USG. At no time should this imagery or LIDP be used for other than USG-related purposes and must not be used for commercial gain. The copyright information should be maintained at all times. Your acceptance of these license terms is implied by your use.\nIn other words, you may only use NextView imagery linked from this site for digitizing OpenStreetMap data for humanitarian purposes.",
+              "url":"https://raw.githubusercontent.com/state-hiu/cybergis-licenses/master/licenses/NEXTVIEW-LICENSE-RAW.txt",
+              "license_text":""
+          }
+        },
+        {
+          "pk": 8,
+          "model": "base.license",
+          "fields": {
+              "identifier":"CC-0",
+              "name":"CC-0",
+              "abbreviation":"CC-0",
+              "description":"https://creativecommons.org/share-your-work/public-domain/cc0/",
+              "url":"https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+              "license_text":""
+          }
+      },
+      {
+        "pk": 9,
         "model": "base.license",
         "fields": {
-            "identifier": "not_specified",
-            "name":"Not Specified",
-            "abbreviation":"",
-            "description":"The original author did not specify a license.",
+            "identifier":"CC-SNA",
+            "name":"CC-SNA",
+            "abbreviation":"CC-SNA",
+            "description":"https://creativecommons.org/",
             "url":"",
-            "license_text":"Not applicable"
-        }
-    },
-{
-        "pk": 2,
-        "model": "base.license",
-        "fields": {
-            "identifier":"varied_original",
-            "name":"Varied / Original",
-            "abbreviation":"",
-            "description":"This item is either licensed under multiple licenses.  See the item's abstract for more information or contact the distributor.",
-            "url":"",
-            "license_text":"Not applicable"
-        }
-    },
-    {
-        "pk": 3,
-        "model": "base.license",
-        "fields": {
-            "identifier":"varied_derived",
-            "name":"Varied / Derived",
-            "abbreviation":"",
-            "description":"The constituent parts of this item have different licenses.  Go to each part to see license information.",
-            "url":"",
-            "license_text":"Not applicable"
-        }
-    },
-    {
-        "pk": 4,
-        "model": "base.license",
-        "fields": {
-            "identifier":"public_domain",
-            "name":"Public Domain",
-            "abbreviation":"PD",
-            "description":"Works in the public domain may be used freely without the permission of the former copyright owner.",
-            "url":"http://www.copyright.gov/help/faq/faq-definitions.html",
-            "license_text":"The public domain is not a place. A work of authorship is in the “public domain” if it is no longer under copyright protection or if it failed to meet the requirements for copyright protection. Works in the public domain may be used freely without the permission of the former copyright owner."
-        }
-    },
-    {
-        "pk": 5,
-        "model": "base.license",
-        "fields": {
-            "identifier":"public_domain_usg",
-            "name":"Public Domain / USG",
-            "abbreviation":"PD/USG",
-            "description":"This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105.",
-            "url":"https://raw.githubusercontent.com/state-hiu/cybergis-licenses/master/licenses/PUBLICDOMAIN-LICENSE-RAW.txt",
-            "license_text":"This project constitutes a work of the United States Government and is not subject to domestic copyright protection under 17 USC § 105."
-        }
-    },
-    {
-        "pk": 6,
-        "model": "base.license",
-        "fields": {
-            "identifier":"odbl",
-            "name":"Open Data Commons Open Database License / OSM",
-            "abbreviation":"ODbL/OSM",
-            "description":"You are free to copy, distribute, transmit and adapt our data, as long as you credit OpenStreetMap and its contributors\nIf you alter or build upon our data, you may distribute the result only under the same licence.",
-            "url":"http://www.openstreetmap.org/copyright",
             "license_text":""
         }
-    },
-    {
-        "pk": 7,
+      },
+      {
+        "pk": 10,
         "model": "base.license",
         "fields": {
-            "identifier":"nextview",
-            "name":"NextView",
-            "abbreviation":"NV",
-            "description":"This data is licensed for use by the US Government (USG) under the NextView (NV) license and copyrighted by Digital Globe or GeoEye. The NV license allows the USG to share the imagery and Literal Imagery Derived Products (LIDP) with entities outside the USG when that entity is working directly with the USG, for the USG, or in a manner that is directly beneficial to the USG. The party receiving the data can only use the imagery or LIDP for the original purpose or only as otherwise agreed to by the USG. The party receiving the data cannot share the imagery or LIDP with a third party without express permission from the USG. At no time should this imagery or LIDP be used for other than USG-related purposes and must not be used for commercial gain. The copyright information should be maintained at all times. Your acceptance of these license terms is implied by your use.\nIn other words, you may only use NextView imagery linked from this site for digitizing OpenStreetMap data for humanitarian purposes.",
-            "url":"https://raw.githubusercontent.com/state-hiu/cybergis-licenses/master/licenses/NEXTVIEW-LICENSE-RAW.txt",
+            "identifier":"CC-NC",
+            "name":"CC-NC",
+            "abbreviation":"CC-NC",
+            "description":"https://creativecommons.org/licenses/by-nc/2.0/",
+            "url":"https://creativecommons.org/licenses/by-nc/2.0/legalcode",
             "license_text":""
         }
-    },
+      },
+      {
+        "pk": 11,
+        "model": "base.license",
+        "fields": {
+            "identifier":"CC-ND",
+            "name":"CC-ND",
+            "abbreviation":"CC-ND",
+            "description":"https://creativecommons.org/licenses/by-nd/2.0/",
+            "url":"https://creativecommons.org/licenses/by-nd/2.0/legalcode",
+            "license_text":""
+        }
+      },
+      {
+        "pk": 12,
+        "model": "base.license",
+        "fields": {
+            "identifier":"CC-NC-SA",
+            "name":"CC-NC-SA",
+            "abbreviation":"CC-NC-SA",
+            "description":"https://creativecommons.org/licenses/by-nc-sa/2.0/",
+            "url":"https://creativecommons.org/licenses/by-nc-sa/2.0/legalcode",
+            "license_text":""
+        }
+      },
+      {
+        "pk": 12,
+        "model": "base.license",
+        "fields": {
+            "identifier":"CC-NC-SA",
+            "name":"CC-NC-SA",
+            "abbreviation":"CC-NC-SA",
+            "description":"https://creativecommons.org/licenses/by-nc-sa/2.0/",
+            "url":"https://creativecommons.org/licenses/by-nc-sa/2.0/legalcode",
+            "license_text":""
+        }
+      },
+
      {
         "pk": 1,
         "model": "base.restrictioncodetype",
@@ -443,6 +517,7 @@
             "description": "a name, symbol, or other device identifying a product, officially registered and legally restricted to the use of the owner or manufacturer"
         }
     },
+
     {
       "pk": 1,
       "model": "base.region",
@@ -4873,5 +4948,717 @@
         "fields": {
             "name": "CARDS_MENU"
         }
+    },
+
+
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 1,
+      "fields": {
+        "label": "ARK",
+        "description": "ARK"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 2,
+      "fields": {
+        "label": "DOI",
+        "description": "DOI"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 3,
+      "fields": {
+        "label": "EAN13",
+        "description": "EAN13"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 4,
+      "fields": {
+        "label": "EISSN",
+        "description": "EISSN"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 5,
+      "fields": {
+        "label": "Handle",
+        "description": "Handle"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 6,
+      "fields": {
+        "label": "IGSN",
+        "description": "IGSN"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 7,
+      "fields": {
+        "label": "IBSN",
+        "description": "IBSN"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 8,
+      "fields": {
+        "label": "ISSN",
+        "description": "ISSN"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 9,
+      "fields": {
+        "label": "ISTC",
+        "description": "ISTC"
+      }
+    },
+
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 10,
+      "fields": {
+        "label": "LISSN",
+        "description": "LISSN"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 11,
+      "fields": {
+        "label": "LSID",
+        "description": "LSID"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 12,
+      "fields": {
+        "label": "PMID",
+        "description": "PMID"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 13,
+      "fields": {
+        "label": "PURL",
+        "description": "PURL"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 14,
+      "fields": {
+        "label": "UPC",
+        "description": "UPC"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 15,
+      "fields": {
+        "label": "URL",
+        "description": "URL"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 16,
+      "fields": {
+        "label": "URN",
+        "description": "URN"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 17,
+      "fields": {
+        "label": "arXiv",
+        "description": "arXiv"
+      }
+    },
+    {
+      "model": "base.relatedidentifiertype",
+      "pk": 18,
+      "fields": {
+        "label": "bibcode",
+        "description": "bibcode"
+      }
+    },
+
+
+    {
+      "model": "base.relationtype",
+      "pk": 1,
+      "fields": {
+        "label": "Cites",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 2,
+      "fields": {
+        "label": "Compiles",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 3,
+      "fields": {
+        "label": "Continues",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 4,
+      "fields": {
+        "label": "Documents",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 5,
+      "fields": {
+        "label": "HasMetadata",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 6,
+      "fields": {
+        "label": "HasPart",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 7,
+      "fields": {
+        "label": "IsCitedBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 8,
+      "fields": {
+        "label": "IsCompiledBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 9,
+      "fields": {
+        "label": "IsContinuedBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 10,
+      "fields": {
+        "label": "IsDerivedFrom",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 11,
+      "fields": {
+        "label": "IsDocumentedBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 12,
+      "fields": {
+        "label": "IsIdenticalTo",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 13,
+      "fields": {
+        "label": "IsMetadataFor",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 14,
+      "fields": {
+        "label": "IsNewVersionOf",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 15,
+      "fields": {
+        "label": "IsOriginalFormOf",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 16,
+      "fields": {
+        "label": "IsPartOf",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 17,
+      "fields": {
+        "label": "IsPreviousVersionOf",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 18,
+      "fields": {
+        "label": "IsReferencedBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 19,
+      "fields": {
+        "label": "IsReviewedBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 20,
+      "fields": {
+        "label": "IsSourceOf",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 21,
+      "fields": {
+        "label": "IsSupplementTo",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 22,
+      "fields": {
+        "label": "IsSupplementedBy",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 23,
+      "fields": {
+        "label": "IsVariantFormOf",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 24,
+      "fields": {
+        "label": "References",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 25,
+      "fields": {
+        "label": "Reviews",
+        "description": ""
+      }
+    },
+
+    {
+      "model": "base.fundingreference",
+      "pk": 1,
+      "fields": {
+        "funder_name": "Federal Ministry for Education and Research (BMBF)",
+        "funder_identifier": "10.13039/501100002347",
+        "funder_identifier_type": "BMBF"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 2,
+      "fields": {
+        "funder_name": "European agricultural fund for rural development (EAFRD)",
+        "funder_identifier": "10.13039/501100014141",
+        "funder_identifier_type": "EAFRD"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 3,
+      "fields": {
+        "funder_name": "European Union's Horizon 2020 research and innovation programme (Horizon2020)",
+        "funder_identifier": "",
+        "funder_identifier_type": "Horizon2020"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 4,
+      "fields": {
+        "funder_name": "Federal Ministry of Food and Agriculture (BMEL)",
+        "funder_identifier": "",
+        "funder_identifier_type": "BMEL"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 5,
+      "fields": {
+        "funder_name": "Forschungsring e.V.",
+        "funder_identifier": "",
+        "funder_identifier_type": "Forschungsring"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 6,
+      "fields": {
+        "funder_name": "German Academic Exchange Service (DAAD)",
+        "funder_identifier": "",
+        "funder_identifier_type": "DAAD"
+      }
+    },
+  
+    {
+      "model": "base.fundingreference",
+      "pk": 7,
+      "fields": {
+        "funder_name": "Research and Culture of the State of Brandenburg (MWFK)",
+        "funder_identifier": "",
+        "funder_identifier_type": "MWFK"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 8,
+      "fields": {
+        "funder_name": "Leibniz Association",
+        "funder_identifier": "",
+        "funder_identifier_type": "Leibniz"
+      }
+    },
+    {
+      "model": "base.fundingreference",
+      "pk": 9,
+      "fields": {
+        "funder_name": "Leibniz Center for Agricultural Landscape Research (ZALF e.V.)",
+        "funder_identifier": "",
+        "funder_identifier_type": "ZALF"
+      }
+    },
+
+    {
+      "model": "base.relatedproject",
+      "pk": 1,
+      "fields": {
+        "display_name": "BonaRes - CATCHY",
+        "label": "catchy"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 2,
+      "fields": {
+        "display_name": "BonaRes - DiControl",
+        "label": "dicontrol"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 3,
+      "fields": {
+        "display_name": "BonaRes - InnoSoilPhos",
+        "label": "innosoilphos"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 4,
+      "fields": {
+        "display_name": "BonaRes - Inplamint",
+        "label": "inplamint"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 5,
+      "fields": {
+        "display_name": "BonaRes - I4S",
+        "label": "i4s"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 6,
+      "fields": {
+        "display_name": "BonaRes - ORDIAmur",
+        "label": "ordiamur"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 7,
+      "fields": {
+        "display_name": "BonaRes - SOILAssist",
+        "label": "soilassist"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 8,
+      "fields": {
+        "display_name": "BonaRes - Soil3",
+        "label": "soil3"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 9,
+      "fields": {
+        "display_name": "BonaRes - SUSALPS",
+        "label": "susalps"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 10,
+      "fields": {
+        "display_name": "BonaRes - SIGNAL",
+        "label": "signal"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 11,
+      "fields": {
+        "display_name": "BonaRes Centre",
+        "label": "bonares_centre"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 12,
+      "fields": {
+        "display_name": "LTFE",
+        "label": "ltfe"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 13,
+      "fields": {
+        "display_name": "LTFE V140 Müncheberg",
+        "label": "ltfe_v140_muencheberg"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 14,
+      "fields": {
+        "display_name": "LTFE Dauerdüngungsversuch Dikopshof",
+        "label": "ltfe_ddv_dikopshof"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 15,
+      "fields": {
+        "display_name": "LTFE Phosphordüngungsstrategien Rostock",
+        "label": "ltfe_pds_rostock"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 16,
+      "fields": {
+        "display_name": "LTFE Langzeitdüngungsversuch Darmstadt (Feld A)",
+        "label": "ltfe_ddv_darmstadt"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 17,
+      "fields": {
+        "display_name": "LTFE Hohes Feld Göttingen",
+        "label": "ltfe_goettingen_hohes_feld"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 18,
+      "fields": {
+        "display_name": "LTFE Garte-Süd Göttingen",
+        "label": "ltfe_goettingen_garte_sued"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 19,
+      "fields": {
+        "display_name": "LTFE Dauerdüngungsversuch IOSDV Dülmen",
+        "label": "ltfe_duelmen"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 20,
+      "fields": {
+        "display_name": "Other",
+        "label": "extern"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 21,
+      "fields": {
+        "display_name": "LTFE Langzeitdüngungsversuch Darmstadt (Feld E)",
+        "label": "ltfe_darmstadt_feld_e"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 22,
+      "fields": {
+        "display_name": "ZALF",
+        "label": "zalf"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 23,
+      "fields": {
+        "display_name": "ZALF - patchCROP",
+        "label": "zalf-patchcrop"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 24,
+      "fields": {
+        "display_name": "Rhizo4Bio - RootWayS",
+        "label": "rhizo_rootways"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 25,
+      "fields": {
+        "display_name": "Rhizo4Bio - CROP",
+        "label": "rhizo_crop"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 26,
+      "fields": {
+        "display_name": "Rhizo4Bio - rhizotraits",
+        "label": "rhizo_traits"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 27,
+      "fields": {
+        "display_name": "Rhizo4Bio - RhizoWheat",
+        "label": "rhizo_wheat"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 28,
+      "fields": {
+        "display_name": "Rhizo4Bio - bread and beer",
+        "label": "rhizo_bread_and_beer"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 29,
+      "fields": {
+        "display_name": "Rhizo4Bio - µPlastic",
+        "label": "rhizo_plastic"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 30,
+      "fields": {
+        "display_name": "LTFE Rauischholzhausen",
+        "label": "ltfe_rauischholzhausen"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 31,
+      "fields": {
+        "display_name": "LTFE Dürnast",
+        "label": "ltfe_duernast"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 32,
+      "fields": {
+        "display_name": "LTE Dahlem_D42",
+        "label": "ltfe_dahlem_d42"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 33,
+      "fields": {
+        "display_name": "LTE Thyrow_D5",
+        "label": "ltfe_thyrow_d5"
+      }
+    },
+    {
+      "model": "base.relatedproject",
+      "pk": 34,
+      "fields": {
+        "display_name": "LTFE Bad Lauchstädt",
+        "label": "ltfe_bad_lauchstaedt"
+      }
+    },    {
+      "model": "base.relatedproject",
+      "pk": 35,
+      "fields": {
+        "display_name": "LTE Seehausen",
+        "label": "lte_seehausen"
+      }
     }
-]
+  ]

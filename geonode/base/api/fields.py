@@ -16,11 +16,44 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
 import json
 
 from django.core.exceptions import ValidationError
+
+from rest_framework.exceptions import ParseError
 from dynamic_rest.fields.fields import DynamicRelationField
+
+from geonode.base.models import RelatedIdentifierType, RelationType, RelatedIdentifier, FundingReference, Funder
+
+
+class RelatedIdentifierDynamicRelationField(DynamicRelationField):
+    def to_internal_value_single(self, data, serializer):
+        try:
+            rit = RelatedIdentifierType.objects.get(**data["related_identifier_type"])
+            rt = RelationType.objects.get(**data["relation_type"])
+            RelatedIdentifier.objects.get_or_create(
+                related_identifier=data["related_identifier"], related_identifier_type=rit, relation_type=rt
+            )[0].save()
+            r = RelatedIdentifier.objects.get(
+                related_identifier=data["related_identifier"], related_identifier_type=rit, relation_type=rt
+            )
+        except TypeError:
+            raise ParseError(detail="Could not convert related_identifier to internal object ...", code=400)
+        return r
+
+
+class FundersDynamicRelationField(DynamicRelationField):
+    def to_internal_value_single(self, data, serializer):
+        try:
+            funding_reference = FundingReference.objects.get(**data["funding_reference"])
+            data["funding_reference"] = funding_reference
+        except TypeError:
+            raise ParseError(detail="Missing funding_reference object in funders ...", code=400)
+        try:
+            funder = Funder.objects.get_or_create(**data)
+        except TypeError:
+            raise ParseError(detail="Could not convert related_identifier to internal object ...", code=400)
+        return funder
 
 
 class ComplexDynamicRelationField(DynamicRelationField):
@@ -28,7 +61,8 @@ class ComplexDynamicRelationField(DynamicRelationField):
         """Overwrite of DynamicRelationField implementation to handle complex data structure initialization
 
         Args:
-            data (Optional[str, Dict]}): serialized or deserialized data from http calls (POST, GET ...)
+            data (Union[str, Dict]}): serialized or deserialized data from http calls (POST, GET ...),
+                                      if content-type application/json is used, data shows up as dict
             serializer (DynamicModelSerializer): Serializer for the given data
 
         Raises:
@@ -37,8 +71,11 @@ class ComplexDynamicRelationField(DynamicRelationField):
             django.db.models.QuerySet: return QuerySet object of the request or set data
         """
         related_model = serializer.Meta.model
-        if isinstance(data, str):
-            data = json.loads(data)
+        try:
+            if isinstance(data, str):
+                data = json.loads(data)
+        except ValueError:
+            return super().to_internal_value_single(data, serializer)
 
         if isinstance(data, dict):
             try:

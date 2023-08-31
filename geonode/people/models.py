@@ -127,6 +127,21 @@ class Profile(AbstractUser):
         blank=True,
     )
 
+    orcid_identifier = models.CharField(
+        _("orcid identifier"),
+        max_length=255,
+        default="",
+        blank=True,
+        help_text=_("ORCID identifier of profile."),
+    )
+
+    @property
+    def identifier_schema(self):
+        return "ORCID"
+
+    def get_orcid_url(self):
+        return "https://orcid.org/" + self.orcid_identifier
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._previous_active_state = self.is_active
