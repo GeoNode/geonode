@@ -21,15 +21,15 @@ import os
 import re
 import shutil
 import logging
-import importlib
 
 from uuid import uuid1
 from pathlib import Path
 from typing import BinaryIO, List, Mapping, Union
 from django.conf import settings
 
-from django.core.exceptions import SuspiciousFileOperation
 from django.utils.deconstruct import deconstructible
+from django.utils.module_loading import import_string
+from django.core.exceptions import SuspiciousFileOperation
 
 from geonode.storage.data_retriever import DataItemRetriever, DataRetriever
 
@@ -129,10 +129,7 @@ class StorageManager(StorageManagerInterface):
         self.data_retriever = DataRetriever(remote_files, tranfer_at_creation=False)
 
     def _get_concrete_manager(self):
-        module_name, class_name = sm_settings.STORAGE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
-        module = importlib.import_module(module_name)
-        class_ = getattr(module, class_name)
-        return class_()
+        return import_string(sm_settings.STORAGE_MANAGER_CONCRETE_CLASS)()
 
     def delete(self, name):
         return self._concrete_storage_manager.delete(name)
