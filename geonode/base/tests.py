@@ -1164,7 +1164,7 @@ class TestRegions(GeoNodeBaseTestSupport):
             region.is_assignable_to_geom(self.dataset_outside_region), "Extent outside a region should be assigned"
         )
 
-    @override_settings(METADATA_STORERS=["geonode.resource.region_handlers.spatial_predicate_region_assignor"])
+    @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
     def test_regions_are_assigned_if_handler_is_used(self):
         dataset = resource_manager.create(
             None,

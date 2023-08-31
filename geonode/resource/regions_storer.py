@@ -27,6 +27,7 @@ from django.contrib.gis.geos import GEOSGeometry
 logger = logging.getLogger(__name__)
 
 
+# A metadata storer that assigns regions to a resource on the base of spatial predicates
 def spatial_predicate_region_assignor(instance, *args, **kwargs):
     def _get_poly_from_instance(instance):
         srid1, wkt1 = instance.geographic_bounding_box.split(";")
