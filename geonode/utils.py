@@ -33,7 +33,6 @@ import tarfile
 import datetime
 import requests
 import tempfile
-import importlib
 import ipaddress
 import itertools
 import traceback
@@ -2027,19 +2026,3 @@ def safe_path_leaf(path):
             f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"
         )
     return fullpath
-
-
-def import_class_module(full_class_string):
-    """
-    Dynamically load a class from a string
-
-    >>> klass = import_class_module("module.submodule.ClassName")
-    >>> klass2 = import_class_module("myfile.Class2")
-    """
-    try:
-        module_path, class_name = full_class_string.rsplit(".", 1)
-        module = importlib.import_module(module_path)
-        class_obj = getattr(module, class_name)
-        return class_obj
-    except Exception:
-        return None

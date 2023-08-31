@@ -21,7 +21,6 @@ import os
 import copy
 import typing
 import logging
-import importlib
 
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
@@ -35,6 +34,7 @@ from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, FieldDoesNotExist
 
@@ -224,10 +224,7 @@ class ResourceManager(ResourceManagerInterface):
         self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
     def _get_concrete_manager(self):
-        module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
-        module = importlib.import_module(module_name)
-        class_ = getattr(module, class_name)
-        return class_()
+        return import_string(rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS)()
 
     @classmethod
     def _get_instance(cls, uuid: str) -> ResourceBase:
