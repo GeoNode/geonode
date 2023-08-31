@@ -277,8 +277,8 @@ def update_resource(
     return instance
 
 
-def call_storers(instance, custom={}, reset_data=False):
-    if not globals().get("storer_modules") or reset_data:
+def call_storers(instance, custom={}):
+    if not globals().get("storer_modules"):
         storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
         globals()["storer_modules"] = [import_string(storer_path) for storer_path in storer_module_path]
 
