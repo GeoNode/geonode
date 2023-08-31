@@ -597,6 +597,7 @@ except ValueError:
     ALLOWED_DOCUMENT_TYPES = (
         [
             "txt",
+            "csv",
             "log",
             "doc",
             "docx",
