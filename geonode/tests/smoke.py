@@ -305,6 +305,7 @@ class TestMetadataStorers(TestCase):
     @override_settings(METADATA_STORERS=["geonode.tests.smoke.dummy_metadata_storer"])
     def test_will_use_single_storers_defined(self):
         call_storers(self.dataset, self.custom)
+        self.dataset.update_from_db()
         self.assertEqual("abc123cfde", self.dataset.uuid)
         self.assertEqual("updated abstract", self.dataset.abstract)
 
@@ -316,6 +317,7 @@ class TestMetadataStorers(TestCase):
     )
     def test_will_use_multiple_storers_defined(self):
         dataset = call_storers(self.dataset, self.custom)
+        self.dataset.update_from_db()
         self.assertEqual("abc123cfde", dataset.uuid)
         self.assertEqual("another update", dataset.abstract)
         self.assertEqual("Updated Title", dataset.title)
