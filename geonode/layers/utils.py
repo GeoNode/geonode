@@ -51,6 +51,7 @@ from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
+from django.utils.module_loading import import_string
 
 READ_PERMISSIONS = ["view_resourcebase"]
 WRITE_PERMISSIONS = ["change_dataset_data", "change_dataset_style", "change_resourcebase_metadata"]
@@ -591,3 +592,25 @@ def is_sld_upload_only(request):
 def mdata_search_by_type(request, filetype):
     files = list({v.name for k, v in request.FILES.items()})
     return len(files) == 1 and all([filetype in f for f in files])
+
+
+default_dataset_download_handler_list = []
+dataset_download_handler_list = []
+full_dataset_download_handler = []
+
+
+def load_dataset_download_handlers(default_only=False, additional_only=False):
+    if not default_dataset_download_handler_list and getattr(settings, "DEFAULT_DATASET_DOWNLOAD_HANDLER", None):
+        default_dataset_download_handler_list.append(import_string(settings.DEFAULT_DATASET_DOWNLOAD_HANDLER))
+    elif not dataset_download_handler_list and getattr(settings, "DATASET_DOWNLOAD_HANDLERS", None):
+        dataset_download_handler_list.append(import_string(settings.DATASET_DOWNLOAD_HANDLERS[0]))
+
+    if default_only:
+        return default_dataset_download_handler_list
+    elif additional_only:
+        return dataset_download_handler_list
+    else:
+        all_dataset = default_dataset_download_handler_list + dataset_download_handler_list
+        if not all_dataset:
+            raise Exception("No dataset download handler defined")
+        return all_dataset

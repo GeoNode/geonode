@@ -2352,6 +2352,6 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 
-DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(
-    os.getenv("DATASET_DOWNLOAD_HANDLERS", "['geonode.layers.download_handler.DatasetDownloadHandler']")
-)
+DEFAULT_DATASET_DOWNLOAD_HANDLER = "geonode.layers.download_handler.DatasetDownloadHandler"
+
+DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLERS", "[]"))

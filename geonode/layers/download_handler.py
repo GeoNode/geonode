@@ -57,10 +57,6 @@ class DatasetDownloadHandler:
         return response
 
     @property
-    def is_default(self):
-        return "DatasetDownloadHandler" in str(self)
-
-    @property
     def is_ajax_safe(self):
         """
         We use that USE_GEOSERVER boolean to decide if use the default

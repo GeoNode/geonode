@@ -28,7 +28,6 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.http import QueryDict
-from django.utils.module_loading import import_string
 
 from deprecated import deprecated
 from rest_framework import serializers
@@ -56,6 +55,7 @@ from geonode.base.models import (
 )
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
+from geonode.layers.utils import load_dataset_download_handlers
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
@@ -303,7 +303,6 @@ class DownloadArrayLinkField(DynamicComputedField):
         except Exception as e:
             logger.exception(e)
             raise e
-        download_urls = []
         if _instance.resource_type in ["map"] + get_geoapp_subtypes():
             return []
         elif _instance.resource_type in ["document"]:
@@ -314,12 +313,16 @@ class DownloadArrayLinkField(DynamicComputedField):
                 }
             ]
         elif _instance.resource_type in ["dataset"]:
-            for item in settings.DATASET_DOWNLOAD_HANDLERS:
-                handler = import_string(item)
+            download_urls = []
+            # lets get only the default one first to set it
+            default_handler = load_dataset_download_handlers(default_only=True)[0]
+            obj = default_handler(self.context.get("request"), _instance.alternate)
+            download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
+            # then let's prepare the payload with everything
+            handler_list = load_dataset_download_handlers(additional_only=True)
+            for handler in handler_list:
                 obj = handler(self.context.get("request"), _instance.alternate)
-                download_urls.append(
-                    {"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": obj.is_default}
-                )
+                download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
             return download_urls
         else:
             return []
