@@ -60,12 +60,6 @@ else
     fi
 
     invoke statics
-<<<<<<< HEAD
-    invoke waitforgeoserver
-    invoke geoserverfixture
-
-=======
->>>>>>> e676bc4017bbf2c1fb7cbd7f7bdca394c3f7871d
     echo "Executing UWSGI server $cmd for Production"
 fi
 
