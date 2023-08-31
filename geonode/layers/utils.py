@@ -53,7 +53,6 @@ from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.geoserver.helpers import gs_catalog
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
-from django.utils.module_loading import import_string
 
 READ_PERMISSIONS = ["view_resourcebase"]
 WRITE_PERMISSIONS = ["change_dataset_data", "change_dataset_style", "change_resourcebase_metadata"]
