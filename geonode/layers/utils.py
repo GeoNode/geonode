@@ -596,7 +596,6 @@ def mdata_search_by_type(request, filetype):
 
 default_dataset_download_handler_list = []
 dataset_download_handler_list = []
-full_dataset_download_handler = []
 
 
 def load_dataset_download_handlers(default_only=False, additional_only=False):
