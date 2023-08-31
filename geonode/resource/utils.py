@@ -31,7 +31,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.gis.geos import MultiPolygon
 from geonode.utils import OGC_Servers_Handler
-from django.core.cache import caches
+from django.utils.module_loading import import_string
 
 from ..base import enumerations
 from ..base.models import (
@@ -55,8 +55,6 @@ from ..layers.metadata import convert_keyword
 logger = logging.getLogger(__name__)
 
 ogc_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
-
-geonode_local_cache = caches["geonode_local_caches"]
 
 
 class KeywordHandler:
@@ -279,17 +277,12 @@ def update_resource(
     return instance
 
 
-def metadata_storers(instance, custom={}):
-    from django.utils.module_loading import import_string
-
-    if geonode_local_cache.get("metadata_storer_modules"):
-        available_storers = geonode_local_cache.get("metadata_storer_modules")
-    else:
+def call_storers(instance, custom={}):
+    if not globals().get("storer_modules"):
         storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
-        available_storers = [import_string(storer_path) for storer_path in storer_module_path]
-        geonode_local_cache.add("metadata_storer_modules", available_storers)
+        globals()["storer_modules"] = [import_string(storer_path) for storer_path in storer_module_path]
 
-    for storer in available_storers:
+    for storer in globals().get("storer_modules", []):
         storer(instance, custom)
     return instance
 
@@ -480,7 +473,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Has to be called by the children
     """
     if instance:
-        instance = metadata_storers(instance.get_real_instance(), kwargs.get("custom", {}))
+        instance = call_storers(instance.get_real_instance(), kwargs.get("custom", {}))
         if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
             instance.abstract = _("No abstract provided")
         if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":

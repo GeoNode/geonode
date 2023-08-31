@@ -2356,9 +2356,3 @@ FACET_PROVIDERS = [
 ]
 
 DATASET_DOWNLOAD_HANDLER = os.getenv("DATASET_DOWNLOAD_HANDLER", "geonode.resource.download_handler.DownloadHandler")
-
-CACHES["geonode_local_caches"] = {
-    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-    "TIMEOUT": 600,
-    "OPTIONS": {"MAX_ENTRIES": 1000},
-}
