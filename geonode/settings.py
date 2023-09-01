@@ -2231,7 +2231,7 @@ EXTRA_METADATA_SCHEMA = {
 List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved
 """
 METADATA_STORERS = [
-    #'geonode.resource.regions_storer.spatial_predicate_region_assignor',
+    # 'geonode.resource.regions_storer.spatial_predicate_region_assignor',
 ]
 
 
