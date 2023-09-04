@@ -1151,7 +1151,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertAlmostEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
@@ -2125,7 +2125,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(resource_service_permissions_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertAlmostEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
@@ -2166,7 +2166,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertAlmostEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
@@ -2205,7 +2205,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertAlmostEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
