@@ -55,7 +55,7 @@ from geonode.base.models import (
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.utils import build_absolute_uri
-from geonode.security.utils import get_resources_with_perms
+from geonode.security.utils import get_geoapp_subtypes, get_resources_with_perms
 from geonode.resource.models import ExecutionRequest
 
 logger = logging.getLogger(__name__)
@@ -479,6 +479,7 @@ class ResourceBaseSerializer(
         self.fields["is_copyable"] = serializers.BooleanField(read_only=True)
         self.fields["download_url"] = DownloadLinkField(read_only=True)
         self.fields["favorite"] = FavoriteField(read_only=True)
+        self.fields["bbox"] = DynamicComputedField(read_only=True)
 
     metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
@@ -596,6 +597,21 @@ class ResourceBaseSerializer(
             data = data.dict()
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
+
+    def save(self, **kwargs):
+        instance = super().save()
+        if (
+            "bbox" in self.initial_data
+            and instance.get_real_instance().resource_type in ["document", "geoapp"] + get_geoapp_subtypes()
+        ):
+            bbox = self.initial_data.get("bbox")
+            srid = bbox.get("srid", "EPSG:4326")
+            coords = bbox.get("coords")
+            if not coords:
+                logger.warning("Bbox was sent, but no coords were supplied. Skipping")
+                return instance
+            instance.set_bbox_polygon(coords, srid)
+        return instance
 
     """
      - Deferred / not Embedded --> ?include[]=data

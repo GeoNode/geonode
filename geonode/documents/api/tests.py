@@ -143,6 +143,29 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
 
+    def test_creation_should_create_the_doc_and_update_the_bbox(self):
+        """
+        If file_path is not available, should raise error
+        """
+        bbox = {"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:9999"}}
+
+        self.client.force_login(self.admin)
+        payload = {
+            "document": {
+                "title": "New document for testing",
+                "metadata_only": True,
+                "file_path": self.valid_file_path,
+                "bbox": bbox,
+            },
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        extension = actual.json().get("document", {}).get("extension", "")
+        self.assertEqual("xml", extension)
+        doc = Document.objects.filter(title="New document for testing")
+        self.assertTrue(doc.exists())
+        self.assertEqual("EPSG:9999", doc.first().srid)
+
     def test_file_path_and_doc_path_are_not_returned(self):
         """
         If file_path and doc_path should not be visible
