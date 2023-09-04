@@ -317,12 +317,14 @@ class DownloadArrayLinkField(DynamicComputedField):
             # lets get only the default one first to set it
             default_handler = load_dataset_download_handlers(default_only=True)[0]
             obj = default_handler(self.context.get("request"), _instance.alternate)
-            download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
+            if obj.download_url:
+                download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
             # then let's prepare the payload with everything
             handler_list = load_dataset_download_handlers(additional_only=True)
             for handler in handler_list:
                 obj = handler(self.context.get("request"), _instance.alternate)
-                download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
+                if obj.download_url:
+                    download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
             return download_urls
         else:
             return []

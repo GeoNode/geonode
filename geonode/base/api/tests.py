@@ -2210,16 +2210,6 @@ class BaseApiTests(APITestCase):
             {
                 "users": [
                     {
-                        "id": 1,
-                        "username": "admin",
-                        "first_name": "admin",
-                        "last_name": "",
-                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
-                        "permissions": "owner",
-                        "is_staff": True,
-                        "is_superuser": True,
-                    },
-                    {
                         "id": bobby.id,
                         "username": "bobby",
                         "first_name": "bobby",
@@ -2228,6 +2218,16 @@ class BaseApiTests(APITestCase):
                         "permissions": "manage",
                         "is_staff": False,
                         "is_superuser": False,
+                    },
+                    {
+                        "id": 1,
+                        "username": "admin",
+                        "first_name": "admin",
+                        "last_name": "",
+                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+                        "permissions": "owner",
+                        "is_staff": True,
+                        "is_superuser": True,
                     },
                 ],
                 "organizations": [],
