@@ -95,9 +95,18 @@ class GeoAppsApiTests(APITestCase):
         self.assertTrue(self.client.login(username="bobby", password="bob"))
         # Create
         url = f"{reverse('geoapps-list')}?include[]=data"
-        data = {"name": "Test Create", "title": "Test Create", "resource_type": "geostory", "owner": "bobby"}
+        data = {
+            "name": "Test Create",
+            "title": "Test Create",
+            "resource_type": "geostory",
+            "owner": "bobby",
+            "bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3857"},
+        }
         response = self.client.post(url, data=data, format="json")
         self.assertEqual(response.status_code, 201)  # 201 - Created
+
+        x = GeoApp.objects.filter(title="Test Create").first()
+        self.assertTrue(x.srid, "EPSG:3857")
 
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)

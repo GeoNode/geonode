@@ -147,7 +147,7 @@ class DocumentsApiTests(APITestCase):
         """
         If file_path is not available, should raise error
         """
-        bbox = {"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:9999"}}
+        bbox = {"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3857"}}
 
         self.client.force_login(self.admin)
         payload = {
@@ -164,7 +164,7 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual("xml", extension)
         doc = Document.objects.filter(title="New document for testing")
         self.assertTrue(doc.exists())
-        self.assertEqual("EPSG:9999", doc.first().srid)
+        self.assertEqual("EPSG:3857", doc.first().srid)
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """
