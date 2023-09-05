@@ -147,24 +147,24 @@ class DocumentsApiTests(APITransactionTestCase):
         """
         If file_path is not available, should raise error
         """
-        bbox = {"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3857"}}
-
         self.client.force_login(self.admin)
         payload = {
             "document": {
                 "title": "New document for testing",
                 "metadata_only": True,
                 "file_path": self.valid_file_path,
-                "bbox": bbox,
+                "bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3857"},
             },
         }
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(201, actual.status_code)
         extension = actual.json().get("document", {}).get("extension", "")
         self.assertEqual("xml", extension)
-        doc = Document.objects.filter(title="New document for testing")
+        doc = Document.objects.filter(title="New document for testing").all()
         self.assertTrue(doc.exists())
-        self.assertEqual("EPSG:3857", doc.first().srid)
+        x = doc.first()
+        x.refresh_from_db()
+        self.assertEqual("EPSG:3857", x.srid)
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """
