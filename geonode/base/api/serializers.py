@@ -599,7 +599,7 @@ class ResourceBaseSerializer(
         return data
 
     def save(self, **kwargs):
-        instance = super().save()
+        instance = super().save(**kwargs)
         if (
             "bbox" in self.initial_data
             and instance.get_real_instance().resource_type in ["document", "geoapp"] + get_geoapp_subtypes()
