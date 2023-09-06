@@ -33,7 +33,7 @@ import tarfile
 import datetime
 import requests
 import tempfile
-import importlib
+import ipaddress
 import itertools
 import traceback
 import subprocess
@@ -1930,6 +1930,26 @@ def build_absolute_uri(url):
     return url
 
 
+def extract_ip_or_domain(url):
+    ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
+    domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
+
+    match = ip_regex.findall(url)
+    if len(match):
+        ip_address = match[0]
+        try:
+            ipaddress.ip_address(ip_address)  # Validate the IP address
+            return ip_address
+        except ValueError:
+            pass
+
+    match = domain_regex.findall(url)
+    if len(match):
+        return match[0]
+
+    return None
+
+
 def get_xpath_value(
     element: etree.Element, xpath_expression: str, nsmap: typing.Optional[dict] = None
 ) -> typing.Optional[str]:
@@ -2006,19 +2026,3 @@ def safe_path_leaf(path):
             f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"
         )
     return fullpath
-
-
-def import_class_module(full_class_string):
-    """
-    Dynamically load a class from a string
-
-    >>> klass = import_class_module("module.submodule.ClassName")
-    >>> klass2 = import_class_module("myfile.Class2")
-    """
-    try:
-        module_path, class_name = full_class_string.rsplit(".", 1)
-        module = importlib.import_module(module_path)
-        class_obj = getattr(module, class_name)
-        return class_obj
-    except Exception:
-        return None

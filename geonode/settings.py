@@ -597,6 +597,7 @@ except ValueError:
     ALLOWED_DOCUMENT_TYPES = (
         [
             "txt",
+            "csv",
             "log",
             "doc",
             "docx",
@@ -2223,7 +2224,6 @@ CUSTOM_METADATA_SCHEMA = os.getenv("CUSTOM_METADATA_SCHEMA ", {})
 Variable used to actually get the expected metadata schema for each resource_type.
 In this way, each resource type can have a different metadata schema
 """
-
 EXTRA_METADATA_SCHEMA = {
     **{
         "map": os.getenv("MAP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
@@ -2234,12 +2234,18 @@ EXTRA_METADATA_SCHEMA = {
     **CUSTOM_METADATA_SCHEMA,
 }
 
+"""
+List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved
+"""
+METADATA_STORERS = [
+    # 'geonode.resource.regions_storer.spatial_predicate_region_assignor',
+]
+
 
 """
 Define the URLs patterns used by the SizeRestrictedFileUploadHandler
 to evaluate if the file is greater than the limit size defined
 """
-
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
     "uploads-upload",

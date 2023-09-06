@@ -21,7 +21,6 @@ import os
 import copy
 import typing
 import logging
-import importlib
 
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
@@ -35,6 +34,7 @@ from django.db.models.query import QuerySet
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
+from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, FieldDoesNotExist
 
@@ -44,7 +44,7 @@ from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCE
 from geonode.security.utils import perms_as_set, get_user_groups, skip_registered_members_common_group
 
 from . import settings as rm_settings
-from .utils import update_resource, metadata_storers, resourcebase_post_save
+from .utils import update_resource, resourcebase_post_save
 
 from ..base import enumerations
 from ..base.models import ResourceBase
@@ -224,10 +224,7 @@ class ResourceManager(ResourceManagerInterface):
         self._concrete_resource_manager = concrete_manager or self._get_concrete_manager()
 
     def _get_concrete_manager(self):
-        module_name, class_name = rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS.rsplit(".", 1)
-        module = importlib.import_module(module_name)
-        class_ = getattr(module, class_name)
-        return class_()
+        return import_string(rm_settings.RESOURCE_MANAGER_CONCRETE_CLASS)()
 
     @classmethod
     def _get_instance(cls, uuid: str) -> ResourceBase:
@@ -401,7 +398,6 @@ class ResourceManager(ResourceManagerInterface):
                         extra_metadata=extra_metadata,
                     )
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-                    _resource = metadata_storers(_resource.get_real_instance(), custom)
 
                     # The following is only a demo proof of concept for a pluggable WF subsystem
                     from geonode.resource.processing.models import ProcessingWorkflow
@@ -418,7 +414,7 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 try:
                     _resource.save(notify=notify)
-                    resourcebase_post_save(_resource.get_real_instance())
+                    resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
                     _resource.set_permissions(
                         created=False,
                         approval_status_changed=(
