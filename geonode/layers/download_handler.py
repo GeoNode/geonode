@@ -44,6 +44,7 @@ class DatasetDownloadHandler:
     def __init__(self, request, resource_name) -> None:
         self.request = request
         self.resource_name = resource_name
+        self._resource = None
 
     def get_download_response(self):
         """
@@ -57,14 +58,17 @@ class DatasetDownloadHandler:
         return response
 
     @property
+    def is_link_resource(self):
+        resource = self.get_resource()
+        return resource.link_set.filter(resource=resource, link_type="original").exists()
+
+    @property
     def is_ajax_safe(self):
         """
-        We use that USE_GEOSERVER boolean to decide if use the default
-        WPS download method or use the fallback on the proxy.
-        This means that by default if geoserver is used, the WPS
-        is used
+        AJAX is safe to be used for WPS downloads. In case of a link set in a Link entry we cannot assume it,
+        since it could point to an external (non CORS enabled) URL
         """
-        return settings.USE_GEOSERVER
+        return settings.USE_GEOSERVER and not self.is_link_resource
 
     @property
     def download_url(self):
@@ -75,7 +79,7 @@ class DatasetDownloadHandler:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
 
-        if resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").exists():
+        if self.is_link_resource:
             return resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").first().url
 
         return reverse("dataset_download", args=[resource.alternate])
@@ -84,22 +88,25 @@ class DatasetDownloadHandler:
         """
         Returnt the object needed
         """
-        try:
-            return _resolve_dataset(
-                self.request,
-                self.resource_name,
-                "base.download_resourcebase",
-                _("You do not have download permissions for this dataset."),
-            )
-        except Exception as e:
-            logger.exception(e)
-            return None
+        if not self._resource:
+            try:
+                self._resource = _resolve_dataset(
+                    self.request,
+                    self.resource_name,
+                    "base.download_resourcebase",
+                    _("You do not have download permissions for this dataset."),
+                )
+            except Exception as e:
+                logger.exception(e)
 
-    def process_dowload(self, resource):
+        return self._resource
+
+    def process_dowload(self, resource=None):
         """
         Generate the response object
         """
-
+        if not resource:
+            resource = self.get_resource()
         if not settings.USE_GEOSERVER:
             # if GeoServer is not used, we redirect to the proxy download
             return HttpResponseRedirect(reverse("download", args=[resource.id]))

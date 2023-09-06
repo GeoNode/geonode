@@ -41,6 +41,7 @@ from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
 from django.db.models import Count
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 
 from django.conf import settings
 from django.test.utils import override_settings
@@ -2250,3 +2251,18 @@ class TestDatasetDownloadHandler(GeoNodeBaseTestSupport):
     def test_process_dowload(self):
         response = self.sut.get_download_response()
         self.assertIsNotNone(response)
+
+
+class DummyDownloadHandler(DatasetDownloadHandler):
+    def get_download_response(self):
+        return HttpResponse(content=b"abcsfd2")
+
+
+class TestCustomDownloadHandler(GeoNodeBaseTestSupport):
+    @override_settings(DEFAULT_DATASET_DOWNLOAD_HANDLER="geonode.layers.tests.DummyDownloadHandler")
+    def test_download_custom_handler(self):
+        dataset = create_single_dataset("test_dataset")
+        url = reverse("dataset_download", args=[dataset.alternate])
+        response = self.client.get(url)
+        self.assertTrue(response.status_code == 200)
+        self.assertEqual(response.content, b"abcsfd2")
