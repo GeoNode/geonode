@@ -320,7 +320,7 @@ class DownloadArrayLinkField(DynamicComputedField):
             if obj.download_url:
                 download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
             # then let's prepare the payload with everything
-            handler_list = get_dataset_download_handlers(additional_only=True)
+            handler_list = get_dataset_download_handlers()
             for handler in handler_list:
                 obj = handler(self.context.get("request"), _instance.alternate)
                 if obj.download_url:
