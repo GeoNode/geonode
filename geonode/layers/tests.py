@@ -2259,7 +2259,6 @@ class DummyDownloadHandler(DatasetDownloadHandler):
         return HttpResponse(content=b"abcsfd2")
 
 
-
 class TestCustomDownloadHandler(GeoNodeBaseTestSupport):
     @override_settings(DEFAULT_DATASET_DOWNLOAD_HANDLER="geonode.layers.tests.DummyDownloadHandler")
     def test_download_custom_handler(self):
