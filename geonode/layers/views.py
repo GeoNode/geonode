@@ -59,7 +59,12 @@ from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm, NewLayerUploadForm
 from geonode.layers.models import Dataset, Attribute
-from geonode.layers.utils import is_sld_upload_only, is_xml_upload_only, validate_input_source
+from geonode.layers.utils import (
+    is_sld_upload_only,
+    is_xml_upload_only,
+    get_default_dataset_download_handler,
+    validate_input_source,
+)
 from geonode.services.models import Service
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
@@ -69,7 +74,6 @@ from geonode.people.forms import ProfileForm
 from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
 from geonode.geoserver.helpers import ogc_server_settings, select_relevant_files, write_uploaded_files_to_disk
 from geonode.geoserver.security import set_geowebcache_invalidate_cache
-from django.utils.module_loading import import_string
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -733,8 +737,8 @@ def dataset_metadata_advanced(request, layername):
 
 @csrf_exempt
 def dataset_download(request, layername):
-    DownloadHandler = import_string(settings.DATASET_DOWNLOAD_HANDLER)
-    return DownloadHandler(request, layername).get_download_response()
+    handler = get_default_dataset_download_handler()
+    return handler(request, layername).get_download_response()
 
 
 @login_required
