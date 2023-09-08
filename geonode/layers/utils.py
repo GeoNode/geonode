@@ -593,22 +593,35 @@ def mdata_search_by_type(request, filetype):
     return len(files) == 1 and all([filetype in f for f in files])
 
 
-default_dataset_download_handler_list = []
+default_dataset_download_handler = None
 dataset_download_handler_list = []
 
 
-def load_dataset_download_handlers(default_only=False, additional_only=False):
-    if not default_dataset_download_handler_list and getattr(settings, "DEFAULT_DATASET_DOWNLOAD_HANDLER", None):
-        default_dataset_download_handler_list.append(import_string(settings.DEFAULT_DATASET_DOWNLOAD_HANDLER))
-    elif not dataset_download_handler_list and getattr(settings, "DATASET_DOWNLOAD_HANDLERS", None):
+def get_dataset_download_handlers():
+    if not dataset_download_handler_list and getattr(settings, "DATASET_DOWNLOAD_HANDLERS", None):
         dataset_download_handler_list.append(import_string(settings.DATASET_DOWNLOAD_HANDLERS[0]))
 
-    if default_only:
-        return default_dataset_download_handler_list
-    elif additional_only:
-        return dataset_download_handler_list
-    else:
-        all_dataset = default_dataset_download_handler_list + dataset_download_handler_list
-        if not all_dataset:
-            raise Exception("No dataset download handler defined")
-        return all_dataset
+    return dataset_download_handler_list
+
+
+def get_default_dataset_download_handler():
+    global default_dataset_download_handler
+    if not default_dataset_download_handler and getattr(settings, "DEFAULT_DATASET_DOWNLOAD_HANDLER", None):
+        default_dataset_download_handler = import_string(settings.DEFAULT_DATASET_DOWNLOAD_HANDLER)
+
+    return default_dataset_download_handler
+
+
+def set_default_dataset_download_handler(handler):
+    global default_dataset_download_handler
+    handler_module = import_string(handler)
+    if not handler_module in dataset_download_handler_list:
+        dataset_download_handler_list.append(handler_module)
+
+    default_dataset_download_handler = handler_module
+
+
+def clear_dataset_download_handlers():
+    global default_dataset_download_handler
+    dataset_download_handler_list.clear()
+    default_dataset_download_handler = None

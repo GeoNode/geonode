@@ -62,7 +62,7 @@ from geonode.layers.models import Dataset, Attribute
 from geonode.layers.utils import (
     is_sld_upload_only,
     is_xml_upload_only,
-    load_dataset_download_handlers,
+    get_default_dataset_download_handler,
     validate_input_source,
 )
 from geonode.services.models import Service
@@ -737,7 +737,7 @@ def dataset_metadata_advanced(request, layername):
 
 @csrf_exempt
 def dataset_download(request, layername):
-    handler = load_dataset_download_handlers()[0]
+    handler = get_default_dataset_download_handler()
     return handler(request, layername).get_download_response()
 
 

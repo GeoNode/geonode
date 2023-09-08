@@ -2258,11 +2258,16 @@ class DummyDownloadHandler(DatasetDownloadHandler):
         return HttpResponse(content=b"abcsfd2")
 
 
+from geonode.layers.utils import clear_dataset_download_handlers
+
+
 class TestCustomDownloadHandler(GeoNodeBaseTestSupport):
     @override_settings(DEFAULT_DATASET_DOWNLOAD_HANDLER="geonode.layers.tests.DummyDownloadHandler")
     def test_download_custom_handler(self):
-        dataset = create_single_dataset("test_dataset")
+        clear_dataset_download_handlers()
+        dataset = create_single_dataset("test_custom_download_dataset")
         url = reverse("dataset_download", args=[dataset.alternate])
+        self.client.login(username="admin", password="admin")
         response = self.client.get(url)
         self.assertTrue(response.status_code == 200)
         self.assertEqual(response.content, b"abcsfd2")

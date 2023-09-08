@@ -55,7 +55,7 @@ from geonode.base.models import (
 )
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
-from geonode.layers.utils import load_dataset_download_handlers
+from geonode.layers.utils import get_dataset_download_handlers, get_default_dataset_download_handler
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
@@ -315,12 +315,12 @@ class DownloadArrayLinkField(DynamicComputedField):
         elif _instance.resource_type in ["dataset"]:
             download_urls = []
             # lets get only the default one first to set it
-            default_handler = load_dataset_download_handlers(default_only=True)[0]
+            default_handler = get_default_dataset_download_handler()
             obj = default_handler(self.context.get("request"), _instance.alternate)
             if obj.download_url:
                 download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
             # then let's prepare the payload with everything
-            handler_list = load_dataset_download_handlers(additional_only=True)
+            handler_list = get_dataset_download_handlers(additional_only=True)
             for handler in handler_list:
                 obj = handler(self.context.get("request"), _instance.alternate)
                 if obj.download_url:
