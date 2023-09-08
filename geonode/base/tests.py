@@ -81,7 +81,7 @@ from django.core.files import File
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
-
+from geonode.resource.manager import resource_manager
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
@@ -1163,3 +1163,14 @@ class TestRegions(GeoNodeBaseTestSupport):
         self.assertFalse(
             region.is_assignable_to_geom(self.dataset_outside_region), "Extent outside a region should be assigned"
         )
+
+    @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
+    def test_regions_are_assigned_if_handler_is_used(self):
+        dataset = resource_manager.create(
+            None,
+            resource_type=Dataset,
+            defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),
+        )
+        self.assertTrue(dataset.regions.exists())
+        self.assertEqual(1, dataset.regions.count())
+        self.assertEqual("Global", dataset.regions.first().name)
