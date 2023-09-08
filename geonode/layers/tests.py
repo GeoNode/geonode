@@ -49,6 +49,7 @@ from django.contrib.admin.sites import AdminSite
 from geonode.geoserver.createlayer.utils import create_dataset
 
 from geonode.layers import utils
+from geonode.layers.utils import clear_dataset_download_handlers
 from geonode.base import enumerations
 from geonode.layers import DatasetAppConfig
 from geonode.layers.admin import DatasetAdmin
@@ -2257,8 +2258,6 @@ class DummyDownloadHandler(DatasetDownloadHandler):
     def get_download_response(self):
         return HttpResponse(content=b"abcsfd2")
 
-
-from geonode.layers.utils import clear_dataset_download_handlers
 
 
 class TestCustomDownloadHandler(GeoNodeBaseTestSupport):

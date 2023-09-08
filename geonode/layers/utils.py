@@ -615,7 +615,7 @@ def get_default_dataset_download_handler():
 def set_default_dataset_download_handler(handler):
     global default_dataset_download_handler
     handler_module = import_string(handler)
-    if not handler_module in dataset_download_handler_list:
+    if handler_module not in dataset_download_handler_list:
         dataset_download_handler_list.append(handler_module)
 
     default_dataset_download_handler = handler_module
