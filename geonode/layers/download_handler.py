@@ -31,10 +31,10 @@ from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
 from geonode.utils import HttpClient
 
-logger = logging.getLogger("geonode.resource.download_handler")
+logger = logging.getLogger("geonode.layers.download_handler")
 
 
-class DownloadHandler:
+class DatasetDownloadHandler:
     def __str__(self):
         return f"{self.__module__}.{self.__class__.__name__}"
 
@@ -44,6 +44,7 @@ class DownloadHandler:
     def __init__(self, request, resource_name) -> None:
         self.request = request
         self.resource_name = resource_name
+        self._resource = None
 
     def get_download_response(self):
         """
@@ -51,27 +52,61 @@ class DownloadHandler:
         that allow the resource download
         """
         resource = self.get_resource()
+        if not resource:
+            raise Http404("Resource requested is not available")
         response = self.process_dowload(resource)
         return response
+
+    @property
+    def is_link_resource(self):
+        resource = self.get_resource()
+        return resource.link_set.filter(resource=resource, link_type="original").exists()
+
+    @property
+    def is_ajax_safe(self):
+        """
+        AJAX is safe to be used for WPS downloads. In case of a link set in a Link entry we cannot assume it,
+        since it could point to an external (non CORS enabled) URL
+        """
+        return settings.USE_GEOSERVER and not self.is_link_resource
+
+    @property
+    def download_url(self):
+        resource = self.get_resource()
+        if not resource:
+            return None
+        if resource.subtype not in ["vector", "raster", "vector_time"]:
+            logger.info("Download URL is available only for datasets that have been harvested and copied locally")
+            return None
+
+        if self.is_link_resource:
+            return resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").first().url
+
+        return reverse("dataset_download", args=[resource.alternate])
 
     def get_resource(self):
         """
         Returnt the object needed
         """
-        try:
-            return _resolve_dataset(
-                self.request,
-                self.resource_name,
-                "base.download_resourcebase",
-                _("You do not have permissions for this dataset."),
-            )
-        except Exception as e:
-            raise Http404(Exception(_("Not found"), e))
+        if not self._resource:
+            try:
+                self._resource = _resolve_dataset(
+                    self.request,
+                    self.resource_name,
+                    "base.download_resourcebase",
+                    _("You do not have download permissions for this dataset."),
+                )
+            except Exception as e:
+                logger.exception(e)
 
-    def process_dowload(self, resource):
+        return self._resource
+
+    def process_dowload(self, resource=None):
         """
         Generate the response object
         """
+        if not resource:
+            resource = self.get_resource()
         if not settings.USE_GEOSERVER:
             # if GeoServer is not used, we redirect to the proxy download
             return HttpResponseRedirect(reverse("download", args=[resource.id]))
