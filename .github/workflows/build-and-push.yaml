@@ -10,7 +10,7 @@ env:
 on:
   push:
     branches:
-      - "thuenen-dev"
+      - "thuenen_4.x"
 
 jobs:
   build_and_push_geonode:
