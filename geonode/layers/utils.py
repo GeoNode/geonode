@@ -591,3 +591,37 @@ def is_sld_upload_only(request):
 def mdata_search_by_type(request, filetype):
     files = list({v.name for k, v in request.FILES.items()})
     return len(files) == 1 and all([filetype in f for f in files])
+
+
+default_dataset_download_handler = None
+dataset_download_handler_list = []
+
+
+def get_dataset_download_handlers():
+    if not dataset_download_handler_list and getattr(settings, "DATASET_DOWNLOAD_HANDLERS", None):
+        dataset_download_handler_list.append(import_string(settings.DATASET_DOWNLOAD_HANDLERS[0]))
+
+    return dataset_download_handler_list
+
+
+def get_default_dataset_download_handler():
+    global default_dataset_download_handler
+    if not default_dataset_download_handler and getattr(settings, "DEFAULT_DATASET_DOWNLOAD_HANDLER", None):
+        default_dataset_download_handler = import_string(settings.DEFAULT_DATASET_DOWNLOAD_HANDLER)
+
+    return default_dataset_download_handler
+
+
+def set_default_dataset_download_handler(handler):
+    global default_dataset_download_handler
+    handler_module = import_string(handler)
+    if handler_module not in dataset_download_handler_list:
+        dataset_download_handler_list.append(handler_module)
+
+    default_dataset_download_handler = handler_module
+
+
+def clear_dataset_download_handlers():
+    global default_dataset_download_handler
+    dataset_download_handler_list.clear()
+    default_dataset_download_handler = None
