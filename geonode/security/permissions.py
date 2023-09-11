@@ -571,9 +571,9 @@ class PermSpec(PermSpecConverterBase):
                 }
             )
 
-        json["users"] = user_perms
-        json["organizations"] = organization_perms
-        json["groups"] = group_perms
+        json["users"] = sorted(user_perms, key=lambda x: x["id"], reverse=True)
+        json["organizations"] = sorted(organization_perms, key=lambda x: x["id"], reverse=True)
+        json["groups"] = sorted(group_perms, key=lambda x: x["id"], reverse=True)
         return json.copy()
 
 

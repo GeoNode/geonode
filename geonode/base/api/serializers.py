@@ -29,6 +29,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from django.http import QueryDict
 
+from deprecated import deprecated
 from rest_framework import serializers
 from rest_framework_gis import fields
 from rest_framework.reverse import reverse, NoReverseMatch
@@ -54,8 +55,9 @@ from geonode.base.models import (
 )
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
+from geonode.layers.utils import get_dataset_download_handlers, get_default_dataset_download_handler
 from geonode.utils import build_absolute_uri
-from geonode.security.utils import get_resources_with_perms
+from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
 
 logger = logging.getLogger(__name__)
@@ -278,13 +280,54 @@ class DownloadLinkField(DynamicComputedField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    @deprecated(version="4.2.0", reason="Will be replaced by download_urls")
     def get_attribute(self, instance):
         try:
+            logger.info(
+                "This field is deprecated, and will be removed in the future GeoNode version. Please refer to download_urls"
+            )
             _instance = instance.get_real_instance()
             return _instance.download_url if hasattr(_instance, "download_url") else None
         except Exception as e:
             logger.exception(e)
             return None
+
+
+class DownloadArrayLinkField(DynamicComputedField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        try:
+            _instance = instance.get_real_instance()
+        except Exception as e:
+            logger.exception(e)
+            raise e
+        if _instance.resource_type in ["map"] + get_geoapp_subtypes():
+            return []
+        elif _instance.resource_type in ["document"]:
+            return [
+                {
+                    "url": _instance.download_url,
+                    "ajax_safe": _instance.download_is_ajax_safe,
+                }
+            ]
+        elif _instance.resource_type in ["dataset"]:
+            download_urls = []
+            # lets get only the default one first to set it
+            default_handler = get_default_dataset_download_handler()
+            obj = default_handler(self.context.get("request"), _instance.alternate)
+            if obj.download_url:
+                download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
+            # then let's prepare the payload with everything
+            handler_list = get_dataset_download_handlers()
+            for handler in handler_list:
+                obj = handler(self.context.get("request"), _instance.alternate)
+                if obj.download_url:
+                    download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
+            return download_urls
+        else:
+            return []
 
 
 class FavoriteField(DynamicComputedField):
@@ -479,6 +522,7 @@ class ResourceBaseSerializer(
         self.fields["is_copyable"] = serializers.BooleanField(read_only=True)
         self.fields["download_url"] = DownloadLinkField(read_only=True)
         self.fields["favorite"] = FavoriteField(read_only=True)
+        self.fields["download_urls"] = DownloadArrayLinkField(read_only=True)
 
     metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
 
