@@ -1,4 +1,8 @@
-name: Release GeoNode Docker Images
+name: Push GeoNode Docker Images
+
+concurrency: 
+  group: "geonode_build"
+  cancel-in-progress: true
 
 env:
   TITLE: "52°North GeoNode Docker Image"
