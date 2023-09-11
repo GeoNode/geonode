@@ -23,7 +23,7 @@ import sys
 import json
 import logging
 from django.contrib.contenttypes.models import ContentType
-from django.test import override_settings
+from django.test import RequestFactory, override_settings
 import gisdata
 
 from PIL import Image
@@ -751,12 +751,16 @@ class BaseApiTests(APITestCase):
         ds = ResourceBase.objects.get(title=title)
         ds.keywords.add(HierarchicalKeyword.objects.get(slug="a1"))
 
-        serialized = ResourceBaseSerializer(ds)
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = owner
+
+        serialized = ResourceBaseSerializer(ds, context={"request": rq})
         json = JSONRenderer().render(serialized.data)
         stream = BytesIO(json)
         data = JSONParser().parse(stream)
         self.assertIsInstance(data, dict)
-        se = ResourceBaseSerializer(data=data)
+        se = ResourceBaseSerializer(data=data, context={"request": rq})
         self.assertTrue(se.is_valid())
 
     def test_delete_user_with_resource(self):
@@ -2065,6 +2069,7 @@ class BaseApiTests(APITestCase):
         """
         REST API must not forbid saving maps and apps to non-admin and non-owners.
         """
+        self.maxDiff = None
         from geonode.maps.models import Map
 
         _map = Map.objects.filter(uuid__isnull=False, owner__username="admin").first()
@@ -2120,7 +2125,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(resource_service_permissions_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
@@ -2161,7 +2166,7 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
@@ -2200,20 +2205,10 @@ class BaseApiTests(APITestCase):
         response = self.client.get(get_perms_url, format="json")
         self.assertEqual(response.status_code, 200)
         resource_perm_spec = response.data
-        self.assertEqual(
+        self.assertDictEqual(
             resource_perm_spec,
             {
                 "users": [
-                    {
-                        "id": 1,
-                        "username": "admin",
-                        "first_name": "admin",
-                        "last_name": "",
-                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
-                        "permissions": "owner",
-                        "is_staff": True,
-                        "is_superuser": True,
-                    },
                     {
                         "id": bobby.id,
                         "username": "bobby",
@@ -2223,6 +2218,16 @@ class BaseApiTests(APITestCase):
                         "permissions": "manage",
                         "is_staff": False,
                         "is_superuser": False,
+                    },
+                    {
+                        "id": 1,
+                        "username": "admin",
+                        "first_name": "admin",
+                        "last_name": "",
+                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+                        "permissions": "owner",
+                        "is_staff": True,
+                        "is_superuser": True,
                     },
                 ],
                 "organizations": [],
@@ -2444,6 +2449,59 @@ class BaseApiTests(APITestCase):
         url = reverse("maps-detail", args=[_map.id])
         download_url = response.json().get("resource").get("download_url")
         self.assertIsNone(download_url)
+
+    def test_base_resources_return_not_download_links_for_maps(self):
+        """
+        Ensure we can access the Resource Base list.
+        """
+        _map = Map.objects.first()
+        # From resource base API
+        url = reverse("base-resources-detail", args=[_map.id])
+        response = self.client.get(url, format="json")
+        download_url = response.json().get("resource").get("download_urls", None)
+        self.assertListEqual([], download_url)
+
+        # from maps api
+        url = reverse("maps-detail", args=[_map.id])
+        download_url = response.json().get("resource").get("download_urls")
+        self.assertListEqual([], download_url)
+
+    def test_base_resources_return_download_links_for_documents(self):
+        """
+        Ensure we can access the Resource Base list.
+        """
+        doc = Document.objects.first()
+        expected_payload = [{"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}]
+        # From resource base API
+        url = reverse("base-resources-detail", args=[doc.id])
+        response = self.client.get(url, format="json")
+        download_url = response.json().get("resource").get("download_urls")
+        self.assertListEqual(expected_payload, download_url)
+
+        # from documents api
+        url = reverse("documents-detail", args=[doc.id])
+        download_url = response.json().get("resource").get("download_urls")
+        self.assertListEqual(expected_payload, download_url)
+
+    def test_base_resources_return_download_links_for_datasets(self):
+        """
+        Ensure we can access the Resource Base list.
+        """
+        _dataset = Dataset.objects.first()
+        expected_payload = [
+            {"url": reverse("dataset_download", args=[_dataset.alternate]), "ajax_safe": True, "default": True}
+        ]
+
+        # From resource base API
+        url = reverse("base-resources-detail", args=[_dataset.id])
+        response = self.client.get(url, format="json")
+        download_url = response.json().get("resource").get("download_urls")
+        self.assertEqual(expected_payload, download_url)
+
+        # from dataset api
+        url = reverse("datasets-detail", args=[_dataset.id])
+        download_url = response.json().get("resource").get("download_urls")
+        self.assertEqual(expected_payload, download_url)
 
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
