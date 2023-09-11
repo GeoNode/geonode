@@ -96,7 +96,7 @@ class MapViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the MapLayers list.",
     )
     @action(detail=True, methods=["get"])
-    def maplayers(self, request, pk=None):
+    def maplayers(self, request, pk=None, *args, **kwargs):
         map = self.get_object()
         resources = map.maplayers
         return Response(MapLayerSerializer(embed=True, many=True).to_representation(resources))
@@ -107,7 +107,7 @@ class MapViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the local MapLayers.",
     )
     @action(detail=True, methods=["get"])
-    def datasets(self, request, pk=None):
+    def datasets(self, request, pk=None, *args, **kwargs):
         map = self.get_object()
         resources = map.datasets
         return Response(DatasetSerializer(embed=True, many=True).to_representation(resources))
