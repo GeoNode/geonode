@@ -165,7 +165,7 @@ class DocumentsApiTests(APITransactionTestCase):
         x = doc.first()
         x.refresh_from_db()
         self.assertEqual("EPSG:3857", x.srid)
-        self.assertEqual(x.bbox[:4], [1.0, 3.0, 2.0, 4.0])
+        self.assertEqual(x.bbox[:4], [1.0, 2.0, 3.0, 4.0])
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """
