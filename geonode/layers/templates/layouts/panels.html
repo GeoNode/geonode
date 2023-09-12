@@ -322,7 +322,7 @@ span.grippy::after {
                                       </div>
                                     </div>
                                 </div>
-                                {% endblock thumbnail %}  
+                                {% endblock thumbnail %}
                                 <div class="col-lg-4">
                                     {% block dataset_title %}
                                     <div id="req_item">
@@ -331,13 +331,6 @@ span.grippy::after {
                                       {{ dataset_form.title }}
                                     </div>
                                     {% endblock dataset_title %}
-                                    <!-- ZALF CONTENT -->
-                                    <div id="req_item">
-                                      <span>
-                                        <label for="{{ dataset_form.title_de|id }}">{{ dataset_form.title_de.label }}</label>
-                                      </span>
-                                      {{ dataset_form.title_de }}
-                                    </div>                                    
                                     {% block dataset_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ dataset_form.abstract|id }}">{{ dataset_form.abstract.label }}</label></span>
@@ -345,18 +338,6 @@ span.grippy::after {
                                         {{ dataset_form.abstract }}
                                     </div>
                                     {% endblock dataset_abstract %}
-                                    <div id="req_item">
-                                      <span>
-                                        <label for="{{ dataset_form.abstract_de|id }}">{{ dataset_form.abstract_de.label }}</label>
-                                      </span>
-                                      {{ dataset_form.abstract_de }}
-                                    </div>
-                                    <div id="req_item">
-                                      <span>
-                                        <label for="{{ dataset_form.description_type|id }}">{{ dataset_form.description_type.label }}</label>
-                                      </span>
-                                      {{ dataset_form.description_type }}
-                                    </div>
                                 </div>
                                 <div class="col-lg-5">
                                     {% block dataset_date_type %}
@@ -364,7 +345,7 @@ span.grippy::after {
                                         <span><label for="{{ dataset_form.date_type|id }}">{{ dataset_form.date_type.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
                                         {{ dataset_form.date_type }}
-                                    </div> 
+                                    </div>
                                     {% endblock dataset_date_type %}
                                     {% block dataset_date %}
                                     <div class="col-lg-6 col-xs-12" id="req_item">

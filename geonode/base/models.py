@@ -24,6 +24,7 @@ import math
 import uuid
 import logging
 import traceback
+import datetime
 from sequences.models import Sequence
 
 from sequences import get_next_value
@@ -662,47 +663,40 @@ class ResourceBaseManager(PolymorphicManager):
                     upload.delete()
 
 
-########################
-# ZALF MODEL ADDITIONS #
-########################
-
-
-class AlternateType(models.Model):
-    """Available Alternate Types"""
-
-    ALTERNATE_TYPE = (
-        ("Alternative", ""),
-        ("Subtitle", ""),
-        ("Translated", ""),
-        ("Other", ""),
+class RelatedIdentifierType(models.Model):
+    label = models.CharField(
+        max_length=255, help_text=_("related identifier, available identifier types"), unique=True, primary_key=True
     )
-
-    alternate_type = models.CharField(max_length=255, choices=ALTERNATE_TYPE, help_text=_("Alternate title type"))
+    description = models.CharField(max_length=255, help_text=_("label description"))
 
     def __str__(self):
-        return f"{self.alternate_type}"
+        return f"{self.label}"
 
 
-class DescriptionType(models.Model):
-    """Descripion Type of abstract"""
-
-    DESCRIPTION_TYPES = (
-        ("Methods", "The methodology employed for the study or research"),
-        ("SeriesInformation", "Information about a repeating series, such as volumne, issue, number"),
-        ("TableOfContents", "A listing of the Table of Contents"),
-        (
-            "TechnicalInfo",
-            "Detailed information that may be associated with design, implementation, operation, use, and/or maintenance of a process or system",
+class RelationType(models.Model):
+    label = models.CharField(
+        max_length=255,
+        help_text=_(
+            "Description of the relationship of the resource being registered (A) and the related resource (B). If Related identifier is used Relation type is mandatory"
         ),
-        ("other", "Other description information that does not fit into an existing category"),
+        unique=True,
+        primary_key=True,
     )
-
-    description_type = models.CharField(
-        max_length=255, choices=DESCRIPTION_TYPES, help_text=_("abstract description type")
-    )
+    description = models.CharField(max_length=255, help_text=_("label description"))
 
     def __str__(self):
-        return f"{self.description_type}"
+        return f"{self.label}"
+
+
+class RelatedIdentifier(models.Model):
+    related_identifier = models.CharField(
+        max_length=255, help_text=_("Identifiers of related resources. These must be globally unique identifiers.")
+    )
+    related_identifier_type = models.ForeignKey(RelatedIdentifierType, on_delete=models.CASCADE)
+    relation_type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Related Identifier: {self.related_identifier}({self.relation_type}: {self.related_identifier_type})"
 
 
 class FundingReference(models.Model):
@@ -718,6 +712,13 @@ class FundingReference(models.Model):
         ),
     )
     funder_identifier_type = models.CharField(max_length=255, help_text=_("The type of the Identifier. (e.g. BMBF)"))
+
+    def __str__(self):
+        return f"{self.funder_name}"
+
+
+class Funder(models.Model):
+    funding_reference = models.ForeignKey(FundingReference, null=False, blank=False, on_delete=models.CASCADE)
     award_number = models.CharField(
         max_length=255, help_text=_("The code assigned by the funder to a sponsored award (grant). (e.g. 282625)")
     )
@@ -735,25 +736,16 @@ class FundingReference(models.Model):
     )
 
 
-class RelatedIdentifier(models.Model):
-    related_identifier = models.CharField(
-        max_length=255, help_text=_("Identifiers of related resources. These must be globally unique identifiers.")
-    )
-    related_identifier_type = models.CharField(
+class RelatedProject(models.Model):
+    label = models.CharField(
         max_length=255,
-        help_text=_(
-            "The type of the Related identifier. If Related identifier is used Identifier type is mandatory. (e.g. bibcode)"
-        ),
-    )
-    relation_type = models.CharField(
-        max_length=500,
-        help_text=_(
-            "Description of the relationship of the resource being registered (A) and the related resource (B). If Related identifier is used Relation type is mandatory."
-        ),
+        help_text=_("label of the hierarchy levels for which the metadata is provided. (e.g. SIGNAL)"),
+        unique=True,
     )
 
-
-############################################
+    display_name = models.CharField(
+        max_length=255, help_text=_("Name of the hierarchy levels for which the metadata is provided. (e.g. signal)")
+    )
 
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
@@ -775,7 +767,8 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     PERMISSIONS = {}
 
-    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ["Publication"]]
+    VALID_DATE_TYPES = [(x.lower(), _(x)) for x in ["Creation", "Publication", "Revision"]]
+    VALID_CONFORMITY_RESULTS = [(x, _(x)) for x in ["Passed", "Not Passed", "Unknown"]]
 
     abstract_help_text = _("brief narrative summary of the content of the resource(s)")
     date_help_text = _("reference date for the cited resource")
@@ -798,6 +791,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "(space or comma-separated)"
     )
     regions_help_text = _("keyword identifies a location")
+    use_constrains_help_text = _(
+        "This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)"
+    )
     restriction_code_type_help_text = _("limitation(s) placed upon the access or use of the data.")
     constraints_other_help_text = _(
         "other restrictions and legal prerequisites for accessing and using the resource or" " metadata"
@@ -817,10 +813,110 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     extra_metadata_help_text = _(
         'Additional metadata, must be in format [ {"metadata_key": "metadata_value"}, {"metadata_key": "metadata_value"} ]'
     )
+    # BONARES METADATA EXTENSIONS
+    # Bonares Description
+    title_translated_help_text = "german name by which the cited resource is known"
+
+    subtitle_help_text = "subtitle of the dataset"
+    abstract_translated_help_text = _("brief german narrative summary of the content of the resource(s)")
+
+    method_description_help_text = _("The methodology employed for the study or research")
+    series_information_help_text = _("Information about a repeating series, such as volumne, issue, number")
+    table_of_content_help_text = _("A listing of the Table of Contents")
+    technical_info_help_text = _(
+        "Detailed information that may be associated with design, implementation, operation, use, and/or maintenance of a process or system"
+    )
+    other_description_help_text = _("Other description information that does not fit into an existing category")
+    related_identifer_help_text = _("Identifiers of related resources. These must be globally unique identifiers.")
+    funders_help_text = _("List of funders, funded dataset creators")
+    related_projects_help_text = _("Name of the hierarchy levels for which the metadata is provided. (e.g. SIGNAL)")
+    conformity_results_help_text = _(
+        "This is the degree of conformity of the dataset to the implementing rules the BonaRes Schema."
+    )
+    conformity_explanation_help_text = _(
+        "Give an Explanation about the conformity check. (e.g. See the referenced specification."
+    )
+    parent_identifier_help_text = _(
+        "A file identifier of the metadata to which this metadata is a subset (child). (e.g. 73c0f49f-1502-48ee-b038-052563f36527)"
+    )
+
+    date_accepted_help_text = _("The date that the publisher accepted the resource into their system.")
+    date_available_help_text = _(
+        "The date the resource is made publicly available. To indicate the end of an embargo period."
+    )
+    date_collected_help_text = _("The date or date range in which the dataset content was collected")
+    date_copyrighted_help_text = _(
+        "The specific, documented date at which the dataset receives a copyrighted status, if applicable."
+    )
+    date_created_help_text = _(
+        "The date the resource itself was put together; a single date for a final component, e.g. the finalised file with all of  the data."
+    )
+    date_issued_help_text = _("The date that the resource is published or distributed e.g. to a data centre.")
+    date_submitted_help_text = _(
+        "The date the creator submits the resource to the publisher. This could be different from Accepted if the publisher the applies a selection process. To indicate the start of an embargo period. "
+    )
+    date_updated_help_text = _(
+        "The date of the last update (last revision) to the dataset, when the dataset is being added to."
+    )
+    date_valid_help_text = _("The date or date range during which the dataset or resource is accurate.")
+
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
     title = models.CharField(_("title"), max_length=255, help_text=_("name by which the cited resource is known"))
-    abstract = models.TextField(_("abstract"), max_length=2000, blank=True, help_text=abstract_help_text)
+    title_translated = models.CharField(_("title_translated"), max_length=255, help_text=title_translated_help_text)
+
+    abstract = models.TextField(_("abstract"), max_length=2000, help_text=abstract_help_text)
+    abstract_translated = models.TextField(
+        _("abstract_translated"), max_length=2000, help_text=abstract_translated_help_text
+    )
+
+    # description type elements
+    subtitle = models.TextField(_("subtitle"), max_length=400, blank=True, help_text=subtitle_help_text)
+    method_description = models.TextField(
+        _("method_description"), max_length=2000, blank=True, help_text=method_description_help_text
+    )
+    series_information = models.TextField(
+        _("series_information"), max_length=2000, blank=True, help_text=series_information_help_text
+    )
+    table_of_content = models.TextField(
+        _("table_of_content"), max_length=2000, blank=True, help_text=table_of_content_help_text
+    )
+    technical_info = models.TextField(
+        _("technical_info"), max_length=2000, blank=True, help_text=technical_info_help_text
+    )
+    other_description = models.TextField(
+        _("other_description"), max_length=2000, blank=True, help_text=other_description_help_text
+    )
+
+    conformity_results = models.CharField(
+        _("conformity result"),
+        max_length=40,
+        choices=VALID_CONFORMITY_RESULTS,
+        default="Unknown",
+        help_text=conformity_results_help_text,
+    )
+    conformity_explanation = models.CharField(
+        _("conformity explanation"), max_length=2000, blank=True, help_text=conformity_explanation_help_text
+    )
+    parent_identifier = models.ForeignKey(
+        "self", null=True, blank=True, help_text=parent_identifier_help_text, on_delete=models.SET_NULL
+    )
+    date_available = models.DateField(
+        _("date available"), default=datetime.date.today, help_text=date_available_help_text
+    )
+    date_created = models.DateField(_("date created"), default=datetime.date.today, help_text=date_created_help_text)
+    date_issued = models.DateField(_("date issued"), default=datetime.date.today, help_text=date_issued_help_text)
+    date_updated = models.DateField(_("date updated"), default=datetime.date.today, help_text=date_updated_help_text)
+
+    date_accepted = models.DateField(_("date accepted"), blank=True, null=True, help_text=date_accepted_help_text)
+    date_collected = models.DateField(_("date collected"), blank=True, null=True, help_text=date_collected_help_text)
+    date_copyrighted = models.DateField(
+        _("date copyrighted"), blank=True, null=True, help_text=date_copyrighted_help_text
+    )
+    date_submitted = models.DateField(_("date submitted"), blank=True, null=True, help_text=date_submitted_help_text)
+    date_valid = models.DateField(_("date valid"), blank=True, null=True, help_text=date_valid_help_text)
+    date_issued = models.DateField(_("date issued"), blank=True, null=True, help_text=date_issued_help_text)
+
     purpose = models.TextField(_("purpose"), max_length=500, null=True, blank=True, help_text=purpose_help_text)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="owned_resource", verbose_name=_("Owner"), on_delete=models.PROTECT
@@ -857,13 +953,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     regions = models.ManyToManyField(
         Region, verbose_name=_("keywords region"), null=True, blank=True, help_text=regions_help_text
     )
-    restriction_code_type = models.ForeignKey(
+    use_constrains = models.ManyToManyField(
+        RestrictionCodeType,
+        verbose_name=_("use_constrains"),
+        help_text=use_constrains_help_text,
+        null=True,
+        blank=True,
+        related_name="use_constrains",
+        limit_choices_to=Q(is_choice=True),
+    )
+    restriction_code_type = models.ManyToManyField(
         RestrictionCodeType,
         verbose_name=_("restrictions"),
         help_text=restriction_code_type_help_text,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
+        related_name="restriction_code_type",
         limit_choices_to=Q(is_choice=True),
     )
     constraints_other = models.TextField(
@@ -916,6 +1021,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     data_quality_statement = models.TextField(
         _("data quality statement"), max_length=2000, blank=True, null=True, help_text=data_quality_statement_help_text
     )
+
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.SET_NULL)
 
     # Section 9
@@ -1024,36 +1130,20 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "ExtraMetadata", verbose_name=_("Extra Metadata"), null=True, blank=True, help_text=extra_metadata_help_text
     )
 
-    ###############################
-    # ZALF added GeoNode Metadata #
-    ###############################
-
-    title_de = models.CharField(
-        _("title_de"), max_length=255, default="", help_text=_("german name by which the cited resource is known")
-    )
-
-    abstract_de = models.TextField(
-        _("abstract_de"),
-        max_length=2000,
+    # Bonares
+    related_identifier = models.ManyToManyField(
+        RelatedIdentifier,
+        verbose_name=_("Related Identifier"),
+        null=True,
         blank=True,
-        help_text=_("brief german narrative summary of the content of the resource(s)"),
+        help_text=related_identifer_help_text,
     )
-
-    alternate_type = models.ForeignKey(
-        AlternateType, null=True, blank=False, on_delete=models.SET_NULL, help_text=_("Type of the alternate field")
+    funders = models.ManyToManyField(
+        Funder, verbose_name=_("Funder names"), null=True, blank=True, help_text=funders_help_text
     )
-
-    description_type = models.ForeignKey(
-        DescriptionType, null=True, blank=False, on_delete=models.SET_NULL, help_text=_("Descripion Type of abstract.")
+    related_projects = models.ManyToManyField(
+        RelatedProject, verbose_name=_("related project"), null=True, blank=True, help_text=related_projects_help_text
     )
-
-    # project_leader = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL,
-    #     on_delete=models.PROTECT)
-
-    funding_reference = models.ForeignKey(FundingReference, null=True, blank=True, on_delete=models.SET_NULL)
-
-    related_identifier = models.ForeignKey(RelatedIdentifier, null=True, blank=True, on_delete=models.SET_NULL)
 
     use_contraints = models.TextField(
         _("use_constraints"),
@@ -1062,10 +1152,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=_(
             "This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)"
         ),
-    )
-
-    parent_ressource = models.ForeignKey(
-        "self", null=True, blank=True, help_text=_("Parent Dataset, this dataset belongs to"), on_delete=models.SET_NULL
     )
 
     objects = ResourceBaseManager()
@@ -1126,6 +1212,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             "owner": _("Owner"),
         }
 
+    # Bonares
+    @property
+    def metadata_standard_name(self):
+        return "BonaRes Metadata Schema (https://doi.org/10.20387/BonaRes-5PGG-8YRP)"
+      
+    def metadata_standard_version(self):
+        return "Version 1.0"  
+      
     @property
     def raw_abstract(self):
         return self._remove_html_tags(self.abstract)
