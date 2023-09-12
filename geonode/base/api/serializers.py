@@ -447,6 +447,7 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                 )
         return data
 
+api_bbox_settable_resource_types = ["document", "geoapp"] + get_geoapp_subtypes()
 
 class ResourceBaseSerializer(
     ResourceBaseToRepresentationSerializerMixin,
@@ -646,7 +647,7 @@ class ResourceBaseSerializer(
         instance = super().save(**kwargs)
         if (
             "bbox" in self.initial_data
-            and instance.get_real_instance().resource_type in ["document", "geoapp"] + get_geoapp_subtypes()
+            and instance.get_real_instance().resource_type in api_bbox_settable_resource_types
         ):
             bbox = self.initial_data.get("bbox")
             srid = bbox.get("srid", "EPSG:4326")
