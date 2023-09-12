@@ -145,7 +145,7 @@ class DocumentViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the DocumentResourceLink(s).",
     )
     @action(detail=True, methods=["get"])
-    def linked_resources(self, request, pk=None):
+    def linked_resources(self, request, pk=None, *args, **kwargs):
         document = self.get_object()
         resources_id = document.links.all().values("object_id")
         resources = ResourceBase.objects.filter(id__in=resources_id)
