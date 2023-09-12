@@ -53,6 +53,8 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     ExtraMetadata,
 )
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.layers.utils import get_dataset_download_handlers, get_default_dataset_download_handler
@@ -447,7 +449,9 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                 )
         return data
 
-api_bbox_settable_resource_types = ["document", "geoapp"] + get_geoapp_subtypes()
+
+api_bbox_settable_resource_models = [Document, GeoApp]
+
 
 class ResourceBaseSerializer(
     ResourceBaseToRepresentationSerializerMixin,
@@ -647,7 +651,7 @@ class ResourceBaseSerializer(
         instance = super().save(**kwargs)
         if (
             "bbox" in self.initial_data
-            and instance.get_real_instance().resource_type in api_bbox_settable_resource_types
+            and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models
         ):
             bbox = self.initial_data.get("bbox")
             srid = bbox.get("srid", "EPSG:4326")
