@@ -16,12 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+
 import os
-import re
 import uuid
 import logging
 import datetime
-import traceback
 
 from urllib.parse import urlparse, urljoin
 
@@ -30,15 +29,14 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.gis.geos import GEOSGeometry, MultiPolygon
-
+from django.contrib.gis.geos import MultiPolygon
 from geonode.utils import OGC_Servers_Handler
+from django.utils.module_loading import import_string
 
 from ..base import enumerations
 from ..base.models import (
     ExtraMetadata,
     Link,
-    Region,
     License,
     ResourceBase,
     TopicCategory,
@@ -279,12 +277,12 @@ def update_resource(
     return instance
 
 
-def metadata_storers(instance, custom={}):
-    from django.utils.module_loading import import_string
+def call_storers(instance, custom={}):
+    if not globals().get("storer_modules"):
+        storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
+        globals()["storer_modules"] = [import_string(storer_path) for storer_path in storer_module_path]
 
-    available_storers = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
-    for storer_path in available_storers:
-        storer = import_string(storer_path)
+    for storer in globals().get("storer_modules", []):
         storer(instance, custom)
     return instance
 
@@ -464,41 +462,9 @@ def metadata_post_save(instance, *args, **kwargs):
 
     ResourceBase.objects.filter(id=instance.id).update(**defaults)
 
-    try:
-        if not instance.regions or instance.regions.count() == 0:
-            srid1, wkt1 = instance.geographic_bounding_box.split(";")
-            srid1 = re.findall(r"\d+", srid1)
+    from ..catalogue.models import catalogue_post_save
 
-            poly1 = GEOSGeometry(wkt1, srid=int(srid1[0]))
-            poly1.transform(4326)
-
-            queryset = Region.objects.all().order_by("name")
-            global_regions = []
-            regions_to_add = []
-            for region in queryset:
-                try:
-                    if region.is_assignable_to_geom(poly1):
-                        regions_to_add.append(region)
-                    if region.level == 0 and region.parent is None:
-                        global_regions.append(region)
-                except Exception:
-                    tb = traceback.format_exc()
-                    if tb:
-                        logger.debug(tb)
-            if regions_to_add or global_regions:
-                if regions_to_add:
-                    instance.regions.add(*regions_to_add)
-                else:
-                    instance.regions.add(*global_regions)
-    except Exception:
-        tb = traceback.format_exc()
-        if tb:
-            logger.debug(tb)
-    finally:
-        # refresh catalogue metadata records
-        from ..catalogue.models import catalogue_post_save
-
-        catalogue_post_save(instance=instance, sender=instance.__class__)
+    catalogue_post_save(instance=instance, sender=instance.__class__)
 
 
 def resourcebase_post_save(instance, *args, **kwargs):
@@ -507,6 +473,7 @@ def resourcebase_post_save(instance, *args, **kwargs):
     Has to be called by the children
     """
     if instance:
+        instance = call_storers(instance.get_real_instance(), kwargs.get("custom", {}))
         if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
             instance.abstract = _("No abstract provided")
         if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":
