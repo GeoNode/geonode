@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='resourcebase',
             name='use_constrains',
-            field=models.ForeignKey(default=None, help_text='This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)', limit_choices_to=models.Q(('is_choice', True)), on_delete=django.db.models.deletion.CASCADE, related_name='use_constrains', to='base.restrictioncodetype', verbose_name='use_constrains'),
+            field=models.ForeignKey(default=None, help_text='This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)', limit_choices_to=models.Q(('is_choice', True)), on_delete=django.db.models.deletion.CASCADE, null=True, related_name='use_constrains', to='base.restrictioncodetype', verbose_name='use_constrains'),
         ),
         migrations.AlterField(
             model_name='resourcebase',
