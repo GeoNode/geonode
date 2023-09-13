@@ -166,7 +166,10 @@ class DocumentsApiTests(APITransactionTestCase):
         x.refresh_from_db()
         self.assertEqual("EPSG:3857", x.srid)
         self.assertEqual(actual.json()["document"].get("extent")["srid"], "EPSG:4326")
-        self.assertEqual(actual.json()["document"].get("extent")["coords"], [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112])
+        self.assertEqual(
+            actual.json()["document"].get("extent")["coords"],
+            [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112],
+        )
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """

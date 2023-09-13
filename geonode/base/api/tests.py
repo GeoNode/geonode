@@ -2980,8 +2980,8 @@ class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
         self.assertEqual(200, response.status_code)
         self.doc.refresh_from_db()
         expected = {
-            "coords": [10.094299016880456, 12.036103612263465, 43.172169804633185, 44.11087068031093], 
-            "srid": "EPSG:4326"
+            "coords": [10.094299016880456, 12.036103612263465, 43.172169804633185, 44.11087068031093],
+            "srid": "EPSG:4326",
         }
         resp = response.json()["resource"].get("extent")
         self.assertEqual(resp, expected)
@@ -3001,8 +3001,8 @@ class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
         self.assertEqual(200, response.status_code)
         self.geoapp.refresh_from_db()
         expected = {
-            "coords": [10.094299016880456, 12.036103612263465, 43.172169804633185, 44.11087068031093], 
-            "srid": "EPSG:4326"
+            "coords": [10.094299016880456, 12.036103612263465, 43.172169804633185, 44.11087068031093],
+            "srid": "EPSG:4326",
         }
         resp = response.json()["resource"].get("extent")
         self.assertEqual(resp, expected)

@@ -108,7 +108,10 @@ class GeoAppsApiTests(APITestCase):
         x = GeoApp.objects.filter(title="Test Create").first()
         self.assertEqual(x.srid, "EPSG:3857")
         self.assertEqual(response.json()["geoapp"].get("extent")["srid"], "EPSG:4326")
-        self.assertEqual(response.json()["geoapp"].get("extent")["coords"], [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112])
+        self.assertEqual(
+            response.json()["geoapp"].get("extent")["coords"],
+            [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112],
+        )
 
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)
