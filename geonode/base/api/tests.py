@@ -70,7 +70,13 @@ from geonode.documents.models import Document, DocumentResourceLink
 from geonode.geoapps.models import GeoApp
 from geonode.utils import build_absolute_uri
 from geonode.resource.api.tasks import ExecutionRequest
-from geonode.base.populate_test_data import create_models, create_single_dataset, create_single_doc, create_single_map
+from geonode.base.populate_test_data import (
+    create_models,
+    create_single_dataset,
+    create_single_doc,
+    create_single_map,
+    create_single_geoapp,
+)
 from geonode.resource.api.tasks import resouce_service_dispatcher
 
 logger = logging.getLogger(__name__)
@@ -2913,3 +2919,110 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         finally:
             if _d:
                 _d.delete()
+
+
+class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.dataset = create_single_dataset("single_layer")
+        cls.map = create_single_map("single_map")
+        cls.doc = create_single_doc("single_doc")
+        cls.geoapp = create_single_geoapp("single_geoapp")
+        cls.bbox = {"extent": {"coords": [6847623, 4776382, 7002886, 4878813], "srid": "EPSG:6875"}}
+
+    def setUp(self):
+        self.admin = get_user_model().objects.get(username="admin")
+
+    def test_dataset_should_not_update_bbox(self):
+        self.client.force_login(self.admin)
+        url = reverse("base-resources-detail", kwargs={"pk": self.dataset.get_self_resource().pk})
+        response = self.client.patch(
+            url,
+            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886, 4878813], "srid": "EPSG:6875"}}),
+            content_type="application/json",
+        )
+
+        llbbox = self.dataset.ll_bbox_polygon
+        srid = self.dataset.srid
+
+        self.assertEqual(200, response.status_code)
+        self.dataset.refresh_from_db()
+        self.assertEqual(self.dataset.ll_bbox_polygon, llbbox)
+        self.assertEqual(self.dataset.srid, srid)
+
+    def test_map_should_not_update_bbox(self):
+        self.client.force_login(self.admin)
+        url = reverse("base-resources-detail", kwargs={"pk": self.map.get_self_resource().pk})
+        response = self.client.patch(
+            url,
+            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886, 4878813], "srid": "EPSG:6875"}}),
+            content_type="application/json",
+        )
+
+        llbbox = self.map.ll_bbox_polygon
+        srid = self.map.srid
+
+        self.assertEqual(200, response.status_code)
+        self.map.refresh_from_db()
+        self.assertEqual(self.map.ll_bbox_polygon, llbbox)
+        self.assertEqual(self.map.srid, srid)
+
+    def test_document_should_update_bbox(self):
+        self.client.force_login(self.admin)
+        url = reverse("base-resources-detail", kwargs={"pk": self.doc.get_self_resource().pk})
+        response = self.client.patch(
+            url,
+            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886, 4878813], "srid": "EPSG:6875"}}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.doc.refresh_from_db()
+        expected = {
+            "coords": [10.094299016880456, 43.172169804633185, 12.036103612263465, 44.11087068031093],
+            "srid": "EPSG:4326",
+        }
+        resp = response.json()["resource"].get("extent")
+        self.assertEqual(resp, expected)
+        self.assertEqual("EPSG:6875", self.doc.srid)
+        expected = "POLYGON ((10.094299016880456 43.172169804633185, 10.094299016880456 44.11087068031093, 12.036103612263465 44.11087068031093, 12.036103612263465 43.172169804633185, 10.094299016880456 43.172169804633185))"  # noqa
+        self.assertEqual(self.doc.ll_bbox_polygon.wkt, expected)
+
+    def test_geoapp_should_update_bbox(self):
+        self.client.force_login(self.admin)
+        url = reverse("base-resources-detail", kwargs={"pk": self.geoapp.get_self_resource().pk})
+        response = self.client.patch(
+            url,
+            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886, 4878813], "srid": "EPSG:6875"}}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.geoapp.refresh_from_db()
+        expected = {
+            "coords": [10.094299016880456, 43.172169804633185, 12.036103612263465, 44.11087068031093],
+            "srid": "EPSG:4326",
+        }
+        resp = response.json()["resource"].get("extent")
+        self.assertEqual(resp, expected)
+        expected = "POLYGON ((10.094299016880456 43.172169804633185, 10.094299016880456 44.11087068031093, 12.036103612263465 44.11087068031093, 12.036103612263465 43.172169804633185, 10.094299016880456 43.172169804633185))"  # noqa
+        self.assertEqual(self.geoapp.ll_bbox_polygon.wkt, expected)
+        self.assertEqual("EPSG:6875", self.geoapp.srid)
+
+    def test_geoapp_send_invalid_bbox_should_raise_error(self):
+        self.client.force_login(self.admin)
+        url = reverse("base-resources-detail", kwargs={"pk": self.geoapp.get_self_resource().pk})
+        response = self.client.patch(
+            url,
+            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886], "srid": "EPSG:6875"}}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(500, response.status_code)
+        expected = {
+            "success": False,
+            "errors": ["The standard bbox provided is invalid"],
+            "code": "invalid_resource_exception",
+        }
+        self.assertDictEqual(expected, response.json())

@@ -42,6 +42,7 @@ from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.documents.models import Document
 from geonode.base.models import ResourceBase, TopicCategory
+from geonode.geoapps.models import GeoApp
 
 # This is used to populate the database with the search fixture data. This is
 # primarily used as a first step to generate the json data for the fixture using
@@ -473,6 +474,37 @@ def create_single_doc(name, owner=None, **kwargs):
             srid="EPSG:4326",
             files=dfile,
             resource_type="document",
+            **kwargs,
+        ),
+    )
+    m.set_default_permissions(owner=owner or admin)
+    m.clear_dirty_state()
+    m.set_processing_state(enumerations.STATE_PROCESSED)
+    return m
+
+
+def create_single_geoapp(name, resource_type="geostory", owner=None, **kwargs):
+    admin, created = get_user_model().objects.get_or_create(username="admin")
+    if created:
+        admin.is_superuser = True
+        admin.first_name = "admin"
+        admin.set_password("admin")
+        admin.save()
+    test_datetime = datetime.strptime("2020-01-01", "%Y-%m-%d")
+    dd = (name, "lorem ipsum", name, f"{name}", [0, 22, 0, 22], test_datetime, ("populartag",))
+    title, abstract, name, alternate, (bbox_x0, bbox_x1, bbox_y0, bbox_y1), start, kws = dd
+    logger.debug(f"[SetUp] Add geoapp {title}")
+    m, _ = GeoApp.objects.get_or_create(
+        title=title,
+        defaults=dict(
+            uuid=str(uuid4()),
+            abstract=abstract,
+            owner=owner or admin,
+            resource_type=resource_type,
+            bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+            ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
+            srid="EPSG:4326",
+            files=dfile,
             **kwargs,
         ),
     )
