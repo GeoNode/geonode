@@ -100,14 +100,15 @@ class GeoAppsApiTests(APITestCase):
             "title": "Test Create",
             "resource_type": "geostory",
             "owner": "bobby",
-            "bbox": {"coords": [1.0, 3.0, 2.0, 4.0], "srid": "EPSG:3857"},
+            "standard_bbox": {"coords": [1.0, 3.0, 2.0, 4.0], "srid": "EPSG:3857"},
         }
         response = self.client.post(url, data=data, format="json")
         self.assertEqual(response.status_code, 201)  # 201 - Created
 
         x = GeoApp.objects.filter(title="Test Create").first()
         self.assertEqual(x.srid, "EPSG:3857")
-        self.assertEqual(x.bbox[:4], [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual(response.json()["geoapp"].get("standard_bbox")[-1], "EPSG:3857")
+        self.assertEqual(response.json()["geoapp"].get("standard_bbox")[:4], [1.0, 3.0, 2.0, 4.0])
 
         response = self.client.get(url, format="json")
         self.assertEqual(response.status_code, 200)

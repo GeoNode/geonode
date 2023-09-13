@@ -2921,7 +2921,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 _d.delete()
 
 
-class TestApiAdditionalBooxCalculation(GeoNodeBaseTestSupport):
+class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
@@ -2929,7 +2929,7 @@ class TestApiAdditionalBooxCalculation(GeoNodeBaseTestSupport):
         cls.map = create_single_map("single_map")
         cls.doc = create_single_doc("single_doc")
         cls.geoapp = create_single_geoapp("single_geoapp")
-        cls.bbox = {"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}
+        cls.bbox = {"standard_bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}
 
     def setUp(self):
         self.admin = get_user_model().objects.get(username="admin")
@@ -2939,7 +2939,7 @@ class TestApiAdditionalBooxCalculation(GeoNodeBaseTestSupport):
         url = reverse("base-resources-detail", kwargs={"pk": self.dataset.get_self_resource().pk})
         response = self.client.patch(
             url,
-            data=json.dumps({"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
+            data=json.dumps({"standard_bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
             content_type="application/json",
         )
 
@@ -2956,7 +2956,7 @@ class TestApiAdditionalBooxCalculation(GeoNodeBaseTestSupport):
         url = reverse("base-resources-detail", kwargs={"pk": self.map.get_self_resource().pk})
         response = self.client.patch(
             url,
-            data=json.dumps({"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
+            data=json.dumps({"standard_bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
             content_type="application/json",
         )
 
@@ -2973,27 +2973,50 @@ class TestApiAdditionalBooxCalculation(GeoNodeBaseTestSupport):
         url = reverse("base-resources-detail", kwargs={"pk": self.doc.get_self_resource().pk})
         response = self.client.patch(
             url,
-            data=json.dumps({"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
+            data=json.dumps({"standard_bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
             content_type="application/json",
         )
 
         self.assertEqual(200, response.status_code)
         self.doc.refresh_from_db()
+        expected = [1, 2, 3, 4, "EPSG:3456"]
+        resp = response.json()["resource"].get("standard_bbox")
+        self.assertEqual(resp, expected)
+        self.assertEqual("EPSG:3456", self.doc.srid)
         expected = "POLYGON ((-102.88263699484445 -102.88263354727535, -102.88263699484445 30.06770751904323, 30.067704520339273 30.06770751904323, 30.067704520339273 -102.88263354727535, -102.88263699484445 -102.88263354727535))"  # noqa
         self.assertEqual(self.doc.ll_bbox_polygon.wkt, expected)
-        self.assertEqual("EPSG:3456", self.doc.srid)
 
     def test_geoapp_should_update_bbox(self):
         self.client.force_login(self.admin)
         url = reverse("base-resources-detail", kwargs={"pk": self.geoapp.get_self_resource().pk})
         response = self.client.patch(
             url,
-            data=json.dumps({"bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
+            data=json.dumps({"standard_bbox": {"coords": [1, 2, 3, 4], "srid": "EPSG:3456"}}),
             content_type="application/json",
         )
 
         self.assertEqual(200, response.status_code)
         self.geoapp.refresh_from_db()
+        expected = [1, 2, 3, 4, "EPSG:3456"]
+        resp = response.json()["resource"].get("standard_bbox")
+        self.assertEqual(resp, expected)
         expected = "POLYGON ((-102.88263699484445 -102.88263354727535, -102.88263699484445 30.06770751904323, 30.067704520339273 30.06770751904323, 30.067704520339273 -102.88263354727535, -102.88263699484445 -102.88263354727535))"  # noqa
         self.assertEqual(self.geoapp.ll_bbox_polygon.wkt, expected)
         self.assertEqual("EPSG:3456", self.geoapp.srid)
+
+    def test_geoapp_send_invalid_bbox_should_raise_error(self):
+        self.client.force_login(self.admin)
+        url = reverse("base-resources-detail", kwargs={"pk": self.geoapp.get_self_resource().pk})
+        response = self.client.patch(
+            url,
+            data=json.dumps({"standard_bbox": {"coords": [1, 2, 3], "srid": "EPSG:3456"}}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(500, response.status_code)
+        expected = {
+            "success": False,
+            "errors": ["The standard bbox provided is invalid"],
+            "code": "invalid_resource_exception",
+        }
+        self.assertDictEqual(expected, response.json())

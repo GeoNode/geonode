@@ -38,6 +38,7 @@ from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from avatar.templatetags.avatar_tags import avatar_url
+from geonode.base.api.exceptions import InvalidResourceException
 
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
@@ -61,6 +62,7 @@ from geonode.layers.utils import get_dataset_download_handlers, get_default_data
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
+from django.contrib.gis.geos import Polygon
 
 logger = logging.getLogger(__name__)
 
@@ -385,6 +387,15 @@ class ContactRoleField(DynamicComputedField):
         return UserSerializer(embed=True, many=False).to_representation(value)
 
 
+class StandardBboxField(DynamicComputedField):
+    def get_attribute(self, instance):
+        return instance.bbox
+
+    def to_representation(self, value):
+        fixed_val = value[:4]
+        return super().to_representation([fixed_val[0], fixed_val[2], fixed_val[1], fixed_val[3], value[-1]])
+
+
 class DataBlobField(DynamicRelationField):
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
@@ -488,6 +499,7 @@ class ResourceBaseSerializer(
         self.fields["data_quality_statement"] = serializers.CharField(required=False)
         self.fields["bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["ll_bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
+        self.fields["standard_bbox"] = StandardBboxField(required=False)
         self.fields["srid"] = serializers.CharField(required=False)
         self.fields["group"] = ComplexDynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields["popular_count"] = serializers.CharField(required=False)
@@ -527,7 +539,6 @@ class ResourceBaseSerializer(
         self.fields["is_copyable"] = serializers.BooleanField(read_only=True)
         self.fields["download_url"] = DownloadLinkField(read_only=True)
         self.fields["favorite"] = FavoriteField(read_only=True)
-        self.fields["bbox"] = DynamicComputedField(read_only=True)
         self.fields["download_urls"] = DownloadArrayLinkField(read_only=True)
 
     metadata = ComplexDynamicRelationField(ExtraMetadataSerializer, embed=False, many=True, deferred=True)
@@ -619,6 +630,7 @@ class ResourceBaseSerializer(
             "data_quality_statement": {"required": False},
             "bbox_polygon": {"required": False},
             "ll_bbox_polygon": {"required": False},
+            "standard_bbox": {"required": False},
             "srid": {"required": False},
             "popular_count": {"required": False},
             "share_count": {"required": False},
@@ -648,17 +660,20 @@ class ResourceBaseSerializer(
         return data
 
     def save(self, **kwargs):
+        bbox = self.validated_data.pop("standard_bbox", None)
         instance = super().save(**kwargs)
-        if (
-            "bbox" in self.initial_data
-            and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models
-        ):
-            bbox = self.initial_data.get("bbox")
+        if bbox and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
             srid = bbox.get("srid", "EPSG:4326")
             coords = bbox.get("coords")
             if not coords:
-                logger.warning("Bbox was sent, but no coords were supplied. Skipping")
+                logger.warning("BBOX was sent, but no coords were supplied. Skipping")
                 return instance
+            try:
+                # small validation test
+                Polygon.from_bbox(coords)
+            except Exception as e:
+                logger.exception(e)
+                raise InvalidResourceException("The standard bbox provided is invalid")
             instance.set_bbox_polygon(coords, srid)
         return instance
 
