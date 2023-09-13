@@ -1,32 +1,31 @@
-name: Release GeoNode Docker Images
+name: Push Thünen Atlas Docker Image(s)
+
+concurrency: 
+  group: "geonode_build"
+  cancel-in-progress: true
 
 env:
   TITLE: "52°North GeoNode Docker Image"
   VENDOR: "52°North GmbH"
   AUTHORS: "https://52North.org/"
-  DESCRIPTION: "Builds and publishes the GeoNode Docker image for Thuenen"
+  DESCRIPTION: "Builds and publishes Thuenen Atlas GeoNode image(s)"
   LICENSE: "GPL-3.0"
 
 on:
   push:
-    tags: 
-      - "v*-thuenen"
+    branches:
+      - "thuenen_4.x"
 
 jobs:
   build_and_push_geonode:
     runs-on: ubuntu-22.04
     env:
       IMAGE: 52north/geonode_thuenen
+      DEVELOPMENT_VERSION: "4.x"
     steps:
       -
         name: Checkout
         uses: actions/checkout@v3
-      -
-        name: Parse semver string
-        id: semver_parser 
-        uses: booxmedialtd/ws-action-parse-semver@v1
-        with:
-          input_string: "${{github.ref_name}}"
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -43,9 +42,7 @@ jobs:
             "org.opencontainers.image.title=${{ env.TITLE }}"
             "org.opencontainers.image.licenses=${{ env.LICENSE }}"
           tags: |
-            ${{ steps.semver_parser.outputs.major }}
-            ${{ steps.semver_parser.outputs.major }}-${{ steps.semver_parser.outputs.minor }}
-            ${{ steps.semver_parser.outputs.major }}-${{ steps.semver_parser.outputs.minor }}-${{ steps.semver_parser.outputs.patch }}
+            ${{ env.DEVELOPMENT_VERSION }}
       -
         name: Login to Docker Hub
         uses: docker/login-action@v2
