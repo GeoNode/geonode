@@ -14,7 +14,7 @@ urllib3==1.26.15
 Paver==1.3.4
 python-slugify==8.0.1
 decorator==5.1.1
-celery==5.3.1
+celery==5.3.4
 kombu==5.3.2
 vine==5.0.0
 tqdm==4.66.1
@@ -46,7 +46,7 @@ django-tastypie<0.15.0
 django-tinymce==3.6.1
 django-grappelli==3.0.7
 django-uuid-upload-path==1.0.0
-django-widget-tweaks==1.4.12
+django-widget-tweaks==1.5.0
 django-sequences==2.8
 oauthlib==3.2.2
 pyopenssl==23.2.0
@@ -118,7 +118,7 @@ boto3==1.28.45
 # Django Caches
 python-memcached<=1.59
 whitenoise==6.5.0
-Brotli==1.0.9
+Brotli==1.1.0
 
 # Contribs
 xmltodict<0.13.1
@@ -126,7 +126,7 @@ inflection>=0.4.0
 jdcal==1.4.1
 mock<6.0.0
 python-dateutil==2.8.2
-pytz==2023.3
+pytz==2023.3.post1
 requests==2.31.0
 timeout-decorator==0.5.0
 pylibmc==1.6.3
@@ -150,7 +150,7 @@ docker==6.1.3
 invoke==2.2.0
 
 # tests
-coverage==7.3.0
+coverage==7.3.1
 requests-toolbelt==1.0.0
 flake8==6.1.0
 black==23.9.1

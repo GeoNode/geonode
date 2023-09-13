@@ -68,6 +68,19 @@ services:
       - statics:/mnt/volumes/statics
     restart: unless-stopped
 
+  # memcached service
+  memcached:
+    image: memcached:alpine
+    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    command: memcached ${MEMCACHED_OPTIONS}
+    restart: on-failure
+    healthcheck:
+      test: nc -z 127.0.0.1 11211
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
   # Gets and installs letsencrypt certificates
   letsencrypt:
     image: geonode/letsencrypt:latest
