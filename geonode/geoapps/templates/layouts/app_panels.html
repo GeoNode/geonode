@@ -292,9 +292,11 @@ span.grippy::after {
                                     </script>
                                 </div>
                                 <div class="col-lg-4">
+                                  {% block geoapp_title %}
                                     <span><label for="{{ geoapp_form.title|id }}">{{ geoapp_form.title.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
                                         {{ geoapp_form.title }}
+                                    {% endblock %}
                                     <div>
                                         <span><label for="{{ geoapp_form.abstract|id }}">{{ geoapp_form.abstract.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
@@ -312,6 +314,7 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                                         {{ geoapp_form.date }}
                                     </div>
+                                    {% block geoapp_category %}
                                     <div id="basicCategoryInfo" class="col-lg-12">
                                         <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
                                         <select
@@ -331,6 +334,7 @@ span.grippy::after {
                                           {% endfor %}
                                         </select>
                                     </div>
+                                    {% endblock geoapp_category %}
                                     <div id="basicGroupInfo" class="col-lg-12">
                                         <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
                                         <select
@@ -377,6 +381,7 @@ span.grippy::after {
                     <div class="panel-body">
                         <div class="" id="mdinfo">
                             <div class="">
+                                {% block geoapp_attributes %}
                                 <div class="col-lg-4">
                                     <div>
                                         <span><label for="{{ geoapp_form.language|id }}">{{ geoapp_form.language.label }}</label></span>
@@ -393,6 +398,7 @@ span.grippy::after {
                                         {{ geoapp_form.attribution }}
                                     </div>
                                 </div>
+                                {% endblock geoapp_attributes %}
                                 <div class="col-lg-4">
                                       <div id="regions_multiselect_container">
                                         <span><label for="{{ geoapp_form.regions|id }}">{{ geoapp_form.regions.label }}</label></span>
@@ -452,6 +458,7 @@ span.grippy::after {
                 </div>
             </div>
             <div class="col-xs-12 col-lg-5">
+                {% block geoapp_temporal_extent_start %}
                 <div class="col-xs-12 col-lg-6">
                   <div class="input-group date">
                     <span><label for="{{ geoapp_form.temporal_extent_start|id }}">{{ geoapp_form.temporal_extent_start.label }}</label></span>
@@ -459,6 +466,8 @@ span.grippy::after {
                     {{ geoapp_form.temporal_extent_start }}
                     </div>
                 </div>
+                {% endblock geoapp_temporal_extent_start %}
+                {% block geoapp_temporal_extent_end %}
                 <div class="col-xs-12 col-lg-6" id="req_date">
                     <div class="input-group date">
                     <span><label for="{{ geoapp_form.temporal_extent_end|id }}">{{ geoapp_form.temporal_extent_end.label }}</label></span>
@@ -466,6 +475,8 @@ span.grippy::after {
                     {{ geoapp_form.temporal_extent_end }}
                     </div>
                 </div>
+                {% endblock geoapp_temporal_extent_end %}
+                {% block maintenance_block %}
                 <div class="col-xs-12">
                     <div style="margin-top: 5px">
                         <span><label for="{{ geoapp_form.maintenance_frequency|id }}">{{ geoapp_form.maintenance_frequency.label }}</label></span>
@@ -484,6 +495,7 @@ span.grippy::after {
                     </div>
                     {% endblock geoapp_extra_metadata %}
                 </div>
+                {% endblock maintenance_block %}
             </div>
             <div class="col-xs-12 col-lg-3">
               <div class="panel panel-default" style="margin-top: 5px">
