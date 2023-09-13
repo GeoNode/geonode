@@ -378,7 +378,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the approved Resources.",
     )
     @action(detail=False, methods=["get"])
-    def approved(self, request):
+    def approved(self, request, *args, **kwargs):
         return self._filtered(request, {"is_approved": True})
 
     @extend_schema(
@@ -387,7 +387,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the published Resources.",
     )
     @action(detail=False, methods=["get"])
-    def published(self, request):
+    def published(self, request, *args, **kwargs):
         return self._filtered(request, {"is_published": True})
 
     @extend_schema(
@@ -396,7 +396,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the featured Resources.",
     )
     @action(detail=False, methods=["get"])
-    def featured(self, request):
+    def featured(self, request, *args, **kwargs):
         return self._filtered(request, {"featured": True})
 
     @extend_schema(
@@ -411,7 +411,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             IsAuthenticated,
         ],
     )
-    def favorites(self, request, pk=None):
+    def favorites(self, request, pk=None, *args, **kwargs):
         paginator = GeoNodeApiPagination()
         paginator.page_size = request.GET.get("page_size", 10)
         favorites = Favorite.objects.favorites_for_user(user=request.user)
@@ -425,7 +425,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the favorite Resources.",
     )
     @action(detail=True, methods=["post", "delete"], permission_classes=[IsAuthenticated])
-    def favorite(self, request, pk=None):
+    def favorite(self, request, pk=None, *args, **kwargs):
         resource = self.get_object()
         user = request.user
 
@@ -476,7 +476,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         """,
     )
     @action(detail=False, methods=["get"])
-    def resource_types(self, request):
+    def resource_types(self, request, *args, **kwargs):
         def _to_compact_perms_list(
             allowed_perms: dict, resource_type: str, resource_subtype: str, compact_perms_labels: dict = {}
         ) -> list:
@@ -583,7 +583,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["get", "put", "patch", "delete"],
         permission_classes=[IsAuthenticated],
     )
-    def resource_service_permissions(self, request, pk):
+    def resource_service_permissions(self, request, pk, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'DELETE' or 'UPDATE' on the permissions of a valid 'uuid'
 
         - GET input_params: {
@@ -720,7 +720,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
-    def set_thumbnail_from_bbox(self, request, resource_id):
+    def set_thumbnail_from_bbox(self, request, resource_id, *args, **kwargs):
         import traceback
         from django.utils.datastructures import MultiValueDictKeyError
 
@@ -778,7 +778,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["post"],
         permission_classes=[IsAuthenticated],
     )
-    def resource_service_ingest(self, request, resource_type: str = None):
+    def resource_service_ingest(self, request, resource_type: str = None, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'INGEST' operation
 
         - POST input_params: {
@@ -879,7 +879,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
-    def resource_service_create(self, request, resource_type: str = None):
+    def resource_service_create(self, request, resource_type: str = None, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'CREATE' operation
         **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
 
@@ -981,7 +981,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["delete"],
         permission_classes=[IsAuthenticated, UserHasPerms],
     )
-    def resource_service_delete(self, request, pk):
+    def resource_service_delete(self, request, pk, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'DELETE' operation over a valid 'uuid'
 
         - DELETE input_params: {
@@ -1065,7 +1065,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         methods=["put"],
         permission_classes=[IsAuthenticated, UserHasPerms],
     )
-    def resource_service_update(self, request, pk):
+    def resource_service_update(self, request, pk, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'UPDATE' operation over a valid 'uuid'
 
         - PUT input_params: {
@@ -1195,7 +1195,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             ),
         ],
     )
-    def resource_service_copy(self, request, pk):
+    def resource_service_copy(self, request, pk, *args, **kwargs):
         """Instructs the Async dispatcher to execute a 'COPY' operation over a valid 'pk'
 
         - PUT input_params: {
@@ -1300,7 +1300,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
         ],
     )
-    def ratings(self, request, pk):
+    def ratings(self, request, pk, *args, **kwargs):
         resource = get_object_or_404(ResourceBase, pk=pk)
         resource = resource.get_real_instance()
         ct = ContentType.objects.get_for_model(resource)
@@ -1337,7 +1337,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         permission_classes=[IsAuthenticated, UserHasPerms],
         parser_classes=[JSONParser, MultiPartParser],
     )
-    def set_thumbnail(self, request, pk):
+    def set_thumbnail(self, request, pk, *args, **kwargs):
         resource = get_object_or_404(ResourceBase, pk=pk)
 
         if not request.data.get("file"):
@@ -1397,7 +1397,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
     )
-    def extra_metadata(self, request, pk):
+    def extra_metadata(self, request, pk, *args, **kwargs):
         _obj = get_object_or_404(ResourceBase, pk=pk)
 
         if request.method == "GET":
@@ -1488,7 +1488,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_path=r"linked_resources",  # noqa
         url_name="linked_resources",
     )
-    def linked_resources(self, request, pk):
+    def linked_resources(self, request, pk, *args, **kwargs):
         try:
             """
             To let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
