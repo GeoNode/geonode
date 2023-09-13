@@ -493,6 +493,12 @@ def _split_query(query):
     return [kw.strip() for kw in keywords if kw.strip()]
 
 
+# Swaps coords order from xmin,ymin,xmax,ymax to xmin,xmax,ymin,ymax and viceversa
+def bbox_swap(bbox):
+    _bbox = [float(o) for o in bbox]
+    return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
+
+
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
     if srid and str(srid).startswith("EPSG:"):
         srid = srid[5:]
