@@ -46,6 +46,19 @@ services:
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
     command: "celery-cmd"
 
+  # memcached service
+  memcached:
+    image: memcached:alpine
+    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    command: memcached ${MEMCACHED_OPTIONS}
+    restart: on-failure
+    healthcheck:
+      test: nc -z 127.0.0.1 11211
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
     image: geonode/nginx:1.25.1

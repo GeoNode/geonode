@@ -16,7 +16,6 @@ invoke () {
 
 # Start cron && memcached services
 service cron restart
-service memcached restart
 
 echo $"\n\n\n"
 echo "-----------------------------------------------------"
