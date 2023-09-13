@@ -212,9 +212,10 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"processor": [{"id": uid} for uid in user_ids]}
+        patch_data = {"processor": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
+        # check if all set processors are in the return json
         self.assertTrue(
             all(
                 user_id in [processor.get("pk") for processor in response.json().get("document").get("processor")]

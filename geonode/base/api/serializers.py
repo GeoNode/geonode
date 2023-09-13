@@ -404,7 +404,7 @@ class ContactRoleField(DynamicComputedField):
                 pks_of_users_to_set.append(username_user.pk)
             elif "pk" in val:
                 pks_of_users_to_set.append(val["pk"])
-            return pks_of_users_to_set
+        return pks_of_users_to_set
 
     def to_internal_value(self, value):
         return get_user_model().objects.filter(pk__in=self.get_pks_of_users_to_set(value))
