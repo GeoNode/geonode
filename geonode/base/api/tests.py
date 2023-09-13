@@ -2979,7 +2979,10 @@ class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
 
         self.assertEqual(200, response.status_code)
         self.doc.refresh_from_db()
-        expected = [6847623, 4776382, 7002886, 4878813, "EPSG:6875"]
+        expected = {
+            "coords": [10.094299016880456, 12.036103612263465, 43.172169804633185, 44.11087068031093], 
+            "srid": "EPSG:4326"
+        }
         resp = response.json()["resource"].get("extent")
         self.assertEqual(resp, expected)
         self.assertEqual("EPSG:6875", self.doc.srid)
@@ -2997,7 +3000,10 @@ class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
 
         self.assertEqual(200, response.status_code)
         self.geoapp.refresh_from_db()
-        expected = [6847623, 4776382, 7002886, 4878813, "EPSG:6875"]
+        expected = {
+            "coords": [10.094299016880456, 12.036103612263465, 43.172169804633185, 44.11087068031093], 
+            "srid": "EPSG:4326"
+        }
         resp = response.json()["resource"].get("extent")
         self.assertEqual(resp, expected)
         expected = "POLYGON ((10.094299016880456 43.172169804633185, 10.094299016880456 44.11087068031093, 12.036103612263465 44.11087068031093, 12.036103612263465 43.172169804633185, 10.094299016880456 43.172169804633185))"  # noqa
@@ -3009,7 +3015,7 @@ class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
         url = reverse("base-resources-detail", kwargs={"pk": self.geoapp.get_self_resource().pk})
         response = self.client.patch(
             url,
-            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886, 4878813], "srid": "EPSG:6875"}}),
+            data=json.dumps({"extent": {"coords": [6847623, 4776382, 7002886], "srid": "EPSG:6875"}}),
             content_type="application/json",
         )
 

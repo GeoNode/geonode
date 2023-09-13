@@ -38,6 +38,7 @@ from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from avatar.templatetags.avatar_tags import avatar_url
+from geonode.utils import bbox_swap
 from geonode.base.api.exceptions import InvalidResourceException
 
 from geonode.favorite.models import Favorite
@@ -392,7 +393,8 @@ class ExtentBboxField(DynamicComputedField):
         return instance.ll_bbox
 
     def to_representation(self, value):
-        return super().to_representation({"coords": value[:-1], "srid": value[-1]})
+        bbox = bbox_swap(value[:-1])
+        return super().to_representation({"coords": bbox, "srid": value[-1]})
 
 
 class DataBlobField(DynamicRelationField):
