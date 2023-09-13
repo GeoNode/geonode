@@ -389,11 +389,10 @@ class ContactRoleField(DynamicComputedField):
 
 class ExtentBboxField(DynamicComputedField):
     def get_attribute(self, instance):
-        return instance.bbox
+        return instance.ll_bbox
 
     def to_representation(self, value):
-        fixed_val = value[:4]
-        return super().to_representation([fixed_val[0], fixed_val[2], fixed_val[1], fixed_val[3], value[-1]])
+        return super().to_representation({"coords": value[:-1], "srid": value[-1]})
 
 
 class DataBlobField(DynamicRelationField):
