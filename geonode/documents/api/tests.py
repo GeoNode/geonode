@@ -153,7 +153,7 @@ class DocumentsApiTests(APITransactionTestCase):
                 "title": "New document for testing",
                 "metadata_only": True,
                 "file_path": self.valid_file_path,
-                "standard_bbox": {"coords": [1.0, 3.0, 2.0, 4.0], "srid": "EPSG:3857"},
+                "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
             },
         }
         actual = self.client.post(self.url, data=payload, format="json")
@@ -165,7 +165,7 @@ class DocumentsApiTests(APITransactionTestCase):
         x = doc.first()
         x.refresh_from_db()
         self.assertEqual("EPSG:3857", x.srid)
-        self.assertEqual(actual.json()["document"].get("standard_bbox"), [1.0, 3.0, 2.0, 4.0, "EPSG:3857"])
+        self.assertEqual(actual.json()["document"].get("extent"), [1123692.0, 5338214.0, 1339852.0, 5482615.0, "EPSG:3857"])
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """

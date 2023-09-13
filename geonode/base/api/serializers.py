@@ -387,7 +387,7 @@ class ContactRoleField(DynamicComputedField):
         return UserSerializer(embed=True, many=False).to_representation(value)
 
 
-class StandardBboxField(DynamicComputedField):
+class ExtentBboxField(DynamicComputedField):
     def get_attribute(self, instance):
         return instance.bbox
 
@@ -499,7 +499,7 @@ class ResourceBaseSerializer(
         self.fields["data_quality_statement"] = serializers.CharField(required=False)
         self.fields["bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["ll_bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
-        self.fields["standard_bbox"] = StandardBboxField(required=False)
+        self.fields["extent"] = ExtentBboxField(required=False)
         self.fields["srid"] = serializers.CharField(required=False)
         self.fields["group"] = ComplexDynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields["popular_count"] = serializers.CharField(required=False)
@@ -630,7 +630,7 @@ class ResourceBaseSerializer(
             "data_quality_statement": {"required": False},
             "bbox_polygon": {"required": False},
             "ll_bbox_polygon": {"required": False},
-            "standard_bbox": {"required": False},
+            "extent": {"required": False},
             "srid": {"required": False},
             "popular_count": {"required": False},
             "share_count": {"required": False},
@@ -660,11 +660,11 @@ class ResourceBaseSerializer(
         return data
 
     def save(self, **kwargs):
-        bbox = self.validated_data.pop("standard_bbox", None)
+        extent = self.validated_data.pop("extent", None)
         instance = super().save(**kwargs)
-        if bbox and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
-            srid = bbox.get("srid", "EPSG:4326")
-            coords = bbox.get("coords")
+        if extent and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
+            srid = extent.get("srid", "EPSG:4326")
+            coords = extent.get("coords")
             if not coords:
                 logger.warning("BBOX was sent, but no coords were supplied. Skipping")
                 return instance
