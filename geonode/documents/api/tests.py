@@ -443,6 +443,8 @@ class DocumentsApiTests(APITransactionTestCase):
                 ]
                 for user_id in user_ids
             )
+        )
+
     def test_creation_should_create_the_doc_and_update_the_bbox(self):
         """
         If file_path is not available, should raise error
