@@ -496,7 +496,6 @@ class DocumentsApiTests(APITransactionTestCase):
                 "extension": "jpeg",
             }
         }
-        breakpoint()
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(201, actual.status_code)
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
