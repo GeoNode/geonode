@@ -227,7 +227,6 @@ class MapsApiTests(APITestCase):
         }
         self.client.login(username="admin", password="admin")
         response = self.client.post(f"{url}?include[]=data", data=data, format="json")
-
         self.assertEqual(response.status_code, 201)
         self.assertTrue(len(response.data) > 0)
         self.assertTrue("data" in response.data["map"])

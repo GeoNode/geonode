@@ -40,5 +40,4 @@ def get_contact_role_value(form, contact):
 @register.simple_tag
 def getattribute(form, contact):
     """Gets an attribute of an object dynamically from a string name"""
-    # breakpoint()
     return form[contact]
