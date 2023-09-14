@@ -151,7 +151,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"poc": [{"id": uid} for uid in user_ids]}
+        patch_data = {"poc": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -177,7 +177,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"metadata_author": [{"id": uid} for uid in user_ids]}
+        patch_data = {"metadata_author": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -240,7 +240,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"publisher": [{"id": uid} for uid in user_ids]}
+        patch_data = {"publisher": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -267,7 +267,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"custodian": [{"id": uid} for uid in user_ids]}
+        patch_data = {"custodian": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -294,7 +294,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"distributor": [{"id": uid} for uid in user_ids]}
+        patch_data = {"distributor": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -323,7 +323,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"resource_user": [{"id": uid} for uid in user_ids]}
+        patch_data = {"resource_user": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -354,7 +354,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"resource_provider": [{"id": uid} for uid in user_ids]}
+        patch_data = {"resource_provider": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -390,7 +390,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"originator": [{"id": uid} for uid in user_ids]}
+        patch_data = {"originator": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -418,7 +418,7 @@ class DocumentsApiTests(APITestCase):
         get_user_model().objects.get_or_create(username="turtle")
         users = get_user_model().objects.exclude(pk=-1)
         user_ids = [user.pk for user in users]
-        patch_data = {"principal_investigator": [{"id": uid} for uid in user_ids]}
+        patch_data = {"principal_investigator": [{"pk": uid} for uid in user_ids]}
         response = self.client.patch(url, data=patch_data, format="json")
         self.assertEqual(200, response.status_code)
         self.assertTrue(
@@ -470,6 +470,7 @@ class DocumentsApiTests(APITestCase):
                 "extension": "jpeg",
             }
         }
+        breakpoint()
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(201, actual.status_code)
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
