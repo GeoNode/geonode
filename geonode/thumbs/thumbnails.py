@@ -171,7 +171,7 @@ def create_thumbnail(
                 img = Image.open(content)
                 img.verify()  # verify that it is, in fact an image
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-                merged_partial_thumbs.paste(img, mask=img.convert("RGBA"))
+                merged_partial_thumbs.paste(img, mask=img.convert("RGBA").split()[-1])
             except UnidentifiedImageError as e:
                 logger.error(f"Thumbnail generation. Error occurred while fetching dataset image: {image}")
                 logger.exception(e)
@@ -271,7 +271,7 @@ def _datasets_locations(
             else:
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-        for map_dataset in instance.maplayers.iterator():
+        for map_dataset in instance.maplayers.filter(visibility=True).order_by("order").iterator():
             if not map_dataset.local and not map_dataset.ows_url:
                 logger.warning(
                     "Incorrectly defined remote dataset encountered (no OWS URL defined)."

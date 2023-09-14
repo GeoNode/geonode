@@ -40,6 +40,8 @@ from dynamic_rest.serializers import DynamicEphemeralSerializer, DynamicModelSer
 from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedField
 
 from avatar.templatetags.avatar_tags import avatar_url
+from geonode.utils import bbox_swap
+from geonode.base.api.exceptions import InvalidResourceException
 
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
@@ -55,12 +57,15 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     ExtraMetadata,
 )
+from geonode.documents.models import Document
+from geonode.geoapps.models import GeoApp
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.layers.utils import get_dataset_download_handlers, get_default_dataset_download_handler
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
+from django.contrib.gis.geos import Polygon
 
 logger = logging.getLogger(__name__)
 
@@ -410,6 +415,15 @@ class ContactRoleField(DynamicComputedField):
         return get_user_model().objects.filter(pk__in=self.get_pks_of_users_to_set(value))
 
 
+class ExtentBboxField(DynamicComputedField):
+    def get_attribute(self, instance):
+        return instance.ll_bbox
+
+    def to_representation(self, value):
+        bbox = bbox_swap(value[:-1])
+        return super().to_representation({"coords": bbox, "srid": value[-1]})
+
+
 class DataBlobField(DynamicRelationField):
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
@@ -475,6 +489,9 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
         return data
 
 
+api_bbox_settable_resource_models = [Document, GeoApp]
+
+
 class ResourceBaseSerializer(
     ResourceBaseToRepresentationSerializerMixin,
     BaseDynamicModelSerializer,
@@ -524,6 +541,7 @@ class ResourceBaseSerializer(
         self.fields["data_quality_statement"] = serializers.CharField(required=False)
         self.fields["bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
         self.fields["ll_bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
+        self.fields["extent"] = ExtentBboxField(required=False)
         self.fields["srid"] = serializers.CharField(required=False)
         self.fields["group"] = ComplexDynamicRelationField(GroupSerializer, embed=True, many=False)
         self.fields["popular_count"] = serializers.CharField(required=False)
@@ -662,6 +680,7 @@ class ResourceBaseSerializer(
             "data_quality_statement": {"required": False},
             "bbox_polygon": {"required": False},
             "ll_bbox_polygon": {"required": False},
+            "extent": {"required": False},
             "srid": {"required": False},
             "popular_count": {"required": False},
             "share_count": {"required": False},
@@ -689,6 +708,24 @@ class ResourceBaseSerializer(
             data = data.dict()
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
+
+    def save(self, **kwargs):
+        extent = self.validated_data.pop("extent", None)
+        instance = super().save(**kwargs)
+        if extent and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
+            srid = extent.get("srid", "EPSG:4326")
+            coords = extent.get("coords")
+            if not coords:
+                logger.warning("BBOX was sent, but no coords were supplied. Skipping")
+                return instance
+            try:
+                # small validation test
+                Polygon.from_bbox(coords)
+            except Exception as e:
+                logger.exception(e)
+                raise InvalidResourceException("The standard bbox provided is invalid")
+            instance.set_bbox_polygon(coords, srid)
+        return instance
 
     """
      - Deferred / not Embedded --> ?include[]=data

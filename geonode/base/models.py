@@ -68,7 +68,14 @@ from geonode.base import enumerations
 from geonode.singleton import SingletonModel
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
-from geonode.utils import bbox_to_wkt, find_by_attr, bbox_to_projection, get_allowed_extensions, is_monochromatic_image
+from geonode.utils import (
+    bbox_to_wkt,
+    find_by_attr,
+    bbox_to_projection,
+    bbox_swap,
+    get_allowed_extensions,
+    is_monochromatic_image,
+)
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
@@ -1366,7 +1373,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else:
                 match = re.match(r"^(EPSG:)?(?P<srid>\d{4,6})$", str(srid))
                 bbox_polygon.srid = int(match.group("srid")) if match else 4326
-                self.ll_bbox_polygon = Polygon.from_bbox(bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
+
+                # Adapt coords order from xmin,ymin,xmax,ymax to xmin,xmax,ymin,ymax
+                standard_extent = list(bbox_polygon.extent)
+                bbox_gn_order = bbox_swap(standard_extent) + [srid]
+                projected_bbox_gn_order = bbox_to_projection(bbox_gn_order)
+                projected_bbox = bbox_swap(projected_bbox_gn_order[:-1])
+
+                self.ll_bbox_polygon = Polygon.from_bbox(projected_bbox)
             ResourceBase.objects.filter(id=self.id).update(ll_bbox_polygon=self.ll_bbox_polygon)
         except Exception as e:
             raise GeoNodeException(e)

@@ -507,13 +507,15 @@ span.grippy::after {
                 {% endblock map_supplemental_information %}
             </div>
             <div class="col-xs-12 col-lg-5">
+              {% block map_temporal_extent_start %}
                 <div class="col-xs-12 col-lg-6">
                   <div class="input-group date">
                     <span><label for="{{ map_form.temporal_extent_start|id }}">{{ map_form.temporal_extent_start.label }}</label></span>
                     <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
                     {{ map_form.temporal_extent_start }}
-                    </div>
+                  </div>
                 </div>
+                {% endblock %}
                 <div class="col-xs-12 col-lg-6">
                     {% block map_temporal_extent_end %}
                     <div class="input-group date">
@@ -523,6 +525,7 @@ span.grippy::after {
                     </div>
                     {% endblock map_temporal_extent_end %}
                 </div>
+                {% block maintenance_block %}
                 <div class="col-xs-12">
                     <div style="margin-top: 5px">
                         <span><label for="{{ map_form.maintenance_frequency|id }}">{{ map_form.maintenance_frequency.label }}</label></span>
@@ -541,6 +544,7 @@ span.grippy::after {
                     </div>
                     {% endblock map_extra_metadata %}
                 </div>
+                {% endblock maintenance_block %}
             </div>
             <!-- Contact Roles -->
             <div class="col-xs-12 col-lg-3" >

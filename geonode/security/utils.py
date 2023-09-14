@@ -22,7 +22,6 @@ import logging
 import collections
 from itertools import chain
 
-from django.apps import apps
 from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -216,14 +215,9 @@ def get_geoapp_subtypes():
     """
     from geonode.geoapps.models import GeoApp
 
-    subtypes = []
-    for label, app in apps.app_configs.items():
-        if hasattr(app, "type") and app.type == "GEONODE_APP":
-            if hasattr(app, "default_model"):
-                _model = apps.get_model(label, app.default_model)
-                if issubclass(_model, GeoApp):
-                    subtypes.append(_model.__name__.lower())
-    return subtypes
+    if not globals().get("geoapp_subtypes"):
+        globals()["geoapp_subtypes"] = list(GeoApp.objects.values_list("resource_type", flat=True).distinct())
+    return globals().get("geoapp_subtypes", [])
 
 
 def skip_registered_members_common_group(user_group):

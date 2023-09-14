@@ -557,9 +557,9 @@ span.grippy::after {
                     {% endblock doc_extra_metadata %}
                 </div>
             </div>
-            <!-- Contact Roles -->
-            <div class="col-xs-12 col-lg-3" >
-              <div class="panel panel-default" class="collapse" style="margin-top: 5px">
+            <div class="col-xs-12 col-lg-3">
+              {% block document_poc %}
+              <div class="panel panel-default" style="margin-top: 5px">
                 <div class="panel-heading">{% trans "Responsible Parties" %}</div>
                   {% block document_poc %}
                   <div class="panel-body check-select">
@@ -595,6 +595,22 @@ span.grippy::after {
                 </div>
               </div>
               {% endblock document_more_contact_roles %}
+              {% endblock %}
+
+              <div class="panel panel-default">
+                <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                <div class="panel-body">
+                    <div>
+                        <span><label for="{{ document_form.owner|id }}">{{ document_form.owner.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
+                        {{ document_form.owner }}
+                    </div>
+                    <div>
+                        <span><label for="{{ document_form.metadata_author|id }}">{{ document_form.metadata_author.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
+                        {{ document_form.metadata_author }}
+                    </div>
+                </div>
             </div>
             <!--End Contact Roles -->
           </div>
