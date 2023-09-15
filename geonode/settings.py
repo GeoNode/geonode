@@ -2340,7 +2340,9 @@ IMPORTER_HANDLERS = ast.literal_eval(
     'importer.handlers.shapefile.handler.ShapeFileHandler',\
     'importer.handlers.kml.handler.KMLFileHandler',\
     'importer.handlers.csv.handler.CSVFileHandler',\
-    'importer.handlers.geotiff.handler.GeoTiffFileHandler'\
+    'importer.handlers.geotiff.handler.GeoTiffFileHandler',\
+    'importer.handlers.xml.handler.XMLFileHandler',\
+    'importer.handlers.sld.handler.SLDFileHandler'\
 ]",
     )
 )
