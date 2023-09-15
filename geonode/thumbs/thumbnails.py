@@ -174,8 +174,8 @@ def create_thumbnail(
                 img = Image.open(content)
                 img.verify()  # verify that it is, in fact an image
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-                #merged_partial_thumbs.paste(img, mask=img.convert("RGBA").split()[-1])
-                merged_partial_thumbs = Image.alpha_composite(merged_partial_thumbs,img.convert("RGBA"))
+                # merged_partial_thumbs.paste(img, mask=img.convert("RGBA").split()[-1])
+                merged_partial_thumbs = Image.alpha_composite(merged_partial_thumbs, img.convert("RGBA"))
             except UnidentifiedImageError as e:
                 logger.error(f"Thumbnail generation. Error occurred while fetching dataset image: {image}")
                 logger.exception(e)
@@ -195,7 +195,7 @@ def create_thumbnail(
     if background is not None:
         thumbnail.paste(background, (0, 0))
 
-    thumbnail = Image.alpha_composite(thumbnail,merged_partial_thumbs)
+    thumbnail = Image.alpha_composite(thumbnail, merged_partial_thumbs)
 
     # convert image to the format required by save_thumbnail
     with BytesIO() as output:
