@@ -333,21 +333,6 @@ class DatasetsAutocomplete(SimpleSelect2View):
         ]
 
 
-class DatasetsAutocomplete(SimpleSelect2View):
-    model = Dataset
-    filter_arg = "title__icontains"
-
-    def get_results(self, context):
-        return [
-            {
-                "id": self.get_result_value(result),
-                "text": self.get_result_label(result.title),
-                "selected_text": self.get_selected_result_label(result.title),
-            }
-            for result in context["object_list"]
-        ]
-
-
 class ThesaurusAvailable(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         tid = self.request.GET.get("sysid")

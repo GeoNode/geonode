@@ -416,22 +416,6 @@ class TestStorageManager(GeoNodeBaseTestSupport):
         os.remove(output.get("files")[0])
         self.assertFalse(os.path.exists(output.get("files")[0]))
 
-    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
-    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
-    def test_storage_manager_copy(self):
-        """
-        Test that the copy works as expected and the permissions are corerct
-        """
-        dataset = create_single_dataset(name="test_copy")
-        dataset.files = [os.path.join(f"{self.project_root}", "tests/data/test_sld.sld")]
-        dataset.save()
-        output = self.sut().copy(dataset)
-
-        self.assertTrue(os.path.exists(output.get("files")[0]))
-        self.assertEqual(os.stat(os.path.exists(output.get("files")[0])).st_mode, 8592)
-        os.remove(output.get("files")[0])
-        self.assertFalse(os.path.exists(output.get("files")[0]))
-
 
 class TestDataRetriever(TestCase):
     @classmethod
@@ -624,7 +608,7 @@ class TestDataRetriever(TestCase):
         self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
         _files = storage_manager.get_retrieved_paths()
         self.assertTrue("single_point.shp" in _files.get("base_file"))
-        
+
     def test_zip_file_should_correctly_relate_mixed_content(self):
         zip_file = os.path.join(f"{self.project_root}", "tests/data/data_collection.zip")
         storage_manager = self.sut(
@@ -634,7 +618,7 @@ class TestDataRetriever(TestCase):
         self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
         _files = storage_manager.get_retrieved_paths()
         base_file = _files.get("base_file")
-        
+
         def strip_extension(filename):
             return filename.split(".")[0] if filename else filename
 
