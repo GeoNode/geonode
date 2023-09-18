@@ -516,6 +516,7 @@ span.grippy::after {
                 {% endblock doc_supplemental_information %}
             </div>
             <div class="col-xs-12 col-lg-5">
+              {% block doc_temporal_block %}
                     <div class="col-xs-12 col-lg-6">
                       {% block doc_temporal_extent_start %}
                       <div class="input-group date">
@@ -534,6 +535,7 @@ span.grippy::after {
                         </div>
                       {% endblock doc_temporal_extent_end %}
                     </div>
+                {% endblock %}
                 <div class="col-xs-12">
                       {% block doc_maintenance_frequency %}
                     <div style="margin-top: 5px">
