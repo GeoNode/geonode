@@ -1886,17 +1886,6 @@ def _create_geofence_client():
 geofence = _create_geofence_client()
 gf_utils = GeoFenceUtils(geofence)
 
-
-def _create_geofence_client():
-    gf_rest_url = f'{url.rstrip("/")}/geofence/'
-    client = GeoFenceClient(gf_rest_url, _user, _password)
-    client.set_timeout(ogc_server_settings.GEOFENCE_TIMEOUT)
-    return client
-
-
-geofence = _create_geofence_client()
-gf_utils = GeoFenceUtils(geofence)
-
 _punc = re.compile(r"[\.:]")  # regex for punctuation that confuses restconfig
 _foregrounds = ["#ffbbbb", "#bbffbb", "#bbbbff", "#ffffbb", "#bbffff", "#ffbbff"]
 _backgrounds = ["#880000", "#008800", "#000088", "#888800", "#008888", "#880088"]
