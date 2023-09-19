@@ -17,7 +17,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-        repository: 52north/geonode
+        repository: 52north/geonode_thuenen
         short-description: "Geospatial content management system"
         readme-filepath: ./README_thuenen.md
         enable-url-completion: true
