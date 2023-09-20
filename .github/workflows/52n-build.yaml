@@ -15,9 +15,9 @@ on:
   push:
     branches:
       - "thuenen_4.x"
-    paths:
-      - "!./.github/workflows/52n-dockerhub-description.yaml"
-      - "!./README_thuenen.md"
+    paths-ignore: 
+      - "./.github/workflows/52n-dockerhub-description.yaml"
+      - "./README_thuenen.md"
 
 jobs:
   build_and_push_geonode:
