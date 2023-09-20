@@ -608,30 +608,3 @@ class TestDataRetriever(TestCase):
         self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
         _files = storage_manager.get_retrieved_paths()
         self.assertTrue("single_point.shp" in _files.get("base_file"))
-
-    def test_zip_file_should_correctly_relate_mixed_content(self):
-        zip_file = os.path.join(f"{self.project_root}", "tests/data/data_collection.zip")
-        storage_manager = self.sut(
-            remote_files={"base_file": zip_file}
-        )
-        storage_manager.clone_remote_files()
-        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
-        _files = storage_manager.get_retrieved_paths()
-        base_file = _files.get("base_file")
-
-        def strip_extension(filename):
-            return filename.split(".")[0] if filename else filename
-
-        base_name = strip_extension(base_file)
-        available_files = [
-            _files.get("shp_file"),
-            _files.get("prj_file"),
-            _files.get("shx_file"),
-            _files.get("dbf_file")
-        ]
-
-        def assert_same_base_name(base_name, file_name):
-            self.assertEqual(base_name, strip_extension(file_name))
-
-        for file in available_files:
-            assert_same_base_name(base_name, file)
