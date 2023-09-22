@@ -504,22 +504,26 @@ def _container_exposed_port(component, instname):
 
 
 def _update_db_connstring():
-    user = os.getenv("GEONODE_DATABASE", "geonode")
-    pwd = os.getenv("GEONODE_DATABASE_PASSWORD", "geonode")
-    dbname = os.getenv("GEONODE_DATABASE", "geonode")
-    dbhost = os.getenv("DATABASE_HOST", "db")
-    dbport = os.getenv("DATABASE_PORT", 5432)
-    connstr = f"postgis://{user}:{pwd}@{dbhost}:{dbport}/{dbname}"
+    connstr = os.getenv("DATABASE_URL", None)
+    if not connstr:
+        user = os.getenv("GEONODE_DATABASE_USER", "geonode")
+        pwd = os.getenv("GEONODE_DATABASE_PASSWORD", "geonode")
+        dbname = os.getenv("GEONODE_DATABASE", "geonode")
+        dbhost = os.getenv("DATABASE_HOST", "db")
+        dbport = os.getenv("DATABASE_PORT", 5432)
+        connstr = f"postgis://{user}:{pwd}@{dbhost}:{dbport}/{dbname}"
     return connstr
 
 
 def _update_geodb_connstring():
-    geouser = os.getenv("GEONODE_GEODATABASE", "geonode_data")
-    geopwd = os.getenv("GEONODE_GEODATABASE_PASSWORD", "geonode_data")
-    geodbname = os.getenv("GEONODE_GEODATABASE", "geonode_data")
-    dbhost = os.getenv("DATABASE_HOST", "db")
-    dbport = os.getenv("DATABASE_PORT", 5432)
-    geoconnstr = f"postgis://{geouser}:{geopwd}@{dbhost}:{dbport}/{geodbname}"
+    geoconnstr = os.getenv("GEODATABASE_URL", None)
+    if not geoconnstr:
+        geouser = os.getenv("GEONODE_GEODATABASE_USER", "geonode_data")
+        geopwd = os.getenv("GEONODE_GEODATABASE_PASSWORD", "geonode_data")
+        geodbname = os.getenv("GEONODE_GEODATABASE", "geonode_data")
+        dbhost = os.getenv("DATABASE_HOST", "db")
+        dbport = os.getenv("DATABASE_PORT", 5432)
+        geoconnstr = f"postgis://{geouser}:{geopwd}@{dbhost}:{dbport}/{geodbname}"
     return geoconnstr
 
 
