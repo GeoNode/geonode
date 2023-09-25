@@ -498,6 +498,7 @@ span.grippy::after {
                 {% endblock maintenance_block %}
             </div>
             <div class="col-xs-12 col-lg-3">
+              {% block geoapp_poc %}
               <div class="panel panel-default" style="margin-top: 5px">
                   <div class="panel-heading">{% trans "Responsible Parties" %}</div>
                   <div class="panel-body">
@@ -505,6 +506,7 @@ span.grippy::after {
                       {{ geoapp_form.poc }}
                   </div>
               </div>
+              {% endblock %}
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">
