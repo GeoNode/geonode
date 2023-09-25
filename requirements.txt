@@ -167,7 +167,7 @@ factory-boy==3.3.0
 flaky==3.7.0
 selenium>=4.1.0,<5.0.0
 selenium-requests==2.0.3
-webdriver_manager==4.0.0
+webdriver_manager==4.0.1
 
 # Security and audit
 mistune==3.0.1
