@@ -3,7 +3,7 @@ version: '3.9'
 # Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
-  image: geonode/geonode:latest-ubuntu-22.10
+  image: geonode/geonode:latest-ubuntu-22.04
   restart: unless-stopped
   env_file:
     - .env
