@@ -234,11 +234,6 @@ def update_resource(
 
     to_update.update(defaults)
     try:
-        ResourceBase.objects.filter(id=instance.resourcebase_ptr.id).update(**defaults)
-    except Exception as e:
-        logger.error(f"{e} - {defaults}")
-        raise
-    try:
         instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
     except Exception as e:
         logger.error(f"{e} - {to_update}")
@@ -254,8 +249,6 @@ def update_resource(
             _s = Service.objects.filter(harvester=_h).get()
             _to_update = {
                 "remote_typename": _s.name,
-                # "ows_url": _s.service_url,
-                "subtype": "remote",
             }
             if hasattr(instance, "remote_service"):
                 _to_update["remote_service"] = _s
