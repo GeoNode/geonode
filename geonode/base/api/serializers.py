@@ -197,7 +197,7 @@ class SimpleTopicCategorySerializer(DynamicModelSerializer):
     class Meta:
         model = TopicCategory
         name = "TopicCategory"
-        fields = ("identifier",)
+        fields = ("identifier","gn_description")
 
 
 class RestrictionCodeTypeSerializer(DynamicModelSerializer):
