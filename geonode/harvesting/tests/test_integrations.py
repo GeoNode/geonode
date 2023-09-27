@@ -16,16 +16,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from unittest import mock
 import uuid
+import datetime as dt
+from unittest import mock
 
 from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.layers.models import Dataset
 
-from geonode.harvesting.resourcedescriptor import *
-from geonode.harvesting.models import *
+from geonode.harvesting.resourcedescriptor import (
+    RecordDescriptionContact,
+    RecordDistribution,
+    RecordIdentification,
+    RecordDescription,
+)
+from geonode.harvesting.models import Harvester, HarvestableResource, AsynchronousHarvestingSession
 from geonode.harvesting.harvesters.base import HarvestedResourceInfo
 from geonode.harvesting.harvesters.geonodeharvester import GeonodeUnifiedHarvesterWorker
 
