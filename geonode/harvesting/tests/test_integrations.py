@@ -35,8 +35,6 @@ from geonode.harvesting.models import Harvester, HarvestableResource, Asynchrono
 from geonode.harvesting.harvesters.base import HarvestedResourceInfo
 from geonode.harvesting.harvesters.geonodeharvester import GeonodeUnifiedHarvesterWorker
 
-from geonode.harvesting.tasks import _harvest_resource
-
 
 class HarvesterIntegrationsTestCase(GeoNodeBaseTestSupport):
     unique_identifier = "id"
