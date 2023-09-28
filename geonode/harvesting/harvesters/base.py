@@ -247,6 +247,7 @@ class BaseHarvesterWorker(abc.ABC):
         if self.should_copy_resource(harvestable_resource):
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
         else:
+            defaults["subtype"] = "remote"
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
         return {key: value for key, value in defaults.items() if value is not None}
 
