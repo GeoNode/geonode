@@ -542,7 +542,8 @@ class GenericWMTSBackground(BaseThumbBackground):
         return background
 
     def build_kvp_request(self, baseurl, layer, style, xyz):
-        return f"{baseurl}?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer={layer}&style={style}&tilematrixset={self.options['tilematrixset']}&TileMatrix={xyz[2]}&TileRow={xyz[1]}&TileCol={xyz[0]}"
+        return f"{baseurl}?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer={layer}&style={style} \
+            &tilematrixset={self.options['tilematrixset']}&TileMatrix={xyz[2]}&TileRow={xyz[1]}&TileCol={xyz[0]}"
 
     def build_request(self, xyz):
         request_encoding = self.options.get("requestencoding", "KVP")
