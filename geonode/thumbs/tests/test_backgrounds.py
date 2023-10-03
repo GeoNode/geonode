@@ -276,7 +276,7 @@ WMTS_TILEMATRIX_LEVELS = [
 THUMBNAIL_BACKGROUND = {
     "class": "geonode.thumbs.background.GenericWMTSBackground",
     "options": {
-        "url": "https://maps.info-rac.org/arcgis/rest/services/Hosted/basemap_inforac_3857/MapServer/WMTS",
+        "url": "myserver.com/WMTS",
         "layer": "Hosted_basemap_inforac_3857",
         "style": "default",
         "tilematrixset": "default028mm",
@@ -286,7 +286,7 @@ THUMBNAIL_BACKGROUND = {
 
 EXPECTED_RESULTS_DIR = "geonode/thumbs/tests/expected_results/"
 
-base_request_url = "https://maps.info-rac.org/arcgis/rest/services/Hosted/basemap_inforac_3857/MapServer/WMTS?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer=Hosted_basemap_inforac_3857&style=default&tilematrixset=default028mm&"
+base_request_url = "https://myserver.com/WMTS?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer=Hosted_basemap_inforac_3857&style=default&tilematrixset=default028mm&"
 mocked_requests = {
     base_request_url + "TileMatrix=4&TileRow=5&TileCol=7": f"{EXPECTED_RESULTS_DIR}/tiles/wmts_7_5_4.png",
     base_request_url + "TileMatrix=4&TileRow=6&TileCol=7": f"{EXPECTED_RESULTS_DIR}/tiles/wmts_7_6_4.png",
@@ -345,7 +345,7 @@ class GeoNodeThumbnailWMTSBackground(GeoNodeBaseTestSupport):
     @override_settings(THUMBNAIL_BACKGROUND=THUMBNAIL_BACKGROUND)
     @patch("geonode.thumbs.background.WMTS_TILEMATRIXSET_LEVELS", WMTS_TILEMATRIX_LEVELS)
     def test_build_request(self, *args):
-        expected_imgurl = "https://maps.info-rac.org/arcgis/rest/services/Hosted/basemap_inforac_3857/MapServer/WMTS?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer=Hosted_basemap_inforac_3857&style=default&tilematrixset=default028mm&TileMatrix=4&TileRow=5&TileCol=7"
+        expected_imgurl = "https://myserver.com/WMTS?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer=Hosted_basemap_inforac_3857&style=default&tilematrixset=default028mm&TileMatrix=4&TileRow=5&TileCol=7"
         background = GenericWMTSBackground(thumbnail_width=500, thumbnail_height=200)
         imgurl = background.build_request((7, 5, 4))
         self.assertEqual(expected_imgurl, imgurl)
