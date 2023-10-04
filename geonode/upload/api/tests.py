@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from geonode.base.models import ResourceBase
 from geonode.resource.models import ExecutionRequest
 import os
 import shutil
@@ -233,35 +234,45 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         Ensure we can access the Local Server Uploads list.
         """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 201)
+        try:
+            # Try to upload a good raster file and check the session IDs
+            fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
+            resp, data = rest_upload_by_path(fname, self.client)
+            self.assertEqual(resp.status_code, 201)
 
-        url = reverse("uploads-list")
-        # Anonymous
-        self.client.logout()
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 0)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 0)
-        logger.debug(response.data)
+            url = reverse("uploads-list")
+            # Anonymous
+            self.client.logout()
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data["total"], 0)
+            # Pagination
+            self.assertEqual(len(response.data["uploads"]), 0)
+            logger.debug(response.data)
+        finally:
+            x = ResourceBase.objects.filter(title__icontains="relief_san_andres")
+            if x.exists():
+                x.first().delete()
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_rest_uploads_non_interactive(self):
         """
         Ensure we can access the Local Server Uploads list.
         """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
-        self.assertEqual(resp.status_code, 201)
+        try:
+            # Try to upload a good raster file and check the session IDs
+            fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
+            resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
+            self.assertEqual(resp.status_code, 201)
 
-        exec_id = data.get("execution_id", None)
-        _exec = ExecutionRequest.objects.get(exec_id=exec_id)
-        self.assertEqual(_exec.status, "finished")
+            exec_id = data.get("execution_id", None)
+            _exec = ExecutionRequest.objects.get(exec_id=exec_id)
+            self.assertEqual(_exec.status, "finished")
+        finally:
+            x = ResourceBase.objects.filter(title__icontains="relief_san_andres")
+            if x.exists():
+                x.first().delete()
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
