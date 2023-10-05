@@ -197,6 +197,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with("name")
 
 
+@override_settings(AWS_STORAGE_BUCKET_NAME="my-bucket-name")
 class TestAwsStorageManager(SimpleTestCase):
     def setUp(self):
         self.sut = AwsStorageManager
