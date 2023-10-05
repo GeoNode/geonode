@@ -150,37 +150,15 @@ class Document(ResourceBase):
             return self.link_set.filter(resource=self.get_self_resource(), link_type="original").first().url
         return build_absolute_uri(reverse("document_download", args=(self.id,)))
 
-    @property
-    def linked_resources(self):
-        return ResourceBase.objects.filter(id__in=self.links.values_list("object_id", flat=True))
-
     class Meta(ResourceBase.Meta):
         pass
 
 
 class DocumentResourceLink(models.Model):
     # relation to the document model
-    document = models.ForeignKey(Document, null=True, blank=True, related_name="links", on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, null=True, blank=True, related_name="links_TO_BE_REMOVED_WIP", on_delete=models.CASCADE)
 
     # relation to the resource model
     content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     resource = GenericForeignKey("content_type", "object_id")
-
-
-def get_related_documents(resource):
-    if isinstance(resource, Dataset) or isinstance(resource, Map):
-        content_type = ContentType.objects.get_for_model(resource)
-        return Document.objects.filter(links__content_type=content_type, links__object_id=resource.pk)
-    else:
-        return None
-
-
-def update_documents_extent(sender, **kwargs):
-    documents = get_related_documents(sender)
-    if documents:
-        for document in documents:
-            document.save()
-
-
-map_changed_signal.connect(update_documents_extent)

@@ -47,7 +47,7 @@ from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save
 
 from ..base import enumerations
-from ..base.models import ResourceBase
+from ..base.models import ResourceBase, LinkedResource
 from ..security.utils import AdvancedSecurityWorkflowManager
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document, DocumentResourceLink
@@ -512,12 +512,15 @@ class ResourceManager(ResourceManagerInterface):
                         if "name" in defaults:
                             defaults.pop("name")
                     _resource.save()
-                    if isinstance(instance.get_real_instance(), Document):
-                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
-                            _resource_link = copy.copy(resource_link)
-                            _resource_link.pk = _resource_link.id = None
-                            _resource_link.document = _resource.get_real_instance()
-                            _resource_link.save()
+                    for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
+                        LinkedResource.object.get_or_create(source_id=_resource.pk,
+                                                            target_id=lr.target.pk,
+                                                            internal=False)
+                    for lr in LinkedResource.get_linked_resources(target=instance.pk, is_internal=False):
+                        LinkedResource.object.get_or_create(source_id=lr.source.pk,
+                                                            target_id=_resource.pk,
+                                                            internal=False)
+
                     if isinstance(instance.get_real_instance(), Dataset):
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
                             _attribute = copy.copy(attribute)

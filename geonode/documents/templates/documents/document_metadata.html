@@ -88,13 +88,13 @@
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
-    $("#id_resource-links").select2({
+    $("#id_resource-linked_resources").select2({
         placeholder: "{% trans "Select an option" %}",
         allowClear: true
     });
 </script>
 <style>
-  #s2id_id_resource-links {
+  #s2id_id_resource-linked_resources {
     width: 600px;
     height: 100%;
   }

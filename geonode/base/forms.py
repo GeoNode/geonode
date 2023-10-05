@@ -46,6 +46,7 @@ from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (
     HierarchicalKeyword,
     License,
+    LinkedResource,
     Region,
     ResourceBase,
     Thesaurus,
@@ -345,6 +346,63 @@ class ThesaurusAvailableForm(forms.Form):
         return tname.first()
 
 
+class LinkedResourceForm(forms.ModelForm):
+
+    linked_resources = forms.MultipleChoiceField(label=_("Link to"), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["linked_resources"].choices = LinkedResourceForm.generate_link_choices()
+        self.fields["linked_resources"].initial = LinkedResourceForm.generate_link_values(resources=LinkedResource.get_targets(self.instance))
+
+    @staticmethod
+    def generate_link_choices(resources=None):
+        if resources is None:
+            resources = ResourceBase.objects.all().order_by('title')
+
+        choices = []
+        for obj in resources:
+            choices.append([obj.id, f"{obj.title} ({obj.polymorphic_ctype.model})"])
+
+        return choices
+
+    @staticmethod
+    def generate_link_values(resources=None):
+        choices = LinkedResourceForm.generate_link_choices(resources=resources)
+        return [choice[0] for choice in choices]
+
+    def save_linked_resources(self, links_field="linked_resources"):
+        # create and fetch desired links
+        target_ids = []
+        for res_id in self.cleaned_data[links_field]:
+            linked, _ = LinkedResource.objects.get_or_create(
+                source=self.instance,
+                target_id=res_id,
+                internal=False
+            )
+            target_ids.append(res_id)
+
+            # matches = re.match(r"type:(\d+)-id:(\d+)", link)
+            # if matches:
+            #     content_type = ContentType.objects.get(id=matches.group(1))
+            #     instance, _ = DocumentResourceLink.objects.get_or_create(
+            #         document=self.instance,
+            #         content_type=content_type,
+            #         object_id=matches.group(2),
+            #     )
+            #     instances.append(instance)
+
+        # delete remaining links
+        # DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
+        #     pk__in=[i.pk for i in instances]
+        # ).delete()
+        (LinkedResource.objects
+            .filter(source_id=self.instance.id)
+            .exclude(target_id__in=target_ids)
+            .delete()
+         )
+
+
 class ResourceBaseDateTimePicker(DateTimePicker):
     def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
         "Helper function for building an attribute dictionary."
@@ -355,7 +413,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         # return base_attrs
 
 
-class ResourceBaseForm(TranslationModelForm):
+class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
 
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 
@@ -638,3 +696,4 @@ class OwnerRightsRequestForm(forms.Form):
 
 class ThesaurusImportForm(forms.Form):
     rdf_file = forms.FileField()
+
