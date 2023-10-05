@@ -689,3 +689,4 @@ class OwnerRightsRequestForm(forms.Form):
 
 class ThesaurusImportForm(forms.Form):
     rdf_file = forms.FileField()
+
