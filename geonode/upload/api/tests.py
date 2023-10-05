@@ -235,6 +235,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         Ensure we can access the Local Server Uploads list.
         """
+        resp = None
         layer_name = "relief_san_andres"
         try:
             self._cleanup_layer(layer_name=layer_name)
@@ -264,6 +265,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         """
         Ensure we can access the Local Server Uploads list.
         """
+        resp = None
         layer_name = "relief_san_andres"
         try:
             self._cleanup_layer(layer_name=layer_name)
@@ -289,11 +291,11 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         # removing the layer from geoserver
         dataset = gs_catalog.get_layer(layer_name)
         if dataset:
-            gs_catalog.delete(dataset)
+            gs_catalog.delete(dataset, purge="all", recurse=True)
         # removing the layer from geoserver
         store = gs_catalog.get_store(layer_name, workspace="geonode")
         if store:
-            gs_catalog.delete(store)
+            gs_catalog.delete(store, purge="all", recurse=True)
 
     @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
     def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
