@@ -197,11 +197,11 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with("name")
 
 
+@override_settings(AWS_STORAGE_BUCKET_NAME="my-bucket-name")
 class TestAwsStorageManager(SimpleTestCase):
     def setUp(self):
         self.sut = AwsStorageManager
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage.delete")
     def test_aws_deleted(self, aws):
         """
@@ -213,7 +213,6 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertIsNone(output)
         aws.assert_called_once_with("filename")
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage.exists")
     def test_aws_exists(self, aws):
         """
@@ -225,7 +224,6 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertTrue(output)
         aws.assert_called_once_with("filename")
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage.listdir")
     def test_aws_listdir(self, aws):
         """
@@ -237,7 +235,6 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertTupleEqual((["folder1"], ["file1", "file2"]), output)
         aws.assert_called_once_with("Apps/")
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage._open")
     def test_aws_open(self, aws):
         """
@@ -249,7 +246,6 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertEqual(type(output), io.StringIO().__class__)
         aws.assert_called_once_with("name", "xx")
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage._normalize_name")
     def test_aws_path(self, aws):
         """
@@ -261,7 +257,6 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertEqual("/opt/full/path/to/file", output)
         aws.assert_called_once_with("file")
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage.save")
     def test_aws_save(self, aws):
         """
@@ -273,7 +268,6 @@ class TestAwsStorageManager(SimpleTestCase):
         self.assertTrue(output)
         aws.assert_called_once_with("file_name", "content")
 
-    @override_settings(AWS_STORAGE_BUCKET_NAME= "bucket_name")
     @patch("storages.backends.s3boto3.S3Boto3Storage.size")
     def test_aws_size(self, aws):
         """
