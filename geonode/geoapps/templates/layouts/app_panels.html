@@ -510,6 +510,7 @@ span.grippy::after {
               {% endblock %}
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  {% block geoapp_owner %}
                   <div class="panel-body">
                       <div>
                         <span><label for="{{ geoapp_form.owner|id }}">{{ geoapp_form.owner.label }}</label></span>
