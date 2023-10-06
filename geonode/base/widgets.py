@@ -33,8 +33,6 @@ class TaggitProfileSelect2Custom(TaggitSelect2):
         returns list of selected elements
         """
         try:
-            ret_list = data.getlist(name)
-        except AttributeError:
             ret_list = data[name]
         except KeyError:
             ret_list = []
