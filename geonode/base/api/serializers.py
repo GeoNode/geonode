@@ -380,8 +380,9 @@ class UserSerializer(BaseDynamicModelSerializer):
 
 class ContactRoleField(DynamicComputedField):
     default_error_messages = {
-        'required': ('ContactRoleField This field is required.'),
+        "required": ("ContactRoleField This field is required."),
     }
+
     def __init__(self, contact_type, **kwargs):
         self.contact_type = contact_type
         super().__init__(**kwargs)
@@ -508,22 +509,16 @@ class ResourceBaseSerializer(
         self.fields["resource_type"] = serializers.CharField(required=False)
         self.fields["polymorphic_ctype_id"] = serializers.CharField(read_only=True)
         self.fields["owner"] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
-        self.fields["metadata_author"] = ContactRoleField(
-            Roles.METADATA_AUTHOR.name, required=False
-        )
+        self.fields["metadata_author"] = ContactRoleField(Roles.METADATA_AUTHOR.name, required=False)
         self.fields["processor"] = ContactRoleField(Roles.PROCESSOR.name, required=False)
         self.fields["publisher"] = ContactRoleField(Roles.PUBLISHER.name, required=False)
         self.fields["custodian"] = ContactRoleField(Roles.CUSTODIAN.name, required=False)
         self.fields["poc"] = ContactRoleField(Roles.POC.name, required=False)
         self.fields["distributor"] = ContactRoleField(Roles.DISTRIBUTOR.name, required=False)
-        self.fields["resource_user"] = ContactRoleField(
-            Roles.RESOURCE_USER.name, required=False
-        )
-        self.fields["resource_provider"] = ContactRoleField(
-            Roles.RESOURCE_PROVIDER.name, required=False)
+        self.fields["resource_user"] = ContactRoleField(Roles.RESOURCE_USER.name, required=False)
+        self.fields["resource_provider"] = ContactRoleField(Roles.RESOURCE_PROVIDER.name, required=False)
         self.fields["originator"] = ContactRoleField(Roles.ORIGINATOR.name, required=False)
-        self.fields["principal_investigator"] = ContactRoleField(
-            Roles.PRINCIPAL_INVESTIGATOR.name, required=False)
+        self.fields["principal_investigator"] = ContactRoleField(Roles.PRINCIPAL_INVESTIGATOR.name, required=False)
         self.fields["title"] = serializers.CharField(required=False)
         self.fields["abstract"] = serializers.CharField(required=False)
         self.fields["attribution"] = serializers.CharField(required=False)
