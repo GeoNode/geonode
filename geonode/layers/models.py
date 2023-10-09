@@ -323,6 +323,7 @@ class Dataset(ResourceBase):
 
         if as_target:
             from geonode.maps.models import Map
+
             # create LinkedResources on the fly to report MapLayer relationship
             res = (LinkedResource(source=map, target=self, internal=True) for map in self.maps)
             ret = itertools.chain(ret, res)

@@ -1732,8 +1732,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         This is implemented as a method so that derived classes can override it (for instance, Maps may add
         related datasets)
         """
-        return LinkedResource.get_linked_resources(target=self) if as_target \
+        return (
+            LinkedResource.get_linked_resources(target=self)
+            if as_target
             else LinkedResource.get_linked_resources(source=self)
+        )
 
 
 class LinkManager(models.Manager):
@@ -1759,29 +1762,29 @@ class LinkManager(models.Manager):
 
 
 class LinkedResource(models.Model):
-    source = models.ForeignKey(ResourceBase, related_name="linked_to",
-                               blank=False, null=False, on_delete=models.CASCADE)
-    target = models.ForeignKey(ResourceBase, related_name="linked_by",
-                               blank=True, null=False, on_delete=models.CASCADE)
+    source = models.ForeignKey(
+        ResourceBase, related_name="linked_to", blank=False, null=False, on_delete=models.CASCADE
+    )
+    target = models.ForeignKey(ResourceBase, related_name="linked_by", blank=True, null=False, on_delete=models.CASCADE)
     internal = models.BooleanField(null=False, default=False)
 
     @classmethod
     def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, is_internal: bool = None):
         if source is None and target is None:
-            raise ValueError('Both source and target filters missing')
+            raise ValueError("Both source and target filters missing")
 
         qs = LinkedResource.objects
         if source:
-            qs = qs.filter(source=source).select_related('target')
+            qs = qs.filter(source=source).select_related("target")
         if target:
-            qs = qs.filter(target=target).select_related('source')
+            qs = qs.filter(target=target).select_related("source")
         if is_internal is not None:
             qs = qs.filter(internal=is_internal)
         return qs
 
     @classmethod
     def get_targets(cls, source: ResourceBase, is_internal: bool = None):
-        sub = LinkedResource.objects.filter(source=source).values('target_id')
+        sub = LinkedResource.objects.filter(source=source).values("target_id")
         if is_internal is not None:
             sub = sub.filter(internal=is_internal)
         return ResourceBase.objects.filter(id__in=sub)

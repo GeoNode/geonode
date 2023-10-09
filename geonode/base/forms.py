@@ -347,18 +347,19 @@ class ThesaurusAvailableForm(forms.Form):
 
 
 class LinkedResourceForm(forms.ModelForm):
-
     linked_resources = forms.MultipleChoiceField(label=_("Link to"), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["linked_resources"].choices = LinkedResourceForm.generate_link_choices()
-        self.fields["linked_resources"].initial = LinkedResourceForm.generate_link_values(resources=LinkedResource.get_targets(self.instance))
+        self.fields["linked_resources"].initial = LinkedResourceForm.generate_link_values(
+            resources=LinkedResource.get_targets(self.instance)
+        )
 
     @staticmethod
     def generate_link_choices(resources=None):
         if resources is None:
-            resources = ResourceBase.objects.all().order_by('title')
+            resources = ResourceBase.objects.all().order_by("title")
 
         choices = []
         for obj in resources:
@@ -375,11 +376,7 @@ class LinkedResourceForm(forms.ModelForm):
         # create and fetch desired links
         target_ids = []
         for res_id in self.cleaned_data[links_field]:
-            linked, _ = LinkedResource.objects.get_or_create(
-                source=self.instance,
-                target_id=res_id,
-                internal=False
-            )
+            linked, _ = LinkedResource.objects.get_or_create(source=self.instance, target_id=res_id, internal=False)
             target_ids.append(res_id)
 
             # matches = re.match(r"type:(\d+)-id:(\d+)", link)
@@ -396,11 +393,7 @@ class LinkedResourceForm(forms.ModelForm):
         # DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
         #     pk__in=[i.pk for i in instances]
         # ).delete()
-        (LinkedResource.objects
-            .filter(source_id=self.instance.id)
-            .exclude(target_id__in=target_ids)
-            .delete()
-         )
+        (LinkedResource.objects.filter(source_id=self.instance.id).exclude(target_id__in=target_ids).delete())
 
 
 class ResourceBaseDateTimePicker(DateTimePicker):
@@ -696,4 +689,3 @@ class OwnerRightsRequestForm(forms.Form):
 
 class ThesaurusImportForm(forms.Form):
     rdf_file = forms.FileField()
-

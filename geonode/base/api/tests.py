@@ -2625,14 +2625,19 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
             self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(payload, "resources", (
-                {"pk":self.map.id, "title": ">>> " + self.map.title},
-                {"pk":self.dataset.id, "title": ">>> " + self.dataset.title})
+            self.assert_linkedres_contains(
+                payload,
+                "resources",
+                (
+                    {"pk": self.map.id, "title": ">>> " + self.map.title},
+                    {"pk": self.dataset.id, "title": ">>> " + self.dataset.title},
+                ),
             )
             self.assert_linkedres_size(payload, "linked_to", 2)
-            self.assert_linkedres_contains(payload, "linked_to", (
-                {"pk":self.map.id, "title": self.map.title},
-                {"pk":self.dataset.id, "title": self.dataset.title})
+            self.assert_linkedres_contains(
+                payload,
+                "linked_to",
+                ({"pk": self.map.id, "title": self.map.title}, {"pk": self.dataset.id, "title": self.dataset.title}),
             )
             self.assert_linkedres_size(payload, "linked_by", 0)
         finally:
@@ -2682,18 +2687,20 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             payload = response.json()
             self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(payload, "resources", (
-                {"pk":self.doc.id, "title": "<<< " + self.doc.title},
-                {"pk":self.dataset.id, "title": ">>> " + self.dataset.title},)
+            self.assert_linkedres_contains(
+                payload,
+                "resources",
+                (
+                    {"pk": self.doc.id, "title": "<<< " + self.doc.title},
+                    {"pk": self.dataset.id, "title": ">>> " + self.dataset.title},
+                ),
             )
             self.assert_linkedres_size(payload, "linked_to", 1)
-            self.assert_linkedres_contains(payload, "linked_to", (
-                {"pk":self.dataset.id, "title": self.dataset.title},)
+            self.assert_linkedres_contains(
+                payload, "linked_to", ({"pk": self.dataset.id, "title": self.dataset.title},)
             )
             self.assert_linkedres_size(payload, "linked_by", 1)
-            self.assert_linkedres_contains(payload, "linked_by", (
-                {"pk":self.doc.id, "title": self.doc.title},)
-            )
+            self.assert_linkedres_contains(payload, "linked_by", ({"pk": self.doc.id, "title": self.doc.title},))
 
         finally:
             if _d:
@@ -2721,12 +2728,12 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             payload = response.json()
             self.assert_linkedres_size(payload, "resources", 1)
-            self.assert_linkedres_contains(payload, "resources", (
-                {"pk":self.dataset.id, "title": ">>> " + self.dataset.title},)
+            self.assert_linkedres_contains(
+                payload, "resources", ({"pk": self.dataset.id, "title": ">>> " + self.dataset.title},)
             )
             self.assert_linkedres_size(payload, "linked_to", 1)
-            self.assert_linkedres_contains(payload, "linked_to", (
-                {"pk":self.dataset.id, "title": self.dataset.title},)
+            self.assert_linkedres_contains(
+                payload, "linked_to", ({"pk": self.dataset.id, "title": self.dataset.title},)
             )
             self.assert_linkedres_size(payload, "linked_by", 0)
 
@@ -2754,14 +2761,12 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             payload = response.json()
             self.assert_linkedres_size(payload, "resources", 1)
-            self.assert_linkedres_contains(payload, "resources", (
-                {"pk":self.map.id, "title": "<<< " + self.map.title},)
+            self.assert_linkedres_contains(
+                payload, "resources", ({"pk": self.map.id, "title": "<<< " + self.map.title},)
             )
             self.assert_linkedres_size(payload, "linked_to", 0)
             self.assert_linkedres_size(payload, "linked_by", 1)
-            self.assert_linkedres_contains(payload, "linked_by", (
-                {"pk":self.map.id, "title": self.map.title},)
-            )
+            self.assert_linkedres_contains(payload, "linked_by", ({"pk": self.map.id, "title": self.map.title},))
 
         finally:
             if _m:
@@ -2787,15 +2792,23 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
             self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(payload, "resources", (
-                {"pk":self.doc.id, "title": "<<< " + self.doc.title},
-                {"pk":self.map.id, "title": "<<< " + self.map.title},)
+            self.assert_linkedres_contains(
+                payload,
+                "resources",
+                (
+                    {"pk": self.doc.id, "title": "<<< " + self.doc.title},
+                    {"pk": self.map.id, "title": "<<< " + self.map.title},
+                ),
             )
             self.assert_linkedres_size(payload, "linked_to", 0)
             self.assert_linkedres_size(payload, "linked_by", 2)
-            self.assert_linkedres_contains(payload, "linked_by", (
-                {"pk":self.map.id, "title": self.map.title},
-                {"pk":self.doc.id, "title": self.doc.title},)
+            self.assert_linkedres_contains(
+                payload,
+                "linked_by",
+                (
+                    {"pk": self.map.id, "title": self.map.title},
+                    {"pk": self.doc.id, "title": self.doc.title},
+                ),
             )
 
         finally:

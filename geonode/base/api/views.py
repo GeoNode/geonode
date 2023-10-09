@@ -109,7 +109,8 @@ from .serializers import (
     TopicCategorySerializer,
     RegionSerializer,
     ThesaurusKeywordSerializer,
-    ExtraMetadataSerializer, LinkedResourceSerializer,
+    ExtraMetadataSerializer,
+    LinkedResourceSerializer,
 )
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
@@ -1506,17 +1507,15 @@ def base_linked_resources(instance, user, params):
         # linked_resources = LinkedResource.get_linked_resources(source=instance).filter(target__in=resources)
         # linked_by = LinkedResource.get_linked_resources(target=instance).filter(source__in=resources)
 
-        linked_resources = [lres for lres in instance.get_linked_resources()
-                            if lres.target.id in visible_ids]
-        linked_by = [lres for lres in instance.get_linked_resources(as_target=True)
-                     if lres.source.id in visible_ids]
+        linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
+        linked_by = [lres for lres in instance.get_linked_resources(as_target=True) if lres.source.id in visible_ids]
 
         warnings = {
-            'DEPRECATION': "'resources' field is deprecated, please use 'linked_to'",
+            "DEPRECATION": "'resources' field is deprecated, please use 'linked_to'",
         }
 
         if "page_size" in params or "page" in params:
-            warnings['PAGINATION'] = "Pagination is not supported on this call"
+            warnings["PAGINATION"] = "Pagination is not supported on this call"
 
         # "resources" will be deprecated, so next block is temporary
         # "resources" at the moment it's the only element rendered, so we want to add there both the linked_resources and the linked_by
@@ -1524,18 +1523,20 @@ def base_linked_resources(instance, user, params):
         resources = []
         for lres in linked_resources:
             res = lres.target
-            setattr(res, 'is_target', True)
+            setattr(res, "is_target", True)
             resources.append(res)
         for lres in linked_by:
             res = lres.source
-            setattr(res, 'is_target', False)
+            setattr(res, "is_target", False)
             resources.append(res)
 
         ret = {
             "WARNINGS": warnings,
             "resources": SimpleResourceSerializer(resources, embed=True, many=True).data,  # deprecated
             "linked_to": LinkedResourceSerializer(linked_resources, embed=True, many=True).data,
-            "linked_by": LinkedResourceSerializer(instance=linked_by, serialize_source=True, embed=True, many=True).data,
+            "linked_by": LinkedResourceSerializer(
+                instance=linked_by, serialize_source=True, embed=True, many=True
+            ).data,
         }
 
         return Response(ret)

@@ -54,7 +54,8 @@ from geonode.base.models import (
     SpatialRepresentationType,
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
-    ExtraMetadata, LinkedResource,
+    ExtraMetadata,
+    LinkedResource,
 )
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
@@ -788,9 +789,7 @@ class OwnerSerializer(BaseResourceCountSerializer):
 
 
 class SimpleResourceSerializer(DynamicModelSerializer):
-    warnings.warn('SimpleResourceSerializer is deprecated',
-                  DeprecationWarning,
-                  stacklevel=2)
+    warnings.warn("SimpleResourceSerializer is deprecated", DeprecationWarning, stacklevel=2)
 
     class Meta:
         name = "linked_resources"
@@ -808,7 +807,7 @@ class SimpleResourceSerializer(DynamicModelSerializer):
 
 
 class LinkedResourceSerializer(DynamicModelSerializer):
-    def __init__(self,  *kargs, serialize_source: bool = False, **kwargs):
+    def __init__(self, *kargs, serialize_source: bool = False, **kwargs):
         super().__init__(*kargs, **kwargs)
         self.serialize_target = not serialize_source
 
@@ -820,11 +819,13 @@ class LinkedResourceSerializer(DynamicModelSerializer):
     def to_representation(self, instance: LinkedResource):
         data = super().to_representation(instance)
         item: ResourceBase = instance.target if self.serialize_target else instance.source
-        data.update({
-            "pk": item.pk,
-            "title": item.title,
-            "resource_type": item.resource_type,
-            "detail_url": item.detail_url,
-            "thumbnail_url": item.thumbnail_url,
-        })
+        data.update(
+            {
+                "pk": item.pk,
+                "title": item.title,
+                "resource_type": item.resource_type,
+                "detail_url": item.detail_url,
+                "thumbnail_url": item.thumbnail_url,
+            }
+        )
         return data
