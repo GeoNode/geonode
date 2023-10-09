@@ -152,13 +152,3 @@ class Document(ResourceBase):
 
     class Meta(ResourceBase.Meta):
         pass
-
-
-class DocumentResourceLink(models.Model):
-    # relation to the document model
-    document = models.ForeignKey(Document, null=True, blank=True, related_name="links_TO_BE_REMOVED_WIP", on_delete=models.CASCADE)
-
-    # relation to the resource model
-    content_type = models.ForeignKey(ContentType, null=True, blank=True, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    resource = GenericForeignKey("content_type", "object_id")

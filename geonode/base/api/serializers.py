@@ -20,6 +20,7 @@ import logging
 from slugify import slugify
 from urllib.parse import urljoin
 import json
+import warnings
 
 from django.db.models import Q
 from django.conf import settings
@@ -787,6 +788,9 @@ class OwnerSerializer(BaseResourceCountSerializer):
 
 
 class SimpleResourceSerializer(DynamicModelSerializer):
+    warnings.warn('SimpleResourceSerializer is deprecated',
+                  DeprecationWarning,
+                  stacklevel=2)
 
     class Meta:
         name = "linked_resources"
@@ -796,7 +800,7 @@ class SimpleResourceSerializer(DynamicModelSerializer):
     def to_representation(self, instance: LinkedResource):
         return {
             "pk": instance.pk,
-            "title": f"{'>>> ' if instance.is_target else '<<< '} {instance.title}",
+            "title": f"{'>>>' if instance.is_target else '<<<'} {instance.title}",
             "resource_type": instance.resource_type,
             "detail_url": instance.detail_url,
             "thumbnail_url": instance.thumbnail_url,

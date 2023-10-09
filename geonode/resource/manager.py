@@ -50,7 +50,7 @@ from ..base import enumerations
 from ..base.models import ResourceBase, LinkedResource
 from ..security.utils import AdvancedSecurityWorkflowManager
 from ..layers.metadata import parse_metadata
-from ..documents.models import Document, DocumentResourceLink
+from ..documents.models import Document
 from ..layers.models import Dataset, Attribute
 from ..maps.models import Map
 from ..storage.manager import storage_manager

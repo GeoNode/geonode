@@ -675,7 +675,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         mixin1.cleaned_data = dict(
             links=mixin1.generate_link_values(resources=resources),
         )
-        mixin1.save_many2many()
+        mixin1.save_linked_resources()
 
         for resource in resources:
             ct = ContentType.objects.get_for_model(resource)
@@ -689,7 +689,7 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
         mixin2.cleaned_data = dict(
             links=mixin2.generate_link_values(resources=layers),
         )
-        mixin2.save_many2many()
+        mixin2.save_linked_resources()
 
         for resource in layers:
             ct = ContentType.objects.get_for_model(resource)

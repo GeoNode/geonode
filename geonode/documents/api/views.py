@@ -142,7 +142,7 @@ class DocumentViewSet(DynamicModelViewSet):
     @extend_schema(
         methods=["get"],
         responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the DocumentResourceLink(s).",
+        description="API endpoint allowing to retrieve linked resources",
     )
     @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None, *args, **kwargs):
