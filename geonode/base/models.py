@@ -1783,11 +1783,15 @@ class LinkedResource(models.Model):
         return qs
 
     @classmethod
-    def get_targets(cls, source: ResourceBase, is_internal: bool = None):
-        sub = LinkedResource.objects.filter(source=source).values("target_id")
+    def get_target_ids(cls, source: ResourceBase, is_internal: bool = None):
+        sub = LinkedResource.objects.filter(source=source).values_list("target_id", flat=True)
         if is_internal is not None:
             sub = sub.filter(internal=is_internal)
-        return ResourceBase.objects.filter(id__in=sub)
+        return sub
+
+    @classmethod
+    def get_targets(cls, source: ResourceBase, is_internal: bool = None):
+        return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, is_internal))
 
     @classmethod
     def resolve_targets(cls, linked_resources):

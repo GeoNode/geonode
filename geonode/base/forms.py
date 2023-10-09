@@ -351,26 +351,18 @@ class LinkedResourceForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["linked_resources"].choices = LinkedResourceForm.generate_link_choices()
-        self.fields["linked_resources"].initial = LinkedResourceForm.generate_link_values(
-            resources=LinkedResource.get_targets(self.instance)
-        )
+        self.fields["linked_resources"].choices = self.generate_link_choices()
+        self.fields["linked_resources"].initial = LinkedResource.get_target_ids(self.instance)
 
-    @staticmethod
-    def generate_link_choices(resources=None):
+    class Meta:
+        model = ResourceBase
+        fields = ["linked_resources"]
+
+    def generate_link_choices(self, resources=None):
         if resources is None:
-            resources = ResourceBase.objects.all().order_by("title")
+            resources = ResourceBase.objects.exclude(pk=self.instance.id).order_by("title")
 
-        choices = []
-        for obj in resources:
-            choices.append([obj.id, f"{obj.title} ({obj.polymorphic_ctype.model})"])
-
-        return choices
-
-    @staticmethod
-    def generate_link_values(resources=None):
-        choices = LinkedResourceForm.generate_link_choices(resources=resources)
-        return [choice[0] for choice in choices]
+        return [[obj.id, f"{obj.title} ({obj.polymorphic_ctype.model})"] for obj in resources]
 
     def save_linked_resources(self, links_field="linked_resources"):
         # create and fetch desired links
@@ -378,16 +370,6 @@ class LinkedResourceForm(forms.ModelForm):
         for res_id in self.cleaned_data[links_field]:
             linked, _ = LinkedResource.objects.get_or_create(source=self.instance, target_id=res_id, internal=False)
             target_ids.append(res_id)
-
-            # matches = re.match(r"type:(\d+)-id:(\d+)", link)
-            # if matches:
-            #     content_type = ContentType.objects.get(id=matches.group(1))
-            #     instance, _ = DocumentResourceLink.objects.get_or_create(
-            #         document=self.instance,
-            #         content_type=content_type,
-            #         object_id=matches.group(2),
-            #     )
-            #     instances.append(instance)
 
         # delete remaining links
         # DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
