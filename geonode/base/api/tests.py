@@ -24,7 +24,6 @@ import json
 import logging
 from typing import Iterable
 
-from django.contrib.contenttypes.models import ContentType
 from django.test import RequestFactory, override_settings
 import gisdata
 
@@ -2648,7 +2647,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertEqual(expected_size, len(payload[element]), f"Mismatching payload size of {element}")
 
     def assert_linkedres_contains(self, payload, element: str, expected_elements: Iterable):
-        # try:
         res_list = payload[element]
         for dikt in expected_elements:
             found = False
@@ -2657,14 +2655,11 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                     if dikt.items() <= res.items():
                         found = True
                         break
-                except AttributeError as e:
+                except AttributeError:
                     self.fail(f"\nError while comparing \n EXPECTED: {dikt}\n FOUND: {res}")
 
             if not found:
                 self.fail(f"Elements {dikt} could not be found in output: {payload}")
-        # except Exception as e:
-        #     logger.exception(f"\nError while evaluating {payload}", e)
-        #     raise e
 
     def test_linked_resource_for_maps_mixed(self):
         try:

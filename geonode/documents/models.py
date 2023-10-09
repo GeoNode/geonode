@@ -25,14 +25,9 @@ from django.db import models
 from django.urls import reverse
 from django.utils.functional import classproperty
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 
 from geonode.client.hooks import hookset
-from geonode.maps.models import Map
-from geonode.layers.models import Dataset
 from geonode.base.models import ResourceBase
-from geonode.maps.signals import map_changed_signal
 from geonode.groups.conf import settings as groups_settings
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS, DOWNLOAD_PERMISSIONS

@@ -20,7 +20,6 @@ import json
 import logging
 
 import itertools
-from typing import Iterator
 
 from deprecated import deprecated
 from django.db import models

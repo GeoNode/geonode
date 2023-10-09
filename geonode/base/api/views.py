@@ -17,7 +17,6 @@
 #
 #########################################################################
 import ast
-from geonode.geoapps.models import GeoApp
 import json
 import re
 
@@ -61,7 +60,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
+from geonode.base.models import Configuration, ExtraMetadata
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
