@@ -2610,9 +2610,9 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 403)
 
     def test_linked_resource_for_document(self):
+        _d = []
         try:
             # data preparation
-            _d = []
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
 
@@ -2667,13 +2667,13 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # data preparation
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
             _d.append(
-                MapLayer(
+                MapLayer.objects.create(
                     map=self.map,
                     dataset=self.dataset,
                     name=self.dataset.name,
                     current_style="test_style",
                     ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
-                ).save()
+                )
             )
 
             # call the API
@@ -2707,13 +2707,13 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
     def test_linked_resources_for_maps(self):
         try:
             # data preparation
-            _m = MapLayer(
+            _m = MapLayer.objects.create(
                 map=self.map,
                 dataset=self.dataset,
                 name=self.dataset.name,
                 current_style="test_style",
                 ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
-            ).save()
+            )
 
             # call the API
             url = reverse("base-resources-linked_resources", args=[self.map.id])
@@ -2741,13 +2741,13 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         _m = None
         try:
             # data preparation
-            _m = MapLayer(
+            _m = MapLayer.objects.create(
                 map=self.map,
                 dataset=self.dataset,
                 name=self.dataset.name,
                 current_style="test_style",
                 ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
-            ).save()
+            )
 
             # call the API
             url = reverse("base-resources-linked_resources", args=[self.dataset.id])
@@ -2775,13 +2775,13 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # data preparation
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
             _d.append(
-                MapLayer(
+                MapLayer.objects.create(
                     map=self.map,
                     dataset=self.dataset,
                     name=self.dataset.name,
                     current_style="test_style",
                     ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
-                ).save()
+                )
             )
 
             # call the API
