@@ -29,7 +29,6 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.gis.geos import MultiPolygon
 from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
 
@@ -316,16 +315,6 @@ def get_alternate_name(instance):
     return instance.alternate
 
 
-def get_related_resources(document):
-    if document.links:
-        try:
-            return [link.content_type.get_object_for_this_type(id=link.object_id) for link in document.links.all()]
-        except Exception:
-            return []
-    else:
-        return []
-
-
 def document_post_save(instance, *args, **kwargs):
     instance.csw_type = "document"
 
@@ -374,15 +363,6 @@ def document_post_save(instance, *args, **kwargs):
                 link_type="data",
             ),
         )
-
-    resources = get_related_resources(instance)
-
-    # if there are (new) linked resources update the bbox computed by their bboxes
-    if resources:
-        bbox = MultiPolygon([r.bbox_polygon for r in resources])
-        instance.set_bbox_polygon(bbox.extent, instance.srid)
-    elif not instance.bbox_polygon:
-        instance.set_bbox_polygon((-180, -90, 180, 90), "EPSG:4326")
 
 
 def dataset_post_save(instance, *args, **kwargs):

@@ -46,6 +46,7 @@ from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (
     HierarchicalKeyword,
     License,
+    LinkedResource,
     Region,
     ResourceBase,
     Thesaurus,
@@ -345,6 +346,38 @@ class ThesaurusAvailableForm(forms.Form):
         return tname.first()
 
 
+class LinkedResourceForm(forms.ModelForm):
+    linked_resources = forms.MultipleChoiceField(label=_("Link to"), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["linked_resources"].choices = self.generate_link_choices()
+        self.fields["linked_resources"].initial = LinkedResource.get_target_ids(self.instance)
+
+    class Meta:
+        model = ResourceBase
+        fields = ["linked_resources"]
+
+    def generate_link_choices(self, resources=None):
+        if resources is None:
+            resources = ResourceBase.objects.exclude(pk=self.instance.id).order_by("title")
+
+        return [[obj.id, f"{obj.title} ({obj.polymorphic_ctype.model})"] for obj in resources]
+
+    def save_linked_resources(self, links_field="linked_resources"):
+        # create and fetch desired links
+        target_ids = []
+        for res_id in self.cleaned_data[links_field]:
+            linked, _ = LinkedResource.objects.get_or_create(source=self.instance, target_id=res_id, internal=False)
+            target_ids.append(res_id)
+
+        # delete remaining links
+        # DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
+        #     pk__in=[i.pk for i in instances]
+        # ).delete()
+        (LinkedResource.objects.filter(source_id=self.instance.id).exclude(target_id__in=target_ids).delete())
+
+
 class ResourceBaseDateTimePicker(DateTimePicker):
     def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
         "Helper function for building an attribute dictionary."
@@ -355,7 +388,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         # return base_attrs
 
 
-class ResourceBaseForm(TranslationModelForm):
+class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
 
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 

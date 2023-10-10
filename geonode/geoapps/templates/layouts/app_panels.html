@@ -297,6 +297,13 @@ span.grippy::after {
                                         <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
                                         {{ geoapp_form.title }}
                                     {% endblock %}
+                                    {% block geoapp_linked_resources %}
+                                        <div id="req_item">
+                                          <span><label for="{{ geoapp_form.linked_resources|id }}">{{ geoapp_form.linked_resources.label }}</label></span>
+                                          {{ geoapp_form.linked_resources }}
+                                        </div>
+                                    {% endblock geoapp_linked_resources %}
+
                                     <div>
                                         <span><label for="{{ geoapp_form.abstract|id }}">{{ geoapp_form.abstract.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->

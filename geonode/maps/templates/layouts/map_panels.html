@@ -317,6 +317,12 @@ span.grippy::after {
                                           {{ map_form.title }}
                                     </div>
                                   {% endblock map_title %}
+                                  {% block map_linked_resources %}
+                                    <div id="req_item">
+                                      <span><label for="{{ map_form.linked_resources|id }}">{{ map_form.linked_resources.label }}</label></span>
+                                      {{ map_form.linked_resources }}
+                                    </div>
+                                  {% endblock map_linked_resources %}
                                   {% block map_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ map_form.abstract|id }}">{{ map_form.abstract.label }}</label></span>

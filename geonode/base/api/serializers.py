@@ -20,6 +20,7 @@ import logging
 from slugify import slugify
 from urllib.parse import urljoin
 import json
+import warnings
 
 from django.db.models import Q
 from django.conf import settings
@@ -54,6 +55,7 @@ from geonode.base.models import (
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
     ExtraMetadata,
+    LinkedResource,
 )
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
@@ -787,7 +789,43 @@ class OwnerSerializer(BaseResourceCountSerializer):
 
 
 class SimpleResourceSerializer(DynamicModelSerializer):
+    warnings.warn("SimpleResourceSerializer is deprecated", DeprecationWarning, stacklevel=2)
+
     class Meta:
         name = "linked_resources"
         model = ResourceBase
         fields = ("pk", "title", "resource_type", "detail_url", "thumbnail_url")
+
+    def to_representation(self, instance: LinkedResource):
+        return {
+            "pk": instance.pk,
+            "title": f"{'>>>' if instance.is_target else '<<<'} {instance.title}",
+            "resource_type": instance.resource_type,
+            "detail_url": instance.detail_url,
+            "thumbnail_url": instance.thumbnail_url,
+        }
+
+
+class LinkedResourceSerializer(DynamicModelSerializer):
+    def __init__(self, *kargs, serialize_source: bool = False, **kwargs):
+        super().__init__(*kargs, **kwargs)
+        self.serialize_target = not serialize_source
+
+    class Meta:
+        name = "linked_resources"
+        model = LinkedResource
+        fields = ("internal",)
+
+    def to_representation(self, instance: LinkedResource):
+        data = super().to_representation(instance)
+        item: ResourceBase = instance.target if self.serialize_target else instance.source
+        data.update(
+            {
+                "pk": item.pk,
+                "title": item.title,
+                "resource_type": item.resource_type,
+                "detail_url": item.detail_url,
+                "thumbnail_url": item.thumbnail_url,
+            }
+        )
+        return data

@@ -46,20 +46,20 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
-from geonode.base.models import License, Region
+from geonode.base.models import License, Region, LinkedResource
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents import DocumentsAppConfig
 from geonode.resource.manager import resource_manager
-from geonode.documents.forms import DocumentFormMixin
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
-from geonode.documents.models import Document, DocumentResourceLink
+from geonode.documents.models import Document
 
 from geonode.base.populate_test_data import all_public, create_models, create_single_doc, remove_models
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
+from ..base.forms import LinkedResourceForm
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
@@ -120,23 +120,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         c = Document.objects.create(files=f, owner=superuser, title="theimg")
         c.set_default_permissions()
         self.assertEqual(Document.objects.get(pk=c.id).title, "theimg")
-
-    @patch("geonode.documents.tasks.create_document_thumbnail")
-    def test_create_document_with_rel(self, thumb):
-        """Tests the creation of a document with no a map related"""
-        thumb.return_value = True
-        f = [f"{settings.MEDIA_ROOT}/img.gif"]
-
-        superuser = get_user_model().objects.get(pk=2)
-
-        c = Document.objects.create(files=f, owner=superuser, title="theimg")
-
-        m = Map.objects.first()
-        ctype = ContentType.objects.get_for_model(m)
-        _d = DocumentResourceLink.objects.create(document_id=c.id, content_type=ctype, object_id=m.id)
-
-        self.assertEqual(Document.objects.get(pk=c.id).title, "theimg")
-        self.assertEqual(DocumentResourceLink.objects.get(pk=_d.id).object_id, m.id)
 
     def test_remote_document_is_marked_remote(self):
         """Tests creating an external document set its sourcetype to REMOTE."""
@@ -670,36 +653,33 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         # create document links
 
-        mixin1 = DocumentFormMixin()
+        mixin1 = LinkedResourceForm()
         mixin1.instance = d
         mixin1.cleaned_data = dict(
-            links=mixin1.generate_link_values(resources=resources),
+            linked_resources=[r.id for r in resources],
         )
-        mixin1.save_many2many()
+        mixin1.save_linked_resources()
 
         for resource in resources:
-            ct = ContentType.objects.get_for_model(resource)
-            _d = DocumentResourceLink.objects.get(document_id=d.id, content_type=ct.id, object_id=resource.id)
-            self.assertEqual(_d.object_id, resource.id)
+            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
+            self.assertEqual(_d.target_id, resource.id)
 
         # update document links
 
-        mixin2 = DocumentFormMixin()
+        mixin2 = LinkedResourceForm()
         mixin2.instance = d
         mixin2.cleaned_data = dict(
-            links=mixin2.generate_link_values(resources=layers),
+            linked_resources=[r.id for r in layers],
         )
-        mixin2.save_many2many()
+        mixin2.save_linked_resources()
 
         for resource in layers:
-            ct = ContentType.objects.get_for_model(resource)
-            _d = DocumentResourceLink.objects.get(document_id=d.id, content_type=ct.id, object_id=resource.id)
-            self.assertEqual(_d.object_id, resource.id)
+            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
+            self.assertEqual(_d.target_id, resource.id)
 
         for resource in maps:
-            ct = ContentType.objects.get_for_model(resource)
-            with self.assertRaises(DocumentResourceLink.DoesNotExist):
-                DocumentResourceLink.objects.get(document_id=d.id, content_type=ct.id, object_id=resource.id)
+            with self.assertRaises(LinkedResource.DoesNotExist):
+                LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):

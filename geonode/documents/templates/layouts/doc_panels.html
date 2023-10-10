@@ -313,12 +313,12 @@ span.grippy::after {
                                       {{ document_form.title }}
                                     </div>
                                 {% endblock doc_title %}
-                                {% block doc_links %}
+                                {% block doc_linked_resources %}
                                     <div id="req_item">                                  
-                                      <span><label for="{{ document_form.title|id }}">{{ document_form.links.label }}</label></span>
-                                      {{ document_form.links }}
+                                      <span><label for="{{ document_form.linked_resources|id }}">{{ document_form.linked_resources.label }}</label></span>
+                                      {{ document_form.linked_resources }}
                                     </div>
-                                {% endblock doc_links %}
+                                {% endblock doc_linked_resources %}
                                 {% block doc_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ document_form.abstract|id }}">{{ document_form.abstract.label }}</label></span>

@@ -18,7 +18,6 @@
 #########################################################################
 
 import os
-import re
 import json
 import logging
 
@@ -28,14 +27,10 @@ from django import forms
 from django.conf import settings
 from django.forms import HiddenInput
 from django.utils.translation import ugettext as _
-from django.contrib.contenttypes.models import ContentType
 from django.template.defaultfilters import filesizeformat
 
-from geonode.maps.models import Map
-from geonode.layers.models import Dataset
 from geonode.base.forms import ResourceBaseForm, get_tree_data
-from geonode.resource.utils import get_related_resources
-from geonode.documents.models import Document, DocumentResourceLink
+from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
 from geonode.upload.api.exceptions import FileUploadLimitException
 
@@ -82,54 +77,12 @@ class SizeRestrictedFileField(forms.FileField):
         return max_size_db_obj.max_size
 
 
-class DocumentFormMixin:
-    def generate_link_choices(self, resources=None):
-        if resources is None:
-            resources = list(Dataset.objects.all())
-            resources += list(Map.objects.all())
-            resources.sort(key=lambda x: x.title)
-
-        choices = []
-        for obj in resources:
-            type_id = ContentType.objects.get_for_model(obj.__class__).id
-            choices.append([f"type:{type_id}-id:{obj.id}", f"{obj.title} ({obj.polymorphic_ctype.model})"])
-
-        return choices
-
-    def generate_link_values(self, resources=None):
-        choices = self.generate_link_choices(resources=resources)
-        return [choice[0] for choice in choices]
-
-    def save_many2many(self, links_field="links"):
-        # create and fetch desired links
-        instances = []
-        for link in self.cleaned_data[links_field]:
-            matches = re.match(r"type:(\d+)-id:(\d+)", link)
-            if matches:
-                content_type = ContentType.objects.get(id=matches.group(1))
-                instance, _ = DocumentResourceLink.objects.get_or_create(
-                    document=self.instance,
-                    content_type=content_type,
-                    object_id=matches.group(2),
-                )
-                instances.append(instance)
-
-        # delete remaining links
-        DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
-            pk__in=[i.pk for i in instances]
-        ).delete()
-
-
-class DocumentForm(ResourceBaseForm, DocumentFormMixin):
+class DocumentForm(ResourceBaseForm):
     title = forms.CharField(required=False)
-
-    links = forms.MultipleChoiceField(label=_("Link to"), required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["regions"].choices = get_tree_data()
-        self.fields["links"].choices = self.generate_link_choices()
-        self.fields["links"].initial = self.generate_link_values(resources=get_related_resources(self.instance))
         for field in self.fields:
             help_text = self.fields[field].help_text
             self.fields[field].help_text = None
@@ -163,7 +116,7 @@ class DocumentDescriptionForm(forms.Form):
     keywords = forms.CharField(max_length=500, required=False)
 
 
-class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
+class DocumentCreateForm(TranslationModelForm):
 
     """
     The document upload form.
@@ -172,8 +125,6 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
     permissions = forms.CharField(
         widget=HiddenInput(attrs={"name": "permissions", "id": "permissions"}), required=False
     )
-
-    links = forms.MultipleChoiceField(label=_("Link to"), required=False)
 
     doc_file = SizeRestrictedFileField(label=_("File"), required=False, field_slug="document_upload_size")
 
@@ -186,7 +137,6 @@ class DocumentCreateForm(TranslationModelForm, DocumentFormMixin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["links"].choices = self.generate_link_choices()
 
     def clean_permissions(self):
         """
