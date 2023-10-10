@@ -2662,16 +2662,19 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 self.fail(f"Elements {dikt} could not be found in output: {payload}")
 
     def test_linked_resource_for_maps_mixed(self):
+        _d = []
         try:
             # data preparation
-            _d = LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id)
-            _m = MapLayer(
-                map=self.map,
-                dataset=self.dataset,
-                name=self.dataset.name,
-                current_style="test_style",
-                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
-            ).save()
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            _d.append(
+                MapLayer(
+                    map=self.map,
+                    dataset=self.dataset,
+                    name=self.dataset.name,
+                    current_style="test_style",
+                    ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+                ).save()
+            )
 
             # call the API
             url = reverse("base-resources-linked_resources", args=[self.map.id])
@@ -2698,10 +2701,8 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assert_linkedres_contains(payload, "linked_by", ({"pk": self.doc.id, "title": self.doc.title},))
 
         finally:
-            if _d:
-                _d.delete()
-            if _m:
-                _m.delete()
+            for d in _d:
+                d.delete()
 
     def test_linked_resources_for_maps(self):
         try:
@@ -2737,6 +2738,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 _m.delete()
 
     def test_linked_resource_for_dataset(self):
+        _m = None
         try:
             # data preparation
             _m = MapLayer(
@@ -2768,16 +2770,19 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 _m.delete()
 
     def test_linked_resource_for_datasets_mixed(self):
+        _d = []
         try:
             # data preparation
-            _d = LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id)
-            _m = MapLayer(
-                map=self.map,
-                dataset=self.dataset,
-                name=self.dataset.name,
-                current_style="test_style",
-                ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
-            ).save()
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(
+                MapLayer(
+                    map=self.map,
+                    dataset=self.dataset,
+                    name=self.dataset.name,
+                    current_style="test_style",
+                    ows_url="https://maps.geosolutionsgroup.com/geoserver/wms",
+                ).save()
+            )
 
             # call the API
             url = reverse("base-resources-linked_resources", args=[self.dataset.id])
@@ -2807,15 +2812,13 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             )
 
         finally:
-            if _d:
-                _d.delete()
-            if _m:
-                _m.delete()
+            for d in _d:
+                d.delete()
 
     def test_linked_resource_deprecated_pagination(self):
+        _d = []
         try:
             # data preparation
-            _d = []
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
 
