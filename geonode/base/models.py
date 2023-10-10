@@ -1797,6 +1797,7 @@ class LinkedResource(models.Model):
     def resolve_targets(cls, linked_resources):
         return (lr.target for lr in linked_resources)
 
+    @classmethod
     def resolve_sources(cls, linked_resources):
         return (lr.source for lr in linked_resources)
 
