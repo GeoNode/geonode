@@ -1503,9 +1503,6 @@ def base_linked_resources(instance, user, params):
         ).order_by("-pk")
         visible_ids = [res.id for res in visibile_resources]
 
-        # linked_resources = LinkedResource.get_linked_resources(source=instance).filter(target__in=resources)
-        # linked_by = LinkedResource.get_linked_resources(target=instance).filter(source__in=resources)
-
         linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
         linked_by = [lres for lres in instance.get_linked_resources(as_target=True) if lres.source.id in visible_ids]
 
@@ -1539,9 +1536,7 @@ def base_linked_resources(instance, user, params):
         }
 
         return Response(ret)
-    except NotImplementedError as e:
-        logger.exception(e)
-        return Response(data={"message": e.args[0], "success": False}, status=501, exception=True)
+
     except Exception as e:
         logger.exception(e)
         return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)

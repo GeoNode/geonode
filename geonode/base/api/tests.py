@@ -2812,6 +2812,39 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             if _m:
                 _m.delete()
 
+    def test_linked_resource_deprecated_pagination(self):
+        try:
+            # data preparation
+            _d = []
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+
+            # call the API w/ pagination
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?page_size=1")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
+            self.assertIn("PAGINATION", payload["WARNINGS"], "Missing PAGINATION element")
+
+            # call the API w/o pagination
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(url)
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
+            self.assertNotIn("PAGINATION", payload["WARNINGS"], "Unexpected PAGINATION element")
+
+        finally:
+            for d in _d:
+                d.delete()
+
 
 class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
     @classmethod
