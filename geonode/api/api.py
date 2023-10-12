@@ -76,7 +76,7 @@ class CountJSONSerializer(Serializer):
 
     def get_resources_counts(self, options):
         if settings.SKIP_PERMS_FILTER:
-            resources = 
+            resources = \
                 ResourceBase.objects.all()
         else:
             resources = get_objects_for_user(options["user"], "base.view_resourcebase")
