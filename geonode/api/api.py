@@ -19,7 +19,6 @@
 
 import json
 import time
-import os
 
 from django.apps import apps
 from django.db.models import Q
