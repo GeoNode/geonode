@@ -19,6 +19,7 @@
 
 import json
 import time
+import os
 
 from django.apps import apps
 from django.db.models import Q
@@ -70,11 +71,13 @@ FILTER_TYPES = {"dataset": Dataset, "map": Map, "document": Document, "geoapp": 
 
 
 class CountJSONSerializer(Serializer):
+
     """Custom serializer to post process the api and add counts"""
 
     def get_resources_counts(self, options):
         if settings.SKIP_PERMS_FILTER:
-            resources = ResourceBase.objects.all()
+            resources = 
+                ResourceBase.objects.all()
         else:
             resources = get_objects_for_user(options["user"], "base.view_resourcebase")
 
