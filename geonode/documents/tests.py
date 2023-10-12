@@ -655,9 +655,9 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         mixin1 = LinkedResourceForm()
         mixin1.instance = d
-        mixin1.cleaned_data = dict(
-            linked_resources=[r.id for r in resources],
-        )
+        mixin1.cleaned_data = {
+            "linked_resources": resources,
+        }
         mixin1.save_linked_resources()
 
         for resource in resources:
@@ -668,9 +668,9 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         mixin2 = LinkedResourceForm()
         mixin2.instance = d
-        mixin2.cleaned_data = dict(
-            linked_resources=[r.id for r in layers],
-        )
+        mixin2.cleaned_data = {
+            "linked_resources": layers,
+        }
         mixin2.save_linked_resources()
 
         for resource in layers:

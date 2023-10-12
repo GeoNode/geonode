@@ -319,7 +319,7 @@ span.grippy::after {
                                   {% endblock map_title %}
                                   {% block map_linked_resources %}
                                     <div id="req_item">
-                                      <span><label for="{{ map_form.linked_resources|id }}">{{ map_form.linked_resources.label }}</label></span>
+                                      <span><label for="{{ map_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
                                       {{ map_form.linked_resources }}
                                     </div>
                                   {% endblock map_linked_resources %}

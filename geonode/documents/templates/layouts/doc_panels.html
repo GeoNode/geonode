@@ -315,7 +315,7 @@ span.grippy::after {
                                 {% endblock doc_title %}
                                 {% block doc_linked_resources %}
                                     <div id="req_item">                                  
-                                      <span><label for="{{ document_form.linked_resources|id }}">{{ document_form.linked_resources.label }}</label></span>
+                                      <span><label for="{{ document_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
                                       {{ document_form.linked_resources }}
                                     </div>
                                 {% endblock doc_linked_resources %}
