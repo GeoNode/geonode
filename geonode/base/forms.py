@@ -20,9 +20,11 @@ import re
 import html
 import json
 import logging
+
 from django.db.models.query import QuerySet
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
+import dal.forward
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -347,35 +349,45 @@ class ThesaurusAvailableForm(forms.Form):
 
 
 class LinkedResourceForm(forms.ModelForm):
-    linked_resources = forms.MultipleChoiceField(label=_("Link to"), required=False)
+    linked_resources = forms.ModelMultipleChoiceField(
+        label=_("Related resources"),
+        required=False,
+        queryset=None,
+        widget=autocomplete.ModelSelect2Multiple(url="autocomplete_linked_resource"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["linked_resources"].choices = self.generate_link_choices()
-        self.fields["linked_resources"].initial = LinkedResource.get_target_ids(self.instance)
+
+        # this is used to automatically validate the POSTed back values
+        self.fields["linked_resources"].queryset = ResourceBase.objects.exclude(pk=self.instance.id)
+        # these are the LinkedResource already linked to this resource
+        self.fields["linked_resources"].initial = LinkedResource.get_target_ids(self.instance).all()
+        # this is used by the autocomplete view to exclude current resource
+        self.fields["linked_resources"].widget.forward.append(
+            dal.forward.Const(
+                self.instance.id,
+                "exclude",
+            )
+        )
 
     class Meta:
         model = ResourceBase
         fields = ["linked_resources"]
 
-    def generate_link_choices(self, resources=None):
-        if resources is None:
-            resources = ResourceBase.objects.exclude(pk=self.instance.id).order_by("title")
-
-        return [[obj.id, f"{obj.title} ({obj.polymorphic_ctype.model})"] for obj in resources]
-
     def save_linked_resources(self, links_field="linked_resources"):
         # create and fetch desired links
         target_ids = []
-        for res_id in self.cleaned_data[links_field]:
-            linked, _ = LinkedResource.objects.get_or_create(source=self.instance, target_id=res_id, internal=False)
-            target_ids.append(res_id)
+        for res in self.cleaned_data[links_field]:
+            LinkedResource.objects.get_or_create(source=self.instance, target=res, internal=False)
+            target_ids.append(res.pk)
 
         # delete remaining links
-        # DocumentResourceLink.objects.filter(document_id=self.instance.id).exclude(
-        #     pk__in=[i.pk for i in instances]
-        # ).delete()
-        (LinkedResource.objects.filter(source_id=self.instance.id).exclude(target_id__in=target_ids).delete())
+        (
+            LinkedResource.objects.filter(source_id=self.instance.id, internal=False)
+            .exclude(target_id__in=target_ids)
+            .delete()
+        )
 
 
 class ResourceBaseDateTimePicker(DateTimePicker):

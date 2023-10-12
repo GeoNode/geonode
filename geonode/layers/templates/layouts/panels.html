@@ -333,7 +333,7 @@ span.grippy::after {
                                     {% endblock dataset_title %}
                                     {% block dataset_linked_resources %}
                                         <div id="req_item">
-                                          <span><label for="{{ dataset_form.linked_resources|id }}">{{ dataset_form.linked_resources.label }}</label></span>
+                                          <span><label for="{{ dataset_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
                                           {{ dataset_form.linked_resources }}
                                         </div>
                                     {% endblock dataset_linked_resources %}
