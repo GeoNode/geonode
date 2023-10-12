@@ -331,12 +331,6 @@ span.grippy::after {
                                       {{ dataset_form.title }}
                                     </div>
                                     {% endblock dataset_title %}
-                                    {% block dataset_linked_resources %}
-                                        <div id="req_item">
-                                          <span><label for="{{ dataset_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
-                                          {{ dataset_form.linked_resources }}
-                                        </div>
-                                    {% endblock dataset_linked_resources %}
                                     {% block dataset_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ dataset_form.abstract|id }}">{{ dataset_form.abstract.label }}</label></span>
@@ -563,6 +557,12 @@ span.grippy::after {
                       {{ dataset_form.extra_metadata }}
                     </div>
                     {% endblock layer_extra_metadata %}
+                    {% block dataset_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ dataset_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ dataset_form.linked_resources }}
+                        </div>
+                    {% endblock dataset_linked_resources %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
