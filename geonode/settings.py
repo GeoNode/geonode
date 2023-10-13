@@ -1340,8 +1340,6 @@ DOWNLOAD_FORMATS_RASTER = [
 ]
 
 
-DISPLAY_ORIGINAL_DATASET_LINK = ast.literal_eval(os.getenv("DISPLAY_ORIGINAL_DATASET_LINK", "True"))
-
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = ast.literal_eval(os.getenv("ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE", "False"))
 
 TASTYPIE_DEFAULT_FORMATS = ["json"]
@@ -2325,3 +2323,7 @@ FACET_PROVIDERS = (
     "geonode.facets.providers.thesaurus.ThesaurusFacetProvider",
     "geonode.facets.providers.region.RegionFacetProvider",
 )
+
+DEFAULT_DATASET_DOWNLOAD_HANDLER = "geonode.layers.download_handler.DatasetDownloadHandler"
+
+DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLERS", "[]"))

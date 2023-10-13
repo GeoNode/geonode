@@ -48,6 +48,7 @@ from geonode.layers.models import Dataset, Style
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 from geonode.geoserver.helpers import gs_catalog, get_sld_for, extract_name_from_sld
+from geonode.catalogue.models import catalogue_post_save
 
 import logging
 
@@ -1192,6 +1193,16 @@ class LayerTests(GeoNodeBaseTestSupport):
         with self.settings(UPDATE_RESOURCE_LINKS_AT_MIGRATE=True, ASYNC_SIGNALS=False):
             # Links
             _def_link_types = ["original", "metadata"]
+            Link.objects.update_or_create(
+                resource=Dataset.objects.first(),
+                url="https://custom_dowonload_url.com",
+                defaults=dict(
+                    extension="zip",
+                    name="Original Dataset",
+                    mime="application/octet-stream",
+                    link_type="original",
+                ),
+            )
             _links = Link.objects.filter(link_type__in=_def_link_types)
             # Check 'original' and 'metadata' links exist
             self.assertIsNotNone(_links, "No 'original' and 'metadata' links have been found")
@@ -1233,6 +1244,17 @@ class LayerTests(GeoNodeBaseTestSupport):
 
             for _lyr in _post_migrate_datasets:
                 # Check original links in csw_anytext
+                # by default is not created anymore, we need to create one
+                Link.objects.update_or_create(
+                    resource=_lyr,
+                    url="https://custom_dowonload_url.com",
+                    defaults=dict(
+                        extension="zip",
+                        name="Original Dataset",
+                        mime="application/octet-stream",
+                        link_type="original",
+                    ),
+                )
                 _post_migrate_links_orig = Link.objects.filter(
                     resource=_lyr.resourcebase_ptr, resource_id=_lyr.resourcebase_ptr.id, link_type="original"
                 )
@@ -1240,6 +1262,9 @@ class LayerTests(GeoNodeBaseTestSupport):
                     _post_migrate_links_orig.exists(),
                     f"No 'original' links has been found for the layer '{_lyr.alternate}'",
                 )
+                # needed to update the csw_anytext field with the new link created
+                catalogue_post_save(instance=_lyr, sender=_lyr.__class__)
+                _lyr.refresh_from_db()
                 for _link_orig in _post_migrate_links_orig:
                     self.assertIn(
                         _link_orig.url,

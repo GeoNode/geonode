@@ -55,7 +55,7 @@ from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document, DocumentResourceLink
 
-from geonode.base.populate_test_data import all_public, create_models, remove_models
+from geonode.base.populate_test_data import all_public, create_models, create_single_doc, remove_models
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
@@ -153,6 +153,26 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         doc = Document.objects.get(pk=c.id)
         self.assertEqual(doc.title, "GeoNode Map")
         self.assertEqual(doc.extension, "pdf")
+
+    def test_download_is_not_ajax_safe(self):
+        """Remote document is mark as not safe."""
+        self.client.login(username="admin", password="admin")
+        form_data = {
+            "title": "A remote document through form is remote",
+            "doc_url": "https://development.demo.geonode.org/static/mapstore/img/geonode-logo.svg",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+
+        self.assertEqual(response.status_code, 302)
+
+        d = Document.objects.get(title="A remote document through form is remote")
+        self.assertFalse(d.download_is_ajax_safe)
+
+    def test_download_is_ajax_safe(self):
+        """Remote document is mark as not safe."""
+        d = create_single_doc("example_doc_name")
+        self.assertTrue(d.download_is_ajax_safe)
 
     def test_create_document_url_view(self):
         """

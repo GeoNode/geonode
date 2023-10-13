@@ -104,6 +104,14 @@ class Document(ResourceBase):
             return urljoin(settings.SITEURL, reverse("document_link", args=(self.id,)))
 
     @property
+    def is_local(self):
+        return False if self.doc_url else True
+
+    @property
+    def download_is_ajax_safe(self):
+        return self.is_local
+
+    @property
     def is_file(self):
         return self.files and self.extension
 
