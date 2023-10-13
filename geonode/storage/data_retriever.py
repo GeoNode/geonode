@@ -221,14 +221,14 @@ class DataRetriever(object):
                     existing = self.file_paths[f"{ext}_file"]
                     self.file_paths[f"{ext}_file"] = [
                         Path(str(_file)),
-                        *(existing if type(existing) == list else [existing]),
+                        *(existing if isinstance(existing, list) else [existing]),
                     ]
                 else:
                     self.file_paths[f"{ext}_file"] = Path(str(_file))
 
         tmp = self.file_paths.copy()
         for key, value in self.file_paths.items():
-            if type(value) == list:
+            if isinstance(value, list):
                 for index, file_path in enumerate(value):
                     n = f"{key}_{index}" if index > 0 else key
                     tmp[n] = file_path
