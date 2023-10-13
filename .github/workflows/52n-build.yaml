@@ -1,7 +1,7 @@
-name: Push Thünen Atlas Docker Image(s)
+name: "[thuenen_4.x -> 4.x] Push Thünen Atlas Docker Image(s)"
 
-concurrency: 
-  group: "geonode_build"
+concurrency:
+  group: "geonode_build_thuenen_4.x"
   cancel-in-progress: true
 
 env:
@@ -15,7 +15,7 @@ on:
   push:
     branches:
       - "thuenen_4.x"
-    paths-ignore: 
+    paths-ignore:
       - "./.github/workflows/52n-dockerhub-description.yaml"
       - "./README_thuenen.md"
 
@@ -32,7 +32,7 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - 
+      -
         name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
