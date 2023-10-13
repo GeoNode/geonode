@@ -70,7 +70,6 @@ FILTER_TYPES = {"dataset": Dataset, "map": Map, "document": Document, "geoapp": 
 
 
 class CountJSONSerializer(Serializer):
-
     """Custom serializer to post process the api and add counts"""
 
     def get_resources_counts(self, options):
