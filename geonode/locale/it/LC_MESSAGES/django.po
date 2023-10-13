@@ -948,7 +948,8 @@ msgid "Link to"
 msgstr "Collegamento a"
 
 msgid "Related resources"
-msgstr "Risorse correlate"
+msgstr "Risorse collegate"
+#msgstr "Risorse correlate"
 
 msgid "File"
 msgstr "File"

@@ -317,12 +317,6 @@ span.grippy::after {
                                           {{ map_form.title }}
                                     </div>
                                   {% endblock map_title %}
-                                  {% block map_linked_resources %}
-                                    <div id="req_item">
-                                      <span><label for="{{ map_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
-                                      {{ map_form.linked_resources }}
-                                    </div>
-                                  {% endblock map_linked_resources %}
                                   {% block map_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ map_form.abstract|id }}">{{ map_form.abstract.label }}</label></span>
@@ -550,6 +544,13 @@ span.grippy::after {
                         {{ map_form.extra_metadata }}
                     </div>
                     {% endblock map_extra_metadata %}
+                    {% block map_linked_resources %}
+                    <div id="linked_resources">
+                      <span><label for="{{ map_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                      {{ map_form.linked_resources }}
+                    </div>
+                    {% endblock map_linked_resources %}
+
                 </div>
                 {% endblock maintenance_block %}
             </div>
