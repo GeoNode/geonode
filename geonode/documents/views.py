@@ -51,7 +51,6 @@ from geonode.decorators import check_keyword_write_perms
 from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.models import Thesaurus, TopicCategory
-from geonode.base import enumerations
 
 from .utils import get_download_response
 
@@ -185,10 +184,7 @@ class DocumentUploadView(CreateView):
                 None,
                 resource_type=Document,
                 defaults=dict(
-                    owner=self.request.user,
-                    doc_url=doc_form.pop("doc_url", None),
-                    title=doc_form.pop("title", None),
-                    sourcetype=enumerations.SOURCE_TYPE_REMOTE,
+                    owner=self.request.user, doc_url=doc_form.pop("doc_url", None), title=doc_form.pop("title", None)
                 ),
             )
 
@@ -435,7 +431,7 @@ def document_metadata(
         )
 
         resource_manager.set_thumbnail(document.uuid, instance=document, overwrite=False)
-        document_form.save_linked_resources()
+        document_form.save_many2many()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, document)
         url = hookset.document_detail_url(document)

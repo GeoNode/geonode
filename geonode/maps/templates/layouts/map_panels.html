@@ -544,13 +544,6 @@ span.grippy::after {
                         {{ map_form.extra_metadata }}
                     </div>
                     {% endblock map_extra_metadata %}
-                    {% block map_linked_resources %}
-                    <div id="linked_resources">
-                      <span><label for="{{ map_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
-                      {{ map_form.linked_resources }}
-                    </div>
-                    {% endblock map_linked_resources %}
-
                 </div>
                 {% endblock maintenance_block %}
             </div>

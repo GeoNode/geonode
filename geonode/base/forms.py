@@ -20,11 +20,9 @@ import re
 import html
 import json
 import logging
-
 from django.db.models.query import QuerySet
 from bootstrap3_datetime.widgets import DateTimePicker
 from dal import autocomplete
-import dal.forward
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -48,7 +46,6 @@ from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (
     HierarchicalKeyword,
     License,
-    LinkedResource,
     Region,
     ResourceBase,
     Thesaurus,
@@ -348,48 +345,6 @@ class ThesaurusAvailableForm(forms.Form):
         return tname.first()
 
 
-class LinkedResourceForm(forms.ModelForm):
-    linked_resources = forms.ModelMultipleChoiceField(
-        label=_("Related resources"),
-        required=False,
-        queryset=None,
-        widget=autocomplete.ModelSelect2Multiple(url="autocomplete_linked_resource"),
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # this is used to automatically validate the POSTed back values
-        self.fields["linked_resources"].queryset = ResourceBase.objects.exclude(pk=self.instance.id)
-        # these are the LinkedResource already linked to this resource
-        self.fields["linked_resources"].initial = LinkedResource.get_target_ids(self.instance).all()
-        # this is used by the autocomplete view to exclude current resource
-        self.fields["linked_resources"].widget.forward.append(
-            dal.forward.Const(
-                self.instance.id,
-                "exclude",
-            )
-        )
-
-    class Meta:
-        model = ResourceBase
-        fields = ["linked_resources"]
-
-    def save_linked_resources(self, links_field="linked_resources"):
-        # create and fetch desired links
-        target_ids = []
-        for res in self.cleaned_data[links_field]:
-            LinkedResource.objects.get_or_create(source=self.instance, target=res, internal=False)
-            target_ids.append(res.pk)
-
-        # delete remaining links
-        (
-            LinkedResource.objects.filter(source_id=self.instance.id, internal=False)
-            .exclude(target_id__in=target_ids)
-            .delete()
-        )
-
-
 class ResourceBaseDateTimePicker(DateTimePicker):
     def build_attrs(self, base_attrs=None, extra_attrs=None, **kwargs):
         "Helper function for building an attribute dictionary."
@@ -400,7 +355,7 @@ class ResourceBaseDateTimePicker(DateTimePicker):
         # return base_attrs
 
 
-class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
+class ResourceBaseForm(TranslationModelForm):
 
     """Base form for metadata, should be inherited by childres classes of ResourceBase"""
 

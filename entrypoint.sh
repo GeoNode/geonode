@@ -16,6 +16,7 @@ invoke () {
 
 # Start cron && memcached services
 service cron restart
+service memcached restart
 
 echo $"\n\n\n"
 echo "-----------------------------------------------------"
@@ -40,7 +41,7 @@ echo MONITORING_HOST_NAME=$MONITORING_HOST_NAME
 echo MONITORING_SERVICE_NAME=$MONITORING_SERVICE_NAME
 echo MONITORING_DATA_TTL=$MONITORING_DATA_TTL
 
-# invoke waitfordbs
+invoke waitfordbs
 
 cmd="$@"
 
@@ -60,6 +61,8 @@ else
     fi
 
     invoke statics
+    invoke waitforgeoserver
+    invoke geoserverfixture
 
     echo "Executing UWSGI server $cmd for Production"
 fi

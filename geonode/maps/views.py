@@ -211,8 +211,6 @@ def map_metadata(
             new_m = ExtraMetadata.objects.create(resource=map_obj, metadata=_m)
             map_obj.metadata.add(new_m)
 
-        map_form.save_linked_resources()
-
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:
             return HttpResponseRedirect(hookset.map_detail_url(map_obj))

@@ -66,14 +66,7 @@ from geonode.base import enumerations
 from geonode.singleton import SingletonModel
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
-from geonode.utils import (
-    bbox_to_wkt,
-    find_by_attr,
-    bbox_to_projection,
-    bbox_swap,
-    get_allowed_extensions,
-    is_monochromatic_image,
-)
+from geonode.utils import bbox_to_wkt, find_by_attr, bbox_to_projection, get_allowed_extensions, is_monochromatic_image
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
@@ -1409,14 +1402,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else:
                 match = re.match(r"^(EPSG:)?(?P<srid>\d{4,6})$", str(srid))
                 bbox_polygon.srid = int(match.group("srid")) if match else 4326
-
-                # Adapt coords order from xmin,ymin,xmax,ymax to xmin,xmax,ymin,ymax
-                standard_extent = list(bbox_polygon.extent)
-                bbox_gn_order = bbox_swap(standard_extent) + [srid]
-                projected_bbox_gn_order = bbox_to_projection(bbox_gn_order)
-                projected_bbox = bbox_swap(projected_bbox_gn_order[:-1])
-
-                self.ll_bbox_polygon = Polygon.from_bbox(projected_bbox)
+                self.ll_bbox_polygon = Polygon.from_bbox(bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
             ResourceBase.objects.filter(id=self.id).update(ll_bbox_polygon=self.ll_bbox_polygon)
         except Exception as e:
             raise GeoNodeException(e)
@@ -1726,18 +1712,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
-    def get_linked_resources(self, as_target: bool = False):
-        """
-        Get all the linked resources to this ResourceBase instance.
-        This is implemented as a method so that derived classes can override it (for instance, Maps may add
-        related datasets)
-        """
-        return (
-            LinkedResource.get_linked_resources(target=self)
-            if as_target
-            else LinkedResource.get_linked_resources(source=self)
-        )
-
 
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type"""
@@ -1759,47 +1733,6 @@ class LinkManager(models.Manager):
 
     def ows(self):
         return self.get_queryset().filter(link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS"])
-
-
-class LinkedResource(models.Model):
-    source = models.ForeignKey(
-        ResourceBase, related_name="linked_to", blank=False, null=False, on_delete=models.CASCADE
-    )
-    target = models.ForeignKey(ResourceBase, related_name="linked_by", blank=True, null=False, on_delete=models.CASCADE)
-    internal = models.BooleanField(null=False, default=False)
-
-    @classmethod
-    def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, is_internal: bool = None):
-        if source is None and target is None:
-            raise ValueError("Both source and target filters missing")
-
-        qs = LinkedResource.objects
-        if source:
-            qs = qs.filter(source=source).select_related("target")
-        if target:
-            qs = qs.filter(target=target).select_related("source")
-        if is_internal is not None:
-            qs = qs.filter(internal=is_internal)
-        return qs
-
-    @classmethod
-    def get_target_ids(cls, source: ResourceBase, is_internal: bool = None):
-        sub = LinkedResource.objects.filter(source=source).values_list("target_id", flat=True)
-        if is_internal is not None:
-            sub = sub.filter(internal=is_internal)
-        return sub
-
-    @classmethod
-    def get_targets(cls, source: ResourceBase, is_internal: bool = None):
-        return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, is_internal))
-
-    @classmethod
-    def resolve_targets(cls, linked_resources):
-        return (lr.target for lr in linked_resources)
-
-    @classmethod
-    def resolve_sources(cls, linked_resources):
-        return (lr.source for lr in linked_resources)
 
 
 class Link(models.Model):

@@ -17,31 +17,20 @@
 #
 #########################################################################
 
-import json
 import logging
 import os
+from django.db.utils import IntegrityError, OperationalError
 import requests
-from PIL import Image
-from io import BytesIO
+
 from uuid import uuid4
 from unittest.mock import patch, Mock
-from guardian.shortcuts import assign_perm
-
-from django.db.utils import IntegrityError, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
-from django.contrib.gis.geos import Polygon, GEOSGeometry
-from django.template import Template, Context
-from django.contrib.auth import get_user_model
-from geonode.storage.manager import storage_manager
-from django.test import Client, TestCase, override_settings, SimpleTestCase
-from django.shortcuts import reverse
-from django.utils import translation
-from django.core.files import File
-from django.core.management import call_command
-from django.core.management.base import CommandError
 
+from PIL import Image
+from io import BytesIO
+from guardian.shortcuts import assign_perm
 from geonode.base.populate_test_data import create_single_dataset
+
 from geonode.maps.models import Map
 from geonode.resource.utils import KeywordHandler
 from geonode.thumbs import utils as thumb_utils
@@ -65,6 +54,15 @@ from geonode.base.models import (
     ThesaurusKeyword,
     generate_thesaurus_reference,
 )
+from django.conf import settings
+from django.contrib.gis.geos import Polygon, GEOSGeometry
+from django.template import Template, Context
+from django.contrib.auth import get_user_model
+from geonode.storage.manager import storage_manager
+from django.test import Client, TestCase, override_settings, SimpleTestCase
+from django.shortcuts import reverse
+from django.utils import translation
+
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
@@ -78,8 +76,12 @@ from geonode.base.templatetags.thesaurus import (
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
+
+from django.core.files import File
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
-from geonode.resource.manager import resource_manager
+
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
@@ -1161,57 +1163,3 @@ class TestRegions(GeoNodeBaseTestSupport):
         self.assertFalse(
             region.is_assignable_to_geom(self.dataset_outside_region), "Extent outside a region should be assigned"
         )
-
-    @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
-    def test_regions_are_assigned_if_handler_is_used(self):
-        dataset = resource_manager.create(
-            None,
-            resource_type=Dataset,
-            defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),
-        )
-        self.assertTrue(dataset.regions.exists())
-        self.assertEqual(1, dataset.regions.count())
-        self.assertEqual("Global", dataset.regions.first().name)
-
-
-class LinkedResourcesTest(GeoNodeBaseTestSupport):
-    def test_autocomplete_linked_resource(self):
-        d = []
-        try:
-            user, _ = get_user_model().objects.get_or_create(username="admin")
-
-            for t in ("dataset1", "dataset2", "other"):
-                d.append(ResourceBase.objects.create(title=t, owner=user, is_approved=True, is_published=True))
-
-            web_client = Client()
-            web_client.force_login(user)
-            url_name = "autocomplete_linked_resource"
-
-            # get all resources
-            response = web_client.get(reverse(url_name))
-            rjson = response.json()
-
-            self.assertEqual(response.status_code, 200, "Can not get autocomplete API")
-            self.assertIn("results", rjson, "Can not find results")
-            self.assertEqual(len(rjson["results"]), 3, "Unexpected results count")
-
-            # filter by title
-            response = web_client.get(
-                reverse(url_name),
-                data={
-                    "q": "dataset",
-                },
-            )
-            rjson = response.json()
-            self.assertEqual(len(rjson["results"]), 2, "Unexpected results count")
-
-            # filter by title, exclude
-            response = web_client.get(
-                reverse(url_name), data={"q": "dataset", "forward": json.dumps({"exclude": d[0].id})}
-            )
-            rjson = response.json()
-            self.assertEqual(len(rjson["results"]), 1, "Unexpected results count")
-
-        finally:
-            for _ in d:
-                _.delete()

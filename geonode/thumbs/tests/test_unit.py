@@ -230,8 +230,8 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             [
                 [
                     settings.OGC_SERVER["default"]["LOCATION"],
-                    [dataset.alternate, "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1"],
-                    ["theaters_nyc", "test_style"],
+                    ["geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1", dataset.alternate],
+                    ["test_style", "theaters_nyc"],
                 ]
             ],
         )
@@ -255,9 +255,9 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
             [
                 settings.GEOSERVER_LOCATION,
                 [
-                    "geonode:theaters_nyc",
-                    "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1",
                     "rt_geologia.dbg_risorse_minerarie",
+                    "geonode:Meteorite_Landings_from_NASA_Open_Data_Portal1",
+                    "geonode:theaters_nyc",
                 ],
                 [],
             ]

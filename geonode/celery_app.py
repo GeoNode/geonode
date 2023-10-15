@@ -49,14 +49,14 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @app.task(
     bind=True,
-    name='geonode.test',
+    name='{{project_name}}.test',
     queue='default')
 def test(arg):
     _log(arg)
 
 @app.task(
     bind=True,
-    name='geonode.debug_task',
+    name='{{project_name}}.debug_task',
     queue='default')
 def debug_task(self):
     _log(f"Request: {self.request}")

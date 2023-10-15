@@ -138,9 +138,6 @@ class MapLayerSerializer(DynamicModelSerializer):
             "current_style",
             "dataset",
             "name",
-            "order",
-            "visibility",
-            "opacity",
         )
 
 
@@ -148,7 +145,12 @@ class SimpleMapLayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MapLayer
         name = "maplayer"
-        fields = ("pk", "name", "extra_params", "current_style", "order", "visibility", "opacity")
+        fields = (
+            "pk",
+            "name",
+            "extra_params",
+            "current_style",
+        )
 
 
 class MapSerializer(ResourceBaseSerializer):

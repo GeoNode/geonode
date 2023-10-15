@@ -19,8 +19,6 @@
 import json
 import logging
 
-import itertools
-
 from deprecated import deprecated
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -28,7 +26,7 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from geonode import geoserver  # noqa
-from geonode.base.models import ResourceBase, LinkedResource
+from geonode.base.models import ResourceBase
 from geonode.client.hooks import hookset
 from geonode.layers.models import Dataset, Style
 from geonode.utils import check_ogc_backend
@@ -61,17 +59,13 @@ class Map(ResourceBase):
         dataset_names = MapLayer.objects.filter(map__id=self.id).values("name")
         return Dataset.objects.filter(alternate__in=dataset_names) | Dataset.objects.filter(name__in=dataset_names)
 
-    def get_linked_resources(self, as_target: bool = False):
-        ret = super().get_linked_resources(as_target)
+    @property
+    def linked_resources(self):
+        from geonode.documents.models import DocumentResourceLink
 
-        if not as_target:
-            dataset_ids = MapLayer.objects.filter(map__id=self.id).values("dataset_id")
-            datasets = ResourceBase.objects.filter(id__in=dataset_ids)
-            # create LinkedResources on the fly to report MapLayer relationship
-            res = (LinkedResource(source=self, target=d, internal=True) for d in datasets)
-            ret = itertools.chain(ret, res)
-
-        return ret
+        _dataset_id = list(self.datasets.values_list("pk", flat=True))
+        _doc_ids = list(DocumentResourceLink.objects.filter(object_id=self.pk).values_list("document__pk", flat=True))
+        return ResourceBase.objects.filter(id__in=list(set(_dataset_id + _doc_ids)))
 
     def json(self, dataset_filter):
         """
@@ -267,11 +261,6 @@ class MapLayer(models.Model):
 
     local = models.BooleanField(default=False, blank=True)
     # True if this layer is served by the local geoserver
-
-    # Extend MapLayer model with visualization properties #11251
-    order = models.IntegerField(default=0)
-    visibility = models.BooleanField(default=True)
-    opacity = models.FloatField(default=1.0)
 
     @property
     def dataset_title(self):

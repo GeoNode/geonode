@@ -18,9 +18,8 @@
 #########################################################################
 
 from unittest import TestCase
-
 from geonode.base.populate_test_data import create_single_dataset
-from geonode.resource.utils import call_storers
+from geonode.resource.utils import metadata_storers
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
@@ -296,15 +295,15 @@ class TestMetadataStorers(TestCase):
         self.uuid = self.dataset.uuid
         self.abstract = self.dataset.abstract
         self.custom = {
-            "processes": {"uuid": "abc123cfde", "name": "updated name"},
+            "processes": {"uuid": "abc123cfde", "abstract": "updated abstract"},
             "second-stage": {"title": "Updated Title", "abstract": "another update"},
         }
 
     @override_settings(METADATA_STORERS=["geonode.tests.smoke.dummy_metadata_storer"])
     def test_will_use_single_storers_defined(self):
-        call_storers(self.dataset, self.custom)
+        metadata_storers(self.dataset, self.custom)
         self.assertEqual("abc123cfde", self.dataset.uuid)
-        self.assertEqual("updated name", self.dataset.name)
+        self.assertEqual("updated abstract", self.dataset.abstract)
 
     @override_settings(
         METADATA_STORERS=[
@@ -313,7 +312,7 @@ class TestMetadataStorers(TestCase):
         ]
     )
     def test_will_use_multiple_storers_defined(self):
-        dataset = call_storers(self.dataset, self.custom)
+        dataset = metadata_storers(self.dataset, self.custom)
         self.assertEqual("abc123cfde", dataset.uuid)
         self.assertEqual("another update", dataset.abstract)
         self.assertEqual("Updated Title", dataset.title)
