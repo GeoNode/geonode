@@ -1,5 +1,5 @@
 FROM ubuntu:22.04
-LABEL GeoNode development team
+LABEL JSDC development team
 
 RUN mkdir -p /usr/src/geonode
 
