@@ -90,7 +90,7 @@ jobs:
             - run:
                 name: Run code quality checks
                 command: |
-                  docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c 'codecov -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F <<parameters.test_suite>>'
+                  docker-compose --env-file .env_test -f docker-compose-test.yml exec django bash -c ' bash <(curl -s https://codecov.io/bash) -t 2c0e7780-1640-45f0-93a3-e103b057d8c8 -F <<parameters.test_suite>>'
                 working_directory: ./
 
 workflows:
