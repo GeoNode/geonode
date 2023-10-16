@@ -1199,7 +1199,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(302, response.status_code)
         self.assertEqual(f"/download/{dataset.id}", response.url)
 
-    @patch("geonode.layers.download_handler.HttpClient.request")
     def test_dataset_download_invalid_wps_format(self):
         # if settings.USE_GEOSERVER is false, the URL must be redirected
         self.client.login(username="admin", password="admin")
@@ -1209,7 +1208,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(500, response.status_code)
         self.assertDictEqual({"error": "The format provided is not valid for the selected resource"}, response.json())
 
-    @patch("geonode.layers.views.HttpClient.request")
+    @patch("geonode.layers.download_handler.HttpClient.request")
     def test_dataset_download_call_the_catalog_raise_error_for_no_200(self, mocked_catalog):
         _response = MagicMock(status_code=500, content="foo-bar")
         mocked_catalog.return_value = _response, "foo-bar"
