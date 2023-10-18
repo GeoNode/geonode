@@ -495,6 +495,13 @@ span.grippy::after {
                         {{ geoapp_form.extra_metadata }}
                     </div>
                     {% endblock geoapp_extra_metadata %}
+                    {% block geoapp_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ geoapp_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ geoapp_form.linked_resources }}
+                        </div>
+                    {% endblock geoapp_linked_resources %}
+
                 </div>
                 {% endblock maintenance_block %}
             </div>

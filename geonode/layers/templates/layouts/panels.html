@@ -558,6 +558,12 @@ span.grippy::after {
                       {{ dataset_form.extra_metadata }}
                     </div>
                     {% endblock layer_extra_metadata %}
+                    {% block dataset_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ dataset_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ dataset_form.linked_resources }}
+                        </div>
+                    {% endblock dataset_linked_resources %}
                 </div>
             </div>
             <!-- Contact Roles -->

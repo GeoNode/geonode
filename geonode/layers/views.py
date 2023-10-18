@@ -578,6 +578,8 @@ def dataset_metadata(
         if up_sessions.exists() and up_sessions[0].user != layer.owner:
             up_sessions.update(user=layer.owner)
 
+        dataset_form.save_linked_resources()
+
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)
         if not ajax:
             return HttpResponseRedirect(layer.get_absolute_url())
