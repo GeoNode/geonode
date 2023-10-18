@@ -21,13 +21,16 @@ import time
 import ast
 import typing
 import logging
+import math
 import mercantile
+import requests
 
 from io import BytesIO
 from pyproj import Transformer
 from abc import ABC, abstractmethod
 from math import ceil, floor, copysign
 from PIL import Image, UnidentifiedImageError
+from owslib.wmts import WebMapTileService
 
 from django.conf import settings
 from django.utils.html import strip_tags
@@ -464,3 +467,200 @@ class OSMTileBackground(GenericXYZBackground):
 
         self.url = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         self.tile_size = 256
+
+
+WMTS_TILEMATRIXSET_LEVELS = None
+
+
+class GenericWMTSBackground(BaseThumbBackground):
+    def __init__(self, thumbnail_width: int, thumbnail_height: int, max_retries: int = 3, retry_delay: int = 1):
+        super().__init__(thumbnail_width, thumbnail_height, max_retries, retry_delay)
+        self.options = settings.THUMBNAIL_BACKGROUND.get("options", {})
+        self.levels = self.get_levels_for_tilematrix()
+
+        self.thumbnail_width = thumbnail_width
+        self.thumbnail_height = thumbnail_height
+
+    def fetch(self, bbox: typing.List, *args, **kwargs):
+        bbox = [bbox[0], bbox[2], bbox[1], bbox[3]]
+        target_pixelspan = self.get_target_pixelspan(bbox)
+        level = self.get_level_for_targetpixelspan(target_pixelspan)
+
+        tilewidth = level["tilewidth"]
+        tileheight = level["tileheight"]
+        zoom = level["zoom"]
+        pixelspan = level["pixelspan"]
+        tilespanx = level["tilespanx"]
+        tilespany = level["tilespany"]
+
+        pixelspan_ratio = level["pixelspan"] / target_pixelspan
+
+        tile_rowcols = self.get_tiles_coords(level, bbox)
+        tiles_cols_list = set([tile_rowcol[0] for tile_rowcol in tile_rowcols])
+        tiles_mincol = min(tiles_cols_list)
+        tiles_maxcol = max(tiles_cols_list)
+        tiles_minx = level["bounds"][0] + (tiles_mincol * tilespanx)
+        tiles_rows_list = set([tile_rowcol[1] for tile_rowcol in tile_rowcols])
+        tiles_minrow = min(tiles_rows_list)
+        tiles_maxrow = max(tiles_rows_list)
+        tiles_maxy = level["bounds"][3] - (tiles_minrow * tilespany)
+
+        tiles_width = (tiles_maxcol - tiles_mincol + 1) * tilewidth
+        tiles_height = (tiles_maxrow - tiles_minrow + 1) * tileheight
+
+        background = Image.new("RGB", (tiles_width, tiles_height), (250, 250, 250))
+
+        for tile_coord in tile_rowcols:
+            try:
+                im = None
+                imgurl = self.build_request([tile_coord[0], tile_coord[1], zoom])
+                resp = requests.get(imgurl)
+                if resp.status_code > 400:
+                    raise Exception(f"{strip_tags(resp.content)}")
+                im = BytesIO(resp.content)
+                Image.open(im).verify()
+                if im:
+                    offsetx = (tile_coord[0] - tiles_mincol) * tilewidth
+                    offsety = (tile_coord[1] - tiles_minrow) * tileheight
+                    image = Image.open(im)
+                    background.paste(image, (offsetx, offsety))
+            except Exception as e:
+                logger.error(f"Error fetching {imgurl} for thumbnail: {e}")
+
+        left = abs(tiles_minx - bbox[0]) / pixelspan
+        right = left + self.thumbnail_width
+        top = abs(tiles_maxy - bbox[3]) / pixelspan
+        bottom = top + self.thumbnail_height
+        background = background.crop((left, top, right, bottom))
+
+        width = round(self.thumbnail_width * pixelspan_ratio)
+        height = round(self.thumbnail_height * pixelspan_ratio)
+
+        background = background.resize((width, height))
+        background.crop((left, top, right, bottom))
+
+        return background
+
+    def build_kvp_request(self, baseurl, layer, style, xyz):
+        return f"{baseurl}?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&layer={layer}&style={style}\
+&tilematrixset={self.options['tilematrixset']}&TileMatrix={xyz[2]}&TileRow={xyz[1]}&TileCol={xyz[0]}"
+
+    def build_request(self, xyz):
+        request_encoding = self.options.get("requestencoding", "KVP")
+        baseurl = self.options["url"]
+        layer = self.options["layer"]
+        style = self.options["style"]
+
+        imgurl = None
+        if request_encoding == "KVP":
+            imgurl = self.build_kvp_request(baseurl, layer, style, xyz)
+
+        return imgurl
+
+    def get_image_bbox_for_level(self, level, bbox):
+        image_width = self.thumbnail_width
+        image_height = self.thumbnail_height
+
+        half_imagespanx = image_width * level["pixelspan"] / 2
+        half_imagespany = image_height * level["pixelspan"] / 2
+
+        (
+            boundsminx,
+            boundsminy,
+            boundsmaxx,
+            boundsmaxy,
+        ) = bbox
+
+        bboxcentrex = boundsminx + ((boundsmaxx - boundsminx) / 2)
+        bboxcentrey = boundsminy + ((boundsmaxy - boundsminy) / 2)
+
+        image_minx = bboxcentrex - half_imagespanx
+        image_maxx = bboxcentrex + half_imagespanx
+        image_miny = bboxcentrey - half_imagespany
+        image_maxy = bboxcentrey + half_imagespany
+
+        return [image_minx, image_miny, image_maxx, image_maxy]
+
+    def get_tiles_coords(self, level, bbox):
+        tile_coords = []
+
+        tilematrixminx = level["bounds"][0]
+        tilematrixmaxy = level["bounds"][3]
+        tilespanx = level["tilespanx"]
+        tilespany = level["tilespany"]
+
+        boundsminx, boundsminy, boundsmaxx, boundsmaxy = bbox
+
+        tile_coord_minx = int(math.floor(boundsminx - tilematrixminx) / tilespanx)
+        # min tile coord corresponds to the maxy coordinate
+        tile_coord_miny = int(math.floor(tilematrixmaxy - boundsmaxy) / tilespany)
+        tile_coord_maxx = int(math.floor(boundsmaxx - tilematrixminx) / tilespanx)
+        # max tile coord corresponds to the miny coordinate
+        tile_coord_maxy = int(math.floor(tilematrixmaxy - boundsminy) / tilespany)
+
+        for x in range(tile_coord_minx, tile_coord_maxx + 1):
+            for y in range(tile_coord_miny, tile_coord_maxy + 1):
+                tile_coords.append([x, y])
+
+        return tile_coords
+
+    def get_level_for_targetpixelspan(self, target_pixelspan):
+        level = None
+        for _level in self.levels:
+            is_level_under_minscaledenominator = False
+            minscaledenominator = self.options.get("minscaledenominator")
+            if minscaledenominator:
+                is_level_under_minscaledenominator = _level["scaledenominator"] < self.options.get(
+                    "minscaledenominator"
+                )
+            if _level["pixelspan"] < target_pixelspan or is_level_under_minscaledenominator:
+                return level
+            level = _level
+
+    def get_target_pixelspan(self, bbox):
+        x_min, y_min, x_max, y_max = bbox
+        return (x_max - x_min) / self.thumbnail_width
+
+    def get_levels_for_tilematrix(self):
+        url = self.options["url"]
+        tilematrixset = self.options["tilematrixset"]
+        global WMTS_TILEMATRIXSET_LEVELS
+        if not WMTS_TILEMATRIXSET_LEVELS:
+            service = WebMapTileService(url=url)
+            tilematrixsset = service.tilematrixsets[tilematrixset]
+
+            levels = []
+            for index, tilematrix in tilematrixsset.tilematrix.items():
+                scaledenominator = tilematrix.scaledenominator * 1  # here we assume 3857
+                matrixheight = tilematrix.matrixheight
+                matrixwidth = tilematrix.matrixwidth
+                tileheight = tilematrix.tileheight
+                tilewidth = tilematrix.tilewidth
+                tilematrixminx = tilematrix.topleftcorner[0]  # here we assume 3857
+                tilematrixmaxy = tilematrix.topleftcorner[1]  # here we assume 3857
+
+                pixelspan = scaledenominator * 0.00028  # OGC standardized rendering pixel size
+                tilespanx = tilewidth * pixelspan
+                tilespany = tileheight * pixelspan
+                tilematrixmaxx = tilematrixminx + tilespanx * matrixwidth
+                tilematrixminy = tilematrixmaxy - tilespany * matrixheight
+
+                levels.append(
+                    {
+                        "zoom": int(index),
+                        "bounds": [
+                            tilematrixminx,
+                            tilematrixminy,
+                            tilematrixmaxx,
+                            tilematrixmaxy,
+                        ],
+                        "scaledenominator": scaledenominator,
+                        "tilewidth": tilewidth,
+                        "tileheight": tileheight,
+                        "pixelspan": pixelspan,
+                        "tilespanx": tilespanx,
+                        "tilespany": tilespany,
+                    }
+                )
+            WMTS_TILEMATRIXSET_LEVELS = levels
+        return WMTS_TILEMATRIXSET_LEVELS

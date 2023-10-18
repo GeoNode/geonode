@@ -3,7 +3,7 @@ version: '3.9'
 # Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
-  image: geonode/geonode:latest-ubuntu-22.10
+  image: geonode/geonode:latest-ubuntu-22.04
   restart: unless-stopped
   env_file:
     - .env_test
@@ -67,6 +67,19 @@ services:
       - nginx-certificates:/geonode-certificates
       - statics:/mnt/volumes/statics
     restart: unless-stopped
+
+  # memcached service
+  memcached:
+    image: memcached:alpine
+    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    command: memcached ${MEMCACHED_OPTIONS}
+    restart: on-failure
+    healthcheck:
+      test: nc -z 127.0.0.1 11211
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   # Gets and installs letsencrypt certificates
   letsencrypt:

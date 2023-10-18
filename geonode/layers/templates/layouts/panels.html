@@ -557,18 +557,24 @@ span.grippy::after {
                       {{ dataset_form.extra_metadata }}
                     </div>
                     {% endblock layer_extra_metadata %}
+                    {% block dataset_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ dataset_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ dataset_form.linked_resources }}
+                        </div>
+                    {% endblock dataset_linked_resources %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
+              {% block dataset_poc %}
               <div class="panel panel-default" style="margin-top: 5px">
                   <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                    {% block dataset_poc %}
                     <div class="panel-body check-select">
                         <span><label for="{{ dataset_form.poc|id }}">{{ dataset_form.poc.label }}</label></span>
                         {{ dataset_form.poc }}
                     </div>
-                    {% endblock dataset_poc %}
               </div>
+              {% endblock dataset_poc %}              
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">

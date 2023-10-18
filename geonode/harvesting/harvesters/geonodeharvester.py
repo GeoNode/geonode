@@ -261,6 +261,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
                         "thumbnail_url": harvested_info.resource_descriptor.distribution.thumbnail_url,
                         "srid": srid,
                         "ptype": GXP_PTYPES["GN_WMS"],
+                        "subtype": "remote",
                     }
                 )
         return defaults

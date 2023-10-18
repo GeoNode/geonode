@@ -435,7 +435,7 @@ def document_metadata(
         )
 
         resource_manager.set_thumbnail(document.uuid, instance=document, overwrite=False)
-        document_form.save_many2many()
+        document_form.save_linked_resources()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, document)
         url = hookset.document_detail_url(document)

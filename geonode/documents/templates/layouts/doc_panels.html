@@ -313,12 +313,6 @@ span.grippy::after {
                                       {{ document_form.title }}
                                     </div>
                                 {% endblock doc_title %}
-                                {% block doc_links %}
-                                    <div id="req_item">                                  
-                                      <span><label for="{{ document_form.title|id }}">{{ document_form.links.label }}</label></span>
-                                      {{ document_form.links }}
-                                    </div>
-                                {% endblock doc_links %}
                                 {% block doc_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ document_form.abstract|id }}">{{ document_form.abstract.label }}</label></span>
@@ -514,6 +508,7 @@ span.grippy::after {
                 {% endblock doc_supplemental_information %}
             </div>
             <div class="col-xs-12 col-lg-5">
+              {% block doc_temporal_block %}
                     <div class="col-xs-12 col-lg-6">
                       {% block doc_temporal_extent_start %}
                       <div class="input-group date">
@@ -532,6 +527,7 @@ span.grippy::after {
                         </div>
                       {% endblock doc_temporal_extent_end %}
                     </div>
+                {% endblock %}
                 <div class="col-xs-12">
                       {% block doc_maintenance_frequency %}
                     <div style="margin-top: 5px">
@@ -553,9 +549,16 @@ span.grippy::after {
                         {{ document_form.extra_metadata }}
                     </div>
                     {% endblock doc_extra_metadata %}
+                    {% block doc_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ document_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ document_form.linked_resources }}
+                        </div>
+                    {% endblock doc_linked_resources %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
+              {% block document_poc %}
               <div class="panel panel-default" style="margin-top: 5px">
                 <div class="panel-heading">{% trans "Responsible Parties" %}</div>
                 <div class="panel-body">
@@ -563,6 +566,8 @@ span.grippy::after {
                   {{ document_form.poc }}
                 </div>
               </div>
+              {% endblock %}
+
               <div class="panel panel-default">
                 <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                 <div class="panel-body">

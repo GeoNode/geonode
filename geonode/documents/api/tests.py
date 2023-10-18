@@ -22,7 +22,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITransactionTestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
@@ -34,7 +34,7 @@ from geonode.documents.models import Document
 logger = logging.getLogger(__name__)
 
 
-class DocumentsApiTests(APITestCase):
+class DocumentsApiTests(APITransactionTestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -142,6 +142,34 @@ class DocumentsApiTests(APITestCase):
         extension = actual.json().get("document", {}).get("extension", "")
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
+
+    def test_creation_should_create_the_doc_and_update_the_bbox(self):
+        """
+        If file_path is not available, should raise error
+        """
+        self.client.force_login(self.admin)
+        payload = {
+            "document": {
+                "title": "New document for testing",
+                "metadata_only": True,
+                "file_path": self.valid_file_path,
+                "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
+            },
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        extension = actual.json().get("document", {}).get("extension", "")
+        self.assertEqual("xml", extension)
+        doc = Document.objects.filter(title="New document for testing").all()
+        self.assertTrue(doc.exists())
+        x = doc.first()
+        x.refresh_from_db()
+        self.assertEqual("EPSG:3857", x.srid)
+        self.assertEqual(actual.json()["document"].get("extent")["srid"], "EPSG:4326")
+        self.assertEqual(
+            actual.json()["document"].get("extent")["coords"],
+            [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112],
+        )
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """
