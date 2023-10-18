@@ -1917,7 +1917,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def principal_investigator_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.principal_investigator)
-    
+
     def get_linked_resources(self, as_target: bool = False):
         """
         Get all the linked resources to this ResourceBase instance.
