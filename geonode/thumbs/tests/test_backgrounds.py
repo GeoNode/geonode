@@ -276,7 +276,7 @@ WMTS_TILEMATRIX_LEVELS = [
 THUMBNAIL_BACKGROUND = {
     "class": "geonode.thumbs.background.GenericWMTSBackground",
     "options": {
-        "url": "myserver.com/WMTS",
+        "url": "https://myserver.com/WMTS",
         "layer": "Hosted_basemap_inforac_3857",
         "style": "default",
         "tilematrixset": "default028mm",
@@ -345,8 +345,8 @@ class GeoNodeThumbnailWMTSBackground(GeoNodeBaseTestSupport):
     @override_settings(THUMBNAIL_BACKGROUND=THUMBNAIL_BACKGROUND)
     @patch("geonode.thumbs.background.WMTS_TILEMATRIXSET_LEVELS", WMTS_TILEMATRIX_LEVELS)
     def test_build_request(self, *args):
-        expected_imgurl = "https://myserver.com/WMTS?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png& \
-            layer=Hosted_basemap_inforac_3857&style=default&tilematrixset=default028mm&TileMatrix=4&TileRow=5&TileCol=7"
+        expected_imgurl = "https://myserver.com/WMTS?&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/png&\
+layer=Hosted_basemap_inforac_3857&style=default&tilematrixset=default028mm&TileMatrix=4&TileRow=5&TileCol=7"
         background = GenericWMTSBackground(thumbnail_width=500, thumbnail_height=200)
         imgurl = background.build_request((7, 5, 4))
         self.assertEqual(expected_imgurl, imgurl)
