@@ -462,7 +462,7 @@ span.grippy::after {
                                         <span><label for="{{ map_form.constraints_other|id }}">{{ map_form.constraints_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
                                         {{ map_form.constraints_other }}
-                                    </div> 
+                                    </div>
                                     {% endblock map_constraints_other %}
                                 </div>
                             </div>
@@ -543,6 +543,13 @@ span.grippy::after {
                         {{ map_form.extra_metadata }}
                     </div>
                     {% endblock map_extra_metadata %}
+                    {% block map_linked_resources %}
+                    <div id="linked_resources">
+                      <span><label for="{{ map_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                      {{ map_form.linked_resources }}
+                    </div>
+                    {% endblock map_linked_resources %}
+
                 </div>
                 {% endblock maintenance_block %}
             </div>

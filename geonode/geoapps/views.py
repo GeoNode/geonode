@@ -289,6 +289,9 @@ def geoapp_metadata(
         geoapp_form.cleaned_data.pop("metadata")
         extra_metadata = geoapp_form.cleaned_data.pop("extra_metadata")
 
+        geoapp_form.save_linked_resources()
+        geoapp_form.cleaned_data.pop("linked_resources")
+
         geoapp_obj = geoapp_form.instance
 
         _vals = dict(**geoapp_form.cleaned_data, **additional_vals)

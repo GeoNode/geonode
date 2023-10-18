@@ -1918,6 +1918,18 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def principal_investigator_csv(self):
         return ",".join(p.get_full_name() or p.username for p in self.principal_investigator)
 
+    def get_linked_resources(self, as_target: bool = False):
+        """
+        Get all the linked resources to this ResourceBase instance.
+        This is implemented as a method so that derived classes can override it (for instance, Maps may add
+        related datasets)
+        """
+        return (
+            LinkedResource.get_linked_resources(target=self)
+            if as_target
+            else LinkedResource.get_linked_resources(source=self)
+        )
+
 
 class LinkManager(models.Manager):
     """Helper class to access links grouped by type"""
@@ -1939,6 +1951,47 @@ class LinkManager(models.Manager):
 
     def ows(self):
         return self.get_queryset().filter(link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS"])
+
+
+class LinkedResource(models.Model):
+    source = models.ForeignKey(
+        ResourceBase, related_name="linked_to", blank=False, null=False, on_delete=models.CASCADE
+    )
+    target = models.ForeignKey(ResourceBase, related_name="linked_by", blank=True, null=False, on_delete=models.CASCADE)
+    internal = models.BooleanField(null=False, default=False)
+
+    @classmethod
+    def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, is_internal: bool = None):
+        if source is None and target is None:
+            raise ValueError("Both source and target filters missing")
+
+        qs = LinkedResource.objects
+        if source:
+            qs = qs.filter(source=source).select_related("target")
+        if target:
+            qs = qs.filter(target=target).select_related("source")
+        if is_internal is not None:
+            qs = qs.filter(internal=is_internal)
+        return qs
+
+    @classmethod
+    def get_target_ids(cls, source: ResourceBase, is_internal: bool = None):
+        sub = LinkedResource.objects.filter(source=source).values_list("target_id", flat=True)
+        if is_internal is not None:
+            sub = sub.filter(internal=is_internal)
+        return sub
+
+    @classmethod
+    def get_targets(cls, source: ResourceBase, is_internal: bool = None):
+        return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, is_internal))
+
+    @classmethod
+    def resolve_targets(cls, linked_resources):
+        return (lr.target for lr in linked_resources)
+
+    @classmethod
+    def resolve_sources(cls, linked_resources):
+        return (lr.source for lr in linked_resources)
 
 
 class Link(models.Model):
