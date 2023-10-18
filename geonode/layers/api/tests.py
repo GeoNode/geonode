@@ -30,6 +30,7 @@ from rest_framework.test import APITestCase
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode.geoserver.createlayer.utils import create_dataset
 
+from geonode.base.models import Link
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.layers.models import Attribute, Dataset
 from geonode.maps.models import Map, MapLayer
@@ -323,6 +324,304 @@ class DatasetsApiTests(APITestCase):
         # evaluate that the number of available layer is not changed
         self.assertEqual(Dataset.objects.count(), cnt)
 
+    def test_patch_point_of_contact(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"poc": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(user_id in [poc.get("pk") for poc in response.json().get("dataset").get("poc")] for user_id in user_ids)
+        )
+        # Resetting all point of contact
+        response = self.client.patch(url, data={"poc": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [poc.get("pk") for poc in response.json().get("dataset").get("poc")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_metadata_author(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"metadata_author": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [
+                    metadata_author.get("pk")
+                    for metadata_author in response.json().get("dataset").get("metadata_author")
+                ]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all metadata authors
+        response = self.client.patch(url, data={"metadata_author": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    metadata_author.get("pk")
+                    for metadata_author in response.json().get("dataset").get("metadata_author")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_processor(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"processor": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [processor.get("pk") for processor in response.json().get("dataset").get("processor")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all processors
+        response = self.client.patch(url, data={"processor": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [processor.get("pk") for processor in response.json().get("dataset").get("processor")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_publisher(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"publisher": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [publisher.get("pk") for publisher in response.json().get("dataset").get("publisher")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all publishers
+        response = self.client.patch(url, data={"publisher": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [publisher.get("pk") for publisher in response.json().get("dataset").get("publisher")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_custodian(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"custodian": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [custodian.get("pk") for custodian in response.json().get("dataset").get("custodian")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all custodians
+        response = self.client.patch(url, data={"custodian": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [custodian.get("pk") for custodian in response.json().get("dataset").get("custodian")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_distributor(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"distributor": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [distributor.get("pk") for distributor in response.json().get("dataset").get("distributor")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all distributers
+        response = self.client.patch(url, data={"distributor": []}, format="json")
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [distributor.get("pk") for distributor in response.json().get("dataset").get("distributor")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_resource_user(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"resource_user": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [resource_user.get("pk") for resource_user in response.json().get("dataset").get("resource_user")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all resource users
+        response = self.client.patch(url, data={"resource_user": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    resource_user.get("pk") for resource_user in response.json().get("dataset").get("resource_user")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_resource_provider(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"resource_provider": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [
+                    resource_provider.get("pk")
+                    for resource_provider in response.json().get("dataset").get("resource_provider")
+                ]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all principal investigator
+        response = self.client.patch(url, data={"resource_provider": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    resource_provider.get("pk")
+                    for resource_provider in response.json().get("dataset").get("resource_provider")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_originator(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"originator": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [originator.get("pk") for originator in response.json().get("dataset").get("originator")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all originators
+        response = self.client.patch(url, data={"originator": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [originator.get("pk") for originator in response.json().get("dataset").get("originator")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_principal_investigator(self):
+        layer = Dataset.objects.first()
+        url = urljoin(f"{reverse('datasets-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"principal_investigator": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [
+                    principal_investigator.get("pk")
+                    for principal_investigator in response.json().get("dataset").get("principal_investigator")
+                ]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all principal investigator
+        response = self.client.patch(url, data={"principal_investigator": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    principal_investigator.get("pk")
+                    for principal_investigator in response.json().get("dataset").get("principal_investigator")
+                ]
+                for user_id in user_ids
+            )
+        )
+
     def test_metadata_update_for_not_supported_method(self):
         layer = Dataset.objects.first()
         url = reverse("datasets-replace-metadata", args=(layer.id,))
@@ -415,3 +714,26 @@ class DatasetsApiTests(APITestCase):
         put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
         self.assertEqual(200, response.status_code)
+
+    def test_download_api(self):
+        dataset = create_single_dataset("test_dataset")
+        url = reverse("datasets-detail", kwargs={"pk": dataset.pk})
+        response = self.client.get(url)
+        self.assertTrue(response.status_code == 200)
+        data = response.json()["dataset"]
+        download_url_data = data["download_urls"][0]
+        download_url = reverse("dataset_download", args=[dataset.alternate])
+        self.assertEqual(download_url_data["default"], True)
+        self.assertEqual(download_url_data["ajax_safe"], True)
+        self.assertEqual(download_url_data["url"], download_url)
+
+        link = Link(link_type="original", url="https://myoriginal.org", resource=dataset)
+        link.save()
+
+        response = self.client.get(url)
+        data = response.json()["dataset"]
+        download_url_data = data["download_urls"][0]
+        download_url = reverse("dataset_download", args=[dataset.alternate])
+        self.assertEqual(download_url_data["default"], True)
+        self.assertEqual(download_url_data["ajax_safe"], False)
+        self.assertEqual(download_url_data["url"], "https://myoriginal.org")

@@ -96,10 +96,9 @@ def map_metadata(
 
     # Add metadata_author or poc if missing
     map_obj.add_missing_metadata_author_or_poc()
+
     current_keywords = [keyword.name for keyword in map_obj.keywords.all()]
-    poc = map_obj.poc
     topic_thesaurus = map_obj.tkeywords.all()
-    metadata_author = map_obj.metadata_author
 
     topic_category = map_obj.category
 
@@ -162,8 +161,6 @@ def map_metadata(
                 tkeywords_form.fields[tid].initial = values
 
     if request.method == "POST" and map_form.is_valid() and category_form.is_valid() and tkeywords_form.is_valid():
-        new_poc = map_form.cleaned_data["poc"]
-        new_author = map_form.cleaned_data["metadata_author"]
         new_keywords = current_keywords if request.keyword_readonly else map_form.cleaned_data["keywords"]
         new_regions = map_form.cleaned_data["regions"]
         new_title = map_form.cleaned_data["title"]
@@ -177,25 +174,10 @@ def map_metadata(
         ):
             new_category = TopicCategory.objects.get(id=int(category_form.cleaned_data["category_choice_field"]))
 
-        if new_poc is None:
-            if poc is None:
-                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
-            else:
-                poc_form = ProfileForm(request.POST, prefix="poc")
-            if poc_form.has_changed and poc_form.is_valid():
-                new_poc = poc_form.save()
+        # update contact roles
+        map_obj.set_contact_roles_from_metadata_edit(map_form)
+        map_obj.save()
 
-        if new_author is None:
-            if metadata_author is None:
-                author_form = ProfileForm(request.POST, prefix="author", instance=metadata_author)
-            else:
-                author_form = ProfileForm(request.POST, prefix="author")
-            if author_form.has_changed and author_form.is_valid():
-                new_author = author_form.save()
-
-        if new_poc is not None and new_author is not None:
-            map_obj.poc = new_poc
-            map_obj.metadata_author = new_author
         map_obj.title = new_title
         map_obj.abstract = new_abstract
         map_obj.keywords.clear()
@@ -210,6 +192,8 @@ def map_metadata(
         for _m in json.loads(map_form.cleaned_data["extra_metadata"]):
             new_m = ExtraMetadata.objects.create(resource=map_obj, metadata=_m)
             map_obj.metadata.add(new_m)
+
+        map_form.save_linked_resources()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, map_obj)
         if not ajax:
@@ -260,22 +244,15 @@ def map_metadata(
     # - POST Request Ends here -
 
     # Request.GET
-    if poc is None:
-        poc_form = ProfileForm(request.POST, prefix="poc")
-    else:
-        map_form.fields["poc"].initial = poc.id
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden = True
-
-    if metadata_author is None:
-        author_form = ProfileForm(request.POST, prefix="author")
-    else:
-        map_form.fields["metadata_author"].initial = metadata_author.id
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden = True
+    # define contact role forms
+    contact_role_forms_context = {}
+    for role in map_obj.get_multivalue_role_property_names():
+        map_form.fields[role].initial = [p.username for p in map_obj.__getattribute__(role)]
+        role_form = ProfileForm(prefix=role)
+        role_form.hidden = True
+        contact_role_forms_context[f"{role}_form"] = role_form
 
     layers = MapLayer.objects.filter(map=map_obj.id)
-
     metadata_author_groups = get_user_visible_groups(request.user)
 
     if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, map_obj):
@@ -294,8 +271,6 @@ def map_metadata(
             "panel_template": panel_template,
             "custom_metadata": custom_metadata,
             "map_form": map_form,
-            "poc_form": poc_form,
-            "author_form": author_form,
             "category_form": category_form,
             "tkeywords_form": tkeywords_form,
             "layers": layers,
@@ -308,6 +283,8 @@ def map_metadata(
                 set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
                 | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
             ),
+            **contact_role_forms_context,
+            "UI_ROLES_IN_TOGGLE_VIEW": map_obj.get_ui_toggled_role_property_names(),
         },
     )
 

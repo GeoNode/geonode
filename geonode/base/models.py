@@ -25,6 +25,8 @@ import uuid
 import logging
 import traceback
 import datetime
+
+from typing import List, Optional, Union, Tuple
 from sequences.models import Sequence
 
 from sequences import get_next_value
@@ -40,6 +42,7 @@ from django.db.utils import IntegrityError, OperationalError
 from django.contrib.auth.models import Group
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
+from django.db.models.query import QuerySet
 from django.db.models.fields.json import JSONField
 from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
@@ -67,7 +70,14 @@ from geonode.base import enumerations
 from geonode.singleton import SingletonModel
 from geonode.groups.conf import settings as groups_settings
 from geonode.base.bbox_utils import BBOXHelper, polygon_from_bbox
-from geonode.utils import bbox_to_wkt, find_by_attr, bbox_to_projection, get_allowed_extensions, is_monochromatic_image
+from geonode.utils import (
+    bbox_to_wkt,
+    find_by_attr,
+    bbox_to_projection,
+    bbox_swap,
+    get_allowed_extensions,
+    is_monochromatic_image,
+)
 from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
@@ -75,6 +85,7 @@ from geonode.security.models import PermissionLevelMixin
 from geonode.security.permissions import VIEW_PERMISSIONS, OWNER_PERMISSIONS
 
 from geonode.notifications_helper import send_notification, get_notification_recipients
+from geonode.people import Roles
 from geonode.people.enumerations import ROLE_VALUES
 
 from urllib.parse import urlsplit, urljoin
@@ -94,37 +105,6 @@ class ContactRole(models.Model):
     role = models.CharField(
         choices=ROLE_VALUES, max_length=255, help_text=_("function performed by the responsible " "party")
     )
-
-    def clean(self):
-        """
-        Make sure there is only one poc and author per resource
-        """
-
-        if not hasattr(self, "resource"):
-            # The ModelForm will already raise a Validation error for a missing resource.
-            # Re-raising an empty error here ensures the rest of this method isn't
-            # executed.
-            raise ValidationError("")
-
-        if (self.role == self.resource.poc) or (self.role == self.resource.metadata_author):
-            contacts = self.resource.contacts.filter(contactrole__role=self.role)
-            if contacts.count() == 1:
-                # only allow this if we are updating the same contact
-                if self.contact != contacts.get():
-                    raise ValidationError(f"There can be only one {self.role} for a given resource")
-        if self.contact is None:
-            # verify that any unbound contact is only associated to one
-            # resource
-            bounds = ContactRole.objects.filter(contact=self.contact).count()
-            if bounds > 1:
-                raise ValidationError("There can be one and only one resource linked to an unbound contact" % self.role)
-            elif bounds == 1:
-                # verify that if there was one already, it corresponds to this
-                # instance
-                if ContactRole.objects.filter(contact=self.contact).get().id != self.id:
-                    raise ValidationError(
-                        "There can be one and only one resource linked to an unbound contact" % self.role
-                    )
 
     class Meta:
         unique_together = (("contact", "resource", "role"),)
@@ -1365,14 +1345,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         return self.restriction_code_type.gn_description if self.restriction_code_type else None
 
     @property
-    def publisher(self):
-        return self.poc.get_full_name() or self.poc.username
-
-    @property
-    def contributor(self):
-        return self.metadata_author.get_full_name() or self.metadata_author.username
-
-    @property
     def topiccategory(self):
         return self.category.identifier if self.category else None
 
@@ -1634,7 +1606,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             else:
                 match = re.match(r"^(EPSG:)?(?P<srid>\d{4,6})$", str(srid))
                 bbox_polygon.srid = int(match.group("srid")) if match else 4326
-                self.ll_bbox_polygon = Polygon.from_bbox(bbox_to_projection(list(bbox_polygon.extent) + [srid])[:-1])
+
+                # Adapt coords order from xmin,ymin,xmax,ymax to xmin,xmax,ymin,ymax
+                standard_extent = list(bbox_polygon.extent)
+                bbox_gn_order = bbox_swap(standard_extent) + [srid]
+                projected_bbox_gn_order = bbox_to_projection(bbox_gn_order)
+                projected_bbox = bbox_swap(projected_bbox_gn_order[:-1])
+
+                self.ll_bbox_polygon = Polygon.from_bbox(projected_bbox)
             ResourceBase.objects.filter(id=self.id).update(ll_bbox_polygon=self.ll_bbox_polygon)
         except Exception as e:
             raise GeoNodeException(e)
@@ -1882,10 +1861,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 pass
 
         if user:
-            if self.poc is None:
-                self.poc = user
-            if self.metadata_author is None:
-                self.metadata_author = user
+            if len(self.poc) == 0:
+                self.poc = [user]
+            if len(self.metadata_author) == 0:
+                self.metadata_author = [user]
 
         from guardian.models import UserObjectPermission
 
@@ -1905,42 +1884,162 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def language_title(self):
         return [v for v in enumerations.ALL_LANGUAGES if v[0] == self.language][0][1].title()
 
-    def _set_poc(self, poc):
-        # reset any poc assignation to this resource
-        ContactRole.objects.filter(role="pointOfContact", resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(role="pointOfContact", resource=self, contact=poc)
-
-    def _get_poc(self):
-        try:
-            the_poc = ContactRole.objects.get(role="pointOfContact", resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_poc = None
-        return the_poc
-
-    poc = property(_get_poc, _set_poc)
-
-    def _set_metadata_author(self, metadata_author):
-        # reset any metadata_author assignation to this resource
-        ContactRole.objects.filter(role="author", resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(role="author", resource=self, contact=metadata_author)
-
-    def _get_metadata_author(self):
-        try:
-            the_ma = ContactRole.objects.get(role="author", resource=self).contact
-        except ContactRole.DoesNotExist:
-            the_ma = None
-        return the_ma
-
+    # Contact Roles
     def add_missing_metadata_author_or_poc(self):
         """
         Set metadata_author and/or point of contact (poc) to a resource when any of them is missing
         """
-        if not self.metadata_author:
-            self.metadata_author = self.owner
-        if not self.poc:
-            self.poc = self.owner
+        if len(self.metadata_author) == 0:
+            self.metadata_author = [self.owner]
+        if len(self.poc) == 0:
+            self.poc = [self.owner]
+
+    @staticmethod
+    def get_multivalue_role_property_names() -> List[str]:
+        """returns list of property names for all contact roles able to
+            handle multiple profile_users
+
+        Returns:
+            _type_: List(str)
+            _description: list of names
+        """
+        return [role.name for role in Roles.get_multivalue_ones()]
+
+    @staticmethod
+    def get_multivalue_required_role_property_names() -> List[str]:
+        """returns list of property names for all contact roles that are required
+
+        Returns:
+            _type_: List(str)
+            _description: list of names
+        """
+        return [role.name for role in (set(Roles.get_multivalue_ones()) & set(Roles.get_required_ones()))]
+
+    @staticmethod
+    def get_ui_toggled_role_property_names() -> List[str]:
+        """returns list of property names for all contact roles that are toggled of in metadata_editor
+
+        Returns:
+            _type_: List(str)
+            _description: list of names
+        """
+        return [role.name for role in (set(Roles.get_toggled_ones()) & set(Roles.get_toggled_ones()))]
+
+    # typing not possible due to: from geonode.base.forms import ResourceBaseForm; unable due to circular ...
+    def set_contact_roles_from_metadata_edit(self, resource_base_form) -> bool:
+        """gets a ResourceBaseForm and extracts the Contact Role elements from it
+
+        Args:
+            resource_base_form (ResourceBaseForm): ResourceBaseForm with contact roles set
+
+        Returns:
+            bool: true if all contact roles could be set, else false
+        """
+        failed = False
+        for role in self.get_multivalue_role_property_names():
+            try:
+                if resource_base_form.cleaned_data[role].exists():
+                    self.__setattr__(role, resource_base_form.cleaned_data[role])
+            except AttributeError:
+                logger.warning(f"unable to set contact role {role} for {self} ...")
+                failed = True
+        return failed
+
+    def __get_contact_role_elements__(self, role: str) -> Optional[List[settings.AUTH_USER_MODEL]]:
+        """general getter of for all contact roles except owner
+
+        Args:
+            role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested
+        Returns:
+            Optional[List[settings.AUTH_USER_MODEL]]: returns the requested contact role from the database
+        """
+        try:
+            contact_role = ContactRole.objects.filter(role=role, resource=self)
+            contacts = [cr.contact for cr in contact_role]
+        except ContactRole.DoesNotExist:
+            contacts = None
+        return contacts
+
+    # types allowed as input for Contact role properties
+    CONTACT_ROLE_USER_PROFILES_ALLOWED_TYPES = Union[settings.AUTH_USER_MODEL, QuerySet, List[settings.AUTH_USER_MODEL]]
+
+    def __set_contact_role_element__(self, user_profile: CONTACT_ROLE_USER_PROFILES_ALLOWED_TYPES, role: str):
+        """general setter for all contact roles except owner in resource base
+
+        Args:
+            user_profile (CONTACT_ROLE_USER_PROFILES_ALLOWED_TYPES): _description_
+            role (str): tring coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set
+        """
+
+        def __create_role__(
+            resource, role: str, user_profile: settings.AUTH_USER_MODEL
+        ) -> List[settings.AUTH_USER_MODEL]:
+            return ContactRole.objects.create(role=role, resource=resource, contact=user_profile)
+
+        if isinstance(user_profile, QuerySet):
+            ContactRole.objects.filter(role=role, resource=self).delete()
+            return [__create_role__(self, role, user) for user in user_profile]
+
+        elif isinstance(user_profile, get_user_model()):
+            ContactRole.objects.filter(role=role, resource=self).delete()
+            return __create_role__(self, role, user_profile)
+
+        elif isinstance(user_profile, list) and all(isinstance(x, get_user_model()) for x in user_profile):
+            ContactRole.objects.filter(role=role, resource=self).delete()
+            return [__create_role__(self, role, profile) for profile in user_profile]
+
+        elif user_profile is None:
+            ContactRole.objects.filter(role=role, resource=self).delete()
+        else:
+            logger.error(f"Bad profile format for role: {role} ...")
+
+    def get_defined_multivalue_contact_roles(self) -> List[Tuple[List[settings.AUTH_USER_MODEL], str]]:
+        """Returns all set contact roles of the ressource with additional ROLE_VALUES from geonode.people.enumarations.ROLE_VALUES. Mainly used to generate output xml more easy.
+
+        Returns:
+              _type_: List[Tuple[List[people object], roles_label_name]]
+              _description: list tuples including two elements: 1. list of people have a certain role. 2. role label
+        """
+        return {
+            role.label: self.__getattribute__(role.name)
+            for role in Roles.get_multivalue_ones()
+            if self.__getattribute__(role.name)
+        }
+
+    def get_first_contact_of_role(self, role: str) -> Optional[ContactRole]:
+        """
+        Get the first contact from the specified role.
+
+        Parameters:
+            role (str): The role of the contact.
+
+        Returns:
+            ContactRole or None: The first contact with the specified role, or None if not found.
+        """
+        if contact := self.__get_contact_role_elements__(role):
+            return contact[0]
+        else:
+            return None
+
+    # Contact Role: POC (pointOfContact)
+    def __get_poc__(self) -> List[settings.AUTH_USER_MODEL]:
+        return self.__get_contact_role_elements__(role="pointOfContact")
+
+    def __set_poc__(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role="pointOfContact")
+
+    poc = property(__get_poc__, __set_poc__)
+
+    @property
+    def poc_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.poc)
+
+    # Contact Role: metadata_author
+    def _get_metadata_author(self):
+        return self.__get_contact_role_elements__(role="author")
+
+    def _set_metadata_author(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role="author")
 
     def _get_contact_role_element(self, role: str) -> ContactRole:
         """
@@ -1983,69 +2082,125 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
-    def _get_processor(self):
-        return self._get_contact_role_element(role="processor")
+    @property
+    def metadata_author_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.metadata_author)
 
-    def _set_processor(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="processor")
+    # Contact Role: PROCESSOR
+    def _get_processor(self):
+        return self.__get_contact_role_elements__(role=Roles.PROCESSOR.name)
+
+    def _set_processor(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.PROCESSOR.name)
 
     processor = property(_get_processor, _set_processor)
 
-    def _get_publisher(self):
-        return self._get_contact_role_element(role="publisher")
+    @property
+    def processor_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.processor)
 
-    def _set_publisher(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="publisher")
+    # Contact Role: PUBLISHER
+    def _get_publisher(self):
+        return self.__get_contact_role_elements__(role=Roles.PUBLISHER.name)
+
+    def _set_publisher(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.PUBLISHER.name)
 
     publisher = property(_get_publisher, _set_publisher)
 
-    def _get_custodian(self):
-        return self._get_contact_role_element(role="custodian")
+    @property
+    def publisher_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.publisher)
 
-    def _set_custodian(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="custodian")
+    # Contact Role: CUSTODIAN
+    def _get_custodian(self):
+        return self.__get_contact_role_elements__(role=Roles.CUSTODIAN.name)
+
+    def _set_custodian(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.CUSTODIAN.name)
 
     custodian = property(_get_custodian, _set_custodian)
 
-    def _get_distributor(self):
-        return self._get_contact_role_element(role="distributor")
+    @property
+    def custodian_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.custodian)
 
-    def _set_distributor(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="distributor")
+    # Contact Role: DISTRIBUTOR
+    def _get_distributor(self):
+        return self.__get_contact_role_elements__(role=Roles.DISTRIBUTOR.name)
+
+    def _set_distributor(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.DISTRIBUTOR.name)
 
     distributor = property(_get_distributor, _set_distributor)
 
-    def _get_resource_user(self):
-        return self._get_contact_role_element(role="resource_user")
+    @property
+    def distributor_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.distributor)
 
-    def _set_resource_user(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="resource_user")
+    # Contact Role: RESOURCE_USER
+    def _get_resource_user(self):
+        return self.__get_contact_role_elements__(role=Roles.RESOURCE_USER.name)
+
+    def _set_resource_user(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.RESOURCE_USER.name)
 
     resource_user = property(_get_resource_user, _set_resource_user)
 
-    def _get_resource_provider(self):
-        return self._get_contact_role_element(role="resource_provider")
+    @property
+    def resource_user_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.resource_user)
 
-    def _set_resource_provider(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="resource_provider")
+    # Contact Role: RESOURCE_PROVIDER
+    def _get_resource_provider(self):
+        return self.__get_contact_role_elements__(role=Roles.RESOURCE_PROVIDER.name)
+
+    def _set_resource_provider(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.RESOURCE_PROVIDER.name)
 
     resource_provider = property(_get_resource_provider, _set_resource_provider)
 
-    def _get_originator(self):
-        return self._get_contact_role_element(role="originator")
+    @property
+    def resource_provider_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.resource_provider)
 
-    def _set_originator(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="originator")
+    # Contact Role: ORIGINATOR
+    def _get_originator(self):
+        return self.__get_contact_role_elements__(role=Roles.ORIGINATOR.name)
+
+    def _set_originator(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.ORIGINATOR.name)
 
     originator = property(_get_originator, _set_originator)
 
-    def _get_principal_investigator(self):
-        return self._get_contact_role_element(role="principal_investigator")
+    @property
+    def originator_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.originator)
 
-    def _set_principal_investigator(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="principal_investigator")
+    # Contact Role: PRINCIPAL_INVESTIGATOR
+    def _get_principal_investigator(self):
+        return self.__get_contact_role_elements__(role=Roles.PRINCIPAL_INVESTIGATOR.name)
+
+    def _set_principal_investigator(self, user_profile):
+        return self.__set_contact_role_element__(user_profile=user_profile, role=Roles.PRINCIPAL_INVESTIGATOR.name)
 
     principal_investigator = property(_get_principal_investigator, _set_principal_investigator)
+
+    @property
+    def principal_investigator_csv(self):
+        return ",".join(p.get_full_name() or p.username for p in self.principal_investigator)
+
+    def get_linked_resources(self, as_target: bool = False):
+        """
+        Get all the linked resources to this ResourceBase instance.
+        This is implemented as a method so that derived classes can override it (for instance, Maps may add
+        related datasets)
+        """
+        return (
+            LinkedResource.get_linked_resources(target=self)
+            if as_target
+            else LinkedResource.get_linked_resources(source=self)
+        )
 
 
 class LinkManager(models.Manager):
@@ -2068,6 +2223,47 @@ class LinkManager(models.Manager):
 
     def ows(self):
         return self.get_queryset().filter(link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS"])
+
+
+class LinkedResource(models.Model):
+    source = models.ForeignKey(
+        ResourceBase, related_name="linked_to", blank=False, null=False, on_delete=models.CASCADE
+    )
+    target = models.ForeignKey(ResourceBase, related_name="linked_by", blank=True, null=False, on_delete=models.CASCADE)
+    internal = models.BooleanField(null=False, default=False)
+
+    @classmethod
+    def get_linked_resources(cls, source: ResourceBase = None, target: ResourceBase = None, is_internal: bool = None):
+        if source is None and target is None:
+            raise ValueError("Both source and target filters missing")
+
+        qs = LinkedResource.objects
+        if source:
+            qs = qs.filter(source=source).select_related("target")
+        if target:
+            qs = qs.filter(target=target).select_related("source")
+        if is_internal is not None:
+            qs = qs.filter(internal=is_internal)
+        return qs
+
+    @classmethod
+    def get_target_ids(cls, source: ResourceBase, is_internal: bool = None):
+        sub = LinkedResource.objects.filter(source=source).values_list("target_id", flat=True)
+        if is_internal is not None:
+            sub = sub.filter(internal=is_internal)
+        return sub
+
+    @classmethod
+    def get_targets(cls, source: ResourceBase, is_internal: bool = None):
+        return ResourceBase.objects.filter(id__in=cls.get_target_ids(source, is_internal))
+
+    @classmethod
+    def resolve_targets(cls, linked_resources):
+        return (lr.target for lr in linked_resources)
+
+    @classmethod
+    def resolve_sources(cls, linked_resources):
+        return (lr.source for lr in linked_resources)
 
 
 class Link(models.Model):

@@ -44,13 +44,13 @@ from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCE
 from geonode.security.utils import perms_as_set, get_user_groups, skip_registered_members_common_group
 
 from . import settings as rm_settings
-from .utils import update_resource, metadata_storers, resourcebase_post_save
+from .utils import update_resource, resourcebase_post_save
 
 from ..base import enumerations
-from ..base.models import ResourceBase
+from ..base.models import ResourceBase, LinkedResource
 from ..security.utils import AdvancedSecurityWorkflowManager
 from ..layers.metadata import parse_metadata
-from ..documents.models import Document, DocumentResourceLink
+from ..documents.models import Document
 from ..layers.models import Dataset, Attribute
 from ..maps.models import Map
 from ..storage.manager import storage_manager
@@ -398,7 +398,6 @@ class ResourceManager(ResourceManagerInterface):
                         extra_metadata=extra_metadata,
                     )
                     _resource = self._concrete_resource_manager.update(uuid, instance=_resource, notify=notify)
-                    _resource = metadata_storers(_resource.get_real_instance(), custom)
 
                     # The following is only a demo proof of concept for a pluggable WF subsystem
                     from geonode.resource.processing.models import ProcessingWorkflow
@@ -415,7 +414,7 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 try:
                     _resource.save(notify=notify)
-                    resourcebase_post_save(_resource.get_real_instance())
+                    resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
                     _resource.set_permissions(
                         created=False,
                         approval_status_changed=(
@@ -513,12 +512,15 @@ class ResourceManager(ResourceManagerInterface):
                         if "name" in defaults:
                             defaults.pop("name")
                     _resource.save()
-                    if isinstance(instance.get_real_instance(), Document):
-                        for resource_link in DocumentResourceLink.objects.filter(document=instance.get_real_instance()):
-                            _resource_link = copy.copy(resource_link)
-                            _resource_link.pk = _resource_link.id = None
-                            _resource_link.document = _resource.get_real_instance()
-                            _resource_link.save()
+                    for lr in LinkedResource.get_linked_resources(source=instance.pk, is_internal=False):
+                        LinkedResource.object.get_or_create(
+                            source_id=_resource.pk, target_id=lr.target.pk, internal=False
+                        )
+                    for lr in LinkedResource.get_linked_resources(target=instance.pk, is_internal=False):
+                        LinkedResource.object.get_or_create(
+                            source_id=lr.source.pk, target_id=_resource.pk, internal=False
+                        )
+
                     if isinstance(instance.get_real_instance(), Dataset):
                         for attribute in Attribute.objects.filter(dataset=instance.get_real_instance()):
                             _attribute = copy.copy(attribute)

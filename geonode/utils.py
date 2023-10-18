@@ -88,6 +88,7 @@ from urllib.parse import (
     urlparse,
     urlsplit,
     urlencode,
+    urlunparse,
     parse_qsl,
     ParseResult,
 )
@@ -491,6 +492,12 @@ def _split_query(query):
     if accum is not None:
         keywords.append(accum)
     return [kw.strip() for kw in keywords if kw.strip()]
+
+
+# Swaps coords order from xmin,ymin,xmax,ymax to xmin,xmax,ymin,ymax and viceversa
+def bbox_swap(bbox):
+    _bbox = [float(o) for o in bbox]
+    return [_bbox[0], _bbox[2], _bbox[1], _bbox[3]]
 
 
 def bbox_to_wkt(x0, x1, y0, y1, srid="4326", include_srid=True):
@@ -1411,10 +1418,7 @@ def get_legend_url(
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
-    from django.urls import reverse
     from django.utils.translation import ugettext
-    from geonode.layers.models import Dataset
-    from geonode.documents.models import Document
 
     # Prune old links
     if prune:
@@ -1480,32 +1484,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             except Exception as e:
                 logger.exception(e)
                 bbox = instance.bbox_string
-
-        # Create Raw Data download link
-        if settings.DISPLAY_ORIGINAL_DATASET_LINK:
-            logger.debug(" -- Resource Links[Create Raw Data download link]...")
-            if isinstance(instance, Dataset):
-                download_url = build_absolute_uri(reverse("dataset_download", args=(instance.alternate,)))
-            elif isinstance(instance, Document):
-                download_url = build_absolute_uri(reverse("document_download", args=(instance.id,)))
-            else:
-                download_url = None
-
-            while Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").exists():
-                Link.objects.filter(resource=instance.resourcebase_ptr, link_type="original").delete()
-            Link.objects.update_or_create(
-                resource=instance.resourcebase_ptr,
-                url=download_url,
-                defaults=dict(
-                    extension="zip",
-                    name="Original Dataset",
-                    mime="application/octet-stream",
-                    link_type="original",
-                ),
-            )
-            logger.debug(" -- Resource Links[Create Raw Data download link]...done!")
-        else:
-            Link.objects.filter(resource=instance.resourcebase_ptr, name="Original Dataset").delete()
 
         # Set download links for WMS, WCS or WFS and KML
         logger.debug(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
@@ -1930,11 +1908,27 @@ def build_absolute_uri(url):
     return url
 
 
+def remove_credentials_from_url(url):
+    # Parse the URL
+    parsed_url = urlparse(url)
+
+    # Remove the username and password from the parsed URL
+    parsed_url = parsed_url._replace(netloc=parsed_url.netloc.split("@")[-1])
+
+    # Reconstruct the URL without credentials
+    cleaned_url = urlunparse(parsed_url)
+
+    return cleaned_url
+
+
 def extract_ip_or_domain(url):
+    # Decode the URL to handle percent-encoded characters
+    _url = remove_credentials_from_url(unquote(url))
+
     ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
     domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
 
-    match = ip_regex.findall(url)
+    match = ip_regex.findall(_url)
     if len(match):
         ip_address = match[0]
         try:
@@ -1943,7 +1937,7 @@ def extract_ip_or_domain(url):
         except ValueError:
             pass
 
-    match = domain_regex.findall(url)
+    match = domain_regex.findall(_url)
     if len(match):
         return match[0]
 

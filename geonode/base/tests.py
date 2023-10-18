@@ -17,20 +17,31 @@
 #
 #########################################################################
 
+import json
 import logging
 import os
-from django.db.utils import IntegrityError, OperationalError
 import requests
-
-from uuid import uuid4
-from unittest.mock import patch, Mock
-from django.core.exceptions import ObjectDoesNotExist
-
 from PIL import Image
 from io import BytesIO
+from uuid import uuid4
+from unittest.mock import patch, Mock
 from guardian.shortcuts import assign_perm
-from geonode.base.populate_test_data import create_single_dataset
 
+from django.db.utils import IntegrityError, OperationalError
+from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
+from django.contrib.gis.geos import Polygon, GEOSGeometry
+from django.template import Template, Context
+from django.contrib.auth import get_user_model
+from geonode.storage.manager import storage_manager
+from django.test import Client, TestCase, override_settings, SimpleTestCase
+from django.shortcuts import reverse
+from django.utils import translation
+from django.core.files import File
+from django.core.management import call_command
+from django.core.management.base import CommandError
+
+from geonode.base.populate_test_data import create_single_dataset
 from geonode.maps.models import Map
 from geonode.resource.utils import KeywordHandler
 from geonode.thumbs import utils as thumb_utils
@@ -54,15 +65,6 @@ from geonode.base.models import (
     ThesaurusKeyword,
     generate_thesaurus_reference,
 )
-from django.conf import settings
-from django.contrib.gis.geos import Polygon, GEOSGeometry
-from django.template import Template, Context
-from django.contrib.auth import get_user_model
-from geonode.storage.manager import storage_manager
-from django.test import Client, TestCase, override_settings, SimpleTestCase
-from django.shortcuts import reverse
-from django.utils import translation
-
 from geonode.base.middleware import ReadOnlyMiddleware, MaintenanceMiddleware
 from geonode.base.templatetags.base_tags import get_visibile_resources, facets
 from geonode.base.templatetags.thesaurus import (
@@ -76,12 +78,8 @@ from geonode.base.templatetags.thesaurus import (
 from geonode.base.templatetags.user_messages import show_notification
 from geonode import geoserver
 from geonode.decorators import on_ogc_backend
-
-from django.core.files import File
-from django.core.management import call_command
-from django.core.management.base import CommandError
 from geonode.base.forms import ThesaurusAvailableForm, THESAURUS_RESULT_LIST_SEPERATOR
-
+from geonode.resource.manager import resource_manager
 
 test_image = Image.new("RGBA", size=(50, 50), color=(155, 0, 0))
 
@@ -159,11 +157,111 @@ class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
         Test that calling add_missing_metadata_author_or_poc resource method sets
         a missing metadata_author and/or point of contact (poc) to resource owner
         """
-        user = get_user_model().objects.create(username="zlatan_i")
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+
         self.rb.owner = user
         self.rb.add_missing_metadata_author_or_poc()
-        self.assertEqual(self.rb.metadata_author.username, "zlatan_i")
-        self.assertEqual(self.rb.poc.username, "zlatan_i")
+        self.assertTrue("zlatan_i" in [author.username for author in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" in [author.username for author in self.rb.poc])
+
+
+class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
+
+    """
+    Test that contact roles can be set as people profile
+    """
+
+    def test_set_contact_role_as_people_profile(self):
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+
+        self.rb.owner = user
+        self.rb.metadata_author = user
+        self.rb.poc = user
+        self.rb.publisher = user
+        self.rb.custodian = user
+        self.rb.distributor = user
+        self.rb.resource_user = user
+        self.rb.resource_provider = user
+        self.rb.originator = user
+        self.rb.principal_investigator = user
+        self.rb.processor = user
+
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.poc])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.publisher])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.custodian])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.distributor])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.resource_user])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.resource_provider])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.originator])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.principal_investigator])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.processor])
+
+    """
+    Test that contact roles can be set as list of people profiles
+    """
+
+    def test_set_contact_role_as_list_of_people(self):
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+        user2, _ = get_user_model().objects.get_or_create(username="sven_z")
+
+        profile_list = [user, user2]
+
+        self.rb.owner = user
+        self.rb.metadata_author = profile_list
+        self.rb.poc = profile_list
+        self.rb.publisher = profile_list
+        self.rb.custodian = profile_list
+        self.rb.distributor = profile_list
+        self.rb.resource_user = profile_list
+        self.rb.resource_provider = profile_list
+        self.rb.originator = profile_list
+        self.rb.principal_investigator = profile_list
+        self.rb.processor = profile_list
+
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.poc])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.publisher])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.custodian])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.distributor])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_user])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_provider])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.originator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.principal_investigator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.processor])
+
+    """
+    Test that contact roles can be set as queryset
+    """
+
+    def test_set_contact_role_as_queryset(self):
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+        user2, _ = get_user_model().objects.get_or_create(username="sven_z")
+
+        query = get_user_model().objects.filter(username__in=["zlatan_i", "sven_z"])
+
+        self.rb.owner = user
+        self.rb.metadata_author = query
+        self.rb.poc = query
+        self.rb.publisher = query
+        self.rb.custodian = query
+        self.rb.distributor = query
+        self.rb.resource_user = query
+        self.rb.resource_provider = query
+        self.rb.originator = query
+        self.rb.principal_investigator = query
+        self.rb.processor = query
+
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.poc])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.publisher])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.custodian])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.distributor])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_user])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_provider])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.originator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.principal_investigator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.processor])
 
 
 class RenderMenuTagTest(GeoNodeBaseTestSupport):
@@ -1163,3 +1261,57 @@ class TestRegions(GeoNodeBaseTestSupport):
         self.assertFalse(
             region.is_assignable_to_geom(self.dataset_outside_region), "Extent outside a region should be assigned"
         )
+
+    @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
+    def test_regions_are_assigned_if_handler_is_used(self):
+        dataset = resource_manager.create(
+            None,
+            resource_type=Dataset,
+            defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),
+        )
+        self.assertTrue(dataset.regions.exists())
+        self.assertEqual(1, dataset.regions.count())
+        self.assertEqual("Global", dataset.regions.first().name)
+
+
+class LinkedResourcesTest(GeoNodeBaseTestSupport):
+    def test_autocomplete_linked_resource(self):
+        d = []
+        try:
+            user, _ = get_user_model().objects.get_or_create(username="admin")
+
+            for t in ("dataset1", "dataset2", "other"):
+                d.append(ResourceBase.objects.create(title=t, owner=user, is_approved=True, is_published=True))
+
+            web_client = Client()
+            web_client.force_login(user)
+            url_name = "autocomplete_linked_resource"
+
+            # get all resources
+            response = web_client.get(reverse(url_name))
+            rjson = response.json()
+
+            self.assertEqual(response.status_code, 200, "Can not get autocomplete API")
+            self.assertIn("results", rjson, "Can not find results")
+            self.assertEqual(len(rjson["results"]), 3, "Unexpected results count")
+
+            # filter by title
+            response = web_client.get(
+                reverse(url_name),
+                data={
+                    "q": "dataset",
+                },
+            )
+            rjson = response.json()
+            self.assertEqual(len(rjson["results"]), 2, "Unexpected results count")
+
+            # filter by title, exclude
+            response = web_client.get(
+                reverse(url_name), data={"q": "dataset", "forward": json.dumps({"exclude": d[0].id})}
+            )
+            rjson = response.json()
+            self.assertEqual(len(rjson["results"]), 1, "Unexpected results count")
+
+        finally:
+            for _ in d:
+                _.delete()
