@@ -545,6 +545,10 @@ class ThesaurusKeyword(models.Model):
 
     thesaurus = models.ForeignKey("Thesaurus", related_name="thesaurus", on_delete=models.CASCADE)
 
+    icon = models.CharField(
+        max_length=512, help_text="It can be a fa-class name or a URL to an image", null=True, blank=True
+    )
+
     def __str__(self):
         return str(self.alt_label)
 
