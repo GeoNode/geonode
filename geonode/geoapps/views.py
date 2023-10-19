@@ -327,20 +327,14 @@ def geoapp_metadata(
         geoapp_form.cleaned_data.pop("linked_resources")
 
         geoapp_obj = geoapp_form.instance
+        geoapp_obj.keywords.clear()
+        geoapp_obj.keywords.add(*new_keywords)
+        geoapp_obj.regions.clear()
+        geoapp_obj.regions.add(*new_regions)
+        geoapp_obj.category = new_category
 
         _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
         _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
-
-        resource_manager.update(
-            geoapp_obj.uuid,
-            instance=geoapp_obj,
-            keywords=new_keywords,
-            regions=new_regions,
-            vals=_vals,
-            notify=True,
-            extra_metadata=json.loads(extra_metadata),
-        )
-        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
@@ -373,7 +367,20 @@ def geoapp_metadata(
         if any([x in geoapp_form.changed_data for x in ["is_approved", "is_published"]]):
             vals["is_approved"] = geoapp_form.cleaned_data.get("is_approved", geoapp_obj.is_approved)
             vals["is_published"] = geoapp_form.cleaned_data.get("is_published", geoapp_obj.is_published)
-        resource_manager.update(geoapp_obj.uuid, instance=geoapp_obj, notify=True, vals=vals)
+        else:
+            vals.pop("is_approved", None)
+            vals.pop("is_published", None)
+
+        resource_manager.update(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            notify=True,
+            vals=vals,
+            extra_metadata=json.loads(extra_metadata),
+        )
+
+        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+
         return HttpResponse(json.dumps({"message": message}))
     elif request.method == "POST" and (
         not geoapp_form.is_valid() or not category_form.is_valid() or not tkeywords_form.is_valid()
