@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='thesauruskeyword',
-            name='icon',
-            field=models.CharField(blank=True, max_length=512, null=True, help_text='It can be a fa-class name or a URL to an image'),
+            name='image',
+            field=models.CharField(blank=True, max_length=512, null=True, help_text='A URL to an image'),
         ),
     ]
