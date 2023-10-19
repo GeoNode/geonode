@@ -327,11 +327,6 @@ def geoapp_metadata(
         geoapp_form.cleaned_data.pop("linked_resources")
 
         geoapp_obj = geoapp_form.instance
-        geoapp_obj.keywords.clear()
-        geoapp_obj.keywords.add(*new_keywords)
-        geoapp_obj.regions.clear()
-        geoapp_obj.regions.add(*new_regions)
-        geoapp_obj.category = new_category
 
         _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
         _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
@@ -374,6 +369,8 @@ def geoapp_metadata(
         resource_manager.update(
             geoapp_obj.uuid,
             instance=geoapp_obj,
+            keywords=new_keywords,
+            regions=new_regions,
             notify=True,
             vals=vals,
             extra_metadata=json.loads(extra_metadata),
