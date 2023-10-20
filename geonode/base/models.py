@@ -517,6 +517,8 @@ class ThesaurusKeyword(models.Model):
 
     thesaurus = models.ForeignKey("Thesaurus", related_name="thesaurus", on_delete=models.CASCADE)
 
+    image = models.CharField(max_length=512, help_text="A URL to an image", null=True, blank=True)
+
     def __str__(self):
         return str(self.alt_label)
 
