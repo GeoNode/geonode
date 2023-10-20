@@ -2041,45 +2041,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def _set_metadata_author(self, user_profile):
         return self.__set_contact_role_element__(user_profile=user_profile, role="author")
 
-    def _get_contact_role_element(self, role: str) -> ContactRole:
-        """
-        generell getter of for all contact roles except owner
-
-        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is requested
-        return (ContactRole): returns the requested contact role from the database
-        """
-        try:
-            cr = ContactRole.objects.get(role=role, resource=self).contact
-        except ContactRole.DoesNotExist:
-            cr = None
-        return cr
-
-    def _set_contact_role_element(self, contact_role: ContactRole, role: str) -> ContactRole:
-        """
-        generell setter for all contact roles except owner in resource base
-
-        param contact_role (ContactRole):
-        param role (str): string coresponding to ROLE_VALUES in geonode/people/enumarations, defining which propery is to set
-        return (ContactRole): returns the requested contact role from the database
-        """
-        ContactRole.objects.filter(role=role, resource=self).delete()
-        # create the new assignation
-        ContactRole.objects.create(role=role, resource=self, contact=contact_role)
-
-    def _get_poc(self):
-        return self._get_contact_role_element(role="pointOfContact")
-
-    def _set_poc(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="pointOfContact")
-
-    poc = property(_get_poc, _set_poc)
-
-    def _get_metadata_author(self):
-        return self._get_contact_role_element(role="author")
-
-    def _set_metadata_author(self, contact_role: ContactRole):
-        return self._set_contact_role_element(contact_role=contact_role, role="author")
-
     metadata_author = property(_get_metadata_author, _set_metadata_author)
 
     @property
