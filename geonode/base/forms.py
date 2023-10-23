@@ -57,11 +57,12 @@ from geonode.base.models import (
     ThesaurusLabel,
     TopicCategory,
 )
-from geonode.base.widgets import TaggitSelect2Custom
+from geonode.base.widgets import TaggitSelect2Custom, TaggitProfileSelect2Custom
 from geonode.base.fields import MultiThesauriField
 from geonode.documents.models import Document
 from geonode.layers.models import Dataset
 from geonode.base.utils import validate_extra_metadata, remove_country_from_languagecode
+from geonode.people import Roles
 
 logger = logging.getLogger(__name__)
 
@@ -348,6 +349,16 @@ class ThesaurusAvailableForm(forms.Form):
         return tname.first()
 
 
+class ContactRoleMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def clean(self, value) -> QuerySet:
+        try:
+            users = get_user_model().objects.filter(username__in=value)
+        except TypeError:
+            # value of not supported type ...
+            raise forms.ValidationError(_("Something went wrong in finding the profile(s) in a contact role form ..."))
+        return users
+
+
 class LinkedResourceForm(forms.ModelForm):
     linked_resources = forms.ModelMultipleChoiceField(
         label=_("Related resources"),
@@ -418,8 +429,8 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     data_quality_statement = forms.CharField(label=_("Data quality statement"), required=False, widget=TinyMCE())
 
     owner = forms.ModelChoiceField(
-        empty_label=_("Owner"),
-        label=_("Owner"),
+        empty_label=_(Roles.OWNER.label),
+        label=_(Roles.OWNER.label),
         required=True,
         queryset=get_user_model().objects.exclude(username="AnonymousUser"),
         widget=autocomplete.ModelSelect2(url="autocomplete_profile"),
@@ -448,20 +459,74 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD HH:mm a"}),
     )
 
-    poc = forms.ModelChoiceField(
-        empty_label=_("Person outside GeoNode (fill form)"),
-        label=_("Point of Contact"),
-        required=False,
+    metadata_author = ContactRoleMultipleChoiceField(
+        label=_(Roles.METADATA_AUTHOR.label),
+        required=Roles.METADATA_AUTHOR.is_required,
         queryset=get_user_model().objects.exclude(username="AnonymousUser"),
-        widget=autocomplete.ModelSelect2(url="autocomplete_profile"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
     )
 
-    metadata_author = forms.ModelChoiceField(
-        empty_label=_("Person outside GeoNode (fill form)"),
-        label=_("Metadata Author"),
-        required=False,
+    processor = ContactRoleMultipleChoiceField(
+        label=_(Roles.PROCESSOR.label),
+        required=Roles.PROCESSOR.is_required,
         queryset=get_user_model().objects.exclude(username="AnonymousUser"),
-        widget=autocomplete.ModelSelect2(url="autocomplete_profile"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    publisher = ContactRoleMultipleChoiceField(
+        label=_(Roles.PUBLISHER.label),
+        required=Roles.PUBLISHER.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    custodian = ContactRoleMultipleChoiceField(
+        label=_(Roles.CUSTODIAN.label),
+        required=Roles.CUSTODIAN.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    poc = ContactRoleMultipleChoiceField(
+        label=_(Roles.POC.label),
+        required=Roles.POC.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    distributor = ContactRoleMultipleChoiceField(
+        label=_(Roles.DISTRIBUTOR.label),
+        required=Roles.DISTRIBUTOR.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    resource_user = ContactRoleMultipleChoiceField(
+        label=_(Roles.RESOURCE_USER.label),
+        required=Roles.RESOURCE_USER.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    resource_provider = ContactRoleMultipleChoiceField(
+        label=_(Roles.RESOURCE_PROVIDER.label),
+        required=Roles.RESOURCE_PROVIDER.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    originator = ContactRoleMultipleChoiceField(
+        label=_(Roles.ORIGINATOR.label),
+        required=Roles.ORIGINATOR.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
+    )
+
+    principal_investigator = ContactRoleMultipleChoiceField(
+        label=_(Roles.PRINCIPAL_INVESTIGATOR.label),
+        required=Roles.PRINCIPAL_INVESTIGATOR.is_required,
+        queryset=get_user_model().objects.exclude(username="AnonymousUser"),
+        widget=TaggitProfileSelect2Custom(url="autocomplete_profile"),
     )
 
     keywords = TagField(
@@ -512,7 +577,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
                     }
                 )
 
-            if field in ["poc", "owner"] and not self.can_change_perms:
+            if field in ["owner"] and not self.can_change_perms:
                 self.fields[field].disabled = True
 
     def disable_keywords_widget_for_non_superuser(self, user):
