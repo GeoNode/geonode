@@ -58,6 +58,12 @@ def template_trans(text):
         return text
 
 
+@register.filter(name="get_item")
+def get_item(dictionary, key):
+    """Get a element for a dict by name"""
+    return dictionary.get(key)
+
+
 @register.simple_tag
 def num_ratings(obj):
     ct = ContentType.objects.get_for_model(obj)

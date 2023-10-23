@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2023 OSGeo
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,10 +17,27 @@
 #
 #########################################################################
 
-from django.urls import path
-from .views import ListFacetsView, GetFacetView
+from django import template
 
-urlpatterns = [
-    path("facets", ListFacetsView.as_view(), name="list_facets"),
-    path("facets/<facet>", GetFacetView.as_view(), name="get_facet"),
-]
+register = template.Library()
+
+
+@register.filter(is_safe=True)
+def get_contact_role_id(form, contact):
+    return id(form.fields[contact])
+
+
+@register.filter(is_safe=True)
+def get_contact_role_label(form, contact):
+    return form.fields[contact].label
+
+
+@register.filter(is_safe=True)
+def get_contact_role_value(form, contact):
+    return form[contact]
+
+
+@register.simple_tag
+def getattribute(form, contact):
+    """Gets an attribute of an object dynamically from a string name"""
+    return form[contact]

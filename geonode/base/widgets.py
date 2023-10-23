@@ -1,3 +1,5 @@
+from typing import List
+
 from dal_select2_taggit.widgets import TaggitSelect2
 
 
@@ -20,3 +22,19 @@ class TaggitSelect2Custom(TaggitSelect2):
             return value
         except TypeError:
             return ""
+
+
+class TaggitProfileSelect2Custom(TaggitSelect2):
+    """Overriding Select2 tag widget for ContactRoleField."""
+
+    def value_from_datadict(self, data, files, name) -> List[str]:
+        """Handle multi-profiles.
+
+        returns list of selected elements
+        """
+        try:
+            ret_list = data[name]
+        except KeyError:
+            ret_list = []
+        finally:
+            return ret_list

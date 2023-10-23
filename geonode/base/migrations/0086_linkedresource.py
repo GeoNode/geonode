@@ -5,19 +5,31 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('base', '0085_alter_resourcebase_uuid'),
+        ("base", "0085_alter_resourcebase_uuid"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LinkedResource',
+            name="LinkedResource",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('source', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='linked_to', to='base.resourcebase')),
-                ('target', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='linked_by', to='base.resourcebase')),
-                ('internal', models.BooleanField(default=False)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "source",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="linked_to", to="base.resourcebase"
+                    ),
+                ),
+                (
+                    "target",
+                    models.ForeignKey(
+                        blank=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="linked_by",
+                        to="base.resourcebase",
+                    ),
+                ),
+                ("internal", models.BooleanField(default=False)),
             ],
         ),
     ]

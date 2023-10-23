@@ -4,17 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('documents', '0036_clean_document_thumbnails'),
-        ('base', '0086_linkedresource'),
+        ("documents", "0036_clean_document_thumbnails"),
+        ("base", "0086_linkedresource"),
     ]
 
     operations = [
-        migrations.RunSQL("INSERT INTO base_linkedresource(source_id, target_id, internal)"
-                          "SELECT document_id, object_id, false as internal "
-                          "FROM documents_documentresourcelink;"),
+        migrations.RunSQL(
+            "INSERT INTO base_linkedresource(source_id, target_id, internal)"
+            "SELECT document_id, object_id, false as internal "
+            "FROM documents_documentresourcelink;"
+        ),
         migrations.DeleteModel(
-            name='DocumentResourceLink',
+            name="DocumentResourceLink",
         ),
     ]

@@ -91,7 +91,7 @@ class Map(ResourceBase):
             layers = [lyr for lyr in layers if dataset_filter(lyr)]
 
         # the readme text will appear in a README file in the zip
-        readme = f"Title: {self.title}\nAuthor: {self.poc}\nAbstract: {self.abstract}\n"
+        readme = f"Title: {self.title}\nAuthor: {self.poc_csv()}\nAbstract: {self.abstract}\n"
         if self.license:
             readme += f"License: {self.license}"
             if self.license.url:
