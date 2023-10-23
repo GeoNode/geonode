@@ -79,7 +79,7 @@ class ThesaurusFacetProvider(FacetProvider):
 
         q = (
             queryset.filter(**filter)
-            .values("tkeywords", "tkeywords__alt_label", "tkeywords__icon")
+            .values("tkeywords", "tkeywords__alt_label", "tkeywords__image")
             .annotate(count=Count("tkeywords"))
             .annotate(
                 localized_label=Subquery(
@@ -102,7 +102,7 @@ class ThesaurusFacetProvider(FacetProvider):
                 "label": r["localized_label"] or r["tkeywords__alt_label"],
                 "is_localized": r["localized_label"] is not None,
                 "count": r["count"],
-                "icon": r["tkeywords__icon"],
+                "image": r["tkeywords__image"],
             }
             for r in q[start:end].all()
         ]
