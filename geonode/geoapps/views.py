@@ -314,7 +314,7 @@ def geoapp_metadata(
 
         geoapp_form.cleaned_data.pop("ptype")
 
-        additional_vals = dict(
+        vals = dict(
             poc=new_poc or geoapp_obj.poc,
             metadata_author=new_author or geoapp_obj.metadata_author,
             category=new_category,
@@ -328,8 +328,7 @@ def geoapp_metadata(
 
         geoapp_obj = geoapp_form.instance
 
-        _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
-        _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
+        vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
@@ -356,7 +355,6 @@ def geoapp_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
-        vals = {}
         if "group" in geoapp_form.changed_data:
             vals["group"] = geoapp_form.cleaned_data.get("group")
         if any([x in geoapp_form.changed_data for x in ["is_approved", "is_published"]]):
