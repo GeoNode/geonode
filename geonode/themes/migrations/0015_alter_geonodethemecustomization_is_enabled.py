@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='geonodethemecustomization',
             name='is_enabled',
-            field=models.BooleanField(default=False, help_text='Will enable the theme GLOBALLY. Will disable the current enabled theme (if any)'),
+            field=models.BooleanField(default=False, help_text='Set this theme as the current global theme for GeoNode. This will disable the current theme (if any)'),
         ),
     ]
