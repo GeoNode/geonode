@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2021 OSGeo
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,27 @@
 #
 #########################################################################
 
-from .test_unit import *  # noqa: F401, F403
-from .test_integration import *  # noqa: F401, F403
-from .test_backgrounds import *  # noqa: F401, F403
+from django import template
+
+register = template.Library()
+
+
+@register.filter(is_safe=True)
+def get_contact_role_id(form, contact):
+    return id(form.fields[contact])
+
+
+@register.filter(is_safe=True)
+def get_contact_role_label(form, contact):
+    return form.fields[contact].label
+
+
+@register.filter(is_safe=True)
+def get_contact_role_value(form, contact):
+    return form[contact]
+
+
+@register.simple_tag
+def getattribute(form, contact):
+    """Gets an attribute of an object dynamically from a string name"""
+    return form[contact]
