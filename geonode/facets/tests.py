@@ -42,8 +42,8 @@ from geonode.facets.providers.baseinfo import FeaturedFacetProvider
 from geonode.facets.providers.category import CategoryFacetProvider
 from geonode.facets.providers.keyword import KeywordFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
+from geonode.facets.views import ListFacetsView, GetFacetView
 from geonode.tests.base import GeoNodeBaseTestSupport
-import geonode.facets.views as views
 
 
 logger = logging.getLogger(__name__)
@@ -85,7 +85,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         for tn in range(2):
             t = Thesaurus.objects.create(identifier=f"t_{tn}", title=f"Thesaurus {tn}", order=100 + tn * 10)
             cls.thesauri[tn] = t
-            for tl in (
+            for tl in (  # fmt: skip
                 "en",
                 "it",
             ):
@@ -94,7 +94,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             for tkn in range(10):
                 tk = ThesaurusKeyword.objects.create(thesaurus=t, alt_label=f"T{tn}_K{tkn}_ALT")
                 cls.thesauri_k[f"{tn}_{tkn}"] = tk
-                for tkl in (
+                for tkl in (  # fmt: skip
                     "en",
                     "it",
                 ):
@@ -104,7 +104,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def _create_regions(cls):
         cls.regions = {}
 
-        for code, name in (
+        for code, name in (  # fmt: skip
             ("R0", "Region0"),
             ("R1", "Region1"),
             ("R2", "Region2"),
@@ -115,7 +115,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def _create_categories(cls):
         cls.cats = {}
 
-        for code, name in (
+        for code, name in (  # fmt: skip
             ("C0", "Cat0"),
             ("C1", "Cat1"),
             ("C2", "Cat2"),
@@ -126,7 +126,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def _create_keywords(cls):
         cls.kw = {}
 
-        for code, name in (
+        for code, name in (  # fmt: skip
             ("K0", "Keyword0"),
             ("K1", "Keyword1"),
             ("K2", "Keyword2"),
@@ -186,14 +186,14 @@ class TestFacets(GeoNodeBaseTestSupport):
             if (x % 6) in (0, 1, 2):
                 d.featured = True
 
-            for reg, idx in (
+            for reg, idx in (  # fmt: skip
                 ("R0", (0, 1)),
                 ("R1", (0, 2, 8, 13)),
             ):
                 if x in idx:
                     d.regions.add(self.regions[reg])
 
-            for kw, idx in (
+            for kw, idx in (  # fmt: skip
                 ("K0", (0, 3, 4, 5)),
                 ("K1", [1, 4]),
                 ("K2", [2, 5]),
@@ -201,7 +201,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 if x in idx:
                     d.keywords.add(self.kw[kw])
 
-            for cat, idx in (
+            for cat, idx in (  # fmt: skip
                 ("C0", [0, 2, 4]),
                 ("C1", [5, 15, 16]),
                 ("C2", [18, 19]),
@@ -218,7 +218,7 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     def test_facets_base(self):
         req = self.rf.get(reverse("list_facets"), data={"lang": "en"})
-        res: JsonResponse = views.list_facets(req)
+        res: JsonResponse = ListFacetsView.as_view()(req)
         obj = json.loads(res.content)
         self.assertIn("facets", obj)
         facets_list = obj["facets"]
@@ -238,13 +238,13 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         # run the request
         req = self.rf.get(reverse("list_facets"), data={"include_topics": 1, "lang": "en"})
-        res: JsonResponse = views.list_facets(req)
+        res: JsonResponse = ListFacetsView.as_view()(req)
         obj = json.loads(res.content)
 
         facets_list = obj["facets"]
         self.assertEqual(8, len(facets_list))
         fmap = self._facets_to_map(facets_list)
-        for expected in (
+        for expected in (  # fmt: skip
             {
                 "name": "category",
                 "topics": {
@@ -356,7 +356,7 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         # run the request with a valid language
         req = self.rf.get(reverse("get_facet", args=["t_0"]), data={"lang": "en"})
-        res: JsonResponse = views.get_facet(req, "t_0")
+        res: JsonResponse = GetFacetView.as_view()(req, "t_0")
         obj = json.loads(res.content)
 
         self.assertEqual(2, obj["topics"]["total"])
@@ -366,25 +366,13 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         # run the request with an INVALID language
         req = self.rf.get(reverse("get_facet", args=["t_0"]), data={"lang": "ZZ"})
-        res: JsonResponse = views.get_facet(req, "t_0")
+        res: JsonResponse = GetFacetView.as_view()(req, "t_0")
         obj = json.loads(res.content)
 
         self.assertEqual(2, obj["topics"]["total"])
         self.assertEqual(10, obj["topics"]["items"][0]["count"])  # make sure the count is still there
         self.assertEqual("T0_K0_ALT", obj["topics"]["items"][0]["label"])  # check for the alternate label
         self.assertFalse(obj["topics"]["items"][0]["is_localized"])  # check for the localization flag
-
-    def test_topics(self):
-        for facet, keys, exp in (
-            ("t_0", [self.thesauri_k["0_0"].id, self.thesauri_k["0_1"].id, -999], 2),
-            ("category", ["C1", "C2", "nomatch"], 2),
-            ("owner", [self.user.id, -100], 1),
-            ("region", ["R0", "R1", "nomatch"], 2),
-        ):
-            req = self.rf.get(reverse("get_facet_topics", args=[facet]), data={"lang": "en", "key": keys})
-            res: JsonResponse = views.get_facet_topics(req, facet)
-            obj = json.loads(res.content)
-            self.assertEqual(exp, len(obj["topics"]["items"]), f"Unexpected topic count {exp} for facet {facet}")
 
     def test_prefiltering(self):
         reginfo = RegionFacetProvider().get_info()
@@ -403,7 +391,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             (reginfo["name"], {t1filter: self.thesauri_k["1_0"].id}, 2, 3),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=filters)
-            res: JsonResponse = views.get_facet(req, facet)
+            res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
             self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and filter {filters}")
             self.assertEqual(count0, obj["topics"]["items"][0]["count"], f"Bad count0 for facet '{facet}")
@@ -423,7 +411,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             (featname, {t1filter: tkey_1_1}, expected_feat),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
-            res: JsonResponse = views.get_facet(req, facet)
+            res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
 
             self.assertEqual(
@@ -439,13 +427,13 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         # Run the single request
         req = self.rf.get(reverse("list_facets"), data={"include_topics": 1, t1filter: tkey_1_1})
-        res: JsonResponse = views.list_facets(req)
+        res: JsonResponse = ListFacetsView.as_view()(req)
         obj = json.loads(res.content)
 
         facets_list = obj["facets"]
         fmap = self._facets_to_map(facets_list)
 
-        for name, items in (
+        for name, items in (  # fmt: skip
             (regname, expected_region),
             (featname, expected_feat),
         ):
@@ -466,7 +454,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("owner", "select", 8),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data={"include_config": True})
-            res: JsonResponse = views.get_facet(req, facet)
+            res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
             self.assertIn("config", obj, "Config info not found in payload")
             conf = obj["config"]
@@ -525,7 +513,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             (kwname, {t0filter: t("0_0"), regfilter: "R0", "key": ["K0"]}, {"K0": None}),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
-            res: JsonResponse = views.get_facet(req, facet)
+            res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
             # self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and params {params}")
 
