@@ -574,7 +574,6 @@ class ResourceBaseSerializer(
         self.fields["uuid"] = serializers.CharField(read_only=True)
         self.fields["resource_type"] = serializers.CharField(required=False)
         self.fields["polymorphic_ctype_id"] = serializers.CharField(read_only=True)
-
         self.fields["owner"] = DynamicRelationField(UserSerializer, embed=True, many=False, read_only=True)
         self.fields["metadata_author"] = ContactRoleField(Roles.METADATA_AUTHOR.name, required=False)
         self.fields["processor"] = ContactRoleField(Roles.PROCESSOR.name, required=False)
