@@ -737,6 +737,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         help_text=keywords_help_text,
         manager=_HierarchicalTagManager,
+        ordering=["name"],
     )
     tkeywords = models.ManyToManyField(
         ThesaurusKeyword, verbose_name=_("keywords"), null=True, blank=True, help_text=tkeywords_help_text
