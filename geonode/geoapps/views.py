@@ -292,7 +292,6 @@ def geoapp_metadata(
         geoapp_form.save_linked_resources()
         geoapp_form.cleaned_data.pop("linked_resources")
 
-
         vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
