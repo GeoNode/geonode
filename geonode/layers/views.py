@@ -27,7 +27,6 @@ from django.urls import reverse
 
 from owslib.wfs import WebFeatureService
 import xml.etree.ElementTree as ET
-
 from django.conf import settings
 
 from django.db.models import F
@@ -54,7 +53,8 @@ from geonode.proxy.views import fetch_response_headers
 from geonode.resource.manager import resource_manager
 from geonode.geoserver.helpers import set_dataset_style, wps_format_is_supported
 from geonode.resource.utils import update_resource
-
+from rest_framework.response import Response
+#new response
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
@@ -171,12 +171,10 @@ def dataset_upload_metadata(request):
         )
         if layer:
             dataset_uuid, vals, regions, keywords, _ = parse_metadata(open(base_file).read())
-            if dataset_uuid and layer.uuid != dataset_uuid:
-                out["success"] = False
-                out["errors"] = "The UUID identifier from the XML Metadata, is different from the one saved"
-                return HttpResponse(json.dumps(out), content_type="application/json", status=404)
+                           
             updated_dataset = update_resource(layer, base_file, regions, keywords, vals)
             updated_dataset.save()
+            dataset_uuid, vals, regions, keywords, _ = parse_metadata(open(base_file).read())
             out["status"] = ["finished"]
             out["url"] = updated_dataset.get_absolute_url()
             out["bbox"] = updated_dataset.bbox_string
@@ -188,7 +186,14 @@ def dataset_upload_metadata(request):
                 upload_session.save()
             status_code = 200
             out["success"] = True
-            return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
+            if dataset_uuid and layer.uuid != dataset_uuid:
+                status_code = 404
+                out["success"] = True
+                out["errors"] = "WARNING: UUID of dataset and metadata are different. Metadata XML was still uploaded"
+                return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
+            else:
+                return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
+
         else:
             out["success"] = False
             out["errors"] = "Dataset selected does not exists"
