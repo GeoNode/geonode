@@ -588,6 +588,7 @@ class ResourceBaseSerializer(
         self.fields["title"] = serializers.CharField(required=False)
         self.fields["abstract"] = serializers.CharField(required=False)
         # BONARES ELEMENTS
+        self.fields["title_translated"] = serializers.CharField(required=False)
         self.fields["abstract_translated"] = serializers.CharField(required=False)
 
         self.fields["subtitle"] = serializers.CharField(required=False)
@@ -609,10 +610,10 @@ class ResourceBaseSerializer(
         self.fields["parent_identifier"] = ComplexDynamicRelationField(
             SimpleResourceSerializer, embed=True, many=False, required=False
         )
-        self.fields["date_available"] = serializers.DateField(required=True)
-        self.fields["date_updated"] = serializers.DateField(required=True)
-        self.fields["date_created"] = serializers.DateField(required=True)
-        self.fields["date_issued"] = serializers.DateField(required=True)
+        self.fields["date_available"] = serializers.DateField(required=False)
+        self.fields["date_updated"] = serializers.DateField(required=False)
+        self.fields["date_created"] = serializers.DateField(required=False)
+        self.fields["date_issued"] = serializers.DateField(required=False)
 
         self.fields["date_accepted"] = serializers.DateField(required=False)
         self.fields["date_collected"] = serializers.DateField(required=False)
