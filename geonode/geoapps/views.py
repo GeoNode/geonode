@@ -280,11 +280,11 @@ def geoapp_metadata(
             new_category = TopicCategory.objects.get(id=int(category_form.cleaned_data["category_choice_field"]))
         geoapp_form.cleaned_data.pop("ptype")
 
+        geoapp_obj = geoapp_form.instance
         # update contact roles
         geoapp_obj.set_contact_roles_from_metadata_edit(geoapp_form)
-        geoapp_obj.save()
 
-        additional_vals = dict(category=new_category)
+        vals = dict(category=new_category)
 
         geoapp_form.cleaned_data.pop("metadata")
         extra_metadata = geoapp_form.cleaned_data.pop("extra_metadata")
@@ -292,21 +292,7 @@ def geoapp_metadata(
         geoapp_form.save_linked_resources()
         geoapp_form.cleaned_data.pop("linked_resources")
 
-        geoapp_obj = geoapp_form.instance
-
-        _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
-        _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
-
-        resource_manager.update(
-            geoapp_obj.uuid,
-            instance=geoapp_obj,
-            keywords=new_keywords,
-            regions=new_regions,
-            vals=_vals,
-            notify=True,
-            extra_metadata=json.loads(extra_metadata),
-        )
-        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+        vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
@@ -333,13 +319,27 @@ def geoapp_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
-        vals = {}
         if "group" in geoapp_form.changed_data:
             vals["group"] = geoapp_form.cleaned_data.get("group")
         if any([x in geoapp_form.changed_data for x in ["is_approved", "is_published"]]):
             vals["is_approved"] = geoapp_form.cleaned_data.get("is_approved", geoapp_obj.is_approved)
             vals["is_published"] = geoapp_form.cleaned_data.get("is_published", geoapp_obj.is_published)
-        resource_manager.update(geoapp_obj.uuid, instance=geoapp_obj, notify=True, vals=vals)
+        else:
+            vals.pop("is_approved", None)
+            vals.pop("is_published", None)
+
+        resource_manager.update(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            keywords=new_keywords,
+            regions=new_regions,
+            notify=True,
+            vals=vals,
+            extra_metadata=json.loads(extra_metadata),
+        )
+
+        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+
         return HttpResponse(json.dumps({"message": message}))
     elif request.method == "POST" and (
         not geoapp_form.is_valid() or not category_form.is_valid() or not tkeywords_form.is_valid()
