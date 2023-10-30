@@ -111,7 +111,7 @@ class ThesaurusFacetProvider(FacetProvider):
 
     def get_topics(self, keys: list, lang="en", **kwargs) -> list:
         q = (
-            ThesaurusKeyword.objects.filter(id__in=keys)
+            ThesaurusKeyword.objects.filter(id__in=keys, thesaurus__identifier=self.name)
             .values("id", "alt_label")
             .annotate(
                 localized_label=Subquery(

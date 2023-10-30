@@ -498,6 +498,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_1"), t("1_0")]},
                 {t("1_0"): None, t("1_1"): None},
             ),
+            ("t_1", {"key": [t("0_1")]}, {}),
             # regions
             (regname, {t1filter: t("1_1")}, {"R1": 1}),
             (regname, {t1filter: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
