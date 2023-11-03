@@ -131,6 +131,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("K0", "Keyword0"),
             ("K1", "Keyword1"),
             ("K2", "Keyword2"),
+            ("K3", "Keyword3"),
         ):
             cls.kw[code] = HierarchicalKeyword.objects.create(slug=code, name=name)
 
@@ -151,26 +152,26 @@ class TestFacets(GeoNodeBaseTestSupport):
 
             # These are the assigned keywords to the Resources
 
-            # RB00 ->            T1K0      R0,R1    FEAT  K0      C0
-            # RB01 ->  T0K0      T1K0      R0       FEAT  K1
-            # RB02 ->            T1K0         R1    FEAT  K2      C0
-            # RB03 ->  T0K0      T1K0                     K0
-            # RB04 ->            T1K0                     K0,K1   C0
-            # RB05 ->  T0K0      T1K0                     K0,K2   C1
-            # RB06 ->            T1K0               FEAT
-            # RB07 ->  T0K0      T1K0            R2 FEAT          C3
-            # RB08 ->            T1K0 T1K1    R1,R2 FEAT          C3
-            # RB09 ->  T0K0      T1K0 T1K1       R2               C3
-            # RB10 ->                 T1K1       R2               C3
-            # RB11 ->  T0K0 T0K1      T1K1
-            # RB12 ->                 T1K1          FEAT
-            # RB13 ->  T0K0 T0K1              R1    FEAT
-            # RB14 ->                               FEAT
-            # RB15 ->  T0K0 T0K1                                  C1
-            # RB16 ->                                             C1
-            # RB17 ->  T0K0 T0K1
-            # RB18 ->                               FEAT          C2
-            # RB19 ->  T0K0 T0K1                    FEAT          C2
+            # RB00 ->           T1K0      R0,R1    FEAT  K0      C0
+            # RB01 -> T0K0      T1K0      R0       FEAT    K1
+            # RB02 ->           T1K0         R1    FEAT      K2  C0
+            # RB03 -> T0K0      T1K0                     K0
+            # RB04 ->           T1K0                     K0K1    C0
+            # RB05 -> T0K0      T1K0                     K0  K2  C1
+            # RB06 ->           T1K0               FEAT
+            # RB07 -> T0K0      T1K0            R2 FEAT      K3  C3
+            # RB08 ->           T1K0 T1K1    R1,R2 FEAT      K3  C3
+            # RB09 -> T0K0      T1K0 T1K1       R2           K3  C3
+            # RB10 ->                T1K1       R2           K3  C3
+            # RB11 -> T0K0 T0K1      T1K1
+            # RB12 ->                T1K1          FEAT
+            # RB13 -> T0K0 T0K1              R1    FEAT
+            # RB14 ->                              FEAT
+            # RB15 -> T0K0 T0K1                                  C1
+            # RB16 ->                                            C1
+            # RB17 -> T0K0 T0K1
+            # RB18 ->                              FEAT          C2
+            # RB19 -> T0K0 T0K1                    FEAT          C2
 
             if x % 2 == 1:
                 logger.debug(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
@@ -199,6 +200,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 ("K0", (0, 3, 4, 5)),
                 ("K1", [1, 4]),
                 ("K2", [2, 5]),
+                ("K3", [7, 8, 9, 10]),
             ):
                 if x in idx:
                     d.keywords.add(self.kw[kw])
@@ -263,11 +265,12 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "keyword",
                 "topics": {
-                    "total": 3,
+                    "total": 4,
                     "items": [
                         {"label": "Keyword0", "count": 4},
                         {"label": "Keyword1", "count": 2},
                         {"label": "Keyword2", "count": 2},
+                        {"label": "Keyword3", "count": 4},
                     ],
                 },
             },
@@ -529,7 +532,9 @@ class TestFacets(GeoNodeBaseTestSupport):
             (catname, {kwflt: "K1"}, {"C0": 1}),
             (catname, {kwflt: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
             # keyword
-            (kwname, {t0flt: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1}),
+            (kwname, {t0flt: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1, "K3": 2}),
+            (kwname, {t0flt: t("1_0")}, {"K0": 4, "K1": 2, "K2": 2, "K3": 3}),
+            (kwname, {t0flt: [t("1_0"), t("1_1")]}, {"K0": 4, "K1": 2, "K2": 2, "K3": 4}),
             (kwname, {t0flt: t("0_0"), regflt: "R0"}, {"K1": 1}),
             (kwname, {t0flt: t("0_0"), regflt: "R0", "key": ["K0"]}, {"K0": None}),
         ):
