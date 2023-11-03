@@ -119,6 +119,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("C0", "Cat0"),
             ("C1", "Cat1"),
             ("C2", "Cat2"),
+            ("C3", "Cat3"),
         ):
             cls.cats[code] = TopicCategory.objects.create(identifier=code, description=name, gn_description=name)
 
@@ -157,10 +158,10 @@ class TestFacets(GeoNodeBaseTestSupport):
             # RB04 ->            T1K0                        K0,K1   C0
             # RB05 ->  T0K0      T1K0                        K0,K2   C1
             # RB06 ->            T1K0                  FEAT
-            # RB07 ->  T0K0      T1K0                  FEAT
-            # RB08 ->            T1K0 T1K1     R1      FEAT
-            # RB09 ->  T0K0      T1K0 T1K1
-            # RB10 ->                 T1K1
+            # RB07 ->  T0K0      T1K0                  FEAT          C3
+            # RB08 ->            T1K0 T1K1     R1      FEAT          C3
+            # RB09 ->  T0K0      T1K0 T1K1                           C3
+            # RB10 ->                 T1K1                           C3
             # RB11 ->  T0K0 T0K1      T1K1
             # RB12 ->                 T1K1             FEAT
             # RB13 ->  T0K0 T0K1               R1      FEAT
@@ -205,6 +206,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 ("C0", [0, 2, 4]),
                 ("C1", [5, 15, 16]),
                 ("C2", [18, 19]),
+                ("C3", [7, 8, 9, 10]),
             ):
                 if x in idx:
                     d.category = self.cats[cat]
@@ -248,10 +250,11 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "category",
                 "topics": {
-                    "total": 3,
+                    "total": 4,
                     "items": [
                         {"label": "Cat0", "count": 3},
                         {"label": "Cat1", "count": 3},
+                        {"label": "Cat3", "count": 4},
                         {"label": "Cat2", "count": 2},
                     ],
                 },
@@ -475,6 +478,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         regname = reginfo["name"]
 
         catinfo = CategoryFacetProvider().get_info()
+        catflt = catinfo["filter"]
         catname = catinfo["name"]
 
         kwinfo = KeywordFacetProvider().get_info()
@@ -502,13 +506,16 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("t_1", {t0flt: t("0_0")}, {t("1_0"): 5, t("1_1"): 2}),
             ("t_1", {t0flt: t("0_1")}, {t("1_1"): 1}),
             ("t_1", {t0flt: [t("0_1"), t("0_0")]}, {t("1_0"): 5, t("1_1"): 2}),
+            ("t_1", {catflt: ["C0"]}, {t("1_0"): 3}),
+            ("t_1", {catflt: ["C0", "C1"]}, {t("1_0"): 4}),
             # regions
             (regname, {t1flt: t("1_1")}, {"R1": 1}),
             (regname, {t1flt: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
             (regname, {t1flt: t("1_1"), "key": ["R0"]}, {"R0": None}),
             # category
-            (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1}),
+            (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1, "C3": 3}),
             (catname, {t1flt: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
+            (catname, {t1flt: [t("1_0"), t("1_1")]}, {"C0": 3, "C1": 1, "C3": 4}),
             (catname, {kwflt: "K1"}, {"C0": 1}),
             (catname, {kwflt: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
             # keyword
