@@ -471,49 +471,53 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     def test_count0(self):
         reginfo = RegionFacetProvider().get_info()
-        regfilter = reginfo["filter"]
+        regflt = reginfo["filter"]
         regname = reginfo["name"]
 
         catinfo = CategoryFacetProvider().get_info()
         catname = catinfo["name"]
 
         kwinfo = KeywordFacetProvider().get_info()
-        kwfilter = kwinfo["filter"]
+        kwflt = kwinfo["filter"]
         kwname = kwinfo["name"]
 
-        t0filter = facet_registry.get_provider("t_0").get_info()["filter"]
-        t1filter = facet_registry.get_provider("t_1").get_info()["filter"]
+        t0flt = facet_registry.get_provider("t_0").get_info()["filter"]
+        t1flt = facet_registry.get_provider("t_1").get_info()["filter"]
 
         def t(tk):
             return self.thesauri_k[tk].id
 
         for facet, params, items in (
             # thesauri
-            ("t_1", {regfilter: "R0"}, {t("1_0"): 2}),
-            ("t_1", {regfilter: "R0", "key": [t("1_0")]}, {t("1_0"): 2}),
-            ("t_1", {regfilter: "R0", t0filter: t("0_1")}, {}),
-            ("t_1", {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_0")]}, {t("1_0"): None}),
+            ("t_1", {regflt: "R0"}, {t("1_0"): 2}),
+            ("t_1", {regflt: "R0", "key": [t("1_0")]}, {t("1_0"): 2}),
+            ("t_1", {regflt: "R0", t0flt: t("0_1")}, {}),
+            ("t_1", {regflt: "R0", t0flt: t("0_1"), "key": [t("1_0")]}, {t("1_0"): None}),
             (
                 "t_1",
-                {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_1"), t("1_0")]},
+                {regflt: "R0", t0flt: t("0_1"), "key": [t("1_1"), t("1_0")]},
                 {t("1_0"): None, t("1_1"): None},
             ),
             ("t_1", {"key": [t("0_1")]}, {}),
+            ("t_1", {t0flt: t("0_0")}, {t("1_0"): 5, t("1_1"): 2}),
+            ("t_1", {t0flt: t("0_1")}, {t("1_1"): 1}),
+            ("t_1", {t0flt: [t("0_1"), t("0_0")]}, {t("1_0"): 5, t("1_1"): 2}),
             # regions
-            (regname, {t1filter: t("1_1")}, {"R1": 1}),
-            (regname, {t1filter: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
-            (regname, {t1filter: t("1_1"), "key": ["R0"]}, {"R0": None}),
+            (regname, {t1flt: t("1_1")}, {"R1": 1}),
+            (regname, {t1flt: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
+            (regname, {t1flt: t("1_1"), "key": ["R0"]}, {"R0": None}),
             # category
-            (catname, {t1filter: t("1_0")}, {"C0": 3, "C1": 1}),
-            (catname, {t1filter: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
-            (catname, {kwfilter: "K1"}, {"C0": 1}),
-            (catname, {kwfilter: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
+            (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1}),
+            (catname, {t1flt: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
+            (catname, {kwflt: "K1"}, {"C0": 1}),
+            (catname, {kwflt: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
             # keyword
-            (kwname, {t0filter: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1}),
-            (kwname, {t0filter: t("0_0"), regfilter: "R0"}, {"K1": 1}),
-            (kwname, {t0filter: t("0_0"), regfilter: "R0", "key": ["K0"]}, {"K0": None}),
+            (kwname, {t0flt: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1}),
+            (kwname, {t0flt: t("0_0"), regflt: "R0"}, {"K1": 1}),
+            (kwname, {t0flt: t("0_0"), regflt: "R0", "key": ["K0"]}, {"K0": None}),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
+            req.user = self.admin
             res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
             # self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and params {params}")

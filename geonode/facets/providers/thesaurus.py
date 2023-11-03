@@ -56,7 +56,7 @@ class ThesaurusFacetProvider(FacetProvider):
 
     def get_facet_items(
         self,
-        queryset=None,
+        queryset,
         start: int = 0,
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
@@ -66,30 +66,30 @@ class ThesaurusFacetProvider(FacetProvider):
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self._name)
 
-        filter = {
-            "tkeywords__thesaurus__identifier": self._name,
-        }
+        filter = {"thesaurus__identifier": self._name, "resourcebase__in": queryset}
 
         if topic_contains:
-            filter["tkeywords__keyword__label__icontains"] = topic_contains
+            filter["label__icontains"] = topic_contains
 
         if keys:
             logger.debug("Filtering by keys %r\n", keys)
-            filter["tkeywords__in"] = keys
+            filter["id__in"] = keys
 
         q = (
-            queryset.filter(**filter)
-            .values("tkeywords", "tkeywords__alt_label", "tkeywords__image")
-            .annotate(count=Count("tkeywords"))
+            ThesaurusKeyword.objects.filter(**filter)
+            .values("id", "alt_label", "image")
+            .annotate(count=Count("resourcebase"))
             .annotate(
                 localized_label=Subquery(
-                    ThesaurusKeywordLabel.objects.filter(keyword=OuterRef("tkeywords"), lang=lang).values("label")
+                    ThesaurusKeywordLabel.objects.filter(keyword=OuterRef("id"), lang=lang).values("label")
                 )
             )
             .order_by("-count")
         )
 
-        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" PREFILTERED QUERY ---> %s\n\n", queryset.query)
+        logger.debug(" ADDITIONAL FILTERS ---> %s\n\n", filter)
+        logger.debug(" FINAL QUERY       ---> %s\n\n", q.query)
 
         cnt = q.count()
 
@@ -98,11 +98,11 @@ class ThesaurusFacetProvider(FacetProvider):
 
         topics = [
             {
-                "key": r["tkeywords"],
-                "label": r["localized_label"] or r["tkeywords__alt_label"],
+                "key": r["id"],
+                "label": r["localized_label"] or r["alt_label"],
                 "is_localized": r["localized_label"] is not None,
                 "count": r["count"],
-                "image": r["tkeywords__image"],
+                "image": r["image"],
             }
             for r in q[start:end].all()
         ]
