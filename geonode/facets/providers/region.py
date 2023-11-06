@@ -46,7 +46,7 @@ class RegionFacetProvider(FacetProvider):
 
     def get_facet_items(
         self,
-        queryset=None,
+        queryset,
         start: int = 0,
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
@@ -56,19 +56,19 @@ class RegionFacetProvider(FacetProvider):
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        filters = {"regions__isnull": False}
+        filters = {"resourcebase__in": queryset}
 
         if topic_contains:
-            filters["regions__name"] = topic_contains
+            filters["name__icontains"] = topic_contains
 
         if keys:
             logger.debug("Filtering by keys %r", keys)
-            filters["regions__code__in"] = keys
+            filters["code__in"] = keys
 
         q = (
-            queryset.filter(**filters)
-            .values("regions__code", "regions__name")
-            .annotate(count=Count("regions__code"))
+            Region.objects.filter(**filters)
+            .values("code", "name")
+            .annotate(count=Count("resourcebase"))
             .order_by("-count")
         )
 
@@ -80,8 +80,8 @@ class RegionFacetProvider(FacetProvider):
 
         topics = [
             {
-                "key": r["regions__code"],
-                "label": r["regions__name"],
+                "key": r["code"],
+                "label": r["name"],
                 "count": r["count"],
             }
             for r in q[start:end].all()
