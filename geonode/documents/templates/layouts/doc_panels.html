@@ -1,6 +1,8 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load base_tags %}
+{% load contact_roles %}
 
 <!-- Required to make select2 fields work for autocomplete -->
 <link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
@@ -313,12 +315,6 @@ span.grippy::after {
                                       {{ document_form.title }}
                                     </div>
                                 {% endblock doc_title %}
-                                {% block doc_links %}
-                                    <div id="req_item">                                  
-                                      <span><label for="{{ document_form.title|id }}">{{ document_form.links.label }}</label></span>
-                                      {{ document_form.links }}
-                                    </div>
-                                {% endblock doc_links %}
                                 {% block doc_abstract %}
                                     <div id="req_item">
                                         <span><label for="{{ document_form.abstract|id }}">{{ document_form.abstract.label }}</label></span>
@@ -466,7 +462,7 @@ span.grippy::after {
                                         <span><label for="{{ document_form.constraints_other|id }}">{{ document_form.constraints_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
                                         {{ document_form.constraints_other }}
-                                    </div> 
+                                    </div>
                                     {% endblock doc_constraints_other %}
                                 </div>
                             </div>
@@ -555,18 +551,51 @@ span.grippy::after {
                         {{ document_form.extra_metadata }}
                     </div>
                     {% endblock doc_extra_metadata %}
+                    {% block doc_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ document_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ document_form.linked_resources }}
+                        </div>
+                    {% endblock doc_linked_resources %}
                 </div>
             </div>
             <div class="col-xs-12 col-lg-3">
-              {% block document_poc %}
               <div class="panel panel-default" style="margin-top: 5px">
                 <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                <div class="panel-body">
-                  <span><label for="{{ document_form.poc|id }}">{{ document_form.poc.label }}</label></span>
-                  {{ document_form.poc }}
+                  {% block document_poc %}
+                  <div class="panel-body check-select">
+                      <span><label for="{{ document_form.poc|id }}">{{ document_form.poc.label }}</label></span>
+                      {{ document_form.poc }}
+                  </div>
+                  {% endblock document_poc %}
+            </div>
+              <div class="panel panel-default">
+                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  <div class="panel-body">
+                    {% block document_owner %}
+                      <div>
+                          <span><label for="{{ document_form.owner|id }}">{{ document_form.owner.label }}</label></span>
+                          {{ document_form.owner }}
+                      </div>
+                    {% endblock document_owner %}
+                  </div>
+                </div>
+              <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              {% block document_more_contact_roles %}
+              <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                  {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                    {% getattribute document_form contact_role as cr %}
+                    <div class="panel-body">
+                      <div>
+                        <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                        {{ cr}}
+                      </div>
+                    </div>
+                  {% endfor %}
                 </div>
               </div>
-              {% endblock %}
+              {% endblock document_more_contact_roles %}
 
               <div class="panel panel-default">
                 <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
@@ -583,12 +612,13 @@ span.grippy::after {
                     </div>
                 </div>
             </div>
+            <!--End Contact Roles -->
           </div>
         </div>
-      </div></div></div>
+      </div>
     </div>
     {% block extra_metadata_content %}
-    {% endblock %}
+    {% endblock extra_metadata_content %}
   </div>
   {% endblock ownership %}
 

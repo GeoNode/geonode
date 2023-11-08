@@ -24,7 +24,6 @@ import traceback
 
 from django.conf import settings
 from django.shortcuts import render
-from django.forms.utils import ErrorList
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -207,8 +206,6 @@ def geoapp_metadata(
     # Add metadata_author or poc if missing
     geoapp_obj.add_missing_metadata_author_or_poc()
     resource_type = geoapp_obj.resource_type
-    poc = geoapp_obj.poc
-    metadata_author = geoapp_obj.metadata_author
     topic_category = geoapp_obj.category
     current_keywords = [keyword.name for keyword in geoapp_obj.keywords.all()]
 
@@ -271,8 +268,6 @@ def geoapp_metadata(
                 tkeywords_form.fields[tid].initial = values
 
     if request.method == "POST" and geoapp_form.is_valid() and category_form.is_valid() and tkeywords_form.is_valid():
-        new_poc = geoapp_form.cleaned_data.pop("poc")
-        new_author = geoapp_form.cleaned_data.pop("metadata_author")
         new_keywords = current_keywords if request.keyword_readonly else geoapp_form.cleaned_data.pop("keywords")
         new_regions = geoapp_form.cleaned_data.pop("regions")
 
@@ -283,61 +278,21 @@ def geoapp_metadata(
             and category_form.cleaned_data["category_choice_field"]
         ):
             new_category = TopicCategory.objects.get(id=int(category_form.cleaned_data["category_choice_field"]))
-
-        if new_poc is None:
-            if poc is None:
-                poc_form = ProfileForm(request.POST, prefix="poc", instance=poc)
-            else:
-                poc_form = ProfileForm(request.POST, prefix="poc")
-            if poc_form.is_valid():
-                if len(poc_form.cleaned_data["profile"]) == 0:
-                    # FIXME use form.add_error in django > 1.7
-                    errors = poc_form._errors.setdefault("profile", ErrorList())
-                    errors.append(_("You must set a point of contact for this resource"))
-                    poc = None
-            if poc_form.has_changed and poc_form.is_valid():
-                new_poc = poc_form.save()
-
-        if new_author is None:
-            if metadata_author is None:
-                author_form = ProfileForm(request.POST, prefix="author", instance=metadata_author)
-            else:
-                author_form = ProfileForm(request.POST, prefix="author")
-            if author_form.is_valid():
-                if len(author_form.cleaned_data["profile"]) == 0:
-                    # FIXME use form.add_error in django > 1.7
-                    errors = author_form._errors.setdefault("profile", ErrorList())
-                    errors.append(_("You must set an author for this resource"))
-                    metadata_author = None
-            if author_form.has_changed and author_form.is_valid():
-                new_author = author_form.save()
-
         geoapp_form.cleaned_data.pop("ptype")
 
-        additional_vals = dict(
-            poc=new_poc or geoapp_obj.poc,
-            metadata_author=new_author or geoapp_obj.metadata_author,
-            category=new_category,
-        )
+        geoapp_obj = geoapp_form.instance
+        # update contact roles
+        geoapp_obj.set_contact_roles_from_metadata_edit(geoapp_form)
+
+        vals = dict(category=new_category)
 
         geoapp_form.cleaned_data.pop("metadata")
         extra_metadata = geoapp_form.cleaned_data.pop("extra_metadata")
 
-        geoapp_obj = geoapp_form.instance
+        geoapp_form.save_linked_resources()
+        geoapp_form.cleaned_data.pop("linked_resources")
 
-        _vals = dict(**geoapp_form.cleaned_data, **additional_vals)
-        _vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
-
-        resource_manager.update(
-            geoapp_obj.uuid,
-            instance=geoapp_obj,
-            keywords=new_keywords,
-            regions=new_regions,
-            vals=_vals,
-            notify=True,
-            extra_metadata=json.loads(extra_metadata),
-        )
-        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+        vals.update({"resource_type": resource_type, "sourcetype": SOURCE_TYPE_LOCAL})
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, geoapp_obj)
         if not ajax:
@@ -364,13 +319,27 @@ def geoapp_metadata(
             tb = traceback.format_exc()
             logger.error(tb)
 
-        vals = {}
         if "group" in geoapp_form.changed_data:
             vals["group"] = geoapp_form.cleaned_data.get("group")
         if any([x in geoapp_form.changed_data for x in ["is_approved", "is_published"]]):
             vals["is_approved"] = geoapp_form.cleaned_data.get("is_approved", geoapp_obj.is_approved)
             vals["is_published"] = geoapp_form.cleaned_data.get("is_published", geoapp_obj.is_published)
-        resource_manager.update(geoapp_obj.uuid, instance=geoapp_obj, notify=True, vals=vals)
+        else:
+            vals.pop("is_approved", None)
+            vals.pop("is_published", None)
+
+        resource_manager.update(
+            geoapp_obj.uuid,
+            instance=geoapp_obj,
+            keywords=new_keywords,
+            regions=new_regions,
+            notify=True,
+            vals=vals,
+            extra_metadata=json.loads(extra_metadata),
+        )
+
+        resource_manager.set_thumbnail(geoapp_obj.uuid, instance=geoapp_obj, overwrite=False)
+
         return HttpResponse(json.dumps({"message": message}))
     elif request.method == "POST" and (
         not geoapp_form.is_valid() or not category_form.is_valid() or not tkeywords_form.is_valid()
@@ -385,16 +354,13 @@ def geoapp_metadata(
         return HttpResponse(json.dumps(out), content_type="application/json", status=400)
     # - POST Request Ends here -
 
-    # Request.GET
-    if poc is not None:
-        geoapp_form.fields["poc"].initial = poc.id
-        poc_form = ProfileForm(prefix="poc")
-        poc_form.hidden = True
-
-    if metadata_author is not None:
-        geoapp_form.fields["metadata_author"].initial = metadata_author.id
-        author_form = ProfileForm(prefix="author")
-        author_form.hidden = True
+    # define contact role forms
+    contact_role_forms_context = {}
+    for role in geoapp_obj.get_multivalue_role_property_names():
+        geoapp_form.fields[role].initial = [p.username for p in geoapp_obj.__getattribute__(role)]
+        role_form = ProfileForm(prefix=role)
+        role_form.hidden = True
+        contact_role_forms_context[f"{role}_form"] = role_form
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
@@ -413,8 +379,6 @@ def geoapp_metadata(
             "panel_template": panel_template,
             "custom_metadata": custom_metadata,
             "geoapp_form": geoapp_form,
-            "poc_form": poc_form,
-            "author_form": author_form,
             "category_form": category_form,
             "tkeywords_form": tkeywords_form,
             "metadata_author_groups": metadata_author_groups,
@@ -424,6 +388,8 @@ def geoapp_metadata(
                 set(getattr(settings, "UI_DEFAULT_MANDATORY_FIELDS", []))
                 | set(getattr(settings, "UI_REQUIRED_FIELDS", []))
             ),
+            **contact_role_forms_context,
+            "UI_ROLES_IN_TOGGLE_VIEW": geoapp_obj.get_ui_toggled_role_property_names(),
         },
     )
 

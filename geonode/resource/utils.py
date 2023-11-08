@@ -29,7 +29,6 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.gis.geos import MultiPolygon
 from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
 
@@ -49,6 +48,7 @@ from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
 from ..people.utils import get_valid_user
+from geonode.people import Roles
 from ..layers.utils import resolve_regions
 from ..layers.metadata import convert_keyword
 
@@ -175,8 +175,10 @@ def update_resource(
             else:
                 defaults[key] = value
 
-    poc = defaults.pop("poc", None)
-    metadata_author = defaults.pop("metadata_author", None)
+    contact_roles = {
+        contact_role.name: defaults.pop(contact_role.name, getattr(instance, contact_role.name))
+        for contact_role in Roles.get_multivalue_ones()
+    }
 
     to_update = {}
     for _key in ("name",):
@@ -232,6 +234,12 @@ def update_resource(
         _default_ows_url = urljoin(ogc_settings.PUBLIC_LOCATION, "ows")
         to_update["ows_url"] = defaults.pop("ows_url", getattr(instance, "ows_url", None)) or _default_ows_url
 
+    # update contact roles in instance
+    [
+        instance.__setattr__(contact_role_name, contact_role_value)
+        for contact_role_name, contact_role_value in contact_roles.items()
+    ]
+
     to_update.update(defaults)
     try:
         instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
@@ -256,10 +264,6 @@ def update_resource(
 
     # Refresh from DB
     instance.refresh_from_db()
-    if poc:
-        instance.poc = poc
-    if metadata_author:
-        instance.metadata_author = metadata_author
 
     if extra_metadata:
         instance.metadata.all().delete()
@@ -316,16 +320,6 @@ def get_alternate_name(instance):
     return instance.alternate
 
 
-def get_related_resources(document):
-    if document.links:
-        try:
-            return [link.content_type.get_object_for_this_type(id=link.object_id) for link in document.links.all()]
-        except Exception:
-            return []
-    else:
-        return []
-
-
 def document_post_save(instance, *args, **kwargs):
     instance.csw_type = "document"
 
@@ -374,15 +368,6 @@ def document_post_save(instance, *args, **kwargs):
                 link_type="data",
             ),
         )
-
-    resources = get_related_resources(instance)
-
-    # if there are (new) linked resources update the bbox computed by their bboxes
-    if resources:
-        bbox = MultiPolygon([r.bbox_polygon for r in resources])
-        instance.set_bbox_polygon(bbox.extent, instance.srid)
-    elif not instance.bbox_polygon:
-        instance.set_bbox_polygon((-180, -90, 180, 90), "EPSG:4326")
 
 
 def dataset_post_save(instance, *args, **kwargs):
