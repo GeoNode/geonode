@@ -20,7 +20,7 @@ vine==5.0.0
 tqdm==4.66.1
 Deprecated==1.2.14
 wrapt==1.15.0
-jsonschema==4.19.1
+jsonschema==4.19.2
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
