@@ -1358,7 +1358,7 @@ TASTYPIE_DEFAULT_FORMATS = ["json"]
 AUTO_GENERATE_AVATAR_SIZES = (20, 30, 32, 40, 50, 65, 70, 80, 100, 140, 200, 240)
 AVATAR_GRAVATAR_SSL = ast.literal_eval(os.getenv("AVATAR_GRAVATAR_SSL", "False"))
 
-AVATAR_DEFAULT_URL = os.getenv("AVATAR_DEFAULT_URL", "/geonode/img/avatar.png")
+AVATAR_DEFAULT_URL = os.getenv("AVATAR_DEFAULT_URL", "/geonode/img/default-avatar.jpg")
 
 try:
     # try to parse python notation, default in dockerized env
