@@ -119,6 +119,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("C0", "Cat0"),
             ("C1", "Cat1"),
             ("C2", "Cat2"),
+            ("C3", "Cat3"),
         ):
             cls.cats[code] = TopicCategory.objects.create(identifier=code, description=name, gn_description=name)
 
@@ -130,6 +131,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("K0", "Keyword0"),
             ("K1", "Keyword1"),
             ("K2", "Keyword2"),
+            ("K3", "Keyword3"),
         ):
             cls.kw[code] = HierarchicalKeyword.objects.create(slug=code, name=name)
 
@@ -150,26 +152,26 @@ class TestFacets(GeoNodeBaseTestSupport):
 
             # These are the assigned keywords to the Resources
 
-            # RB00 ->            T1K0          R0,R1   FEAT  K0      C0
-            # RB01 ->  T0K0      T1K0          R0      FEAT  K1
-            # RB02 ->            T1K0          R1      FEAT  K2      C0
-            # RB03 ->  T0K0      T1K0                        K0
-            # RB04 ->            T1K0                        K0,K1   C0
-            # RB05 ->  T0K0      T1K0                        K0,K2   C1
-            # RB06 ->            T1K0                  FEAT
-            # RB07 ->  T0K0      T1K0                  FEAT
-            # RB08 ->            T1K0 T1K1     R1      FEAT
-            # RB09 ->  T0K0      T1K0 T1K1
-            # RB10 ->                 T1K1
-            # RB11 ->  T0K0 T0K1      T1K1
-            # RB12 ->                 T1K1             FEAT
-            # RB13 ->  T0K0 T0K1               R1      FEAT
-            # RB14 ->                                  FEAT
-            # RB15 ->  T0K0 T0K1                                     C1
-            # RB16 ->                                                C1
-            # RB17 ->  T0K0 T0K1
-            # RB18 ->                                  FEAT          C2
-            # RB19 ->  T0K0 T0K1                       FEAT          C2
+            # RB00 ->           T1K0      R0,R1    FEAT  K0      C0
+            # RB01 -> T0K0      T1K0      R0       FEAT    K1
+            # RB02 ->           T1K0         R1    FEAT      K2  C0
+            # RB03 -> T0K0      T1K0                     K0
+            # RB04 ->           T1K0                     K0K1    C0
+            # RB05 -> T0K0      T1K0                     K0  K2  C1
+            # RB06 ->           T1K0               FEAT
+            # RB07 -> T0K0      T1K0            R2 FEAT      K3  C3
+            # RB08 ->           T1K0 T1K1    R1,R2 FEAT      K3  C3
+            # RB09 -> T0K0      T1K0 T1K1       R2           K3  C3
+            # RB10 ->                T1K1       R2           K3  C3
+            # RB11 -> T0K0 T0K1      T1K1
+            # RB12 ->                T1K1          FEAT
+            # RB13 -> T0K0 T0K1              R1    FEAT
+            # RB14 ->                              FEAT
+            # RB15 -> T0K0 T0K1                                  C1
+            # RB16 ->                                            C1
+            # RB17 -> T0K0 T0K1
+            # RB18 ->                              FEAT          C2
+            # RB19 -> T0K0 T0K1                    FEAT          C2
 
             if x % 2 == 1:
                 logger.debug(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
@@ -189,6 +191,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             for reg, idx in (  # fmt: skip
                 ("R0", (0, 1)),
                 ("R1", (0, 2, 8, 13)),
+                ("R2", (7, 8, 9, 10)),
             ):
                 if x in idx:
                     d.regions.add(self.regions[reg])
@@ -197,6 +200,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 ("K0", (0, 3, 4, 5)),
                 ("K1", [1, 4]),
                 ("K2", [2, 5]),
+                ("K3", [7, 8, 9, 10]),
             ):
                 if x in idx:
                     d.keywords.add(self.kw[kw])
@@ -205,6 +209,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 ("C0", [0, 2, 4]),
                 ("C1", [5, 15, 16]),
                 ("C2", [18, 19]),
+                ("C3", [7, 8, 9, 10]),
             ):
                 if x in idx:
                     d.category = self.cats[cat]
@@ -248,10 +253,11 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "category",
                 "topics": {
-                    "total": 3,
+                    "total": 4,
                     "items": [
                         {"label": "Cat0", "count": 3},
                         {"label": "Cat1", "count": 3},
+                        {"label": "Cat3", "count": 4},
                         {"label": "Cat2", "count": 2},
                     ],
                 },
@@ -259,11 +265,12 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "keyword",
                 "topics": {
-                    "total": 3,
+                    "total": 4,
                     "items": [
                         {"label": "Keyword0", "count": 4},
                         {"label": "Keyword1", "count": 2},
                         {"label": "Keyword2", "count": 2},
+                        {"label": "Keyword3", "count": 4},
                     ],
                 },
             },
@@ -295,10 +302,11 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "region",
                 "topics": {
-                    "total": 2,
+                    "total": 3,
                     "items": [
                         {"label": "Region0", "key": "R0", "count": 2},
                         {"label": "Region1", "key": "R1", "count": 4},
+                        {"label": "Region2", "key": "R2", "count": 4},
                     ],
                 },
             },
@@ -386,15 +394,21 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("t_1", {}, 2, 10),
             ("t_1", {regfilter: "R0"}, 1, 2),
             ("t_1", {regfilter: "R1"}, 2, 3),
-            (reginfo["name"], {}, 2, 4),
-            (reginfo["name"], {t0filter: self.thesauri_k["0_0"].id}, 2, 1),
-            (reginfo["name"], {t1filter: self.thesauri_k["1_0"].id}, 2, 3),
+            (reginfo["name"], {}, 3, 4),
+            (reginfo["name"], {t0filter: self.thesauri_k["0_0"].id}, 3, 2),
+            (reginfo["name"], {t1filter: self.thesauri_k["1_0"].id}, 3, 3),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=filters)
             res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
-            self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and filter {filters}")
-            self.assertEqual(count0, obj["topics"]["items"][0]["count"], f"Bad count0 for facet '{facet}")
+            self.assertEqual(
+                totals,
+                obj["topics"]["total"],
+                f"Bad totals for facet '{facet} and filter {filters}\nRESPONSE: {obj}",
+            )
+            self.assertEqual(
+                count0, obj["topics"]["items"][0]["count"], f"Bad count0 for facet '{facet}\nRESPONSE: {obj}"
+            )
 
     def test_prefiltering_tkeywords(self):
         regname = RegionFacetProvider().name
@@ -402,7 +416,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         t1filter = facet_registry.get_provider("t_1").get_info()["filter"]
         tkey_1_1 = self.thesauri_k["1_1"].id
 
-        expected_region = {"R1": 1}
+        expected_region = {"R1": 1, "R2": 3}
         expected_feat = {True: 2, False: 3}
 
         # Run the single requests
@@ -471,49 +485,61 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     def test_count0(self):
         reginfo = RegionFacetProvider().get_info()
-        regfilter = reginfo["filter"]
+        regflt = reginfo["filter"]
         regname = reginfo["name"]
 
         catinfo = CategoryFacetProvider().get_info()
+        catflt = catinfo["filter"]
         catname = catinfo["name"]
 
         kwinfo = KeywordFacetProvider().get_info()
-        kwfilter = kwinfo["filter"]
+        kwflt = kwinfo["filter"]
         kwname = kwinfo["name"]
 
-        t0filter = facet_registry.get_provider("t_0").get_info()["filter"]
-        t1filter = facet_registry.get_provider("t_1").get_info()["filter"]
+        t0flt = facet_registry.get_provider("t_0").get_info()["filter"]
+        t1flt = facet_registry.get_provider("t_1").get_info()["filter"]
 
         def t(tk):
             return self.thesauri_k[tk].id
 
-        for facet, params, items in (
+        for facet, params, items in (  # fmt: skip
             # thesauri
-            ("t_1", {regfilter: "R0"}, {t("1_0"): 2}),
-            ("t_1", {regfilter: "R0", "key": [t("1_0")]}, {t("1_0"): 2}),
-            ("t_1", {regfilter: "R0", t0filter: t("0_1")}, {}),
-            ("t_1", {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_0")]}, {t("1_0"): None}),
+            ("t_1", {regflt: "R0"}, {t("1_0"): 2}),
+            ("t_1", {regflt: "R0", "key": [t("1_0")]}, {t("1_0"): 2}),
+            ("t_1", {regflt: "R0", t0flt: t("0_1")}, {}),
+            ("t_1", {regflt: "R0", t0flt: t("0_1"), "key": [t("1_0")]}, {t("1_0"): None}),
             (
                 "t_1",
-                {regfilter: "R0", t0filter: t("0_1"), "key": [t("1_1"), t("1_0")]},
+                {regflt: "R0", t0flt: t("0_1"), "key": [t("1_1"), t("1_0")]},
                 {t("1_0"): None, t("1_1"): None},
             ),
             ("t_1", {"key": [t("0_1")]}, {}),
+            ("t_1", {t0flt: t("0_0")}, {t("1_0"): 5, t("1_1"): 2}),
+            ("t_1", {t0flt: t("0_1")}, {t("1_1"): 1}),
+            ("t_1", {t0flt: [t("0_1"), t("0_0")]}, {t("1_0"): 5, t("1_1"): 2}),
+            ("t_1", {catflt: ["C0"]}, {t("1_0"): 3}),
+            ("t_1", {catflt: ["C0", "C1"]}, {t("1_0"): 4}),
             # regions
-            (regname, {t1filter: t("1_1")}, {"R1": 1}),
-            (regname, {t1filter: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
-            (regname, {t1filter: t("1_1"), "key": ["R0"]}, {"R0": None}),
+            (regname, {t1flt: t("1_0")}, {"R0": 2, "R1": 3, "R2": 3}),
+            (regname, {t1flt: t("1_1")}, {"R1": 1, "R2": 3}),
+            (regname, {t1flt: [t("1_1"), t("1_0")]}, {"R0": 2, "R1": 3, "R2": 4}),
+            (regname, {t1flt: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
+            (regname, {t1flt: t("1_1"), "key": ["R0"]}, {"R0": None}),
             # category
-            (catname, {t1filter: t("1_0")}, {"C0": 3, "C1": 1}),
-            (catname, {t1filter: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
-            (catname, {kwfilter: "K1"}, {"C0": 1}),
-            (catname, {kwfilter: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
+            (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1, "C3": 3}),
+            (catname, {t1flt: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
+            (catname, {t1flt: [t("1_0"), t("1_1")]}, {"C0": 3, "C1": 1, "C3": 4}),
+            (catname, {kwflt: "K1"}, {"C0": 1}),
+            (catname, {kwflt: "K1", "key": ["C0", "C2"]}, {"C0": 1, "C2": None}),
             # keyword
-            (kwname, {t0filter: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1}),
-            (kwname, {t0filter: t("0_0"), regfilter: "R0"}, {"K1": 1}),
-            (kwname, {t0filter: t("0_0"), regfilter: "R0", "key": ["K0"]}, {"K0": None}),
+            (kwname, {t0flt: t("0_0")}, {"K0": 2, "K1": 1, "K2": 1, "K3": 2}),
+            (kwname, {t0flt: t("1_0")}, {"K0": 4, "K1": 2, "K2": 2, "K3": 3}),
+            (kwname, {t0flt: [t("1_0"), t("1_1")]}, {"K0": 4, "K1": 2, "K2": 2, "K3": 4}),
+            (kwname, {t0flt: t("0_0"), regflt: "R0"}, {"K1": 1}),
+            (kwname, {t0flt: t("0_0"), regflt: "R0", "key": ["K0"]}, {"K0": None}),
         ):
             req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
+            req.user = self.admin
             res: JsonResponse = GetFacetView.as_view()(req, facet)
             obj = json.loads(res.content)
             # self.assertEqual(totals, obj["topics"]["total"], f"Bad totals for facet '{facet} and params {params}")
