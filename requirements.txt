@@ -16,7 +16,7 @@ python-slugify==8.0.1
 decorator==5.1.1
 celery==5.3.4
 kombu==5.3.2
-vine==5.0.0
+vine==5.1.0
 tqdm==4.66.1
 Deprecated==1.2.14
 wrapt==1.15.0
