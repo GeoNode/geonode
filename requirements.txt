@@ -109,7 +109,7 @@ elasticsearch>=2.0.0,<9.0.0
 django-bootstrap3-datetimepicker-2==2.8.3
 
 # storage manager dependencies
-django-storages==1.14.1
+django-storages==1.14.2
 dropbox==11.36.2
 google-cloud-storage==2.11.0
 google-cloud-core==2.3.3
