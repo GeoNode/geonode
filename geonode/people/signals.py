@@ -111,7 +111,7 @@ def profile_post_save(instance, sender, **kwargs):
         is_anonymous = instance.username == "AnonymousUser"
 
         if not is_anonymous:
-            if settings.REGISTERED_USER_IS_CONTRIBUTOR:
+            if settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS:
                 if Group.objects.filter(name="contributors").count() and not (
                     instance.is_staff or instance.is_superuser
                 ):

@@ -463,10 +463,10 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         new_user = get_user_model().objects.create(username="random_username")
         self.assertTrue("contributors" in [x.name for x in new_user.groups.iterator()])
 
-    @override_settings(REGISTERED_USER_IS_CONTRIBUTOR=False)
+    @override_settings(AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS=False)
     def test_new_user_is_no_assigned_automatically_to_contributors_if_disabled(self):
         """
-        If REGISTERED_USER_IS_CONTRIBUTOR is false, each new user is not automatically
+        If AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS is false, each new user is not automatically
         assinged to the contributors group
         """
         new_user = get_user_model().objects.create(username="random_username")
