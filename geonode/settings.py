@@ -2368,3 +2368,5 @@ FACET_PROVIDERS = [
 DEFAULT_DATASET_DOWNLOAD_HANDLER = "geonode.layers.download_handler.DatasetDownloadHandler"
 
 DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLERS", "[]"))
+
+REGISTERED_USER_IS_CONTRIBUTOR = ast.literal_eval(os.getenv("REGISTERED_USER_IS_CONTRIBUTOR", "True"))
