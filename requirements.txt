@@ -25,7 +25,7 @@ zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.4.0
-PyMuPDF==1.23.4
+PyMuPDF==1.23.6
 pathvalidate==3.2.0
 
 # Django Apps
