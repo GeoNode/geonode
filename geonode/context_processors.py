@@ -17,6 +17,8 @@
 #
 #########################################################################
 
+import ast
+import os
 import warnings
 
 from django.conf import settings

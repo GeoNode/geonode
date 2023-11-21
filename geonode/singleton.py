@@ -20,6 +20,8 @@
 
 # Geonode functionality
 
+import ast
+import os
 from django.db import models
 
 
@@ -38,6 +40,8 @@ class SingletonModel(models.Model):
     @classmethod
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
+        if ast.literal_eval(os.getenv("FORCE_READ_ONLY_MODE", "False")):
+            setattr(obj, "read_only", True)
         return obj
 
     def save(self, *args, **kwargs):
