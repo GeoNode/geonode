@@ -40,8 +40,9 @@ class SingletonModel(models.Model):
     @classmethod
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
-        if ast.literal_eval(os.getenv("FORCE_READ_ONLY_MODE", "False")):
-            setattr(obj, "read_only", True)
+        val = os.getenv("FORCE_READ_ONLY_MODE", None)
+        if val is not None:
+            setattr(obj, "read_only", val)
         return obj
 
     def save(self, *args, **kwargs):
