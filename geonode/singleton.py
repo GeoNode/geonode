@@ -20,7 +20,6 @@
 
 # Geonode functionality
 
-import ast
 import os
 from django.db import models
 

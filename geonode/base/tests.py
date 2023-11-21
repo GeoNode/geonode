@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import django.test.utils
 import json
 import logging
 import os
@@ -677,6 +676,7 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         # will take the value from the db
         config = Configuration.load()
         self.assertFalse(config.read_only)
+
 
 class TestOwnerRightsRequestUtils(TestCase):
     def setUp(self):
