@@ -130,7 +130,7 @@ class DocumentCreateForm(TranslationModelForm):
 
     class Meta:
         model = Document
-        fields = ["title", "doc_file", "doc_url"]
+        fields = ["title", "doc_file", "doc_url", "extension"]
         widgets = {
             "name": HiddenInput(attrs={"cols": 80, "rows": 20}),
         }
@@ -159,6 +159,7 @@ class DocumentCreateForm(TranslationModelForm):
         cleaned_data = super().clean()
         doc_file = self.cleaned_data.get("doc_file")
         doc_url = self.cleaned_data.get("doc_url")
+        extension = self.cleaned_data.get("extension")
 
         if not doc_file and not doc_url and "doc_file" not in self.errors and "doc_url" not in self.errors:
             logger.error("Document must be a file or url.")
@@ -167,6 +168,9 @@ class DocumentCreateForm(TranslationModelForm):
         if doc_file and doc_url:
             logger.error("A document cannot have both a file and a url.")
             raise forms.ValidationError(_("A document cannot have both a file and a url."))
+
+        if extension:
+            cleaned_data['extension'] = extension.replace(".", "")
 
         return cleaned_data
 
