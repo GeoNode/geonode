@@ -173,6 +173,7 @@ class DocumentUploadView(CreateView):
                     owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", file.name),
+                    extension=doc_form.pop("extension", None),
                     files=[storage_path],
                 ),
             )
@@ -186,6 +187,7 @@ class DocumentUploadView(CreateView):
                     owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", None),
+                    extension=doc_form.pop("extension", None),
                     sourcetype=enumerations.SOURCE_TYPE_REMOTE,
                 ),
             )
