@@ -555,9 +555,15 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
+<<<<<<< HEAD
         self.fields["regions"].choices = get_tree_data()
         self.can_change_perms = self.user and self.user.has_perm(
             "change_resourcebase_permissions", self.instance.get_self_resource()
+=======
+        self.fields['regions'].choices = get_tree_data()
+        self.can_change_perms = self.user and self.user.has_perm(
+            'change_resourcebase_permissions', self.instance.get_self_resource()
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         )
         if self.instance and self.instance.id and self.instance.metadata.exists():
             self.fields["extra_metadata"].initial = [x.metadata for x in self.instance.metadata.all()]
@@ -578,6 +584,9 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
                 )
 
             if field in ["owner"] and not self.can_change_perms:
+                self.fields[field].disabled = True
+
+            if field in ['poc', 'owner'] and not self.can_change_perms:
                 self.fields[field].disabled = True
 
     def disable_keywords_widget_for_non_superuser(self, user):
@@ -693,7 +702,11 @@ class BatchEditForm(forms.Form):
 
 def get_user_choices():
     try:
+<<<<<<< HEAD
         return [(x.pk, x.title) for x in Dataset.objects.all().order_by("id")]
+=======
+        return [(x.pk, x.title) for x in Dataset.objects.all().order_by('id')]
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     except Exception:
         return []
 
@@ -710,13 +723,31 @@ class UserAndGroupPermissionsForm(forms.Form):
         required=False,
     )
 
+<<<<<<< HEAD
+=======
+    layers = MultipleChoiceField(
+        choices=get_user_choices(),
+        widget=autocomplete.Select2Multiple(
+            url='datasets_autocomplete'
+        ),
+        label="Datasets",
+        required=False,
+    )
+
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     permission_type = forms.ChoiceField(
         required=True,
         widget=forms.RadioSelect,
         choices=(
+<<<<<<< HEAD
             ("view", "View"),
             ("download", "Download"),
             ("edit", "Edit"),
+=======
+            ('view', 'View'),
+            ('download', 'Download'),
+            ('edit', 'Edit'),
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         ),
     )
     mode = forms.ChoiceField(

@@ -18,7 +18,10 @@
 #########################################################################
 import re
 import os
+<<<<<<< HEAD
 import time
+=======
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 import logging
 
 from urllib.parse import urljoin
@@ -36,6 +39,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
 from geonode.geoserver.helpers import (
     gs_catalog,
+<<<<<<< HEAD
     ows_endpoint_in_path,
     get_dataset_storetype,
     extract_name_from_sld,
@@ -43,6 +47,11 @@ from geonode.geoserver.helpers import (
     get_layer_ows_url,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
+=======
+    get_dataset_storetype,
+    extract_name_from_sld)
+from geonode.layers.populate_datasets_data import create_dataset_data
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 logger = logging.getLogger(__name__)
@@ -87,12 +96,21 @@ class HelperTest(GeoNodeBaseTestSupport):
     def test_safe_path_leaf(self):
         base_path = settings.MEDIA_ROOT
 
+<<<<<<< HEAD
         malformed_paths = ["c:/etc/passwd", "c:\\etc\\passwd", "\0_a*b:c<d>e%f/(g)h+i_0.txt"]
+=======
+        malformed_paths = [
+            'c:/etc/passwd',
+            'c:\\etc\\passwd',
+            '\0_a*b:c<d>e%f/(g)h+i_0.txt'
+        ]
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         for _path in malformed_paths:
             with self.assertRaises(ValidationError):
                 safe_path_leaf(_path)
 
         unsafe_paths = [
+<<<<<<< HEAD
             "/root/",
             "~/.ssh",
             "$HOME/.ssh",
@@ -110,6 +128,22 @@ class HelperTest(GeoNodeBaseTestSupport):
                 safe_path_leaf(_path)
 
         safe_path = os.path.join(base_path, "style.sld")
+=======
+            '/root/',
+            '~/.ssh',
+            '$HOME/.ssh',
+            '/etc/passwd',
+            '.../style.sld',
+            'fi:l*e/p"a?t>h|.t<xt',
+            os.path.join('/tmp/uploaded/', 'style.sld'),
+            os.path.join(base_path, '../etc/passwd', 'style.sld')
+        ]
+        for _path in unsafe_paths:
+            with self.assertRaisesMessage(GeoNodeException, f"The provided path '{_path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"):
+                safe_path_leaf(_path)
+
+        safe_path = os.path.join(base_path, 'style.sld')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         self.assertEqual(safe_path_leaf(safe_path), safe_path)
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)

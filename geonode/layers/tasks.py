@@ -29,8 +29,13 @@ logger = get_task_logger(__name__)
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     name="geonode.layers.tasks.delete_dataset",
     queue="cleanup",
+=======
+    name='geonode.layers.tasks.delete_dataset',
+    queue='cleanup',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,

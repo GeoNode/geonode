@@ -135,6 +135,7 @@ class GeoAppTests(GeoNodeBaseTestSupport):
         }
     )
     def test_resource_form_is_valid_extra_metadata(self):
+<<<<<<< HEAD
         form = self.sut(
             data={
                 "owner": self.geoapp.owner.id,
@@ -146,6 +147,16 @@ class GeoAppTests(GeoNodeBaseTestSupport):
             },
             user=self.user,
         )
+=======
+        form = self.sut(data={
+            "owner": self.geoapp.owner.id,
+            "title": "geoapp_title",
+            "date": "2022-01-24 16:38 pm",
+            "date_type": "creation",
+            "language": "eng",
+            "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
+        }, user=self.user)
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         self.assertTrue(form.is_valid())
 
     def test_geoapp_category_is_correctly_assigned_in_metadata_upload(self):

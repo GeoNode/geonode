@@ -67,9 +67,22 @@ PERMISSIONS = {
 
 DOWNLOADABLE_RESOURCES = ["dataset", "document"]
 
+<<<<<<< HEAD
 DATA_EDITABLE_RESOURCES_SUBTYPES = ["vector", "vector_time"]
 
 DATA_STYLABLE_RESOURCES_SUBTYPES = ["raster", "vector", "vector_time"]
+=======
+DATA_EDITABLE_RESOURCES_SUBTYPES = [
+    'vector',
+    'vector_time'
+]
+
+DATA_STYLABLE_RESOURCES_SUBTYPES = [
+    'raster',
+    'vector',
+    'vector_time'
+]
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 # The following permissions will be filtered out when READ_ONLY mode is active
 READ_ONLY_AFFECTED_PERMISSIONS = [

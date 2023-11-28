@@ -54,7 +54,14 @@ class TasksTest(GeoNodeBaseTestSupport):
     def test_geoserver_set_style_with_real_file(self, mocked_set_dataset_style):
         dataset = Dataset.objects.first()
         sld_file = "geonode/base/fixtures/test_sld.sld"
+<<<<<<< HEAD
         geoserver_set_style(instance_id=dataset.id, base_file=sld_file)
+=======
+        geoserver_set_style(
+            instance_id=dataset.id,
+            base_file=sld_file
+        )
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         mocked_set_dataset_style.assert_called_once()
 
         args_list = mocked_set_dataset_style.call_args_list[0].args
@@ -69,8 +76,16 @@ class TasksTest(GeoNodeBaseTestSupport):
     def test_geoserver_set_style_with_xml(self, mocked_set_dataset_style):
         dataset = Dataset.objects.first()
 
+<<<<<<< HEAD
         with open("geonode/base/fixtures/test_sld.sld", "r+") as _file:
             geoserver_set_style(instance_id=dataset.id, base_file=_file.read())
+=======
+        with open("geonode/base/fixtures/test_sld.sld", 'r+') as _file:
+            geoserver_set_style(
+                instance_id=dataset.id,
+                base_file=_file.read()
+            )
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         mocked_set_dataset_style.assert_called_once()
 
         args_list = mocked_set_dataset_style.call_args_list[0].args

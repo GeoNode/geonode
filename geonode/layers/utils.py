@@ -415,12 +415,18 @@ def surrogate_escape_string(input_string, source_character_set):
     return input_string.encode(source_character_set, "surrogateescape").decode("utf-8", "surrogateescape")
 
 
+<<<<<<< HEAD
 def set_datasets_permissions(
     permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False
 ):
     # here to avoid circular import
     from geonode.resource.manager import resource_manager
 
+=======
+def set_datasets_permissions(permissions_name, resources_names=None, users_usernames=None, groups_names=None, delete_flag=False, verbose=False):
+    # here to avoid circular import
+    from geonode.resource.manager import resource_manager
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     # Processing information
     resources_as_pk = []
     for el in resources_names or []:
@@ -456,6 +462,7 @@ def set_datasets_permissions(
                     try:
                         new_perms_payload["users"].append(
                             {"id": User.objects.get(username=_user).pk, "permissions": permissions_name}
+<<<<<<< HEAD
                         )
                     except User.DoesNotExist:
                         logger.warning(f"The user {_user} does not exists. " "It has been skipped.")
@@ -468,6 +475,20 @@ def set_datasets_permissions(
                         new_perms_payload["groups"].append(
                             {"id": Group.objects.get(name=group_name).pk, "permissions": permissions_name}
                         )
+=======
+                        )
+                    except User.DoesNotExist:
+                        logger.warning(f"The user {_user} does not exists. " "It has been skipped.")
+            # GROUPS
+            # if the group is specified, we add them to the payload with the compact
+            # perm value
+            if groups_names:
+                for group_name in groups_names:
+                    try:
+                        new_perms_payload["groups"].append(
+                            {"id": Group.objects.get(name=group_name).pk, "permissions": permissions_name}
+                        )
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     except Group.DoesNotExist:
                         logger.warning(f"The group {group_name} does not exists. " "It has been skipped.")
             # Using the compact permissions payload to calculate the permissions
@@ -492,11 +513,17 @@ def set_datasets_permissions(
                 final_perms_payload["groups"] = {
                     _group: _perms
                     for _group, _perms in perms_spec_compact_resource.extended["groups"].items()
+<<<<<<< HEAD
                     if _group not in copy_compact_perms.extended["groups"]
                 }
                 if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get(
                     "anonymous"
                 ):
+=======
+                    if _user not in copy_compact_perms.extended["groups"]
+                }
+                if final_perms_payload["users"].get("AnonymousUser") is None and final_perms_payload["groups"].get("anonymous"):
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     final_perms_payload["groups"].pop("anonymous")
 
             # calling the resource manager to set the permissions

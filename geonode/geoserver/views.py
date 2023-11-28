@@ -162,7 +162,11 @@ def dataset_style_upload(request, layername):
     try:
         # Check SLD is valid
         try:
+<<<<<<< HEAD
             _allowed_sld_extensions = [".sld", ".xml", ".css", ".txt", ".yml"]
+=======
+            _allowed_sld_extensions = ['.sld', '.xml', '.css', '.txt', '.yml']
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             if sld and os.path.splitext(safe_path_leaf(sld))[1].lower() in _allowed_sld_extensions:
                 if isfile(sld):
                     with open(sld) as sld_file:

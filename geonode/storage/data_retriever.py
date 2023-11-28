@@ -159,12 +159,21 @@ class DataRetriever(object):
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = Path(file_path)
             os.chmod(file_path, settings.FILE_UPLOAD_PERMISSIONS)
+<<<<<<< HEAD
         """
         Is more usefull to have always unzipped file than the zip file
         So in case is a zip_file, we unzip it and than delete it
         """
         if zipfile.is_zipfile(self.file_paths.get("base_file", "not_zip")):
             self._unzip(zip_name=self.file_paths.get("base_file"))
+=======
+        '''
+        Is more usefull to have always unzipped file than the zip file
+        So in case is a zip_file, we unzip it and than delete it
+        '''
+        if zipfile.is_zipfile(self.file_paths.get('base_file', 'not_zip')):
+            self._unzip(zip_name=self.file_paths.get('base_file'))
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
         if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
             # value is always set by default as None
@@ -209,7 +218,11 @@ class DataRetriever(object):
             the_zip.extractall(self.temporary_folder)
 
         available_choices = get_allowed_extensions()
+<<<<<<< HEAD
         not_main_files = ["xml", "sld", "zip", "kmz"]
+=======
+        not_main_files = ['xml', 'sld', 'zip', 'kmz']
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         base_file_choices = [x for x in available_choices if x not in not_main_files]
         sorted_files = sorted(Path(self.temporary_folder).iterdir())
         for _file in sorted_files:

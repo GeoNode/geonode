@@ -52,8 +52,13 @@ log_lock = logging.getLogger("geonode_lock_handler")
 @app.task(
     bind=True,
     base=FaultTolerantTask,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_update_datasets",
     queue="geoserver.catalog",
+=======
+    name='geonode.geoserver.tasks.geoserver_update_datasets',
+    queue='geoserver.catalog',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -67,7 +72,11 @@ def geoserver_update_datasets(self, *args, **kwargs):
     """
     Runs update layers.
     """
+<<<<<<< HEAD
     lock_id = f"{self.request.id}"
+=======
+    lock_id = f'{self.request.id}'
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     log_lock.debug(f"geoserver_update_datasets: Creating lock {lock_id}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_update_datasets: Acquiring lock {lock_id}")
@@ -83,8 +92,13 @@ def geoserver_update_datasets(self, *args, **kwargs):
 @app.task(
     bind=True,
     base=FaultTolerantTask,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_set_style",
     queue="geoserver.catalog",
+=======
+    name='geonode.geoserver.tasks.geoserver_set_style',
+    queue='geoserver.catalog',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -105,7 +119,11 @@ def geoserver_set_style(self, instance_id, base_file):
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
+<<<<<<< HEAD
     lock_id = f"{self.request.id}" if self.request.id else instance.name
+=======
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     log_lock.debug(f"geoserver_set_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_set_style: Acquiring lock {lock_id} for {instance.name}")
@@ -119,7 +137,15 @@ def geoserver_set_style(self, instance_id, base_file):
                     sld = base_file
                     base_file = None
 
+<<<<<<< HEAD
                 set_dataset_style(instance, instance.alternate, sld, base_file=base_file)
+=======
+                set_dataset_style(
+                    instance,
+                    instance.alternate,
+                    sld,
+                    base_file=base_file)
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             except Exception as e:
                 logger.exception(e)
@@ -131,8 +157,13 @@ def geoserver_set_style(self, instance_id, base_file):
 @app.task(
     bind=True,
     base=FaultTolerantTask,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_create_style",
     queue="geoserver.catalog",
+=======
+    name='geonode.geoserver.tasks.geoserver_create_style',
+    queue='geoserver.catalog',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -155,7 +186,11 @@ def geoserver_create_style(self, instance_id, name, sld_file, tempdir):
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
+<<<<<<< HEAD
     lock_id = f"{self.request.id}" if self.request.id else instance.name
+=======
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     log_lock.debug(f"geoserver_create_style: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_create_style: Acquiring lock {lock_id} for {instance.name}")
@@ -209,8 +244,13 @@ def geoserver_create_style(self, instance_id, name, sld_file, tempdir):
 @app.task(
     bind=True,
     base=FaultTolerantTask,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_post_save_datasets",
     queue="geoserver.catalog",
+=======
+    name='geonode.geoserver.tasks.geoserver_post_save_datasets',
+    queue='geoserver.catalog',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -231,7 +271,11 @@ def geoserver_post_save_datasets(self, instance_id, *args, **kwargs):
         logger.debug(f"Dataset id {instance_id} does not exist yet!")
         raise
 
+<<<<<<< HEAD
     lock_id = f"{self.request.id}" if self.request.id else instance.name
+=======
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     log_lock.debug(f"geoserver_post_save_datasets: Creating lock {lock_id} for {instance_id}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_post_save_datasets: Acquiring lock {lock_id} for {instance_id}")
@@ -251,8 +295,13 @@ def geoserver_post_save_datasets(self, instance_id, *args, **kwargs):
 @app.task(
     bind=True,
     base=FaultTolerantTask,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_create_thumbnail",
     queue="geoserver.events",
+=======
+    name='geonode.geoserver.tasks.geoserver_create_thumbnail',
+    queue='geoserver.events',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -273,7 +322,11 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
         logger.error(f"Resource id {instance_id} does not exist yet!")
         raise
 
+<<<<<<< HEAD
     lock_id = f"{self.request.id}" if self.request.id else instance.name
+=======
+    lock_id = f'{self.request.id}' if self.request.id else instance.name
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     log_lock.debug(f"geoserver_create_thumbnail: Creating lock {lock_id} for {instance.name}")
     with AcquireLock(lock_id) as lock:
         log_lock.debug(f"geoserver_create_thumbnail: Acquiring lock {lock_id} for {instance.name}")
@@ -297,8 +350,13 @@ def geoserver_create_thumbnail(self, instance_id, overwrite=True, check_bbox=Tru
 @app.task(
     bind=True,
     base=FaultTolerantTask,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_cascading_delete",
     queue="cleanup",
+=======
+    name='geonode.geoserver.tasks.geoserver_cascading_delete',
+    queue='cleanup',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -323,8 +381,13 @@ def geoserver_cascading_delete(self, *args, **kwargs):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     name="geonode.geoserver.tasks.geoserver_delete_map",
     queue="cleanup",
+=======
+    name='geonode.geoserver.tasks.geoserver_delete_map',
+    queue='cleanup',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -357,8 +420,13 @@ def geoserver_delete_map(self, object_id):
 
 @shared_task(
     bind=True,
+<<<<<<< HEAD
     name="geonode.security.tasks.synch_guardian",
     queue="security",
+=======
+    name='geonode.security.tasks.synch_guardian',
+    queue='security',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,

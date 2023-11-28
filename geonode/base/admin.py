@@ -85,6 +85,7 @@ def set_user_and_group_dataset_permission(modeladmin, request, queryset):
 
     model_mapper = {"profile": "people", "groupprofile": "groups"}
 
+<<<<<<< HEAD
     form = UserAndGroupPermissionsForm(
         {
             "permission_type": "view",
@@ -92,6 +93,13 @@ def set_user_and_group_dataset_permission(modeladmin, request, queryset):
             "ids": ids,
         }
     )
+=======
+    form = UserAndGroupPermissionsForm({
+        'permission_type': 'view',
+        'mode': 'set',
+        'ids': ids,
+    })
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     return render(
         request, "base/user_and_group_permissions.html", context={"form": form, "model": model_mapper[resource]}

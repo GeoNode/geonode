@@ -86,6 +86,7 @@ def user_and_group_permission(request, model):
     users_usernames = None
     groups_names = None
 
+<<<<<<< HEAD
     if request.method == "POST":
         form = UserAndGroupPermissionsForm(request.POST)
         ids = ids.split(",")
@@ -107,6 +108,22 @@ def user_and_group_permission(request, model):
                 and "AnonymousUser" in users_usernames
                 and (not groups_names or "anonymous" not in groups_names)
             ):
+=======
+    if request.method == 'POST':
+        form = UserAndGroupPermissionsForm(request.POST)
+        ids = ids.split(",")
+        _message = ''
+        _errors = False
+        if form.is_valid():
+            resources_names = form.cleaned_data.get('layers')
+            users_usernames = [user.username for user in model_class.objects.filter(
+                id__in=ids)] if model == 'profile' else None
+            groups_names = [group_profile.group.name for group_profile in model_class.objects.filter(
+                id__in=ids)] if model in ('group', 'groupprofile') else None
+
+            if users_usernames and 'AnonymousUser' in users_usernames and \
+                    (not groups_names or 'anonymous' not in groups_names):
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 if not groups_names:
                     groups_names = []
                 groups_names.append("anonymous")
@@ -123,7 +140,11 @@ def user_and_group_permission(request, model):
             permissions_names = form.cleaned_data.get("permission_type")
 
             if permissions_names:
+<<<<<<< HEAD
                 if "edit" in permissions_names and users_usernames and "AnonymousUser" in users_usernames:
+=======
+                if 'edit' in permissions_names and 'AnonymousUser' in users_usernames:
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     if not _errors:
                         _message = '"EDIT" permissions not allowed for the "AnonymousUser".'
                         _errors = True
@@ -136,6 +157,7 @@ def user_and_group_permission(request, model):
                         _message = f'The asyncronous permissions {form.cleaned_data.get("mode")} request for {", ".join(users_usernames or groups_names)} has been sent'
             else:
                 if not _errors:
+<<<<<<< HEAD
                     _message = "No permissions have been set."
                     _errors = True
         else:
@@ -156,6 +178,32 @@ def user_and_group_permission(request, model):
         {
             "permission_type": "view",
             "mode": "set",
+=======
+                    _message = 'No permissions have been set.'
+                    _errors = True
+        else:
+            if not _errors:
+                _message = f'Some error has occured {form.errors}'
+                _errors = True
+        messages.add_message(
+            request,
+            (messages.INFO if not _errors else messages.ERROR),
+            _message
+        )
+        return HttpResponseRedirect(
+            get_url_for_app_model(model, model_class))
+
+    form = UserAndGroupPermissionsForm({
+        'permission_type': 'view',
+        'mode': 'set',
+    })
+    return render(
+        request,
+        "base/user_and_group_permissions.html",
+        context={
+            "form": form,
+            "model": model
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         }
     )
     return render(request, "base/user_and_group_permissions.html", context={"form": form, "model": model})
@@ -252,7 +300,11 @@ class SimpleSelect2View(autocomplete.Select2QuerySetView):
             raise AttributeError("SimpleSelect2View missing required 'filter_arg' argument")
 
     def get_queryset(self):
+<<<<<<< HEAD
         qs = super(views.BaseQuerySetView, self).get_queryset().order_by("pk")
+=======
+        qs = super(views.BaseQuerySetView, self).get_queryset().order_by('pk')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
         if self.q:
             qs = qs.filter(**{self.filter_arg: self.q})
@@ -352,6 +404,20 @@ class DatasetsAutocomplete(SimpleSelect2View):
                 "selected_text": self.get_selected_result_label(result.title),
             }
             for result in context["object_list"]
+        ]
+
+
+class DatasetsAutocomplete(SimpleSelect2View):
+    model = Dataset
+    filter_arg = 'title__icontains'
+
+    def get_results(self, context):
+        return [
+            {
+                'id': self.get_result_value(result),
+                'text': self.get_result_label(result.title),
+                'selected_text': self.get_selected_result_label(result.title),
+            } for result in context['object_list']
         ]
 
 

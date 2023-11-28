@@ -683,7 +683,13 @@ LOGGING = {
         "simple": {
             "format": "%(message)s",
         },
+<<<<<<< HEAD
         "br": {"format": "%(levelname)-7s %(asctime)s %(message)s"},
+=======
+        'br': {
+            'format': '%(levelname)-7s %(asctime)s %(message)s'
+        },
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
@@ -693,6 +699,7 @@ LOGGING = {
             "filters": ["require_debug_false"],
             "class": "django.utils.log.AdminEmailHandler",
         },
+<<<<<<< HEAD
         "br": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "br"},
     },
     "loggers": {
@@ -721,6 +728,32 @@ LOGGING = {
         "geonode_logstash.logstash": {
             "level": "ERROR",
         },
+=======
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+        'br': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'br'
+        },
+    },
+    'root': {
+        'handlers': ['console'], 'level': 'ERROR',
+    },
+    "loggers": {
+        "django": {"level": "ERROR", },
+        "geonode": {"level": "WARN", },
+        "geonode.br": {"level": "INFO", 'handlers': ['br'], 'propagate': False},
+        "geoserver-restconfig.catalog": {"level": "ERROR", },
+        "owslib": {"level": "ERROR", },
+        "pycsw": {"level": "ERROR", },
+        "celery": {"level": "WARN", },
+        "mapstore2_adapter.plugins.serializers": {"level": "ERROR", },
+        "geonode_logstash.logstash": {"level": "ERROR", },
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     },
 }
 
@@ -1113,6 +1146,7 @@ PYCSW = {
         #    'pretty_print': 'true',
         #    'federatedcatalogues': 'http://catalog.data.gov/csw'
         # },
+<<<<<<< HEAD
         "server": {
             "home": ".",
             "url": CATALOGUE["default"]["URL"],
@@ -1120,6 +1154,15 @@ PYCSW = {
             "language": LANGUAGE_CODE if LANGUAGE_CODE in ("en", "fr", "el") else "en",
             "maxrecords": "20",
             "pretty_print": "true",
+=======
+        'server': {
+            'home': '.',
+            'url': CATALOGUE['default']['URL'],
+            'encoding': 'UTF-8',
+            'language': LANGUAGE_CODE if LANGUAGE_CODE in ('en', 'fr', 'el') else 'en',
+            'maxrecords': '20',
+            'pretty_print': 'true',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             # 'domainquerytype': 'range',
             "domaincounts": "true",
             "profiles": "apiso,ebrim",
@@ -1776,6 +1819,7 @@ CELERY_ACCEPT_CONTENT = [
 CELERY_TASK_CREATE_MISSING_QUEUES = ast.literal_eval(os.environ.get("CELERY_TASK_CREATE_MISSING_QUEUES", "True"))
 GEONODE_EXCHANGE = Exchange("default", type="topic", durable=True)
 CELERY_TASK_QUEUES = (
+<<<<<<< HEAD
     Queue("default", GEONODE_EXCHANGE, routing_key="default", priority=0),
     Queue("geonode", GEONODE_EXCHANGE, routing_key="geonode", priority=0),
     Queue("update", GEONODE_EXCHANGE, routing_key="update", priority=0),
@@ -1785,6 +1829,17 @@ CELERY_TASK_QUEUES = (
     Queue("security", GEONODE_EXCHANGE, routing_key="security", priority=0),
     Queue("management_commands_http", GEONODE_EXCHANGE, routing_key="management_commands_http", priority=0),
     Queue("clery_cleanup", GEONODE_EXCHANGE, routing_key="clery_cleanup", priority=0),
+=======
+    Queue('default', GEONODE_EXCHANGE, routing_key='default', priority=0),
+    Queue('geonode', GEONODE_EXCHANGE, routing_key='geonode', priority=0),
+    Queue('update', GEONODE_EXCHANGE, routing_key='update', priority=0),
+    Queue('upload', GEONODE_EXCHANGE, routing_key='upload', priority=0),
+    Queue('cleanup', GEONODE_EXCHANGE, routing_key='cleanup', priority=0),
+    Queue('email', GEONODE_EXCHANGE, routing_key='email', priority=0),
+    Queue('security', GEONODE_EXCHANGE, routing_key='security', priority=0),
+    Queue('management_commands_http', GEONODE_EXCHANGE, routing_key='management_commands_http', priority=0),
+    Queue('clery_cleanup', GEONODE_EXCHANGE, routing_key='clery_cleanup', priority=0)
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 )
 
 if USE_GEOSERVER:
@@ -2046,8 +2101,13 @@ INVITATIONS_CONFIRMATION_URL_NAME = "geonode.invitations:accept-invite"
 THUMBNAIL_GENERATOR = os.environ.get("THUMBNAIL_GENERATOR", "geonode.thumbs.thumbnails.create_gs_thumbnail_geonode")
 
 THUMBNAIL_SIZE = {
+<<<<<<< HEAD
     "width": int(os.environ.get("THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH", 500)),
     "height": int(os.environ.get("THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT", 200)),
+=======
+    'width': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_WIDTH', 500)),
+    'height': int(os.environ.get('THUMBNAIL_GENERATOR_DEFAULT_SIZE_HEIGHT', 200))
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 }
 
 THUMBNAIL_BACKGROUND = {
@@ -2174,6 +2234,7 @@ UPLOAD_SESSION_EXPIRY_HOURS = os.getenv("UPLOAD_SESSION_EXPIRY_HOURS ", 24)
 
 # If a command name is listed here, the command will be available to admins over http
 # This list is used by the management_commands_http app
+<<<<<<< HEAD
 MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set(
     [
         "ping_mngmt_commands_http",
@@ -2186,6 +2247,17 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set(
     ]
     + ast.literal_eval(os.getenv("MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ", "[]"))
 )
+=======
+MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set([
+    "ping_mngmt_commands_http",
+    "updatelayers",
+    "sync_geonode_datasets",
+    "sync_geonode_maps",
+    "importlayers",
+    "set_all_datasets_metadata",
+    "set_layers_permissions",
+] + ast.literal_eval(os.getenv('MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP ', '[]')))
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 FILE_UPLOAD_HANDLERS = [

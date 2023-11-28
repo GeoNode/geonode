@@ -149,9 +149,15 @@ class RestoreCommandTests(GeoNodeBaseTestSupport):
                 call_command("restore", *args, **kwargs)
 
             self.assertIn(
+<<<<<<< HEAD
                 "andatory option (-c / --config)",
                 exc.exception.args[0],
                 'Can not match message about mandatory option (-c / --config)" exception',
+=======
+                'andatory option (-c / --config)',
+                exc.exception.args[0],
+                'Can not match message about mandatory option (-c / --config)" exception'
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             )
 
         # create the backup file with ini file

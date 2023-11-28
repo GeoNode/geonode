@@ -158,7 +158,19 @@ class MapSerializer(ResourceBaseSerializer):
         model = Map
         name = "map"
         view_name = "maps-list"
+<<<<<<< HEAD
         fields = ("pk", "uuid", "urlsuffix", "featuredurl", "data", "maplayers", "executions", "metadata")
+=======
+        fields = (
+            "pk",
+            "uuid",
+            "urlsuffix",
+            "featuredurl",
+            "data",
+            "maplayers",
+            'executions'
+        )
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 class SimpleMapSerializer(BaseDynamicModelSerializer):

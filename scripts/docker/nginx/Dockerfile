@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 FROM nginx:1.25.3-alpine
+=======
+FROM nginx:1.23.2-alpine
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 RUN apk add --no-cache openssl inotify-tools vim
 

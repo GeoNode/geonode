@@ -473,7 +473,11 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
                         | Q(geonode_resource=_resource)
                     )
                 )
+<<<<<<< HEAD
             ).order_by("-created")
+=======
+            ).order_by('-created')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             for execution in executions:
                 data.append(

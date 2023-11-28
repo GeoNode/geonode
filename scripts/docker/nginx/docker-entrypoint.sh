@@ -32,10 +32,16 @@ else
         ln -sf "/geonode-certificates/autoissued" /certificate_symlink
 fi
 
+<<<<<<< HEAD
 if [ -z "${HTTPS_HOST}" ]; then
         HTTP_SCHEME="http"
 else
         HTTP_SCHEME="https"
+=======
+echo "Sanity checks on http/s ports configuration"
+if [ -z "${JENKINS_HTTP_PORT}" ]; then
+        JENKINS_HTTP_PORT=9080
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 fi
 
 export HTTP_SCHEME=${HTTP_SCHEME:-http}
@@ -45,9 +51,15 @@ export GEOSERVER_LB_HOST_IP=${GEOSERVER_LB_HOST_IP:-geoserver}
 export GEOSERVER_LB_PORT=${GEOSERVER_LB_PORT:-8080}
 
 echo "Replacing environement variables"
+<<<<<<< HEAD
 envsubst '\$HTTP_HOST \$HTTPS_HOST \$HTTP_SCHEME \$GEONODE_LB_HOST_IP \$GEONODE_LB_PORT \$GEOSERVER_LB_HOST_IP \$GEOSERVER_LB_PORT \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
 envsubst '\$HTTP_HOST \$HTTPS_HOST \$HTTP_SCHEME \$GEONODE_LB_HOST_IP \$GEONODE_LB_PORT \$GEOSERVER_LB_HOST_IP \$GEOSERVER_LB_PORT \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
 envsubst '\$HTTP_HOST \$HTTPS_HOST \$HTTP_SCHEME \$GEONODE_LB_HOST_IP \$GEONODE_LB_PORT \$GEOSERVER_LB_HOST_IP \$GEOSERVER_LB_PORT' < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
+=======
+envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
+envsubst '\$HTTP_HOST \$HTTPS_HOST \$RESOLVER' < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
+envsubst '\$HTTP_HOST \$HTTPS_HOST \$JENKINS_HTTP_PORT' < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 echo "Enabling or not https configuration"
 if [ -z "${HTTPS_HOST}" ]; then

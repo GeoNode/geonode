@@ -356,14 +356,23 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
                 "https://maps3.geosolutionsgroup.com/geoserver/wms",
                 "https://maps4.geosolutionsgroup.com/geoserver/wms",
                 "https://maps5.geosolutionsgroup.com/geoserver/wms",
+<<<<<<< HEAD
                 "https://maps6.geosolutionsgroup.com/geoserver/wms",
+=======
+                "https://maps6.geosolutionsgroup.com/geoserver/wms"
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             ],
             "group": "background",
             "thumbURL": f"{SITEURL}static/mapstorestyle/img/s2cloudless-s2cloudless.png",
             "visibility": False,
             "credits": {
+<<<<<<< HEAD
                 "title": '<a class="a-light" xmlns:dct="http://purl.org/dc/terms/" href="https://s2maps.eu" property="dct:title">Sentinel-2 cloudless 2016</a> by <a class="a-light" xmlns:cc="http://creativecommons.org/ns#" href="https://eox.at" property="cc:attributionName" rel="cc:attributionURL">EOX IT Services GmbH</a>'
             },
+=======
+            "title": "<a class=\"a-light\" xmlns:dct=\"http://purl.org/dc/terms/\" href=\"https://s2maps.eu\" property=\"dct:title\">Sentinel-2 cloudless 2016</a> by <a class=\"a-light\" xmlns:cc=\"http://creativecommons.org/ns#\" href=\"https://eox.at\" property=\"cc:attributionName\" rel=\"cc:attributionURL\">EOX IT Services GmbH</a>"
+            }
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         },
         {
             "source": "ol",

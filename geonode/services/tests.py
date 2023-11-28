@@ -735,7 +735,11 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
         self.client.logout()
         response = self.client.get(reverse("register_service"))
         self.assertEqual(response.status_code, 302)
+<<<<<<< HEAD
         url = "https://maps.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+=======
+        url = 'https://maps.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         # url = "http://fake"
         service_type = enumerations.WMS
         form_data = {"url": url, "type": service_type}
@@ -777,14 +781,23 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
     @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
+<<<<<<< HEAD
             "url": "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities",
             "type": enumerations.WMS,
+=======
+            'url': 'https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities',
+            'type': enumerations.WMS
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         }
 
         self.client.login(username="serviceowner", password="somepassword")
 
         # Add the first resource
+<<<<<<< HEAD
         url = "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+=======
+        url = 'https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         # url = "http://fake"
         service_type = enumerations.WMS
         form_data = {"url": url, "type": service_type}
@@ -833,7 +846,11 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
             reg_url = reverse("register_service")
             cls.client.get(reg_url)
 
+<<<<<<< HEAD
             url = "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+=======
+            url = 'https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities'
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             service_type = enumerations.WMS
             form_data = {"url": url, "type": service_type}
             forms.CreateServiceForm(form_data)

@@ -566,6 +566,7 @@ span.grippy::after {
                     {% endblock dataset_linked_resources %}
                 </div>
             </div>
+<<<<<<< HEAD
             <!-- Contact Roles -->
             <div class="col-xs-12 col-lg-3" >
               <div class="panel panel-default" class="collapse" style="margin-top: 5px">
@@ -577,6 +578,18 @@ span.grippy::after {
                   </div>
                   {% endblock dataset_poc %}
             </div>
+=======
+            <div class="col-xs-12 col-lg-3">
+              {% block dataset_poc %}
+              <div class="panel panel-default" style="margin-top: 5px">
+                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                    <div class="panel-body check-select">
+                        <span><label for="{{ dataset_form.poc|id }}">{{ dataset_form.poc.label }}</label></span>
+                        {{ dataset_form.poc }}
+                    </div>
+              </div>
+              {% endblock dataset_poc %}              
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">

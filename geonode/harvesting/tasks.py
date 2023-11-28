@@ -81,7 +81,11 @@ def harvesting_scheduler(self):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -125,7 +129,11 @@ def harvesting_dispatcher(self, harvesting_session_id: int):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -182,7 +190,11 @@ def harvest_resources(self, harvestable_resource_ids: typing.List[int], harvesti
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -235,7 +247,11 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -256,7 +272,11 @@ def _finish_harvesting(self, harvesting_session_id: int):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -302,7 +322,11 @@ def _handle_harvesting_error(self, task_id, *args, **kwargs):
 @app.task(
     bind=True,
     # name='geonode.harvesting.tasks.check_harvester_available',
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -315,7 +339,11 @@ def check_harvester_available(self, harvester_id: int):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -374,7 +402,11 @@ def update_harvestable_resources(self, refresh_session_id: int):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -416,7 +448,11 @@ def _update_harvestable_resources_batch(self, refresh_session_id: int, page: int
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -442,7 +478,11 @@ def _finish_harvestable_resources_update(self, refresh_session_id: int):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     queue="geonode",
+=======
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,

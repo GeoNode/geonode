@@ -33,10 +33,19 @@ from .models import Document
 logger = get_task_logger(__name__)
 
 
+<<<<<<< HEAD
 class DocumentRenderer:
     FILETYPES = ["pdf"]
     # See https://pillow.readthedocs.io/en/stable/reference/ImageOps.html#PIL.ImageOps.fit
     CROP_CENTERING = {"pdf": (0.0, 0.0)}
+=======
+class DocumentRenderer():
+    FILETYPES = ['pdf']
+    # See https://pillow.readthedocs.io/en/stable/reference/ImageOps.html#PIL.ImageOps.fit
+    CROP_CENTERING = {
+        'pdf': (0.0, 0.0)
+    }
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     def __init__(self) -> None:
         pass
@@ -48,7 +57,11 @@ class DocumentRenderer:
         content = None
         if self.supports(filename):
             filetype = self._get_filetype(filename)
+<<<<<<< HEAD
             render = getattr(self, f"render_{filetype}")
+=======
+            render = getattr(self, f'render_{filetype}')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             content = render(filename)
         return content
 
@@ -58,7 +71,11 @@ class DocumentRenderer:
             pix = doc[0].get_pixmap(matrix=fitz.Matrix(2.0, 2.0))
             return pix.pil_tobytes(format="PNG")
         except Exception as e:
+<<<<<<< HEAD
             logger.warning(f"Cound not generate thumbnail for {filename}: {e}")
+=======
+            logger.warning(f'Cound not generate thumbnail for {filename}: {e}')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             return None
 
     def preferred_crop_centering(self, filename):
@@ -73,8 +90,13 @@ doc_renderer = DocumentRenderer()
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     name="geonode.documents.tasks.create_document_thumbnail",
     queue="geonode",
+=======
+    name='geonode.documents.tasks.create_document_thumbnail',
+    queue='geonode',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -100,6 +122,7 @@ def create_document_thumbnail(self, object_id):
 
     image_file = None
     thumbnail_content = None
+<<<<<<< HEAD
     remove_tmp_file = False
     centering = (0.5, 0.5)
 
@@ -109,9 +132,18 @@ def create_document_thumbnail(self, object_id):
     elif document.doc_url:
         doc_path = document.doc_url
         remove_tmp_file = True
+=======
+    centering = (0.5, 0.5)
+
+    if document.is_image:
+        dname = storage_manager.path(document.files[0])
+        if storage_manager.exists(dname):
+            image_file = storage_manager.open(dname, 'rb')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     if document.is_image:
         try:
+<<<<<<< HEAD
             image_file = storage_manager.open(doc_path)
         except Exception as e:
             logger.debug(f"Could not generate thumbnail from remote document {document.doc_url}: {e}")
@@ -139,26 +171,55 @@ def create_document_thumbnail(self, object_id):
         try:
             thumbnail_content = doc_renderer.render(doc_path)
             preferred_centering = doc_renderer.preferred_crop_centering(doc_path)
+=======
+            image = Image.open(image_file)
+            with io.BytesIO() as output:
+                image.save(output, format='PNG')
+                thumbnail_content = output.getvalue()
+                output.close()
+        except Exception as e:
+            logger.debug(f"Could not generate thumbnail: {e}")
+        finally:
+            if image_file is not None:
+                image_file.close()
+
+    elif doc_renderer.supports(document.files[0]):
+        try:
+            thumbnail_content = doc_renderer.render(document.files[0])
+            preferred_centering = doc_renderer.preferred_crop_centering(document.files[0])
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             if preferred_centering is not None:
                 centering = preferred_centering
         except Exception as e:
             print(e)
+<<<<<<< HEAD
         finally:
             if remove_tmp_file:
                 storage_manager.delete(doc_path)
+=======
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     if not thumbnail_content:
         logger.warning(f"Thumbnail for document #{object_id} empty.")
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)
     else:
+<<<<<<< HEAD
         filename = f"document-{document.uuid}-thumb.jpg"
+=======
+        filename = f'document-{document.uuid}-thumb.jpg'
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         document.save_thumbnail(filename, thumbnail_content, centering=centering)
         logger.debug(f"Thumbnail for document #{object_id} created.")
 
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     name="geonode.documents.tasks.delete_orphaned_document_files",
     queue="cleanup",
+=======
+    name='geonode.documents.tasks.delete_orphaned_document_files',
+    queue='cleanup',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -176,8 +237,13 @@ def delete_orphaned_document_files(self):
 
 @app.task(
     bind=True,
+<<<<<<< HEAD
     name="geonode.documents.tasks.delete_orphaned_thumbnails",
     queue="cleanup",
+=======
+    name='geonode.documents.tasks.delete_orphaned_thumbnails',
+    queue='cleanup',
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,

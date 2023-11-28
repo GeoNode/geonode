@@ -360,7 +360,11 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         ResourceBasePermissionsFilter,
         FavoriteFilter,
     ]
+<<<<<<< HEAD
     queryset = ResourceBase.objects.all().order_by("-created")
+=======
+    queryset = ResourceBase.objects.all().order_by('-created')
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     serializer_class = ResourceBaseSerializer
     pagination_class = GeoNodeApiPagination
 
@@ -718,9 +722,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_path="(?P<resource_id>\d+)/set_thumbnail_from_bbox",  # noqa
         url_name="set-thumb-from-bbox",
         methods=["post"],
+<<<<<<< HEAD
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
     def set_thumbnail_from_bbox(self, request, resource_id, *args, **kwargs):
+=======
+        permission_classes=[
+            IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
+        ])
+    def set_thumbnail_from_bbox(self, request, resource_id):
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         import traceback
         from django.utils.datastructures import MultiValueDictKeyError
 
@@ -877,9 +888,16 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_path="create/(?P<resource_type>\w+)",  # noqa
         url_name="resource-service-create",
         methods=["post"],
+<<<<<<< HEAD
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
     def resource_service_create(self, request, resource_type: str = None, *args, **kwargs):
+=======
+        permission_classes=[
+            IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
+        ])
+    def resource_service_create(self, request, resource_type: str = None):
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         """Instructs the Async dispatcher to execute a 'CREATE' operation
         **WARNING**: This will create an empty dataset; if you need to upload a resource to GeoNode, consider using the endpoint "ingest" instead
 
@@ -1296,11 +1314,17 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="ratings",
         methods=["post", "get"],
         permission_classes=[
+<<<<<<< HEAD
             IsAuthenticatedOrReadOnly,
             UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
         ],
     )
     def ratings(self, request, pk, *args, **kwargs):
+=======
+            IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
+        ])
+    def ratings(self, request, pk):
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         resource = get_object_or_404(ResourceBase, pk=pk)
         resource = resource.get_real_instance()
         ct = ContentType.objects.get_for_model(resource)
@@ -1393,7 +1417,13 @@ class ResourceBaseViewSet(DynamicModelViewSet):
     @action(
         detail=True,
         methods=["get", "put", "delete", "post"],
+<<<<<<< HEAD
         permission_classes=[IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
+=======
+        permission_classes=[
+            IsOwnerOrAdmin, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})
+        ],
+>>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         url_path=r"extra_metadata",  # noqa
         url_name="extra-metadata",
     )
