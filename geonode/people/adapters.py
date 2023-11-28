@@ -237,7 +237,6 @@ def _site_allows_signup(django_request):
 
 def _respond_inactive_user(user):
     return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
-<<<<<<< HEAD
 
 
 PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
@@ -314,5 +313,3 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
         except (AttributeError, NotImplementedError):
             pass  # extractor doesn't define a method for extracting field
         return user
-=======
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6

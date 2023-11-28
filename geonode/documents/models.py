@@ -89,11 +89,7 @@ class Document(ResourceBase):
         if not self.title:
             return str(self.id)
         else:
-<<<<<<< HEAD
             return f"{self.title} ({self.id})"
-=======
-            return f'{self.title} ({self.id})'
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     @property
     def href(self):

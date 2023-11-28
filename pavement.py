@@ -506,19 +506,12 @@ def start_django(options):
     sh(f"{settings} python -W ignore manage.py runserver {bind} {foreground}")
 
     if ASYNC_SIGNALS:
-<<<<<<< HEAD
         sh(
             f"{settings} celery -A geonode.celery_app:app worker --autoscale=20,10 --without-gossip --without-mingle -Ofair -B -E \
             --statedb=/tmp/worker.state --scheduler={CELERY_BEAT_SCHEDULER} --loglevel=DEBUG \
             --concurrency=10 --max-tasks-per-child=10 -n worker1@%h -f celery.log {foreground}"
         )
         sh(f"{settings} python -W ignore manage.py runmessaging {foreground}")
-=======
-        sh(f"{settings} celery -A geonode.celery_app:app worker --autoscale=20,10 --without-gossip --without-mingle -Ofair -B -E \
-            --statedb=/tmp/worker.state --scheduler={CELERY_BEAT_SCHEDULER} --loglevel=DEBUG \
-            --concurrency=10 --max-tasks-per-child=10 -n worker1@%h -f celery.log {foreground}")
-        sh(f'{settings} python -W ignore manage.py runmessaging {foreground}')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     # wait for Django to start
     started = waitfor(f"http://localhost:{port}")

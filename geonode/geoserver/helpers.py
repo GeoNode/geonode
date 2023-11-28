@@ -245,11 +245,7 @@ def extract_name_from_sld(gs_catalog, sld, sld_file=None):
                 with open(sld, "rb") as sld_file:
                     sld = sld_file.read()
             if isinstance(sld, str):
-<<<<<<< HEAD
                 sld = sld.encode("utf-8")
-=======
-                sld = sld.encode('utf-8')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             dom = etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
         elif sld_file and isfile(sld_file):
             with open(sld_file, "rb") as sld_file:
@@ -380,13 +376,8 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
                     sld = sld_file.read()
 
             elif isinstance(sld, str):
-<<<<<<< HEAD
                 sld = sld.strip("b'\n")
                 sld = re.sub(r"(\\r)|(\\n)", "", sld).encode("UTF-8")
-=======
-                sld = sld.strip('b\'\n')
-                sld = re.sub(r'(\\r)|(\\n)', '', sld).encode("UTF-8")
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
         elif base_file and isfile(base_file):
             with open(base_file, "rb") as sld_file:
@@ -420,7 +411,6 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
         try:
             _sld_format = _extract_style_version_from_sld(sld)
             style = gs_catalog.create_style(
-<<<<<<< HEAD
                 saved_dataset.name,
                 sld,
                 overwrite=True,
@@ -428,11 +418,6 @@ def set_dataset_style(saved_dataset, title, sld, base_file=None):
                 style_format=_sld_format,
                 workspace=saved_dataset.workspace,
             )
-=======
-                saved_dataset.name, sld,
-                overwrite=True, raw=True, style_format=_sld_format,
-                workspace=saved_dataset.workspace)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         except Exception as e:
             logger.exception(e)
 
@@ -1145,7 +1130,6 @@ def clean_styles(layer, gs_catalog: Catalog):
         gs_catalog.reset()
         gs_dataset = get_dataset(layer, gs_catalog)
         logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
-<<<<<<< HEAD
         style = gs_catalog.get_style(name=gs_dataset.default_style.name, workspace=None, recursive=True)
         if style:
             gs_catalog.delete(style, purge=True, recurse=False)
@@ -1155,20 +1139,6 @@ def clean_styles(layer, gs_catalog: Catalog):
     except Exception as e:
         logger.warning(f"Could not clean style for layer {layer.name}", exc_info=e)
         logger.debug(f"Could not clean style for layer {layer.name} - STACK INFO", stack_info=True)
-=======
-        style = gs_catalog.get_style(
-            name=gs_dataset.default_style.name,
-            workspace=None,
-            recursive=True)
-        if style:
-            gs_catalog.delete(style, purge=True, recurse=False)
-            logger.debug(f'clean_styles: Style removed: {gs_dataset.default_style.name}')
-        else:
-            logger.debug(f'clean_styles: Style does not exist: {gs_dataset.default_style.name}')
-    except Exception as e:
-        logger.warning(f'Could not clean style for layer {layer.name}', exc_info=e)
-        logger.debug(f'Could not clean style for layer {layer.name} - STACK INFO', stack_info=True)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 def set_styles(layer, gs_catalog: Catalog):
@@ -1180,20 +1150,15 @@ def set_styles(layer, gs_catalog: Catalog):
             # make sure we are not using a default SLD (which won't be editable)
             layer.default_style, _gs_default_style = save_style(default_style, layer)
             try:
-<<<<<<< HEAD
                 if (
                     default_style.name != _gs_default_style.name
                     or default_style.workspace != _gs_default_style.workspace
                 ):
-=======
-                if default_style.name != _gs_default_style.name or default_style.workspace != _gs_default_style.workspace:
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     logger.debug(f'set_style: Setting default style "{_gs_default_style.name}" for layer "{layer.name}')
 
                     gs_dataset.default_style = _gs_default_style
                     gs_catalog.save(gs_dataset)
                     if default_style.name not in DEFAULT_STYLE_NAME:
-<<<<<<< HEAD
                         logger.debug(
                             f'set_style: Retrieving no-workspace default style "{default_style.name}" for deletion'
                         )
@@ -1207,17 +1172,6 @@ def set_styles(layer, gs_catalog: Catalog):
                 logger.error(
                     f'Error setting default style "{_gs_default_style.name}" for layer "{layer.name}', exc_info=e
                 )
-=======
-                        logger.debug(f'set_style: Retrieving no-workspace default style "{default_style.name}" for deletion')
-                        style_to_delete = gs_catalog.get_style(name=default_style.name, workspace=None, recursive=True)
-                        if style_to_delete:
-                            gs_catalog.delete(style_to_delete, purge=True, recurse=False)
-                            logger.debug(f'set_style: No-ws default style deleted: {default_style.name}')
-                        else:
-                            logger.debug(f'set_style: No-ws default style does not exist: {default_style.name}')
-            except Exception as e:
-                logger.error(f'Error setting default style "{_gs_default_style.name}" for layer "{layer.name}', exc_info=e)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             style_set.append(layer.default_style)
 
@@ -1296,22 +1250,10 @@ def save_style(gs_style, layer):
     _gs_style = None
     if not gs_style.workspace:
         logger.debug(f'save_style: Copying style "{sld_name}" to "{layer.workspace}:{layer.name}')
-<<<<<<< HEAD
         _gs_style = gs_catalog.create_style(layer.name, sld_body, raw=True, overwrite=True, workspace=layer.workspace)
     else:
         logger.debug(
             f'save_style: Retrieving style "{layer.workspace}:{sld_name}" for layer "{layer.workspace}:{layer.name}'
-=======
-        _gs_style = gs_catalog.create_style(
-            layer.name, sld_body,
-            raw=True, overwrite=True,
-            workspace=layer.workspace)
-    else:
-        logger.debug(f'save_style: Retrieving style "{layer.workspace}:{sld_name}" for layer "{layer.workspace}:{layer.name}')
-        _gs_style = gs_catalog.get_style(
-            name=sld_name,
-            workspace=layer.workspace
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         )
         _gs_style = gs_catalog.get_style(name=sld_name, workspace=layer.workspace)
 

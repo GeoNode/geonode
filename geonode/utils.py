@@ -1999,28 +1999,17 @@ def get_supported_datasets_file_types():
 
 
 def get_allowed_extensions():
-<<<<<<< HEAD
     return list(itertools.chain.from_iterable([_type["ext"] for _type in get_supported_datasets_file_types()]))
-=======
-    return list(itertools.chain.from_iterable([_type['ext'] for _type in get_supported_datasets_file_types()]))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 def safe_path_leaf(path):
     """A view that is not vulnerable to malicious file access."""
     base_path = settings.MEDIA_ROOT
     try:
-<<<<<<< HEAD
         validate_filepath(path, platform="auto")
         head, tail = ntpath.split(path)
         filename = tail or ntpath.basename(head)
         validate_filename(filename, platform="auto")
-=======
-        validate_filepath(path, platform='auto')
-        head, tail = ntpath.split(path)
-        filename = tail or ntpath.basename(head)
-        validate_filename(filename, platform='auto')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     except ValidationError as e:
         logger.error(f"{e}")
         raise e
@@ -2028,10 +2017,6 @@ def safe_path_leaf(path):
     fullpath = os.path.normpath(os.path.join(head, filename))
     if not fullpath.startswith(base_path) or path != fullpath:
         raise GeoNodeException(
-<<<<<<< HEAD
             f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"
         )
-=======
-            f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!")
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     return fullpath

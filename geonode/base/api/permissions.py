@@ -23,7 +23,6 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
-<<<<<<< HEAD
 from geonode.security.permissions import (
     BASIC_MANAGE_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
@@ -32,13 +31,6 @@ from geonode.security.permissions import (
 )
 from distutils.util import strtobool
 from geonode.security.utils import get_users_with_perms, get_visible_resources
-=======
-from geonode.security.permissions import BASIC_MANAGE_PERMISSIONS, DOWNLOAD_PERMISSIONS, EDIT_PERMISSIONS, VIEW_PERMISSIONS
-from distutils.util import strtobool
-from geonode.security.utils import (
-    get_users_with_perms,
-    get_visible_resources)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
@@ -208,31 +200,18 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-<<<<<<< HEAD
         try:
             metadata_only = strtobool(request.query_params.get("filter{metadata_only}", "None"))
         except Exception:
             metadata_only = None
 
-=======
-
-        try:
-            metadata_only = strtobool(request.query_params.get("filter{metadata_only}", "None"))
-        except Exception:
-            metadata_only = None
-
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         return get_visible_resources(
             queryset,
             request.user,
             metadata_only=metadata_only,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-<<<<<<< HEAD
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-=======
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         )
 
 

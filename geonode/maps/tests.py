@@ -688,7 +688,6 @@ class TestMapForm(GeoNodeBaseTestSupport):
         self.assertIn(expected, response.json()["errors"][0])
 
     def test_resource_form_is_valid_extra_metadata(self):
-<<<<<<< HEAD
         form = self.sut(
             user=self.user,
             data={
@@ -700,14 +699,4 @@ class TestMapForm(GeoNodeBaseTestSupport):
                 "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
             },
         )
-=======
-        form = self.sut(user=self.user, data={
-            "owner": self.map.owner.id,
-            "title": "map_title",
-            "date": "2022-01-24 16:38 pm",
-            "date_type": "creation",
-            "language": "eng",
-            "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]'
-        })
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         self.assertTrue(form.is_valid())

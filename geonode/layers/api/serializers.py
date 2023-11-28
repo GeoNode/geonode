@@ -159,7 +159,6 @@ class DatasetSerializer(ResourceBaseSerializer):
         name = "dataset"
         view_name = "datasets-list"
         fields = (
-<<<<<<< HEAD
             "pk",
             "uuid",
             "name",
@@ -182,12 +181,6 @@ class DatasetSerializer(ResourceBaseSerializer):
             "subtype",
             "ptype",
             "executions",
-=======
-            'pk', 'uuid', 'name', 'workspace', 'store', 'subtype', 'charset',
-            'is_mosaic', 'has_time', 'has_elevation', 'time_regex', 'elevation_regex',
-            'featureinfo_custom_template', 'ows_url', 'ptype', 'default_style', 'styles', 'attribute_set',
-            'executions'
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         )
 
     name = serializers.CharField(read_only=True)

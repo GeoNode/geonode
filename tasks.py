@@ -44,17 +44,6 @@ def waitfordbs(ctx):
 
 
 @task
-<<<<<<< HEAD
-=======
-def waitforgeoserver(ctx):
-    print("****************************geoserver********************************")
-    while not _gs_service_availability(f"{os.environ['GEOSERVER_LOCATION']}ows"):
-        print("Wait for GeoServer API availability...")
-    print("GeoServer is available for HTTP calls!")
-
-
-@task
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 def update(ctx):
     print("***************************setting env*********************************")
     ctx.run("env", pty=True)
@@ -543,28 +532,11 @@ def _localsettings():
     return settings
 
 
-<<<<<<< HEAD
 def _geonode_public_host():
     gn_pub_hostip = os.getenv("GEONODE_LB_HOST_IP", None)
     if not gn_pub_hostip:
         gn_pub_hostip = _docker_host_ip()
     return gn_pub_hostip
-=======
-def _gs_service_availability(url):
-    import requests
-    try:
-        r = requests.request('get', url, verify=False)
-        r.raise_for_status()  # Raises a HTTPError if the status is 4xx, 5xxx
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-        logger.error(f"GeoServer connection error is {e}")
-        return False
-    except requests.exceptions.HTTPError as er:
-        logger.error(f"GeoServer HTTP error is {er}")
-        return False
-    else:
-        logger.info("GeoServer API are available!")
-        return True
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 def _geonode_public_host_ip():

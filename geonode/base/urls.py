@@ -68,16 +68,7 @@ urlpatterns = [
         name="datasets_autocomplete",
     ),
     url(
-<<<<<<< HEAD
         r"^resource_rights/(?P<pk>\d+)$",
-=======
-        r'^datasets_autocomplete/$',
-        DatasetsAutocomplete.as_view(),
-        name='datasets_autocomplete',
-    ),
-    url(
-        r'^resource_rights/(?P<pk>\d+)$',
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         OwnerRightsRequestView.as_view(),
         name="owner_rights_request",
     ),

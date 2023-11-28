@@ -229,10 +229,6 @@ class GeoNodeThumbnailTileBackground(GeoNodeBaseTestSupport):
         }
     )
     def test_tile_background_generic_fetch_zoom(self):
-<<<<<<< HEAD
-=======
-
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         width = 500
         height = 200
 

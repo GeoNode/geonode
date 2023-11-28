@@ -36,21 +36,12 @@ from django.conf import settings
 from django.core.management.base import CommandError
 
 
-<<<<<<< HEAD
 MEDIA_ROOT = "uploaded"
 STATIC_ROOT = "static_root"
 STATICFILES_DIRS = "static_dirs"
 TEMPLATE_DIRS = "template_dirs"
 LOCALE_PATHS = "locale_dirs"
 EXTERNAL_ROOT = "external"
-=======
-MEDIA_ROOT = 'uploaded'
-STATIC_ROOT = 'static_root'
-STATICFILES_DIRS = 'static_dirs'
-TEMPLATE_DIRS = 'template_dirs'
-LOCALE_PATHS = 'locale_dirs'
-EXTERNAL_ROOT = 'external'
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 logger = logging.getLogger(__name__)
@@ -99,10 +90,6 @@ def geoserver_option_list(parser):
 
 
 class Config:
-<<<<<<< HEAD
-=======
-
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     def __init__(self, options: dict):
         def apply_options_override(options):
             def get_option(key, fallback):
@@ -114,7 +101,6 @@ class Config:
             self.gs_dump_raster_data = get_option("dump_gs_raster_data", self.gs_dump_raster_data)
 
             # store back overrides as current config (needed for saving it into the backup zip)
-<<<<<<< HEAD
             self.config_parser["geoserver"]["datadir"] = self.gs_data_dir
             self.config_parser["geoserver"]["dumpvectordata"] = str(self.gs_dump_vector_data)
             self.config_parser["geoserver"]["dumprasterdata"] = str(self.gs_dump_raster_data)
@@ -158,44 +144,6 @@ class Config:
 
         # Start init code
         settings_path = options.get("config")
-=======
-            self.config_parser['geoserver']['datadir'] = self.gs_data_dir
-            self.config_parser['geoserver']['dumpvectordata'] = str(self.gs_dump_vector_data)
-            self.config_parser['geoserver']['dumprasterdata'] = str(self.gs_dump_raster_data)
-
-        def load_settings(config):
-            self.pg_dump_cmd = config.get('database', 'pgdump')
-            self.pg_restore_cmd = config.get('database', 'pgrestore')
-            self.psql_cmd = config.get('database', 'psql', fallback='psql')
-
-            self.gs_data_dir = config.get('geoserver', 'datadir')
-
-            self.gs_exclude_file_path = ';'.join(config.get('geoserver', 'datadir_exclude_file_path').split(',')) \
-                if config.has_option('geoserver', 'datadir_exclude_file_path') \
-                else ''
-
-            self.gs_dump_vector_data = config.getboolean('geoserver', 'dumpvectordata')
-            self.gs_dump_raster_data = config.getboolean('geoserver', 'dumprasterdata')
-
-            self.gs_data_dt_filter = config.get('geoserver', 'data_dt_filter').split(' ') \
-                if config.has_option('geoserver', 'data_dt_filter') \
-                else (None, None)
-
-            self.gs_data_datasetname_filter = config.get('geoserver', 'data_datasetname_filter').split(',') \
-                if config.has_option('geoserver', 'data_datasetname_filter') \
-                else ''
-
-            self.gs_data_datasetname_exclude_filter = config.get('geoserver', 'data_datasetname_exclude_filter').split(
-                ',') \
-                if config.has_option('geoserver', 'data_datasetname_exclude_filter') \
-                else ''
-
-            self.app_names = config.get('fixtures', 'apps').split(',')
-            self.dump_names = config.get('fixtures', 'dumps').split(',')
-
-        # Start init code
-        settings_path = options.get('config')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         if not settings_path:
             raise CommandError("Missing mandatory option (-c / --config)")
         if not os.path.isabs(settings_path):
@@ -225,11 +173,7 @@ def get_db_conn(db_name, db_user, db_port, db_host, db_passwd):
     return conn
 
 
-<<<<<<< HEAD
 def get_tables(db_user, db_passwd, db_name, db_host="localhost", db_port=5432):
-=======
-def get_tables(db_user, db_passwd, db_name, db_host='localhost', db_port=5432):
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     select = f"SELECT tablename FROM pg_tables WHERE tableowner = '{db_user}' and schemaname = 'public'"
     logger.info(f"Retrieving table list from DB {db_name}@{db_host}: {select}")
 
@@ -263,11 +207,7 @@ def truncate_tables(db_name, db_user, db_port, db_host, db_passwd):
 
     try:
         for table in sorted(pg_tables):
-<<<<<<< HEAD
             if table == "br_restoredbackup":
-=======
-            if table == 'br_restoredbackup':
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 continue
             logger.info(f"Truncating table : {table}")
             try:
@@ -316,7 +256,6 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
     empty_folder(target_folder)
     for table in sorted(pg_tables):
         logger.info(f" - Dumping data table: {db_name}:{table}")
-<<<<<<< HEAD
         command = (
             f"{config.pg_dump_cmd} "
             f" -h {db_host} -p {str(db_port)} -U {db_user} -d {db_name} "
@@ -327,16 +266,6 @@ def dump_db(config, db_name, db_user, db_port, db_host, db_passwd, target_folder
         ret = subprocess.call(command, shell=True, env={"PGPASSWORD": db_passwd})
         if ret != 0:
             logger.error(f"DUMP FAILED FOR TABLE {table}")
-=======
-        command = f'{config.pg_dump_cmd} ' \
-                  f' -h {db_host} -p {str(db_port)} -U {db_user} -d {db_name} ' \
-                  f' -b '  \
-                  f" -t '\"{str(table)}\"' " \
-                  f" -f {os.path.join(target_folder, f'{table}.sql ')}"
-        ret = subprocess.call(command, shell=True, env={'PGPASSWORD': db_passwd})
-        if ret != 0:
-            logger.error(f'DUMP FAILED FOR TABLE {table}')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_folder, preserve_tables):
@@ -346,7 +275,6 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
 
     logger.info("Restoring data tables")
 
-<<<<<<< HEAD
     dump_extensions = ["dump", "sql"]
     file_names = [fn for fn in os.listdir(source_folder) if any(fn.endswith(ext) for ext in dump_extensions)]
     for filename in sorted(file_names):
@@ -382,42 +310,6 @@ def restore_db(config, db_name, db_user, db_port, db_host, db_passwd, source_fol
                 logger.error(f'CMD:: {" ".join(args)}')
                 # logger.error(f'OUT:: {cproc.stdout}')
                 logger.error(f"ERR:: {cproc.stderr}")
-=======
-    dump_extensions = ['dump', 'sql']
-    file_names = [fn for fn in os.listdir(source_folder)
-                  if any(fn.endswith(ext) for ext in dump_extensions)]
-    for filename in sorted(file_names):
-        table_name = os.path.splitext(filename)[0]
-        logger.info(f" - restoring data table: {db_name}:{table_name} ")
-        if filename.endswith('dump'):
-            command = f'{config.pg_restore_cmd} ' \
-                      f' -h {db_host} -p {str(db_port)} -d {db_name}' \
-                      f' -U {db_user} --role={db_user} ' \
-                      f' -t "{table_name}" ' \
-                      f' {"-c" if not preserve_tables else "" } ' \
-                      f' {os.path.join(source_folder, filename)} '
-            ret = subprocess.call(command, env={'PGPASSWORD': db_passwd},
-                                  shell=True)
-            if ret:
-                logger.error(f'RESTORE FAILED FOR FILE {filename}')
-
-        elif filename.endswith('sql'):
-            args = f'{config.psql_cmd} ' \
-                   f' -h {db_host} ' \
-                   f' -p {str(db_port)} ' \
-                   f' -d {db_name} ' \
-                   f' -U {db_user} ' \
-                   f' -f {os.path.join(source_folder, filename)} '\
-                   ' -q -b '
-            cproc = subprocess.run(args, env={'PGPASSWORD': db_passwd},
-                                   shell=True, capture_output=True, text=True)
-            ret = cproc.returncode
-            if ret:
-                logger.error(f'RESTORE FAILED FOR FILE {filename}')
-                logger.error(f'CMD:: {" ".join(args)}')
-                # logger.error(f'OUT:: {cproc.stdout}')
-                logger.error(f'ERR:: {cproc.stderr}')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 def remove_existing_tables(db_name, db_user, db_port, db_host, db_passwd):
@@ -571,7 +463,6 @@ def empty_folder(folder):
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except Exception as e:
-<<<<<<< HEAD
             print(f"Failed to delete {file_path}. Reason: {e}")
 
 
@@ -585,24 +476,6 @@ def setup_logger():
 
         handler = StreamHandler()
         handler.setFormatter(Formatter(fmt="%(levelname)-7s %(asctime)s %(message)s"))
-=======
-            print(f'Failed to delete {file_path}. Reason: {e}')
-
-
-def setup_logger():
-    if 'geonode.br' not in settings.LOGGING['loggers']:
-        settings.LOGGING['formatters']['br'] = {'format': '%(levelname)-7s %(asctime)s %(message)s'}
-        settings.LOGGING['handlers']['br'] = {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'br'}
-        settings.LOGGING['loggers']['geonode.br'] = {'handlers': ['br'], "level": "INFO", 'propagate': False}
-
-        logger = logging.getLogger('geonode.br')
-
-        handler = StreamHandler()
-        handler.setFormatter(Formatter(fmt='%(levelname)-7s %(asctime)s %(message)s'))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
         logger.propagate = False

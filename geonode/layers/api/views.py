@@ -63,14 +63,10 @@ class DatasetViewSet(DynamicModelViewSet):
 
     http_method_names = ["get", "patch", "put"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-<<<<<<< HEAD
     permission_classes = [
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
     ]
-=======
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -78,11 +74,7 @@ class DatasetViewSet(DynamicModelViewSet):
         ExtentFilter,
         DatasetPermissionsFilter,
     ]
-<<<<<<< HEAD
     queryset = Dataset.objects.all().order_by("-created")
-=======
-    queryset = Dataset.objects.all().order_by('-created')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     serializer_class = DatasetSerializer
     pagination_class = GeoNodeApiPagination
 

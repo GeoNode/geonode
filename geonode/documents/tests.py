@@ -85,11 +85,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
     def setUp(self):
         super().setUp()
-<<<<<<< HEAD
         create_models("map")
-=======
-        create_models('map')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         self.project_root = os.path.abspath(os.path.dirname(__file__))
         self.imgfile = io.BytesIO(
             b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00"
@@ -266,7 +262,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         d.delete()
 
     def test_non_image_documents_thumbnail(self):
-<<<<<<< HEAD
         self.client.login(username="admin", password="admin")
         try:
             with open(os.path.join(f"{self.project_root}", "tests/data/text.txt"), "rb") as f:
@@ -279,29 +274,10 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
     def test_documents_thumbnail(self):
         self.client.login(username="admin", password="admin")
-=======
-        self.client.login(username='admin', password='admin')
-        try:
-            with open(os.path.join(f"{self.project_root}", "tests/data/text.txt"), "rb") as f:
-                data = {
-                    'title': "Non img File Doc",
-                    'doc_file': f,
-                    'extension': 'txt'
-                }
-                self.client.post(reverse('document_upload'), data=data)
-            d = Document.objects.get(title='Non img File Doc')
-            self.assertIsNone(d.thumbnail_url)
-        finally:
-            Document.objects.filter(title='Non img File Doc').delete()
-
-    def test_image_documents_thumbnail(self):
-        self.client.login(username='admin', password='admin')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         try:
             # test image doc
             with open(os.path.join(f"{self.project_root}", "tests/data/img.gif"), "rb") as f:
                 data = {
-<<<<<<< HEAD
                     "title": "img File Doc",
                     "doc_file": f,
                     "extension": "gif",
@@ -309,15 +285,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 with self.settings(THUMBNAIL_SIZE={"width": 400, "height": 200}):
                     self.client.post(reverse("document_upload"), data=data)
                     d = Document.objects.get(title="img File Doc")
-=======
-                    'title': "img File Doc",
-                    'doc_file': f,
-                    'extension': 'gif',
-                }
-                with self.settings(THUMBNAIL_SIZE={'width': 400, 'height': 200}):
-                    self.client.post(reverse('document_upload'), data=data)
-                    d = Document.objects.get(title='img File Doc')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     self.assertIsNotNone(d.thumbnail_url)
                     thumb_file = os.path.join(
                         settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
@@ -325,7 +292,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     file = Image.open(thumb_file)
                     self.assertEqual(file.size, (400, 200))
                     # check thumbnail qualty and extention
-<<<<<<< HEAD
                     self.assertEqual(file.format, "JPEG")
             data = {
                 "title": "Remote img File Doc",
@@ -352,35 +318,16 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                 }
                 self.client.post(reverse("document_upload"), data=data)
                 d = Document.objects.get(title="Pdf File Doc")
-=======
-                    self.assertEqual(file.format, 'JPEG')
-            # test pdf doc
-            with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
-                data = {
-                    'title': "Pdf File Doc",
-                    'doc_file': f,
-                    'extension': 'pdf',
-                }
-                self.client.post(reverse('document_upload'), data=data)
-                d = Document.objects.get(title='Pdf File Doc')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 self.assertIsNotNone(d.thumbnail_url)
                 thumb_file = os.path.join(
                     settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
                 )
                 file = Image.open(thumb_file)
                 # check thumbnail qualty and extention
-<<<<<<< HEAD
                 self.assertEqual(file.format, "JPEG")
         finally:
             Document.objects.filter(title="img File Doc").delete()
             Document.objects.filter(title="Pdf File Doc").delete()
-=======
-                self.assertEqual(file.format, 'JPEG')
-        finally:
-            Document.objects.filter(title='img File Doc').delete()
-            Document.objects.filter(title='Pdf File Doc').delete()
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     def test_upload_document_form_size_limit(self):
         form_data = {
@@ -880,14 +827,9 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
                 doc_url="http://geonode.org/map.pdf",
                 owner=self.not_admin,
                 title="GeoNode Map Doc",
-<<<<<<< HEAD
             ),
         )
         self.assertEqual(doc.href, "http://geonode.org/map.pdf")
-=======
-            ))
-        self.assertEqual(doc.href, 'http://geonode.org/map.pdf')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
         # create original link to external
         doc.link_set.create(resource=doc.resourcebase_ptr, link_type="original", url="http://google.com/test")

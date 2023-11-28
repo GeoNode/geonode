@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
-from django.contrib.auth import get_user_model
 import logging
 
 from django.contrib.auth import get_user_model
@@ -28,11 +26,7 @@ from rest_framework.test import APITransactionTestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
-<<<<<<< HEAD
 
-=======
-from geonode.documents.models import Document
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 from geonode.base.populate_test_data import create_models
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
@@ -44,19 +38,11 @@ class DocumentsApiTests(APITransactionTestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
-<<<<<<< HEAD
         create_models(b"document")
         create_models(b"map")
         create_models(b"dataset")
         self.admin = get_user_model().objects.get(username="admin")
         self.url = reverse("documents-list")
-=======
-        create_models(b'document')
-        create_models(b'map')
-        create_models(b'dataset')
-        self.admin = get_user_model().objects.get(username="admin")
-        self.url = reverse('documents-list')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         self.invalid_file_path = f"{settings.PROJECT_ROOT}/tests/data/thesaurus.rdf"
         self.valid_file_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
 
@@ -90,7 +76,6 @@ class DocumentsApiTests(APITransactionTestCase):
         # import json
         # logger.error(f"{json.dumps(layers_data)}")
 
-<<<<<<< HEAD
     def test_extra_metadata_included_with_param(self):
         resource = Document.objects.first()
         url = urljoin(f"{reverse('documents-list')}/", f"{resource.pk}")
@@ -113,26 +98,11 @@ class DocumentsApiTests(APITransactionTestCase):
             "errors": ["A file, file path or URL must be speficied"],
             "code": "document_exception",
         }
-=======
-    def test_creation_return_error_if_file_is_not_passed(self):
-        '''
-        If file_path is not available, should raise error
-        '''
-        self.client.force_login(self.admin)
-        payload = {
-            "document": {
-                "title": "New document",
-                "metadata_only": True
-            }
-        }
-        expected = {'success': False, 'errors': ['A file path or a file must be speficied'], 'code': 'document_exception'}
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
 
     def test_creation_return_error_if_file_is_none(self):
-<<<<<<< HEAD
         """
         If file_path is not available, should raise error
         """
@@ -143,50 +113,23 @@ class DocumentsApiTests(APITransactionTestCase):
             "errors": ["A file, file path or URL must be speficied"],
             "code": "document_exception",
         }
-=======
-        '''
-        If file_path is not available, should raise error
-        '''
-        self.client.force_login(self.admin)
-        payload = {
-            "document": {
-                "title": "New document",
-                "metadata_only": True,
-                "file_path": None,
-                "doc_file": None
-            }
-        }
-        expected = {'success': False, 'errors': ['A file path or a file must be speficied'], 'code': 'document_exception'}
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
 
     def test_creation_should_rase_exec_for_unsupported_files(self):
         self.client.force_login(self.admin)
-<<<<<<< HEAD
         payload = {"document": {"title": "New document", "metadata_only": True, "file_path": self.invalid_file_path}}
         expected = {
             "success": False,
             "errors": ["The file provided is not in the supported extensions list"],
             "code": "document_exception",
         }
-=======
-        payload = {
-            "document": {
-                "title": "New document",
-                "metadata_only": True,
-                "file_path": self.invalid_file_path
-            }
-        }
-        expected = {'success': False, 'errors': ['The file provided is not in the supported extension file list'], 'code': 'document_exception'}
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
 
     def test_creation_should_create_the_doc(self):
-<<<<<<< HEAD
         """
         If file_path is not available, should raise error
         """
@@ -506,17 +449,11 @@ class DocumentsApiTests(APITransactionTestCase):
         """
         If file_path is not available, should raise error
         """
-=======
-        '''
-        If file_path is not available, should raise error
-        '''
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         self.client.force_login(self.admin)
         payload = {
             "document": {
                 "title": "New document for testing",
                 "metadata_only": True,
-<<<<<<< HEAD
                 "file_path": self.valid_file_path,
                 "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
             },
@@ -559,14 +496,10 @@ class DocumentsApiTests(APITransactionTestCase):
                 "metadata_only": False,
                 "doc_url": doc_url,
                 "extension": "jpeg",
-=======
-                "file_path": self.valid_file_path
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             }
         }
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(201, actual.status_code)
-<<<<<<< HEAD
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
         self.assertEqual(created_doc_url, doc_url)
 
@@ -610,13 +543,3 @@ class DocumentsApiTests(APITransactionTestCase):
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
-=======
-        cloned_path = actual.json().get("document", {}).get("file_path", "")[0]
-        extension = actual.json().get("document", {}).get("extension", "")
-        self.assertTrue(os.path.exists(cloned_path))
-        self.assertEqual('xml', extension)
-        self.assertTrue(Document.objects.filter(title="New document for testing").exists())
-
-        if cloned_path:
-            os.remove(cloned_path)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6

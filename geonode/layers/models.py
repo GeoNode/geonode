@@ -333,13 +333,7 @@ class Dataset(ResourceBase):
         if self.subtype not in ["vector", "raster", "vector_time"]:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
-<<<<<<< HEAD
         return build_absolute_uri(reverse("dataset_download", args=(self.alternate,)))
-=======
-        if self.link_set.filter(resource=self.get_self_resource(), link_type="original").exists():
-            return self.link_set.filter(resource=self.get_self_resource(), link_type="original").first().url
-        return build_absolute_uri(reverse('dataset_download', args=(self.alternate,)))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     @property
     def maplayers(self):

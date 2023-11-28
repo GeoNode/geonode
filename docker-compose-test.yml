@@ -94,17 +94,10 @@ services:
 
   # Geoserver backend
   geoserver:
-<<<<<<< HEAD
     image: geonode/geoserver:2.23.0
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
-=======
-    image: geonode/geoserver:2.20.7
-    container_name: geoserver4${COMPOSE_PROJECT_NAME}
-    healthcheck:
-      test: "curl --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://127.0.0.1:8080/geoserver/ows"
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
       start_period: 60s
       interval: 60s
       timeout: 10s
@@ -127,11 +120,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-<<<<<<< HEAD
     image: geonode/geoserver_data:2.23.0
-=======
-    image: geonode/geoserver_data:2.20.7
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:

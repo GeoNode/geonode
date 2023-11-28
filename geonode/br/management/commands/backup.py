@@ -93,13 +93,6 @@ class Command(BaseCommand):
             help='Skips setup of the "geonode.br" logger, "br" handler and "br" format if not present in settings',
         )
 
-        parser.add_argument(
-            '--skip-logger-setup',
-            action='store_false',
-            dest='setup_logger',
-            help='Skips setup of the "geonode.br" logger, "br" handler and "br" format if not present in settings'
-        )
-
     def handle(self, **options):
         skip_read_only = options.get("skip_read_only")
         config = Configuration.load()
@@ -110,11 +103,7 @@ class Command(BaseCommand):
             config.read_only = True
             config.save()
 
-<<<<<<< HEAD
         if options.get("setup_logger"):
-=======
-        if options.get('setup_logger'):
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             utils.setup_logger()
 
         try:
@@ -142,11 +131,6 @@ class Command(BaseCommand):
             print("Before proceeding with the Backup, please ensure that:")
             print(" 1. The backend (DB or whatever) is accessible and you have rights")
             print(" 2. The GeoServer is up and running and reachable from this machine")
-<<<<<<< HEAD
-=======
-
-        message = 'You want to proceed?'
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
         message = "You want to proceed?"
 
@@ -190,16 +174,11 @@ class Command(BaseCommand):
                 if not os.path.exists(media_folder):
                     os.makedirs(media_folder, exist_ok=True)
 
-<<<<<<< HEAD
                 copy_tree(
                     media_root,
                     media_folder,
                     ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
                 )
-=======
-                copy_tree(media_root, media_folder,
-                          ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 logger.info(f"Saved media files from '{media_root}'")
 
                 # Store Static Root
@@ -210,16 +189,11 @@ class Command(BaseCommand):
                 if not os.path.exists(static_folder):
                     os.makedirs(static_folder, exist_ok=True)
 
-<<<<<<< HEAD
                 copy_tree(
                     static_root,
                     static_folder,
                     ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
                 )
-=======
-                copy_tree(static_root, static_folder,
-                          ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 logger.info(f"Saved static root from '{static_root}'.")
 
                 # Store Static Folders
@@ -231,7 +205,6 @@ class Command(BaseCommand):
                     os.makedirs(static_files_folders, exist_ok=True)
 
                 for static_files_folder in static_folders:
-<<<<<<< HEAD
                     # skip dumping of static files of apps not located under PROJECT_ROOT path
                     # (check to prevent saving files from site-packages in project-template based GeoNode projects)
                     if getattr(settings, "PROJECT_ROOT", None) and not static_files_folder.startswith(
@@ -241,15 +214,6 @@ class Command(BaseCommand):
                             f"Skipping static directory: {static_files_folder}. "
                             f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
                         )
-=======
-
-                    # skip dumping of static files of apps not located under PROJECT_ROOT path
-                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, 'PROJECT_ROOT', None) and \
-                            not static_files_folder.startswith(settings.PROJECT_ROOT):
-                        logger.info(f"Skipping static directory: {static_files_folder}. "
-                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}.")
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                         continue
 
                     static_folder = os.path.join(
@@ -258,16 +222,11 @@ class Command(BaseCommand):
                     if not os.path.exists(static_folder):
                         os.makedirs(static_folder, exist_ok=True)
 
-<<<<<<< HEAD
                     copy_tree(
                         static_files_folder,
                         static_folder,
                         ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
                     )
-=======
-                    copy_tree(static_files_folder, static_folder,
-                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     logger.info(f"Saved static files from '{static_files_folder}'.")
 
                 # Store Template Folders
@@ -286,7 +245,6 @@ class Command(BaseCommand):
                     os.makedirs(template_files_folders, exist_ok=True)
 
                 for template_files_folder in template_folders:
-<<<<<<< HEAD
                     # skip dumping of template files of apps not located under PROJECT_ROOT path
                     # (check to prevent saving files from site-packages in project-template based GeoNode projects)
                     if getattr(settings, "PROJECT_ROOT", None) and not template_files_folder.startswith(
@@ -296,15 +254,6 @@ class Command(BaseCommand):
                             f"Skipping template directory: {template_files_folder}. "
                             f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
                         )
-=======
-
-                    # skip dumping of template files of apps not located under PROJECT_ROOT path
-                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, 'PROJECT_ROOT', None) and \
-                            not template_files_folder.startswith(settings.PROJECT_ROOT):
-                        logger.info(f"Skipping template directory: {template_files_folder}. "
-                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}.")
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                         continue
 
                     template_folder = os.path.join(
@@ -313,16 +262,11 @@ class Command(BaseCommand):
                     if not os.path.exists(template_folder):
                         os.makedirs(template_folder, exist_ok=True)
 
-<<<<<<< HEAD
                     copy_tree(
                         template_files_folder,
                         template_folder,
                         ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
                     )
-=======
-                    copy_tree(template_files_folder, template_folder,
-                              ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     logger.info(f"Saved template files from '{template_files_folder}'.")
 
                 # Store Locale Folders
@@ -333,7 +277,6 @@ class Command(BaseCommand):
                     os.makedirs(locale_files_folders, exist_ok=True)
 
                 for locale_files_folder in locale_folders:
-<<<<<<< HEAD
                     # skip dumping of locale files of apps not located under PROJECT_ROOT path
                     # (check to prevent saving files from site-packages in project-template based GeoNode projects)
                     if getattr(settings, "PROJECT_ROOT", None) and not locale_files_folder.startswith(
@@ -343,15 +286,6 @@ class Command(BaseCommand):
                             f"Skipping locale directory: {locale_files_folder}. "
                             f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
                         )
-=======
-
-                    # skip dumping of locale files of apps not located under PROJECT_ROOT path
-                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, 'PROJECT_ROOT', None) and \
-                            not locale_files_folder.startswith(settings.PROJECT_ROOT):
-                        logger.info(f"Skipping locale directory: {locale_files_folder}. "
-                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}.")
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                         continue
 
                     locale_folder = os.path.join(
@@ -370,11 +304,7 @@ class Command(BaseCommand):
                 # Create Final ZIP Archive
                 logger.info("*** Creating final ZIP archive...")
 
-<<<<<<< HEAD
                 backup_archive = os.path.join(backup_dir, f"{dir_time_suffix}.zip")
-=======
-                backup_archive = os.path.join(backup_dir, f'{dir_time_suffix}.zip')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 logger.info(f"Creating zip {backup_archive}...")
 
                 zip_dir(target_folder, backup_archive)
@@ -403,7 +333,6 @@ class Command(BaseCommand):
 
     def create_geoserver_backup(self, config, settings, target_folder, ignore_errors):
         # Create GeoServer Backup
-<<<<<<< HEAD
         url = settings.OGC_SERVER["default"]["LOCATION"]
         user = settings.OGC_SERVER["default"]["USER"]
         passwd = settings.OGC_SERVER["default"]["PASSWORD"]
@@ -411,16 +340,6 @@ class Command(BaseCommand):
 
         logger.info(f"*** Dumping GeoServer catalog [{url}] into '{geoserver_bk_file}'")
         r = requests.put(f"{url}rest/reset/", auth=HTTPBasicAuth(user, passwd))
-=======
-        url = settings.OGC_SERVER['default']['LOCATION']
-        user = settings.OGC_SERVER['default']['USER']
-        passwd = settings.OGC_SERVER['default']['PASSWORD']
-        geoserver_bk_file = os.path.join(target_folder, 'geoserver_catalog.zip')
-
-        logger.info(f"*** Dumping GeoServer catalog [{url}] into '{geoserver_bk_file}'")
-        r = requests.put(f'{url}rest/reset/',
-                         auth=HTTPBasicAuth(user, passwd))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         if r.status_code != 200:
             raise ValueError("Could not reset GeoServer catalog!")
         r = requests.put(f"{url}rest/reload/", auth=HTTPBasicAuth(user, passwd))
@@ -436,7 +355,6 @@ class Command(BaseCommand):
             f'BK_BEST_EFFORT={("true" if ignore_errors else "false")}',
             f"exclude.file.path={config.gs_exclude_file_path}",
         ]
-<<<<<<< HEAD
         data = {"backup": {"archiveFile": geoserver_bk_file, "overwrite": "true", "options": {"option": _options}}}
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         r = requests.post(
@@ -453,32 +371,6 @@ class Command(BaseCommand):
                     _url = urlparse(gs_backup["backups"]["backup"][-1]["href"])
                     _url = f"{urljoin(url, _url.path)}?{_url.query}"
                     r = requests.get(_url, headers=headers, auth=HTTPBasicAuth(user, passwd), timeout=10)
-=======
-        data = {'backup': {'archiveFile': geoserver_bk_file,
-                           'overwrite': 'true',
-                           'options': {'option': _options}}}
-        headers = {
-            'Accept': 'application/json',
-            'Content-type': 'application/json'
-        }
-        r = requests.post(f'{url}rest/br/backup/', data=json.dumps(data),
-                          headers=headers, auth=HTTPBasicAuth(user, passwd))
-
-        if r.status_code in (200, 201, 406):
-            try:
-                r = requests.get(f'{url}rest/br/backup.json',
-                                 headers=headers,
-                                 auth=HTTPBasicAuth(user, passwd),
-                                 timeout=10)
-                if r.status_code == 200:
-                    gs_backup = r.json()
-                    _url = urlparse(gs_backup['backups']['backup'][-1]['href'])
-                    _url = f'{urljoin(url, _url.path)}?{_url.query}'
-                    r = requests.get(_url,
-                                     headers=headers,
-                                     auth=HTTPBasicAuth(user, passwd),
-                                     timeout=10)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     if r.status_code == 200:
                         gs_backup = r.json()
 
@@ -487,7 +379,6 @@ class Command(BaseCommand):
             except ValueError:
                 raise ValueError(error_backup.format(url, r.status_code, r.text))
 
-<<<<<<< HEAD
             gs_bk_exec_id = gs_backup["backup"]["execution"]["id"]
             r = requests.get(
                 f"{url}rest/br/backup/{gs_bk_exec_id}.json",
@@ -509,40 +400,14 @@ class Command(BaseCommand):
                         timeout=10,
                     )
                     if r.status_code == 200:
-=======
-            gs_bk_exec_id = gs_backup['backup']['execution']['id']
-            r = requests.get(f'{url}rest/br/backup/{gs_bk_exec_id}.json',
-                             headers=headers,
-                             auth=HTTPBasicAuth(user, passwd),
-                             timeout=10)
-            if r.status_code == 200:
-                gs_bk_exec_status = gs_backup['backup']['execution']['status']
-                gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                gs_bk_exec_progress_updated = '0/0'
-                while gs_bk_exec_status != 'COMPLETED' and gs_bk_exec_status != 'FAILED':
-                    if gs_bk_exec_progress != gs_bk_exec_progress_updated:
-                        gs_bk_exec_progress_updated = gs_bk_exec_progress
-                    r = requests.get(f'{url}rest/br/backup/{gs_bk_exec_id}.json',
-                                     headers=headers,
-                                     auth=HTTPBasicAuth(user, passwd),
-                                     timeout=10)
-                    if r.status_code == 200:
-
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                         try:
                             gs_backup = r.json()
                         except ValueError:
                             raise ValueError(error_backup.format(url, r.status_code, r.text))
 
-<<<<<<< HEAD
                         gs_bk_exec_status = gs_backup["backup"]["execution"]["status"]
                         gs_bk_exec_progress = gs_backup["backup"]["execution"]["progress"]
                         logger.info(f"Async backup status: {gs_bk_exec_status} - {gs_bk_exec_progress}")
-=======
-                        gs_bk_exec_status = gs_backup['backup']['execution']['status']
-                        gs_bk_exec_progress = gs_backup['backup']['execution']['progress']
-                        logger.info(f'Async backup status: {gs_bk_exec_status} - {gs_bk_exec_progress}')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
@@ -565,7 +430,6 @@ class Command(BaseCommand):
             logger.info("*** Dump GeoServer raster data")
 
             for source_root, dest_folder in (
-<<<<<<< HEAD
                 (
                     os.path.join(config.gs_data_dir, "geonode"),  # Dump '$config.gs_data_dir/geonode'
                     os.path.join(target_folder, "gs_data_dir", "geonode"),
@@ -577,32 +441,15 @@ class Command(BaseCommand):
             ):
                 if not os.path.isabs(source_root):
                     source_root = os.path.join(settings.PROJECT_ROOT, "..", source_root)
-=======
-                (os.path.join(config.gs_data_dir, 'geonode'),  # Dump '$config.gs_data_dir/geonode'
-                 os.path.join(target_folder, 'gs_data_dir', 'geonode')),
-                (os.path.join(config.gs_data_dir, 'data', 'geonode'),  # Dump '$config.gs_data_dir/data/geonode'
-                 os.path.join(target_folder, 'gs_data_dir', 'data', 'geonode')),
-             ):
-
-                if not os.path.isabs(source_root):
-                    source_root = os.path.join(settings.PROJECT_ROOT, '..', source_root)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                 logger.info(f"Dumping raster data from '{source_root}'...")
                 if os.path.exists(source_root):
                     if not os.path.exists(dest_folder):
                         os.makedirs(dest_folder, exist_ok=True)
-<<<<<<< HEAD
                     copy_tree(
                         source_root,
                         dest_folder,
                         ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
                     )
-=======
-                    copy_tree(source_root,
-                              dest_folder,
-                              ignore=utils.ignore_time(config.gs_data_dt_filter[0],
-                                                       config.gs_data_dt_filter[1]))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                     logger.info(f"Dumped raster data from '{source_root}'")
                 else:
                     logger.info(f"Skipped raster data directory '{source_root}' because it does not exist")
@@ -612,7 +459,6 @@ class Command(BaseCommand):
             logger.info("*** Dump GeoServer vector data")
 
             # Dump Vectorial Data from DB
-<<<<<<< HEAD
             datastore_name = settings.OGC_SERVER["default"]["DATASTORE"]
             if datastore_name:
                 datastore = settings.DATABASES[datastore_name]
@@ -630,23 +476,6 @@ class Command(BaseCommand):
                     datastore["PASSWORD"],
                     gs_data_folder,
                 )
-=======
-            datastore_name = settings.OGC_SERVER['default']['DATASTORE']
-            if datastore_name:
-                datastore = settings.DATABASES[datastore_name]
-
-                gs_data_folder = os.path.join(target_folder, 'gs_data_dir', 'geonode')
-                if not os.path.exists(gs_data_folder):
-                    os.makedirs(gs_data_folder, exist_ok=True)
-
-                utils.dump_db(config,
-                              datastore['NAME'],
-                              datastore['USER'],
-                              datastore['PORT'],
-                              datastore['HOST'],
-                              datastore['PASSWORD'],
-                              gs_data_folder)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     def dump_geoserver_externals(self, config, settings, target_folder):
         """Scan layers xml and see if there are external references.

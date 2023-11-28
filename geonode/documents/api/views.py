@@ -31,11 +31,8 @@ from geonode import settings
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
-<<<<<<< HEAD
 from geonode.base.api.views import base_linked_resources
 from geonode.base import enumerations
-=======
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 
@@ -56,7 +53,6 @@ class DocumentViewSet(DynamicModelViewSet):
     """
     API endpoint that allows documents to be viewed or edited.
     """
-<<<<<<< HEAD
 
     http_method_names = ["get", "patch", "put", "post"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
@@ -64,11 +60,6 @@ class DocumentViewSet(DynamicModelViewSet):
         IsAuthenticatedOrReadOnly,
         UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
     ]
-=======
-    http_method_names = ['get', 'patch', 'put', 'post']
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})]
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -76,20 +67,12 @@ class DocumentViewSet(DynamicModelViewSet):
         ExtentFilter,
         DocumentPermissionsFilter,
     ]
-<<<<<<< HEAD
     queryset = Document.objects.all().order_by("-created")
-=======
-    queryset = Document.objects.all().order_by('-created')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     serializer_class = DocumentSerializer
     pagination_class = GeoNodeApiPagination
 
     def perform_create(self, serializer):
-<<<<<<< HEAD
         """
-=======
-        '''
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         Function to create document via API v2.
         file_path: path to the file
         doc_file: the open file
@@ -109,7 +92,6 @@ class DocumentViewSet(DynamicModelViewSet):
         --form 'title="Super Title2"' \
         --form 'doc_file=@"/C:/Users/user/Pictures/BcMc-a6T9IM.jpg"' \
         --form 'metadata_only="False"'
-<<<<<<< HEAD
         """
         manager = None
         serializer.is_valid(raise_exception=True)
@@ -145,37 +127,6 @@ class DocumentViewSet(DynamicModelViewSet):
                 payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
             resource = serializer.save(**payload)
-=======
-        '''
-        manager = None
-        serializer.is_valid(raise_exception=True)
-        _has_file = serializer.validated_data.pop("file_path", None) or serializer.validated_data.pop("doc_file", None)
-        extension = serializer.validated_data.pop("extension", None)
-
-        if not _has_file:
-            raise DocumentException(detail="A file path or a file must be speficied")
-
-        if not extension:
-            filename = _has_file if isinstance(_has_file, str) else _has_file.name
-            extension = Path(filename).suffix.replace(".", "")
-
-        if extension not in settings.ALLOWED_DOCUMENT_TYPES:
-            raise DocumentException("The file provided is not in the supported extension file list")
-
-        try:
-            manager = StorageManager(remote_files={"base_file": _has_file})
-            manager.clone_remote_files()
-            files = manager.get_retrieved_paths()
-
-            resource = serializer.save(
-                **{
-                    "owner": self.request.user,
-                    "extension": extension,
-                    "files": [files.get("base_file")],
-                    "resource_type": "document"
-                }
-            )
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             resource.set_missing_info()
             resourcebase_post_save(resource.get_real_instance())
@@ -188,7 +139,6 @@ class DocumentViewSet(DynamicModelViewSet):
                 manager.delete_retrieved_paths()
             raise e
 
-<<<<<<< HEAD
     @extend_schema(
         methods=["get"],
         responses={200: ResourceBaseSerializer(many=True)},
@@ -197,23 +147,3 @@ class DocumentViewSet(DynamicModelViewSet):
     @action(detail=True, methods=["get"])
     def linked_resources(self, request, pk=None, *args, **kwargs):
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
-=======
-    @extend_schema(methods=['get'], responses={200: ResourceBaseSerializer(many=True)},
-                   description="API endpoint allowing to retrieve the DocumentResourceLink(s).")
-    @action(detail=True, methods=['get'])
-    def linked_resources(self, request, pk=None):
-        document = self.get_object()
-        resources_id = document.links.all().values('object_id')
-        resources = ResourceBase.objects.filter(id__in=resources_id)
-        exclude = []
-        for resource in resources:
-            if not request.user.is_superuser and \
-                    not request.user.has_perm('view_resourcebase', resource.get_self_resource()):
-                exclude.append(resource.id)
-        resources = resources.exclude(id__in=exclude)
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get('page_size', 10)
-        result_page = paginator.paginate_queryset(resources, request)
-        serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
-        return paginator.get_paginated_response({"resources": serializer.data})
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6

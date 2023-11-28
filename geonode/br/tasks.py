@@ -27,13 +27,8 @@ from geonode.celery_app import app
 
 @app.task(
     bind=True,
-<<<<<<< HEAD
     name="geonode.br.tasks.restore_notification",
     queue="email",
-=======
-    name='geonode.br.tasks.restore_notification',
-    queue='email',
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -41,12 +36,8 @@ from geonode.celery_app import app
     retry_kwargs={"max_retries": 5},
     retry_backoff=3,
     retry_backoff_max=30,
-<<<<<<< HEAD
     retry_jitter=False,
 )
-=======
-    retry_jitter=False)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 def restore_notification(self, recipients: List, backup_file: str, backup_md5: str, exception: str = None):
     """
     Function sending a CC email report of the restore procedure to a provided emails.

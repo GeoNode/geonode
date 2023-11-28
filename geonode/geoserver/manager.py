@@ -42,25 +42,12 @@ from geonode.security.permissions import (
     VIEW_PERMISSIONS,
     OWNER_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
-<<<<<<< HEAD
     DATASET_ADMIN_PERMISSIONS,
 )
 from geonode.resource.manager import ResourceManager, ResourceManagerInterface
 from geonode.geoserver.signals import geofence_rule_assign
 from .geofence import AutoPriorityBatch
 from .tasks import geoserver_set_style, geoserver_delete_map, geoserver_create_style, geoserver_cascading_delete
-=======
-    DATASET_ADMIN_PERMISSIONS)
-from geonode.resource.manager import (
-    ResourceManager,
-    ResourceManagerInterface)
-from geonode.geoserver.signals import post_set_permissions
-from .tasks import (
-    geoserver_set_style,
-    geoserver_delete_map,
-    geoserver_create_style,
-    geoserver_cascading_delete)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 from .helpers import (
     SpatialFilesLayerType,
     gs_catalog,
@@ -125,7 +112,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if instance and getattr(ogc_server_settings, "BACKEND_WRITE_ENABLED", True):
             try:
                 _real_instance = instance.get_real_instance()
-<<<<<<< HEAD
                 if (
                     isinstance(_real_instance, Dataset)
                     and hasattr(_real_instance, "alternate")
@@ -136,10 +122,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                         or _real_instance.remote_service is None
                         or _real_instance.remote_service.method == CASCADED
                     ):
-=======
-                if isinstance(_real_instance, Dataset) and hasattr(_real_instance, 'alternate') and _real_instance.alternate:
-                    if not hasattr(_real_instance, 'remote_service') or _real_instance.remote_service is None or _real_instance.remote_service.method == CASCADED:
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
                         geoserver_cascading_delete.apply_async(args=(_real_instance.alternate,), expiration=30)
                 elif isinstance(_real_instance, Map):
                     geoserver_delete_map.apply_async(args=(_real_instance.id,), expiration=30)
@@ -578,11 +560,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
             logger.exception(e)
             return False
 
-<<<<<<< HEAD
         geofence_rule_assign.send_robust(sender=instance, instance=instance)
-=======
-        post_set_permissions.send_robust(sender=instance, instance=instance)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
         return True
 

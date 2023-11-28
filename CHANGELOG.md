@@ -1,41 +1,5 @@
 # Change Log
 
-<<<<<<< HEAD
-=======
-## [4.0.3](https://github.com/GeoNode/geonode/tree/4.0.3) (2023-02-23)
-
-### Breaking Changes
-
- - Based on GeoServer [2.20.7](https://geoserver.org/announcements/2023/02/20/geoserver-2-20-7-released.html)
-
-### What's Changed
-
-#### Enhancements and Features
-* [Fixes #10684] Remote Services with the same prefix create layers which won't be allow to edit metadata by @afabiani in https://github.com/GeoNode/geonode/pull/10682
-
-#### Translations
-
-#### Bug Fixes
-* [Backport 4.0.x] [Fixes #10462] GeoNode is vulnerable to an XML External Entity (XXE) injection by @github-actions in https://github.com/GeoNode/geonode/pull/10466
-* [Backport 4.0.x] [Fixes #10464] Fix code scanning alert - Uncontrolled data used in path expression by @github-actions in https://github.com/GeoNode/geonode/pull/10468
-
-#### Dependencies Updates
-* [Backport 4.0.x] [Backport 4.1.x] Bump boto3 from 1.26.28 to 1.26.32 by @github-actions in https://github.com/GeoNode/geonode/pull/10450
-* [Backport 4.0.x] [Backport 4.1.x] Bump dj-database-url from 1.0.0 to 1.2.0 by @github-actions in https://github.com/GeoNode/geonode/pull/10451
-* [Backport 4.0.x] [Backport 4.1.x] Update numpy requirement from ==1.23.* to ==1.24.* by @github-actions in https://github.com/GeoNode/geonode/pull/10452
-* [Backport 4.0.x] [Backport 4.1.x] Bump drf-spectacular from 0.24.2 to 0.25.1 by @github-actions in https://github.com/GeoNode/geonode/pull/10453
-* [Backport 4.0.x] [Backport 4.1.x] Bump coverage from 6.5.0 to 7.0.0 by @github-actions in https://github.com/GeoNode/geonode/pull/10454
-* [Backport 4.0.x] [Backport 4.1.x] Bump wandb from 0.13.6 to 0.13.7 by @github-actions in https://github.com/GeoNode/geonode/pull/10455
-* [Backport 4.0.x] [Backport 4.1.x] Bump pytz from 2022.6 to 2022.7 by @github-actions in https://github.com/GeoNode/geonode/pull/10456
-* [Backport 4.0.x] [Backport 4.1.x] Bump pymupdf from 1.21.0 to 1.21.1 by @github-actions in https://github.com/GeoNode/geonode/pull/10457
-* [Backport 4.0.x] [Backport 4.1.x] Bump lxml from 4.9.1 to 4.9.2 by @github-actions in https://github.com/GeoNode/geonode/pull/10458
-
-#### Security Updates
-* [4.0.x] Bump GeoServer to version 2.20.7 by @afabiani in https://github.com/GeoNode/geonode/pull/10686
-
-**Full Changelog**: https://github.com/GeoNode/geonode/compare/4.0.2...4.0.3
-
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 ## [4.0.2](https://github.com/GeoNode/geonode/tree/4.0.2) (2022-12-20)
 
 ### Breaking Changes

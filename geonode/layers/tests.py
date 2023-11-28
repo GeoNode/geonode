@@ -378,12 +378,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
             links = Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="image")
             self.assertIsNotNone(links)
 
-            # get and update original link to external
-            Link.objects.filter(resource=lyr.resourcebase_ptr, link_type="original").update(
-                url="http://google.com/test"
-            )
-            self.assertEqual(lyr.download_url, "http://google.com/test")
-
     def test_get_valid_user(self):
         # Verify it accepts an admin user
         adminuser = get_user_model().objects.get(is_superuser=True)
@@ -899,13 +893,9 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         perm_spec = layer.get_all_level_info()
         self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
 
-<<<<<<< HEAD
         utils.set_datasets_permissions(
             "edit", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True
         )
-=======
-        utils.set_datasets_permissions("edit", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         perm_spec = layer.get_all_level_info()
         _c = 0
         if "users" in perm_spec:
@@ -1861,34 +1851,21 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
     def test_change_owner_in_metadata(self):
         try:
             test_user = get_user_model().objects.create_user(
-<<<<<<< HEAD
                 username="non_auth", email="non_auth@geonode.org", password="password"
             )
             norman = get_user_model().objects.get(username="norman")
-=======
-                username='non_auth',
-                email="non_auth@geonode.org",
-                password='password')
-            norman = get_user_model().objects.get(username='norman')
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             dataset = Dataset.objects.first()
             data = {
                 "resource-title": "geoapp_title",
                 "resource-date": "2022-01-24 16:38 pm",
                 "resource-date_type": "creation",
                 "resource-language": "eng",
-<<<<<<< HEAD
                 "dataset_attribute_set-TOTAL_FORMS": 0,
                 "dataset_attribute_set-INITIAL_FORMS": 0,
-=======
-                'dataset_attribute_set-TOTAL_FORMS': 0,
-                'dataset_attribute_set-INITIAL_FORMS': 0
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             }
             perm_spec = {
                 "users": {
                     "non_auth": [
-<<<<<<< HEAD
                         "change_resourcebase_metadata",
                         "change_resourcebase",
                     ],
@@ -1897,19 +1874,6 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             }
             self.assertTrue(dataset.set_permissions(perm_spec))
             self.assertFalse(test_user.has_perm("change_resourcebase_permissions", dataset.get_self_resource()))
-=======
-                        'change_resourcebase_metadata',
-                        'change_resourcebase',
-                    ],
-                    "norman": [
-                        'change_resourcebase_metadata',
-                        'change_resourcebase_permissions'
-                    ],
-                }
-            }
-            self.assertTrue(dataset.set_permissions(perm_spec))
-            self.assertFalse(test_user.has_perm('change_resourcebase_permissions', dataset.get_self_resource()))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             url = reverse("dataset_metadata", args=(dataset.alternate,))
             # post as non-authorised user
@@ -1926,24 +1890,15 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             self.assertEqual(dataset.owner, test_user)
             # post as an authorised user
             self.client.login(username="norman", password="norman")
-<<<<<<< HEAD
             self.assertTrue(norman.has_perm("change_resourcebase_permissions", dataset.get_self_resource()))
-=======
-            self.assertTrue(norman.has_perm('change_resourcebase_permissions', dataset.get_self_resource()))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             data["resource-owner"] = norman.id
             response = self.client.post(url, data=data)
             dataset.refresh_from_db()
             self.assertEqual(response.status_code, 200)
             self.assertEqual(dataset.owner, norman)
         finally:
-<<<<<<< HEAD
             get_user_model().objects.filter(username="non_auth").delete
             Dataset.objects.filter(name="dataset_name").delete()
-=======
-            get_user_model().objects.filter(username='non_auth').delete
-            Dataset.objects.filter(name='dataset_name').delete()
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
     @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
     def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
@@ -2082,7 +2037,6 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             },
         )
         self.assertFalse(form.is_valid())
-<<<<<<< HEAD
         self.assertTrue("presentation" in form.errors)
         self.assertEqual(
             "Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.",
@@ -2168,28 +2122,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
 
             dataset, args, username, opts = self._create_arguments(perms_type="download")
             call_command("set_layers_permissions", *args, **opts)
-=======
-        self.assertTrue('presentation' in form.errors)
-        self.assertEqual("Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.", form.errors['presentation'][0])
-
-
-class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
-    '''
-    Unittest to ensure that the management command "set_layers_permissions"
-    behaves as expected
-    '''
-
-    def test_user_get_the_download_permissions_for_the_selected_dataset(self):
-        '''
-        Given a user, the compact perms and the resource id, it shoul set the
-        permissions for the selected resource
-        '''
-        try:
-            expected_perms = {'view_resourcebase', 'download_resourcebase'}
-
-            dataset, args, username, opts = self._create_arguments(perms_type='download')
-            call_command('set_layers_permissions', *args, **opts)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             self._assert_perms(expected_perms, dataset, username)
         finally:
@@ -2197,7 +2129,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 dataset.delete()
 
     def test_user_get_the_view_permissions_for_the_selected_dataset(self):
-<<<<<<< HEAD
         """
         Given a user, the compact perms and the resource id, it shoul set the
         permissions for the selected resource
@@ -2207,17 +2138,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             dataset, args, username, opts = self._create_arguments(perms_type="view")
 
             call_command("set_layers_permissions", *args, **opts)
-=======
-        '''
-        Given a user, the compact perms and the resource id, it shoul set the
-        permissions for the selected resource
-        '''
-        try:
-            expected_perms = {'view_resourcebase'}
-            dataset, args, username, opts = self._create_arguments(perms_type='view')
-
-            call_command('set_layers_permissions', *args, **opts)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             self._assert_perms(expected_perms, dataset, username)
 
@@ -2226,7 +2146,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 dataset.delete()
 
     def test_user_get_the_edit_permissions_for_the_selected_dataset(self):
-<<<<<<< HEAD
         """
         Given a user, the compact perms and the resource id, it shoul set the
         permissions for the selected resource
@@ -2244,25 +2163,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             dataset, args, username, opts = self._create_arguments(perms_type="edit")
 
             call_command("set_layers_permissions", *args, **opts)
-=======
-        '''
-        Given a user, the compact perms and the resource id, it shoul set the
-        permissions for the selected resource
-        '''
-        try:
-            expected_perms = {
-                'view_resourcebase',
-                'change_dataset_style',
-                'download_resourcebase',
-                'change_resourcebase_metadata',
-                'change_dataset_data',
-                'change_resourcebase'
-            }
-
-            dataset, args, username, opts = self._create_arguments(perms_type='edit')
-
-            call_command('set_layers_permissions', *args, **opts)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             self._assert_perms(expected_perms, dataset, username)
         finally:
@@ -2270,7 +2170,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 dataset.delete()
 
     def test_user_get_the_manage_permissions_for_the_selected_dataset(self):
-<<<<<<< HEAD
         """
         Given a user, the compact perms and the resource id, it shoul set the
         permissions for the selected resource
@@ -2291,28 +2190,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             dataset, args, username, opts = self._create_arguments(perms_type="manage")
 
             call_command("set_layers_permissions", *args, **opts)
-=======
-        '''
-        Given a user, the compact perms and the resource id, it shoul set the
-        permissions for the selected resource
-        '''
-        try:
-            expected_perms = {
-                'delete_resourcebase',
-                'change_resourcebase',
-                'view_resourcebase',
-                'change_resourcebase_permissions',
-                'change_dataset_style',
-                'change_resourcebase_metadata',
-                'publish_resourcebase',
-                'change_dataset_data',
-                'download_resourcebase'
-            }
-
-            dataset, args, username, opts = self._create_arguments(perms_type='manage')
-
-            call_command('set_layers_permissions', *args, **opts)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             self._assert_perms(expected_perms, dataset, username)
         finally:
@@ -2320,7 +2197,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 dataset.delete()
 
     def test_anonymous_user_cannot_get_edit_permissions(self):
-<<<<<<< HEAD
         """
         Given the Anonymous user, we should get an error trying to set "edit" permissions.
         """
@@ -2332,20 +2208,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             opts["users"] = ["AnonymousUser"]
 
             call_command("set_layers_permissions", *args, **opts)
-=======
-        '''
-        Given the Anonymous user, we should get an error trying to set "edit" permissions.
-        '''
-        try:
-            expected_perms = {
-            }
-
-            dataset, args, username, opts = self._create_arguments(perms_type='edit')
-            username = 'AnonymousUser'
-            opts["users"] = ['AnonymousUser']
-
-            call_command('set_layers_permissions', *args, **opts)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             self._assert_perms(expected_perms, dataset, username, assertion=False)
         finally:
@@ -2353,7 +2215,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
                 dataset.delete()
 
     def test_unset_anonymous_view_permissions(self):
-<<<<<<< HEAD
         """
         Given the Anonymous user, we should be able to unset any paermission.
         """
@@ -2365,27 +2226,12 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             opts["users"] = ["AnonymousUser"]
 
             call_command("set_layers_permissions", *args, **opts)
-=======
-        '''
-        Given the Anonymous user, we should be able to unset any paermission.
-        '''
-        try:
-            expected_perms = {
-            }
-
-            dataset, args, username, opts = self._create_arguments(perms_type='view', mode='unset')
-            username = 'AnonymousUser'
-            opts["users"] = ['AnonymousUser']
-
-            call_command('set_layers_permissions', *args, **opts)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
             self._assert_perms(expected_perms, dataset, username, assertion=False)
         finally:
             if dataset:
                 dataset.delete()
 
-<<<<<<< HEAD
     def _create_arguments(self, perms_type, mode="set"):
         dataset = create_single_dataset("dataset_for_management_command")
         args = []
@@ -2396,18 +2242,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
             "resources": str(dataset.id),
             "delete": True if mode == "unset" else False,
         }
-=======
-    def _create_arguments(self, perms_type, mode='set'):
-        dataset = create_single_dataset('dataset_for_management_command')
-        args = []
-        username = get_user_model().objects.exclude(username='admin').exclude(username='AnonymousUser').first().username
-        opts = {
-                "permission": perms_type,
-                "users": [username],
-                "resources": str(dataset.id),
-                "delete": True if mode == 'unset' else False
-            }
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
         return dataset, args, username, opts
 
@@ -2416,7 +2250,6 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
 
         perms = dataset.get_all_level_info()
         if assertion:
-<<<<<<< HEAD
             self.assertTrue(username in [user.username for user in perms["users"]])
             actual = set(
                 itertools.chain.from_iterable(
@@ -2477,10 +2310,3 @@ class TestCustomDownloadHandler(GeoNodeBaseTestSupport):
         response = self.client.get(url)
         self.assertTrue(response.status_code == 200)
         self.assertEqual(response.content, b"abcsfd2")
-=======
-            self.assertTrue(username in [user.username for user in perms['users']])
-            actual = set(itertools.chain.from_iterable([perms for user, perms in perms['users'].items() if user.username == username]))
-            self.assertSetEqual(expected_perms, actual)
-        else:
-            self.assertFalse(username in [user.username for user in perms['users']])
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6

@@ -706,25 +706,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
-<<<<<<< HEAD
     title = models.CharField(_("title"), max_length=255, help_text=_("name by which the cited resource is known"))
     abstract = models.TextField(_("abstract"), max_length=2000, blank=True, help_text=abstract_help_text)
     purpose = models.TextField(_("purpose"), max_length=500, null=True, blank=True, help_text=purpose_help_text)
-=======
-    title = models.CharField(_('title'), max_length=255, help_text=_(
-        'name by which the cited resource is known'))
-    abstract = models.TextField(
-        _('abstract'),
-        max_length=2000,
-        blank=True,
-        help_text=abstract_help_text)
-    purpose = models.TextField(
-        _('purpose'),
-        max_length=500,
-        null=True,
-        blank=True,
-        help_text=purpose_help_text)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="owned_resource", verbose_name=_("Owner"), on_delete=models.PROTECT
     )
@@ -1552,11 +1536,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     def save_thumbnail(self, filename, image, **kwargs):
         upload_path = get_unique_upload_path(filename)
         # force convertion to JPEG output file
-<<<<<<< HEAD
         upload_path = f"{os.path.splitext(upload_path)[0]}.jpg"
-=======
-        upload_path = f'{os.path.splitext(upload_path)[0]}.jpg'
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         try:
             # Check that the image is valid
             if is_monochromatic_image(None, image):
@@ -1578,13 +1558,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
                     centering = kwargs.get("centering", (0.5, 0.5))
-<<<<<<< HEAD
                     cover = ImageOps.fit(
                         im, (_default_thumb_size["width"], _default_thumb_size["height"]), centering=centering
                     ).convert("RGB")
-=======
-                    cover = ImageOps.fit(im, (_default_thumb_size['width'], _default_thumb_size['height']), centering=centering).convert("RGB")
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
                     # Saving the thumb into a temporary directory on file system
                     tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")

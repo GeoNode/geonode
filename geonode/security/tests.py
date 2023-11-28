@@ -1204,69 +1204,42 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertEqual(layers.filter(dirty_state=False).count(), len(actual))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_true(self):
-<<<<<<< HEAD
         """
         If metadata only is provided, it should return only the metadata resources
         """
-=======
-        '''
-        If metadata only is provided, it should return only the metadata resources
-        '''
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         try:
             dataset = create_single_dataset("dataset_with_metadata_only_True")
             dataset.metadata_only = True
             dataset.save()
 
             layers = Dataset.objects.all()
-<<<<<<< HEAD
             actual = get_visible_resources(
                 queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user)
             )
-=======
-            actual = get_visible_resources(queryset=layers, metadata_only=True, user=get_user_model().objects.get(username=self.user))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             self.assertEqual(1, actual.count())
         finally:
             if dataset:
                 dataset.delete()
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_none(self):
-<<<<<<< HEAD
         """
         If metadata only is provided, it should return only the metadata resources
         """
-=======
-        '''
-        If metadata only is provided, it should return only the metadata resources
-        '''
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
         try:
             dataset = create_single_dataset("dataset_with_metadata_only_True")
             dataset.metadata_only = True
             dataset.save()
 
             layers = Dataset.objects.all()
-<<<<<<< HEAD
             actual = get_visible_resources(
                 queryset=layers, metadata_only=None, user=get_user_model().objects.get(username=self.user)
             )
-=======
-            actual = get_visible_resources(queryset=layers, metadata_only=None, user=get_user_model().objects.get(username=self.user))
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
             self.assertEqual(layers.count(), actual.count())
         finally:
             if dataset:
                 dataset.delete()
 
-<<<<<<< HEAD
     @override_settings(ADMIN_MODERATE_UPLOADS=True, RESOURCE_PUBLISHING=True, GROUP_PRIVATE_RESOURCES=True)
-=======
-    @override_settings(
-        ADMIN_MODERATE_UPLOADS=True,
-        RESOURCE_PUBLISHING=True,
-        GROUP_PRIVATE_RESOURCES=True)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     def test_get_visible_resources_advanced_workflow(self):
         admin_user = get_user_model().objects.get(username="admin")
         standard_user = get_user_model().objects.get(username="bobby")
@@ -1772,15 +1745,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             request.user = admin
             request.path = reverse("home")
             request.META["REMOTE_ADDR"] = "127.0.0.1"
-            middleware.process_request(request)
-            self.assertTrue(request.user.is_superuser)
-
-        # Test valid IP in second element
-        with self.settings(ADMIN_IP_WHITELIST=['88.88.88.88', '127.0.0.1']):
-            request = HttpRequest()
-            request.user = admin
-            request.path = reverse('home')
-            request.META['REMOTE_ADDR'] = '127.0.0.1'
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 

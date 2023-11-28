@@ -95,7 +95,6 @@ class MapAdmin(TabbedTranslationAdmin):
 
 
 class MapLayerAdmin(admin.ModelAdmin):
-<<<<<<< HEAD
     list_display = ("id", "map", "name")
     list_filter = ("map",)
     search_fields = (
@@ -104,13 +103,6 @@ class MapLayerAdmin(admin.ModelAdmin):
     )
     autocomplete_fields = ("dataset",)
     form = forms.modelform_factory(MapLayer, fields="__all__")
-=======
-    list_display = ('id', 'map', 'name')
-    list_filter = ('map',)
-    search_fields = ('map__title', 'name',)
-    form = forms.modelform_factory(MapLayer, fields='__all__')
-    autocomplete_fields = ("dataset",)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 admin.site.register(Map, MapAdmin)

@@ -48,19 +48,6 @@ def run_setup_hooks(sender, **kwargs):
                 start_time=timezone.now(),
             ),
         )
-        daily_interval, _ = IntervalSchedule.objects.get_or_create(
-            every=1,
-            period="days"
-        )
-        PeriodicTask.objects.update_or_create(
-            name="clean-up-old-task-result",
-            defaults=dict(
-                task="geonode.upload.tasks.cleanup_celery_task_entries",
-                interval=daily_interval,
-                args='',
-                start_time=timezone.now()
-            )
-        )
 
 
 class UploadAppConfig(AppConfig):
@@ -72,10 +59,6 @@ class UploadAppConfig(AppConfig):
         settings.CELERY_BEAT_SCHEDULE["clean-up-old-task-result"] = {
             "task": "geonode.upload.tasks.cleanup_celery_task_entries",
             "schedule": 86400.0,
-        }
-        settings.CELERY_BEAT_SCHEDULE['clean-up-old-task-result'] = {
-            'task': 'geonode.upload.tasks.cleanup_celery_task_entries',
-            'schedule': 86400.0,
         }
 
 

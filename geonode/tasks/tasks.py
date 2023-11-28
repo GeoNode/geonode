@@ -130,13 +130,8 @@ class FaultTolerantTask(celery.Task):
 
 @app.task(
     bind=True,
-<<<<<<< HEAD
     name="geonode.tasks.email.send_mail",
     queue="email",
-=======
-    name='geonode.tasks.email.send_mail',
-    queue='email',
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -155,13 +150,8 @@ def send_email(self, *args, **kwargs):
 
 @app.task(
     bind=True,
-<<<<<<< HEAD
     name="geonode.tasks.notifications.send_queued_notifications",
     queue="email",
-=======
-    name='geonode.tasks.notifications.send_queued_notifications',
-    queue='email',
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
@@ -195,13 +185,8 @@ def send_queued_notifications(self, *args):
 @app.task(
     bind=True,
     base=FaultTolerantTask,
-<<<<<<< HEAD
     name="geonode.tasks.layers.set_permissions",
     queue="security",
-=======
-    name='geonode.tasks.layers.set_permissions',
-    queue='security',
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,

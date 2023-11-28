@@ -118,7 +118,6 @@ def _resolve_dataset(request, alternate, permission="base.view_resourcebase", ms
     service_typename = alternate.split(":", 1)
     for _s in Service.objects.filter(name__startswith=service_typename[0]):
         query = {
-<<<<<<< HEAD
             "alternate": service_typename[1],
             "remote_service": _s,
         }
@@ -139,48 +138,6 @@ def _resolve_dataset(request, alternate, permission="base.view_resourcebase", ms
     elif test_query.count() > 1:
         query = {"id": test_query.last().id}
     return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
-=======
-            'alternate': service_typename[1],
-            'remote_service': _s
-        }
-        try:
-            return resolve_object(
-                request,
-                Dataset,
-                query,
-                permission=permission,
-                permission_msg=msg,
-                **kwargs)
-        except (Dataset.DoesNotExist, Http404) as e:
-            logger.debug(e)
-    if len(service_typename) > 1 and ':' in service_typename[1]:
-        if service_typename[0]:
-            query = {
-                'store': service_typename[0],
-                'alternate': service_typename[1]
-            }
-        else:
-            query = {
-                'alternate': service_typename[1]
-            }
-    else:
-        query = {'alternate': alternate}
-    test_query = Dataset.objects.filter(**query)
-    if test_query.count() > 1 and test_query.exclude(subtype='remote').count() == 1:
-        query = {
-            'id': test_query.exclude(subtype='remote').last().id
-        }
-    elif test_query.count() > 1:
-        query = {
-            'id': test_query.last().id
-        }
-    return resolve_object(request,
-                          Dataset,
-                          query,
-                          permission=permission,
-                          permission_msg=msg,
-                          **kwargs)
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
 
 
 # Basic Dataset Views #

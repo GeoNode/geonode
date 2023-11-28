@@ -23,13 +23,8 @@ from django.core.management import call_command
 
 @shared_task(
     bind=True,
-<<<<<<< HEAD
     name="geonode.monitoring.tasks.collect_metrics",
     queue="geoserver.events",
-=======
-    name='geonode.monitoring.tasks.collect_metrics',
-    queue='geoserver.events',
->>>>>>> fedc0bf0f72966b9853f8c33aa2737899fa050e6
     expires=30,
     time_limit=600,
     acks_late=False,
