@@ -85,8 +85,6 @@ def document_link(request, docid):
 
 
 def document_embed(request, docid):
-    from django.http.response import HttpResponseRedirect
-
     document = get_object_or_404(Document, pk=docid)
 
     if not request.user.has_perm("base.download_resourcebase", obj=document.get_self_resource()):
