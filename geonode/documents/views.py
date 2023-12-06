@@ -31,7 +31,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.views.generic.edit import CreateView, UpdateView
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from geonode.base.api.exceptions import geonode_exception_handler
 
