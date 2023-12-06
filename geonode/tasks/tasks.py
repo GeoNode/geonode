@@ -168,18 +168,21 @@ def send_queued_notifications(self, *args):
     advantage of this.
 
     """
-    from importlib import import_module
+    from geonode.notifications_helper import has_notifications
 
-    notifications = getattr(settings, "NOTIFICATIONS_MODULE", None)
+    if has_notifications:
+        from importlib import import_module
 
-    if notifications:
-        engine = import_module(f"{notifications}.engine")
-        send_all = getattr(engine, "send_all")
-        # Make sure application can write to location where lock files are stored
-        if not args and getattr(settings, "NOTIFICATION_LOCK_LOCATION", None):
-            send_all(settings.NOTIFICATION_LOCK_LOCATION)
-        else:
-            send_all(*args)
+        notifications = getattr(settings, "NOTIFICATIONS_MODULE", None)
+
+        if notifications:
+            engine = import_module(f"{notifications}.engine")
+            send_all = getattr(engine, "send_all")
+            # Make sure application can write to location where lock files are stored
+            if not args and getattr(settings, "NOTIFICATION_LOCK_LOCATION", None):
+                send_all(settings.NOTIFICATION_LOCK_LOCATION)
+            else:
+                send_all(*args)
 
 
 @app.task(
