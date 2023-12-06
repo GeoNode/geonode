@@ -172,6 +172,7 @@ def send_queued_notifications(self, *args):
 
     if has_notifications:
         from geonode.notifications_helper import notifications
+
         engine = f"{notifications}.engine"
         send_all = getattr(engine, "send_all")
         # Make sure application can write to location where lock files are stored
