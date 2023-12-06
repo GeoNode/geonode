@@ -23,7 +23,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from django.db import connections, transaction
-from django.utils.module_loading import import_string
 
 from geonode.celery_app import app
 
@@ -174,8 +173,7 @@ def send_queued_notifications(self, *args):
     if has_notifications:
         from geonode.notifications_helper import notifications
 
-        engine = import_string(f"{notifications}.engine")
-        send_all = getattr(engine, "send_all")
+        send_all = getattr(notifications.engine, "send_all")
         # Make sure application can write to location where lock files are stored
         if not args and getattr(settings, "NOTIFICATION_LOCK_LOCATION", None):
             send_all(settings.NOTIFICATION_LOCK_LOCATION)
