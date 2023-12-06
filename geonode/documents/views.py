@@ -106,8 +106,6 @@ def document_embed(request, docid):
             "resource": document.get_self_resource(),
         }
         return render(request, "documents/document_embed.html", context_dict)
-    if document.doc_url:
-        return HttpResponseRedirect(document.doc_url)
     else:
         context_dict = {
             "document_link": reverse("document_link", args=(document.id,)),
