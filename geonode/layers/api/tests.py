@@ -361,7 +361,7 @@ class DatasetsApiTests(APITestCase):
         f = open(self.exml_path, "r")
         put_data = {"metadata_file": f}
         response = self.client.put(url, data=put_data)
-        self.assertEqual(500, response.status_code)
+        self.assertEqual(200, response.status_code)
 
     def test_permissions_for_not_permitted_user(self):
         get_user_model().objects.create_user(

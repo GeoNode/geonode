@@ -141,17 +141,16 @@ class DatasetViewSet(DynamicModelViewSet):
                 dataset_uuid, vals, regions, keywords, _ = parse_metadata(open(metadata_file).read())
             except Exception:
                 raise InvalidMetadataException(detail="Unsupported metadata format")
-            if dataset_uuid and dataset.uuid != dataset_uuid:
-                raise InvalidMetadataException(
-                    detail="The UUID identifier from the XML Metadata, is different from the one saved"
-                )
             try:
                 updated_dataset = update_resource(dataset, metadata_file, regions, keywords, vals)
                 updated_dataset.save()  # This also triggers the recreation of the XML metadata file according to the updated values
             except Exception:
                 raise GeneralDatasetException(detail="Failed to update metadata")
             out["success"] = True
-            out["message"] = ["Metadata successfully updated"]
+            out_message = "Metadata successfully updated"
+            if dataset_uuid and dataset.uuid != dataset_uuid:
+                out_message += " The UUID identifier from the XML Metadata is different from the one saved"
+            out["message"] = [out_message]
             return Response(out)
         except Exception as e:
             raise e

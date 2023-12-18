@@ -63,6 +63,7 @@
     </section>
 
     <section>
+      <div class="btn-danger"><strong>{% trans "WARNING" %}: </strong>{% trans "This will most probably overwrite the current metadata!" %}</div>
       <a href="{% url "dataset_metadata_upload" resource.alternate %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
       <a href="#" id="upload-button" class="btn btn-primary">{% trans "Upload files" %}</a>
     </section>

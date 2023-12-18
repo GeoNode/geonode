@@ -171,10 +171,6 @@ def dataset_upload_metadata(request):
         )
         if layer:
             dataset_uuid, vals, regions, keywords, _ = parse_metadata(open(base_file).read())
-            if dataset_uuid and layer.uuid != dataset_uuid:
-                out["success"] = False
-                out["errors"] = "The UUID identifier from the XML Metadata, is different from the one saved"
-                return HttpResponse(json.dumps(out), content_type="application/json", status=404)
             updated_dataset = update_resource(layer, base_file, regions, keywords, vals)
             updated_dataset.save()
             out["status"] = ["finished"]
@@ -186,9 +182,14 @@ def dataset_upload_metadata(request):
                 upload_session = updated_dataset.upload_session
                 upload_session.processed = True
                 upload_session.save()
-            status_code = 200
             out["success"] = True
+            status_code = 200
+            if dataset_uuid and layer.uuid != dataset_uuid:
+                out[
+                    "warning"
+                ] = "WARNING: The XML's UUID was ignored while updating this dataset's metadata because that UUID is already present in this system. The rest of the XML's metadata was applied."
             return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
+
         else:
             out["success"] = False
             out["errors"] = "Dataset selected does not exists"
