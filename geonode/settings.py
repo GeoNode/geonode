@@ -1314,6 +1314,7 @@ if HAYSTACK_SEARCH:
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
     "Atom",
+    "DataCite",
     "DIF",
     "Dublin Core",
     "ebRIM",

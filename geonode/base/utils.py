@@ -60,6 +60,7 @@ _names = [
     "KML",
     "KMZ",
     "Atom",
+    "DataCite",
     "DIF",
     "Dublin Core",
     "ebRIM",
