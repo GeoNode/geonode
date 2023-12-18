@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 TIMEOUT = 10
 METADATA_FORMATS = {
     "Atom": ("atom:entry", "http://www.w3.org/2005/Atom"),
+    "DataCite": ("csw:Record", "http://datacite.org/schema/kernel-4"),
     "DIF": ("dif:DIF", "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/"),
     "Dublin Core": ("csw:Record", "http://www.opengis.net/cat/csw/2.0.2"),
     "ebRIM": ("rim:RegistryObject", "urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"),

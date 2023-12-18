@@ -65,7 +65,7 @@ CONFIGURATION = {
 class CatalogueBackend(GenericCatalogueBackend):
     def __init__(self, *args, **kwargs):
         GenericCatalogueBackend.__init__(CatalogueBackend, self, *args, **kwargs)
-        self.catalogue.formats = ["Atom", "DIF", "Dublin Core", "ebRIM", "FGDC", "ISO"]
+        self.catalogue.formats = ["Atom", "DataCite", "DIF", "Dublin Core", "ebRIM", "FGDC", "ISO"]
         self.catalogue.local = True
 
     def remove_record(self, uuid):
