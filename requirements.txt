@@ -1,6 +1,6 @@
 # native dependencies
 Pillow==10.0.1
-lxml==4.9.3
+lxml==4.9.4
 psycopg2==2.9.9
 Django==3.2.23
 
