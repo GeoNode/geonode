@@ -83,7 +83,6 @@ services:
   # Gets and installs letsencrypt certificates
   letsencrypt:
     image: geonode/letsencrypt:latest
-    build: ./scripts/docker/letsencrypt/
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
     env_file:
       - .env_test
