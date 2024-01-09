@@ -455,3 +455,19 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         }
         form = SignupForm(data, email_required=True)
         self.assertTrue(form.is_valid())
+
+    def test_new_user_is_assigned_automatically_to_contributors(self):
+        """
+        By default the contributors group is assigned to each new user
+        """
+        new_user = get_user_model().objects.create(username="random_username")
+        self.assertTrue("contributors" in [x.name for x in new_user.groups.iterator()])
+
+    @override_settings(AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS=False)
+    def test_new_user_is_no_assigned_automatically_to_contributors_if_disabled(self):
+        """
+        If AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS is false, each new user is not automatically
+        assinged to the contributors group
+        """
+        new_user = get_user_model().objects.create(username="random_username")
+        self.assertFalse("contributors" in [x.name for x in new_user.groups.iterator()])
