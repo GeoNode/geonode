@@ -97,7 +97,7 @@ geonode-user-messages==2.0.2
 geonode-announcements==2.0.2
 geonode-django-activity-stream==0.10.0
 gn-arcrest==10.5.6
-geoserver-restconfig==2.0.9
+geoserver-restconfig~=2.0.10
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
@@ -159,7 +159,7 @@ pytest-bdd==6.1.1
 splinter==0.19.0
 pytest-splinter==3.3.2
 pytest-django==4.5.2
-setuptools>=59.1.1,<68.3.0
+setuptools>=65.5.1,<68.3.0
 pip==23.2.1
 Twisted==23.10.0
 pixelmatch==0.3.0
@@ -174,6 +174,6 @@ mistune==3.0.2
 protobuf==3.20.3
 mako==1.2.4
 paramiko==3.4.0 # not directly required, fixes Blowfish deprecation warning
-certifi>=2022.12.7 # not directly required, pinned by Snyk to avoid a vulnerability
+certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
 jwcrypto>=1.4 # not directly required, pinned by Snyk to avoid a vulnerability
 cryptography>=41.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
