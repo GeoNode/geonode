@@ -45,7 +45,7 @@
     "raty-js": "^2.9.0",
     "requirejs": "^2.3.6",
     "requirejs-text": "^2.0.15",
-    "rimraf": "^3.0.2",
+    "rimraf": "^4.0.0",
     "select2": "4.0.10",
     "sortable": "^2.0.0",
     "timeago": "^1.6.7",
