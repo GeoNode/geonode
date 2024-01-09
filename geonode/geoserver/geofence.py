@@ -83,7 +83,7 @@ class Rule:
         for field, value in (
             ("priority", priority),
             ("userName", user),
-            ("roleName", group),
+            ("roleName", f"ROLE_{group.upper()}" if group is not None and group != "*" else group),
             ("service", service),
             ("request", request),
             ("subfield", subfield),
