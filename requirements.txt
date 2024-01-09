@@ -165,7 +165,7 @@ Twisted==23.10.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
 flaky==3.7.0
-selenium>=4.1.0,<5.0.0
+selenium>=4.15.1,<5.0.0
 selenium-requests==2.0.3
 webdriver_manager==4.0.1
 
@@ -173,7 +173,8 @@ webdriver_manager==4.0.1
 mistune==3.0.2
 protobuf==3.20.3
 mako==1.2.4
-paramiko==3.3.1 # not directly required, fixes Blowfish deprecation warning
+paramiko==3.4.0 # not directly required, fixes Blowfish deprecation warning
 certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
 jwcrypto>=1.4 # not directly required, pinned by Snyk to avoid a vulnerability
 cryptography>=41.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
