@@ -387,7 +387,9 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
     for _header_key, _header_value in dict(request.headers.copy()).items():
         if _header_key.lower() in FORWARDED_HEADERS:
             headers[_header_key] = _header_value
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(url=raw_url, allowed_hosts=url.hostname):
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(
+        url=raw_url, allowed_hosts=url.hostname
+    ):
         cookies = request.META["HTTP_COOKIE"]
 
     for cook in request.COOKIES:
@@ -1504,9 +1506,9 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
             except Link.MultipleObjectsReturned:
                 _d = dict(extension=ext, url=wms_url, mime=mime, link_type="image")
-                Link.objects.filter(resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image").update(
-                    **_d
-                )
+                Link.objects.filter(
+                    resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image"
+                ).update(**_d)
 
         if instance.subtype == "vector":
             links = wfs_links(

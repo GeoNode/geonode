@@ -33,7 +33,9 @@ urlpatterns = [
     re_path(r"^upload_metadata$", views.dataset_metadata_upload, name="dataset_metadata_upload"),
     re_path(r"^load_dataset_data$", views.load_dataset_data, name="load_dataset_data"),
     re_path(r"^(?P<layername>[^/]*)/metadata$", views.dataset_metadata, name="dataset_metadata"),
-    re_path(r"^(?P<layername>[^/]*)/metadata_advanced$", views.dataset_metadata_advanced, name="dataset_metadata_advanced"),
+    re_path(
+        r"^(?P<layername>[^/]*)/metadata_advanced$", views.dataset_metadata_advanced, name="dataset_metadata_advanced"
+    ),
     re_path(
         r"^(?P<granule_id>[^/]*)/(?P<layername>[^/]*)/granule_remove$",
         views.dataset_granule_remove,
@@ -46,7 +48,9 @@ urlpatterns = [
     re_path(r"^(?P<layername>[^/]*)/metadata_upload$", views.dataset_metadata_upload, name="dataset_metadata_upload"),
     re_path(r"^(?P<layername>[^/]+)/embed$", views.dataset_embed, name="dataset_embed"),
     re_path(r"^(?P<layername>[^/]*)/style_upload$", views.dataset_sld_upload, name="dataset_sld_upload"),
-    re_path(r"^(?P<layername>[^/]*)/feature_catalogue$", views.dataset_feature_catalogue, name="dataset_feature_catalogue"),
+    re_path(
+        r"^(?P<layername>[^/]*)/feature_catalogue$", views.dataset_feature_catalogue, name="dataset_feature_catalogue"
+    ),
     re_path(r"^metadata/batch/$", views.dataset_batch_metadata, name="dataset_batch_metadata"),
     re_path(r"^(?P<layername>[^/]*)/dataset_download$", views.dataset_download, name="dataset_download"),
     re_path(r"^", include("geonode.layers.api.urls")),

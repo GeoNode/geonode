@@ -25,7 +25,9 @@ from . import views
 
 urlpatterns = [  # 'geonode.groups.views',
     re_path(r"^$", TemplateView.as_view(template_name="groups/group_list.html"), name="group_list"),
-    re_path(r"^categories/$", TemplateView.as_view(template_name="groups/category_list.html"), name="group_category_list"),
+    re_path(
+        r"^categories/$", TemplateView.as_view(template_name="groups/category_list.html"), name="group_category_list"
+    ),
     re_path(r"^categories/_create/$", views.group_category_create, name="group_category_create"),
     re_path(r"^categories/(?P<slug>[-\w]+)/$", views.group_category_detail, name="group_category_detail"),
     re_path(r"^categories/(?P<slug>[-\w]+)/update/$", views.group_category_update, name="group_category_update"),

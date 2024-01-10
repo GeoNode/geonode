@@ -34,7 +34,7 @@ django-appconf==1.0.5
 django-celery-results==2.5.1
 django-filter==23.3
 django-imagekit==4.1.0
-django-taggit==1.5.1
+django-taggit==5.0.1
 django-markdownify==0.9.3
 django-mptt==0.15.0
 django-modeltranslation>=0.11,<0.19.0
@@ -90,12 +90,12 @@ git+https://github.com/cesar-benjamin/pinax-ratings.git@master#egg=pinax-ratings
 
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
--e git+https://github.com/GeoNode/geonode-mapstore-client.git@django_upgrade#egg=django_geonode_mapstore_client
--e git+https://github.com/GeoNode/geonode-importer.git@django_upgrade#egg=geonode-importer
+git+https://github.com/GeoNode/geonode-mapstore-client.git@django_upgrade#egg=django_geonode_mapstore_client
+git+https://github.com/GeoNode/geonode-importer.git@django_upgrade#egg=geonode-importer
 django-avatar==7.1.1
 geonode-oauth-toolkit==2.2.2
--e git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
--e git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
+git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
+git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
 django-activity-stream==2.0.0
 gn-arcrest==10.5.6
 geoserver-restconfig==2.0.9

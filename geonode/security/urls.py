@@ -26,7 +26,9 @@ urlpatterns = [
     re_path(r"^geolimits/(?P<resource_id>\d+)$", views.resource_geolimits, name="resource_geolimits"),
     re_path(r"^bulk-permissions/?$", views.set_bulk_permissions, name="bulk_permissions"),
     re_path(r"^request-permissions/?$", views.request_permissions, name="request_permissions"),
-    re_path(r"^invalidate-permissions-cache/?$", views.invalidate_permissions_cache, name="invalidate_permissions_cache"),
+    re_path(
+        r"^invalidate-permissions-cache/?$", views.invalidate_permissions_cache, name="invalidate_permissions_cache"
+    ),
     re_path(
         r"^invalidate_tileddataset_cache/?$", views.invalidate_tileddataset_cache, name="invalidate_tileddataset_cache"
     ),
