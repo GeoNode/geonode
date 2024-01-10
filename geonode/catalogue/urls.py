@@ -17,19 +17,19 @@
 #
 #########################################################################
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    url(r"^csw$", views.csw_global_dispatch, name="csw_global_dispatch"),
-    url(r"^opensearch$", views.opensearch_dispatch, name="opensearch_dispatch"),
-    url(
+    re_path(r"^csw$", views.csw_global_dispatch, name="csw_global_dispatch"),
+    re_path(r"^opensearch$", views.opensearch_dispatch, name="opensearch_dispatch"),
+    re_path(
         r"^csw_to_extra_format/(?P<layeruuid>[^/]*)/(?P<resname>[^/]*).txt$",
         views.csw_render_extra_format_txt,
         name="csw_render_extra_format_txt",
     ),
-    url(
+    re_path(
         r"^csw_to_extra_format/(?P<layeruuid>[^/]*)/(?P<resname>[^/]*).html$",
         views.csw_render_extra_format_html,
         name="csw_render_extra_format_html",

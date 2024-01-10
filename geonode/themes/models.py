@@ -22,7 +22,7 @@ from django.db import models
 from django.core.cache import cache
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 from django.db.models.signals import post_save, post_delete
 
 THEME_CACHE_KEY = "enabled_theme"

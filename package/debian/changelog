@@ -1262,7 +1262,7 @@ geonode (2.7.4+dev20171114153121) xenial; urgency=high
   [ Cezary Statkiewicz ]
   * [36e2aa] removed duplicate requirements
   * [a03357] monitoring docs: ghc integration note
-  * [e55f95] use ugettext_lazy for some strings used before i18n infra is up
+  * [e55f95] use gettext_lazy for some strings used before i18n infra is up
   * [266110] monitoring: updategeoip command
   * [2529f6] monitoring docs update
   * [f74ea7] monitoring: test fixes
@@ -5467,8 +5467,8 @@ geonode (2.4.0+alpha21) trusty; urgency=high
   * [3c6088] Display correct options in edit window (edit metadata, styles...) given the permissions the user has for the layer
   * [6eda03] Returning a 401 if user want to modify metadata but has not a change_resourcebase_metadata permission
   * [54e3ee] Returning a 401 if user want to modify metadata but has not a change_resourcebase_metadata permission
-  * [fcaf51] Returning a 401 if user want to view a layer but has not a view_resourcebase  permission. Using ugettext messages
-  * [f6058f] Returning a 401 if user want to view a layer but has not a view_resourcebase  permission. Using ugettext messages
+  * [fcaf51] Returning a 401 if user want to view a layer but has not a view_resourcebase  permission. Using gettext_lazy messages
+  * [f6058f] Returning a 401 if user want to view a layer but has not a view_resourcebase  permission. Using gettext_lazy messages
   * [2e1bf7] Enable edit in gxp if user has change_layer_data permission on the layer
   * [415894] Enable edit in gxp if user has change_layer_data permission on the layer
   * [ed3090] Now the document details page is update with the new custom permissions structure

@@ -28,7 +28,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
 

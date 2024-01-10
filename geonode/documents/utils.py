@@ -29,7 +29,7 @@ from geonode.storage.manager import storage_manager
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import loader
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 from django_downloadview.response import DownloadResponse
 

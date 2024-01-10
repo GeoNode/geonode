@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf.urls import url, include
+from django.urls import include, re_path
 from django.contrib.auth.decorators import login_required
 
 from .views import DocumentUploadView, DocumentUpdateView
@@ -27,14 +27,14 @@ js_info_dict = {
 }
 
 urlpatterns = [  # 'geonode.documents.views',
-    url(r"^(?P<docid>\d+)/download/?$", views.document_download, name="document_download"),
-    url(r"^(?P<docid>\d+)/link/?$", views.document_link, name="document_link"),
-    url(r"^(?P<docid>\d+)/replace$", login_required(DocumentUpdateView.as_view()), name="document_replace"),
-    url(r"^(?P<docid>\d+)/embed/?$", views.document_embed, name="document_embed"),
-    url(r"^upload/?$", login_required(DocumentUploadView.as_view()), name="document_upload"),
-    url(r"^(?P<docid>[^/]*)/metadata_detail$", views.document_metadata_detail, name="document_metadata_detail"),
-    url(r"^(?P<docid>\d+)/metadata$", views.document_metadata, name="document_metadata"),
-    url(r"^metadata/batch/$", views.document_batch_metadata, name="document_batch_metadata"),
-    url(r"^(?P<docid>\d+)/metadata_advanced$", views.document_metadata_advanced, name="document_metadata_advanced"),
-    url(r"^", include("geonode.documents.api.urls")),
+    re_path(r"^(?P<docid>\d+)/download/?$", views.document_download, name="document_download"),
+    re_path(r"^(?P<docid>\d+)/link/?$", views.document_link, name="document_link"),
+    re_path(r"^(?P<docid>\d+)/replace$", login_required(DocumentUpdateView.as_view()), name="document_replace"),
+    re_path(r"^(?P<docid>\d+)/embed/?$", views.document_embed, name="document_embed"),
+    re_path(r"^upload/?$", login_required(DocumentUploadView.as_view()), name="document_upload"),
+    re_path(r"^(?P<docid>[^/]*)/metadata_detail$", views.document_metadata_detail, name="document_metadata_detail"),
+    re_path(r"^(?P<docid>\d+)/metadata$", views.document_metadata, name="document_metadata"),
+    re_path(r"^metadata/batch/$", views.document_batch_metadata, name="document_batch_metadata"),
+    re_path(r"^(?P<docid>\d+)/metadata_advanced$", views.document_metadata_advanced, name="document_metadata_advanced"),
+    re_path(r"^", include("geonode.documents.api.urls")),
 ]

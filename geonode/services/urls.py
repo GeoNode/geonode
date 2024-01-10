@@ -17,20 +17,20 @@
 #
 #########################################################################
 
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 urlpatterns = [
     # 'geonode.services.views',
-    url(r"^$", views.services, name="services"),
-    url(r"^register/$", views.register_service, name="register_service"),
-    url(r"^(?P<service_id>\d+)/$", views.service_detail, name="service_detail"),
-    url(r"^(?P<service_id>\d+)/edit$", views.edit_service, name="edit_service"),
-    url(r"^(?P<service_id>\d+)/rescan$", views.rescan_service, name="rescan_service"),
-    url(r"^(?P<service_id>\d+)/remove", views.remove_service, name="remove_service"),
-    url(r"^(?P<service_id>\d+)/harvest$", views.harvest_resources, name="harvest_resources"),
-    url(
+    re_path(r"^$", views.services, name="services"),
+    re_path(r"^register/$", views.register_service, name="register_service"),
+    re_path(r"^(?P<service_id>\d+)/$", views.service_detail, name="service_detail"),
+    re_path(r"^(?P<service_id>\d+)/edit$", views.edit_service, name="edit_service"),
+    re_path(r"^(?P<service_id>\d+)/rescan$", views.rescan_service, name="rescan_service"),
+    re_path(r"^(?P<service_id>\d+)/remove", views.remove_service, name="remove_service"),
+    re_path(r"^(?P<service_id>\d+)/harvest$", views.harvest_resources, name="harvest_resources"),
+    re_path(
         r"^(?P<service_id>\d+)/harvest/(?P<resource_id>\S+)",
         views.harvest_single_resource,
         name="harvest_single_resource",

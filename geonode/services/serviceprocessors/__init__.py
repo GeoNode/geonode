@@ -19,7 +19,7 @@
 import logging
 
 from collections import OrderedDict
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode.services import enumerations
 from geonode.services.utils import parse_services_types

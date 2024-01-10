@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from geonode import GeoNodeException
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase, UserGeoLimit, GroupGeoLimit

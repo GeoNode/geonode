@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.template.loader import get_template
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from geonode.base.auth import get_or_create_token
 from geonode.geoserver.helpers import wps_format_is_supported

@@ -19,7 +19,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 from geonode.utils import parse_datetime
 from geonode.monitoring.utils import TypeChecks, collect_metric

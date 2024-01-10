@@ -23,7 +23,7 @@ import logging
 
 from django.conf import settings
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from lxml import etree
 from urllib.parse import urlencode, urljoin

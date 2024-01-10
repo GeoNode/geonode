@@ -39,7 +39,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
 from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from guardian.shortcuts import get_objects_for_user
 

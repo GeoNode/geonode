@@ -46,7 +46,7 @@ from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey

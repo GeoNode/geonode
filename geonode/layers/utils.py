@@ -39,7 +39,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.module_loading import import_string
 from django.core.exceptions import ObjectDoesNotExist, SuspiciousFileOperation
 

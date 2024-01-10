@@ -34,10 +34,10 @@ from django.db.models import Prefetch, Q
 from django.forms import models
 from django.forms.fields import ChoiceField, MultipleChoiceField
 from django.forms.utils import flatatt
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from modeltranslation.forms import TranslationModelForm
 from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
@@ -151,7 +151,7 @@ class RegionsSelect(forms.Select):
     def render_option_value(self, selected_choices, option_value, option_label, data_section=None):
         if option_value is None:
             option_value = ""
-        option_value = force_text(option_value)
+        option_value = force_str(option_value)
         if option_value in selected_choices:
             selected_html = mark_safe(" selected")
             if not self.allow_multiple_selected:
@@ -160,12 +160,12 @@ class RegionsSelect(forms.Select):
         else:
             selected_html = ""
 
-        label = force_text(option_label)
+        label = force_str(option_label)
 
         if data_section is None:
             data_section = ""
         else:
-            data_section = force_text(data_section)
+            data_section = force_str(data_section)
             if "/" in data_section:
                 label = format_html("{} [{}]", label, data_section.rsplit("/", 1)[1])
 
@@ -181,7 +181,7 @@ class RegionsSelect(forms.Select):
             else:
                 return choice.id
 
-        selected_choices = {force_text(_region_id_from_choice(v)) for v in selected_choices}
+        selected_choices = {force_str(_region_id_from_choice(v)) for v in selected_choices}
         output = []
 
         output.append(format_html('<optgroup label="{}">', "Global"))
@@ -192,25 +192,25 @@ class RegionsSelect(forms.Select):
 
         for option_value, option_label in self.choices:
             if isinstance(option_label, (list, tuple)) and not isinstance(option_label, str):
-                output.append(format_html('<optgroup label="{}">', force_text(option_value)))
+                output.append(format_html('<optgroup label="{}">', force_str(option_value)))
                 for option in option_label:
                     if isinstance(option, (list, tuple)) and not isinstance(option, str):
                         if isinstance(option[1][0], (list, tuple)) and not isinstance(option[1][0], str):
                             for option_child in option[1][0]:
                                 output.append(
                                     self.render_option_value(
-                                        selected_choices, *option_child, data_section=force_text(option[1][0][0])
+                                        selected_choices, *option_child, data_section=force_str(option[1][0][0])
                                     )
                                 )
                         else:
                             output.append(
                                 self.render_option_value(
-                                    selected_choices, *option[1], data_section=force_text(option[0])
+                                    selected_choices, *option[1], data_section=force_str(option[0])
                                 )
                             )
                     else:
                         output.append(
-                            self.render_option_value(selected_choices, *option, data_section=force_text(option_value))
+                            self.render_option_value(selected_choices, *option, data_section=force_str(option_value))
                         )
                 output.append("</optgroup>")
 

@@ -57,7 +57,7 @@ from geonode.upload.api.exceptions import GeneralUploadException
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
 from django.http import HttpResponse
@@ -68,7 +68,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, connection, transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode import geoserver, GeoNodeException  # noqa
 from geonode.compat import ensure_string
@@ -387,7 +387,7 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
     for _header_key, _header_value in dict(request.headers.copy()).items():
         if _header_key.lower() in FORWARDED_HEADERS:
             headers[_header_key] = _header_value
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, allowed_hosts=url.hostname):
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(url=raw_url, allowed_hosts=url.hostname):
         cookies = request.META["HTTP_COOKIE"]
 
     for cook in request.COOKIES:
@@ -1418,7 +1418,7 @@ def get_legend_url(
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
-    from django.utils.translation import ugettext
+    from django.utils.translation import gettext_lazy
 
     # Prune old links
     if prune:
@@ -1494,7 +1494,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             try:
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
-                    name=ugettext(name),
+                    name=gettext_lazy(name),
                     defaults=dict(
                         extension=ext,
                         url=wms_url,
@@ -1504,7 +1504,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
             except Link.MultipleObjectsReturned:
                 _d = dict(extension=ext, url=wms_url, mime=mime, link_type="image")
-                Link.objects.filter(resource=instance.resourcebase_ptr, name=ugettext(name), link_type="image").update(
+                Link.objects.filter(resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image").update(
                     **_d
                 )
 

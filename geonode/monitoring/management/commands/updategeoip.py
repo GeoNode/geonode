@@ -23,7 +23,7 @@ import tarfile
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 logger = logging.getLogger(__name__)
 

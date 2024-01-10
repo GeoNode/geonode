@@ -26,7 +26,7 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset

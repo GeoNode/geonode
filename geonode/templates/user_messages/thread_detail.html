@@ -27,7 +27,7 @@
 {% for message in thread.messages.all %}
   <div class="well">
     {% autoescape off %}{% avatar message.sender 50 %}{% endautoescape %}
-    {{ message.sent_at }} {% trans "by" %} {% ifequal request.user message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endifequal %}
+    {{ message.sent_at }} {% trans "by" %} {% if request.user == message.sender %}{% trans "me" %}{% else %}<a href="{{ message.sender.get_absolute_url }}">{{ message.sender }}</a>{% endif %}
     <p>{{ message.content }}</p>
   </div>
   {% empty %}

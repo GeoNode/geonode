@@ -31,7 +31,7 @@ from django.views.generic import FormView
 from django.http import HttpResponseRedirect
 from django.contrib.auth import get_user_model
 from django.contrib import messages
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin

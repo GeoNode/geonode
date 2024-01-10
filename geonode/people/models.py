@@ -29,7 +29,7 @@ from django.db.models.deletion import ProtectedError
 
 from django.urls import reverse
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser, Permission, UserManager
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 

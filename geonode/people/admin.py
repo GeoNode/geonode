@@ -18,12 +18,12 @@
 #########################################################################
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AdminPasswordChangeForm
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.db import transaction
@@ -111,7 +111,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         return [  # '',
-            url(r"^(\d+)/password/$", self.admin_site.admin_view(self.user_change_password))
+            re_path(r"^(\d+)/password/$", self.admin_site.admin_view(self.user_change_password))
         ] + super().get_urls()
 
     def lookup_allowed(self, lookup, value):

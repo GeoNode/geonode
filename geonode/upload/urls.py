@@ -16,11 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.conf.urls import url, include
+from django.urls import include, re_path
 
 from . import views
 
 urlpatterns = [  # 'geonode.upload.views',
-    url(r"^delete/(?P<id>\d+)?$", views.delete, name="data_upload_delete"),
-    url(r"^", include("geonode.upload.api.urls")),
+    re_path(r"^delete/(?P<id>\d+)?$", views.delete, name="data_upload_delete"),
+    re_path(r"^", include("geonode.upload.api.urls")),
 ]

@@ -19,7 +19,7 @@
 from geonode.celery_app import app as celery_app
 from geonode.management_commands_http.tasks import run_management_command_async
 from geonode.management_commands_http.models import ManagementCommandJob
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 def start_task(job: ManagementCommandJob):

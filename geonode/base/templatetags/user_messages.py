@@ -21,7 +21,7 @@ from django import template
 from django.conf import settings
 from django.db.models import Sum
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 register = template.Library()
 

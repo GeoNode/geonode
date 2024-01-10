@@ -26,7 +26,7 @@ from owslib.etree import etree as dlxml
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.clickjacking import xframe_options_exempt
 
