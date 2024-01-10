@@ -83,12 +83,16 @@ def resource_permissions_handle_post(request, resource):
                     "consistently!"
                 ).format(username=user.username)
 
-        return HttpResponse(json.dumps({"success": success, "message": str(message)}), status=200, content_type="text/plain")
+        return HttpResponse(
+            json.dumps({"success": success, "message": str(message)}), status=200, content_type="text/plain"
+        )
     except Exception as e:
         logger.exception(e)
         success = False
         message = _("Error updating permissions :(")
-        return HttpResponse(json.dumps({"success": success, "message": str(message)}), status=500, content_type="text/plain")
+        return HttpResponse(
+            json.dumps({"success": success, "message": str(message)}), status=500, content_type="text/plain"
+        )
 
 
 def resource_permissions(request, resource_id):
