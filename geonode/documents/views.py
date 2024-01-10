@@ -85,8 +85,6 @@ def document_link(request, docid):
 
 
 def document_embed(request, docid):
-    from django.http.response import HttpResponseRedirect
-
     document = get_object_or_404(Document, pk=docid)
 
     if not request.user.has_perm("base.download_resourcebase", obj=document.get_self_resource()):
@@ -106,8 +104,6 @@ def document_embed(request, docid):
             "resource": document.get_self_resource(),
         }
         return render(request, "documents/document_embed.html", context_dict)
-    if document.doc_url:
-        return HttpResponseRedirect(document.doc_url)
     else:
         context_dict = {
             "document_link": reverse("document_link", args=(document.id,)),
@@ -173,6 +169,7 @@ class DocumentUploadView(CreateView):
                     owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", file.name),
+                    extension=doc_form.pop("extension", None),
                     files=[storage_path],
                 ),
             )
@@ -186,6 +183,7 @@ class DocumentUploadView(CreateView):
                     owner=self.request.user,
                     doc_url=doc_form.pop("doc_url", None),
                     title=doc_form.pop("title", None),
+                    extension=doc_form.pop("extension", None),
                     sourcetype=enumerations.SOURCE_TYPE_REMOTE,
                 ),
             )
