@@ -25,7 +25,7 @@ zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.4.0
-PyMuPDF==1.23.4
+PyMuPDF==1.23.8
 pathvalidate==3.2.0
 
 # Django Apps
@@ -152,9 +152,9 @@ invoke==2.2.0
 # tests
 coverage==7.4.0
 requests-toolbelt==1.0.0
-flake8==6.1.0
+flake8==7.0.0
 black==23.12.1
-pytest==7.4.2
+pytest==7.4.4
 pytest-bdd==6.1.1
 splinter==0.19.0
 pytest-splinter==3.3.2
