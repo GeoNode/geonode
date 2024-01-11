@@ -20,7 +20,6 @@ import logging
 import os
 
 from django.conf import settings
-from django.core.management import call_command
 
 from celery import shared_task
 from celery.utils.log import get_task_logger

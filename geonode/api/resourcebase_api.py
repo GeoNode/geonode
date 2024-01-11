@@ -17,7 +17,6 @@
 #
 #########################################################################
 from geonode.base.enumerations import LAYER_TYPES
-import re
 import logging
 
 from django.db.models import Q
@@ -29,13 +28,7 @@ from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie import fields
-from tastypie.utils import trailing_slash
 
-from guardian.shortcuts import get_objects_for_user
-
-from django.urls import re_path
-from django.core.paginator import Paginator, InvalidPage
-from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 

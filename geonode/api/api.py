@@ -22,7 +22,6 @@ import time
 
 from django.apps import apps
 from django.db.models import Q
-from django.urls import re_path
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.urls import reverse
@@ -61,7 +60,6 @@ from tastypie.serializers import Serializer
 from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.utils import trailing_slash
 
 from geonode.utils import check_ogc_backend
 from geonode.security.utils import get_visible_resources
