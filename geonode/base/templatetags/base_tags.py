@@ -24,7 +24,6 @@ from django.db.models import Count
 from django.utils.translation import gettext_lazy
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
 
 from guardian.shortcuts import get_objects_for_user
 

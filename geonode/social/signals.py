@@ -35,7 +35,6 @@ from geonode.documents.models import Document
 from geonode.notifications_helper import (
     send_notification,
     queue_notification,
-    has_notifications,
     get_notification_recipients,
 )
 
@@ -45,6 +44,7 @@ activity = None
 if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
+
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """

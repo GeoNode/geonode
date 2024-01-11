@@ -20,16 +20,12 @@ import ast
 import json
 import re
 
-from decimal import Decimal
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
 
 from django.apps import apps
-from django.contrib.contenttypes.models import ContentType
 from django.core.validators import URLValidator
-from django.db import models
-from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings

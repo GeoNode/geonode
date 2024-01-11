@@ -17,8 +17,6 @@
 #
 #########################################################################
 
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Avg
 from haystack import indexes
 from geonode.documents.models import Document
 
