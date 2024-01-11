@@ -18,16 +18,12 @@
 #########################################################################
 
 from geonode.tests.base import GeoNodeBaseTestSupport
+from unittest.mock import patch
+from geonode.tasks.tasks import send_queued_notifications
 
 
 class TasksTest(GeoNodeBaseTestSupport):
-
-    """
-    Tests geonode.messaging
-    """
-
-    def setUp(self):
-        super().setUp()
-
-        self.adm_un = "admin"
-        self.adm_pw = "admin"
+    @patch("geonode.notifications_helper.has_notifications", False)
+    def test_send_queued_notifications_is_not_called_if_notification_is_off(self):
+        actual = send_queued_notifications()
+        self.assertIsNone(actual)

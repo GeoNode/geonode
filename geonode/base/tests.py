@@ -666,6 +666,17 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
 
         self.assertEqual(response.status_code, 503, "User is allowed to get index page")
 
+    @patch.dict(os.environ, {"FORCE_READ_ONLY_MODE": "True"})
+    def test_readonly_overwrite_by_env(self):
+        config = Configuration.load()
+        self.assertTrue(config.read_only)
+
+    @patch.dict(os.environ, {"FORCE_READ_ONLY_MODE": "False"})
+    def test_readonly_is_not_overwrite_by_env(self):
+        # will take the value from the db
+        config = Configuration.load()
+        self.assertFalse(config.read_only)
+
 
 class TestOwnerRightsRequestUtils(TestCase):
     def setUp(self):
