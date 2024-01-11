@@ -1404,8 +1404,8 @@ if CREATE_LAYER:
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
 
 if RECAPTCHA_ENABLED:
-    if "captcha" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("captcha",)
+    if "django_recaptcha" not in INSTALLED_APPS:
+        INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
         "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
     )
