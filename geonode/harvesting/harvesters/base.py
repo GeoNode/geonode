@@ -36,7 +36,6 @@ from geonode.storage.manager import storage_manager
 
 from .. import (
     config,
-    models,
     resourcedescriptor,
 )
 
@@ -247,6 +246,7 @@ class BaseHarvesterWorker(abc.ABC):
         if self.should_copy_resource(harvestable_resource):
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
         else:
+            defaults["subtype"] = "remote"
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
         return {key: value for key, value in defaults.items() if value is not None}
 
@@ -376,16 +376,9 @@ def _get_file_name(
     return sanitized
 
 
-def _generate_harvester_keyword(harvester_id):
-    harvester = models.Harvester.objects.get(pk=harvester_id)
-    return harvester.name.lower().replace("harvester ", "").replace("harvester_", "").replace("harvester", "").strip()
-
-
 def _consolidate_resource_keywords(
     resource_descriptor: resourcedescriptor.RecordDescription, geonode_resource, harvester_id: int
 ) -> typing.List[str]:
     geonode_keywords = geonode_resource.keyword_list() if geonode_resource else []
     keywords = list(resource_descriptor.identification.other_keywords) + geonode_keywords
-    harvester_keyword = _generate_harvester_keyword(harvester_id)
-    keywords.append(harvester_keyword)
     return list(set(keywords))

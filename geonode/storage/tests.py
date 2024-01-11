@@ -197,6 +197,7 @@ class TestGoogleStorageManager(SimpleTestCase):
         gcs.assert_called_once_with("name")
 
 
+@override_settings(AWS_STORAGE_BUCKET_NAME="my-bucket-name")
 class TestAwsStorageManager(SimpleTestCase):
     def setUp(self):
         self.sut = AwsStorageManager
@@ -572,7 +573,21 @@ class TestDataRetriever(TestCase):
 
         self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
         _files = storage_manager.get_retrieved_paths()
-        self.assertTrue("example.csv" in _files.get("base_file"))
+        # Selected base_file is not defined in case of multiple csv files
+        self.assertTrue(_files.get("base_file").endswith(".csv"))
+
+    def test_zip_file_should_correctly_index_file_extensions(self):
+        # reinitiate the storage manager with the zip file
+        storage_manager = self.sut(
+            remote_files={"base_file": os.path.join(f"{self.project_root}", "tests/data/example.zip")}
+        )
+        storage_manager.clone_remote_files()
+
+        self.assertIsNotNone(storage_manager.data_retriever.temporary_folder)
+        _files = storage_manager.get_retrieved_paths()
+        self.assertIsNotNone(_files.get("csv_file"))
+        # extensions found more than once get indexed
+        self.assertIsNotNone(_files.get("csv_file_1"))
 
     @override_settings(
         SUPPORTED_DATASET_FILE_TYPES=[

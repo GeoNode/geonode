@@ -213,6 +213,16 @@ class ProxyTest(GeoNodeBaseTestSupport):
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertEqual(response.status_code, 403)
 
+        url = f"{settings.SITEURL.rstrip('/')}@db/"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
+
+        url = f"{settings.SITEURL.rstrip('/')}%40db/"
+
+        response = self.client.get(f"{self.proxy_url}?url={url}")
+        self.assertEqual(response.status_code, 403)
+
         # Legit requests using the local host (SITEURL)
         url = f"/\\@%23{urlsplit(settings.SITEURL).hostname}"
 

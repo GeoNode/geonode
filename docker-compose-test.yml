@@ -3,7 +3,7 @@ version: '3.9'
 # Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
-  image: geonode/geonode:latest-ubuntu-22.10
+  image: geonode/geonode:latest-ubuntu-22.04
   restart: unless-stopped
   env_file:
     - .env_test
@@ -52,8 +52,7 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:1.25.1
-    build: ./scripts/docker/nginx/
+    image: geonode/nginx:1.25.3-latest
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
       - .env_test
@@ -68,10 +67,22 @@ services:
       - statics:/mnt/volumes/statics
     restart: unless-stopped
 
+  # memcached service
+  memcached:
+    image: memcached:alpine
+    container_name: memcached4${COMPOSE_PROJECT_NAME}
+    command: memcached ${MEMCACHED_OPTIONS}
+    restart: on-failure
+    healthcheck:
+      test: nc -z 127.0.0.1 11211
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
   # Gets and installs letsencrypt certificates
   letsencrypt:
-    image: geonode/letsencrypt:latest
-    build: ./scripts/docker/letsencrypt/
+    image: geonode/letsencrypt:2.6.0-latest
     container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
     env_file:
       - .env_test
@@ -81,7 +92,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.23.0
+    image: geonode/geoserver:2.23.3-latest
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -107,7 +118,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.23.0
+    image: geonode/geoserver_data:2.23.3-latest
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
@@ -119,7 +130,7 @@ services:
   # PostGIS database.
   db:
     # use geonode official postgis 15 image
-    image: geonode/postgis:15
+    image: geonode/postgis:15.3-latest
     command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS}"
     container_name: db4${COMPOSE_PROJECT_NAME}
     env_file:
