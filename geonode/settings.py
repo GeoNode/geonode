@@ -1286,30 +1286,6 @@ except ValueError:
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 
-# Haystack Search Backend Configuration. To enable,
-# first install the following:
-# - pip install django-haystack
-# - pip install pyelasticsearch
-# Set HAYSTACK_SEARCH to True
-# Run "python manage.py rebuild_index"
-HAYSTACK_SEARCH = ast.literal_eval(os.getenv("HAYSTACK_SEARCH", "False"))
-# Avoid permissions prefiltering
-SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
-# Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = ast.literal_eval(os.getenv("HAYSTACK_FACET_COUNTS", "True"))
-if HAYSTACK_SEARCH:
-    if "haystack" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("haystack",)
-    HAYSTACK_CONNECTIONS = {
-        "default": {
-            "ENGINE": "haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine",
-            "URL": os.getenv("HAYSTACK_ENGINE_URL", "http://127.0.0.1:9200/"),
-            "INDEX_NAME": os.getenv("HAYSTACK_ENGINE_INDEX_NAME", "haystack"),
-        },
-    }
-    HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-    HAYSTACK_SEARCH_RESULTS_PER_PAGE = int(os.getenv("HAYSTACK_SEARCH_RESULTS_PER_PAGE", "200"))
-
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
     "Atom",

@@ -100,10 +100,6 @@ geoserver-restconfig~=2.0.10
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
-# haystack/elasticsearch
-django-haystack==3.2.1
-elasticsearch>=2.0.0,<9.0.0
-
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.3
 

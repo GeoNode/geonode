@@ -41,9 +41,6 @@
                     $location.search()['category__identifier__in'], 'identifier');
             }
             $rootScope.categories = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
@@ -59,9 +56,6 @@
         function successCallback(data) {
             //success code
             $rootScope.groupCategories = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
@@ -83,9 +77,6 @@
                     $location.search()['keywords__slug__in'], 'slug');
             }
             $rootScope.keywords = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
@@ -149,9 +140,6 @@
                     $location.search()['tkeywords__id__in'], 'id');
             }
             $rootScope.tkeywords = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
@@ -174,9 +162,6 @@
                     $location.search()['regions__name__in'], 'name');
             }
             $rootScope.regions = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
@@ -191,9 +176,6 @@
         function successCallback(data) {
             //success code
             $rootScope.groups = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
@@ -215,82 +197,11 @@
                     $location.search()['owner__username__in'], 'identifier');
             }
             $rootScope.owners = data.data.objects;
-            if (HAYSTACK_FACET_COUNTS && $rootScope.query_data) {
-                module.haystack_facets($http, $rootScope, $location);
-            }
         };
 
         function errorCallback(error) {
             //error code
         };
-    }
-
-    // Update facet counts for categories and keywords
-    module.haystack_facets = function ($http, $rootScope, $location) {
-        var data = $rootScope.query_data;
-        if ("categories" in $rootScope) {
-            try {
-                $rootScope.category_counts = data.meta.facets.category;
-                for (var id in $rootScope.categories) {
-                    var category = $rootScope.categories[id];
-                    if (category.identifier in $rootScope.category_counts) {
-                        category.count = $rootScope.category_counts[category.identifier]
-                    } else {
-                        category.count = 0;
-                    }
-                }
-            } catch (err) {
-                // console.log(err);
-            }
-        }
-
-        if ("keywords" in $rootScope) {
-            try {
-                $rootScope.keyword_counts = data.meta.facets.keywords;
-                for (var id in $rootScope.keywords) {
-                    var keyword = $rootScope.keywords[id];
-                    if (keyword.slug in $rootScope.keyword_counts) {
-                        keyword.count = $rootScope.keyword_counts[keyword.slug]
-                    } else {
-                        keyword.count = 0;
-                    }
-                }
-            } catch (err) {
-                // console.log(err);
-            }
-        }
-
-        if ("regions" in $rootScope) {
-            try {
-                $rootScope.regions_counts = data.meta.facets.regions;
-                for (var id in $rootScope.regions) {
-                    var region = $rootScope.regions[id];
-                    if (region.name in $rootScope.region_counts) {
-                        region.count = $rootScope.region_counts[region.name]
-                    } else {
-                        region.count = 0;
-                    }
-                }
-            } catch (err) {
-                // console.log(err);
-            }
-        }
-
-        if ("owners" in $rootScope) {
-            try {
-                $rootScope.owner_counts = data.meta.facets.owners;
-                for (var id in $rootScope.owners) {
-                    var owner = $rootScope.owners[id];
-                    if (owner.name in $rootScope.owner_counts) {
-                        owner.count = $rootScope.owner_counts[owner.name]
-                    } else {
-                        owner.count = 0;
-                    }
-                }
-            } catch (err) {
-                // console.log(err);
-            }
-        }
     }
 
     /*
@@ -372,39 +283,17 @@
                 $scope.results = data.data.objects;
                 $scope.total_counts = data.data.meta.total_count;
                 $scope.$root.query_data = data.data;
-                if (HAYSTACK_SEARCH) {
-                    if ($location.search().hasOwnProperty('q')) {
-                        $scope.text_query = $location.search()['q'].replace(/\+/g, " ");
-                    }
-                } else {
-                    if ($location.search().hasOwnProperty('title__icontains')) {
-                        $scope.text_query = $location.search()['title__icontains'].replace(/\+/g, " ");
-                    }
-                    if ($location.search().hasOwnProperty('name__icontains')) {
-                        $scope.text_query = $location.search()['name__icontains'].replace(/\+/g, " ");
-                    }
-                    if ($location.search().hasOwnProperty('name')) {
-                        $scope.text_query = $location.search()['name'].replace(/\+/g, " ");
-                    }
+
+                if ($location.search().hasOwnProperty('title__icontains')) {
+                    $scope.text_query = $location.search()['title__icontains'].replace(/\+/g, " ");
+                }
+                if ($location.search().hasOwnProperty('name__icontains')) {
+                    $scope.text_query = $location.search()['name__icontains'].replace(/\+/g, " ");
+                }
+                if ($location.search().hasOwnProperty('name')) {
+                    $scope.text_query = $location.search()['name'].replace(/\+/g, " ");
                 }
 
-                //Update facet/keyword/category counts from search results
-                if (HAYSTACK_FACET_COUNTS) {
-                    try {
-                        module.haystack_facets($http, $scope.$root, $location);
-                        $("#types").find("a").each(function () {
-                            if ($(this)[0].id in data.data.meta.facets.subtype) {
-                                $(this).find("span").text(data.data.meta.facets.subtype[$(this)[0].id]);
-                            } else if ($(this)[0].id in data.data.meta.facets.type) {
-                                $(this).find("span").text(data.data.meta.facets.type[$(this)[0].id]);
-                            } else {
-                                $(this).find("span").text("0");
-                            }
-                        });
-                    } catch (err) {
-                        // console.log(err);
-                    }
-                }
             };
 
             function errorCallback(error) {
@@ -633,35 +522,31 @@
         }
 
         $('#text_search_btn').click(function () {
-            if (HAYSTACK_SEARCH) {
-                $scope.query['q'] = $('#text_search_input').val();
+            if (AUTOCOMPLETE_URL_RESOURCEBASE == "/people/autocomplete/") { // updated url to work with new autocomplete backend format
+                // a user profile has no title; if search was triggered from
+                // the /people page, filter by username instead
+                var query_key = 'username__icontains';
+            } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete_category/") {
+                // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
+                var query_key = 'name__icontains';
+            } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete/") {
+                // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
+                var query_key = $('#text_search_input').data('query-key') || 'title';
             } else {
-                if (AUTOCOMPLETE_URL_RESOURCEBASE == "/people/autocomplete/") { // updated url to work with new autocomplete backend format
-                    // a user profile has no title; if search was triggered from
-                    // the /people page, filter by username instead
-                    var query_key = 'username__icontains';
-                } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete_category/") {
-                    // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
-                    var query_key = 'name__icontains';
-                } else if (AUTOCOMPLETE_URL_RESOURCEBASE == "/groups/autocomplete/") {
-                    // Adding in this conditional since both groups autocomplete and searches requests need to search name not title.
-                    var query_key = $('#text_search_input').data('query-key') || 'title';
-                } else {
-                    var query_key = $('#text_search_input').data('query-key') || 'title__icontains';
-                }
-                if ($('#text_search_input').val()) {
-                    $scope.query[query_key] = $('#text_search_input').val();
-                } else {
-                    // Reset query context
-                    var limit = $scope.query['limit'];
-                    var offset = $scope.query['offset'];
-                    var order_by = $scope.query['order_by'];
-                    $scope.query = {};
-                    $scope.query['limit'] = limit;
-                    $scope.query['offset'] = offset;
-                    if (order_by) {
-                        $scope.query['order_by'] = order_by;
-                    }
+                var query_key = $('#text_search_input').data('query-key') || 'title__icontains';
+            }
+            if ($('#text_search_input').val()) {
+                $scope.query[query_key] = $('#text_search_input').val();
+            } else {
+                // Reset query context
+                var limit = $scope.query['limit'];
+                var offset = $scope.query['offset'];
+                var order_by = $scope.query['order_by'];
+                $scope.query = {};
+                $scope.query['limit'] = limit;
+                $scope.query['offset'] = offset;
+                if (order_by) {
+                    $scope.query['order_by'] = order_by;
                 }
             }
             if ($('#text_search_input').val() || $('#text_search_input').val()) {
