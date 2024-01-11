@@ -43,10 +43,6 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
-from pinax.ratings.categories import category_value
-from pinax.ratings.models import OverallRating, Rating
-from pinax.ratings.views import NUM_OF_RATINGS
-
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -1284,47 +1280,6 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
-
-    @extend_schema(
-        methods=["post", "get"],
-        responses={200},
-        description="API endpoint allowing to rate and get overall rating of the Resource.",
-    )
-    @action(
-        detail=True,
-        url_path="ratings",
-        url_name="ratings",
-        methods=["post", "get"],
-        permission_classes=[
-            IsAuthenticatedOrReadOnly,
-            UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
-        ],
-    )
-    def ratings(self, request, pk, *args, **kwargs):
-        resource = get_object_or_404(ResourceBase, pk=pk)
-        resource = resource.get_real_instance()
-        ct = ContentType.objects.get_for_model(resource)
-        if request.method == "POST":
-            rating_input = int(request.data.get("rating"))
-            category = resource._meta.object_name.lower()
-            # check if category is configured in settings.PINAX_RATINGS_CATEGORY_CHOICES
-            cat_choice = category_value(resource, category)
-
-            # Check for errors and bail early
-            if category and cat_choice is None:
-                return HttpResponseForbidden("Invalid category. It must match a preconfigured setting")
-            if rating_input not in range(NUM_OF_RATINGS + 1):
-                return HttpResponseForbidden(f"Invalid rating. It must be a value between 0 and {NUM_OF_RATINGS}")
-            Rating.update(rating_object=resource, user=request.user, category=cat_choice, rating=rating_input)
-        user_rating = None
-        if request.user.is_authenticated:
-            user_rating = Rating.objects.filter(object_id=resource.pk, content_type=ct, user=request.user).first()
-        overall_rating = OverallRating.objects.filter(object_id=resource.pk, content_type=ct).aggregate(
-            r=models.Avg("rating")
-        )["r"]
-        overall_rating = Decimal(str(overall_rating or "0"))
-
-        return Response({"rating": user_rating.rating if user_rating else 0, "overall_rating": overall_rating})
 
     @extend_schema(
         methods=["put"], responses={200}, description="API endpoint allowing to set thumbnail of the Resource."

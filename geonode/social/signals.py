@@ -46,12 +46,6 @@ if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
 
-ratings = None
-if "pinax.ratings" in settings.INSTALLED_APPS:
-    ratings = True
-    from pinax.ratings.models import Rating
-
-
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
     """
     Creates new activities after a Map, Dataset, or Document is created/updated/deleted.
@@ -183,8 +177,3 @@ def rating_post_save(instance, sender, created, **kwargs):
         notice_type_label,
         {"resource": instance.content_object, "user": instance.user, "rating": instance.rating},
     )
-
-
-# rating notifications
-if ratings and has_notifications:
-    signals.post_save.connect(rating_post_save, sender=Rating)

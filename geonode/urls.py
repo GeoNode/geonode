@@ -95,7 +95,6 @@ urlpatterns += [
     re_path(r"^invitations/", include("geonode.invitations.urls", namespace="geonode.invitations")),
     re_path(r"^people/", include("geonode.people.urls")),
     re_path(r"^avatar/", include("avatar.urls")),
-    re_path(r"^ratings/", include("pinax.ratings.urls", namespace="pinax_ratings")),
     re_path(r"^activity/", include("actstream.urls")),
     re_path(r"^announcements/", include("announcements.urls")),
     re_path(r"^messages/", include("user_messages.urls")),

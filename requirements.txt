@@ -85,7 +85,7 @@ git+https://github.com/5-studio/dynamic-rest.git@master#egg=dynamic_rest
 Markdown==3.5
 
 git+https://github.com/Virtualstock/pinax-notifications-vs.git
-git+https://github.com/cesar-benjamin/pinax-ratings.git@master#egg=pinax-ratings
+#git+https://github.com/cesar-benjamin/pinax-ratings.git@master#egg=pinax-ratings
 
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5

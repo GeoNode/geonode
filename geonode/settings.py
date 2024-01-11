@@ -487,7 +487,6 @@ INSTALLED_APPS = (
     "django_forms_bootstrap",
     # Social
     "avatar",
-    "pinax.ratings",
     "announcements",
     "actstream",
     "user_messages",

@@ -17,9 +17,6 @@
 #
 #########################################################################
 
-from pinax.ratings.models import OverallRating
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Avg
 from haystack import indexes
 from geonode.maps.models import Dataset
 
@@ -57,8 +54,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
     regions = indexes.MultiValueField(model_attr="region_name_list", null=True, faceted=True, stored=True)
     popular_count = indexes.IntegerField(model_attr="popular_count", default=0, boost=20)
     share_count = indexes.IntegerField(model_attr="share_count", default=0)
-    rating = indexes.IntegerField(null=True)
-    num_ratings = indexes.IntegerField(stored=False)
 
     def get_model(self):
         return Dataset
@@ -76,21 +71,6 @@ class LayerIndex(indexes.SearchIndex, indexes.Indexable):
             return "raster"
         elif obj.subtype in ["tileStore", "remote"]:
             return "remote"
-
-    def prepare_rating(self, obj):
-        ct = ContentType.objects.get_for_model(obj)
-        try:
-            rating = OverallRating.objects.filter(object_id=obj.pk, content_type=ct).aggregate(r=Avg("rating"))["r"]
-            return float(str(rating or "0"))
-        except OverallRating.DoesNotExist:
-            return 0.0
-
-    def prepare_num_ratings(self, obj):
-        ct = ContentType.objects.get_for_model(obj)
-        try:
-            return OverallRating.objects.filter(object_id=obj.pk, content_type=ct).all().count()
-        except OverallRating.DoesNotExist:
-            return 0
 
     def prepare_title_sortable(self, obj):
         return obj.title.lower()

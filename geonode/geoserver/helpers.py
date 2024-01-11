@@ -36,7 +36,6 @@ from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
 from urllib.parse import urlparse, urlencode, urlsplit, urljoin
-from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
