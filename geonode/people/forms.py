@@ -72,4 +72,5 @@ class ProfileForm(forms.ModelForm):
             "is_superuser",
             "is_active",
             "date_joined",
+            "language",
         )

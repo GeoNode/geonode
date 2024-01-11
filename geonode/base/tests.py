@@ -157,11 +157,111 @@ class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
         Test that calling add_missing_metadata_author_or_poc resource method sets
         a missing metadata_author and/or point of contact (poc) to resource owner
         """
-        user = get_user_model().objects.create(username="zlatan_i")
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+
         self.rb.owner = user
         self.rb.add_missing_metadata_author_or_poc()
-        self.assertEqual(self.rb.metadata_author.username, "zlatan_i")
-        self.assertEqual(self.rb.poc.username, "zlatan_i")
+        self.assertTrue("zlatan_i" in [author.username for author in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" in [author.username for author in self.rb.poc])
+
+
+class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
+
+    """
+    Test that contact roles can be set as people profile
+    """
+
+    def test_set_contact_role_as_people_profile(self):
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+
+        self.rb.owner = user
+        self.rb.metadata_author = user
+        self.rb.poc = user
+        self.rb.publisher = user
+        self.rb.custodian = user
+        self.rb.distributor = user
+        self.rb.resource_user = user
+        self.rb.resource_provider = user
+        self.rb.originator = user
+        self.rb.principal_investigator = user
+        self.rb.processor = user
+
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.poc])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.publisher])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.custodian])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.distributor])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.resource_user])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.resource_provider])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.originator])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.principal_investigator])
+        self.assertTrue("zlatan_i" in [cr.username for cr in self.rb.processor])
+
+    """
+    Test that contact roles can be set as list of people profiles
+    """
+
+    def test_set_contact_role_as_list_of_people(self):
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+        user2, _ = get_user_model().objects.get_or_create(username="sven_z")
+
+        profile_list = [user, user2]
+
+        self.rb.owner = user
+        self.rb.metadata_author = profile_list
+        self.rb.poc = profile_list
+        self.rb.publisher = profile_list
+        self.rb.custodian = profile_list
+        self.rb.distributor = profile_list
+        self.rb.resource_user = profile_list
+        self.rb.resource_provider = profile_list
+        self.rb.originator = profile_list
+        self.rb.principal_investigator = profile_list
+        self.rb.processor = profile_list
+
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.poc])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.publisher])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.custodian])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.distributor])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_user])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_provider])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.originator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.principal_investigator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.processor])
+
+    """
+    Test that contact roles can be set as queryset
+    """
+
+    def test_set_contact_role_as_queryset(self):
+        user, _ = get_user_model().objects.get_or_create(username="zlatan_i")
+        user2, _ = get_user_model().objects.get_or_create(username="sven_z")
+
+        query = get_user_model().objects.filter(username__in=["zlatan_i", "sven_z"])
+
+        self.rb.owner = user
+        self.rb.metadata_author = query
+        self.rb.poc = query
+        self.rb.publisher = query
+        self.rb.custodian = query
+        self.rb.distributor = query
+        self.rb.resource_user = query
+        self.rb.resource_provider = query
+        self.rb.originator = query
+        self.rb.principal_investigator = query
+        self.rb.processor = query
+
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.metadata_author])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.poc])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.publisher])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.custodian])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.distributor])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_user])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.resource_provider])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.originator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.principal_investigator])
+        self.assertTrue("zlatan_i" and "sven_z" in [cr.username for cr in self.rb.processor])
 
 
 class RenderMenuTagTest(GeoNodeBaseTestSupport):
@@ -565,6 +665,17 @@ class ConfigurationTest(GeoNodeBaseTestSupport):
         response = web_client.get("/")
 
         self.assertEqual(response.status_code, 503, "User is allowed to get index page")
+
+    @patch.dict(os.environ, {"FORCE_READ_ONLY_MODE": "True"})
+    def test_readonly_overwrite_by_env(self):
+        config = Configuration.load()
+        self.assertTrue(config.read_only)
+
+    @patch.dict(os.environ, {"FORCE_READ_ONLY_MODE": "False"})
+    def test_readonly_is_not_overwrite_by_env(self):
+        # will take the value from the db
+        config = Configuration.load()
+        self.assertFalse(config.read_only)
 
 
 class TestOwnerRightsRequestUtils(TestCase):

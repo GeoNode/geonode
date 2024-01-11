@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2017 OSGeo
+# Copyright (C) 2016 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,13 +17,27 @@
 #
 #########################################################################
 
-from geonode.tests.base import GeoNodeBaseTestSupport
-from unittest.mock import patch
-from geonode.tasks.tasks import send_queued_notifications
+from django import template
+
+register = template.Library()
 
 
-class TasksTest(GeoNodeBaseTestSupport):
-    @patch("geonode.notifications_helper.has_notifications", False)
-    def test_send_queued_notifications_is_not_called_if_notification_is_off(self):
-        actual = send_queued_notifications()
-        self.assertIsNone(actual)
+@register.filter(is_safe=True)
+def get_contact_role_id(form, contact):
+    return id(form.fields[contact])
+
+
+@register.filter(is_safe=True)
+def get_contact_role_label(form, contact):
+    return form.fields[contact].label
+
+
+@register.filter(is_safe=True)
+def get_contact_role_value(form, contact):
+    return form[contact]
+
+
+@register.simple_tag
+def getattribute(form, contact):
+    """Gets an attribute of an object dynamically from a string name"""
+    return form[contact]

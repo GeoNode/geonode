@@ -47,7 +47,7 @@ class Document(ResourceBase):
     doc_url = models.URLField(
         blank=True,
         null=True,
-        max_length=255,
+        max_length=512,
         help_text=_("The URL of the document if it is external."),
         verbose_name=_("URL"),
     )
