@@ -25,10 +25,8 @@ from owslib.etree import etree as dlxml
 from rest_framework import status
 
 from django.urls import reverse
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 
 from geonode import geoserver
 from geonode.maps import MapsAppConfig
@@ -611,14 +609,6 @@ community."
             self.assertTrue(self.check_notification_out("map_updated", self.u))
 
             self.clear_notifications_queue()
-            lct = ContentType.objects.get_for_model(_l)
-            if "pinax.ratings" in settings.INSTALLED_APPS:
-                self.clear_notifications_queue()
-                from pinax.ratings.models import Rating
-
-                rating = Rating(user=self.norman, content_type=lct, object_id=_l.id, content_object=_l, rating=5)
-                rating.save()
-                self.assertTrue(self.check_notification_out("map_rated", self.u))
 
 
 class TestMapForm(GeoNodeBaseTestSupport):
