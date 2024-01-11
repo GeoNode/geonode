@@ -24,7 +24,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
 
-from django_recaptcha.fields import ReCaptchaField
+try:
+    from captcha.fields import ReCaptchaField
+except ImportError:
+    from django_recaptcha.fields import ReCaptchaField
 
 # Ported in from django-registration
 attrs_dict = {"class": "required"}
