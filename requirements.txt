@@ -9,7 +9,7 @@ amqp==5.2.0
 beautifulsoup4==4.12.2
 httplib2<0.22.1
 hyperlink==21.0.0
-idna>=2.5,<3.5
+idna>=2.5,<3.7
 urllib3==1.26.18
 Paver==1.3.4
 python-slugify==8.0.1
@@ -19,7 +19,7 @@ kombu==5.3.4
 vine==5.1.0
 tqdm==4.66.1
 Deprecated==1.2.14
-wrapt==1.15.0
+wrapt==1.16.0
 jsonschema==4.20.0
 zipstream-new==1.1.8
 schema==0.7.5
@@ -30,9 +30,9 @@ pathvalidate==3.2.0
 
 # Django Apps
 django-allauth==0.54.0
-django-appconf==1.0.5
+django-appconf==1.0.6
 django-celery-results==2.5.1
-django-filter==23.3
+django-filter==23.5
 django-imagekit==4.1.0
 django-taggit==5.0.1
 django-markdownify==0.9.3
@@ -49,14 +49,14 @@ django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.5.0
 django-sequences==2.9
 oauthlib==3.2.2
-pyopenssl==23.2.0
+pyopenssl==23.3.0
 pyjwt==2.8.0
 
 # geopython dependencies
 pyproj<3.7.0
 OWSLib==0.29.3
 pycsw==2.6.1
-SQLAlchemy==2.0.21 # required by PyCSW
+SQLAlchemy==2.0.22 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 numpy==1.26.*
@@ -70,8 +70,8 @@ django-select2==8.1.2
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
 django-autocomplete-light==3.9.5
-django-invitations<2.0.1
-django-recaptcha==3.0.0
+django-invitations<2.1.1
+django-recaptcha==4.0.0
 
 # REST
 djangorestframework==3.14.0
@@ -79,8 +79,9 @@ djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
-drf-spectacular==0.26.5
+drf-spectacular==0.27.0
 git+https://github.com/5-studio/dynamic-rest.git@master#egg=dynamic_rest
+Markdown==3.5.1
 
 Markdown==3.5
 
@@ -90,7 +91,7 @@ git+https://github.com/Virtualstock/pinax-notifications-vs.git
 # django-geonode-mapstore-client==4.0.5
 git+https://github.com/GeoNode/geonode-mapstore-client.git@django_upgrade#egg=django_geonode_mapstore_client
 git+https://github.com/GeoNode/geonode-importer.git@django_upgrade#egg=geonode-importer
-django-avatar==7.1.1
+django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2
 git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
 git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
@@ -106,8 +107,8 @@ django-bootstrap3-datetimepicker-2==2.8.3
 # storage manager dependencies
 django-storages==1.14.2
 dropbox==11.36.2
-google-cloud-storage==2.11.0
-google-cloud-core==2.3.3
+google-cloud-storage==2.14.0
+google-cloud-core==2.4.1
 boto3==1.34.15
 
 # Django Caches
@@ -129,18 +130,18 @@ sherlock==0.4.1
 
 # required by monitoring
 psutil==5.9.7
-django-cors-headers==4.2.0
+django-cors-headers==4.3.1
 user-agents
 django-user-agents
 xmljson
-django-ipware<5.1
+django-ipware<6.1
 # no version here, use latest one with fresh data
 pycountry
 
 # production
 gunicorn==21.2.0
 ipython==8.20.0
-docker==6.1.3
+docker==7.0.0
 invoke==2.2.0
 
 # tests
@@ -150,11 +151,11 @@ flake8==7.0.0
 black==23.12.1
 pytest==7.4.4
 pytest-bdd==7.0.1
-splinter==0.19.0
+splinter==0.20.1
 pytest-splinter==3.3.2
 pytest-django==4.7.0
-setuptools>=59.1.1,<69.0.3
-pip==23.2.1
+setuptools>=65.5.1,<69.1.0
+pip==23.3.1
 Twisted==23.10.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
