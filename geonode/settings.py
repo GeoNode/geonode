@@ -1286,6 +1286,8 @@ except ValueError:
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 
+# Avoid permissions prefiltering
+SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
     "Atom",
