@@ -80,7 +80,7 @@ djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
 drf-spectacular==0.27.0
-git+https://github.com/GeoNode/dynamic-rest.git@django_upgrade#egg=dynamic_rest
+git+https://github.com/GeoNode/dynamic-rest.git@master#egg=dynamic_rest
 Markdown==3.5.1
 
 git+https://github.com/Virtualstock/pinax-notifications-vs.git
