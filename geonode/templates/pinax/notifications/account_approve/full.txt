@@ -1,7 +1,7 @@
 {% load i18n %}
 {% trans "User" %} "{{from_user}}" ({{from_user.email}}) 
 {% if account_approval_required %}
-    {% trans "has requested access to the site." %} {% trans "You can enable access by setting the user as active on the admin section" %}: http://{{current_site}}/admin/people/profile/{{from_user.id}}
+    {% trans "has requested access to the site." %} {% trans "You can enable access by setting the user as active on the admin section" %}: {{ default_http_protocol }}://{{current_site}}/admin/people/profile/{{from_user.id}}
 {% else %}
     {% trans "has created an account and has access to the site." %}
 {% endif %}
