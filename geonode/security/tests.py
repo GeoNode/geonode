@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import geoserver.catalog
 import json
 import base64
 import logging
@@ -1238,6 +1239,59 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         finally:
             if dataset:
                 dataset.delete()
+
+    def test_get_visible_resources_should_return_with_advertised_false(self):
+        """
+        If advertised filter is provided, the API should filter the resource
+        If false should return only the resources which are not advertised
+        """
+        try:
+            dataset = create_single_dataset("dataset_with_advertised_false")
+            dataset.advertised = False
+            dataset.save()
+
+            layers = Dataset.objects.all()
+            actual = get_visible_resources(
+                queryset=layers, advertised=False, user=get_user_model().objects.get(username=self.user)
+            )
+            self.assertEqual(1, actual.count())
+        finally:
+            if dataset:
+                dataset.delete()
+
+    def test_get_visible_resources_should_return_with_advertised_True(self):
+        """
+        If advertised filter is provided, the API should filter the resource
+        If TRUE should return only the resources which are advertised
+        """
+        try:
+            prev = Dataset.objects.count()
+
+            lry = Dataset.objects.first()
+            lry.advertised = False
+            lry.save()
+
+            layers = Dataset.objects.all()
+            actual = get_visible_resources(
+                queryset=layers, advertised=True, user=get_user_model().objects.get(username=self.user)
+            )
+            self.assertEqual(prev - 1, actual.count())
+        finally:
+            Dataset.objects.update(advertised=True)
+
+    def test_get_visible_resources_should_return_with_advertised_None(self):
+        """
+        If advertised filter is provided, the API should filter the resource
+        If None should return all the resources based on the user permission and advertised rules
+        """
+        try:
+            layers = Dataset.objects.all()
+            actual = get_visible_resources(
+                queryset=layers, advertised=None, user=get_user_model().objects.get(username=self.user)
+            )
+            self.assertEqual(layers.count(), actual.count())
+        finally:
+            Dataset.objects.update(advertised=True)
 
     @override_settings(ADMIN_MODERATE_UPLOADS=True, RESOURCE_PUBLISHING=True, GROUP_PRIVATE_RESOURCES=True)
     def test_get_visible_resources_advanced_workflow(self):

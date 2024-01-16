@@ -2511,6 +2511,63 @@ class BaseApiTests(APITestCase):
         download_url = response.json().get("resource").get("download_urls")
         self.assertEqual(expected_payload, download_url)
 
+    def test_api_should_return_all_resources_for_admin(self):
+        """
+        Api whould return all resources even if advertised=False.
+        """
+        url = reverse("base-resources-list")
+        self.client.login(username="admin", password="admin")
+        payload = self.client.get(url)
+        prev_count = payload.json().get("total")
+        # update all the resource to advertised=False
+        Dataset.objects.update(advertised=False)
+        url = reverse("base-resources-list")
+        payload = self.client.get(url)
+        new_count = payload.json().get("total")
+        self.assertEqual(new_count, prev_count)
+
+        Dataset.objects.update(advertised=True)
+
+    def test_api_should_return_advertised_resource_if_anonymous(self):
+        """
+        If anonymous user, only the advertised resoruces whould be returned by the API.
+        """
+        url = reverse("base-resources-list")
+        self.client.login(username="admin", password="admin")
+        payload = self.client.get(url)
+        prev_count = payload.json().get("total")
+        # update all the resource to advertised=False
+        Dataset.objects.update(advertised=False)
+        url = reverse("base-resources-list")
+        payload = self.client.get(url)
+        new_count = payload.json().get("total")
+        self.assertEqual(new_count, prev_count)
+
+        Dataset.objects.update(advertised=True)
+
+    def test_api_should_return_only_the_advertised_false_where_user_is_owner(self):
+        """
+        Api Should return all the resource with advertised=True
+        And the resource with advertised=False if is owner of it
+        """
+        # defining a new user
+        test_user_for_api = get_user_model().objects.create(username="test_user_for_api", password="password")
+        # creating a new resource for the user with advertised=False
+        dataset = create_single_dataset(name="test_resource_for_api", owner=test_user_for_api, advertised=False)
+        url = reverse("base-resources-list")
+        self.client.force_login(test_user_for_api)
+        payload = self.client.get(f"{url}?limit=1000")
+        # the uuid of the dataset is in the returned payload
+        self.assertTrue(dataset.uuid in [k["uuid"] for k in payload.json()["resources"]])
+        # bobby is not able to see the dataset belonging to the previous user
+        self.client.login(username="bobby", password="bob")
+        payload = self.client.get(url)
+        self.assertFalse(dataset.uuid in [k["uuid"] for k in payload.json()["resources"]])
+
+        # cleanup
+        dataset.delete()
+        test_user_for_api.delete()
+
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):

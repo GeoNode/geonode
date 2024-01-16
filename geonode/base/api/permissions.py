@@ -205,10 +205,16 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
         except Exception:
             metadata_only = None
 
+        try:
+            advertised = strtobool(request.query_params.get("filter{advertised}", "None"))
+        except Exception:
+            advertised = None
+
         return get_visible_resources(
             queryset,
             request.user,
             metadata_only=metadata_only,
+            advertised=advertised,
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
