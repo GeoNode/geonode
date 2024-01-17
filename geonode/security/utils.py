@@ -96,9 +96,9 @@ def get_visible_resources(
     if advertised is not None:
         filter_set = filter_set.filter(advertised=advertised)
 
-    if not is_admin and not user.is_anonymous:
+    if not is_admin and user and not user.is_anonymous:
         filter_set = (filter_set.filter(advertised=True) | filter_set.filter(owner=user)).distinct()
-    elif user.is_anonymous:
+    elif not user or user.is_anonymous:
         filter_set = filter_set.filter(advertised=True)
 
     if not is_admin:

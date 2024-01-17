@@ -2533,7 +2533,6 @@ class BaseApiTests(APITestCase):
         If anonymous user, only the advertised resoruces whould be returned by the API.
         """
         url = reverse("base-resources-list")
-        self.client.login(username="admin", password="admin")
         payload = self.client.get(url)
         prev_count = payload.json().get("total")
         # update all the resource to advertised=False
@@ -2541,7 +2540,7 @@ class BaseApiTests(APITestCase):
         url = reverse("base-resources-list")
         payload = self.client.get(url)
         new_count = payload.json().get("total")
-        self.assertEqual(new_count, prev_count)
+        self.assertNotEqual(new_count, prev_count)
 
         Dataset.objects.update(advertised=True)
 
