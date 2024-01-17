@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import geoserver.catalog
 import json
 import base64
 import logging
