@@ -2567,6 +2567,40 @@ class BaseApiTests(APITestCase):
         dataset.delete()
         test_user_for_api.delete()
 
+    def test_api_should_filter_by_advertised_param(self):
+        """
+        If anonymous user, only the advertised resoruces whould be returned by the API.
+        """
+        dts = create_single_dataset("advertised_false")
+        dts.advertised = False
+        dts.save()
+        # should show the result based on the logic
+        url = reverse("base-resources-list")
+        payload = self.client.get(url)
+        prev_count = payload.json().get("total")
+        # the user can see only the advertised resources
+        self.assertEqual(ResourceBase.objects.filter(advertised=True).count(), prev_count)
+
+        payload = self.client.get(f"{url}?advertised=True")
+        # so if advertised is True, we dont see the advertised=False resource
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count)
+
+        payload = self.client.get(f"{url}?advertised=False")
+        # so if advertised is False, we see only the resource with advertised==False
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, 1)
+
+        # if all is requested, we will see all the resources
+        payload = self.client.get(f"{url}?advertised=all")
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count + 1)
+
+        Dataset.objects.update(advertised=True)
+
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
     def setUp(self):
