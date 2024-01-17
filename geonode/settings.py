@@ -795,6 +795,13 @@ TEMPLATES = [
     },
 ]
 
+OPTIONS = {
+    "libraries": {
+        "contact_roles": "geonode.layers.templatetags.contact_roles",
+    },
+}
+
+
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -1397,8 +1404,8 @@ if CREATE_LAYER:
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
 
 if RECAPTCHA_ENABLED:
-    if "captcha" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("captcha",)
+    if "django_recaptcha" not in INSTALLED_APPS:
+        INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
         "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
     )
@@ -2361,3 +2368,7 @@ FACET_PROVIDERS = [
 DEFAULT_DATASET_DOWNLOAD_HANDLER = "geonode.layers.download_handler.DatasetDownloadHandler"
 
 DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLERS", "[]"))
+
+AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
+)

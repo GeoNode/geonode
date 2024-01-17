@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load contact_roles %}
 
 <!-- Required to make select2 fields work for autocomplete -->
 <link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
@@ -494,6 +495,13 @@ span.grippy::after {
                         {{ geoapp_form.extra_metadata }}
                     </div>
                     {% endblock geoapp_extra_metadata %}
+                    {% block geoapp_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ geoapp_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ geoapp_form.linked_resources }}
+                        </div>
+                    {% endblock geoapp_linked_resources %}
+
                 </div>
                 {% endblock maintenance_block %}
             </div>
@@ -509,22 +517,35 @@ span.grippy::after {
               {% endblock %}
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  {% block geoapp_owner %}
                   <div class="panel-body">
                       <div>
                         <span><label for="{{ geoapp_form.owner|id }}">{{ geoapp_form.owner.label }}</label></span>
-                        <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
                         {{ geoapp_form.owner }}
-                      </div>
-                      <div>
-                          <span><label for="{{ geoapp_form.metadata_author|id }}">{{ geoapp_form.metadata_author.label }}</label></span>
-                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
-                          {{ geoapp_form.metadata_author }}
-                      </div>
+                    </div>
+                  {% endblock geoapp_owner %}
+                </div>
+              </div>
+            <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+            {% block geoapp_more_contact_roles %}
+            <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+              <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                  {% getattribute geoapp_form contact_role as cr %}
+                  <div class="panel-body">
+                    <div>
+                      <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                      {{ cr}}
+                    </div>
                   </div>
+                {% endfor %}
               </div>
             </div>
+            {% endblock geoapp_more_contact_roles %}
+          </div>
+          <!--End Contact Roles -->
         </div>
-      </div></div></div>
+      </div>
     </div>
     {% block extra_metadata_content %}
     {% endblock %}

@@ -69,7 +69,7 @@ class NotificationsAppConfigBase(AppConfig):
 def call_celery(func):
     def wrap(*args, **kwargs):
         ret = func(*args, **kwargs)
-        if settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
+        if has_notifications and settings.PINAX_NOTIFICATIONS_QUEUE_ALL:
             send_queued_notifications.apply_async(args=(), expiration=30)
         return ret
 

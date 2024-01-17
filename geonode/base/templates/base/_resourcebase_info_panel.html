@@ -108,9 +108,11 @@
     <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
     {% endif %}
 
-    {% if resource.poc.user %}
+    {% if resource.poc %}
     <dt>{% trans "Point of Contact" %}</dt>
-    <dd><a href="{{ resource.poc.user.get_absolute_url }}">{{ resource.poc.user.username }}</a></dd>
+    {% for user in resource.poc  %}
+    <dd><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></dd>
+    {% endfor%}
     {% endif %}
 
     {% if resource.group %}

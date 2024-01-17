@@ -59,6 +59,7 @@ from geonode.utils import DisableDjangoSignals, mkdtemp
 from geonode.layers.views import _resolve_dataset
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
+from geonode.people import Roles
 from guardian.shortcuts import get_anonymous_user
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
@@ -1821,6 +1822,8 @@ class TestIsSldUploadOnly(TestCase):
 class TestDatasetForm(GeoNodeBaseTestSupport):
     def setUp(self) -> None:
         self.user = get_user_model().objects.get(username="admin")
+        self.user2 = get_user_model().objects.get_or_create(username="svenzwei")
+
         self.dataset = create_single_dataset("my_single_layer", owner=self.user)
         self.sut = DatasetForm
         self.time_form = DatasetTimeSerieForm
@@ -2039,6 +2042,44 @@ class TestDatasetForm(GeoNodeBaseTestSupport):
             "Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.",
             form.errors["presentation"][0],
         )
+
+    def test_resource_form_is_valid_single_user_contact_role(self):
+        """test if passing a single user to a contact role form is working"""
+        users = get_user_model().objects.filter(username="svenzwei")
+        cr = Roles.get_multivalue_ones()[0]
+        form = self.sut(
+            instance=self.dataset,
+            data={
+                "owner": self.dataset.owner.id,
+                cr.name: [u.username for u in users],
+                "title": "layer_title",
+                "date": "2022-01-24 16:38 pm",
+                "date_type": "creation",
+                "language": "eng",
+                "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
+            },
+        )
+        self.assertTrue(form.is_valid())
+        self.assertEqual(list(form.cleaned_data[cr.name]), list(users))
+
+    def test_resource_form_is_valid_multiple_user_contact_role_as_queryset(self):
+        """test if passing a multiple user to a contact role form is working"""
+        users = get_user_model().objects.filter(username__in=["svenzwei", "admin"])
+        for cr in Roles.get_multivalue_ones():
+            form = self.sut(
+                instance=self.dataset,
+                data={
+                    "owner": self.dataset.owner.id,
+                    cr.name: [u.username for u in users],
+                    "title": "layer_title",
+                    "date": "2022-01-24 16:38 pm",
+                    "date_type": "creation",
+                    "language": "eng",
+                    "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
+                },
+            )
+            self.assertTrue(form.is_valid())
+            self.assertEqual(list(form.cleaned_data[cr.name]), list(users))
 
     def test_resource_form_is_invalid_with_incompleted_timeserie_data(self):
         self.client.login(username="admin", password="admin")

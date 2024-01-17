@@ -17,7 +17,6 @@
 #
 #########################################################################
 import ast
-from geonode.geoapps.models import GeoApp
 import json
 import re
 
@@ -110,6 +109,7 @@ from .serializers import (
     RegionSerializer,
     ThesaurusKeywordSerializer,
     ExtraMetadataSerializer,
+    LinkedResourceSerializer,
 )
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
@@ -1489,48 +1489,54 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         url_name="linked_resources",
     )
     def linked_resources(self, request, pk, *args, **kwargs):
-        try:
-            """
-            To let the API be able to filter the linked result, we cannot rely on the DynamicFilterBackend
-            works on the resource and not on the linked one.
-            So if we want to filter the linked resource by "resource_type"
-            we have to search in the query params like in the following code:
-            _filters = {
-                x: y
-                for x, y
-                in request.query_params.items()
-                if x not in ["page_size", "page"]
-            }
-            We have to exclude the paging code or will raise the:
-            "Cannot resolve keyword into the field..."
-            """
-            _obj = self.get_object().get_real_instance()
-            if issubclass(_obj.get_real_concrete_instance_class(), GeoApp):
-                raise NotImplementedError("Not implemented: this endpoint is not available for GeoApps")
-            # getting the resource dynamically list based on the above mapping
-            resources = _obj.linked_resources
+        return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
 
-            if request.query_params:
-                _filters = {x: y for x, y in request.query_params.items() if x not in ["page_size", "page"]}
-                if _filters:
-                    resources = resources.filter(**_filters)
 
-            resources = get_visible_resources(
-                resources,
-                user=request.user,
-                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-            ).order_by("-pk")
+def base_linked_resources(instance, user, params):
+    try:
+        visibile_resources = get_visible_resources(
+            ResourceBase.objects,
+            user=user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        ).order_by("-pk")
+        visible_ids = [res.id for res in visibile_resources]
 
-            paginator = GeoNodeApiPagination()
-            paginator.page_size = request.GET.get("page_size", 10)
-            result_page = paginator.paginate_queryset(resources, request)
-            serializer = SimpleResourceSerializer(result_page, embed=True, many=True)
-            return paginator.get_paginated_response({"resources": serializer.data})
-        except NotImplementedError as e:
-            logger.error(e)
-            return Response(data={"message": e.args[0], "success": False}, status=501, exception=True)
-        except Exception as e:
-            logger.error(e)
-            return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
+        linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
+        linked_by = [lres for lres in instance.get_linked_resources(as_target=True) if lres.source.id in visible_ids]
+
+        warnings = {
+            "DEPRECATION": "'resources' field is deprecated, please use 'linked_to'",
+        }
+
+        if "page_size" in params or "page" in params:
+            warnings["PAGINATION"] = "Pagination is not supported on this call"
+
+        # "resources" will be deprecated, so next block is temporary
+        # "resources" at the moment it's the only element rendered, so we want to add there both the linked_resources and the linked_by
+        # we want to tell them apart, so we're adding an attr to store this info, that will be used in the SimpleResourceSerializer
+        resources = []
+        for lres in linked_resources:
+            res = lres.target
+            setattr(res, "is_target", True)
+            resources.append(res)
+        for lres in linked_by:
+            res = lres.source
+            setattr(res, "is_target", False)
+            resources.append(res)
+
+        ret = {
+            "WARNINGS": warnings,
+            "resources": SimpleResourceSerializer(resources, embed=True, many=True).data,  # deprecated
+            "linked_to": LinkedResourceSerializer(linked_resources, embed=True, many=True).data,
+            "linked_by": LinkedResourceSerializer(
+                instance=linked_by, serialize_source=True, embed=True, many=True
+            ).data,
+        }
+
+        return Response(ret)
+
+    except Exception as e:
+        logger.exception(e)
+        return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)

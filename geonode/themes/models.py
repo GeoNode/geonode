@@ -54,7 +54,8 @@ class GeoNodeThemeCustomization(models.Model):
     name = models.CharField(max_length=100, help_text="This will not appear anywhere.")
     description = models.TextField(null=True, blank=True, help_text="This will not appear anywhere.")
     is_enabled = models.BooleanField(
-        default=False, help_text="Enabling this theme will disable the current enabled theme (if any)"
+        default=False,
+        help_text="Set this theme as the current global theme for GeoNode. This will disable the current theme (if any)",
     )
     logo = models.ImageField(upload_to="img/%Y/%m", null=True, blank=True)
     extra_css = models.TextField(

@@ -27,6 +27,7 @@ from .views import (
     ResourceBaseAutocomplete,
     HierarchicalKeywordAutocomplete,
     ThesaurusKeywordLabelAutocomplete,
+    LinkedResourcesAutocomplete,
 )
 
 
@@ -35,6 +36,11 @@ urlpatterns = [
         r"^autocomplete_response/$",
         ResourceBaseAutocomplete.as_view(),
         name="autocomplete_base",
+    ),
+    url(
+        r"^autocomplete_linked_resource/$",
+        LinkedResourcesAutocomplete.as_view(),
+        name="autocomplete_linked_resource",
     ),
     url(
         r"^autocomplete_region/$",

@@ -284,8 +284,8 @@ def create_geofence_rules(layer, perms, user=None, group=None, batch: Batch = No
     # Anon limits should go at the end, but it's responsibility of the caller to create first user/group rules
     for limits, scope, u, g in (
         (users_geolimits, "USER", username, None),
-        (anonymous_geolimits, "ANON", None, None),
         (groups_geolimits, "GROUP", None, groupname),
+        (anonymous_geolimits, "ANON", None, None),
     ):
         if limits and limits.exists():
             logger.debug(f"Adding GeoFence {scope} GeoLimit rule: U:{u} G:{g} L:{layer} ")

@@ -39,7 +39,7 @@ msgstr ""
 "Project-Id-Version: GeoNode\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-08 09:02+0300\n"
-"PO-Revision-Date: 2023-07-20 11:35+0200\n"
+"PO-Revision-Date: 2023-10-11 11:47+0200\n"
 "Last-Translator: Julien Collaer <julien.collaer@opengeode.be>\n"
 "Language-Team: Italian (http://www.transifex.com/geonode/geonode/language/it/)\n"
 "Language: it\n"
@@ -947,6 +947,10 @@ msgstr "Classifica velocità"
 msgid "Link to"
 msgstr "Collegamento a"
 
+msgid "Related resources"
+msgstr "Risorse collegate"
+#msgstr "Risorse correlate"
+
 msgid "File"
 msgstr "File"
 
@@ -1204,6 +1208,12 @@ msgstr "Altri metadati opzionali"
 
 msgid "Responsible Parties"
 msgstr "Parti responsabili"
+
+msgid "toggle more Contact Roles"
+msgstr "mostrare più ruoli"
+
+msgid "more metadata contact roles"
+msgstr "più ruoli di contatto dei metadati"
 
 msgid "Responsible and Permissions"
 msgstr "Responsabile e autorizzazioni"
@@ -3282,6 +3292,11 @@ msgid "Map"
 msgid_plural "Maps"
 msgstr[0] "Mappa"
 msgstr[1] "Mappe"
+
+msgid "map"
+msgid_plural "maps"
+msgstr[0] "mappa"
+msgstr[1] "mappe"
 
 msgid "Map Layers"
 msgstr "Livelli della mappa"

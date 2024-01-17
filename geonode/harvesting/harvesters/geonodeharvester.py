@@ -364,6 +364,7 @@ class GeonodeCurrentHarvester(base.BaseHarvesterWorker):
             # these work for both datasets and documents
             uuid=resource["uuid"],
             language=resource["language"],
+            # TODO issue#10290
             point_of_contact=self._get_contact_descriptor("pointOfContact", resource["poc"]),
             author=self._get_contact_descriptor("author", resource["metadata_author"]),
             date_stamp=resource_datestamp,
