@@ -56,7 +56,6 @@ def get_visible_resources(
     user,
     request=None,
     metadata_only=False,
-    advertised=None,
     admin_approval_required=False,
     unpublished_not_visible=False,
     private_groups_not_visibile=False,
@@ -86,20 +85,6 @@ def get_visible_resources(
     if metadata_only is not None:
         # Hide Dirty State Resources
         filter_set = filter_set.filter(metadata_only=metadata_only)
-
-    # advertised
-    # if superuser, all resources will be visible, otherwise only the advertised once and
-    # the resource which the user is owner will be returned
-    # if the filter{advertised} is sent, is going to be used after the list of the
-    # resources is generated
-
-    if advertised is not None:
-        filter_set = filter_set.filter(advertised=advertised)
-
-    if not is_admin and user and not user.is_anonymous:
-        filter_set = (filter_set.filter(advertised=True) | filter_set.filter(owner=user)).distinct()
-    elif not user or user.is_anonymous:
-        filter_set = filter_set.filter(advertised=True)
 
     if not is_admin:
         if user:
