@@ -101,7 +101,7 @@ class FeatureInfoTemplateField(DynamicComputedField):
                     elif _field.featureinfo_type == Attribute.TYPE_IMAGE:
                         _template += (
                             '<div class="col-xs-12" align="center" style="font-weight: bold; word-wrap: break-word;"> \
-                            <a href="${properties[\'%s\']}" target="_new"><img width="100%%" height="auto" src="${propertiess[\'%s\']}" title="%s" alt="%s"/></a></div>'
+                            <a href="${properties[\'%s\']}" target="_new"><img width="100%%" height="auto" src="${properties[\'%s\']}" title="%s" alt="%s"/></a></div>'
                             % (_field.attribute, _field.attribute, _label, _label)
                         )
                     elif _field.featureinfo_type in (

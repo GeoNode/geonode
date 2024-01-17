@@ -44,7 +44,6 @@ from django.http import HttpResponseRedirect
 from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
 
-from geonode.utils import import_class_module
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ def get_data_extractor(provider_id):
 
 
 def get_group_role_mapper(provider_id):
-    group_role_mapper_class = import_class_module(
+    group_role_mapper_class = import_string(
         getattr(settings, "SOCIALACCOUNT_PROVIDERS", {})
         .get(PROVIDER_ID, {})
         .get(

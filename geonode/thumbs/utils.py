@@ -149,7 +149,7 @@ def get_map(
     ogc_server_location: str,
     layers: List,
     bbox: List,
-    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
+    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.3.0"),
     mime_type: str = "image/png",
     styles: List = None,
     width: int = 240,

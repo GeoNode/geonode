@@ -17,8 +17,7 @@
 #
 #########################################################################
 from django.conf import settings
-
-from geonode.utils import import_class_module
+from django.utils.module_loading import import_string
 
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
@@ -26,5 +25,5 @@ from allauth.socialaccount.providers.oauth2.views import (
 )
 
 
-oauth2_login = OAuth2LoginView.adapter_view(import_class_module(settings.SOCIALACCOUNT_ADAPTER))
-oauth2_callback = OAuth2CallbackView.adapter_view(import_class_module(settings.SOCIALACCOUNT_ADAPTER))
+oauth2_login = OAuth2LoginView.adapter_view(import_string(settings.SOCIALACCOUNT_ADAPTER))
+oauth2_callback = OAuth2CallbackView.adapter_view(import_string(settings.SOCIALACCOUNT_ADAPTER))

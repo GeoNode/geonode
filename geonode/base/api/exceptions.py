@@ -20,6 +20,13 @@ from rest_framework.exceptions import APIException
 from rest_framework.views import exception_handler
 
 
+class InvalidResourceException(APIException):
+    status_code = 500
+    default_detail = "Invalid Resource exception"
+    default_code = "invalid_resource_exception"
+    category = "resource_api"
+
+
 def geonode_exception_handler(exc, context):
     # Call REST framework's default exception handler first,
     # to get the standard error response.

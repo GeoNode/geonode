@@ -38,7 +38,6 @@ class ResourceTypeFacetProvider(FacetProvider):
     def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{resource_type.in}",  # deprecated
             "filter": "filter{resource_type.in}",
             "label": "Resource type",
             "type": FACET_TYPE_BASE,
@@ -108,7 +107,7 @@ class FeaturedFacetProvider(FacetProvider):
     def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{featured}",
+            "filter": "filter{featured}",
             "label": "Featured",
             "type": FACET_TYPE_BASE,
             "hierarchical": False,

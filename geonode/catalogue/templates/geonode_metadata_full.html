@@ -72,10 +72,14 @@
 						<dt>{% trans "Responsible" %}</dt>
 							<dd>{{resource.owner}}</dd>
 
-						<dt>{% trans "Point of Contact" %}</dt>
-							<dd>{{extra_res_md.poc_last_name}}</dd>
-							<dd><a href="mailto:{{extra_res_md.poc_email}}"><i class="fa fa-envelope"></i>{{extra_res_md.poc_email}}</a></dd>
+						{% for role in extra_res_md.roles %}
+						<dt>{% trans role.label %}</dt>
 
+							{% for user in  role.users %}
+								<dd>{{user.last_name}}</dd>
+								<dd><a href="mailto:{{ user.email}}"><i class="fa fa-envelope"></i>{{ user.email}}</a></dd>
+							{% endfor %}
+						{% endfor %}
 
 						<dt>{% trans "Purpose" %}</dt>
 								{% if resource.purpose %}

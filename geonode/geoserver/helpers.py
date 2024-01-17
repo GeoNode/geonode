@@ -2081,19 +2081,19 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
                 if updatemetadata:
                     gs_resource.metadata_links = metadata_links
-
+                    default_poc = instance.get_first_contact_of_role(role="poc")
                     # Update Attribution link
-                    if instance.poc:
+                    if default_poc:
                         # gsconfig now utilizes an attribution dictionary
                         gs_resource.attribution = {
-                            "title": str(instance.poc),
+                            "title": str(instance.poc_csv),
                             "width": None,
                             "height": None,
                             "href": None,
                             "url": None,
                             "type": None,
                         }
-                        profile = get_user_model().objects.get(username=instance.poc.username)
+                        profile = get_user_model().objects.get(username=default_poc.username)
                         site_url = (
                             settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
                         )

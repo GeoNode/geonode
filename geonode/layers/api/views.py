@@ -100,7 +100,7 @@ class DatasetViewSet(DynamicModelViewSet):
             UserHasPerms(perms_dict={"default": {"PUT": ["base.change_resourcebase_metadata"]}}),
         ],
     )
-    def metadata(self, request, pk=None):
+    def metadata(self, request, pk=None, *args, **kwargs):
         """
         Endpoint to upload ISO metadata
         Usage Example:
@@ -165,7 +165,7 @@ class DatasetViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the MapLayers list.",
     )
     @action(detail=True, methods=["get"])
-    def maplayers(self, request, pk=None):
+    def maplayers(self, request, pk=None, *args, **kwargs):
         dataset = self.get_object()
         resources = dataset.maplayers
         return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
@@ -176,7 +176,7 @@ class DatasetViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve maps using the dataset.",
     )
     @action(detail=True, methods=["get"])
-    def maps(self, request, pk=None):
+    def maps(self, request, pk=None, *args, **kwargs):
         dataset = self.get_object()
         resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
@@ -208,7 +208,7 @@ class DatasetViewSet(DynamicModelViewSet):
         methods=["patch"],
         serializer_class=DatasetReplaceAppendSerializer,
     )
-    def replace(self, request, dataset_id=None):
+    def replace(self, request, dataset_id=None, *args, **kwargs):
         """
         Edpoint for replace data to an existing layer
         """
@@ -241,7 +241,7 @@ class DatasetViewSet(DynamicModelViewSet):
         methods=["patch"],
         serializer_class=DatasetReplaceAppendSerializer,
     )
-    def append(self, request, dataset_id=None):
+    def append(self, request, dataset_id=None, *args, **kwargs):
         """
         Edpoint for replace data to an existing layer
         """

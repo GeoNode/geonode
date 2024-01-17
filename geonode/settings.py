@@ -597,6 +597,7 @@ except ValueError:
     ALLOWED_DOCUMENT_TYPES = (
         [
             "txt",
+            "csv",
             "log",
             "doc",
             "docx",
@@ -793,6 +794,13 @@ TEMPLATES = [
         },
     },
 ]
+
+OPTIONS = {
+    "libraries": {
+        "contact_roles": "geonode.layers.templatetags.contact_roles",
+    },
+}
+
 
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
@@ -1342,9 +1350,6 @@ DOWNLOAD_FORMATS_RASTER = [
     "Zipped All Files",
 ]
 
-
-DISPLAY_ORIGINAL_DATASET_LINK = ast.literal_eval(os.getenv("DISPLAY_ORIGINAL_DATASET_LINK", "True"))
-
 ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE = ast.literal_eval(os.getenv("ACCOUNT_NOTIFY_ON_PASSWORD_CHANGE", "False"))
 
 TASTYPIE_DEFAULT_FORMATS = ["json"]
@@ -1399,8 +1404,8 @@ if CREATE_LAYER:
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
 
 if RECAPTCHA_ENABLED:
-    if "captcha" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("captcha",)
+    if "django_recaptcha" not in INSTALLED_APPS:
+        INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
         "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
     )
@@ -2216,7 +2221,6 @@ CUSTOM_METADATA_SCHEMA = os.getenv("CUSTOM_METADATA_SCHEMA ", {})
 Variable used to actually get the expected metadata schema for each resource_type.
 In this way, each resource type can have a different metadata schema
 """
-
 EXTRA_METADATA_SCHEMA = {
     **{
         "map": os.getenv("MAP_EXTRA_METADATA_SCHEMA", DEFAULT_EXTRA_METADATA_SCHEMA),
@@ -2227,12 +2231,18 @@ EXTRA_METADATA_SCHEMA = {
     **CUSTOM_METADATA_SCHEMA,
 }
 
+"""
+List of modules that implement custom metadata storers that will be called when the metadata of a resource is saved
+"""
+METADATA_STORERS = [
+    # 'geonode.resource.regions_storer.spatial_predicate_region_assignor',
+]
+
 
 """
 Define the URLs patterns used by the SizeRestrictedFileUploadHandler
 to evaluate if the file is greater than the limit size defined
 """
-
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
     "uploads-upload",
@@ -2355,4 +2365,10 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 
-DATASET_DOWNLOAD_HANDLER = os.getenv("DATASET_DOWNLOAD_HANDLER", "geonode.resource.download_handler.DownloadHandler")
+DEFAULT_DATASET_DOWNLOAD_HANDLER = "geonode.layers.download_handler.DatasetDownloadHandler"
+
+DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLERS", "[]"))
+
+AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
+)

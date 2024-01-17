@@ -39,7 +39,6 @@ class KeywordFacetProvider(FacetProvider):
     def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{keywords.slug.in}",  # deprecated
             "filter": "filter{keywords.slug.in}",
             "label": "Keyword",
             "type": FACET_TYPE_KEYWORD,
@@ -57,18 +56,18 @@ class KeywordFacetProvider(FacetProvider):
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        filters = {"keywords__isnull": False}
+        filters = {"resourcebase__in": queryset}
         if topic_contains:
-            filters["keywords__name__icontains"] = topic_contains
+            filters["name__icontains"] = topic_contains
 
         if keys:
             logger.debug("Filtering by keys %r", keys)
-            filters["keywords__slug__in"] = keys
+            filters["slug__in"] = keys
 
         q = (
-            queryset.filter(**filters)
-            .values("keywords__slug", "keywords__name")
-            .annotate(count=Count("keywords__slug"))
+            HierarchicalKeyword.objects.filter(**filters)
+            .values("slug", "name")
+            .annotate(count=Count("resourcebase"))
             .order_by("-count")
         )
 
@@ -80,8 +79,8 @@ class KeywordFacetProvider(FacetProvider):
 
         topics = [
             {
-                "key": r["keywords__slug"],
-                "label": r["keywords__name"],
+                "key": r["slug"],
+                "label": r["name"],
                 "count": r["count"],
             }
             for r in q[start:end].all()

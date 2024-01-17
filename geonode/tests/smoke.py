@@ -19,10 +19,8 @@
 
 from unittest import TestCase
 
-from django.http import HttpResponse
 from geonode.base.populate_test_data import create_single_dataset
-from geonode.resource.download_handler import DownloadHandler
-from geonode.resource.utils import metadata_storers
+from geonode.resource.utils import call_storers
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 import os
@@ -298,15 +296,15 @@ class TestMetadataStorers(TestCase):
         self.uuid = self.dataset.uuid
         self.abstract = self.dataset.abstract
         self.custom = {
-            "processes": {"uuid": "abc123cfde", "abstract": "updated abstract"},
+            "processes": {"uuid": "abc123cfde", "name": "updated name"},
             "second-stage": {"title": "Updated Title", "abstract": "another update"},
         }
 
     @override_settings(METADATA_STORERS=["geonode.tests.smoke.dummy_metadata_storer"])
     def test_will_use_single_storers_defined(self):
-        metadata_storers(self.dataset, self.custom)
+        call_storers(self.dataset, self.custom)
         self.assertEqual("abc123cfde", self.dataset.uuid)
-        self.assertEqual("updated abstract", self.dataset.abstract)
+        self.assertEqual("updated name", self.dataset.name)
 
     @override_settings(
         METADATA_STORERS=[
@@ -315,7 +313,7 @@ class TestMetadataStorers(TestCase):
         ]
     )
     def test_will_use_multiple_storers_defined(self):
-        dataset = metadata_storers(self.dataset, self.custom)
+        dataset = call_storers(self.dataset, self.custom)
         self.assertEqual("abc123cfde", dataset.uuid)
         self.assertEqual("another update", dataset.abstract)
         self.assertEqual("Updated Title", dataset.title)
@@ -336,21 +334,3 @@ def dummy_metadata_storer2(dataset, custom):
     if custom.get("second-stage", None):
         for key, value in custom["second-stage"].items():
             setattr(dataset, key, value)
-
-
-class DummyDownloadManager(DownloadHandler):
-    def get_download_response(self):
-        return HttpResponse(content=b"abcsfd2")
-
-
-class TestDownloadManager(GeoNodeBaseTestSupport):
-    def setUp(self):
-        self.sut = DownloadHandler
-
-    @override_settings(DATASET_DOWNLOAD_HANDLER="geonode.tests.smoke.DummyDownloadManager")
-    def test_download_handler(self):
-        dataset = create_single_dataset("test_dataset")
-        url = reverse("dataset_download", args=[dataset.alternate])
-        response = self.client.get(url)
-        self.assertTrue(response.status_code == 200)
-        self.assertEqual(response.content, b"abcsfd2")

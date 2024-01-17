@@ -1252,6 +1252,12 @@ msgstr "Autre, facultatif, métadonnées"
 msgid "Responsible Parties"
 msgstr "Parties responsables"
 
+msgid "toggle more Contact Roles"
+msgstr "afficher plus de rôles"
+
+msgid "more metadata contact roles"
+msgstr "plus de rôles de contact de métadonnées"
+
 msgid "Responsible and Permissions"
 msgstr "Responsabilité et autorisations"
 
