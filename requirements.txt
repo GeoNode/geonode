@@ -15,7 +15,7 @@ Paver==1.3.4
 python-slugify==8.0.1
 decorator==5.1.1
 celery==5.3.6
-kombu==5.3.4
+kombu==5.3.5
 vine==5.1.0
 tqdm==4.66.1
 Deprecated==1.2.14
@@ -25,7 +25,7 @@ zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.4.0
-PyMuPDF==1.23.8
+PyMuPDF==1.23.14
 pathvalidate==3.2.0
 
 # Django Apps
@@ -33,8 +33,8 @@ django-allauth==0.54.0
 django-appconf==1.0.6
 django-celery-results==2.5.1
 django-filter==23.5
-django-imagekit==4.1.0
-django-taggit==5.0.1
+django-imagekit==5.0.0
+django-taggit==1.5.1
 django-markdownify==0.9.3
 django-mptt==0.15.0
 django-modeltranslation>=0.11,<0.19.0
@@ -56,7 +56,7 @@ pyjwt==2.8.0
 pyproj<3.7.0
 OWSLib==0.29.3
 pycsw==2.6.1
-SQLAlchemy==2.0.22 # required by PyCSW
+SQLAlchemy==2.0.25 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 numpy==1.26.*
@@ -81,7 +81,7 @@ drf-extensions==0.7.1
 drf-writable-nested==0.7.0
 drf-spectacular==0.27.0
 git+https://github.com/GeoNode/dynamic-rest.git@master#egg=dynamic_rest
-Markdown==3.5.1
+Markdown==3.5.2
 
 git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-notifications
 
@@ -110,7 +110,7 @@ google-cloud-core==2.4.1
 boto3==1.34.15
 
 # Django Caches
-python-memcached<=1.61
+python-memcached<=1.62
 whitenoise==6.6.0
 Brotli==1.1.0
 
@@ -153,7 +153,7 @@ splinter==0.20.1
 pytest-splinter==3.3.2
 pytest-django==4.7.0
 setuptools>=65.5.1,<69.1.0
-pip==23.3.1
+pip==23.3.2
 Twisted==23.10.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
