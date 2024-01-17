@@ -383,16 +383,19 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         # resources is generated
         user = request.user
         try:
-            advertised = strtobool(request.query_params.get("filter{advertised}", "None"))
+            _filter = request.query_params.get("filter{advertised}", "None")
+            advertised = strtobool(_filter) if _filter!='all' else 'all'
         except Exception:
             advertised = None
 
-        if advertised is not None:
+        if advertised is not None and advertised != 'all':
             queryset = queryset.filter(advertised=advertised)
 
         is_admin = user.is_superuser if user and user.is_authenticated else False
 
-        if not is_admin and user and not user.is_anonymous:
+        if advertised == 'all':
+            pass
+        elif not is_admin and user and not user.is_anonymous:
             queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
         elif not user or user.is_anonymous:
             queryset = queryset.filter(advertised=True)
