@@ -850,7 +850,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     is_approved = models.BooleanField(
         _("Approved"), default=True, help_text=_("Is this resource validated from a publisher or editor?")
     )
-
+    advertised = models.BooleanField(
+        _("Advertised"),
+        default=True,
+        help_text=_("If False, will hide the resource from search results and catalog listings"),
+    )
     # fields necessary for the apis
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
     thumbnail_path = models.TextField(_("Thumbnail path"), null=True, blank=True)

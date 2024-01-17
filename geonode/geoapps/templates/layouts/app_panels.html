@@ -55,6 +55,7 @@ form #mdeditor_form label{
 #mdeditor_form #id_resource-metadata_uploaded_preserve,
 #mdeditor_form #id_resource-is_approved,
 #mdeditor_form #id_resource-is_published,
+#mdeditor_form #id_resource-advertised,
 #mdeditor_form #id_resource-featured  {
   float: right;
 }
@@ -577,6 +578,10 @@ span.grippy::after {
                         {{ geoapp_form.featured }}
                     </div>
                     {% endif %}
+                    <div>
+                        <span><label for="{{ geoapp_form.advertised|id }}">{{ geoapp_form.advertised.label }}</label></span>
+                        {{ geoapp_form.advertised }}
+                    </div>
                   </div>
                 </div>
               </div>
