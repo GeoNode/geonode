@@ -25,7 +25,7 @@ try:
 except ImportError:
     from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
 from .forms import GeoNodeInviteForm

@@ -4,8 +4,8 @@
 {% block extra_head %}
 {{ block.super }}{% endblock %}
 
-{% block title %}{% ifequal request.user actor %}{% trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
-{% block content_title %}{% ifequal request.user actor %}{%  trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endifequal %}{% endblock %}
+{% block title %}{% if request.user == actor %}{% trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endif %}{% endblock %}
+{% block content_title %}{% if request.user == actor %}{%  trans "My Activity feed" %}{% else %}{{ actor }}'s {% trans "Activity Feed" %}{% endif %}{% endblock %}
 
 {% comment %}
 {% block navlinks %}

@@ -31,7 +31,7 @@ import zipfile
 from collections import UserList
 from geoserver.resource import FeatureType, Coverage
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import SuspiciousFileOperation
 
 from geonode.utils import fixup_shp_columnnames

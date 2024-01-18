@@ -17,42 +17,44 @@
 #
 #
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.generic import TemplateView
 
 from .views import GroupDetailView, GroupActivityView, SetGroupDatasetPermission
 from . import views
 
 urlpatterns = [  # 'geonode.groups.views',
-    url(r"^$", TemplateView.as_view(template_name="groups/group_list.html"), name="group_list"),
-    url(r"^categories/$", TemplateView.as_view(template_name="groups/category_list.html"), name="group_category_list"),
-    url(r"^categories/_create/$", views.group_category_create, name="group_category_create"),
-    url(r"^categories/(?P<slug>[-\w]+)/$", views.group_category_detail, name="group_category_detail"),
-    url(r"^categories/(?P<slug>[-\w]+)/update/$", views.group_category_update, name="group_category_update"),
-    url(r"^create/$", views.group_create, name="group_create"),
-    url(r"^group/(?P<slug>[-\w]+)/$", GroupDetailView.as_view(), name="group_detail"),
-    url(r"^group/(?P<slug>[-\w]+)/update/$", views.group_update, name="group_update"),
-    url(r"^group/(?P<slug>[-\w]+)/members/$", views.group_members, name="group_members"),
-    url(r"^group/(?P<slug>[-\w]+)/members_add/$", views.group_members_add, name="group_members_add"),
-    url(
+    re_path(r"^$", TemplateView.as_view(template_name="groups/group_list.html"), name="group_list"),
+    re_path(
+        r"^categories/$", TemplateView.as_view(template_name="groups/category_list.html"), name="group_category_list"
+    ),
+    re_path(r"^categories/_create/$", views.group_category_create, name="group_category_create"),
+    re_path(r"^categories/(?P<slug>[-\w]+)/$", views.group_category_detail, name="group_category_detail"),
+    re_path(r"^categories/(?P<slug>[-\w]+)/update/$", views.group_category_update, name="group_category_update"),
+    re_path(r"^create/$", views.group_create, name="group_create"),
+    re_path(r"^group/(?P<slug>[-\w]+)/$", GroupDetailView.as_view(), name="group_detail"),
+    re_path(r"^group/(?P<slug>[-\w]+)/update/$", views.group_update, name="group_update"),
+    re_path(r"^group/(?P<slug>[-\w]+)/members/$", views.group_members, name="group_members"),
+    re_path(r"^group/(?P<slug>[-\w]+)/members_add/$", views.group_members_add, name="group_members_add"),
+    re_path(
         r"^group/(?P<slug>[-\w]+)/member_remove/(?P<username>.+)$",
         views.group_member_remove,
         name="group_member_remove",
     ),
-    url(
+    re_path(
         r"^group/(?P<slug>[-\w]+)/member_promote/(?P<username>.+)$",
         views.group_member_promote,
         name="group_member_promote",
     ),
-    url(
+    re_path(
         r"^group/(?P<slug>[-\w]+)/member_demote/(?P<username>.+)$",
         views.group_member_demote,
         name="group_member_demote",
     ),
-    url(r"^group/(?P<slug>[-\w]+)/remove/$", views.group_remove, name="group_remove"),
-    url(r"^group/(?P<slug>[-\w]+)/join/$", views.group_join, name="group_join"),
-    url(r"^group/(?P<slug>[-\w]+)/activity/$", GroupActivityView.as_view(), name="group_activity"),
-    url(r"^autocomplete/$", views.GroupProfileAutocomplete.as_view(), name="autocomplete_groups"),
-    url(r"^autocomplete_category/$", views.GroupCategoryAutocomplete.as_view(), name="autocomplete_category"),
-    url(r"^dataset/permission/$", SetGroupDatasetPermission.as_view(), name="set_group_dataset_permissions"),
+    re_path(r"^group/(?P<slug>[-\w]+)/remove/$", views.group_remove, name="group_remove"),
+    re_path(r"^group/(?P<slug>[-\w]+)/join/$", views.group_join, name="group_join"),
+    re_path(r"^group/(?P<slug>[-\w]+)/activity/$", GroupActivityView.as_view(), name="group_activity"),
+    re_path(r"^autocomplete/$", views.GroupProfileAutocomplete.as_view(), name="autocomplete_groups"),
+    re_path(r"^autocomplete_category/$", views.GroupCategoryAutocomplete.as_view(), name="autocomplete_category"),
+    re_path(r"^dataset/permission/$", SetGroupDatasetPermission.as_view(), name="set_group_dataset_permissions"),
 ]

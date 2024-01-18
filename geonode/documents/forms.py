@@ -26,7 +26,7 @@ from modeltranslation.forms import TranslationModelForm
 from django import forms
 from django.conf import settings
 from django.forms import HiddenInput
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.template.defaultfilters import filesizeformat
 
 from geonode.base.forms import ResourceBaseForm, get_tree_data

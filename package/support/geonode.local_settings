@@ -328,33 +328,6 @@ CELERYD_LOG_FILE = None
 CELERY_REDIRECT_STDOUTS = True
 CELERYD_LOG_LEVEL = 1
 
-# Haystack Search Backend Configuration. To enable,
-# first install the following:
-# - pip install django-haystack
-# - pip install elasticsearch==2.4.0
-# - pip install woosh
-# - pip install pyelasticsearch
-# Set HAYSTACK_SEARCH to True
-# Run "python manage.py rebuild_index"
-# HAYSTACK_SEARCH = False
-# Avoid permissions prefiltering
-SKIP_PERMS_FILTER = False
-# Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = True
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
-    },
-    #    'db': {
-    #        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    #        'EXCLUDED_INDEXES': ['thirdpartyapp.search_indexes.BarIndex'],
-    #        }
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
-# HAYSTACK_SEARCH_RESULTS_PER_PAGE = 20
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,

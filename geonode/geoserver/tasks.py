@@ -20,7 +20,6 @@ import logging
 import os
 
 from django.conf import settings
-from django.core.management import call_command
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -239,10 +238,6 @@ def geoserver_post_save_datasets(self, instance_id, *args, **kwargs):
             log_lock.debug(f"geoserver_post_save_datasets: Acquired lock {lock_id} for {instance_id}")
             try:
                 sync_instance_with_geoserver(instance_id, *args, **kwargs)
-
-                # Updating HAYSTACK Indexes if needed
-                if settings.HAYSTACK_SEARCH:
-                    call_command("update_index")
             finally:
                 lock.release()
                 log_lock.debug(f"geoserver_post_save_datasets: Releasing lock {lock_id} for {instance_id}")

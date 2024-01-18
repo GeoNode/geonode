@@ -36,7 +36,6 @@ from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
 from urllib.parse import urlparse, urlencode, urlsplit, urljoin
-from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
@@ -45,10 +44,9 @@ from django.utils import timezone
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -869,8 +867,6 @@ def gs_slurp(
             )
             try:
                 # delete ratings, and taggit tags:
-                ct = ContentType.objects.get_for_model(layer)
-                OverallRating.objects.filter(content_type=ct, object_id=layer.id).delete()
                 layer.keywords.clear()
 
                 layer.delete()
