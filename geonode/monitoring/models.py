@@ -34,7 +34,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.db.models.fields.json import JSONField
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
@@ -602,7 +602,7 @@ class RequestEvent(models.Model):
     @classmethod
     def _get_user_consent(cls, request):
         return settings.USER_ANALYTICS_ENABLED
-        # if  request.user.is_authenticated:
+        # if request.user.is_authenticated:
         #    return request.user.allow_analytics
         # return True
 

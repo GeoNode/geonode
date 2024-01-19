@@ -20,7 +20,7 @@
 # this file will be used to provide custom translation strings from e.g. fixtures
 # it will be parsed by python manage.py makemessages and update the .po files accordingly
 
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 texts = [
     _(

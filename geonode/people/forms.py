@@ -22,9 +22,9 @@ import taggit
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
-from captcha.fields import ReCaptchaField
+from django_recaptcha.fields import ReCaptchaField
 
 # Ported in from django-registration
 attrs_dict = {"class": "required"}

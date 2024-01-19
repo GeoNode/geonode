@@ -28,7 +28,7 @@ from django.db import models
 from django.utils.html import strip_tags
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives as EmailMessage
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 from django.db.models import Max
 from django.urls import resolve, Resolver404
 

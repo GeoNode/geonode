@@ -382,7 +382,7 @@ def fixtures(ctx):
 def collectstatic(ctx):
     print("************************static artifacts******************************")
     ctx.run(
-        f"django-admin collectstatic --noinput \
+        f"python manage.py collectstatic --noinput \
 --settings={_localsettings()}",
         pty=True,
     )
@@ -396,17 +396,17 @@ def monitoringfixture(ctx):
         _prepare_monitoring_fixture()
         try:
             ctx.run(
-                f"django-admin loaddata geonode/monitoring/fixtures/metric_data.json \
+                f"python manage.py loaddata geonode/monitoring/fixtures/metric_data.json \
     --settings={_localsettings()}",
                 pty=True,
             )
             ctx.run(
-                f"django-admin loaddata geonode/monitoring/fixtures/notifications.json \
+                f"python manage.py loaddata geonode/monitoring/fixtures/notifications.json \
     --settings={_localsettings()}",
                 pty=True,
             )
             ctx.run(
-                f"django-admin loaddata /tmp/default_monitoring_apps_docker.json \
+                f"python manage.py loaddata /tmp/default_monitoring_apps_docker.json \
     --settings={_localsettings()}",
                 pty=True,
             )
@@ -423,7 +423,7 @@ def updateadmin(ctx):
         os.environ.get("ADMIN_EMAIL", "admin@example.org"),
     )
     ctx.run(
-        f"django-admin loaddata /tmp/django_admin_docker.json \
+        f"python manage.py loaddata /tmp/django_admin_docker.json \
 --settings={_localsettings()}",
         pty=True,
     )
@@ -609,7 +609,7 @@ def _prepare_monitoring_fixture():
         geoserver_ip = socket.gethostbyname("geoserver")
     except Exception:
         geoserver_ip = pub_ip
-    d = "1970-01-01 00:00:00"
+    d = "1970-01-01T00:00:00-00:00"
     default_fixture = [
         {
             "fields": {

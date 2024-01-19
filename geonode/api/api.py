@@ -22,10 +22,9 @@ import time
 
 from django.apps import apps
 from django.db.models import Q
-from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.urls import reverse
+from django.urls import re_path, reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.db.models import Count
@@ -550,7 +549,7 @@ class ProfileResource(TypeFilteredResource):
     def prepend_urls(self):
         if settings.HAYSTACK_SEARCH:
             return [
-                url(
+                re_path(
                     r"^(?P<resource_name>{})/search{}$".format(self._meta.resource_name, trailing_slash()),
                     self.wrap_view("get_search"),
                     name="api_get_search",

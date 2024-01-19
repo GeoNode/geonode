@@ -1044,9 +1044,9 @@ OGC_SERVER = {
         "GEOFENCE_SECURITY_ENABLED": GEOFENCE_SECURITY_ENABLED,
         "GEOFENCE_URL": os.getenv("GEOFENCE_URL", "internal:/"),
         "GEOFENCE_TIMEOUT": int(os.getenv("GEOFENCE_TIMEOUT", os.getenv("OGC_REQUEST_TIMEOUT", "60"))),
-        "WMST_ENABLED": ast.literal_eval(os.getenv("WMST_ENABLED", "False")),
+        "WMST_ENABLED": ast.literal_eval(os.getenv("WMST_ENABLED", "True")),
         "BACKEND_WRITE_ENABLED": ast.literal_eval(os.getenv("BACKEND_WRITE_ENABLED", "True")),
-        "WPS_ENABLED": ast.literal_eval(os.getenv("WPS_ENABLED", "False")),
+        "WPS_ENABLED": ast.literal_eval(os.getenv("WPS_ENABLED", "True")),
         "LOG_FILE": f"{os.path.abspath(os.path.join(PROJECT_ROOT, os.pardir))}/geoserver/data/logs/geoserver.log",
         # Set to name of database in DATABASES dictionary to enable
         # 'datastore',
@@ -1404,8 +1404,8 @@ if CREATE_LAYER:
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
 
 if RECAPTCHA_ENABLED:
-    if "captcha" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("captcha",)
+    if "django_recaptcha" not in INSTALLED_APPS:
+        INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
         "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
     )

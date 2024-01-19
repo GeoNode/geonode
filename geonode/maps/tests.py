@@ -212,36 +212,36 @@ community."
         mapid = Map.objects.all().first().pk
         invalid_mapid = "42"
 
-        def url(id):
+        def get_url(id):
             return reverse("resource_permissions", args=[id])
 
         # Test that an invalid layer.alternate is handled for properly
         response = self.client.post(
-            url(invalid_mapid), data=json.dumps(self.perm_spec), content_type="application/json"
+            get_url(invalid_mapid), data=json.dumps(self.perm_spec), content_type="application/json"
         )
         self.assertNotEqual(response.status_code, 200)
 
         # Test that GET returns permissions
-        response = self.client.get(url(mapid))
+        response = self.client.get(get_url(mapid))
         assert "permissions" in ensure_string(response.content)
 
         # Test that a user is required to have permissions
 
         # First test un-authenticated
-        response = self.client.post(url(mapid), data=json.dumps(self.perm_spec), content_type="application/json")
+        response = self.client.post(get_url(mapid), data=json.dumps(self.perm_spec), content_type="application/json")
         self.assertEqual(response.status_code, 401)
 
         # Next Test with a user that does NOT have the proper perms
         logged_in = self.client.login(username="foo", password="pass")
         self.assertEqual(logged_in, True)
-        response = self.client.post(url(mapid), data=json.dumps(self.perm_spec), content_type="application/json")
+        response = self.client.post(get_url(mapid), data=json.dumps(self.perm_spec), content_type="application/json")
         self.assertEqual(response.status_code, 401)
 
         # Login as a user with the proper permission and test the endpoint
         logged_in = self.client.login(username="admin", password="admin")
         self.assertEqual(logged_in, True)
 
-        response = self.client.post(url(mapid), data=json.dumps(self.perm_spec), content_type="application/json")
+        response = self.client.post(get_url(mapid), data=json.dumps(self.perm_spec), content_type="application/json")
 
         # Test that the method returns 200
         self.assertEqual(response.status_code, 200)
