@@ -342,7 +342,7 @@ msgid "edition"
 msgstr "Ausgabe"
 
 msgid "Attribution"
-msgstr "Zitation"
+msgstr "Attribution"
 
 msgid "DOI"
 msgstr "DOI"
