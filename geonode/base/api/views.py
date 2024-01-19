@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+from distutils.util import strtobool
 import json
 import re
 
@@ -363,6 +364,41 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # advertised
+        # if superuser, all resources will be visible, otherwise only the advertised once and
+        # the resource which the user is owner will be returned
+        # if the filter{advertised} is sent, is going to be used after the list of the
+        # resources is generated
+        user = request.user
+        try:
+            _filter = request.query_params.get("advertised", "None")
+            advertised = strtobool(_filter) if _filter.lower() != "all" else "all"
+        except Exception:
+            advertised = None
+
+        if advertised is not None and advertised != "all":
+            queryset = queryset.filter(advertised=advertised)
+        else:
+            is_admin = user.is_superuser if user and user.is_authenticated else False
+
+            if advertised == "all":
+                pass
+            elif not is_admin and user and not user.is_anonymous:
+                queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
+            elif not user or user.is_anonymous:
+                queryset = queryset.filter(advertised=True)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     @extend_schema(
         methods=["get"],
