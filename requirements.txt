@@ -22,7 +22,7 @@ rdflib
 smart_open
 PyMuPDF
 pathvalidate
-BeautifulSoup4
+beautifulsoup4
 
 # Django Apps
 django-allauth
