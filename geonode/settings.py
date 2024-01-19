@@ -700,7 +700,7 @@ LOGGING = {
             "level": "ERROR",
         },
         "geonode": {
-            "level": "WARN",
+            "level": "DEBUG",
         },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
@@ -2362,6 +2362,7 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.keyword.KeywordFacetProvider", "config": {"order": 6, "type": "select"}},
     {"class": "geonode.facets.providers.region.RegionFacetProvider", "config": {"order": 7, "type": "select"}},
     {"class": "geonode.facets.providers.users.OwnerFacetProvider", "config": {"order": 8, "type": "select"}},
+    {"class": "geonode.facets.providers.group.GroupFacetProvider", "config": {"order": 9, "type": "select"}},
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 

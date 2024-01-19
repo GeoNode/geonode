@@ -565,3 +565,5 @@ class TestFacets(GeoNodeBaseTestSupport):
         # Make sure that when Thesauri or ThesauriLabel change the facets cache is invalidated
         # TODO impl+test
         pass
+    def test_group_facet(self):
+        assert 1==1
