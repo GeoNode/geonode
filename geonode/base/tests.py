@@ -51,6 +51,7 @@ from geonode.services.models import Service
 from geonode.documents.models import Document
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.templatetags.base_tags import display_change_perms_button
+from geonode.base.templatetags.sanitize_html import sanitize_html
 from geonode.base.utils import OwnerRightsRequestViewUtils
 from geonode.base.models import (
     HierarchicalKeyword,
@@ -727,6 +728,14 @@ class TestOwnerRightsRequestUtils(TestCase):
         user_perms = display_change_perms_button(self.la, self.user, {})
         self.assertTrue(admin_perms)
         self.assertTrue(user_perms)
+
+
+class SanitizedHtmlTest(TestCase):
+    def test_sanitized_html(self):
+        test_html = "<script>alert('XSS');</script><b>Allowed Text</b>"
+        expected_output = "<b>Allowed Text</b>"
+        sanitized_output = sanitize_html(test_html)
+        self.assertEqual(sanitized_output, expected_output)
 
 
 class TestGetVisibleResource(TestCase):

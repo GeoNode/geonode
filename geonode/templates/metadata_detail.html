@@ -3,6 +3,7 @@
 {% load bootstrap_tags %}
 {% load thesaurus %}
 {% load client_lib_tags %}
+{% load sanitize_html %}
 
 {% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
 
@@ -45,7 +46,7 @@
         {% block abstract %}
         {% if resource.abstract %}
         <dt>{% trans "Abstract" %}</dt>
-        <dd>{{ resource.abstract|safe }}</dd>
+        <dd>{{ resource.abstract|sanitize_html|safe }}</dd>
         {% endif %}
         {% endblock abstract %}
 
@@ -91,7 +92,7 @@
                     {% for keyword in resource.keywords.all %}
                     <li>
                         <span itemscope itemtype="http://schema.org/Text">
-                        {{ keyword.name| safe }}
+                        {{ keyword.name|sanitize_html|safe }}
                         </span>
                     </li>
                     {% endfor %}
@@ -299,7 +300,7 @@
         {% if resource.restriction_code_type or resource.constraints_other %}
         <dt>{% trans "Restrictions" %}</dt>
         <dd>{% if resource.constraints_other %}
-            {{ resource.constraints_other|safe }}
+            {{ resource.constraints_other|sanitize_html|safe }}
             {% else %}
             {{ resource.restriction_code_type }}
             {% endif %}</dd>
@@ -316,7 +317,7 @@
         {% block purpose %}
         {% if resource.purpose %}
         <dt>{% trans "Purpose" %}</dt>
-        <dd>{{ resource.purpose|safe }}</dd>
+        <dd>{{ resource.purpose|sanitize_html|safe }}</dd>
         {% endif %}
         {% endblock purpose %}
 
@@ -337,14 +338,14 @@
         {% block data_quality_statement %}
         {% if resource.data_quality_statement %}
         <dt>{% trans "Data Quality" %}</dt>
-        <dd>{{ resource.data_quality_statement|safe }}</dd>
+        <dd>{{ resource.data_quality_statement|sanitize_html|safe }}</dd>
         {% endif %}
         {% endblock data_quality_statement %}
 
         {% block supplemental_information %}
         {% if resource.supplemental_information %}
         <dt>{% trans "Supplemental Information" %}</dt>
-        <dd>{{ resource.supplemental_information|safe }}</dd>
+        <dd>{{ resource.supplemental_information|sanitize_html|safe }}</dd>
         {% endif %}
         {% endblock supplemental_information %}
 
