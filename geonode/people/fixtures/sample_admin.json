@@ -1,6 +1,6 @@
 [{
 	"fields": {
-		"date_joined": "2011-06-09 15:15:27",
+		"date_joined": "2011-06-09T15:15:27-06:00",
 		"email": "ad@m.in",
 		"first_name": "admin",
 		"last_name": "geonode",
