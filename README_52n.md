@@ -5,17 +5,30 @@ This image is built from a fork of [Geonode](https://github.com/geonode/geonode)
 
 However, we are interested to stay as close to upstream as possible, to benefit from ongoing development, but also to contribute features and fixes we develop in our projects.
 
-Starting from version `4` this image is built from the `52n-master` branch of the [`52north/geonode` repository](https://github.com/52North/geonode/tree/52n-master).
-The repository builds and publishes three images:
+
+Starting from version `4` this image is built from branch `52n-<geonode-branchname>` of the [`52north/geonode` repository](https://github.com/52North/geonode/tree/52n-master).
+Please note, that GeoNode depends on other components which are also available as Docker images.
+These images, however, are maintained, built and published from a [`52north/geonode-docker` repository](https://github.com/52North/geonode-docker).
+
+> :bulb: **Note:**
+>
+> Please note that the versioning schema is different from the upstream project.
+> All images are released and tagged using the GeoNode version.
+
+
+You can obtain all images from here:
 
 * [`52north/geonode`](https://hub.docker.com/r/52north/geonode) (this image)
+* [`52north/geonode-geoserver`](https://hub.docker.com/r/52north/geonode-geoserver)
+* [`52north/geonode-geoserver_data`](https://hub.docker.com/r/52north/geonode-geoserver_data)
 * [`52north/geonode-nginx`](https://hub.docker.com/r/52north/geonode-nginx)
-* [`52north/geonode-geoserver`](https://hub.docker.com/r/52north/geonode-geoserver) 
+* [`52north/geonode-postgis`](https://hub.docker.com/r/52north/geonode-postgis)
 
 The Dockerfiles can be found under the [`./scripts/docker` folder](https://github.com/52North/geonode/tree/52n-master/scripts/docker).
 
-The official Docker configuration of [GeoServer for GeoNode](https://github.com/GeoNode/geoserver-docker) seems to be outdated.
-Therefore, our fork adds a `./scripts/docker/geoserver` Docker config which is based on [the geonode-project](https://github.com/geonode/geonode-project) template.
+The GeoNode Dockerfile can be found under the [`./scripts/docker` folder](https://github.com/52North/geonode/tree/52n-master/scripts/docker).
+The Dockerfiles for the dependent components are available at [the geonode-docker repository](https://github.com/52North/geonode-docker).
+
 
 Depending on our current project contexts we merge regularly from upstream, and create new pull requests based on this fork.
 
