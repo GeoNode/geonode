@@ -42,7 +42,7 @@ class GroupFacetProvider(FacetProvider):
     def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "filter": "filter{group.group_id.in}}",#???group.group_id.in
+            "filter": "filter{group.in}",
             "label": "Group",
             "type": FACET_TYPE_CATEGORY,
         }
@@ -70,27 +70,12 @@ class GroupFacetProvider(FacetProvider):
             logger.debug("Filtering by keys %r", keys)
             filters["identifier__in"] = keys
 
-        # q = (
-        #     TopicCategory.objects.values("identifier", "gn_description", "fa_class")
-        #     .filter(**filters)
-        #     .annotate(count=Count("resourcebase"))
-        #     .order_by("-count")
-        # )
-            
-        #q_user=()
-        q= get_user_visible_groups(user=kwargs['user'])# need to get info from user 
-        q = (
-            q.values("slug", "group_id",)
-            .annotate(count=Count("group_id"))
-            .order_by("-count")
-        )
-        # q2 = (
-        #     GroupProfile.objects.values("group", "title","email")
-        #     .filter(**filters)
-        #     .annotate(count=Count("resourcebase"))
-        #     .order_by("-count")
-        # )
-        
+        visible_groups= get_user_visible_groups(user=kwargs['user'])# need to get info from user 
+        # if isinstance(visible_groups, list):
+        #     q=queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
+        # else:
+        #     q = queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
+        q=queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
 
         
 
@@ -111,20 +96,10 @@ class GroupFacetProvider(FacetProvider):
         logger.debug(" ---> %s\n\n", q.query)
         logger.debug(" ---> %r\n\n", q.all())
 
-        # topics = [
-        #     {
-        #         "key": r.identifier,
-        #         "label": r["gn_description"],
-        #         "count": r["count"],
-        #         "fa_class": r["fa_class"],
-        #     }
-        #     for r in q[start:end].all()
-        # ]
-        # count=collections.Counter([d.id for d in q[start:end].all()])
-        # print(count)
         topics = [
             {
-                "key": r['slug'],
+                "key": r['group__id'],
+                "label":r['group__name'],
                 "count": r['count'],
             }
             for r in q[start:end].all()
@@ -148,7 +123,7 @@ class GroupFacetProvider(FacetProvider):
                 "label": r["name"],
             }
             for r in q.all()
-        ]F
+        ]
 
 
 
