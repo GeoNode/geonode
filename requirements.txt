@@ -6,7 +6,7 @@ Django==3.2.23
 
 # Other
 amqp==5.2.0
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
 httplib2<0.22.1
 hyperlink==21.0.0
 idna>=2.5,<3.7
