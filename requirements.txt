@@ -1,7 +1,7 @@
 # native dependencies
 Pillow==10.2.0
 lxml==5.1.0
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
 Django==4.2.9
 
 # Other
@@ -54,7 +54,8 @@ pyjwt==2.8.0
 
 # geopython dependencies
 pyproj<3.7.0
-OWSLib==0.29.3
+OWSLib==0.29.2 # changed from 0.29.3 to avoid a vulnerability (CVE-2021-39371) https://devhub.checkmarx.com/cve-details/CVE-2021-39371/?utm_source=jetbrains&utm_medium=referral&utm_campaign=idea
+               # not sure if 0.29.2 is the best version to use, but it's the latest one that seems doesn't have the vulnerability
 pycsw==2.6.1
 SQLAlchemy==2.0.25 # required by PyCSW
 Shapely==1.8.5.post1
