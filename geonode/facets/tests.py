@@ -36,10 +36,12 @@ from geonode.base.models import (
     Region,
     TopicCategory,
     HierarchicalKeyword,
+    GroupProfile,
 )
 from geonode.facets.models import facet_registry
 from geonode.facets.providers.baseinfo import FeaturedFacetProvider
 from geonode.facets.providers.category import CategoryFacetProvider
+from geonode.facets.providers.group import GroupFacetProvider
 from geonode.facets.providers.keyword import KeywordFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
 from geonode.facets.views import ListFacetsView, GetFacetView
@@ -136,8 +138,72 @@ class TestFacets(GeoNodeBaseTestSupport):
             cls.kw[code] = HierarchicalKeyword.objects.create(slug=code, name=name)
 
     @classmethod
+    def _create_groups(self):
+        # data = {
+        #     "title": "UserAdmin",
+        #     "group": 1,
+        #     "slug": "UserAdmin",
+        #     "description": "test",
+        #     "access": "private",
+        #     "categories": [],
+        # }
+        # url = reverse("group-profiles-list")
+        # self.assertTrue(self.client.login(username="admin", password="admin"))
+        # response = self.client.post(url, data=data, format="json")
+        # self.assertEqual(response.status_code, 201)
+        # self.assertEqual(response.json()["group_profile"]["title"], "UserAdmin")
+        
+        from django.contrib.auth.models import Group
+        group_admin=Group.objects.create(name='UserAdmin')
+
+        group_profile=GroupProfile.objects.create(
+            group_id=group_admin,title='UserAdmin',slug='UserAdmin'
+        )
+        
+        admin_group = {"users": {"AnonymousUser": ["view_resourcebase"]},
+                        "groups": {"UserAdmin": ["view_resourcebase"]}}
+        for _ in range(5):
+            d : ResourceBase = ResourceBase.objects.create(
+                    title=f"dataset_Regis",
+                    uuid=str(uuid4()),
+                    owner=self.admin,
+                    abstract=f"Abstract for dataset Regis",
+                    subtype="vector",
+                    is_approved=True,group=group_admin,
+                    is_published=True)
+            d.save()
+            d.set_permissions(admin_group)
+
+
+
+
+    @classmethod
     def _create_resources(self):
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
+
+
+        from django.contrib.auth.models import Group
+        group_admin=Group.objects.create(name='UserAdmin')
+
+        group_profile=GroupProfile.objects.create(
+            group_id=group_admin,title='UserAdmin',slug='UserAdmin'
+        )
+        public_perm_spec = {
+                            "users": {"admin": ["view_resourcebase"]},
+                            "groups": []}
+        admin_group = {"users": {"AnonymousUser": ["view_resourcebase"]},
+                        "groups": {"UserAdmin": ["view_resourcebase"]}}
+        for _ in range(2):
+            d : ResourceBase = ResourceBase.objects.create(
+                    title=f"dataset_Regis",
+                    uuid=str(uuid4()),
+                    owner=self.admin,
+                    abstract=f"Abstract for dataset Regis",
+                    subtype="vector",
+                    is_approved=True,group=group_admin,
+                    is_published=True)
+            d.save()
+            d.set_permissions(admin_group)
 
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
@@ -229,7 +295,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         facets_list = obj["facets"]
         self.assertEqual(8, len(facets_list))
         fmap = self._facets_to_map(facets_list)
-        for name in ("category", "owner", "t_0", "t_1", "featured", "resourcetype", "keyword"):
+        for name in ("group","category", "owner", "t_0", "t_1", "featured", "resourcetype", "keyword"):
             self.assertIn(name, fmap)
 
     def test_facets_rich(self):
@@ -564,6 +630,71 @@ class TestFacets(GeoNodeBaseTestSupport):
         # Thesauri facets are cached.
         # Make sure that when Thesauri or ThesauriLabel change the facets cache is invalidated
         # TODO impl+test
+
         pass
+    
+    def test_group_facet_api_call(self):
+        expected_response={"name": "group", 
+                            "filter": "filter{group.in}",
+                            "label": "Group", "type": "category", 
+                            "topics": {"page": 0, "page_size": 10, "start": 0, "total": 1,
+                            "items": [{"key": 4, "label": "UserAdmin", "count": 2}]}}
+
+        url=f"{reverse('get_facet',args=['group'])}?filter{{group.in}}=4&include_topics=true&key=4"
+        url_base=f"{reverse('get_facet',args=['group'])}"
+        
+        response=self.client.get(url)
+        response_dict=response.json()
+
+        response_base=self.client.get(url_base)
+        response_dict_base=response_base.json()
+
+        self.assertEqual(response.status_code,
+                         200,
+                         'Unexpected status code, got %s expected 200' %
+                         (response.status_code))
+        self.assertEqual(response_base.status_code,
+                         200,
+                         'Unexpected status code, got %s expected 200' %
+                         (response_base.status_code))
+        
+        self.assertDictEqual(expected_response==response_dict)
+        self.assertDictEqual(expected_response==response_dict_base)
+        
+
+
     def test_group_facet(self):
-        assert 1==1
+        groupinfo = GroupFacetProvider().get_info()
+        groupfilter = groupinfo["filter"]
+        regname = GroupFacetProvider().name
+        group_filter = facet_registry.get_provider("group").get_info()["filter"]
+        group_id = 4
+
+        expected_group_id = {4: 2}
+        #{"key": 4, "label": "UserAdmin", "count": 1}
+        expected_feat = {True: 2}
+
+        # Run the single requests
+        for facet, params, items in (
+            
+            (regname, {group_filter: group_id}, expected_group_id),
+            
+        ):
+            req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
+            res: JsonResponse = GetFacetView.as_view()(req, facet)
+            obj = json.loads(res.content)
+
+            self.assertEqual(
+                len(items),
+                len(obj["topics"]["items"]),
+                f"Bad count for items '{facet} \n PARAMS: {params} \n RESULT: {obj} \n EXPECTED: {items}",
+            )
+            # search item
+            for item in items.keys():
+                found = next((i for i in obj["topics"]["items"] if i["key"] == item), None)
+                self.assertIsNotNone(found, f"Topic '{item}' not found in facet {facet} -- {obj}")
+                self.assertEqual(items[item], found.get("count", None), f"Bad count for facet '{facet}:{item}")
+
+
+
+        
