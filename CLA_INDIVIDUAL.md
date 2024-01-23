@@ -23,14 +23,14 @@ You accept and agree to the following terms and conditions for Your present and 
 
 8. You agree to notify the Foundation of any facts or circumstances of which you become aware that would make these representations inaccurate in any respect.
 
-`Name: ___________________________________________`
+`Name: César Benjamín García Martínez`
 
-`E-mail: _________________________________________`
+`E-mail: cesar.benjamin@monterrey.gob.mx`
 
-`Date: ___________________________________________`
+`Date: 21/01/2024`
 
-`Corporate Contributor Information: ______________`
+`Corporate Contributor Information: Gobierno del Municipio de Monterrey`
 
-`_________________________________________________`
+`Monterrey, Nuevo León, México.`
 
 If you are employed as a software engineer, or if your employer is in the business of developing software, or otherwise may claim rights in the Contributions, please provide information about your employer's policy on contributing to open source projects, including the name of the supervisor to contact in connection with such contributions.

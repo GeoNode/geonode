@@ -1,7 +1,7 @@
 # native dependencies
 Pillow==10.2.0
 lxml==5.1.0
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
 Django==4.2.9
 
 # Other
@@ -54,7 +54,8 @@ pyjwt==2.8.0
 
 # geopython dependencies
 pyproj<3.7.0
-OWSLib==0.29.3
+OWSLib==0.29.2 # changed from 0.29.3 to avoid a vulnerability (CVE-2021-39371) https://devhub.checkmarx.com/cve-details/CVE-2021-39371/?utm_source=jetbrains&utm_medium=referral&utm_campaign=idea
+               # not sure if 0.29.2 is the best version to use, but it's the latest one that seems doesn't have the vulnerability
 pycsw==2.6.1
 SQLAlchemy==2.0.25 # required by PyCSW
 Shapely==1.8.5.post1
@@ -69,7 +70,7 @@ dj-pagination==2.5.0
 django-select2==8.1.2
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
-django-autocomplete-light==3.9.5
+django-autocomplete-light==3.11.0rc1
 django-invitations<2.1.1
 django-recaptcha==4.0.0
 
@@ -80,14 +81,13 @@ djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
 drf-spectacular==0.27.0
-git+https://github.com/GeoNode/dynamic-rest.git@master#egg=dynamic_rest
+git+https://github.com/cesar-benjamin/dynamic-rest.git@master#egg=dynamic_rest
 Markdown==3.5.2
 
-git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-notifications
+git+https://github.com/cesar-benjamin/pinax-notifications.git@master#egg=pinax-notifications
 
 # GeoNode org maintained apps.
-# django-geonode-mapstore-client==4.0.5
-git+https://github.com/GeoNode/geonode-mapstore-client.git@django_upgrade#egg=django_geonode_mapstore_client
+git+https://github.com/cesar-benjamin/geonode-mapstore-client.git@upgrade_django42#egg=django_geonode_mapstore_client
 git+https://github.com/GeoNode/geonode-importer.git@django_upgrade#egg=geonode-importer
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2

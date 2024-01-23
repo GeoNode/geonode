@@ -22,4 +22,11 @@ class Migration(migrations.Migration):
                 to="contenttypes.contenttype",
             ),
         ),
+        migrations.AddField(
+            model_name='resourcebase',
+            name='advertised',
+            field=models.BooleanField(default=True,
+                                      help_text='If False, will hide the resource from search results and catalog listings',
+                                      verbose_name='Advertised'),
+        ),
     ]
