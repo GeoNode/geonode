@@ -1,5 +1,7 @@
-FROM geonode/geonode-base:latest-ubuntu-22.04
-LABEL GeoNode development team
+FROM geonode/geonode:latest-ubuntu-22.04
+LABEL maintainer="GeoNode development team" \
+      description="GeoNode docker image" \
+      version="4.2.1"
 
 # add bower and grunt command
 COPY . /usr/src/geonode/
