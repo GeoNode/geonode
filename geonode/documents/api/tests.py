@@ -489,7 +489,7 @@ class DocumentsApiTests(APITransactionTestCase):
         If file_path is not available, should raise error
         """
         self.client.force_login(self.admin)
-        doc_url = "https://example.com/image"
+        doc_url = "https://www.africau.edu/images/default/sample.pdf"
         payload = {
             "document": {
                 "title": "New document from URL for testing",
@@ -506,7 +506,7 @@ class DocumentsApiTests(APITransactionTestCase):
     def test_remote_document_is_marked_remote(self):
         """Tests creating an external document set its sourcetype to REMOTE."""
         self.client.force_login(self.admin)
-        doc_url = "https://example.com/image"
+        doc_url = "https://www.africau.edu/images/default/sample.pdf"
         payload = {
             "document": {
                 "title": "A remote document is remote",
@@ -524,7 +524,7 @@ class DocumentsApiTests(APITransactionTestCase):
         If file_path is not available, should raise error
         """
         self.client.force_login(self.admin)
-        doc_url = "https://example.com/image"
+        doc_url = "https://www.africau.edu/images/default/sample.pdf"
         payload = {
             "document": {
                 "title": "New document from URL for testing",
