@@ -91,7 +91,7 @@ git+https://github.com/GeoNode/geonode-mapstore-client.git@django_upgrade#egg=dj
 git+https://github.com/GeoNode/geonode-importer.git@django_upgrade#egg=geonode-importer
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2
-git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
+git+https://github.com/cesar-benjamin/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
 git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
 django-activity-stream==2.0.0
 gn-arcrest==10.5.6

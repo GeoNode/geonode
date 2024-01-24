@@ -32,8 +32,8 @@ class TestSendEmail(GeoNodeBaseTestSupport):
         self.p1 = Profile.objects.create(username='test1', email='test1@test.test')
         self.sender = Profile.objects.create(username='sender', email='test1@test.test')
 
-        self.t = Thread.objects.create(subject='test', )
-        self.t2 = Thread.objects.create(subject='test2', )
+        self.t = Thread.objects.create(subject='test')
+        self.t2 = Thread.objects.create(subject='test2')
 
         GroupMemberThread.objects.create(thread=self.t, group=Group.objects.get(pk=1), user=self.p)
         GroupMemberThread.objects.create(thread=self.t2, group=Group.objects.get(pk=1), user=self.p1)
