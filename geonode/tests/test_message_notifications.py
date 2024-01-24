@@ -28,29 +28,18 @@ from geonode.messaging.notifications import message_received_notification
 class TestSendEmail(GeoNodeBaseTestSupport):
 
     def setUp(self):
-        self.p = Profile.objects.create(username='test', email='test1@test.test')
-        self.p1 = Profile.objects.create(username='test1')
+        self.p = Profile.objects.create(username='test', email='test@test.test')
+        self.p1 = Profile.objects.create(username='test1', email='test1@test.test')
         self.sender = Profile.objects.create(username='sender', email='test1@test.test')
-        self.p = Profile.objects.create(username="test", email="test1@test.test")
-        self.p1 = Profile.objects.create(username="test1")
-        self.sender = Profile.objects.create(username="sender", email="test1@test.test")
 
         self.t = Thread.objects.create(subject='test', )
         self.t2 = Thread.objects.create(subject='test2', )
-        self.t = Thread.objects.create(
-            subject="test",
-        )
-        self.t2 = Thread.objects.create(
-            subject="test2",
-        )
 
-        GroupMemberThread.objects.create(thread=self.t2, group=Group.objects.get(pk=1), user=self.p)
+        GroupMemberThread.objects.create(thread=self.t, group=Group.objects.get(pk=1), user=self.p)
         GroupMemberThread.objects.create(thread=self.t2, group=Group.objects.get(pk=1), user=self.p1)
 
         self.m2 = Message.objects.create(content='test', thread=self.t2, sender=self.sender)
         self.m = Message.objects.create(content='test', thread=self.t, sender=self.sender)
-        self.m2 = Message.objects.create(content="test", thread=self.t2, sender=self.sender)
-        self.m = Message.objects.create(content="test", thread=self.t, sender=self.sender)
 
         self.t.single_users.add(self.p)
         self.t.single_users.add(self.p1)
