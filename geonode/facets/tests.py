@@ -137,74 +137,10 @@ class TestFacets(GeoNodeBaseTestSupport):
         ):
             cls.kw[code] = HierarchicalKeyword.objects.create(slug=code, name=name)
 
-    @classmethod
-    def _create_groups(self):
-        # data = {
-        #     "title": "UserAdmin",
-        #     "group": 1,
-        #     "slug": "UserAdmin",
-        #     "description": "test",
-        #     "access": "private",
-        #     "categories": [],
-        # }
-        # url = reverse("group-profiles-list")
-        # self.assertTrue(self.client.login(username="admin", password="admin"))
-        # response = self.client.post(url, data=data, format="json")
-        # self.assertEqual(response.status_code, 201)
-        # self.assertEqual(response.json()["group_profile"]["title"], "UserAdmin")
-        
-        from django.contrib.auth.models import Group
-        group_admin=Group.objects.create(name='UserAdmin')
-
-        group_profile=GroupProfile.objects.create(
-            group_id=group_admin,title='UserAdmin',slug='UserAdmin'
-        )
-        
-        admin_group = {"users": {"AnonymousUser": ["view_resourcebase"]},
-                        "groups": {"UserAdmin": ["view_resourcebase"]}}
-        for _ in range(5):
-            d : ResourceBase = ResourceBase.objects.create(
-                    title=f"dataset_Regis",
-                    uuid=str(uuid4()),
-                    owner=self.admin,
-                    abstract=f"Abstract for dataset Regis",
-                    subtype="vector",
-                    is_approved=True,group=group_admin,
-                    is_published=True)
-            d.save()
-            d.set_permissions(admin_group)
-
-
-
 
     @classmethod
     def _create_resources(self):
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
-
-
-        from django.contrib.auth.models import Group
-        group_admin=Group.objects.create(name='UserAdmin')
-
-        group_profile=GroupProfile.objects.create(
-            group_id=group_admin,title='UserAdmin',slug='UserAdmin'
-        )
-        public_perm_spec = {
-                            "users": {"admin": ["view_resourcebase"]},
-                            "groups": []}
-        admin_group = {"users": {"AnonymousUser": ["view_resourcebase"]},
-                        "groups": {"UserAdmin": ["view_resourcebase"]}}
-        for _ in range(2):
-            d : ResourceBase = ResourceBase.objects.create(
-                    title=f"dataset_Regis",
-                    uuid=str(uuid4()),
-                    owner=self.admin,
-                    abstract=f"Abstract for dataset Regis",
-                    subtype="vector",
-                    is_approved=True,group=group_admin,
-                    is_published=True)
-            d.save()
-            d.set_permissions(admin_group)
-
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
                 title=f"dataset_{x:02}",
@@ -634,13 +570,34 @@ class TestFacets(GeoNodeBaseTestSupport):
         pass
     
     def test_group_facet_api_call(self):
+        from django.contrib.auth.models import Group
+        group_admin=Group.objects.create(name='UserAdmin')
+
+        group_profile=GroupProfile.objects.create(
+            group_id=group_admin,title='UserAdmin',slug='UserAdmin'
+        )
+        admin_group = {"users": {"AnonymousUser": ["view_resourcebase"]},
+                        "groups": {"UserAdmin": ["view_resourcebase"]}}
+        resource_count=7
+        for _ in range(resource_count):
+            d : ResourceBase = ResourceBase.objects.create(
+                    title=f"dataset_Regis",
+                    uuid=str(uuid4()),
+                    owner=self.admin,
+                    abstract=f"Abstract for dataset Regis",
+                    subtype="vector",
+                    is_approved=True,group=group_admin,
+                    is_published=True)
+            d.save()
+            d.set_permissions(admin_group)
         expected_response={"name": "group", 
                             "filter": "filter{group.in}",
                             "label": "Group", "type": "category", 
                             "topics": {"page": 0, "page_size": 10, "start": 0, "total": 1,
-                            "items": [{"key": 4, "label": "UserAdmin", "count": 2}]}}
+                            "items": [{"key": group_admin.id,
+                                        "label": group_admin.name, "count": resource_count}]}}
 
-        url=f"{reverse('get_facet',args=['group'])}?filter{{group.in}}=4&include_topics=true&key=4"
+        url=f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={group_admin.id}&include_topics=true&key={group_admin.id}"
         url_base=f"{reverse('get_facet',args=['group'])}"
         
         response=self.client.get(url)
