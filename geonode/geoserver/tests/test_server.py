@@ -1231,7 +1231,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                 self.assertTrue(updated_count == 0, "Metadata have not been updated (deleted) correctly")
 
             # Call migrate
-            call_command("migrate", verbosity=1)
+            call_command("migrate", verbosity=2)
             # Check links
             _post_migrate_links = Link.objects.filter(link_type__in=_def_link_types)
             self.assertTrue(_post_migrate_links.exists(), "No links have been restored")
