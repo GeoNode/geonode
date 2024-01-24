@@ -1196,7 +1196,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             # Check 'original' and 'metadata' links exist
             Link.objects.update_or_create(
                 resource=Dataset.objects.first(),
-                url="https://custom_dowonload_url.com",
+                url="https://datos.monterrey.gob.mx/dataset/df69215e-a6c2-4785-b4b5-1ec00f450f5a/resource/c6327946-6099-4934-9a00-38f2724f9bbb/download/uso_suelo.zip",
                 defaults=dict(
                     extension="zip",
                     name="Original Dataset",
@@ -1231,7 +1231,7 @@ class LayerTests(GeoNodeBaseTestSupport):
                 self.assertTrue(updated_count == 0, "Metadata have not been updated (deleted) correctly")
 
             # Call migrate
-            call_command("migrate", verbosity=0)
+            call_command("migrate", verbosity=1)
             # Check links
             _post_migrate_links = Link.objects.filter(link_type__in=_def_link_types)
             self.assertTrue(_post_migrate_links.exists(), "No links have been restored")
