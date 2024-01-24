@@ -1,13 +1,13 @@
 [{
 	"fields": {
-		"date_joined": "2011-06-09 15:15:27",
+		"date_joined": "2011-06-09T15:15:27+00:00",
 		"email": "ad@m.in",
 		"first_name": "",
 		"groups": [],
 		"is_active": true,
 		"is_staff": true,
 		"is_superuser": true,
-		"last_login": "2011-06-09 15:45:34",
+		"last_login": "2011-06-09T15:45:34+00:00",
 		"last_name": "",
 		"password": "pbkdf2_sha256$30000$rjuGt0Obn8on$cxF75frIOSaitNklLZ0IJ/VonUW0fwEFVF96o0M+lGc=",
 		"user_permissions": [],

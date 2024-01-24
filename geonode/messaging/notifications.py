@@ -32,6 +32,8 @@ def message_received_notification(**kwargs):
     been submitted
     """
     notice_type_label = "message_received"
+    notice_type_description = "New message received in one of your threads"  # TODO: remove when tests passes
+    notice_type_display = "Message received"  # TODO: remove when tests passes
     message = kwargs.get("message")
     thread = message.thread
 
@@ -41,7 +43,8 @@ def message_received_notification(**kwargs):
     if notifications:
         for user in recipients:
             notifications.models.NoticeSetting.objects.get_or_create(
-                notice_type=notifications.models.NoticeType.objects.get(label=notice_type_label),
+                # notice_type=notifications.models.NoticeType.objects.get_or_create(label=notice_type_label),  # TODO: change to this when tests passes
+                notice_type=notifications.models.NoticeType.objects.get_or_create(label=notice_type_label, description=notice_type_description, display=notice_type_display, default=2),
                 send=True,
                 user=user,
                 medium=0,
