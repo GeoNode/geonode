@@ -1,14 +1,14 @@
 [
     {
         "fields": {
-            "date_joined": "2010-07-20 13:31:27",
+            "date_joined": "2010-07-20T13:31:27+00:00",
             "email": "author@admin.admin",
             "first_name": "Default",
             "groups": [],
             "is_active": false,
             "is_staff": false,
             "is_superuser": false,
-            "last_login": "2010-07-20 17:26:12",
+            "last_login": "2010-07-20T17:26:12+00:00",
             "last_name": "Author",
             "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06",
             "user_permissions": [],
@@ -19,14 +19,14 @@
     },
     {
         "fields": {
-            "date_joined": "2010-07-20 13:31:27",
+            "date_joined": "2010-07-20T13:31:27+00:00",
             "email": "contact@admin.admin",
             "first_name": "",
             "groups": [],
             "is_active": false,
             "is_staff": false,
             "is_superuser": false,
-            "last_login": "2010-07-20 17:26:12",
+            "last_login": "2010-07-20T17:26:12+00:00",
             "last_name": "",
             "password": "sha1$8d019$a84eea3f5093eed93bc68bf62fe400f14042ab06",
             "user_permissions": [],
@@ -37,14 +37,14 @@
     },
     {
         "fields": {
-            "date_joined": "2011-06-09 15:46:03",
+            "date_joined": "2011-06-09T15:46:03+00:00",
             "email": "",
             "first_name": "Fancy",
             "groups": [],
             "is_active": true,
             "is_staff": false,
             "is_superuser": false,
-            "last_login": "2011-06-09 15:46:03",
+            "last_login": "2011-06-09T15:46:03+00:00",
             "last_name": "User",
             "password": "sha1$b0022$1592757da52adeed741051a203fe2d65b6798e83",
             "user_permissions": [],

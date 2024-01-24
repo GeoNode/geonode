@@ -609,7 +609,7 @@ def _prepare_monitoring_fixture():
         geoserver_ip = socket.gethostbyname("geoserver")
     except Exception:
         geoserver_ip = pub_ip
-    d = "1970-01-01 00:00:00"
+    d = "1970-01-01T00:00:00+00:00"
     default_fixture = [
         {
             "fields": {
