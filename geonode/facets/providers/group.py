@@ -58,24 +58,40 @@ class GroupFacetProvider(FacetProvider):
         **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
-        #logger.warning("user is ",**kwargs)
-        #print('i came i saw i printed')
-        #print(kwargs['user'])
-        filters = {"resourcebase__in": queryset}
+
+        filters = dict()
+        #filters = {"resourcebase__in": queryset}
 
         if topic_contains:
             filters["gn_description__icontains"] = topic_contains
 
-        if keys:
-            logger.debug("Filtering by keys %r", keys)
-            filters["identifier__in"] = keys
+
 
         visible_groups= get_user_visible_groups(user=kwargs['user'])# need to get info from user 
+        #TODO handle case
         # if isinstance(visible_groups, list):
         #     q=queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
         # else:
-        #     q = queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
-        q=queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
+        #     q = (queryset.values('group__name', 'group__id').annotate(count=Count("pk"))
+        #     .filter(group__id__in=visible_groups))
+        
+        q=(queryset.values('group__name', 'group__id')
+        .annotate(count=Count("pk"))
+        .filter(group__id__in=[group.group_id for group in visible_groups])
+        )
+
+        """
+        SELECT 
+        "groups_groupprofile"."group_id",
+        "auth_group"."name",
+        "groups_groupprofile"."id",
+        "groups_groupprofile"."slug",COUNT("groups_groupprofile"."group_id") AS "count" 
+        FROM "groups_groupprofile"
+        INNER JOIN "auth_group" ON ("groups_groupprofile"."group_id" = "auth_group"."id")
+        inner join "base_resourcebase" ON ("groups_groupprofile"."group_id" = "base_resourcebase"."group_id")
+        WHERE "auth_group"."name" IS NOT null
+        GROUP BY "auth_group"."name", "groups_groupprofile"."id","groups_groupprofile"."group_id"
+        """
 
         
 
@@ -110,20 +126,23 @@ class GroupFacetProvider(FacetProvider):
 
     def get_topics(self, keys: list, lang="en", **kwargs) -> list:
         #TODO change this logic aswell
+        print("gettopicsgroup")
 
-        q = TopicCategory.objects.filter(identifier__in=keys)
-        q= get_user_visible_groups()
+        return [{"key": 4, "label": "UserAdmin", "count": 6}]
 
-        logger.debug(" ---> %s\n\n", q.query)
-        logger.debug(" ---> %r\n\n", q.all())
+        # q = TopicCategory.objects.filter(identifier__in=keys)
+        # q= get_user_visible_groups()
 
-        return [
-            {
-                "key": r["slug"],
-                "label": r["name"],
-            }
-            for r in q.all()
-        ]
+        # logger.debug(" ---> %s\n\n", q.query)
+        # logger.debug(" ---> %r\n\n", q.all())
+
+        # return [
+        #     {
+        #         "key": r["slug"],
+        #         "label": r["name"],
+        #     }
+        #     for r in q.all()
+        # ]
 
 
 
