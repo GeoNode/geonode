@@ -137,7 +137,6 @@ class TestFacets(GeoNodeBaseTestSupport):
         ):
             cls.kw[code] = HierarchicalKeyword.objects.create(slug=code, name=name)
 
-
     @classmethod
     def _create_resources(self):
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
@@ -231,7 +230,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         facets_list = obj["facets"]
         self.assertEqual(8, len(facets_list))
         fmap = self._facets_to_map(facets_list)
-        for name in ("group","category", "owner", "t_0", "t_1", "featured", "resourcetype", "keyword"):
+        for name in ("group", "category", "owner", "t_0", "t_1", "featured", "resourcetype", "keyword"):
             self.assertIn(name, fmap)
 
     def test_facets_rich(self):
@@ -568,90 +567,119 @@ class TestFacets(GeoNodeBaseTestSupport):
         # TODO impl+test
 
         pass
-    
+
     def test_group_facet_api_call(self):
         from django.contrib.auth.models import Group
-        group_admin=Group.objects.create(name='UserAdmin')
 
-        group_profile=GroupProfile.objects.create(
-            group_id=group_admin,title='UserAdmin',slug='UserAdmin'
-        )
-        admin_group = {"users": {"AnonymousUser": ["view_resourcebase"]},
-                        "groups": {"UserAdmin": ["view_resourcebase"]}}
-        resource_count=7
-        for _ in range(resource_count):
-            d : ResourceBase = ResourceBase.objects.create(
-                    title=f"dataset_Regis",
-                    uuid=str(uuid4()),
-                    owner=self.admin,
-                    abstract=f"Abstract for dataset Regis",
-                    subtype="vector",
-                    is_approved=True,group=group_admin,
-                    is_published=True)
-            d.save()
-            d.set_permissions(admin_group)
-        expected_response={"name": "group", 
-                            "filter": "filter{group.in}",
-                            "label": "Group", "type": "category", 
-                            "topics": {"page": 0, "page_size": 10, "start": 0, "total": 1,
-                            "items": [{"key": group_admin.id,
-                                        "label": group_admin.name, "count": resource_count}]}}
+        group_admin = Group.objects.create(name="UserAdmin")
+        group_common = Group.objects.create(name="UserCommon")
 
-        url=f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={group_admin.id}&include_topics=true&key={group_admin.id}"
-        url_base=f"{reverse('get_facet',args=['group'])}"
-        
-        response=self.client.get(url)
-        response_dict=response.json()
+        group_profile_admin = GroupProfile.objects.create(group_id=group_admin, title="UserAdmin", slug="UserAdmin")
+        group_profile_common = GroupProfile.objects.create(group_id=group_common, title="UserCommon", slug="UserCommon")
 
-        response_base=self.client.get(url_base)
-        response_dict_base=response_base.json()
+        admin_permission_group = {
+            "users": {"AnonymousUser": ["view_resourcebase"]},
+            "groups": {"UserAdmin": ["view_resourcebase"]},
+        }
+        common_permission_group = {
+            "users": {"AnonymousUser": ["view_resourcebase"]},
+            "groups": {group_common.name: ["view_resourcebase"]},
+        }
 
-        self.assertEqual(response.status_code,
-                         200,
-                         'Unexpected status code, got %s expected 200' %
-                         (response.status_code))
-        self.assertEqual(response_base.status_code,
-                         200,
-                         'Unexpected status code, got %s expected 200' %
-                         (response_base.status_code))
-        
-        self.assertDictEqual(expected_response==response_dict)
-        self.assertDictEqual(expected_response==response_dict_base)
-        
+        resource_count_admin = 7
+        resource_count_common = 3
 
-
-    def test_group_facet(self):
-        groupinfo = GroupFacetProvider().get_info()
-        groupfilter = groupinfo["filter"]
-        regname = GroupFacetProvider().name
-        group_filter = facet_registry.get_provider("group").get_info()["filter"]
-        group_id = 4
-
-        expected_group_id = {4: 2}
-        #{"key": 4, "label": "UserAdmin", "count": 1}
-        expected_feat = {True: 2}
-
-        # Run the single requests
-        for facet, params, items in (
-            
-            (regname, {group_filter: group_id}, expected_group_id),
-            
-        ):
-            req = self.rf.get(reverse("get_facet", args=[facet]), data=params)
-            res: JsonResponse = GetFacetView.as_view()(req, facet)
-            obj = json.loads(res.content)
-
-            self.assertEqual(
-                len(items),
-                len(obj["topics"]["items"]),
-                f"Bad count for items '{facet} \n PARAMS: {params} \n RESULT: {obj} \n EXPECTED: {items}",
+        for _ in range(resource_count_admin):
+            d: ResourceBase = ResourceBase.objects.create(
+                title=f"dataset_UserAdmin",
+                uuid=str(uuid4()),
+                owner=self.admin,
+                abstract=f"Abstract for dataset UserAdmin",
+                subtype="vector",
+                is_approved=True,
+                group=group_admin,
+                is_published=True,
             )
-            # search item
-            for item in items.keys():
-                found = next((i for i in obj["topics"]["items"] if i["key"] == item), None)
-                self.assertIsNotNone(found, f"Topic '{item}' not found in facet {facet} -- {obj}")
-                self.assertEqual(items[item], found.get("count", None), f"Bad count for facet '{facet}:{item}")
+            d.save()
+            d.set_permissions(admin_permission_group)
 
+        for _ in range(resource_count_common):
+            d: ResourceBase = ResourceBase.objects.create(
+                title=f"dataset_UserCommon",
+                uuid=str(uuid4()),
+                owner=self.admin,
+                abstract=f"Abstract for dataset UserCommon",
+                subtype="vector",
+                is_approved=True,
+                group=group_common,
+                is_published=True,
+            )
+            d.save()
+            d.set_permissions(common_permission_group)
 
+        expected_response_base = {
+            "name": "group",
+            "filter": "filter{group.in}",
+            "label": "Group",
+            "type": "category",
+            "topics": {
+                "page": 0,
+                "page_size": 10,
+                "start": 0,
+                "total": 2,
+                "items": [
+                    {
+                        "key": group_profile_admin.group_id,
+                        "label": group_profile_admin.slug,
+                        "count": resource_count_admin,
+                    },
+                    {
+                        "key": group_profile_common.group_id,
+                        "label": group_profile_common.slug,
+                        "count": resource_count_common,
+                    },
+                ],
+            },
+        }
+        expected_response_filtered = {
+            "name": "group",
+            "filter": "filter{group.in}",
+            "label": "Group",
+            "type": "category",
+            "topics": {
+                "page": 0,
+                "page_size": 10,
+                "start": 0,
+                "total": 1,
+                "items": [
+                    {
+                        "key": group_profile_admin.group_id,
+                        "label": group_profile_admin.slug,
+                        "count": resource_count_admin,
+                    }
+                ],
+            },
+        }
 
-        
+        url_filtered = f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={group_admin.id}&include_topics=true&key={group_admin.id}"
+        url_base = f"{reverse('get_facet',args=['group'])}"
+
+        response_filtered = self.client.get(url_filtered)
+        response_dict_filtered = response_filtered.json()
+
+        response_base = self.client.get(url_base)
+        response_dict_base = response_base.json()
+
+        self.assertEqual(
+            response_filtered.status_code,
+            200,
+            "Unexpected status code, got %s expected 200" % (response_filtered.status_code),
+        )
+        self.assertEqual(
+            response_base.status_code, 200, "Unexpected status code, got %s expected 200" % (response_base.status_code)
+        )
+
+        self.assertDictEqual(expected_response_filtered, response_dict_filtered)
+        self.assertDictEqual(expected_response_base, response_dict_base)
+
+    

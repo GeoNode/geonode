@@ -21,12 +21,11 @@ import collections
 import logging
 
 from django.db.models import Count
-
-from geonode.base.models import TopicCategory
 from geonode.facets.models import FACET_TYPE_CATEGORY, FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_GROUP
 from itertools import chain
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
+
 logger = logging.getLogger(__name__)
 
 
@@ -60,51 +59,36 @@ class GroupFacetProvider(FacetProvider):
         logger.debug("Retrieving facets for %s", self.name)
 
         filters = dict()
-        #filters = {"resourcebase__in": queryset}
 
-        if topic_contains:
-            filters["gn_description__icontains"] = topic_contains
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["group__id__in"] = keys
 
-
-
-        visible_groups= get_user_visible_groups(user=kwargs['user'])# need to get info from user 
-        #TODO handle case
+        visible_groups = get_user_visible_groups(user=kwargs["user"])
+        # TODO handle case
         # if isinstance(visible_groups, list):
-        #     q=queryset.values('group__name', 'group__id').annotate(count=Count("pk")).filter(group__id__in=[group.group_id for group in visible_groups])
+        #     q=(queryset.values('group__name', 'group__id')
+        #     .annotate(count=Count("group__id"))
+        #     .filter(**filters)
+        #     .filter(group__id__in=[group.group_id for group in visible_groups])
+        #     .order_by("-count")
+        #     )
         # else:
         #     q = (queryset.values('group__name', 'group__id').annotate(count=Count("pk"))
         #     .filter(group__id__in=visible_groups))
-        
-        q=(queryset.values('group__name', 'group__id')
-        .annotate(count=Count("pk"))
-        .filter(group__id__in=[group.group_id for group in visible_groups])
+
+        q = (
+            queryset.values("group__name", "group__id")
+            .annotate(count=Count("group__id"))
+            .filter(**filters)
+            .filter(group__id__in=[group.group_id for group in visible_groups])
+            .order_by("-count")
         )
-
-        """
-        SELECT 
-        "groups_groupprofile"."group_id",
-        "auth_group"."name",
-        "groups_groupprofile"."id",
-        "groups_groupprofile"."slug",COUNT("groups_groupprofile"."group_id") AS "count" 
-        FROM "groups_groupprofile"
-        INNER JOIN "auth_group" ON ("groups_groupprofile"."group_id" = "auth_group"."id")
-        inner join "base_resourcebase" ON ("groups_groupprofile"."group_id" = "base_resourcebase"."group_id")
-        WHERE "auth_group"."name" IS NOT null
-        GROUP BY "auth_group"."name", "groups_groupprofile"."id","groups_groupprofile"."group_id"
-        """
-
-        
-
-
-
-
-
 
         logger.debug(" PREFILTERED QUERY  ---> %s\n\n", queryset.query)
         logger.debug(" ADDITIONAL FILTERS ---> %s\n\n", filters)
         logger.debug(" FINAL QUERY        ---> %s\n\n", q.query)
         logger.warning(" FINAL QUERY        ---> %s\n\n", q.query)
-        
 
         cnt = q.count()
         logger.warning(f" q.count()  {q.count()}")
@@ -114,37 +98,22 @@ class GroupFacetProvider(FacetProvider):
 
         topics = [
             {
-                "key": r['group__id'],
-                "label":r['group__name'],
-                "count": r['count'],
+                "key": r["group__id"],
+                "label": r["group__name"],
+                "count": r["count"],
             }
             for r in q[start:end].all()
         ]
 
-
         return cnt, topics
 
     def get_topics(self, keys: list, lang="en", **kwargs) -> list:
-        #TODO change this logic aswell
-        print("gettopicsgroup")
+        q = GroupProfile.objects.filter(group__id__in=keys)
 
-        return [{"key": 4, "label": "UserAdmin", "count": 6}]
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
 
-        # q = TopicCategory.objects.filter(identifier__in=keys)
-        # q= get_user_visible_groups()
-
-        # logger.debug(" ---> %s\n\n", q.query)
-        # logger.debug(" ---> %r\n\n", q.all())
-
-        # return [
-        #     {
-        #         "key": r["slug"],
-        #         "label": r["name"],
-        #     }
-        #     for r in q.all()
-        # ]
-
-
+        return [{"key": r.group_id, "label": r.slug, "count": len(list(r.resources()))} for r in q.all()]
 
     @classmethod
     def register(cls, registry, **kwargs) -> None:
