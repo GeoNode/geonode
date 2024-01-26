@@ -244,7 +244,7 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         # run the request
         req = self.rf.get(reverse("list_facets"), data={"include_topics": 1, "lang": "en"})
-        res: JsonResponse = ListFacetsView.as_view()(req, user=self.user)
+        res: JsonResponse = ListFacetsView.as_view()(req)
         obj = json.loads(res.content)
 
         facets_list = obj["facets"]
