@@ -228,7 +228,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         obj = json.loads(res.content)
         self.assertIn("facets", obj)
         facets_list = obj["facets"]
-        self.assertEqual(8, len(facets_list))
+        self.assertEqual(9, len(facets_list))
         fmap = self._facets_to_map(facets_list)
         for name in ("group", "category", "owner", "t_0", "t_1", "featured", "resourcetype", "keyword"):
             self.assertIn(name, fmap)
@@ -244,11 +244,11 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         # run the request
         req = self.rf.get(reverse("list_facets"), data={"include_topics": 1, "lang": "en"})
-        res: JsonResponse = ListFacetsView.as_view()(req)
+        res: JsonResponse = ListFacetsView.as_view()(req, user=self.user)
         obj = json.loads(res.content)
 
         facets_list = obj["facets"]
-        self.assertEqual(8, len(facets_list))
+        self.assertEqual(9, len(facets_list))
         fmap = self._facets_to_map(facets_list)
         for expected in (  # fmt: skip
             {
@@ -583,7 +583,7 @@ class TestFacets(GeoNodeBaseTestSupport):
         }
         common_permission_group = {
             "users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {group_common.name: ["view_resourcebase"]},
+            "groups": {"UserCommon": ["view_resourcebase"]},
         }
 
         resource_count_admin = 7
@@ -621,7 +621,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             "name": "group",
             "filter": "filter{group.in}",
             "label": "Group",
-            "type": "category",
+            "type": "group",
             "topics": {
                 "page": 0,
                 "page_size": 10,
@@ -645,7 +645,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             "name": "group",
             "filter": "filter{group.in}",
             "label": "Group",
-            "type": "category",
+            "type": "group",
             "topics": {
                 "page": 0,
                 "page_size": 10,
@@ -681,5 +681,3 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         self.assertDictEqual(expected_response_filtered, response_dict_filtered)
         self.assertDictEqual(expected_response_base, response_dict_base)
-
-    

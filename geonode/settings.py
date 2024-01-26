@@ -699,7 +699,7 @@ LOGGING = {
             "level": "ERROR",
         },
         "geonode": {
-            "level": "DEBUG",
+            "level": "WARN",
         },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {

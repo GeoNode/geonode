@@ -43,7 +43,7 @@ class GroupFacetProvider(FacetProvider):
             "name": self.name,
             "filter": "filter{group.in}",
             "label": "Group",
-            "type": FACET_TYPE_CATEGORY,
+            "type": FACET_TYPE_GROUP,
         }
 
     def get_facet_items(
@@ -59,23 +59,11 @@ class GroupFacetProvider(FacetProvider):
         logger.debug("Retrieving facets for %s", self.name)
 
         filters = dict()
-
         if keys:
             logger.debug("Filtering by keys %r", keys)
             filters["group__id__in"] = keys
 
         visible_groups = get_user_visible_groups(user=kwargs["user"])
-        # TODO handle case
-        # if isinstance(visible_groups, list):
-        #     q=(queryset.values('group__name', 'group__id')
-        #     .annotate(count=Count("group__id"))
-        #     .filter(**filters)
-        #     .filter(group__id__in=[group.group_id for group in visible_groups])
-        #     .order_by("-count")
-        #     )
-        # else:
-        #     q = (queryset.values('group__name', 'group__id').annotate(count=Count("pk"))
-        #     .filter(group__id__in=visible_groups))
 
         q = (
             queryset.values("group__name", "group__id")
