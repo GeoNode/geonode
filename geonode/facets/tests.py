@@ -129,9 +129,12 @@ class TestFacets(GeoNodeBaseTestSupport):
     def _create_groups(cls):
         cls.group_admin = Group.objects.create(name="UserAdmin")
         cls.group_common = Group.objects.create(name="UserCommon")
-        cls.group_profile_admin= GroupProfile.objects.create(group_id=cls.group_admin, title="UserAdmin", slug="UserAdmin")
-        cls.group_profile_common = GroupProfile.objects.create(group_id=cls.group_common, title="UserCommon", slug="UserCommon")
-
+        cls.group_profile_admin = GroupProfile.objects.create(
+            group_id=cls.group_admin, title="UserAdmin", slug="UserAdmin"
+        )
+        cls.group_profile_common = GroupProfile.objects.create(
+            group_id=cls.group_common, title="UserCommon", slug="UserCommon"
+        )
 
     @classmethod
     def _create_keywords(cls):
@@ -591,10 +594,12 @@ class TestFacets(GeoNodeBaseTestSupport):
                 is_published=True,
             )
             d.save()
-            d.set_permissions({
-            "users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {"UserAdmin": ["view_resourcebase"]},
-        })
+            d.set_permissions(
+                {
+                    "users": {"AnonymousUser": ["view_resourcebase"]},
+                    "groups": {"UserAdmin": ["view_resourcebase"]},
+                }
+            )
         for _ in range(resource_count_common):
             d: ResourceBase = ResourceBase.objects.create(
                 title="dataset_UserCommon",
@@ -607,10 +612,12 @@ class TestFacets(GeoNodeBaseTestSupport):
                 is_published=True,
             )
             d.save()
-            d.set_permissions({
-            "users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {"UserCommon": ["view_resourcebase"]},
-        })
+            d.set_permissions(
+                {
+                    "users": {"AnonymousUser": ["view_resourcebase"]},
+                    "groups": {"UserCommon": ["view_resourcebase"]},
+                }
+            )
         expected_response_base = {
             "name": "group",
             "filter": "filter{group.in}",
