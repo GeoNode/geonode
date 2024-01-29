@@ -62,7 +62,7 @@ class BaseFacetingView(APIView):
         end = start + page_size
 
         cnt, items = provider.get_facet_items(
-            queryset, start=start, end=end, lang=lang, topic_contains=topic_contains, keys=keys,**kwargs
+            queryset, start=start, end=end, lang=lang, topic_contains=topic_contains, keys=keys, **kwargs
         )
 
         if keys:
@@ -153,7 +153,7 @@ class ListFacetsView(BaseFacetingView):
 
             if include_topics:
                 prefiltered = prefiltered or self._prefilter_topics(request)
-                info["topics"] = self._get_topics(provider, queryset=prefiltered, lang=lang,user=request.user)
+                info["topics"] = self._get_topics(provider, queryset=prefiltered, lang=lang, user=request.user)
 
             facets.append(info)
 

@@ -17,12 +17,11 @@
 #
 #########################################################################
 
-import collections
+
 import logging
 
 from django.db.models import Count
-from geonode.facets.models import FACET_TYPE_CATEGORY, FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_GROUP
-from itertools import chain
+from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_GROUP
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
 

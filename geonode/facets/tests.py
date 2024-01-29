@@ -41,7 +41,6 @@ from geonode.base.models import (
 from geonode.facets.models import facet_registry
 from geonode.facets.providers.baseinfo import FeaturedFacetProvider
 from geonode.facets.providers.category import CategoryFacetProvider
-from geonode.facets.providers.group import GroupFacetProvider
 from geonode.facets.providers.keyword import KeywordFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
 from geonode.facets.views import ListFacetsView, GetFacetView
@@ -591,10 +590,10 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         for _ in range(resource_count_admin):
             d: ResourceBase = ResourceBase.objects.create(
-                title=f"dataset_UserAdmin",
+                title="dataset_UserAdmin",
                 uuid=str(uuid4()),
                 owner=self.admin,
-                abstract=f"Abstract for dataset UserAdmin",
+                abstract="Abstract for dataset UserAdmin",
                 subtype="vector",
                 is_approved=True,
                 group=group_admin,
@@ -605,10 +604,10 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         for _ in range(resource_count_common):
             d: ResourceBase = ResourceBase.objects.create(
-                title=f"dataset_UserCommon",
+                title="dataset_UserCommon",
                 uuid=str(uuid4()),
                 owner=self.admin,
-                abstract=f"Abstract for dataset UserCommon",
+                abstract="Abstract for dataset UserCommon",
                 subtype="vector",
                 is_approved=True,
                 group=group_common,
