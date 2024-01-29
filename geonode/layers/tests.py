@@ -49,7 +49,7 @@ from geonode.geoserver.createlayer.utils import create_dataset
 from geonode.layers import utils
 from geonode.layers.utils import clear_dataset_download_handlers
 from geonode.base import enumerations
-from geonode.layers import DatasetAppConfig
+from geonode.layers.apps import DatasetAppConfig
 from geonode.layers.admin import DatasetAdmin
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer

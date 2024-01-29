@@ -1125,8 +1125,9 @@ def clean_styles(layer, gs_catalog: Catalog):
         # Cleanup Styles without a Workspace
         gs_catalog.reset()
         gs_dataset = get_dataset(layer, gs_catalog)
-        logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
-        style = gs_catalog.get_style(name=gs_dataset.default_style.name, workspace=None, recursive=True)
+        if gs_dataset is not None:
+            logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
+            style = gs_catalog.get_style(name=gs_dataset.default_style.name, workspace=None, recursive=True)
         if style:
             gs_catalog.delete(style, purge=True, recurse=False)
             logger.debug(f"clean_styles: Style removed: {gs_dataset.default_style.name}")
