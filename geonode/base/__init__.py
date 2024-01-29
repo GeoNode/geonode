@@ -19,25 +19,6 @@
 from functools import wraps
 
 from django.conf import settings
-from django.utils.translation import gettext_noop as _
-
-from geonode.notifications_helper import NotificationsAppConfigBase
-
-
-class BaseAppConfig(NotificationsAppConfigBase):
-    name = "geonode.base"
-    NOTIFICATIONS = (
-        (
-            "request_download_resourcebase",
-            _("Request to download a resource"),
-            _("A request for downloading a resource was sent"),
-        ),
-        (
-            "request_resource_edit",
-            _("Request resource change"),
-            _("Owner has requested permissions to modify a resource"),
-        ),
-    )
 
 
 def register_url_event(event_type=None):
@@ -97,4 +78,3 @@ def register_proxy_event(request):
     """
     Process request to geoserver proxy. Extract layer and ows type
     """
-

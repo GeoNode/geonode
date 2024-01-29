@@ -22,7 +22,6 @@ import os
 __version__ = (4, 2, 0, "dev", 0)
 
 
-
 def get_version():
     import geonode.version
 

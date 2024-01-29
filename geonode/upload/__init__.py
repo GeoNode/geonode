@@ -60,6 +60,3 @@ class UploadAppConfig(AppConfig):
             "task": "geonode.upload.tasks.cleanup_celery_task_entries",
             "schedule": 86400.0,
         }
-
-
-

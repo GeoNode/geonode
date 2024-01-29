@@ -23,6 +23,3 @@ from django.apps import AppConfig
 class BackupRestoreAppConfig(AppConfig):
     name = "geonode.br"
     verbose_name = "Backup/Restore"
-
-
-
