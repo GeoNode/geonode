@@ -45,7 +45,7 @@ from geonode.facets.providers.keyword import KeywordFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
 from geonode.facets.views import ListFacetsView, GetFacetView
 from geonode.tests.base import GeoNodeBaseTestSupport
-
+from django.contrib.auth.models import Group
 
 logger = logging.getLogger(__name__)
 
@@ -57,11 +57,11 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         cls.user = get_user_model().objects.create(username="user_00")
         cls.admin = get_user_model().objects.get(username="admin")
-
         cls._create_thesauri()
         cls._create_regions()
         cls._create_categories()
         cls._create_keywords()
+        cls._create_groups()
         cls._create_resources()
         cls.rf = RequestFactory()
 
@@ -123,6 +123,17 @@ class TestFacets(GeoNodeBaseTestSupport):
             ("C3", "Cat3"),
         ):
             cls.cats[code] = TopicCategory.objects.create(identifier=code, description=name, gn_description=name)
+
+    @classmethod
+    def _create_groups(cls):
+        cls.group_admin = Group.objects.create(name="UserAdmin")
+        cls.group_common = Group.objects.create(name="UserCommon")
+        cls.group_profile_admin = GroupProfile.objects.create(
+            group_id=cls.group_admin, title="UserAdmin", slug="UserAdmin"
+        )
+        cls.group_profile_common = GroupProfile.objects.create(
+            group_id=cls.group_common, title="UserCommon", slug="UserCommon"
+        )
 
     @classmethod
     def _create_keywords(cls):
@@ -568,26 +579,8 @@ class TestFacets(GeoNodeBaseTestSupport):
         pass
 
     def test_group_facet_api_call(self):
-        from django.contrib.auth.models import Group
-
-        group_admin = Group.objects.create(name="UserAdmin")
-        group_common = Group.objects.create(name="UserCommon")
-
-        group_profile_admin = GroupProfile.objects.create(group_id=group_admin, title="UserAdmin", slug="UserAdmin")
-        group_profile_common = GroupProfile.objects.create(group_id=group_common, title="UserCommon", slug="UserCommon")
-
-        admin_permission_group = {
-            "users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {"UserAdmin": ["view_resourcebase"]},
-        }
-        common_permission_group = {
-            "users": {"AnonymousUser": ["view_resourcebase"]},
-            "groups": {"UserCommon": ["view_resourcebase"]},
-        }
-
         resource_count_admin = 7
         resource_count_common = 3
-
         for _ in range(resource_count_admin):
             d: ResourceBase = ResourceBase.objects.create(
                 title="dataset_UserAdmin",
@@ -596,12 +589,16 @@ class TestFacets(GeoNodeBaseTestSupport):
                 abstract="Abstract for dataset UserAdmin",
                 subtype="vector",
                 is_approved=True,
-                group=group_admin,
+                group=self.group_admin,
                 is_published=True,
             )
             d.save()
-            d.set_permissions(admin_permission_group)
-
+            d.set_permissions(
+                {
+                    "users": {"AnonymousUser": ["view_resourcebase"]},
+                    "groups": {"UserAdmin": ["view_resourcebase"]},
+                }
+            )
         for _ in range(resource_count_common):
             d: ResourceBase = ResourceBase.objects.create(
                 title="dataset_UserCommon",
@@ -610,12 +607,16 @@ class TestFacets(GeoNodeBaseTestSupport):
                 abstract="Abstract for dataset UserCommon",
                 subtype="vector",
                 is_approved=True,
-                group=group_common,
+                group=self.group_common,
                 is_published=True,
             )
             d.save()
-            d.set_permissions(common_permission_group)
-
+            d.set_permissions(
+                {
+                    "users": {"AnonymousUser": ["view_resourcebase"]},
+                    "groups": {"UserCommon": ["view_resourcebase"]},
+                }
+            )
         expected_response_base = {
             "name": "group",
             "filter": "filter{group.in}",
@@ -628,13 +629,13 @@ class TestFacets(GeoNodeBaseTestSupport):
                 "total": 2,
                 "items": [
                     {
-                        "key": group_profile_admin.group_id,
-                        "label": group_profile_admin.slug,
+                        "key": self.group_profile_admin.group_id,
+                        "label": self.group_profile_admin.slug,
                         "count": resource_count_admin,
                     },
                     {
-                        "key": group_profile_common.group_id,
-                        "label": group_profile_common.slug,
+                        "key": self.group_profile_common.group_id,
+                        "label": self.group_profile_common.slug,
                         "count": resource_count_common,
                     },
                 ],
@@ -652,15 +653,15 @@ class TestFacets(GeoNodeBaseTestSupport):
                 "total": 1,
                 "items": [
                     {
-                        "key": group_profile_admin.group_id,
-                        "label": group_profile_admin.slug,
+                        "key": self.group_profile_admin.group_id,
+                        "label": self.group_profile_admin.slug,
                         "count": resource_count_admin,
                     }
                 ],
             },
         }
 
-        url_filtered = f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={group_admin.id}&include_topics=true&key={group_admin.id}"
+        url_filtered = f"{reverse('get_facet',args=['group'])}?filter{{group.in}}={self.group_admin.id}&include_topics=true&key={self.group_admin.id}"
         url_base = f"{reverse('get_facet',args=['group'])}"
 
         response_filtered = self.client.get(url_filtered)

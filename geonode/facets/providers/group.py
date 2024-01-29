@@ -75,10 +75,9 @@ class GroupFacetProvider(FacetProvider):
         logger.debug(" PREFILTERED QUERY  ---> %s\n\n", queryset.query)
         logger.debug(" ADDITIONAL FILTERS ---> %s\n\n", filters)
         logger.debug(" FINAL QUERY        ---> %s\n\n", q.query)
-        logger.warning(" FINAL QUERY        ---> %s\n\n", q.query)
 
         cnt = q.count()
-        logger.warning(f" q.count()  {q.count()}")
+        logger.debug(f" q.count()  {q.count()}")
         logger.info("Found %d facets for %s", cnt, self.name)
         logger.debug(" ---> %s\n\n", q.query)
         logger.debug(" ---> %r\n\n", q.all())
