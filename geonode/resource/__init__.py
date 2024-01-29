@@ -17,4 +17,4 @@
 #
 #########################################################################
 
-default_app_config = "geonode.resource.apps.GeoNodeResourceConfig"
+

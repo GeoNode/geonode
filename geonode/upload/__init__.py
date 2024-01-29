@@ -62,4 +62,4 @@ class UploadAppConfig(AppConfig):
         }
 
 
-default_app_config = "geonode.upload.UploadAppConfig"
+

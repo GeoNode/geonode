@@ -80,6 +80,6 @@ class GeoserverAppConfig(NotificationsAppConfigBase):
         signals.post_migrate.connect(set_resource_links, sender=self)
 
 
-default_app_config = "geonode.geoserver.GeoserverAppConfig"
+
 
 BACKEND_PACKAGE = "geonode.geoserver"

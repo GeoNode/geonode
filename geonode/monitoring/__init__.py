@@ -84,4 +84,4 @@ class MonitoringAppConfig(NotificationsAppConfigBase):
             }
 
 
-default_app_config = "geonode.monitoring.MonitoringAppConfig"
+

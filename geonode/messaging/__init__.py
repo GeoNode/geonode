@@ -65,4 +65,4 @@ class MessagingAppConfig(NotificationsAppConfigBase):
         initialize_notification_signal()
 
 
-default_app_config = "geonode.messaging.MessagingAppConfig"
+

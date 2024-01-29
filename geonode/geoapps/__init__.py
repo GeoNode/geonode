@@ -58,4 +58,4 @@ class GeoNodeAppsConfig(NotificationsAppConfigBase):
     )
 
 
-default_app_config = "geonode.geoapps.GeoNodeAppsConfig"
+

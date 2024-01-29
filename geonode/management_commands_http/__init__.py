@@ -24,4 +24,4 @@ class ManagementCommandsHttpAppConfig(AppConfig):
     verbose_name = "Management Commands Over HTTP"
 
 
-default_app_config = "geonode.management_commands_http.ManagementCommandsHttpAppConfig"
+

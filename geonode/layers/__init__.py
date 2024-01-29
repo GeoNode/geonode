@@ -59,4 +59,4 @@ class DatasetAppConfig(NotificationsAppConfigBase):
     )
 
 
-default_app_config = "geonode.layers.DatasetAppConfig"
+

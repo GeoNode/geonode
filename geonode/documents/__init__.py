@@ -55,6 +55,3 @@ class DocumentsAppConfig(NotificationsAppConfigBase):
             _("A rating was given to a document"),
         ),
     )
-
-
-default_app_config = "geonode.documents.DocumentsAppConfig"

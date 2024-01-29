@@ -18,4 +18,4 @@
 #########################################################################
 
 
-default_app_config = "geonode.services.apps.ServicesAppConfig"
+

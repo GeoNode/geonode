@@ -25,4 +25,4 @@ class BackupRestoreAppConfig(AppConfig):
     verbose_name = "Backup/Restore"
 
 
-default_app_config = "geonode.br.BackupRestoreAppConfig"
+

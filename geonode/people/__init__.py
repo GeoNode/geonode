@@ -45,7 +45,7 @@ class PeopleAppConfig(NotificationsAppConfigBase):
         super().ready()
 
 
-default_app_config = "geonode.people.PeopleAppConfig"
+
 
 
 class Role:

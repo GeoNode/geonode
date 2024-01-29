@@ -58,4 +58,4 @@ class MapsAppConfig(NotificationsAppConfigBase):
     )
 
 
-default_app_config = "geonode.maps.MapsAppConfig"
+
