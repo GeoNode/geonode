@@ -37,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 class Document(ResourceBase):
-
     """
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """
