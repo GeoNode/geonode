@@ -111,7 +111,6 @@ fixing it.  Thank you!
 
 
 class JSONResponse(HttpResponse):
-
     """JSON response class."""
 
     def __init__(self, obj="", json_opts=None, content_type="application/json", *args, **kwargs):

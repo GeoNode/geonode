@@ -117,7 +117,6 @@ class DocumentDescriptionForm(forms.Form):
 
 
 class DocumentCreateForm(TranslationModelForm):
-
     """
     The document upload form.
     """

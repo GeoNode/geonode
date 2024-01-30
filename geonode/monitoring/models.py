@@ -69,7 +69,6 @@ def get_geoip():
 
 
 class Host(models.Model):
-
     """
     Describes one physical instance
     """
@@ -83,7 +82,6 @@ class Host(models.Model):
 
 
 class ServiceType(models.Model):
-
     """
     Service Type list
     """
@@ -129,7 +127,6 @@ class ServiceType(models.Model):
 
 
 class Service(models.Model):
-
     """
     Service is a entity describing deployed processes.
     """
