@@ -82,8 +82,6 @@ class Document(ResourceBase):
         if not self.title:
             if len(self.files) > 0:
                 return self.files[0].split("/")[-1]
-            else:
-                return str(self.id)
         else:
             return self.title
 
