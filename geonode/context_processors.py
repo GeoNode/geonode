@@ -86,15 +86,17 @@ def resource_urls(request):
         EXIF_ENABLED=getattr(settings, "EXIF_ENABLED", False),
         FAVORITE_ENABLED=getattr(settings, "FAVORITE_ENABLED", False),
         SEARCH_FILTERS=getattr(settings, "SEARCH_FILTERS", False),
-        THESAURI_FILTERS=[
-            t["name"]
-            for t in [
-                settings.THESAURUS,
+        THESAURI_FILTERS=(
+            [
+                t["name"]
+                for t in [
+                    settings.THESAURUS,
+                ]
+                if t.get("filter")
             ]
-            if t.get("filter")
-        ]
-        if hasattr(settings, "THESAURUS")
-        else [t.identifier for t in thesaurus],
+            if hasattr(settings, "THESAURUS")
+            else [t.identifier for t in thesaurus]
+        ),
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(settings, "MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS", False),
         SHOW_PROFILE_EMAIL=getattr(settings, "SHOW_PROFILE_EMAIL", False),
         OGC_SERVER=getattr(settings, "OGC_SERVER", None),
