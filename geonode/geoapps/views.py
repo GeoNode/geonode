@@ -216,9 +216,11 @@ def geoapp_metadata(
         category_form = CategoryForm(
             request.POST,
             prefix="category_choice_field",
-            initial=int(request.POST["category_choice_field"])
-            if "category_choice_field" in request.POST and request.POST["category_choice_field"]
-            else None,
+            initial=(
+                int(request.POST["category_choice_field"])
+                if "category_choice_field" in request.POST and request.POST["category_choice_field"]
+                else None
+            ),
         )
 
         if hasattr(settings, "THESAURUS"):
