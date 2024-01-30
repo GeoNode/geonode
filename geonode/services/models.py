@@ -118,7 +118,6 @@ class Service(ResourceBase):
 
 
 class ServiceProfileRole(models.Model):
-
     """
     ServiceProfileRole is an intermediate model to bind Profiles and Services and apply roles.
     """

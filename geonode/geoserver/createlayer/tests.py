@@ -33,7 +33,6 @@ from .utils import create_dataset
 
 
 class CreateLayerCoreTest(GeoNodeBaseTestSupport):
-
     """
     Test createlayer application.
     """

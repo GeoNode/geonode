@@ -70,7 +70,6 @@ white_list = [compile(x) for x in white_list_paths + getattr(settings, "AUTH_EXE
 
 
 class LoginRequiredMiddleware(MiddlewareMixin):
-
     """
     Requires a user to be logged in to access any page that is not white-listed.
 
