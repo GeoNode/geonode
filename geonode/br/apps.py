@@ -17,6 +17,9 @@
 #
 #########################################################################
 
+from django.apps import AppConfig
 
-class LayerNotReady(Exception):
-    pass
+
+class BackupRestoreAppConfig(AppConfig):
+    name = "geonode.br"
+    verbose_name = "Backup/Restore"

@@ -35,7 +35,7 @@ from django.urls import resolve, Resolver404
 
 from geonode.utils import raw_sql
 from geonode.notifications_helper import send_notification
-from geonode.monitoring import MonitoringAppConfig as AppConf
+from geonode.monitoring.apps import MonitoringAppConfig as AppConf
 from geonode.monitoring.models import (
     Metric,
     MetricValue,

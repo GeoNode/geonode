@@ -29,7 +29,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from geonode import geoserver
-from geonode.maps import MapsAppConfig
+from geonode.maps.apps import MapsAppConfig
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
