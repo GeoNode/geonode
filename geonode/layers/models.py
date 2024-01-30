@@ -367,7 +367,7 @@ class Dataset(ResourceBase):
         if user == self.owner or user.is_superuser:
             return
         if not do_local:
-            from geonode.messaging.apps import producer
+            from geonode.messaging import producer
 
             producer.viewing_dataset(str(user), str(self.owner), self.id)
 

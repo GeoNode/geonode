@@ -1123,6 +1123,7 @@ def get_dataset(layer, gs_catalog: Catalog):
 def clean_styles(layer, gs_catalog: Catalog):
     try:
         # Cleanup Styles without a Workspace
+        style = None
         gs_catalog.reset()
         gs_dataset = get_dataset(layer, gs_catalog)
         if gs_dataset is not None:
