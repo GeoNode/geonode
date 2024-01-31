@@ -257,12 +257,14 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     profile_url = PROFILE_URL
     id_token_issuer = ID_TOKEN_ISSUER
 
-    def get_provider(self, request, provider):
+    def get_provider(self, request=None, provider=None):
         """Looks up a `provider`, supporting subproviders by looking up by
         `provider_id`.
         """
         from allauth.socialaccount.providers import registry
 
+        request = request or self.request
+        provider = provider or self.provider_id
         provider_class = registry.get_class(provider)
         if provider_class is None or provider_class.uses_apps:
             app = self.get_app(request, provider=provider)
