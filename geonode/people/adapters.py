@@ -43,7 +43,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.core.exceptions import ValidationError
 from django.utils.module_loading import import_string
-
+from django.core.exceptions import ImproperlyConfigured
 from geonode.groups.models import GroupProfile
 
 logger = logging.getLogger(__name__)
@@ -256,6 +256,28 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
     authorize_url = AUTHORIZE_URL
     profile_url = PROFILE_URL
     id_token_issuer = ID_TOKEN_ISSUER
+
+    def get_provider(self, request, provider):
+        """Looks up a `provider`, supporting subproviders by looking up by
+        `provider_id`.
+        """
+        from allauth.socialaccount.providers import registry
+
+        provider_class = registry.get_class(provider)
+        if provider_class is None or provider_class.uses_apps:
+            app = self.get_app(request, provider=provider)
+            if not provider_class:
+                # In this case, the `provider` argument passed was a
+                # `provider_id`.
+                provider_class = registry.get_class(app.provider)
+            if not provider_class:
+                raise ImproperlyConfigured(f"unknown provider: {app.provider}")
+            return provider_class(request, app=app)
+        elif provider_class:
+            assert not provider_class.uses_apps
+            return provider_class(request, app=None)
+        else:
+            raise ImproperlyConfigured(f"unknown provider: {app.provider}")
 
     def complete_login(self, request, app, token, response, **kwargs):
         extra_data = {}
