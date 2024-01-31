@@ -26,7 +26,7 @@ from collections import defaultdict
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset
@@ -35,7 +35,6 @@ from geonode.documents.models import Document
 from geonode.notifications_helper import (
     send_notification,
     queue_notification,
-    has_notifications,
     get_notification_recipients,
 )
 
@@ -45,11 +44,6 @@ activity = None
 if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
     from actstream.actions import follow, unfollow
-
-ratings = None
-if "pinax.ratings" in settings.INSTALLED_APPS:
-    ratings = True
-    from pinax.ratings.models import Rating
 
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
@@ -183,8 +177,3 @@ def rating_post_save(instance, sender, created, **kwargs):
         notice_type_label,
         {"resource": instance.content_object, "user": instance.user, "rating": instance.rating},
     )
-
-
-# rating notifications
-if ratings and has_notifications:
-    signals.post_save.connect(rating_post_save, sender=Rating)

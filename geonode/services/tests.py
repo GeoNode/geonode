@@ -770,7 +770,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(s.title, "Foo Title")
             self.assertEqual(s.description, "Foo Description")
             self.assertEqual(s.abstract, "Foo Abstract")
-            self.assertEqual(["Foo", "OWS", "Service"], list(s.keywords.values_list("name", flat=True)))
+            self.assertSetEqual({"Foo", "OWS", "Service"}, set(list(s.keywords.values_list("name", flat=True))))
             response = self.client.post(reverse("remove_service", args=(s.id,)))
             self.assertEqual(len(Service.objects.all()), 0)
 

@@ -37,7 +37,6 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.template.defaultfilters import filesizeformat
 
@@ -48,7 +47,7 @@ from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.base.models import License, Region, LinkedResource
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
-from geonode.documents import DocumentsAppConfig
+from geonode.documents.apps import DocumentsAppConfig
 from geonode.resource.manager import resource_manager
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
@@ -616,15 +615,6 @@ class DocumentsNotificationsTestCase(NotificationsTestsHelper):
             self.assertTrue(self.check_notification_out("document_updated", self.u))
 
             self.clear_notifications_queue()
-            lct = ContentType.objects.get_for_model(_d)
-
-            if "pinax.ratings" in settings.INSTALLED_APPS:
-                self.clear_notifications_queue()
-                from pinax.ratings.models import Rating
-
-                rating = Rating(user=self.norman, content_type=lct, object_id=_d.id, content_object=_d, rating=5)
-                rating.save()
-                self.assertTrue(self.check_notification_out("document_rated", self.u))
 
 
 class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
