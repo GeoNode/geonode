@@ -41,6 +41,7 @@ from geonode.base.models import (
 from geonode.facets.models import facet_registry
 from geonode.facets.providers.baseinfo import FeaturedFacetProvider
 from geonode.facets.providers.category import CategoryFacetProvider
+from geonode.facets.providers.group import GroupFacetProvider
 from geonode.facets.providers.keyword import KeywordFacetProvider
 from geonode.facets.providers.region import RegionFacetProvider
 from geonode.facets.views import ListFacetsView, GetFacetView
@@ -150,6 +151,49 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     @classmethod
     def _create_resources(self):
+        resource_count_admin = 7
+        resource_count_common = 3
+        c0 = TopicCategory.objects.get(identifier="C0")
+        c1 = TopicCategory.objects.get(identifier="C1")
+        for _ in range(resource_count_admin):
+            d: ResourceBase = ResourceBase.objects.create(
+                title="dataset_UserAdmin",
+                uuid=str(uuid4()),
+                owner=self.admin,
+                abstract="Abstract for dataset UserAdmin",
+                subtype="vector",
+                is_approved=True,
+                group=self.group_admin,
+                category=c1,
+                is_published=True,
+            )
+            d.save()
+            d.set_permissions(
+                {
+                    "users": {"AnonymousUser": ["view_resourcebase"]},
+                    "groups": {"UserAdmin": ["view_resourcebase"]},
+                }
+            )
+        for _ in range(resource_count_common):
+            d: ResourceBase = ResourceBase.objects.create(
+                title="dataset_UserCommon",
+                uuid=str(uuid4()),
+                owner=self.admin,
+                abstract="Abstract for dataset UserCommon",
+                subtype="vector",
+                is_approved=True,
+                group=self.group_common,
+                category=c0,
+                is_published=True,
+            )
+            d.save()
+            d.set_permissions(
+                {
+                    "users": {"AnonymousUser": ["view_resourcebase"]},
+                    "groups": {"UserCommon": ["view_resourcebase"]},
+                }
+            )
+
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
@@ -508,6 +552,10 @@ class TestFacets(GeoNodeBaseTestSupport):
         kwflt = kwinfo["filter"]
         kwname = kwinfo["name"]
 
+        groupinfo = GroupFacetProvider().get_info()
+        grflt = groupinfo["filter"]
+        grname = groupinfo["name"]
+
         t0flt = facet_registry.get_provider("t_0").get_info()["filter"]
         t1flt = facet_registry.get_provider("t_1").get_info()["filter"]
 
@@ -537,6 +585,12 @@ class TestFacets(GeoNodeBaseTestSupport):
             (regname, {t1flt: [t("1_1"), t("1_0")]}, {"R0": 2, "R1": 3, "R2": 4}),
             (regname, {t1flt: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
             (regname, {t1flt: t("1_1"), "key": ["R0"]}, {"R0": None}),
+            # groups
+            (grname, {grflt: 4, "key": [4, 5]}, {4: 7, 5: 3}),
+            (grname, {grflt: 4, "key": [4]}, {4: 7}),
+            (grname, {catflt: ["C0"], grflt: [5]}, {5: 3}),
+            (grname, {catflt: ["C1"], grflt: [4]}, {4: 7}),
+            (grname, {catflt: ["C0", "C1"], grflt: [4, 5]}, {4: 7, 5: 3}),
             # category
             (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1, "C3": 3}),
             (catname, {t1flt: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
@@ -582,42 +636,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def test_group_facet_api_call(self):
         resource_count_admin = 7
         resource_count_common = 3
-        for _ in range(resource_count_admin):
-            d: ResourceBase = ResourceBase.objects.create(
-                title="dataset_UserAdmin",
-                uuid=str(uuid4()),
-                owner=self.admin,
-                abstract="Abstract for dataset UserAdmin",
-                subtype="vector",
-                is_approved=True,
-                group=self.group_admin,
-                is_published=True,
-            )
-            d.save()
-            d.set_permissions(
-                {
-                    "users": {"AnonymousUser": ["view_resourcebase"]},
-                    "groups": {"UserAdmin": ["view_resourcebase"]},
-                }
-            )
-        for _ in range(resource_count_common):
-            d: ResourceBase = ResourceBase.objects.create(
-                title="dataset_UserCommon",
-                uuid=str(uuid4()),
-                owner=self.admin,
-                abstract="Abstract for dataset UserCommon",
-                subtype="vector",
-                is_approved=True,
-                group=self.group_common,
-                is_published=True,
-            )
-            d.save()
-            d.set_permissions(
-                {
-                    "users": {"AnonymousUser": ["view_resourcebase"]},
-                    "groups": {"UserCommon": ["view_resourcebase"]},
-                }
-            )
+
         expected_response_base = {
             "name": "group",
             "filter": "filter{group.in}",
