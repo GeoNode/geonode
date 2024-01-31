@@ -20,12 +20,12 @@ vine==5.1.0
 tqdm==4.66.1
 Deprecated==1.2.14
 wrapt==1.16.0
-jsonschema==4.20.0
+jsonschema==4.21.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.4.0
-PyMuPDF==1.23.14
+PyMuPDF==1.23.20
 pathvalidate==3.2.0
 
 # Django Apps
@@ -49,7 +49,7 @@ django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.5.0
 django-sequences==2.9
 oauthlib==3.2.2
-pyopenssl==23.3.0
+pyopenssl==24.0.0
 pyjwt==2.8.0
 
 # geopython dependencies
@@ -127,7 +127,7 @@ pylibmc==1.6.3
 sherlock==0.4.1
 
 # required by monitoring
-psutil==5.9.7
+psutil==5.9.8
 django-cors-headers==4.3.1
 user-agents
 django-user-agents
@@ -147,7 +147,7 @@ coverage==7.4.1
 requests-toolbelt==1.0.0
 flake8==7.0.0
 black==24.1.1
-pytest==7.4.4
+pytest==8.0.0
 pytest-bdd==7.0.1
 splinter==0.20.1
 pytest-splinter==3.3.2
