@@ -291,7 +291,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def test_facets_rich(self):
         # make sure the resources are in
         c = ResourceBase.objects.count()
-        self.assertEqual(20, c)
+        self.assertEqual(30, c)
 
         # make sure tkeywords have been assigned by checking a sample resource
         rb = ResourceBase.objects.get(title="dataset_01")
@@ -311,8 +311,8 @@ class TestFacets(GeoNodeBaseTestSupport):
                 "topics": {
                     "total": 4,
                     "items": [
-                        {"label": "Cat0", "count": 3},
-                        {"label": "Cat1", "count": 3},
+                        {"label": "Cat0", "count": 6},
+                        {"label": "Cat1", "count": 10},
                         {"label": "Cat3", "count": 4},
                         {"label": "Cat2", "count": 2},
                     ],
@@ -333,7 +333,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "owner",
                 "topics": {
-                    "total": 1,
+                    "total": 2,
                 },
             },
             {
@@ -372,7 +372,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                     "total": 2,
                     "items": [
                         {"label": "True", "key": True, "count": 11},
-                        {"label": "False", "key": False, "count": 9},
+                        {"label": "False", "key": False, "count": 19},
                     ],
                 },
             },
@@ -381,7 +381,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 "topics": {
                     "total": 1,
                     "items": [
-                        {"label": "resourcebase", "key": "resourcebase", "count": 20},
+                        {"label": "resourcebase", "key": "resourcebase", "count": 30},
                     ],
                 },
             },
