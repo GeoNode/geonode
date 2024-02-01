@@ -166,7 +166,6 @@ class TestCreationOfMissingMetadataAuthorsOrPOC(ThumbnailTests):
 
 
 class TestCreationOfContactRolesByDifferentInputTypes(ThumbnailTests):
-
     """
     Test that contact roles can be set as people profile
     """

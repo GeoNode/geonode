@@ -76,7 +76,6 @@ def code_challenge_method_plain(verifier, challenge):
 
 
 class OAuth2AuthorizationCodeGrant(GrantTypeBase):
-
     """`Authorization Code Grant`_
 
     The authorization code grant type is used to obtain both access

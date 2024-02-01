@@ -593,7 +593,6 @@ class CommonModelApi(ModelResource):
 
 
 class ResourceBaseResource(CommonModelApi):
-
     """ResourceBase api"""
 
     class Meta(CommonMetaApi):
@@ -607,7 +606,6 @@ class ResourceBaseResource(CommonModelApi):
 
 
 class FeaturedResourceBaseResource(CommonModelApi):
-
     """Only the featured resourcebases"""
 
     class Meta(CommonMetaApi):
@@ -620,7 +618,6 @@ class FeaturedResourceBaseResource(CommonModelApi):
 
 
 class LayerResource(CommonModelApi):
-
     """Dataset API"""
 
     links = fields.ListField(attribute="links", null=True, use_in="all", default=[])
@@ -756,7 +753,6 @@ class LayerResource(CommonModelApi):
 
 
 class MapResource(CommonModelApi):
-
     """Maps API"""
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
@@ -822,7 +818,6 @@ class MapResource(CommonModelApi):
 
 
 class GeoAppResource(CommonModelApi):
-
     """GeoApps API"""
 
     def format_objects(self, objects):
@@ -874,7 +869,6 @@ class GeoAppResource(CommonModelApi):
 
 
 class DocumentResource(CommonModelApi):
-
     """Documents API"""
 
     def build_filters(self, filters=None, ignore_bad_filters=False, **kwargs):
