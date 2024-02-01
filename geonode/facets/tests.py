@@ -151,49 +151,6 @@ class TestFacets(GeoNodeBaseTestSupport):
 
     @classmethod
     def _create_resources(self):
-        resource_count_admin = 7
-        resource_count_common = 3
-        c0 = TopicCategory.objects.get(identifier="C0")
-        c1 = TopicCategory.objects.get(identifier="C1")
-        for _ in range(resource_count_admin):
-            d: ResourceBase = ResourceBase.objects.create(
-                title="dataset_UserAdmin",
-                uuid=str(uuid4()),
-                owner=self.admin,
-                abstract="Abstract for dataset UserAdmin",
-                subtype="vector",
-                is_approved=True,
-                group=self.group_admin,
-                category=c1,
-                is_published=True,
-            )
-            d.save()
-            d.set_permissions(
-                {
-                    "users": {"AnonymousUser": ["view_resourcebase"]},
-                    "groups": {"UserAdmin": ["view_resourcebase"]},
-                }
-            )
-        for _ in range(resource_count_common):
-            d: ResourceBase = ResourceBase.objects.create(
-                title="dataset_UserCommon",
-                uuid=str(uuid4()),
-                owner=self.admin,
-                abstract="Abstract for dataset UserCommon",
-                subtype="vector",
-                is_approved=True,
-                group=self.group_common,
-                category=c0,
-                is_published=True,
-            )
-            d.save()
-            d.set_permissions(
-                {
-                    "users": {"AnonymousUser": ["view_resourcebase"]},
-                    "groups": {"UserCommon": ["view_resourcebase"]},
-                }
-            )
-
         public_perm_spec = {"users": {"AnonymousUser": ["view_resourcebase"]}, "groups": []}
         for x in range(20):
             d: ResourceBase = ResourceBase.objects.create(
@@ -208,16 +165,16 @@ class TestFacets(GeoNodeBaseTestSupport):
 
             # These are the assigned keywords to the Resources
 
-            # RB00 ->           T1K0      R0,R1    FEAT  K0      C0
-            # RB01 -> T0K0      T1K0      R0       FEAT    K1
-            # RB02 ->           T1K0         R1    FEAT      K2  C0
-            # RB03 -> T0K0      T1K0                     K0
-            # RB04 ->           T1K0                     K0K1    C0
-            # RB05 -> T0K0      T1K0                     K0  K2  C1
-            # RB06 ->           T1K0               FEAT
-            # RB07 -> T0K0      T1K0            R2 FEAT      K3  C3
-            # RB08 ->           T1K0 T1K1    R1,R2 FEAT      K3  C3
-            # RB09 -> T0K0      T1K0 T1K1       R2           K3  C3
+            # RB00 ->           T1K0      R0,R1    FEAT  K0      C0  group_admin
+            # RB01 -> T0K0      T1K0      R0       FEAT    K1        group_admin
+            # RB02 ->           T1K0         R1    FEAT      K2  C0  group_admin
+            # RB03 -> T0K0      T1K0                     K0          group_admin
+            # RB04 ->           T1K0                     K0K1    C0  group_admin
+            # RB05 -> T0K0      T1K0                     K0  K2  C1  group_admin
+            # RB06 ->           T1K0               FEAT              group_admin
+            # RB07 -> T0K0      T1K0            R2 FEAT      K3  C3  group_common
+            # RB08 ->           T1K0 T1K1    R1,R2 FEAT      K3  C3  group_common
+            # RB09 -> T0K0      T1K0 T1K1       R2           K3  C3  group_common
             # RB10 ->                T1K1       R2           K3  C3
             # RB11 -> T0K0 T0K1      T1K1
             # RB12 ->                T1K1          FEAT
@@ -228,6 +185,14 @@ class TestFacets(GeoNodeBaseTestSupport):
             # RB17 -> T0K0 T0K1
             # RB18 ->                              FEAT          C2
             # RB19 -> T0K0 T0K1                    FEAT          C2
+
+            if x < 7:
+                logger.debug(f"ASSIGNING GROUP {self.group_admin.name} TO RB {d}")
+                d.group = self.group_admin
+
+            if 7 <= x < 10:
+                logger.debug(f"ASSIGNING GROUP {self.group_common.name} TO RB {d}")
+                d.group = self.group_common
 
             if x % 2 == 1:
                 logger.debug(f"ADDING KEYWORDS {self.thesauri_k['0_0']} to RB {d}")
@@ -291,7 +256,7 @@ class TestFacets(GeoNodeBaseTestSupport):
     def test_facets_rich(self):
         # make sure the resources are in
         c = ResourceBase.objects.count()
-        self.assertEqual(30, c)
+        self.assertEqual(20, c)
 
         # make sure tkeywords have been assigned by checking a sample resource
         rb = ResourceBase.objects.get(title="dataset_01")
@@ -311,8 +276,8 @@ class TestFacets(GeoNodeBaseTestSupport):
                 "topics": {
                     "total": 4,
                     "items": [
-                        {"label": "Cat0", "count": 6},
-                        {"label": "Cat1", "count": 10},
+                        {"label": "Cat0", "count": 3},
+                        {"label": "Cat1", "count": 3},
                         {"label": "Cat3", "count": 4},
                         {"label": "Cat2", "count": 2},
                     ],
@@ -333,7 +298,7 @@ class TestFacets(GeoNodeBaseTestSupport):
             {
                 "name": "owner",
                 "topics": {
-                    "total": 2,
+                    "total": 1,
                 },
             },
             {
@@ -372,7 +337,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                     "total": 2,
                     "items": [
                         {"label": "True", "key": True, "count": 11},
-                        {"label": "False", "key": False, "count": 19},
+                        {"label": "False", "key": False, "count": 9},
                     ],
                 },
             },
@@ -381,7 +346,7 @@ class TestFacets(GeoNodeBaseTestSupport):
                 "topics": {
                     "total": 1,
                     "items": [
-                        {"label": "resourcebase", "key": "resourcebase", "count": 30},
+                        {"label": "resourcebase", "key": "resourcebase", "count": 20},
                     ],
                 },
             },
@@ -586,11 +551,12 @@ class TestFacets(GeoNodeBaseTestSupport):
             (regname, {t1flt: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
             (regname, {t1flt: t("1_1"), "key": ["R0"]}, {"R0": None}),
             # groups
-            (grname, {grflt: 4, "key": [4, 5]}, {4: 7, 5: 3}),
-            (grname, {grflt: 4, "key": [4]}, {4: 7}),
-            (grname, {catflt: ["C0"], grflt: [5]}, {5: 3}),
-            (grname, {catflt: ["C1"], grflt: [4]}, {4: 7}),
-            (grname, {catflt: ["C0", "C1"], grflt: [4, 5]}, {4: 7, 5: 3}),
+            (grname, {grflt: [4, 5], "key": [4, 5]}, {4: 7, 5: 3}),
+            (grname, {grflt: [4], "key": [4]}, {4: 7}),
+            (grname, {catflt: ["C0"], grflt: [5]}, {}),
+            (grname, {catflt: ["C1"], grflt: [4]}, {4: 1}),
+            (grname, {catflt: ["C0"], grflt: [4]}, {4: 3}),
+            (grname, {catflt: ["C0", "C1"], grflt: [4, 5]}, {4: 4}),
             # category
             (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1, "C3": 3}),
             (catname, {t1flt: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
