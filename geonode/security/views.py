@@ -27,7 +27,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from geonode import GeoNodeException
 from geonode.utils import resolve_object
 from geonode.base.models import ResourceBase, UserGeoLimit, GroupGeoLimit
@@ -83,12 +83,16 @@ def resource_permissions_handle_post(request, resource):
                     "consistently!"
                 ).format(username=user.username)
 
-        return HttpResponse(json.dumps({"success": success, "message": message}), status=200, content_type="text/plain")
+        return HttpResponse(
+            json.dumps({"success": success, "message": str(message)}), status=200, content_type="text/plain"
+        )
     except Exception as e:
         logger.exception(e)
         success = False
         message = _("Error updating permissions :(")
-        return HttpResponse(json.dumps({"success": success, "message": message}), status=500, content_type="text/plain")
+        return HttpResponse(
+            json.dumps({"success": success, "message": str(message)}), status=500, content_type="text/plain"
+        )
 
 
 def resource_permissions(request, resource_id):
@@ -309,13 +313,13 @@ def invalidate_tileddataset_cache(request):
             tb = traceback.format_exc()
             logger.debug(tb)
         return HttpResponse(
-            json.dumps({"success": "ok", "message": _("GeoWebCache Tiled Layer Emptied!")}),
+            json.dumps({"success": "ok", "message": "GeoWebCache Tiled Layer Emptied!"}),
             status=200,
             content_type="text/plain",
         )
     else:
         return HttpResponse(
-            json.dumps({"success": "false", "message": _("You cannot modify this resource!")}),
+            json.dumps({"success": "false", "message": "You cannot modify this resource!"}),
             status=200,
             content_type="text/plain",
         )

@@ -140,7 +140,7 @@ class SessionControlMiddleware(MiddlewareMixin):
         finally:
             try:
                 from django.contrib import messages
-                from django.utils.translation import ugettext_noop as _
+                from django.utils.translation import gettext_noop as _
 
                 messages.warning(request, _("Session is Expired. Please login again!"))
             except Exception:
@@ -187,7 +187,7 @@ class AdminAllowedMiddleware(MiddlewareMixin):
                     finally:
                         try:
                             from django.contrib import messages
-                            from django.utils.translation import ugettext_noop as _
+                            from django.utils.translation import gettext_noop as _
 
                             messages.warning(request, _("Admin access forbidden from {visitor_ip}"))
                         except Exception:

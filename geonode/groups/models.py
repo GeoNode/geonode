@@ -33,7 +33,7 @@ from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode.utils import build_absolute_uri
 from geonode.thumbs.utils import MISSING_THUMB

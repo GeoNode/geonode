@@ -17,18 +17,20 @@
 #
 #########################################################################
 
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 urlpatterns = [
-    url(r"^permissions/(?P<resource_id>\d+)$", views.resource_permissions, name="resource_permissions"),
-    url(r"^geolimits/(?P<resource_id>\d+)$", views.resource_geolimits, name="resource_geolimits"),
-    url(r"^bulk-permissions/?$", views.set_bulk_permissions, name="bulk_permissions"),
-    url(r"^request-permissions/?$", views.request_permissions, name="request_permissions"),
-    url(r"^invalidate-permissions-cache/?$", views.invalidate_permissions_cache, name="invalidate_permissions_cache"),
-    url(
+    re_path(r"^permissions/(?P<resource_id>\d+)$", views.resource_permissions, name="resource_permissions"),
+    re_path(r"^geolimits/(?P<resource_id>\d+)$", views.resource_geolimits, name="resource_geolimits"),
+    re_path(r"^bulk-permissions/?$", views.set_bulk_permissions, name="bulk_permissions"),
+    re_path(r"^request-permissions/?$", views.request_permissions, name="request_permissions"),
+    re_path(
+        r"^invalidate-permissions-cache/?$", views.invalidate_permissions_cache, name="invalidate_permissions_cache"
+    ),
+    re_path(
         r"^invalidate_tileddataset_cache/?$", views.invalidate_tileddataset_cache, name="invalidate_tileddataset_cache"
     ),
-    url(r"^attributes_sats_refresh/?$", views.attributes_sats_refresh, name="attributes_sats_refresh"),
+    re_path(r"^attributes_sats_refresh/?$", views.attributes_sats_refresh, name="attributes_sats_refresh"),
 ]

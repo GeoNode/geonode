@@ -19,7 +19,6 @@
 import logging
 from importlib import import_module
 
-from django.apps import AppConfig
 from django.conf import settings
 from django.db.models import signals
 from django.contrib.auth import get_user_model
@@ -41,7 +40,7 @@ if has_notifications:
         logger.error(e)
 
 
-class NotificationsAppConfigBase(AppConfig):
+class NotificationsAppConfigBase:
     """
     Base class for AppConfig notifications setup
 
