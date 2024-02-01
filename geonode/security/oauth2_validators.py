@@ -34,7 +34,6 @@ log = logging.getLogger(__name__)
 
 
 class OIDCValidator(OAuth2Validator):
-
     """e.g.
         Check username and password correspond to a valid and active User, if fails
         try Facebook token authentication

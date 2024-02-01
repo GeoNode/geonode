@@ -41,7 +41,6 @@ logger = logging.getLogger(__name__)
 
 
 class IsSelf(permissions.BasePermission):
-
     """Grant permission only if the current instance is the request user.
     Used to allow users to edit their own account, nothing to others (even
     superusers).
@@ -62,7 +61,6 @@ class IsSelf(permissions.BasePermission):
 
 
 class IsSelfOrReadOnly(IsSelf):
-
     """Grant permissions if instance *IS* the request user, or read-only.
     Used to allow users to edit their own account, and others to read.
     """
@@ -75,7 +73,6 @@ class IsSelfOrReadOnly(IsSelf):
 
 
 class IsSelfOrAdmin(IsSelf):
-
     """Grant R/W to self and superusers/staff members. Deny others."""
 
     def has_permission(self, request, view):
@@ -94,7 +91,6 @@ class IsSelfOrAdmin(IsSelf):
 
 
 class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
-
     """Grant R/W to self and superusers/staff members, R/O to others."""
 
     def has_permission(self, request, view):
@@ -111,7 +107,6 @@ class IsSelfOrAdminOrReadOnly(IsSelfOrAdmin):
 
 
 class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
-
     """Grant R/W to self and superusers/staff members, R/O to auth."""
 
     def has_object_permission(self, request, view, obj):

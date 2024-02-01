@@ -79,7 +79,6 @@ VIEWER_CONFIG = """
 
 
 class MapsTest(NotificationsTestsHelper):
-
     """Tests geonode.maps app/module"""
 
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]

@@ -57,7 +57,6 @@ class PermissionLevelError(Exception):
 
 
 class PermissionLevelMixin:
-
     """
     Mixin for adding "Permission Level" methods
     to a model class -- eg role systems where a
