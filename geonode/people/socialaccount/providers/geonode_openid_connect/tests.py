@@ -33,6 +33,7 @@ from django.contrib.auth import get_user_model
 
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter
+from allauth.socialaccount.models import SocialAccount
 from allauth.account.models import EmailAddress, EmailConfirmation
 from allauth.account.signals import user_signed_up
 
