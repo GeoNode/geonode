@@ -21,12 +21,10 @@ from django import template
 from django.db.models import Q
 from django.conf import settings
 from django.db.models import Count
-from django.utils.translation import ugettext
+from django.utils.translation import gettext_lazy
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import gettext_lazy as _
 
-from pinax.ratings.models import Rating
 from guardian.shortcuts import get_objects_for_user
 
 from geonode.maps.models import Map
@@ -53,7 +51,7 @@ FACETS = {
 @register.filter(name="template_trans")
 def template_trans(text):
     try:
-        return ugettext(text)
+        return gettext_lazy(text)
     except Exception:
         return text
 
@@ -62,12 +60,6 @@ def template_trans(text):
 def get_item(dictionary, key):
     """Get a element for a dict by name"""
     return dictionary.get(key)
-
-
-@register.simple_tag
-def num_ratings(obj):
-    ct = ContentType.objects.get_for_model(obj)
-    return len(Rating.objects.filter(object_id=obj.pk, content_type=ct))
 
 
 @register.simple_tag(takes_context=True)

@@ -28,14 +28,14 @@ from django.db import models
 from django.utils.html import strip_tags
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives as EmailMessage
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 from django.db.models import Max
 from django.urls import resolve, Resolver404
 
 
 from geonode.utils import raw_sql
 from geonode.notifications_helper import send_notification
-from geonode.monitoring import MonitoringAppConfig as AppConf
+from geonode.monitoring.apps import MonitoringAppConfig as AppConf
 from geonode.monitoring.models import (
     Metric,
     MetricValue,

@@ -1877,47 +1877,6 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["total"], ThesaurusKeyword.objects.count())
 
-    def test_rating_resource(self):
-        resource = Dataset.objects.first()
-        url = reverse("base-resources-ratings", args=[resource.pk])
-        resource.set_permissions(
-            {"users": {get_anonymous_user().username: ["base.view_resourcebase"], "bobby": ["base.add_resourcebase"]}}
-        )
-        data = {"rating": 3}
-        # Anonymous user
-        response = self.client.get(url)
-        self.assertEqual(response.json()["rating"], 0)
-        self.assertEqual(response.json()["overall_rating"], 0)
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(url, data=data)
-        self.assertEqual(response.status_code, 403)
-
-        # Authenticated user
-        self.assertTrue(self.client.login(username="admin", password="admin"))
-        response = self.client.get(url)
-        self.assertEqual(response.json()["rating"], 0)
-        self.assertEqual(response.json()["overall_rating"], 0)
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.post(url, data=data)
-        self.assertEqual(response.json()["rating"], 3)
-        self.assertEqual(response.json()["overall_rating"], 3.0)
-        self.assertEqual(response.status_code, 200)
-
-        # Authenticated user2
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        response = self.client.get(url)
-        self.assertEqual(response.json()["rating"], 0)
-        self.assertEqual(response.json()["overall_rating"], 3.0)
-        self.assertEqual(response.status_code, 200)
-
-        data["rating"] = 1
-        response = self.client.post(url, data=data)
-        self.assertEqual(response.json()["rating"], 1)
-        self.assertEqual(response.json()["overall_rating"], 2.0)
-        self.assertEqual(response.status_code, 200)
-
     def test_set_resource_thumbnail(self):
         re_uuid = "[0-F]{8}-([0-F]{4}-){3}[0-F]{12}"
         resource = Dataset.objects.first()

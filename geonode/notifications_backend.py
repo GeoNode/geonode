@@ -21,7 +21,7 @@ import logging
 from django.conf import settings
 from django.core.mail import send_mail, get_connection, EmailMessage
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext
+from django.utils.translation import gettext_lazy
 
 from pinax.notifications.backends.base import BaseBackend
 
@@ -43,7 +43,7 @@ class EmailBackend(BaseBackend):
             {
                 "recipient": recipient,
                 "sender": sender,
-                "notice": ugettext(notice_type.display),
+                "notice": gettext_lazy(notice_type.display),
             }
         )
         context.update(extra_context)

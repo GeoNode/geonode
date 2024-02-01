@@ -171,6 +171,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
                 "X-Content-Type-Options": "nosniff",
                 "X-XSS-Protection": "1; mode=block",
                 "Referrer-Policy": "same-origin",
+                "Cross-Origin-Opener-Policy": "same-origin",
                 "X-Frame-Options": "SAMEORIGIN",
                 "Content-Language": "en-us",
                 "Content-Length": "119",

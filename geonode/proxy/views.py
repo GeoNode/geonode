@@ -33,7 +33,7 @@ from django.http import HttpResponse, StreamingHttpResponse
 from django.views.generic import View
 from distutils.version import StrictVersion
 from django.http.request import validate_host
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.layers.models import Dataset

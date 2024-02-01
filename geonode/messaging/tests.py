@@ -19,7 +19,7 @@
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
-from geonode.messaging import connection
+from geonode.messaging.apps import connection
 from geonode.messaging.consumer import Consumer
 
 
