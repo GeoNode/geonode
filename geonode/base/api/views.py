@@ -1479,7 +1479,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         resource = self.get_object()
         if request.method in ("POST", "DELETE"):
             try:
-                target = ResourceBase.objects.get(id=int(request.data["target"]))
+                target_id = int(request.data["target"])
+                target = ResourceBase.objects.get(id=target_id)
             except KeyError:
                 return Response({"message": "Bad Request, target missing"}, status=400)
             except ValueError:
@@ -1489,6 +1490,8 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
             if request.method == "POST":
                 try:
+                    if target_id == resource.id:
+                        return Response({"message": "Cannot link to self"}, status=400)
                     LinkedResource.objects.get(source=resource.id, target=target.id)
                     return Response({"message": "Resource is already linked"}, status=400)
                 except LinkedResource.DoesNotExist:

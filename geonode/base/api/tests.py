@@ -1465,6 +1465,9 @@ class BaseApiTests(APITestCase):
         # clean up
         favorite.delete()
 
+    def test_linked_resource(self):
+        pass
+
     def test_get_favorites_is_returned_in_the_base_endpoint_per_user(self):
         """
         Ensure we get user's favorite resources.
@@ -2657,6 +2660,123 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
         response = self.client.put(url)
         self.assertEqual(response.status_code, 403)
+
+    def test_insert_one_linked_resource(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        response = self.client.post(url, data={"target": self.map.id})
+
+        link_connected = LinkedResource.objects.get(source_id=self.doc.id)
+
+        self.assertEqual(response.status_code, 201)
+
+        self.assertEqual(self.doc.id, link_connected.source_id)
+
+        self.assertEqual(self.map.id, link_connected.target_id)
+
+    def test_insert_self_as_linked_resource(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        # linked resource cannot be linked to itself
+        response = self.client.post(url, data={"target": self.doc.id})
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_insert_existing_linked_resource(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        LinkedResource.objects.create(source_id=self.doc.id, target_id=self.doc.id)
+
+        # linked resource cannot be duplicated
+        response = self.client.post(url, data={"target": self.doc.id})
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_insert_multiple_linked_resource(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        response = self.client.post(url, data={"target": self.map.id})
+        response = self.client.post(url, data={"target": self.dataset.id})
+
+        list_connected = LinkedResource.objects.filter(source_id=self.doc.id).all()
+
+        list_connected_targets = [linked.target_id for linked in list_connected]
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(2, len(list_connected))
+
+        self.assertTrue((self.map.id in list_connected_targets))
+        self.assertTrue((self.dataset.id in list_connected_targets))
+
+    def test_insert_invalid_linked_resource(self):
+
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        # generate an invalid id
+        invalid_id = max([r.id for r in ResourceBase.objects.all()]) + 1
+
+        # make sure id does not exist
+        invalid_resource = ResourceBase.objects.filter(id=invalid_id).first()
+        self.assertEqual(None, invalid_resource)
+
+        response = self.client.post(url, data={"target": invalid_id})
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_delete_invalid_linked_resource(self):
+
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        # generate an invalid id
+        invalid_id = max([r.id for r in ResourceBase.objects.all()]) + 1
+
+        # make sure id does not exist
+        invalid_resource = ResourceBase.objects.filter(id=invalid_id).first()
+        self.assertEqual(None, invalid_resource)
+
+        response = self.client.delete(url, data={"target": invalid_id}, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_delete_linked_resource(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id)
+
+        list_connected = LinkedResource.objects.filter(source_id=self.doc.id).all()
+        # check count after insertion
+        self.assertEqual(1, len(list_connected))
+
+        response = self.client.delete(url, data={"target": self.map.id}, content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+        # check count after deletion
+        self.assertEqual(0, len(LinkedResource.objects.filter(source_id=self.doc.id).all()))
+
+    def test_delete_not_found_from_linked_resource(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+        # Make sure there are no linked resource
+        linked_res = LinkedResource.objects.filter(source_id=self.doc.id).all()
+        for link in linked_res:
+            link.delete()
+
+        # try deleting a valid resource but not found in linked res
+
+        response = self.client.delete(url, data={"target": self.map.id}, content_type="application/json")
+
+        self.assertEqual(response.status_code, 404)
 
     def test_linked_resource_for_document(self):
         _d = []
