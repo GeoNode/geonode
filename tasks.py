@@ -325,13 +325,6 @@ def migrations(ctx):
         f"python manage.py migrate --noinput --settings={_localsettings()} --database=datastore",
         pty=True,
     )
-    try:
-        ctx.run(
-            f"python manage.py rebuild_index --noinput --settings={_localsettings()}",
-            pty=True,
-        )
-    except Exception:
-        pass
 
 
 @task
