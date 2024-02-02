@@ -90,7 +90,7 @@ git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-
 git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
 git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
 django-avatar==8.0.0
-geonode-oauth-toolkit==2.2.2
+git+https://github.com/GeoNode/geonode-oauth-toolkit.git@openid-connect#egg=geonode-oauth-toolkit
 git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
 git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
 django-activity-stream==2.0.0
