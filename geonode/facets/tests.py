@@ -520,6 +520,8 @@ class TestFacets(GeoNodeBaseTestSupport):
         groupinfo = GroupFacetProvider().get_info()
         grflt = groupinfo["filter"]
         grname = groupinfo["name"]
+        g_admin_id = self.group_admin.id
+        g_comm_id = self.group_common.id
 
         t0flt = facet_registry.get_provider("t_0").get_info()["filter"]
         t1flt = facet_registry.get_provider("t_1").get_info()["filter"]
@@ -551,12 +553,12 @@ class TestFacets(GeoNodeBaseTestSupport):
             (regname, {t1flt: t("1_1"), "key": ["R0", "R1"]}, {"R1": 1, "R0": None}),
             (regname, {t1flt: t("1_1"), "key": ["R0"]}, {"R0": None}),
             # groups
-            (grname, {grflt: [4, 5], "key": [4, 5]}, {4: 7, 5: 3}),
-            (grname, {grflt: [4], "key": [4]}, {4: 7}),
-            (grname, {catflt: ["C0"], grflt: [5]}, {}),
-            (grname, {catflt: ["C1"], grflt: [4]}, {4: 1}),
-            (grname, {catflt: ["C0"], grflt: [4]}, {4: 3}),
-            (grname, {catflt: ["C0", "C1"], grflt: [4, 5]}, {4: 4}),
+            (grname, {grflt: [g_admin_id, g_comm_id], "key": [g_admin_id, g_comm_id]}, {g_admin_id: 7, g_comm_id: 3}),
+            (grname, {grflt: [g_admin_id], "key": [g_admin_id]}, {g_admin_id: 7}),
+            (grname, {catflt: ["C0"], grflt: [g_comm_id]}, {}),
+            (grname, {catflt: ["C1"], grflt: [g_admin_id]}, {g_admin_id: 1}),
+            (grname, {catflt: ["C0"], grflt: [g_admin_id]}, {g_admin_id: 3}),
+            (grname, {catflt: ["C0", "C1"], grflt: [g_admin_id, g_comm_id]}, {g_admin_id: 4}),
             # category
             (catname, {t1flt: t("1_0")}, {"C0": 3, "C1": 1, "C3": 3}),
             (catname, {t1flt: t("1_0"), "key": ["C0", "C2"]}, {"C0": 3, "C2": None}),
