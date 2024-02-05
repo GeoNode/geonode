@@ -30,6 +30,7 @@ FACET_TYPE_THESAURUS = "thesaurus"
 FACET_TYPE_CATEGORY = "category"
 FACET_TYPE_BASE = "base"
 FACET_TYPE_KEYWORD = "keyword"
+FACET_TYPE_GROUP = "group"
 
 logger = logging.getLogger(__name__)
 
