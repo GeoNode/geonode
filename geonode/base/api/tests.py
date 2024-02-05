@@ -1465,9 +1465,6 @@ class BaseApiTests(APITestCase):
         # clean up
         favorite.delete()
 
-    def test_linked_resource(self):
-        pass
-
     def test_get_favorites_is_returned_in_the_base_endpoint_per_user(self):
         """
         Ensure we get user's favorite resources.
@@ -2666,22 +2663,44 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
-        response = self.client.post(url, data={"target": self.map.id})
+        response = self.client.post(url, data={"target": [self.map.id]}, content_type="application/json")
 
         link_connected = LinkedResource.objects.get(source_id=self.doc.id)
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
+
+        response_json = response.json()
+
+        self.assertTrue((self.map.id in response_json["success"]))
 
         self.assertEqual(self.doc.id, link_connected.source_id)
 
         self.assertEqual(self.map.id, link_connected.target_id)
+
+    def test_insert_linked_resource_invalid_type(self):
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        response = self.client.post(url, data={"target": self.map.id}, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
 
     def test_insert_self_as_linked_resource(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         # linked resource cannot be linked to itself
-        response = self.client.post(url, data={"target": self.doc.id})
+        response = self.client.post(url, data={"target": [self.doc.id]}, content_type="application/json")
+        response_json = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue((self.doc.id in response_json["error"]))
+
+    def test_insert_bad_payload_linked_resource(self):
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        # linked resource cannot have an invalid payload
+        response = self.client.post(url, data={"target_XXX": [self.doc.id]})
 
         self.assertEqual(response.status_code, 400)
 
@@ -2691,24 +2710,30 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         LinkedResource.objects.create(source_id=self.doc.id, target_id=self.doc.id)
 
         # linked resource cannot be duplicated
-        response = self.client.post(url, data={"target": self.doc.id})
-
+        response = self.client.post(url, data={"target": [self.doc.id]}, content_type="application/json")
+        response_json = response.json()
         self.assertEqual(response.status_code, 400)
+        self.assertTrue((self.doc.id in response_json["error"]))
 
     def test_insert_multiple_linked_resource(self):
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
-        response = self.client.post(url, data={"target": self.map.id})
-        response = self.client.post(url, data={"target": self.dataset.id})
+        response = self.client.post(
+            url, data={"target": [self.map.id, self.dataset.id]}, content_type="application/json"
+        )
 
         list_connected = LinkedResource.objects.filter(source_id=self.doc.id).all()
 
         list_connected_targets = [linked.target_id for linked in list_connected]
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(2, len(list_connected))
+        response_json = response.json()
+        self.assertTrue((self.map.id in response_json["success"]))
+        self.assertTrue((self.dataset.id in response_json["success"]))
+        self.assertEqual(2, len(response_json["success"]))
 
         self.assertTrue((self.map.id in list_connected_targets))
         self.assertTrue((self.dataset.id in list_connected_targets))
@@ -2720,15 +2745,35 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
         # generate an invalid id
-        invalid_id = max([r.id for r in ResourceBase.objects.all()]) + 1
+        invalid_id = ResourceBase.objects.last().id + 1
 
         # make sure id does not exist
         invalid_resource = ResourceBase.objects.filter(id=invalid_id).first()
         self.assertEqual(None, invalid_resource)
 
-        response = self.client.post(url, data={"target": invalid_id})
-
+        response = self.client.post(url, data={"target": [invalid_id]}, content_type="application/json")
+        response_json = response.json()
         self.assertEqual(response.status_code, 400)
+        self.assertTrue((invalid_id in response_json["error"]))
+
+    def test_insert_valid_and_invalid_linked_resource(self):
+
+        url = reverse("base-resources-linked_resources", args=[self.doc.id])
+
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        # generate an invalid id
+        invalid_id = ResourceBase.objects.last().id + 1
+
+        # make sure id does not exist
+        invalid_resource = ResourceBase.objects.filter(id=invalid_id).first()
+        self.assertEqual(None, invalid_resource)
+
+        response = self.client.post(url, data={"target": [invalid_id, self.map.id]}, content_type="application/json")
+        response_json = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue((invalid_id in response_json["error"]))
+        self.assertTrue((self.map.id in response_json["success"]))
 
     def test_delete_invalid_linked_resource(self):
 
@@ -2737,15 +2782,16 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
         # generate an invalid id
-        invalid_id = max([r.id for r in ResourceBase.objects.all()]) + 1
+        invalid_id = ResourceBase.objects.last().id + 1
 
         # make sure id does not exist
         invalid_resource = ResourceBase.objects.filter(id=invalid_id).first()
         self.assertEqual(None, invalid_resource)
 
-        response = self.client.delete(url, data={"target": invalid_id}, content_type="application/json")
-
+        response = self.client.delete(url, data={"target": [invalid_id]}, content_type="application/json")
+        response_json = response.json()
         self.assertEqual(response.status_code, 400)
+        self.assertTrue((invalid_id in response_json["error"]))
 
     def test_delete_linked_resource(self):
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
@@ -2758,11 +2804,12 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         # check count after insertion
         self.assertEqual(1, len(list_connected))
 
-        response = self.client.delete(url, data={"target": self.map.id}, content_type="application/json")
-
+        response = self.client.delete(url, data={"target": [self.map.id]}, content_type="application/json")
+        response_json = response.json()
         self.assertEqual(response.status_code, 200)
         # check count after deletion
         self.assertEqual(0, len(LinkedResource.objects.filter(source_id=self.doc.id).all()))
+        self.assertTrue((self.map.id in response_json["success"]))
 
     def test_delete_not_found_from_linked_resource(self):
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2774,9 +2821,10 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
         # try deleting a valid resource but not found in linked res
 
-        response = self.client.delete(url, data={"target": self.map.id}, content_type="application/json")
-
-        self.assertEqual(response.status_code, 404)
+        response = self.client.delete(url, data={"target": [self.map.id]}, content_type="application/json")
+        response_json = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue((self.map.id in response_json["error"]))
 
     def test_linked_resource_for_document(self):
         _d = []

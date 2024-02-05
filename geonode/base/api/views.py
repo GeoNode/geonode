@@ -1479,30 +1479,64 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         resource = self.get_object()
         if request.method in ("POST", "DELETE"):
             try:
-                target_id = int(request.data["target"])
-                target = ResourceBase.objects.get(id=target_id)
-            except KeyError:
-                return Response({"message": "Bad Request, target missing"}, status=400)
-            except ValueError:
-                return Response({"message": "Bad Request, target not of type int"}, status=400)
-            except ResourceBase.DoesNotExist:
-                return Response({"message": "Bad Request, ResourceBase invalid"}, status=400)
+                error_encountered = False
+                success_var = []
+                error_var = []
+                payload = {"success": success_var, "error": error_var, "message": "Resources linked successfully"}
 
-            if request.method == "POST":
-                try:
-                    if target_id == resource.id:
-                        return Response({"message": "Cannot link to self"}, status=400)
-                    LinkedResource.objects.get(source=resource.id, target=target.id)
-                    return Response({"message": "Resource is already linked"}, status=400)
-                except LinkedResource.DoesNotExist:
-                    LinkedResource.objects.create(source=resource, target=target)
-                    return Response({"message": "Successfuly added linked resource"}, status=201)
-            if request.method == "DELETE":
-                try:
-                    LinkedResource.objects.get(source=resource.id, target=target.id).delete()
-                    return Response({"message": "Successfuly removed linked resource"}, status=200)
-                except LinkedResource.DoesNotExist:
-                    return Response({"message": "Resource not linked"}, status=404)
+                def handle_error(t_id, log_msg):
+                    error_var.append(t_id)
+                    logger.error(log_msg)
+                    return True
+
+                target_ids = request.data["target"]
+                if not isinstance(target_ids, list):
+                    raise ValueError
+
+                for t_id in target_ids:
+                    if not isinstance(t_id, int):
+                        error_encountered = handle_error(t_id, f"Target id {t_id} is of invalid type")
+                        continue
+                    try:
+                        target = ResourceBase.objects.get(id=t_id)
+                    except ResourceBase.DoesNotExist:
+                        error_encountered = handle_error(t_id, f"Resource selected with id {t_id} does not exists")
+                        continue
+
+                    if request.method == "POST":
+                        if t_id == resource.id:
+                            error_encountered = handle_error(
+                                t_id, f"Resource selected with id {t_id} cannot reference itself"
+                            )
+                            continue
+                        try:
+                            LinkedResource.objects.get(source=resource.id, target=target.id)
+                            error_encountered = handle_error(
+                                t_id, f"Resource selected with id {t_id} is already linked"
+                            )
+                        except LinkedResource.DoesNotExist:
+                            LinkedResource.objects.create(source=resource, target=target)
+                            success_var.append(t_id)
+                            logger.info(f"Resource with id {t_id} succesfully linked to id : {resource.id}")
+
+                    if request.method == "DELETE":
+                        try:
+                            LinkedResource.objects.get(source=resource.id, target=target.id).delete()
+                            success_var.append(t_id)
+                            logger.info(f"Resource with id {t_id} succesfully unlinked to id : {resource.id}")
+                        except LinkedResource.DoesNotExist:
+                            error_encountered = handle_error(t_id, f"Resource selected with id {t_id} does not exist")
+
+                if error_encountered:
+                    payload["message"] = "Some error has occurred during the saving"
+                    return Response(payload, status=400)
+
+                return Response(payload, status=200)
+
+            except KeyError:
+                return Response({"message": "Bad Request, target missing from payload"}, status=400)
+            except ValueError:
+                return Response({"message": "Bad Request, target list is of invalid type"}, status=400)
 
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
 
