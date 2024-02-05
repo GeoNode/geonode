@@ -25,7 +25,7 @@ zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.4.0
-PyMuPDF==1.23.20
+PyMuPDF==1.23.21
 pathvalidate==3.2.0
 
 # Django Apps
@@ -38,7 +38,7 @@ django-taggit==5.0.1
 django-markdownify==0.9.3
 django-mptt==0.16.0
 django-modeltranslation>=0.11,<0.19.0
-django-treebeard==4.7
+django-treebeard==4.7.1
 django-guardian<2.4.1
 django-downloadview==2.3.0
 django-polymorphic==3.1.0
@@ -47,7 +47,7 @@ django-tinymce==3.6.1
 django-grappelli==3.0.8
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.5.0
-django-sequences==2.9
+django-sequences==3.0
 oauthlib==3.2.2
 pyopenssl==24.0.0
 pyjwt==2.8.0
@@ -120,7 +120,7 @@ inflection>=0.4.0
 jdcal==1.4.1
 mock<6.0.0
 python-dateutil==2.8.2
-pytz==2023.3.post1
+pytz==2024.1
 requests==2.31.0
 timeout-decorator==0.5.0
 pylibmc==1.6.3
@@ -137,6 +137,7 @@ django-ipware<6.1
 pycountry
 
 # production
+uWSGI==2.0.23
 gunicorn==21.2.0
 ipython==8.20.0
 docker==7.0.0
@@ -153,7 +154,7 @@ splinter==0.21.0
 pytest-splinter==3.3.2
 pytest-django==4.7.0
 setuptools>=65.5.1,<69.1.0
-pip==23.3.2
+pip==24.0
 Twisted==23.10.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
