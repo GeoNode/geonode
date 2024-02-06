@@ -50,7 +50,7 @@ Workshop](https://docs.geonode.org/en/master/usage/index.html).
 Install
 -------
 
-    The latest official release is 4.0.2!
+    The latest official release on 4.1.x branch is 4.1.3!
 
 GeoNode can be setup in different ways, flavors and plattforms. If
 you´re planning to do development or install for production please visit
