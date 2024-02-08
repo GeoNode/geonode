@@ -3065,6 +3065,84 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             for d in _d:
                 d.delete()
 
+    def test_linked_resource_filter_one_resource_type(self):
+        _d = []
+        try:
+            # data preparation
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            resource_type_param = "dataset"
+            # call api with single resource_type param
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?resource_type={resource_type_param}")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            res_from_filter = resource_type_param.split(",")
+            res_types = [res["resource_type"] for res in payload["resources"]]
+            for r in res_types:
+                self.assertTrue(r in res_from_filter)
+
+        finally:
+            for d in _d:
+                d.delete()
+
+    def test_linked_resource_filter_multiple_resource_type_linktype(self):
+        _d = []
+        try:
+            # data preparation
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            resource_type_param = "dataset,map"
+            link_type = "linked_by"
+            # call the API w/ both parameters
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?resource_type={resource_type_param}&link_type={link_type}")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            res_filter = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["resources"]]
+            for r in res_types_payload:
+                self.assertTrue(r in res_filter)
+            payload_keys = {"linked_by", "resources", "WARNINGS"}
+            self.assertTrue(payload_keys == set(payload.keys()))
+            # assert that only linked_by is in payload
+
+        finally:
+            for d in _d:
+                d.delete()
+
+    def test_linked_resource_filter_multiple_resource_type_without_linktype(self):
+        _d = []
+        try:
+            # data preparation
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            resource_type_param = "dataset,map"
+            # call the API w/ resource_type
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?resource_type={resource_type_param}")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            res_from_filter = resource_type_param.split(",")
+            res_types = [res["resource_type"] for res in payload["resources"]]
+            for r in res_types:
+                self.assertTrue(r in res_from_filter)
+            payload_keys = {"linked_by", "linked_to", "resources", "WARNINGS"}
+            self.assertTrue(payload_keys == set(payload.keys()))
+
+        finally:
+            for d in _d:
+                d.delete()
+
 
 class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
     @classmethod
