@@ -53,7 +53,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata
+from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
@@ -1467,15 +1467,60 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             logger.debug(e)
             return request.data
 
-    @extend_schema(methods=["get"], description="Get Linked Resources")
+    @extend_schema(methods=["get", "post", "delete"], description="Get Linked Resources")
     @action(
         detail=True,
-        methods=["get"],
+        methods=["get", "post", "delete"],
         permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
         url_path=r"linked_resources",  # noqa
         url_name="linked_resources",
     )
     def linked_resources(self, request, pk, *args, **kwargs):
+        resource = self.get_object()
+        if request.method in ("POST", "DELETE"):
+            success_var = []
+            error_var = []
+            payload = {"success": success_var, "error": error_var, "message": "Resources updated successfully"}
+
+            target_ids = request.data.get("target")
+            if not isinstance(target_ids, list):
+                raise ValidationError("Payload is not valid")
+
+            # remove duplicates and self ref
+            target_ids = set(target_ids)
+            if resource.id in target_ids:
+                error_var.append(resource.id)
+
+            valid_ids = target_ids - {resource.id}
+
+            for t_id in valid_ids:
+                try:
+                    target = get_object_or_404(ResourceBase, pk=t_id)
+
+                    if request.method == "POST":
+                        _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
+                        if created:
+                            success_var.append(t_id)
+                            continue
+                        error_var.append(t_id)
+                    if request.method == "DELETE":
+                        link = LinkedResource.objects.filter(source=resource.id, target=t_id).first()
+                        if not link:
+                            logger.error(f"Resource selected with id {t_id} does not exist")
+                            error_var.append(t_id)
+                            continue
+                        link.delete()
+                        success_var.append(t_id)
+                except Exception:
+                    error_var.append(t_id)
+                    logger.error(f"Resource with id {t_id} not found")
+
+            if len(error_var):
+                payload["message"] = "Some error has occurred during the saving"
+                return Response(payload, status=400)
+
+            return Response(payload, status=200)
+
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
 
 
