@@ -1488,6 +1488,14 @@ def base_linked_resources(instance, user, params):
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         ).order_by("-pk")
+
+        resource_type = params.get("resource_type")
+        link_type = params.get("link_type")
+
+        if resource_type:
+            resource_list = resource_type.split(",")
+            visibile_resources = visibile_resources.filter(resource_type__in=resource_list)
+
         visible_ids = [res.id for res in visibile_resources]
 
         linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
@@ -1521,6 +1529,13 @@ def base_linked_resources(instance, user, params):
                 instance=linked_by, serialize_source=True, embed=True, many=True
             ).data,
         }
+
+        # [Issue #11944] Implement filtering for linked_resources
+        if link_type:
+            if link_type == "linked_to":
+                ret.pop("linked_by")
+            elif link_type == "linked_by":
+                ret.pop("linked_to")
 
         return Response(ret)
 
