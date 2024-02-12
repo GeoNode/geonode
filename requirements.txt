@@ -32,13 +32,8 @@ pathvalidate==3.2.0
 sentry-sdk
 
 # Django Apps
-<<<<<<< HEAD
-django-allauth==0.54.0
-django-appconf==1.0.5
-=======
-django-allauth==0.60.1
+django-allauth==0.61.1
 django-appconf==1.0.6
->>>>>>> c7c4dfb46 (build(deps): bump django-allauth from 0.54.0 to 0.60.1 (#11908))
 django-celery-results==2.5.1
 django-filter==23.3
 django-imagekit==4.1.0
