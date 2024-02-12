@@ -172,3 +172,4 @@ certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerabil
 jwcrypto>=1.4 # not directly required, pinned by Snyk to avoid a vulnerability
 cryptography>=41.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
 aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
+dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
