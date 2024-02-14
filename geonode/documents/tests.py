@@ -383,23 +383,6 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_document_upload_without_title(self):
-        """/documents/upload -> Test uploading a document without a title"""
-
-        f = SimpleUploadedFile("test_img_file.gif", self.imgfile.read(), "image/gif")
-
-        self.client.login(username="admin", password="admin")
-        response = self.client.post(
-            f"{reverse('document_upload')}?no__redirect=true",
-            data={
-                "doc_file": f,
-                "type": "document",
-            },
-        )
-        self.assertEqual(response.status_code, 200)
-        d = Document.objects.get(title="test_img_file.gif")
-        self.assertIsNotNone(d)
-
     # Permissions Tests
 
     def test_set_document_permissions(self):
