@@ -25,7 +25,7 @@ from kombu import BrokerConnection
 from kombu.common import maybe_declare
 from .queues import queue_email_events, queue_geoserver_events, queue_notifications_events, queue_dataset_viewers
 
-from . import url, producers, connection, broker_socket_timeout, task_serializer
+from geonode.messaging.apps import url, producers, connection, broker_socket_timeout, task_serializer
 from .consumer import Consumer
 
 logger = logging.getLogger(__name__)

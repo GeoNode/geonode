@@ -69,9 +69,7 @@ def resource_urls(request):
         GROUP_MANDATORY_RESOURCES=getattr(settings, "GROUP_MANDATORY_RESOURCES", False),
         GROUP_PRIVATE_RESOURCES=getattr(settings, "GROUP_PRIVATE_RESOURCES", False),
         RESOURCE_PUBLISHING=getattr(settings, "RESOURCE_PUBLISHING", False),
-        HAYSTACK_SEARCH=getattr(settings, "HAYSTACK_SEARCH", False),
         SKIP_PERMS_FILTER=getattr(settings, "SKIP_PERMS_FILTER", False),
-        HAYSTACK_FACET_COUNTS=getattr(settings, "HAYSTACK_FACET_COUNTS", False),
         CLIENT_RESULTS_LIMIT=getattr(settings, "CLIENT_RESULTS_LIMIT", 10),
         API_LIMIT_PER_PAGE=getattr(settings, "API_LIMIT_PER_PAGE", 20),
         SRID_DETAIL=getattr(settings, "SRID", dict()).get("DETAIL", "never"),
@@ -86,15 +84,17 @@ def resource_urls(request):
         EXIF_ENABLED=getattr(settings, "EXIF_ENABLED", False),
         FAVORITE_ENABLED=getattr(settings, "FAVORITE_ENABLED", False),
         SEARCH_FILTERS=getattr(settings, "SEARCH_FILTERS", False),
-        THESAURI_FILTERS=[
-            t["name"]
-            for t in [
-                settings.THESAURUS,
+        THESAURI_FILTERS=(
+            [
+                t["name"]
+                for t in [
+                    settings.THESAURUS,
+                ]
+                if t.get("filter")
             ]
-            if t.get("filter")
-        ]
-        if hasattr(settings, "THESAURUS")
-        else [t.identifier for t in thesaurus],
+            if hasattr(settings, "THESAURUS")
+            else [t.identifier for t in thesaurus]
+        ),
         MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS=getattr(settings, "MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS", False),
         SHOW_PROFILE_EMAIL=getattr(settings, "SHOW_PROFILE_EMAIL", False),
         OGC_SERVER=getattr(settings, "OGC_SERVER", None),

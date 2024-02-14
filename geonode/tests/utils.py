@@ -62,7 +62,6 @@ def upload_step(step=None):
 
 
 class Client(DjangoTestClient):
-
     """client for making http requests"""
 
     def __init__(self, url, user, passwd, *args, **kwargs):
@@ -310,7 +309,6 @@ if has_notifications:
     from pinax.notifications.models import NoticeQueueBatch
 
     class NotificationsTestsHelper(GeoNodeBaseTestSupport):
-
         """
         Helper class for notification tests
         This provides:

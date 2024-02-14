@@ -27,7 +27,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.template import loader
 from django.views.generic.edit import CreateView, UpdateView
@@ -322,9 +322,11 @@ def document_metadata(
         category_form = CategoryForm(
             request.POST,
             prefix="category_choice_field",
-            initial=int(request.POST["category_choice_field"])
-            if "category_choice_field" in request.POST and request.POST["category_choice_field"]
-            else None,
+            initial=(
+                int(request.POST["category_choice_field"])
+                if "category_choice_field" in request.POST and request.POST["category_choice_field"]
+                else None
+            ),
         )
 
         if hasattr(settings, "THESAURUS"):

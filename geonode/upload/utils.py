@@ -31,7 +31,7 @@ from owslib.etree import etree as dlxml
 from django.conf import settings
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponse
 from django.template.defaultfilters import filesizeformat
 
@@ -111,7 +111,6 @@ fixing it.  Thank you!
 
 
 class JSONResponse(HttpResponse):
-
     """JSON response class."""
 
     def __init__(self, obj="", json_opts=None, content_type="application/json", *args, **kwargs):

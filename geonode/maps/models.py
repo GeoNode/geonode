@@ -25,7 +25,7 @@ from deprecated import deprecated
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode import geoserver  # noqa
 from geonode.base.models import ResourceBase, LinkedResource
@@ -37,7 +37,6 @@ logger = logging.getLogger("geonode.maps.models")
 
 
 class Map(ResourceBase):
-
     """
     A Map aggregates several layers together and annotates them with a viewport
     configuration.
@@ -231,7 +230,6 @@ class Map(ResourceBase):
 
 
 class MapLayer(models.Model):
-
     """
     The MapLayer model represents a layer included in a map.  This doesn't just
     identify the dataset, but also extra options such as which style to load

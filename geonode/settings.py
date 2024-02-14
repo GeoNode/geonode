@@ -487,7 +487,6 @@ INSTALLED_APPS = (
     "django_forms_bootstrap",
     # Social
     "avatar",
-    "pinax.ratings",
     "announcements",
     "actstream",
     "user_messages",
@@ -805,6 +804,7 @@ OPTIONS = {
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
@@ -1287,30 +1287,8 @@ except ValueError:
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 
-# Haystack Search Backend Configuration. To enable,
-# first install the following:
-# - pip install django-haystack
-# - pip install pyelasticsearch
-# Set HAYSTACK_SEARCH to True
-# Run "python manage.py rebuild_index"
-HAYSTACK_SEARCH = ast.literal_eval(os.getenv("HAYSTACK_SEARCH", "False"))
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
-# Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = ast.literal_eval(os.getenv("HAYSTACK_FACET_COUNTS", "True"))
-if HAYSTACK_SEARCH:
-    if "haystack" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("haystack",)
-    HAYSTACK_CONNECTIONS = {
-        "default": {
-            "ENGINE": "haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine",
-            "URL": os.getenv("HAYSTACK_ENGINE_URL", "http://127.0.0.1:9200/"),
-            "INDEX_NAME": os.getenv("HAYSTACK_ENGINE_INDEX_NAME", "haystack"),
-        },
-    }
-    HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-    HAYSTACK_SEARCH_RESULTS_PER_PAGE = int(os.getenv("HAYSTACK_SEARCH_RESULTS_PER_PAGE", "200"))
-
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
     "Atom",
@@ -1435,6 +1413,9 @@ DEFAULT_MAP_CENTER = (
     ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_X", "0")),
     ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "0")),
 )
+
+DEFAULT_MAP_CENTER_X = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_X", "0"))
+DEFAULT_MAP_CENTER_Y = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "0"))
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
@@ -2362,6 +2343,7 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.keyword.KeywordFacetProvider", "config": {"order": 6, "type": "select"}},
     {"class": "geonode.facets.providers.region.RegionFacetProvider", "config": {"order": 7, "type": "select"}},
     {"class": "geonode.facets.providers.users.OwnerFacetProvider", "config": {"order": 8, "type": "select"}},
+    {"class": "geonode.facets.providers.group.GroupFacetProvider", "config": {"order": 9, "type": "select"}},
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 

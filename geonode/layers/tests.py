@@ -28,13 +28,11 @@ import zipfile
 from uuid import uuid4
 from unittest.mock import MagicMock, patch
 from collections import namedtuple
-from pinax.ratings.models import OverallRating
 
 from django.urls import reverse
 from django.test import TestCase
 from django.forms import ValidationError
 from django.test.client import RequestFactory
-from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.contrib.auth.models import Group
@@ -51,7 +49,7 @@ from geonode.geoserver.createlayer.utils import create_dataset
 from geonode.layers import utils
 from geonode.layers.utils import clear_dataset_download_handlers
 from geonode.base import enumerations
-from geonode.layers import DatasetAppConfig
+from geonode.layers.apps import DatasetAppConfig
 from geonode.layers.admin import DatasetAdmin
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
@@ -90,7 +88,6 @@ logger = logging.getLogger(__name__)
 
 
 class DatasetsTest(GeoNodeBaseTestSupport):
-
     """Tests geonode.layers app/module"""
 
     type = "dataset"
@@ -728,22 +725,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
         # text which is not JSON should fail
         self.assertRaises(ValidationError, lambda: field.clean("<users></users>"))
-
-    def test_rating_dataset_remove(self):
-        """Test layer rating is removed on layer remove"""
-        # Get the layer to work with
-        layer = Dataset.objects.all()[3]
-        dataset_id = layer.id
-        # Create the rating with the correct content type
-        ctype = ContentType.objects.get(model="dataset")
-        OverallRating.objects.create(category=2, object_id=dataset_id, content_type=ctype, rating=3)
-        rating = OverallRating.objects.all()
-        self.assertEqual(rating.count(), 1)
-        # Remove the layer
-        resource_manager.delete(layer.uuid)
-        # Check there are no ratings matching the remove layer
-        rating = OverallRating.objects.all()
-        self.assertEqual(rating.count(), 0)
 
     def test_sld_upload(self):
         """Test layer remove functionality"""
@@ -1532,15 +1513,6 @@ class LayerNotificationsTestCase(NotificationsTestsHelper):
             self.assertTrue(self.check_notification_out("dataset_updated", self.u))
 
             self.clear_notifications_queue()
-            lct = ContentType.objects.get_for_model(_l)
-
-            if "pinax.ratings" in settings.INSTALLED_APPS:
-                self.clear_notifications_queue()
-                from pinax.ratings.models import Rating
-
-                rating = Rating(user=self.norman, content_type=lct, object_id=_l.id, content_object=_l, rating=5)
-                rating.save()
-                self.assertTrue(self.check_notification_out("dataset_rated", self.u))
 
 
 """

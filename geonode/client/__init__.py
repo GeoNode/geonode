@@ -19,5 +19,4 @@
 from pkgutil import extend_path
 
 
-default_app_config = "geonode.client.apps.AppConfig"
 __path__ = extend_path(__path__, __name__)  # noqa

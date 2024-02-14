@@ -21,16 +21,12 @@ from distutils.util import strtobool
 import json
 import re
 
-from decimal import Decimal
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
 
 from django.apps import apps
-from django.contrib.contenttypes.models import ContentType
 from django.core.validators import URLValidator
-from django.db import models
-from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
@@ -43,10 +39,6 @@ from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
-
-from pinax.ratings.categories import category_value
-from pinax.ratings.models import OverallRating, Rating
-from pinax.ratings.views import NUM_OF_RATINGS
 
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -61,7 +53,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata
+from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
@@ -729,7 +721,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         "created": request_params.get("created", False),
                     },
                 )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -890,7 +882,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -990,7 +982,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1074,7 +1066,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 geonode_resource=resource,
                 input_params={"uuid": resource.uuid},
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1195,7 +1187,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "notify": request_params.get("notify", True),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1306,7 +1298,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get("defaults", "{}"),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1320,47 +1312,6 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
-
-    @extend_schema(
-        methods=["post", "get"],
-        responses={200},
-        description="API endpoint allowing to rate and get overall rating of the Resource.",
-    )
-    @action(
-        detail=True,
-        url_path="ratings",
-        url_name="ratings",
-        methods=["post", "get"],
-        permission_classes=[
-            IsAuthenticatedOrReadOnly,
-            UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
-        ],
-    )
-    def ratings(self, request, pk, *args, **kwargs):
-        resource = get_object_or_404(ResourceBase, pk=pk)
-        resource = resource.get_real_instance()
-        ct = ContentType.objects.get_for_model(resource)
-        if request.method == "POST":
-            rating_input = int(request.data.get("rating"))
-            category = resource._meta.object_name.lower()
-            # check if category is configured in settings.PINAX_RATINGS_CATEGORY_CHOICES
-            cat_choice = category_value(resource, category)
-
-            # Check for errors and bail early
-            if category and cat_choice is None:
-                return HttpResponseForbidden("Invalid category. It must match a preconfigured setting")
-            if rating_input not in range(NUM_OF_RATINGS + 1):
-                return HttpResponseForbidden(f"Invalid rating. It must be a value between 0 and {NUM_OF_RATINGS}")
-            Rating.update(rating_object=resource, user=request.user, category=cat_choice, rating=rating_input)
-        user_rating = None
-        if request.user.is_authenticated:
-            user_rating = Rating.objects.filter(object_id=resource.pk, content_type=ct, user=request.user).first()
-        overall_rating = OverallRating.objects.filter(object_id=resource.pk, content_type=ct).aggregate(
-            r=models.Avg("rating")
-        )["r"]
-        overall_rating = Decimal(str(overall_rating or "0"))
-
-        return Response({"rating": user_rating.rating if user_rating else 0, "overall_rating": overall_rating})
 
     @extend_schema(
         methods=["put"], responses={200}, description="API endpoint allowing to set thumbnail of the Resource."
@@ -1516,15 +1467,60 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             logger.debug(e)
             return request.data
 
-    @extend_schema(methods=["get"], description="Get Linked Resources")
+    @extend_schema(methods=["get", "post", "delete"], description="Get Linked Resources")
     @action(
         detail=True,
-        methods=["get"],
+        methods=["get", "post", "delete"],
         permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
         url_path=r"linked_resources",  # noqa
         url_name="linked_resources",
     )
     def linked_resources(self, request, pk, *args, **kwargs):
+        resource = self.get_object()
+        if request.method in ("POST", "DELETE"):
+            success_var = []
+            error_var = []
+            payload = {"success": success_var, "error": error_var, "message": "Resources updated successfully"}
+
+            target_ids = request.data.get("target")
+            if not isinstance(target_ids, list):
+                raise ValidationError("Payload is not valid")
+
+            # remove duplicates and self ref
+            target_ids = set(target_ids)
+            if resource.id in target_ids:
+                error_var.append(resource.id)
+
+            valid_ids = target_ids - {resource.id}
+
+            for t_id in valid_ids:
+                try:
+                    target = get_object_or_404(ResourceBase, pk=t_id)
+
+                    if request.method == "POST":
+                        _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
+                        if created:
+                            success_var.append(t_id)
+                            continue
+                        error_var.append(t_id)
+                    if request.method == "DELETE":
+                        link = LinkedResource.objects.filter(source=resource.id, target=t_id).first()
+                        if not link:
+                            logger.error(f"Resource selected with id {t_id} does not exist")
+                            error_var.append(t_id)
+                            continue
+                        link.delete()
+                        success_var.append(t_id)
+                except Exception:
+                    error_var.append(t_id)
+                    logger.error(f"Resource with id {t_id} not found")
+
+            if len(error_var):
+                payload["message"] = "Some error has occurred during the saving"
+                return Response(payload, status=400)
+
+            return Response(payload, status=200)
+
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
 
 
@@ -1537,6 +1533,14 @@ def base_linked_resources(instance, user, params):
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         ).order_by("-pk")
+
+        resource_type = params.get("resource_type")
+        link_type = params.get("link_type")
+
+        if resource_type:
+            resource_list = resource_type.split(",")
+            visibile_resources = visibile_resources.filter(resource_type__in=resource_list)
+
         visible_ids = [res.id for res in visibile_resources]
 
         linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
@@ -1570,6 +1574,13 @@ def base_linked_resources(instance, user, params):
                 instance=linked_by, serialize_source=True, embed=True, many=True
             ).data,
         }
+
+        # [Issue #11944] Implement filtering for linked_resources
+        if link_type:
+            if link_type == "linked_to":
+                ret.pop("linked_by")
+            elif link_type == "linked_by":
+                ret.pop("linked_to")
 
         return Response(ret)
 

@@ -23,7 +23,7 @@ from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 
 from django.db import models
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 
 class AbstractProcessingTaskMeta(ABCMeta, type(PolymorphicModel)):
