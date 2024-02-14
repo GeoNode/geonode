@@ -25,7 +25,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 from geonode.utils import parse_datetime
 from geonode.monitoring.collector import CollectorAPI

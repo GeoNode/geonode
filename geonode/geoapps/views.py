@@ -24,7 +24,7 @@ import traceback
 
 from django.conf import settings
 from django.shortcuts import render
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
@@ -216,9 +216,11 @@ def geoapp_metadata(
         category_form = CategoryForm(
             request.POST,
             prefix="category_choice_field",
-            initial=int(request.POST["category_choice_field"])
-            if "category_choice_field" in request.POST and request.POST["category_choice_field"]
-            else None,
+            initial=(
+                int(request.POST["category_choice_field"])
+                if "category_choice_field" in request.POST and request.POST["category_choice_field"]
+                else None
+            ),
         )
 
         if hasattr(settings, "THESAURUS"):

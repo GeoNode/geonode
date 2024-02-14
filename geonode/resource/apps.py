@@ -17,7 +17,7 @@
 #
 #########################################################################
 from django.apps import AppConfig
-from django.conf.urls import url, include
+from django.urls import include, re_path
 
 
 class GeoNodeResourceConfig(AppConfig):
@@ -27,4 +27,4 @@ class GeoNodeResourceConfig(AppConfig):
     def ready(self):
         from geonode.urls import urlpatterns
 
-        urlpatterns += [url(r"^api/v2/", include("geonode.resource.api.urls"))]
+        urlpatterns += [re_path(r"^api/v2/", include("geonode.resource.api.urls"))]

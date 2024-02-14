@@ -26,7 +26,7 @@ import zipfile
 from collections import namedtuple
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from ..geoserver.helpers import ogc_server_settings
 from . import files

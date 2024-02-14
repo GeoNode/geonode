@@ -31,7 +31,7 @@ from actstream import registry
 from actstream.models import Action
 
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from geonode.tests.base import GeoNodeBaseTestSupport

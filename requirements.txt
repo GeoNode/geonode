@@ -2,61 +2,61 @@
 Pillow==10.2.0
 lxml==5.1.0
 psycopg2==2.9.9
-Django==3.2.23
+Django==4.2.9
 
 # Other
 amqp==5.2.0
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
 httplib2<0.22.1
 hyperlink==21.0.0
 idna>=2.5,<3.7
 urllib3==1.26.18
 Paver==1.3.4
-python-slugify==8.0.1
+python-slugify==8.0.4
 decorator==5.1.1
 celery==5.3.6
 kombu==5.3.5
 vine==5.1.0
-tqdm==4.66.1
+tqdm==4.66.2
 Deprecated==1.2.14
 wrapt==1.16.0
-jsonschema==4.20.0
+jsonschema==4.21.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==6.4.0
-PyMuPDF==1.23.14
+PyMuPDF==1.23.21
 pathvalidate==3.2.0
 
 # Django Apps
-django-allauth==0.54.0
+django-allauth==0.61.1
 django-appconf==1.0.6
 django-celery-results==2.5.1
 django-filter==23.5
 django-imagekit==5.0.0
-django-taggit==1.5.1
+django-taggit==5.0.1
 django-markdownify==0.9.3
-django-mptt==0.15.0
+django-mptt==0.16.0
 django-modeltranslation>=0.11,<0.19.0
-django-treebeard==4.7
+django-treebeard==4.7.1
 django-guardian<2.4.1
 django-downloadview==2.3.0
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
-django-tinymce==3.6.1
+django-tinymce==3.7.1
 django-grappelli==3.0.8
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.5.0
-django-sequences==2.9
+django-sequences==3.0
 oauthlib==3.2.2
-pyopenssl==23.3.0
+pyopenssl==24.0.0
 pyjwt==2.8.0
 
 # geopython dependencies
 pyproj<3.7.0
 OWSLib==0.29.3
 pycsw==2.6.1
-SQLAlchemy==2.0.25 # required by PyCSW
+SQLAlchemy==2.0.26 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 numpy==1.26.*
@@ -69,40 +69,35 @@ dj-pagination==2.5.0
 django-select2==8.1.2
 django-floppyforms<1.10.0
 django-forms-bootstrap<=3.1.0
-django-autocomplete-light==3.5.1
+django-autocomplete-light==3.9.5
 django-invitations<2.1.1
 django-recaptcha==4.0.0
 
 # REST
-djangorestframework==3.12.0
+djangorestframework==3.14.0
 djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
-drf-spectacular==0.27.0
-dynamic-rest==2.1.2
+drf-spectacular==0.27.1
+git+https://github.com/GeoNode/dynamic-rest.git@master#egg=dynamic_rest
 Markdown==3.5.2
 
-pinax-notifications==6.0.0
-pinax-ratings==4.0.0
+git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-notifications
 
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
--e git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
--e git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
+git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
+git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
 django-avatar==8.0.0
-geonode-oauth-toolkit==2.2.2
-geonode-user-messages==2.0.2
-geonode-announcements==2.0.2
-geonode-django-activity-stream==0.10.0
+git+https://github.com/GeoNode/geonode-oauth-toolkit.git@openid-connect#egg=geonode-oauth-toolkit
+git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
+git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
+django-activity-stream==2.0.0
 gn-arcrest==10.5.6
 geoserver-restconfig~=2.0.10
 gn-gsimporter==2.0.4
 gisdata==0.5.4
-
-# haystack/elasticsearch
-django-haystack==3.2.1
-elasticsearch>=2.0.0,<9.0.0
 
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.3
@@ -112,7 +107,7 @@ django-storages==1.14.2
 dropbox==11.36.2
 google-cloud-storage==2.14.0
 google-cloud-core==2.4.1
-boto3==1.34.20
+boto3==1.34.39
 
 # Django Caches
 python-memcached<=1.62
@@ -125,14 +120,14 @@ inflection>=0.4.0
 jdcal==1.4.1
 mock<6.0.0
 python-dateutil==2.8.2
-pytz==2023.3.post1
+pytz==2024.1
 requests==2.31.0
 timeout-decorator==0.5.0
 pylibmc==1.6.3
 sherlock==0.4.1
 
 # required by monitoring
-psutil==5.9.7
+psutil==5.9.8
 django-cors-headers==4.3.1
 user-agents
 django-user-agents
@@ -142,24 +137,24 @@ django-ipware<6.1
 pycountry
 
 # production
-uWSGI==2.0.23
+uWSGI==2.0.24
 gunicorn==21.2.0
-ipython==8.20.0
+ipython==8.21.0
 docker==7.0.0
 invoke==2.2.0
 
 # tests
-coverage==7.4.0
+coverage==7.4.1
 requests-toolbelt==1.0.0
 flake8==7.0.0
-black==23.12.1
-pytest==7.4.4
+black==24.1.1
+pytest==8.0.0
 pytest-bdd==7.0.1
-splinter==0.20.1
+splinter==0.21.0
 pytest-splinter==3.3.2
-pytest-django==4.7.0
+pytest-django==4.8.0
 setuptools>=65.5.1,<69.1.0
-pip==23.3.2
+pip==24.0
 Twisted==23.10.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
@@ -171,9 +166,11 @@ webdriver_manager==4.0.1
 # Security and audit
 mistune==3.0.2
 protobuf==3.20.3
-mako==1.3.0
+mako==1.3.2
 paramiko==3.4.0 # not directly required, fixes Blowfish deprecation warning
 certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
 jwcrypto>=1.4 # not directly required, pinned by Snyk to avoid a vulnerability
 cryptography>=41.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
 aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
+dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
+nh3==0.2.15

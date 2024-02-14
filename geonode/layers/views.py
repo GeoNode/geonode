@@ -34,7 +34,7 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.utils.html import escape
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
@@ -414,9 +414,11 @@ def dataset_metadata(
         category_form = CategoryForm(
             request.POST,
             prefix="category_choice_field",
-            initial=int(request.POST["category_choice_field"])
-            if "category_choice_field" in request.POST and request.POST["category_choice_field"]
-            else None,
+            initial=(
+                int(request.POST["category_choice_field"])
+                if "category_choice_field" in request.POST and request.POST["category_choice_field"]
+                else None
+            ),
         )
         if not category_form.is_valid():
             logger.error(f"Dataset Category form is not valid: {category_form.errors}")

@@ -24,7 +24,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import classproperty
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode.client.hooks import hookset
 from geonode.base.models import ResourceBase
@@ -37,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 class Document(ResourceBase):
-
     """
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """

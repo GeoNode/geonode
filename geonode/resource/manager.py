@@ -271,16 +271,6 @@ class ResourceManager(ResourceManagerInterface):
                         except Exception as e:
                             logger.exception(e)
 
-                        try:
-                            from pinax.ratings.models import OverallRating
-
-                            ct = ContentType.objects.get_for_model(_resource.get_real_instance())
-                            OverallRating.objects.filter(
-                                content_type=ct, object_id=_resource.get_real_instance().id
-                            ).delete()
-                        except Exception as e:
-                            logger.exception(e)
-
                         # Remove uploaded files, if any
                         ResourceBase.objects.cleanup_uploaded_files(resource_id=_resource.id)
 

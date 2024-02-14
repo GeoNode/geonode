@@ -21,7 +21,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from geonode.messaging import connection
+from geonode.messaging.apps import connection
 from geonode.messaging.consumer import Consumer
 
 logger = logging.getLogger(__package__)
