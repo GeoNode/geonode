@@ -149,9 +149,7 @@ class DocumentsApiTests(APITransactionTestCase):
         A document should be uploaded without specifying a title
         """
         self.client.force_login(self.admin)
-        payload = {
-            "document": {"metadata_only": True, "file_path": self.no_title_file_path}
-        }
+        payload = {"document": {"metadata_only": True, "file_path": self.no_title_file_path}}
         actual = self.client.post(self.url, data=payload, format="json")
         self.assertEqual(201, actual.status_code)
         extension = actual.json().get("document", {}).get("extension", "")
