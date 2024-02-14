@@ -44,6 +44,7 @@ class DocumentsApiTests(APITestCase):
         self.url = reverse("documents-list")
         self.invalid_file_path = f"{settings.PROJECT_ROOT}/tests/data/thesaurus.rdf"
         self.valid_file_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
+        self.no_title_file_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
 
     def test_documents(self):
         """
@@ -141,6 +142,18 @@ class DocumentsApiTests(APITestCase):
         extension = actual.json().get("document", {}).get("extension", "")
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
+
+    def test_uploading_doc_without_title(self):
+        """
+        A document should be uploaded without specifying a title
+        """
+        self.client.force_login(self.admin)
+        payload = {"document": {"metadata_only": True, "file_path": self.no_title_file_path}}
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        extension = actual.json().get("document", {}).get("extension", "")
+        self.assertEqual("sld", extension)
+        self.assertTrue(Document.objects.filter(title="test_sld.sld").exists())
 
     def test_file_path_and_doc_path_are_not_returned(self):
         """
