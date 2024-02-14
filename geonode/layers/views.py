@@ -463,7 +463,10 @@ def dataset_metadata(
             logger.error(f"{out.get('errors')}")
             return HttpResponse(json.dumps(out), content_type="application/json", status=400)
     else:
-        dataset_form = DatasetForm(instance=layer, prefix="resource", user=request.user)
+        group_profile = GroupProfile.objects.filter(group_id=layer.group_id).first()
+        dataset_form = DatasetForm(
+            instance=layer, initial={"group": group_profile}, prefix="resource", user=request.user
+        )
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)
         attribute_form = dataset_attribute_set(
             instance=layer, prefix="dataset_attribute_set", queryset=Attribute.objects.order_by("display_order")

@@ -123,6 +123,10 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
         self.request_admin = RequestFactory().get("/admin")
         self.request_admin.user = get_user_model().objects.get(username="admin")
+        self.group_common = Group.objects.create(name="UserCommon")
+        self.group_profile_common = GroupProfile.objects.create(
+            group_id=self.group_common, title="UserCommon", slug="UserCommon"
+        )
 
     # Admin Tests
 
@@ -211,6 +215,41 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         # ... all should be good
         response = self.client.get(reverse("dataset_metadata", args=("geonode:CA",)))
         self.assertEqual(response.status_code, 200)
+
+    def test_update_dataset_metadata_advanced(self):
+        """
+        Test that when changing the dataset group starting from the groupprofile.
+        """
+        self.test_dataset = None
+        try:
+            self.test_dataset = resource_manager.create(
+                None,
+                resource_type=Dataset,
+                defaults=dict(owner=self.request_admin.user, title="test", is_approved=True),
+            )
+
+            self.assertEqual(self.test_dataset.group, None)
+
+            data = {
+                "resource-title": "test,comma,2021",
+                "resource-group": self.group_profile_common.id,
+                "resource-owner": self.test_dataset.owner.id,
+                "resource-date": str(self.test_dataset.date),
+                "resource-date_type": self.test_dataset.date_type,
+                "resource-language": self.test_dataset.language,
+                "dataset_attribute_set-TOTAL_FORMS": 0,
+                "dataset_attribute_set-INITIAL_FORMS": 0,
+            }
+
+            url = reverse("dataset_metadata_advanced", args=(self.test_dataset.alternate,))
+            self.client.login(username="admin", password="admin")
+            response = self.client.post(url, data=data)
+            self.test_dataset.refresh_from_db()
+            self.assertEqual(self.test_dataset.group, self.group_profile_common.group)
+            self.assertEqual(response.status_code, 200)
+        finally:
+            if self.test_dataset:
+                self.test_dataset.delete()
 
     def test_dataset_attributes(self):
         lyr = Dataset.objects.all().first()

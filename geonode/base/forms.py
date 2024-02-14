@@ -38,6 +38,8 @@ from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
+from geonode.groups.models import GroupProfile
+from geonode.security.utils import get_user_visible_groups
 from modeltranslation.forms import TranslationModelForm
 from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
@@ -555,6 +557,8 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.fields["regions"].choices = get_tree_data()
+        self.fields["group"].queryset = get_user_visible_groups(user=self.user)
+
         self.can_change_perms = self.user and self.user.has_perm(
             "change_resourcebase_permissions", self.instance.get_self_resource()
         )
@@ -582,6 +586,10 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     def disable_keywords_widget_for_non_superuser(self, user):
         if settings.FREETEXT_KEYWORDS_READONLY and not user.is_superuser:
             self["keywords"].field.disabled = True
+
+    def clean_group(self):
+        group_id = GroupProfile.objects.get(id=self.data["resource-group"]).group_id
+        return Group.objects.get(id=group_id)
 
     def clean_keywords(self):
         keywords = self.cleaned_data["keywords"]
