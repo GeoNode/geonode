@@ -137,7 +137,7 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         layer.save()
 
         # with resource publishing
-        with self.settings(RESOURCE_PUBLISHING=True):
+        with self.settings(ADMIN_RESOURCE_PUBLISHING=True):
             resp = self.api_client.get(list_url)
             self.assertGreaterEqual(len(self.deserialize(resp)["objects"]), 7)
 

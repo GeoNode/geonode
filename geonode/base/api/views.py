@@ -153,8 +153,8 @@ class UserViewSet(DynamicModelViewSet):
         resources = get_visible_resources(
             qs,
             user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 
@@ -1529,8 +1529,8 @@ def base_linked_resources(instance, user, params):
         visibile_resources = get_visible_resources(
             ResourceBase.objects,
             user=user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         ).order_by("-pk")
         visible_ids = [res.id for res in visibile_resources]

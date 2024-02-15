@@ -68,7 +68,7 @@ def resource_urls(request):
         TOPICCATEGORY_MANDATORY=getattr(settings, "TOPICCATEGORY_MANDATORY", False),
         GROUP_MANDATORY_RESOURCES=getattr(settings, "GROUP_MANDATORY_RESOURCES", False),
         GROUP_PRIVATE_RESOURCES=getattr(settings, "GROUP_PRIVATE_RESOURCES", False),
-        RESOURCE_PUBLISHING=getattr(settings, "RESOURCE_PUBLISHING", False),
+        ADMIN_RESOURCE_PUBLISHING=getattr(settings, "ADMIN_RESOURCE_PUBLISHING", False),
         SKIP_PERMS_FILTER=getattr(settings, "SKIP_PERMS_FILTER", False),
         CLIENT_RESULTS_LIMIT=getattr(settings, "CLIENT_RESULTS_LIMIT", 10),
         API_LIMIT_PER_PAGE=getattr(settings, "API_LIMIT_PER_PAGE", 20),

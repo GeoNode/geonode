@@ -28,7 +28,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 from guardian.utils import get_user_obj_perms_model
-from guardian.shortcuts import get_objects_for_user, get_objects_for_group
+from guardian.shortcuts import get_objects_for_user, get_objects_for_group, get_anonymous_user
 
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
@@ -56,8 +56,8 @@ def get_visible_resources(
     user,
     request=None,
     metadata_only=False,
-    admin_approval_required=False,
-    unpublished_not_visible=False,
+    admin_moderate_uplaods=False,
+    admin_resource_publishing=False,
     private_groups_not_visibile=False,
 ):
     # Get the list of objects the user has access to
@@ -93,16 +93,20 @@ def get_visible_resources(
             )
             filter_set = filter_set.filter(id__in=_allowed_resources.values("id"))
 
-        if admin_approval_required and not AdvancedSecurityWorkflowManager.is_simplified_workflow():
+        if admin_moderate_uplaods and not AdvancedSecurityWorkflowManager.is_simplified_workflow():
             if not user or not user.is_authenticated or user.is_anonymous:
                 filter_set = filter_set.filter(
                     Q(is_published=True) | Q(group__in=public_groups) | Q(group__in=groups)
                 ).exclude(is_approved=False)
 
         # Hide Unpublished Resources to Anonymous Users
-        if unpublished_not_visible:
-            if not user or not user.is_authenticated or user.is_anonymous:
-                filter_set = filter_set.exclude(is_published=False)
+        if admin_resource_publishing and (not user or not user.is_authenticated or user.is_anonymous):
+            filter_set = filter_set.exclude(is_published=False)
+        else:
+            if user.is_anonymous:
+                user = get_anonymous_user()
+            filter_set = filter_set.exclude(~Q(owner=user.id) & Q(is_published=False))
+
 
         # Hide Resources Belonging to Private Groups
         if private_groups_not_visibile:
@@ -184,8 +188,8 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
     resources_with_perms = get_visible_resources(
         resources,
         user,
-        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+        admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
     )
 
@@ -222,7 +226,7 @@ def get_geoapp_subtypes():
 
 def skip_registered_members_common_group(user_group):
     _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-    if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and _members_group_name == user_group.name:
+    if (settings.ADMIN_RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and _members_group_name == user_group.name:
         return True
     return False
 
@@ -289,7 +293,7 @@ class AdvancedSecurityWorkflowManager:
 
     @staticmethod
     def is_manager_publish_mode():
-        return settings.RESOURCE_PUBLISHING
+        return settings.ADMIN_RESOURCE_PUBLISHING
 
     @staticmethod
     def is_admin_moderate_mode():
@@ -299,7 +303,7 @@ class AdvancedSecurityWorkflowManager:
     def is_auto_publishing_workflow():
         """
         **AUTO PUBLISHING**
-          - `RESOURCE_PUBLISHING = False`
+          - `ADMIN_RESOURCE_PUBLISHING = False`
           - `ADMIN_MODERATE_UPLOADS = False`
 
           - When user creates a resource:
@@ -307,13 +311,13 @@ class AdvancedSecurityWorkflowManager:
             - ANONYMOUS can view and download
           - No change to the Group Manager is applied
         """
-        return not settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
+        return not settings.ADMIN_RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_simple_publishing_workflow():
         """
         **SIMPLE PUBLISHING**
-          - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+          - `ADMIN_RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
           - `ADMIN_MODERATE_UPLOADS = False`
 
           - When user creates a resource:
@@ -327,13 +331,13 @@ class AdvancedSecurityWorkflowManager:
             - Group MANAGERS of the *resource's group* will get the owner permissions (`publish_resource` EXCLUDED)
             - Group MEMBERS of the *resource's group* will get the `view_resourcebase`, `download_resourcebase` permission
         """
-        return settings.RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
+        return settings.ADMIN_RESOURCE_PUBLISHING and not settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_advanced_workflow():
         """
         **ADVANCED WORKFLOW**
-          - `RESOURCE_PUBLISHING = True`
+          - `ADMIN_RESOURCE_PUBLISHING = True`
           - `ADMIN_MODERATE_UPLOADS = True`
 
           - When user creates a resource:
@@ -347,13 +351,13 @@ class AdvancedSecurityWorkflowManager:
             - Group MANAGERS of the resource's group will get the owner permissions (`publish_resource` INCLUDED)
             - Group MEMBERS of the resource's group will get the `view_resourcebase`, `download_resourcebase` permission
         """
-        return settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
+        return settings.ADMIN_RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_simplified_workflow():
         """
         **SIMPLIFIED WORKFLOW**
-          - `RESOURCE_PUBLISHING = False`
+          - `ADMIN_RESOURCE_PUBLISHING = False`
           - `ADMIN_MODERATE_UPLOADS = True`
 
           - **NOTE**: Is it even possibile? when the resource is automatically published, can it be un-published?
@@ -365,7 +369,7 @@ class AdvancedSecurityWorkflowManager:
             - Group MEMBERS of the user's group will get the `view_resourcebase`, `download_resourcebase` permission
             - ANONYMOUS can view and download
         """
-        return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
+        return not settings.ADMIN_RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
     def is_allowed_to_approve(user, resource):
@@ -485,7 +489,7 @@ class AdvancedSecurityWorkflowManager:
     ) -> dict:
         """
         Adapts the provided "perm_spec" accordingly to the following schema:
-                                | RESOURCE_PUBLISHING | ADMIN_MODERATE_UPLOADS
+                                | ADMIN_RESOURCE_PUBLISHING | ADMIN_MODERATE_UPLOADS
           --------------------------------------------------------------------
             AUTO PUBLISH        |          X          |           X
             SIMPLE PUBLISHING   |          V          |           X

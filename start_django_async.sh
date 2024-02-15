@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-export RESOURCE_PUBLISHING=True
+export ADMIN_RESOURCE_PUBLISHING=True
 export ADMIN_MODERATE_UPLOADS=True
 export NOTIFICATION_ENABLED=True
 export MONITORING_ENABLED=False

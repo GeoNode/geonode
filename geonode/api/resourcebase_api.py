@@ -215,8 +215,8 @@ class CommonModelApi(ModelResource):
             filtered,
             request.user if request else None,
             metadata_only=metadata_only,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 

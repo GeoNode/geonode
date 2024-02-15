@@ -276,8 +276,8 @@ class ResourceBaseAutocomplete(autocomplete.Select2QuerySetView):
         return get_visible_resources(
             qs,
             request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )[:100]
 
@@ -295,8 +295,8 @@ class LinkedResourcesAutocomplete(autocomplete.Select2QuerySetView):
         return get_visible_resources(
             qs,
             self.request.user if self.request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 

@@ -1238,7 +1238,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             if dataset:
                 dataset.delete()
 
-    @override_settings(ADMIN_MODERATE_UPLOADS=True, RESOURCE_PUBLISHING=True, GROUP_PRIVATE_RESOURCES=True)
+    @override_settings(ADMIN_MODERATE_UPLOADS=True, ADMIN_RESOURCE_PUBLISHING=True, GROUP_PRIVATE_RESOURCES=True)
     def test_get_visible_resources_advanced_workflow(self):
         admin_user = get_user_model().objects.get(username="admin")
         standard_user = get_user_model().objects.get(username="bobby")
@@ -1252,8 +1252,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1261,8 +1261,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1274,8 +1274,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1283,8 +1283,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1292,8 +1292,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1307,8 +1307,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=admin_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1316,8 +1316,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=standard_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1325,8 +1325,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=Dataset.objects.all(),
             user=None,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         # The method returns only 'metadata_only=False' resources
@@ -1343,8 +1343,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         actual = get_visible_resources(
             queryset=layers,
             user=standard_user,
-            admin_approval_required=True,
-            unpublished_not_visible=True,
+            admin_moderate_uplaods=True,
+            admin_resource_publishing=True,
             private_groups_not_visibile=True,
         )
         self.assertNotIn(_title, list(actual.values_list("title", flat=True)))
@@ -1843,12 +1843,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         self.resource = create_single_dataset(name="test_layer", owner=self.author, group=self.group_profile.group)
         self.anonymous_user = get_anonymous_user()
 
-    @override_settings(RESOURCE_PUBLISHING=False)
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
     def test_set_compact_permissions(self):
         """
         **AUTO PUBLISHING** - test_set_compact_permissions
-          - `RESOURCE_PUBLISHING = False`
+          - `ADMIN_RESOURCE_PUBLISHING = False`
           - `ADMIN_MODERATE_UPLOADS = False`
         """
         use_cases = [
@@ -1911,11 +1911,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     msg=f"use case #{counter} - user: {authorized_subject.username}",
                 )
 
-    @override_settings(RESOURCE_PUBLISHING=True)
-    def test_permissions_are_set_as_expected_resource_publishing_True(self):
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=True)
+    def test_permissions_are_set_as_expected_ADMIN_RESOURCE_PUBLISHING_True(self):
         """
-        **SIMPLE PUBLISHING** - test_permissions_are_set_as_expected_resource_publishing_True
-          - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+        **SIMPLE PUBLISHING** - test_permissions_are_set_as_expected_ADMIN_RESOURCE_PUBLISHING_True
+          - `ADMIN_RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
           - `ADMIN_MODERATE_UPLOADS = False`
         """
         use_cases = [
@@ -1981,12 +1981,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     msg=f"use case #{counter} - user: {authorized_subject.username}",
                 )
 
-    @override_settings(RESOURCE_PUBLISHING=True)
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
-    def test_permissions_are_set_as_expected_admin_upload_resource_publishing_True(self):
+    def test_permissions_are_set_as_expected_admin_upload_ADMIN_RESOURCE_PUBLISHING_True(self):
         """
-        **ADVANCED WORKFLOW** - test_permissions_are_set_as_expected_admin_upload_resource_publishing_True
-          - `RESOURCE_PUBLISHING = True`
+        **ADVANCED WORKFLOW** - test_permissions_are_set_as_expected_admin_upload_ADMIN_RESOURCE_PUBLISHING_True
+          - `ADMIN_RESOURCE_PUBLISHING = True`
           - `ADMIN_MODERATE_UPLOADS = True`
         """
         use_cases = [
@@ -2052,12 +2052,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.resource.is_published = True
             self.resource.save()
 
-    @override_settings(RESOURCE_PUBLISHING=False)
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=False)
     @override_settings(ADMIN_MODERATE_UPLOADS=False)
-    def test_permissions_are_set_as_expected_admin_upload_resource_publishing_False(self):
+    def test_permissions_are_set_as_expected_admin_upload_ADMIN_RESOURCE_PUBLISHING_False(self):
         """
-        **AUTO PUBLISHING** - test_permissions_are_set_as_expected_admin_upload_resource_publishing_False
-          - `RESOURCE_PUBLISHING = False`
+        **AUTO PUBLISHING** - test_permissions_are_set_as_expected_admin_upload_ADMIN_RESOURCE_PUBLISHING_False
+          - `ADMIN_RESOURCE_PUBLISHING = False`
           - `ADMIN_MODERATE_UPLOADS = False`
         """
         use_cases = [
@@ -2112,12 +2112,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                     msg=f"use case #{counter} - user: {authorized_subject.username}",
                 )
 
-    @override_settings(RESOURCE_PUBLISHING=True)
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_permissions_on_user_role_promotion_to_manager(self):
         """
         **ADVANCED WORKFLOW** - test_permissions_on_user_role_promotion_to_manager
-          - `RESOURCE_PUBLISHING = True`
+          - `ADMIN_RESOURCE_PUBLISHING = True`
           - `ADMIN_MODERATE_UPLOADS = True`
         """
         sut = GroupMember.objects.filter(user=self.group_member).exclude(group__title="Registered Members").first()
@@ -2164,12 +2164,12 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.resource.save()
             sut.demote()
 
-    @override_settings(RESOURCE_PUBLISHING=True)
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=True)
     @override_settings(ADMIN_MODERATE_UPLOADS=True)
     def test_permissions_on_user_role_demote_to_member(self):
         """
         **ADVANCED WORKFLOW** - test_permissions_on_user_role_demote_to_member
-          - `RESOURCE_PUBLISHING = True`
+          - `ADMIN_RESOURCE_PUBLISHING = True`
           - `ADMIN_MODERATE_UPLOADS = True`
         """
         sut = GroupMember.objects.filter(user=self.group_manager).exclude(group__title="Registered Members").first()
@@ -2191,11 +2191,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
 
-    @override_settings(RESOURCE_PUBLISHING=True)
-    def test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active(self):
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_demote_to_member_only_ADMIN_RESOURCE_PUBLISHING_active(self):
         """
-        **SIMPLE PUBLISHING** - test_permissions_on_user_role_demote_to_member_only_RESOURCE_PUBLISHING_active
-          - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+        **SIMPLE PUBLISHING** - test_permissions_on_user_role_demote_to_member_only_ADMIN_RESOURCE_PUBLISHING_active
+          - `ADMIN_RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
           - `ADMIN_MODERATE_UPLOADS = False`
         """
         sut = GroupMember.objects.filter(user=self.group_manager).exclude(group__title="Registered Members").first()
@@ -2221,11 +2221,11 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
 
-    @override_settings(RESOURCE_PUBLISHING=True)
-    def test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active(self):
+    @override_settings(ADMIN_RESOURCE_PUBLISHING=True)
+    def test_permissions_on_user_role_promote_to_manager_only_ADMIN_RESOURCE_PUBLISHING_active(self):
         """
-        **SIMPLE PUBLISHING** - test_permissions_on_user_role_promote_to_manager_only_RESOURCE_PUBLISHING_active
-          - `RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
+        **SIMPLE PUBLISHING** - test_permissions_on_user_role_promote_to_manager_only_ADMIN_RESOURCE_PUBLISHING_active
+          - `ADMIN_RESOURCE_PUBLISHING = True` (Autopublishing is disabled)
           - `ADMIN_MODERATE_UPLOADS = False`
         """
         sut = GroupMember.objects.filter(user=self.group_member).exclude(group__title="Registered Members").first()
@@ -2268,7 +2268,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             )
 
 
-@override_settings(RESOURCE_PUBLISHING=True)
+@override_settings(ADMIN_RESOURCE_PUBLISHING=True)
 @override_settings(ADMIN_MODERATE_UPLOADS=True)
 class TestPermissionChanges(GeoNodeBaseTestSupport):
     def setUp(self):

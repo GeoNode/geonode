@@ -27,6 +27,7 @@ import dj_database_url
 from schema import Optional
 from datetime import timedelta
 from urllib.parse import urlparse, urljoin
+import warnings
 
 #
 # General Django development settings
@@ -1907,7 +1908,11 @@ if os.name == "nt":
 # ######################################################## #
 
 # option to enable/disable resource unpublishing for administrators and members
-RESOURCE_PUBLISHING = ast.literal_eval(os.getenv("RESOURCE_PUBLISHING", "False"))
+if os.getenv("RESOURCE_PUBLISHING", "False"):
+    warnings.warn("The env variable RESOURCE_PUBLISHING is deprecated, please use ADMIN_RESOURCE_PUBLISHING")
+    ADMIN_RESOURCE_PUBLISHING = ast.literal_eval(os.getenv("RESOURCE_PUBLISHING", "False"))
+else:
+    ADMIN_RESOURCE_PUBLISHING = ast.literal_eval(os.getenv("ADMIN_RESOURCE_PUBLISHING", "False"))
 
 # Each uploaded Dataset must be approved by an Admin before becoming visible
 ADMIN_MODERATE_UPLOADS = ast.literal_eval(os.environ.get("ADMIN_MODERATE_UPLOADS", "False"))

@@ -83,7 +83,7 @@ def create_gn_dataset(workspace, datastore, name, title, owner_name):
     to_update = {}
     if settings.ADMIN_MODERATE_UPLOADS:
         to_update["is_approved"] = to_update["was_approved"] = False
-    if settings.RESOURCE_PUBLISHING:
+    if settings.ADMIN_RESOURCE_PUBLISHING:
         to_update["is_published"] = to_update["was_published"] = False
 
     resource_manager.update(layer.uuid, instance=layer, vals=to_update)

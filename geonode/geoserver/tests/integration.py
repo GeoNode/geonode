@@ -244,7 +244,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             layer.delete()
 
         # with settings disabled
-        with self.settings(RESOURCE_PUBLISHING=True):
+        with self.settings(ADMIN_RESOURCE_PUBLISHING=True):
             layer = Dataset.objects.first()
             layer.is_approved = False
             layer.is_published = False
@@ -284,7 +284,7 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
         anonymous = get_user_model().objects.get(username="AnonymousUser")
         norman = get_user_model().objects.get(username="norman")
         with override_settings(
-            RESOURCE_PUBLISHING=False,
+            ADMIN_RESOURCE_PUBLISHING=False,
             ADMIN_MODERATE_UPLOADS=False,
             DEFAULT_ANONYMOUS_VIEW_PERMISSION=True,
             DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False,

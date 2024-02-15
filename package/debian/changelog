@@ -5307,7 +5307,7 @@ geonode (2.4.0+alpha32) trusty; urgency=high
   [ capooti ]
   * [c44d5a] Added a request download button in layer and document detail pages. The request will be sent to resource owner using django-notification
   * [6f5abc] Making flake8 happy. Using get_object_or_404 for getting the resource
-  * [0a419a] Refactored the RESOURCE_PUBLISHING setting, now it is not activated by default
+  * [0a419a] Refactored the ADMIN_RESOURCE_PUBLISHING setting, now it is not activated by default
 
   [ state-hiu ]
   * [26bee7] initial levels support
@@ -5359,7 +5359,7 @@ geonode (2.4.0+alpha28) trusty; urgency=high
   * [d0a8c3] Added some basic documentation on publishing/unpublishing resources
   * [050c6b] Forgot a documentation image from previous commit
   * [a774d4] Making flake8 happy
-  * [b58499] Added a RESOURCE_PUBLISHING to enable/disable resource unpublishing for django staff members
+  * [b58499] Added a ADMIN_RESOURCE_PUBLISHING to enable/disable resource unpublishing for django staff members
   * [715d8b] Now when unpublishing the layer is unadvertised in GeoSever. Users with publish_resourcebase can still access the layer detail page.
   * [842242] Moved integration permissions test to its appropriate TestCase
 

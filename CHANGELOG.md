@@ -492,7 +492,7 @@
    * Advanced Upload Workflow Improvements:
      - Non admin user cannot change permission
      - Disable edit permissions globally when read-only mode is active
-     - RESOURCE_PUBLISHING:
+     - ADMIN_RESOURCE_PUBLISHING:
         1. "unpublished" won't be visible to Anonymous users
         2. "unpublished" will be visible to registered users **IF** they have view permissions
         3. "unpublished" will be always visible to the owner and Group Managers

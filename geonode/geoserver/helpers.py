@@ -2098,7 +2098,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                         gs_resource.attribution_link = site_url + profile.get_absolute_url()
 
                     try:
-                        if settings.RESOURCE_PUBLISHING:
+                        if settings.ADMIN_RESOURCE_PUBLISHING:
                             if instance.is_published != gs_resource.advertised:
                                 gs_resource.advertised = "true"
 

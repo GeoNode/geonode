@@ -97,8 +97,8 @@ def facets(context):
                     geoapps = get_visible_resources(
                         apps.get_model(label, app.default_model).objects.all(),
                         request.user if request else None,
-                        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-                        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                        admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+                        admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
                         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
                     )
 
@@ -154,8 +154,8 @@ def facets(context):
         documents = get_visible_resources(
             documents,
             request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 
@@ -201,8 +201,8 @@ def facets(context):
         layers = get_visible_resources(
             layers,
             request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 
@@ -280,15 +280,15 @@ def facets(context):
         maps = get_visible_resources(
             maps,
             request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
         documents = get_visible_resources(
             documents,
             request.user if request else None,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 

@@ -79,8 +79,8 @@ class CountJSONSerializer(Serializer):
         resources = get_visible_resources(
             resources,
             options["user"],
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+            admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
         )
 
@@ -285,8 +285,8 @@ class TopicCategoryResource(TypeFilteredResource):
             filter_set = get_visible_resources(
                 filter_set,
                 request.user if request else None,
-                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+                admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+                admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
                 private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
             )
 
@@ -711,8 +711,8 @@ def _get_resource_counts(request, resourcebase_filter_kwargs):
         ResourceBase.objects.filter(**resourcebase_filter_kwargs),
         request.user,
         request=request,
-        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        admin_moderate_uplaods=settings.ADMIN_MODERATE_UPLOADS,
+        admin_resource_publishing=settings.ADMIN_RESOURCE_PUBLISHING,
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
     )
 
