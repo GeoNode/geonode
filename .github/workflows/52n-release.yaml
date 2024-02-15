@@ -1,0 +1,78 @@
+name: Release GeoNode Docker Images
+
+env:
+  TITLE: "52°North GeoNode Docker Image"
+  VENDOR: "52°North GmbH"
+  AUTHORS: "https://52North.org/"
+  DESCRIPTION: "Builds and publishes the GeoNode Docker image for Thuenen"
+  LICENSE: "GPL-3.0"
+
+on:
+  push:
+    tags: 
+      - "v*-thuenen"
+
+jobs:
+  build_and_push_geonode:
+    runs-on: ubuntu-22.04
+    env:
+      IMAGE: 52north/geonode_thuenen
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Parse semver string
+        id: semver_parser 
+        uses: booxmedialtd/ws-action-parse-semver@v1
+        with:
+          input_string: "${{github.ref_name}}"
+          version_extractor_regex: 'v(.*)-thuenen'
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - 
+        name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        env:
+          MAJOR_VERSION: ${{ steps.semver_parser.outputs.major }}
+          MAJOR_MINOR_VERSION: ${{ steps.semver_parser.outputs.major }}-${{ steps.semver_parser.outputs.minor }}
+          MAJOR_MINOR_PATCH_VERSION: ${{ steps.semver_parser.outputs.fullversion }}
+        with:
+          images: ${{ env.IMAGE }}
+          labels: |
+            "org.opencontainers.image.authors=${{ env.AUTHORS }}"
+            "org.opencontainers.image.vendor=${{ env.VENDOR }}"
+            "org.opencontainers.image.description=${{ env.DESCRIPTION }}"
+            "org.opencontainers.image.title=${{ env.TITLE }}"
+            "org.opencontainers.image.licenses=${{ env.LICENSE }}"
+          tags: |
+            latest
+            ${{ env.MAJOR_VERSION }}
+            ${{ env.MAJOR_MINOR_VERSION }}
+            ${{ env.MAJOR_MINOR_PATCH_VERSION }}
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Fail in case fully tagged version already exists
+        run: |
+          if docker manifest inspect ${{ env.IMAGE }}:${{ steps.semver_parser.outputs.fullversion }}; then
+            echo "tag version already exists! Will not override."
+            exit 1
+          fi
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max

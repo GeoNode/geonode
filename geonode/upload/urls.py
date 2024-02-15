@@ -21,8 +21,6 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [  # 'geonode.upload.views',
-    url(r"^progress$", views.data_upload_progress, name="data_upload_progress"),
-    url(r"^(?P<step>\w+)?$", views.view, name="data_upload"),
     url(r"^delete/(?P<id>\d+)?$", views.delete, name="data_upload_delete"),
     url(r"^", include("geonode.upload.api.urls")),
 ]

@@ -352,5 +352,5 @@ def remove_service(request, service_id):
     elif request.method == "POST":
         service.dataset_set.all().delete()
         service.delete()
-        messages.add_message(request, messages.INFO, _(f"Service {service.name} has been deleted"))
+        messages.add_message(request, messages.INFO, _(f"Service {service.title} has been deleted"))
         return HttpResponseRedirect(reverse("services"))

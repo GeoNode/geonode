@@ -25,6 +25,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from importlib import import_module
 
+default_app_config = "geonode.catalogue.apps.GeoNodeCatalogueAppConfig"
 DEFAULT_CATALOGUE_ALIAS = "default"
 
 # GeoNode uses this if the CATALOGUE setting is empty (None).

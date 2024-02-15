@@ -100,9 +100,11 @@ GEOSERVER_WEB_UI_LOCATION = os.getenv("GEOSERVER_WEB_UI_LOCATION", settings.GEOS
 
 GEOSERVER_PUBLIC_LOCATION = os.getenv("GEOSERVER_PUBLIC_LOCATION", _default_public_location)
 
-OGC_SERVER_DEFAULT_USER = os.getenv("GEOSERVER_ADMIN_USER", "admin")
+GEOSERVER_ADMIN_USER = os.getenv("GEOSERVER_ADMIN_USER", "admin")
 
-OGC_SERVER_DEFAULT_PASSWORD = os.getenv("GEOSERVER_ADMIN_PASSWORD", "geoserver")
+GEOSERVER_ADMIN_PASSWORD = os.getenv("GEOSERVER_ADMIN_PASSWORD", "geoserver")
+
+GEOSERVER_FACTORY_PASSWORD = os.getenv("GEOSERVER_FACTORY_PASSWORD", "geoserver")
 
 # OGC (WMS/WFS/WCS) Server Settings
 OGC_SERVER = {
@@ -116,8 +118,8 @@ OGC_SERVER = {
         # the proxy won't work and the integration tests will fail
         # the entire block has to be overridden in the local_settings
         "PUBLIC_LOCATION": GEOSERVER_PUBLIC_LOCATION,
-        "USER": OGC_SERVER_DEFAULT_USER,
-        "PASSWORD": OGC_SERVER_DEFAULT_PASSWORD,
+        "USER": GEOSERVER_ADMIN_USER,
+        "PASSWORD": GEOSERVER_ADMIN_PASSWORD,
         "MAPFISH_PRINT_ENABLED": True,
         "PRINT_NG_ENABLED": True,
         "GEONODE_SECURITY_ENABLED": True,

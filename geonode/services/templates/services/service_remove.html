@@ -1,7 +1,7 @@
 {% extends "services/services_base.html" %}
 {% load i18n %}
 
-{% block title %} {{ service.name }} - {{ block.super }} {% endblock %}
+{% block title %} {{service.title|default:service.name}} - {{ block.super }} {% endblock %}
 
 {% block body %}
 <div class="page-header">
@@ -9,7 +9,7 @@
 </div>
 <div class="row">
   <div class="col-md-12">
-    <p class="lead">{% trans "Are you sure you want to remove"  %} <strong>{{ service.name }}</strong>?</p>
+    <p class="lead">{% trans "Are you sure you want to remove"  %} <strong>{{service.title|default:service.name}}</strong>?</p>
     <form action="/services/{{service.id}}/remove" method="POST" class="inline">
       {% csrf_token %}
       <input type="hidden" value="{{next}}" id="next" name="next">

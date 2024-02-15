@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+# based on https://github.com/geopython/pycsw/blob/master/pycsw/core/config.py
 MD_CORE_MODEL = {
     "typename": "pycsw:CoreMetadata",
     "outputschema": "http://pycsw.org/metadata",
@@ -30,6 +31,14 @@ MD_CORE_MODEL = {
         "pycsw:AnyText": "csw_anytext",
         "pycsw:Language": "language",
         "pycsw:Title": "title",
+        "pycsw:Edition": "edition",
+        "pycsw:Platform": "platform",
+        "pycsw:Instrument": "instrument",
+        "pycsw:SensorType": "sensortype",
+        "pycsw:CloudCover": "cloudcover",
+        "pycsw:Bands": "bands",
+        "pycsw:Themes": "themes",
+        "pycsw:Contacts": "contacts",
         "pycsw:Abstract": "raw_abstract",
         "pycsw:Keywords": "keyword_csv",
         "pycsw:KeywordType": "keywordstype",
@@ -77,6 +86,6 @@ MD_CORE_MODEL = {
         "pycsw:Publisher": "publisher",
         "pycsw:Contributor": "contributor",
         "pycsw:Relation": "relation",
-        "pycsw:Links": "download_links",
+        "pycsw:Links": "download_urls",
     },
 }

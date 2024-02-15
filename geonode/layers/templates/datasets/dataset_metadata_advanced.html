@@ -52,12 +52,12 @@
       {% endblock metadata_uploaded_check %}
 
       {% block dataset_form_errors %}
-      {% if dataset_form.errors or attribute_form.errors or category_form.errors or author_form.errors or poc.errors %}
+      {% if dataset_form.errors or attribute_form.errors or category_form.errors or metadata_author_form.errors or poc.errors %}
     	    <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
           <ul class="bg-danger">
-          {% if author_form.errors %}
+          {% if metadata_author_form.errors %}
             <li>{% trans "Metadata Author" %}</li>
-            {{ author_form.errors }}
+            {{ metadata_author_form.errors }}
           {% endif %}
           {% if poc_form.errors %}
             <li>{% trans "Point of Contact" %}</li>
@@ -210,7 +210,7 @@
             {% block metadata_provider %}
             <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
               <h2>{% trans "Metadata Provider" %}</h2>
-                {{ author_form|as_bootstrap }}
+                {{ metadata_author_form|as_bootstrap }}
               <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
             </fieldset>
             {% endblock metadata_provider %}

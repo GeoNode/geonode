@@ -32,6 +32,7 @@ from django.utils.timezone import now
 from django.contrib.auth.models import Group
 from django.templatetags.static import static
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 from geonode.utils import build_absolute_uri
@@ -190,24 +191,41 @@ class GroupProfile(models.Model):
         else:
             return True
 
-    def join(self, user, **kwargs):
+    def validate_user(self, user):
         if not user or user.is_anonymous or user == user.get_anonymous():
             raise ValueError("The invited user cannot be anonymous")
-        _members = GroupMember.objects.filter(group=self, user=user)
-        if not _members.count():
-            GroupMember.objects.get_or_create(group=self, user=user, defaults=kwargs)
-        else:
+
+    def join(self, user, **kwargs):
+        self.validate_user(user)
+        try:
+            GroupMember.objects.get(group=self, user=user)
             logger.warning(f'The invited user "{user.username}" is already a member')
+        except ObjectDoesNotExist:
+            GroupMember.objects.create(group=self, user=user, **kwargs)
 
     def leave(self, user, **kwargs):
-        if not user or user.is_anonymous or user == user.get_anonymous():
-            raise ValueError("The invited user cannot be anonymous")
+        self.validate_user(user)
         _members = GroupMember.objects.filter(group=self, user=user)
-        if _members.count():
-            for _member in _members:
-                _member.delete()
-                user.groups.remove(self.group)
+        if _members.exists():
+            _members.delete()
+            user.groups.remove(self.group)
         else:
+            logger.warning(f'The invited user "{user.username}" is not a member')
+
+    def promote(self, user, **kwargs):
+        self.validate_user(user)
+        try:
+            _member = GroupMember.objects.get(group=self, user=user)
+            _member.promote()
+        except ObjectDoesNotExist:
+            logger.warning(f'The invited user "{user.username}" is not a member')
+
+    def demote(self, user, **kwargs):
+        self.validate_user(user)
+        try:
+            _member = GroupMember.objects.get(group=self, user=user)
+            _member.demote()
+        except ObjectDoesNotExist:
             logger.warning(f'The invited user "{user.username}" is not a member')
 
     def get_absolute_url(self):

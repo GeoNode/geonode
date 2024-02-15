@@ -21,6 +21,7 @@ import logging
 
 from django.db.models import Count
 
+from geonode.base.models import Region
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_PLACE
 
 logger = logging.getLogger(__name__)
@@ -35,30 +36,41 @@ class RegionFacetProvider(FacetProvider):
     def name(self) -> str:
         return "region"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{regions.code.in}",
+            "filter": "filter{regions.code.in}",
             "label": "Region",
             "type": FACET_TYPE_PLACE,
-            "hierarchical": False,  # source data is hierarchical, but this implementation is flat
-            "order": 2,
         }
 
     def get_facet_items(
         self,
-        queryset=None,
+        queryset,
         start: int = 0,
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.filter(regions__isnull=False).values("regions__code", "regions__name")
+        filters = {"resourcebase__in": queryset}
+
         if topic_contains:
-            q = q.filter(regions__name=topic_contains)
-        q = q.annotate(count=Count("regions__code")).order_by("-count")
+            filters["name__icontains"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["code__in"] = keys
+
+        q = (
+            Region.objects.filter(**filters)
+            .values("code", "name")
+            .annotate(count=Count("resourcebase"))
+            .order_by("-count")
+        )
 
         cnt = q.count()
 
@@ -68,8 +80,8 @@ class RegionFacetProvider(FacetProvider):
 
         topics = [
             {
-                "key": r["regions__code"],
-                "label": r["regions__name"],
+                "key": r["code"],
+                "label": r["name"],
                 "count": r["count"],
             }
             for r in q[start:end].all()
@@ -77,6 +89,20 @@ class RegionFacetProvider(FacetProvider):
 
         return cnt, topics
 
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = Region.objects.filter(code__in=keys).values("code", "name")
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r["code"],
+                "label": r["name"],
+            }
+            for r in q.all()
+        ]
+
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(RegionFacetProvider())
+        registry.register_facet_provider(RegionFacetProvider(**kwargs))

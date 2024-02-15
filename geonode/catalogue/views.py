@@ -29,11 +29,12 @@ from geonode.catalogue.backends.pycsw_local import CONFIGURATION
 from geonode.base.models import ResourceBase
 from geonode.layers.models import Dataset
 from geonode.base.auth import get_or_create_token
-from geonode.base.models import ContactRole, SpatialRepresentationType
+from geonode.base.models import SpatialRepresentationType
 from geonode.groups.models import GroupProfile
 from geonode.utils import resolve_object
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
+from geonode.people import Roles
 
 
 @csrf_exempt
@@ -286,11 +287,18 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
             content += fst(attr.attribute_label) + s
             content += fst(attr.description) + sc
 
-    pocr = ContactRole.objects.get(resource_id=resource.id, role="pointOfContact")
-    pocp = get_user_model().objects.get(id=pocr.contact_id)
-    content += f"Point of Contact{sc}"
-    content += f"name{s}{fst(pocp.last_name)}{sc}"
-    content += f"e-mail{s}{fst(pocp.email)}{sc}"
+    @staticmethod
+    def __append_contact_role__(content, cr_attr_name, title_in_txt):
+        cr = resource.__getattribute__(cr_attr_name)
+        if cr is not None or (isinstance(list, cr) and len(0)):
+            content += f"{title_in_txt}{sc}"
+            for user in cr:
+                content += f"name{s}{fst(user.last_name)}{sc}"
+                content += f"e-mail{s}{fst(user.email)}{sc}"
+        return content
+
+    for role in set(Roles).difference([Roles.OWNER]):
+        content = __append_contact_role__(content, role.name, role.label)
 
     logger = logging.getLogger(__name__)
     logger.error(content)
@@ -319,10 +327,15 @@ def csw_render_extra_format_html(request, layeruuid, resname):
             s = f"<tr><td>{attr.attribute}</td><td>{attr.attribute_label}</td><td>{attr.description}</td></tr>"
             extra_res_md["atrributes"] += s
 
-    pocr = ContactRole.objects.get(resource_id=resource.id, role="pointOfContact")
-    pocp = get_user_model().objects.get(id=pocr.contact_id)
-    extra_res_md["poc_last_name"] = pocp.last_name
-    extra_res_md["poc_email"] = pocp.email
+    extra_res_md["roles"] = []
+    for role in Roles:
+        cr = resource.__getattribute__(role.name)
+        if not isinstance(cr, list):
+            cr = [cr]
+        users = [{"pk": user.id, "last_name": user.last_name, "email": user.email} for user in cr]
+        if users:
+            extra_res_md["roles"].append({"label": role.label, "users": users})
+
     return render(request, "geonode_metadata_full.html", context={"resource": resource, "extra_res_md": extra_res_md})
 
 

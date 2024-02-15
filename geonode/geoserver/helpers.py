@@ -2081,19 +2081,19 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
                 if updatemetadata:
                     gs_resource.metadata_links = metadata_links
-
+                    default_poc = instance.get_first_contact_of_role(role="poc")
                     # Update Attribution link
-                    if instance.poc:
+                    if default_poc:
                         # gsconfig now utilizes an attribution dictionary
                         gs_resource.attribution = {
-                            "title": str(instance.poc),
+                            "title": str(instance.poc_csv),
                             "width": None,
                             "height": None,
                             "href": None,
                             "url": None,
                             "type": None,
                         }
-                        profile = get_user_model().objects.get(username=instance.poc.username)
+                        profile = get_user_model().objects.get(username=default_poc.username)
                         site_url = (
                             settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
                         )
@@ -2287,7 +2287,7 @@ def get_dataset_capabilities_url(layer, version="1.3.0", access_token=None):
     workspace_layername = layer.alternate.split(":") if ":" in layer.alternate else ("", layer.alternate)
     wms_url = settings.GEOSERVER_PUBLIC_LOCATION
     if not layer.remote_service:
-        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/wms?service=wms&version={version}&request=GetCapabilities"  # noqa
+        wms_url = f"{wms_url}{'/'.join(workspace_layername)}/ows?service=wms&version={version}&request=GetCapabilities"  # noqa
         if access_token:
             wms_url += f"&access_token={access_token}"
     else:

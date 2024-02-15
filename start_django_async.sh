@@ -4,7 +4,7 @@ set -e
 export RESOURCE_PUBLISHING=True
 export ADMIN_MODERATE_UPLOADS=True
 export NOTIFICATION_ENABLED=True
-export MONITORING_ENABLED=True
+export MONITORING_ENABLED=False
 export EMAIL_ENABLED=True
 export BROKER_URL=amqp://guest:guest@localhost:5672/
 export ASYNC_SIGNALS=True

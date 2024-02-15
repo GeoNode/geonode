@@ -1,0 +1,23 @@
+name: Update Docker Hub Description
+on:
+  push:
+    branches:
+      - thuenen_4.x
+    paths:
+      - README_thuenen.md
+      - .github/workflows/52n-dockerhub-description.yaml
+jobs:
+  dockerHubDescription:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Docker Hub Description
+      uses: peter-evans/dockerhub-description@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        repository: 52north/geonode_thuenen
+        short-description: "Geospatial content management system"
+        readme-filepath: ./README_thuenen.md
+        enable-url-completion: true

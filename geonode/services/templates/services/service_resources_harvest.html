@@ -8,9 +8,7 @@
 {% block body %}
     <div class="twocol">
         <div class="page-header">
-            <h3>{% trans "Import resources" %}
-                <small> {{ service.name }}</small>
-            </h3>
+            <h3><strong>{{service.title|default:service.name}}</strong></h3>
         </div>
         <div class="container">
             {% if resources %}

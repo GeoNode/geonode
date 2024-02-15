@@ -100,7 +100,7 @@ class DatasetViewSet(DynamicModelViewSet):
             UserHasPerms(perms_dict={"default": {"PUT": ["base.change_resourcebase_metadata"]}}),
         ],
     )
-    def metadata(self, request, pk=None):
+    def metadata(self, request, pk=None, *args, **kwargs):
         """
         Endpoint to upload ISO metadata
         Usage Example:
@@ -141,17 +141,16 @@ class DatasetViewSet(DynamicModelViewSet):
                 dataset_uuid, vals, regions, keywords, _ = parse_metadata(open(metadata_file).read())
             except Exception:
                 raise InvalidMetadataException(detail="Unsupported metadata format")
-            if dataset_uuid and dataset.uuid != dataset_uuid:
-                raise InvalidMetadataException(
-                    detail="The UUID identifier from the XML Metadata, is different from the one saved"
-                )
             try:
                 updated_dataset = update_resource(dataset, metadata_file, regions, keywords, vals)
                 updated_dataset.save()  # This also triggers the recreation of the XML metadata file according to the updated values
             except Exception:
                 raise GeneralDatasetException(detail="Failed to update metadata")
             out["success"] = True
-            out["message"] = ["Metadata successfully updated"]
+            out_message = "Metadata successfully updated"
+            if dataset_uuid and dataset.uuid != dataset_uuid:
+                out_message += " The UUID identifier from the XML Metadata is different from the one saved"
+            out["message"] = [out_message]
             return Response(out)
         except Exception as e:
             raise e
@@ -165,7 +164,7 @@ class DatasetViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve the MapLayers list.",
     )
     @action(detail=True, methods=["get"])
-    def maplayers(self, request, pk=None):
+    def maplayers(self, request, pk=None, *args, **kwargs):
         dataset = self.get_object()
         resources = dataset.maplayers
         return Response(SimpleMapLayerSerializer(many=True).to_representation(resources))
@@ -176,7 +175,7 @@ class DatasetViewSet(DynamicModelViewSet):
         description="API endpoint allowing to retrieve maps using the dataset.",
     )
     @action(detail=True, methods=["get"])
-    def maps(self, request, pk=None):
+    def maps(self, request, pk=None, *args, **kwargs):
         dataset = self.get_object()
         resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
@@ -208,7 +207,7 @@ class DatasetViewSet(DynamicModelViewSet):
         methods=["patch"],
         serializer_class=DatasetReplaceAppendSerializer,
     )
-    def replace(self, request, dataset_id=None):
+    def replace(self, request, dataset_id=None, *args, **kwargs):
         """
         Edpoint for replace data to an existing layer
         """
@@ -241,7 +240,7 @@ class DatasetViewSet(DynamicModelViewSet):
         methods=["patch"],
         serializer_class=DatasetReplaceAppendSerializer,
     )
-    def append(self, request, dataset_id=None):
+    def append(self, request, dataset_id=None, *args, **kwargs):
         """
         Edpoint for replace data to an existing layer
         """
