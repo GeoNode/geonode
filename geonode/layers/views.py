@@ -187,7 +187,8 @@ def dataset_upload_metadata(request):
             if dataset_uuid and layer.uuid != dataset_uuid:
                 out[
                     "warning"
-                ] = "WARNING: The XML's UUID was ignored while updating this dataset's metadata because that UUID is already present in this system. The rest of the XML's metadata was applied."
+                ] = """WARNING: The XML's UUID was ignored while updating this dataset's metadata because
+                that UUID is already present in this system. The rest of the XML's metadata was applied."""
             return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
         else:
             out["success"] = False
