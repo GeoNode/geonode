@@ -107,7 +107,6 @@ def get_visible_resources(
                 user = get_anonymous_user()
             filter_set = filter_set.exclude(~Q(owner=user.id) & Q(is_published=False))
 
-
         # Hide Resources Belonging to Private Groups
         if private_groups_not_visibile:
             private_groups = GroupProfile.objects.filter(access="private").values("group")
@@ -226,7 +225,9 @@ def get_geoapp_subtypes():
 
 def skip_registered_members_common_group(user_group):
     _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-    if (settings.ADMIN_RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and _members_group_name == user_group.name:
+    if (
+        settings.ADMIN_RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS
+    ) and _members_group_name == user_group.name:
         return True
     return False
 
