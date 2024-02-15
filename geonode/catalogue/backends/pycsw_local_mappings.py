@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+# based on https://github.com/geopython/pycsw/blob/master/pycsw/core/config.py
 MD_CORE_MODEL = {
     "typename": "pycsw:CoreMetadata",
     "outputschema": "http://pycsw.org/metadata",

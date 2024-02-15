@@ -22,18 +22,19 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.urls import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITransactionTestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
 from geonode import settings
 
 from geonode.base.populate_test_data import create_models
+from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
 
 logger = logging.getLogger(__name__)
 
 
-class DocumentsApiTests(APITestCase):
+class DocumentsApiTests(APITransactionTestCase):
     fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
 
     def setUp(self):
@@ -142,6 +143,336 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual("xml", extension)
         self.assertTrue(Document.objects.filter(title="New document for testing").exists())
 
+    def test_patch_point_of_contact(self):
+        document = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{document.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"poc": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [poc.get("pk") for poc in response.json().get("document").get("poc")] for user_id in user_ids
+            )
+        )
+        # Resetting all point of contact
+        response = self.client.patch(url, data={"poc": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [poc.get("pk") for poc in response.json().get("document").get("poc")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_metadata_author(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"metadata_author": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [
+                    metadata_author.get("pk")
+                    for metadata_author in response.json().get("document").get("metadata_author")
+                ]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all metadata authors
+        response = self.client.patch(url, data={"metadata_author": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    metadata_author.get("pk")
+                    for metadata_author in response.json().get("document").get("metadata_author")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_processor(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"processor": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        # check if all set processors are in the return json
+        self.assertTrue(
+            all(
+                user_id in [processor.get("pk") for processor in response.json().get("document").get("processor")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all processors
+        response = self.client.patch(url, data={"processor": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [processor.get("pk") for processor in response.json().get("document").get("processor")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_publisher(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"publisher": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [publisher.get("pk") for publisher in response.json().get("document").get("publisher")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all publishers
+        response = self.client.patch(url, data={"publisher": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [publisher.get("pk") for publisher in response.json().get("document").get("publisher")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_custodian(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"custodian": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [custodian.get("pk") for custodian in response.json().get("document").get("custodian")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all custodians
+        response = self.client.patch(url, data={"custodian": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id not in [custodian.get("pk") for custodian in response.json().get("document").get("custodian")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_distributor(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"distributor": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [distributor.get("pk") for distributor in response.json().get("document").get("distributor")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all distributers
+        response = self.client.patch(url, data={"distributor": []}, format="json")
+
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [distributor.get("pk") for distributor in response.json().get("document").get("distributor")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_resource_user(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"resource_user": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [resource_user.get("pk") for resource_user in response.json().get("document").get("resource_user")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all resource users
+        response = self.client.patch(url, data={"resource_user": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    resource_user.get("pk") for resource_user in response.json().get("document").get("resource_user")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_resource_provider(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"resource_provider": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [
+                    resource_provider.get("pk")
+                    for resource_provider in response.json().get("document").get("resource_provider")
+                ]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all principal investigator
+        response = self.client.patch(url, data={"resource_provider": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    resource_provider.get("pk")
+                    for resource_provider in response.json().get("document").get("resource_provider")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_originator(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"originator": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id in [originator.get("pk") for originator in response.json().get("document").get("originator")]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all originators
+        response = self.client.patch(url, data={"originator": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [originator.get("pk") for originator in response.json().get("document").get("originator")]
+                for user_id in user_ids
+            )
+        )
+
+    def test_patch_principal_investigator(self):
+        layer = Document.objects.first()
+        url = urljoin(f"{reverse('documents-list')}/", f"{layer.id}")
+        self.client.login(username="admin", password="admin")
+        get_user_model().objects.get_or_create(username="ninja")
+        get_user_model().objects.get_or_create(username="turtle")
+        users = get_user_model().objects.exclude(pk=-1)
+        user_ids = [user.pk for user in users]
+        patch_data = {"principal_investigator": [{"pk": uid} for uid in user_ids]}
+        response = self.client.patch(url, data=patch_data, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                in [
+                    principal_investigator.get("pk")
+                    for principal_investigator in response.json().get("document").get("principal_investigator")
+                ]
+                for user_id in user_ids
+            )
+        )
+        # Resetting all principal investigator
+        response = self.client.patch(url, data={"principal_investigator": []}, format="json")
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(
+            all(
+                user_id
+                not in [
+                    principal_investigator.get("pk")
+                    for principal_investigator in response.json().get("document").get("principal_investigator")
+                ]
+                for user_id in user_ids
+            )
+        )
+
+    def test_creation_should_create_the_doc_and_update_the_bbox(self):
+        """
+        If file_path is not available, should raise error
+        """
+        self.client.force_login(self.admin)
+        payload = {
+            "document": {
+                "title": "New document for testing",
+                "metadata_only": True,
+                "file_path": self.valid_file_path,
+                "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
+            },
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        extension = actual.json().get("document", {}).get("extension", "")
+        self.assertEqual("xml", extension)
+        doc = Document.objects.filter(title="New document for testing").all()
+        self.assertTrue(doc.exists())
+        x = doc.first()
+        x.refresh_from_db()
+        self.assertEqual("EPSG:3857", x.srid)
+        self.assertEqual(actual.json()["document"].get("extent")["srid"], "EPSG:4326")
+        self.assertEqual(
+            actual.json()["document"].get("extent")["coords"],
+            [10.094296982428332, 43.1721654049465, 12.03609530058109, 44.11086592050112],
+        )
+
     def test_file_path_and_doc_path_are_not_returned(self):
         """
         If file_path and doc_path should not be visible
@@ -171,6 +502,22 @@ class DocumentsApiTests(APITestCase):
         self.assertEqual(201, actual.status_code)
         created_doc_url = actual.json().get("document", {}).get("doc_url", "")
         self.assertEqual(created_doc_url, doc_url)
+
+    def test_remote_document_is_marked_remote(self):
+        """Tests creating an external document set its sourcetype to REMOTE."""
+        self.client.force_login(self.admin)
+        doc_url = "https://example.com/image"
+        payload = {
+            "document": {
+                "title": "A remote document is remote",
+                "doc_url": doc_url,
+                "extension": "jpeg",
+            }
+        }
+        actual = self.client.post(self.url, data=payload, format="json")
+        self.assertEqual(201, actual.status_code)
+        created_sourcetype = actual.json().get("document", {}).get("sourcetype", "")
+        self.assertEqual(created_sourcetype, SOURCE_TYPE_REMOTE)
 
     def test_either_path_or_url_doc(self):
         """

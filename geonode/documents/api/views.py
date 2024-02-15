@@ -31,10 +31,11 @@ from geonode import settings
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
+from geonode.base.api.views import base_linked_resources
+from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
 
-from geonode.base.models import ResourceBase
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.resource.utils import resourcebase_post_save
 from geonode.storage.manager import StorageManager
@@ -123,6 +124,7 @@ class DocumentViewSet(DynamicModelViewSet):
                 payload["files"] = [manager.get_retrieved_paths().get("base_file")]
             if doc_url:
                 payload["doc_url"] = doc_url
+                payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
             resource = serializer.save(**payload)
 
@@ -140,22 +142,8 @@ class DocumentViewSet(DynamicModelViewSet):
     @extend_schema(
         methods=["get"],
         responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the DocumentResourceLink(s).",
+        description="API endpoint allowing to retrieve linked resources",
     )
     @action(detail=True, methods=["get"])
-    def linked_resources(self, request, pk=None):
-        document = self.get_object()
-        resources_id = document.links.all().values("object_id")
-        resources = ResourceBase.objects.filter(id__in=resources_id)
-        exclude = []
-        for resource in resources:
-            if not request.user.is_superuser and not request.user.has_perm(
-                "view_resourcebase", resource.get_self_resource()
-            ):
-                exclude.append(resource.id)
-        resources = resources.exclude(id__in=exclude)
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(resources, request)
-        serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
-        return paginator.get_paginated_response({"resources": serializer.data})
+    def linked_resources(self, request, pk=None, *args, **kwargs):
+        return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)

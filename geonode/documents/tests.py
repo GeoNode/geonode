@@ -46,19 +46,20 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
-from geonode.base.models import License, Region
+from geonode.base.models import License, Region, LinkedResource
+from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents import DocumentsAppConfig
 from geonode.resource.manager import resource_manager
-from geonode.documents.forms import DocumentFormMixin
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
-from geonode.documents.models import Document, DocumentResourceLink
+from geonode.documents.models import Document
 
-from geonode.base.populate_test_data import all_public, create_models, remove_models
+from geonode.base.populate_test_data import all_public, create_models, create_single_doc, remove_models
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
+from ..base.forms import LinkedResourceForm
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
@@ -120,22 +121,40 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         c.set_default_permissions()
         self.assertEqual(Document.objects.get(pk=c.id).title, "theimg")
 
-    @patch("geonode.documents.tasks.create_document_thumbnail")
-    def test_create_document_with_rel(self, thumb):
-        """Tests the creation of a document with no a map related"""
-        thumb.return_value = True
-        f = [f"{settings.MEDIA_ROOT}/img.gif"]
+    def test_remote_document_is_marked_remote(self):
+        """Tests creating an external document set its sourcetype to REMOTE."""
+        self.client.login(username="admin", password="admin")
+        form_data = {
+            "title": "A remote document through form is remote",
+            "doc_url": "http://www.geonode.org/map.pdf",
+        }
 
-        superuser = get_user_model().objects.get(pk=2)
+        response = self.client.post(reverse("document_upload"), data=form_data)
 
-        c = Document.objects.create(files=f, owner=superuser, title="theimg")
+        self.assertEqual(response.status_code, 302)
 
-        m = Map.objects.first()
-        ctype = ContentType.objects.get_for_model(m)
-        _d = DocumentResourceLink.objects.create(document_id=c.id, content_type=ctype, object_id=m.id)
+        d = Document.objects.get(title="A remote document through form is remote")
+        self.assertEqual(d.sourcetype, SOURCE_TYPE_REMOTE)
 
-        self.assertEqual(Document.objects.get(pk=c.id).title, "theimg")
-        self.assertEqual(DocumentResourceLink.objects.get(pk=_d.id).object_id, m.id)
+    def test_download_is_not_ajax_safe(self):
+        """Remote document is mark as not safe."""
+        self.client.login(username="admin", password="admin")
+        form_data = {
+            "title": "A remote document through form is remote",
+            "doc_url": "https://development.demo.geonode.org/static/mapstore/img/geonode-logo.svg",
+        }
+
+        response = self.client.post(reverse("document_upload"), data=form_data)
+
+        self.assertEqual(response.status_code, 302)
+
+        d = Document.objects.get(title="A remote document through form is remote")
+        self.assertFalse(d.download_is_ajax_safe)
+
+    def test_download_is_ajax_safe(self):
+        """Remote document is mark as not safe."""
+        d = create_single_doc("example_doc_name")
+        self.assertTrue(d.download_is_ajax_safe)
 
     def test_create_document_url(self):
         """Tests creating an external document instead of a file."""
@@ -253,7 +272,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         finally:
             Document.objects.filter(title="Non img File Doc").delete()
 
-    def test_image_documents_thumbnail(self):
+    def test_documents_thumbnail(self):
         self.client.login(username="admin", password="admin")
         try:
             # test image doc
@@ -274,6 +293,22 @@ class DocumentsTest(GeoNodeBaseTestSupport):
                     self.assertEqual(file.size, (400, 200))
                     # check thumbnail qualty and extention
                     self.assertEqual(file.format, "JPEG")
+            data = {
+                "title": "Remote img File Doc",
+                "doc_url": "https://raw.githubusercontent.com/GeoNode/geonode/master/geonode/documents/tests/data/img.gif",
+                "extension": "gif",
+            }
+            with self.settings(THUMBNAIL_SIZE={"width": 400, "height": 200}):
+                self.client.post(reverse("document_upload"), data=data)
+                d = Document.objects.get(title="Remote img File Doc")
+                self.assertIsNotNone(d.thumbnail_url)
+                thumb_file = os.path.join(
+                    settings.MEDIA_ROOT, f"thumbs/{os.path.basename(urlparse(d.thumbnail_url).path)}"
+                )
+                file = Image.open(thumb_file)
+                self.assertEqual(file.size, (400, 200))
+                # check thumbnail qualty and extention
+                self.assertEqual(file.format, "JPEG")
             # test pdf doc
             with open(os.path.join(f"{self.project_root}", "tests/data/pdf_doc.pdf"), "rb") as f:
                 data = {
@@ -618,36 +653,33 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
         # create document links
 
-        mixin1 = DocumentFormMixin()
+        mixin1 = LinkedResourceForm()
         mixin1.instance = d
-        mixin1.cleaned_data = dict(
-            links=mixin1.generate_link_values(resources=resources),
-        )
-        mixin1.save_many2many()
+        mixin1.cleaned_data = {
+            "linked_resources": resources,
+        }
+        mixin1.save_linked_resources()
 
         for resource in resources:
-            ct = ContentType.objects.get_for_model(resource)
-            _d = DocumentResourceLink.objects.get(document_id=d.id, content_type=ct.id, object_id=resource.id)
-            self.assertEqual(_d.object_id, resource.id)
+            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
+            self.assertEqual(_d.target_id, resource.id)
 
         # update document links
 
-        mixin2 = DocumentFormMixin()
+        mixin2 = LinkedResourceForm()
         mixin2.instance = d
-        mixin2.cleaned_data = dict(
-            links=mixin2.generate_link_values(resources=layers),
-        )
-        mixin2.save_many2many()
+        mixin2.cleaned_data = {
+            "linked_resources": layers,
+        }
+        mixin2.save_linked_resources()
 
         for resource in layers:
-            ct = ContentType.objects.get_for_model(resource)
-            _d = DocumentResourceLink.objects.get(document_id=d.id, content_type=ct.id, object_id=resource.id)
-            self.assertEqual(_d.object_id, resource.id)
+            _d = LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
+            self.assertEqual(_d.target_id, resource.id)
 
         for resource in maps:
-            ct = ContentType.objects.get_for_model(resource)
-            with self.assertRaises(DocumentResourceLink.DoesNotExist):
-                DocumentResourceLink.objects.get(document_id=d.id, content_type=ct.id, object_id=resource.id)
+            with self.assertRaises(LinkedResource.DoesNotExist):
+                LinkedResource.objects.get(source_id=d.id, target_id=resource.id)
 
 
 class DocumentViewTestCase(GeoNodeBaseTestSupport):

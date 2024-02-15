@@ -18,9 +18,9 @@
 #########################################################################
 
 from django.urls import path
-from . import views
+from .views import ListFacetsView, GetFacetView
 
 urlpatterns = [
-    path("facets", views.list_facets, name="list_facets"),
-    path("facets/<facet>", views.get_facet, name="get_facet"),
+    path("facets", ListFacetsView.as_view(), name="list_facets"),
+    path("facets/<facet>", GetFacetView.as_view(), name="get_facet"),
 ]

@@ -31,12 +31,12 @@
 </div>
 
     <form id="metadata_update" class="form-horizontal" action="{% url "document_metadata" document.id %}" method="POST">
-      {% if document_form.errors or category_form.errors or author_form.errors or poc.errors %}
+      {% if document_form.errors or category_form.errors or metadata_author_form.errors or poc.errors %}
         <p class="bg-danger">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}</p>
         <ul class="bg-danger">
-        {% if author_form.errors %}
+        {% if metadata_author_form.errors %}
           <li>{% trans "Metadata Author" %}</li>
-          {{ author_form.errors }}
+          {{ metadata_author_form.errors }}
         {% endif %}
         {% if poc_form.errors %}
           <li>{% trans "Point of Contact" %}</li>
@@ -69,7 +69,7 @@
               </fieldset>
               <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
                 <h2>{% trans "Metadata Provider" %}</h2>
-                  {{ author_form|as_bootstrap }}
+                  {{ metadata_author_form|as_bootstrap }}
                 <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
               </fieldset>
 
@@ -84,19 +84,3 @@
   </div>
 </div>
 {% endblock body_outer %}
-
-{% block extra_script %}
-{{ block.super }}
-<script type="text/javascript">
-    $("#id_resource-links").select2({
-        placeholder: "{% trans "Select an option" %}",
-        allowClear: true
-    });
-</script>
-<style>
-  #s2id_id_resource-links {
-    width: 600px;
-    height: 100%;
-  }
-</style>
-{% endblock extra_script %}

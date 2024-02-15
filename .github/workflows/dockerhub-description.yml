@@ -1,0 +1,23 @@
+name: Update Docker Hub Description
+on:
+  push:
+    branches:
+      - 52n-master
+    paths:
+      - README_52n.md
+      - .github/workflows/dockerhub-description.yml
+jobs:
+  dockerHubDescription:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Docker Hub Description
+      uses: peter-evans/dockerhub-description@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN_52N_MASTER }}
+        repository: 52north/geonode
+        short-description: "Geospatial content management system"
+        readme-filepath: ./README_52n.md
+        enable-url-completion: true

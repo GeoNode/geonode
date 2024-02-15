@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="twocol">
-  <h3>{{service.title|default:service.name}}</h3>
+  <h3><strong>{{service.title|default:service.name}}</strong></h3>
       <p><strong>{% trans "Type" %}:</strong> {{service.service_type}}</p>
       <p><strong>{% trans "URL" %}:</strong> {{service.base_url}}</p>
       <p><strong>{% trans "Abstract" %}:</strong> {{service.abstract}}</p>

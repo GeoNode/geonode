@@ -25,6 +25,7 @@ from typing import List, Union, Optional, Tuple
 from django.conf import settings
 from django.utils.module_loading import import_string
 
+from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
@@ -42,7 +43,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
     """
     Create a thumbnail with a GeoServer request.
     """
-    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.1.1"
+    wms_version = getattr(ogc_server_settings, "WMS_VERSION") or "1.3.0"
 
     create_thumbnail(
         instance,
@@ -53,7 +54,7 @@ def create_gs_thumbnail_geonode(instance, overwrite=False, check_bbox=False):
 
 def create_thumbnail(
     instance: Union[Dataset, Map],
-    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.1.1"),
+    wms_version: str = settings.OGC_SERVER["default"].get("WMS_VERSION", "1.3.0"),
     bbox: Optional[Union[List, Tuple]] = None,
     forced_crs: Optional[str] = None,
     styles: Optional[List] = None,
@@ -138,8 +139,10 @@ def create_thumbnail(
     partial_thumbs = []
 
     for ogc_server, datasets, _styles in locations:
-        if isinstance(instance, Map) and len(datasets) == len(_styles):
-            styles = _styles
+        if isinstance(instance, Map):
+            styles = []
+            if len(datasets) == len(_styles):
+                styles = _styles
         try:
             partial_thumbs.append(
                 utils.get_map(
@@ -171,7 +174,8 @@ def create_thumbnail(
                 img = Image.open(content)
                 img.verify()  # verify that it is, in fact an image
                 img = Image.open(BytesIO(image))  # "re-open" the file (required after running verify method)
-                merged_partial_thumbs.paste(img, mask=img.convert("RGBA"))
+                # merged_partial_thumbs.paste(img, mask=img.convert("RGBA").split()[-1])
+                merged_partial_thumbs = Image.alpha_composite(merged_partial_thumbs, img.convert("RGBA"))
             except UnidentifiedImageError as e:
                 logger.error(f"Thumbnail generation. Error occurred while fetching dataset image: {image}")
                 logger.exception(e)
@@ -186,12 +190,12 @@ def create_thumbnail(
         background = None
 
     # --- overlay image with background ---
-    thumbnail = Image.new("RGB", (width, height), (250, 250, 250))
+    thumbnail = Image.new("RGBA", (width, height), (250, 250, 250))
 
     if background is not None:
         thumbnail.paste(background, (0, 0))
 
-    thumbnail.paste(merged_partial_thumbs, (0, 0), merged_partial_thumbs)
+    thumbnail = Image.alpha_composite(thumbnail, merged_partial_thumbs)
 
     # convert image to the format required by save_thumbnail
     with BytesIO() as output:
@@ -271,25 +275,25 @@ def _datasets_locations(
             else:
                 bbox = utils.transform_bbox(instance.bbox, target_crs)
     elif isinstance(instance, Map):
-        for map_dataset in instance.maplayers.iterator():
-            if not map_dataset.local and not map_dataset.ows_url:
+        for maplayer in instance.maplayers.filter(visibility=True).order_by("order").iterator():
+            if maplayer.dataset and maplayer.dataset.sourcetype == SOURCE_TYPE_REMOTE and not maplayer.dataset.ows_url:
                 logger.warning(
                     "Incorrectly defined remote dataset encountered (no OWS URL defined)."
                     "Skipping it in the thumbnail generation."
                 )
                 continue
 
-            name = get_dataset_name(map_dataset)
-            store = map_dataset.store
-            workspace = get_dataset_workspace(map_dataset)
-            map_dataset_style = map_dataset.current_style
+            name = get_dataset_name(maplayer)
+            store = maplayer.store
+            workspace = get_dataset_workspace(maplayer)
+            map_dataset_style = maplayer.current_style
 
             if store and Dataset.objects.filter(store=store, workspace=workspace, name=name).exists():
                 dataset = Dataset.objects.filter(store=store, workspace=workspace, name=name).first()
             elif workspace and Dataset.objects.filter(workspace=workspace, name=name).exists():
                 dataset = Dataset.objects.filter(workspace=workspace, name=name).first()
-            elif Dataset.objects.filter(alternate=map_dataset.name).exists():
-                dataset = Dataset.objects.filter(alternate=map_dataset.name).first()
+            elif Dataset.objects.filter(alternate=maplayer.name).exists():
+                dataset = Dataset.objects.filter(alternate=maplayer.name).first()
             else:
                 logger.warning(f"Dataset for MapLayer {name} was not found. Skipping it in the thumbnail.")
                 continue

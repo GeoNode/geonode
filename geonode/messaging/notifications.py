@@ -38,13 +38,14 @@ def message_received_notification(**kwargs):
     recipients = _get_user_to_notify(message)
 
     # Enable email notifications for reciepients
-    for user in recipients:
-        notifications.models.NoticeSetting.objects.get_or_create(
-            notice_type=notifications.models.NoticeType.objects.get(label=notice_type_label),
-            send=True,
-            user=user,
-            medium=0,
-        )
+    if notifications:
+        for user in recipients:
+            notifications.models.NoticeSetting.objects.get_or_create(
+                notice_type=notifications.models.NoticeType.objects.get(label=notice_type_label),
+                send=True,
+                user=user,
+                medium=0,
+            )
 
     ctx = {
         "message": message.content,

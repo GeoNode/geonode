@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% load floppyforms %}
+{% load contact_roles %}
 <script type="text/javascript">
     // this is used by thumbnail.js to POST to the thumbnail update view
     window.thumbnailUpdateUrl = '{% url 'base-resources-set-thumb-from-bbox' resource.id %}';
@@ -461,13 +462,11 @@ span.grippy::after {
                                         <span><label for="{{ map_form.constraints_other|id }}">{{ map_form.constraints_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
                                         {{ map_form.constraints_other }}
-                                    </div> 
+                                    </div>
                                     {% endblock map_constraints_other %}
                                 </div>
                             </div>
-                            <div class="row">
-
-                            </div>
+                            <div class="row"></div>
                         </div>
                     </div>
                 </div>
@@ -544,37 +543,59 @@ span.grippy::after {
                         {{ map_form.extra_metadata }}
                     </div>
                     {% endblock map_extra_metadata %}
+                    {% block map_linked_resources %}
+                    <div id="linked_resources">
+                      <span><label for="{{ map_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                      {{ map_form.linked_resources }}
+                    </div>
+                    {% endblock map_linked_resources %}
+
                 </div>
                 {% endblock maintenance_block %}
             </div>
-            <div class="col-xs-12 col-lg-3">
-              {% block map_poc %}
-              <div class="panel panel-default" style="margin-top: 5px">
-                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
-                  <div class="panel-body">
+            <!-- Contact Roles -->
+            <div class="col-xs-12 col-lg-3" >
+              <div class="panel panel-default" class="collapse" style="margin-top: 5px">
+                <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                  {% block map_poc %}
+                  <div class="panel-body check-select">
                       <span><label for="{{ map_form.poc|id }}">{{ map_form.poc.label }}</label></span>
                       {{ map_form.poc }}
                   </div>
-              </div>
-              {% endblock %}
+                  {% endblock map_poc %}
+            </div>
               <div class="panel panel-default">
                   <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
                   <div class="panel-body">
+                    {% block map_owner %}
                       <div>
-                        <span><label for="{{ map_form.owner|id }}">{{ map_form.owner.label }}</label></span>
-                        <!--<p class="xxs-font-size">(Responsible of the cited resource)</p>-->
-                        {{ map_form.owner }}
+                          <span><label for="{{ map_form.owner|id }}">{{ map_form.owner.label }}</label></span>
+                          {{ map_form.owner }}
                       </div>
-                      <div>
-                          <span><label for="{{ map_form.metadata_author|id }}">{{ map_form.metadata_author.label }}</label></span>
-                          <!--<p class="xxs-font-size">(Author of the metadata)</p>-->
-                          {{ map_form.metadata_author }}
-                      </div>
+                    {% endblock map_owner %}
                   </div>
+                </div>
+              <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+              {% block map_more_contact_roles %}
+              <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+                <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                  {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                    {% getattribute map_form contact_role as cr %}
+                    <div class="panel-body">
+                      <div>
+                        <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                        {{ cr}}
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
               </div>
+              {% endblock map_more_contact_roles %}
             </div>
+            <!--End Contact Roles -->
+          </div>
         </div>
-      </div></div></div>
+      </div>
     </div>
     {% block extra_metadata_content %}
     {% endblock %}

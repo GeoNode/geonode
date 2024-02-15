@@ -21,6 +21,7 @@ import logging
 
 from django.db.models import Count
 
+from geonode.base.models import TopicCategory
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_CATEGORY
 
 logger = logging.getLogger(__name__)
@@ -35,30 +36,45 @@ class CategoryFacetProvider(FacetProvider):
     def name(self) -> str:
         return "category"
 
-    def get_info(self, lang="en") -> dict:
+    def get_info(self, lang="en", **kwargs) -> dict:
         return {
             "name": self.name,
-            "key": "filter{category__identifier}",
+            "filter": "filter{category.identifier.in}",
             "label": "Category",
             "type": FACET_TYPE_CATEGORY,
-            "hierarchical": False,
-            "order": 2,
         }
 
     def get_facet_items(
         self,
-        queryset=None,
+        queryset,
         start: int = 0,
         end: int = DEFAULT_FACET_PAGE_SIZE,
         lang="en",
         topic_contains: str = None,
+        keys: set = {},
+        **kwargs,
     ) -> (int, list):
         logger.debug("Retrieving facets for %s", self.name)
 
-        q = queryset.values("category__identifier", "category__gn_description", "category__fa_class")
+        filters = {"resourcebase__in": queryset}
+
         if topic_contains:
-            q = q.filter(category__gn_description=topic_contains)
-        q = q.annotate(count=Count("owner")).order_by("-count")
+            filters["gn_description__icontains"] = topic_contains
+
+        if keys:
+            logger.debug("Filtering by keys %r", keys)
+            filters["identifier__in"] = keys
+
+        q = (
+            TopicCategory.objects.values("identifier", "gn_description", "fa_class")
+            .filter(**filters)
+            .annotate(count=Count("resourcebase"))
+            .order_by("-count")
+        )
+
+        logger.debug(" PREFILTERED QUERY  ---> %s\n\n", queryset.query)
+        logger.debug(" ADDITIONAL FILTERS ---> %s\n\n", filters)
+        logger.debug(" FINAL QUERY        ---> %s\n\n", q.query)
 
         cnt = q.count()
 
@@ -68,16 +84,31 @@ class CategoryFacetProvider(FacetProvider):
 
         topics = [
             {
-                "key": r["category__identifier"],
-                "label": r["category__gn_description"],
+                "key": r["identifier"],
+                "label": r["gn_description"],
                 "count": r["count"],
-                "fa_class": r["category__fa_class"],
+                "fa_class": r["fa_class"],
             }
             for r in q[start:end].all()
         ]
 
         return cnt, topics
 
+    def get_topics(self, keys: list, lang="en", **kwargs) -> list:
+        q = TopicCategory.objects.filter(identifier__in=keys)
+
+        logger.debug(" ---> %s\n\n", q.query)
+        logger.debug(" ---> %r\n\n", q.all())
+
+        return [
+            {
+                "key": r.identifier,
+                "label": r.gn_description,
+                "fa_class": r.fa_class,
+            }
+            for r in q.all()
+        ]
+
     @classmethod
     def register(cls, registry, **kwargs) -> None:
-        registry.register_facet_provider(CategoryFacetProvider())
+        registry.register_facet_provider(CategoryFacetProvider(**kwargs))

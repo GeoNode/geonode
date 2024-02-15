@@ -475,6 +475,8 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                 create_geofence_rules(_resource, perms, _owner, None, batch)
                                 exist_geolimits = exist_geolimits or has_geolimits(_resource, _owner, None)
 
+                                deferred_anon_perms = []
+
                                 # All the other users
                                 if "users" in permissions and len(permissions["users"]) > 0:
                                     for user, user_perms in permissions["users"].items():
@@ -482,7 +484,9 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         if _user != _owner:
                                             if user == "AnonymousUser":
                                                 _user = None
-                                            create_geofence_rules(_resource, user_perms, _user, None, batch)
+                                                deferred_anon_perms.append(user_perms)
+                                            else:
+                                                create_geofence_rules(_resource, user_perms, _user, None, batch)
                                             exist_geolimits = exist_geolimits or has_geolimits(_resource, _user, None)
 
                                 # All the other groups
@@ -491,8 +495,14 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                         _group = Group.objects.get(name=group)
                                         if _group and _group.name and _group.name == "anonymous":
                                             _group = None
-                                        create_geofence_rules(_resource, perms, None, _group, batch)
+                                            deferred_anon_perms.append(perms)
+                                        else:
+                                            create_geofence_rules(_resource, perms, None, _group, batch)
                                         exist_geolimits = exist_geolimits or has_geolimits(_resource, None, _group)
+
+                                for perm in deferred_anon_perms:
+                                    create_geofence_rules(_resource, perm, None, None, batch)
+
                             else:
                                 # Owner & Managers
                                 perms = (

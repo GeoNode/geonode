@@ -28,7 +28,7 @@ sys.path.append(current_directory)
 setup(
     version=__import__("geonode").get_version(),
     long_description=open("README.md").read(),
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     package_data={
         "": ["*.*"],  # noqa
         "": ["static/*.*"],  # noqa
@@ -39,5 +39,5 @@ setup(
     exclude_package_data={
         "": ["uploaded/*.*"],  # noqa
         "uploaded": ["*.*"],
-    }
+    },
 )

@@ -1218,6 +1218,12 @@ msgstr "Other, Optional, Metadata"
 msgid "Responsible Parties"
 msgstr "Responsible Parties"
 
+msgid "toggle more Contact Roles"
+msgstr "toggle more Contact Roles"
+
+msgid "more metadata contact roles"
+msgstr "more metadata contact roles"
+
 msgid "Responsible and Permissions"
 msgstr "Responsible and Permissions"
 
