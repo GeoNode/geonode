@@ -588,8 +588,11 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             self["keywords"].field.disabled = True
 
     def clean_group(self):
-        group_id = GroupProfile.objects.get(id=self.data["resource-group"]).group_id
-        return Group.objects.get(id=group_id)
+        group_id = None
+        group = GroupProfile.objects.filter(id=self.data.get("resource-group")).first()
+        if group:
+            group_id = group.group_id
+        return Group.objects.filter(id=group_id).first()
 
     def clean_keywords(self):
         keywords = self.cleaned_data["keywords"]

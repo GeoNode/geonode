@@ -262,7 +262,7 @@ def get_user_visible_groups(user, include_public_invite: bool = False):
             for item in all_metadata_author_groups
             if item not in metadata_author_groups
         ]
-    return metadata_author_groups
+    return GroupProfile.objects.filter(id__in=[group.id for group in metadata_author_groups])
 
 
 AdminViewPermissionsSet = collections.namedtuple("AdminViewPermissionsSet", ["admin_perms", "view_perms"])

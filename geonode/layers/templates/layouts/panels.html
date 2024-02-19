@@ -390,7 +390,7 @@ span.grippy::after {
                                             <option {% if not group %} selected="selected" {% endif %} value="">---</option>
                                             {% for group in metadata_author_groups %}
                                             <option
-                                                value="{{ group.group.id }}"
+                                                value="{{ group.id }}"
                                                 {% if resource.group == group.group %} selected="selected" {% endif %}
                                                 >
                                                 {{ group.title }}
