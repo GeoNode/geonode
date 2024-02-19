@@ -62,7 +62,7 @@ class BaseFacetingView(APIView):
         end = start + page_size
 
         cnt, items = provider.get_facet_items(
-            queryset, start=start, end=end, lang=lang, topic_contains=topic_contains, keys=keys
+            queryset, start=start, end=end, lang=lang, topic_contains=topic_contains, keys=keys, **kwargs
         )
 
         if keys:
@@ -86,7 +86,7 @@ class BaseFacetingView(APIView):
         """
         logger.debug("Filtering by user '%s'", request.user)
         filters = {k: vlist for k, vlist in request.query_params.lists() if k.startswith("filter{")}
-        logger.warning(f"FILTERING BY {filters}")
+        logger.warning(f"FILTERING BY  {filters}")
 
         if filters:
             viewset = ResourceBaseViewSet(request=request, format_kwarg={}, kwargs=filters)
@@ -153,7 +153,7 @@ class ListFacetsView(BaseFacetingView):
 
             if include_topics:
                 prefiltered = prefiltered or self._prefilter_topics(request)
-                info["topics"] = self._get_topics(provider, queryset=prefiltered, lang=lang)
+                info["topics"] = self._get_topics(provider, queryset=prefiltered, lang=lang, user=request.user)
 
             facets.append(info)
 
@@ -187,7 +187,14 @@ class GetFacetView(BaseFacetingView):
 
         qs = self._prefilter_topics(request)
         topics = self._get_topics(
-            provider, queryset=qs, page=page, page_size=page_size, lang=lang, topic_contains=topic_contains, keys=keys
+            provider,
+            queryset=qs,
+            page=page,
+            page_size=page_size,
+            lang=lang,
+            topic_contains=topic_contains,
+            keys=keys,
+            user=request.user,
         )
 
         if add_link:

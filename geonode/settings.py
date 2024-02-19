@@ -1414,6 +1414,9 @@ DEFAULT_MAP_CENTER = (
     ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "0")),
 )
 
+DEFAULT_MAP_CENTER_X = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_X", "0"))
+DEFAULT_MAP_CENTER_Y = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "0"))
+
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
 # maximum zoom is between 12 and 15 (for Google Maps, coverage varies by area)
@@ -2340,6 +2343,7 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.keyword.KeywordFacetProvider", "config": {"order": 6, "type": "select"}},
     {"class": "geonode.facets.providers.region.RegionFacetProvider", "config": {"order": 7, "type": "select"}},
     {"class": "geonode.facets.providers.users.OwnerFacetProvider", "config": {"order": 8, "type": "select"}},
+    {"class": "geonode.facets.providers.group.GroupFacetProvider", "config": {"order": 9, "type": "select"}},
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 
