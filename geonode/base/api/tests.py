@@ -401,6 +401,15 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data={"username": "new_user_1"}, format="json")
         self.assertEqual(response.status_code, 403)
 
+    def test_acess_profile_edit(self):
+        # Registered member
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        user = get_user_model().objects.get(username="bobby")
+
+        url = f'{reverse("profile_edit")}{user.username}'
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
     def test_update_user_profile(self):
         """
         Ensure users cannot update others.
