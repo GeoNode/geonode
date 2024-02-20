@@ -42,12 +42,12 @@ REQ_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
    </metaWidthHeight>
    <mimeFormats>
       <string>application/json;type=utfgrid</string>
-      <string>image/png</string>
-      <string>image/vnd.jpeg-png</string>
-      <string>image/jpeg</string>
-      <string>image/vnd.jpeg-png8</string>
       <string>image/gif</string>
+      <string>image/jpeg</string>
+      <string>image/png</string>
       <string>image/png8</string>
+      <string>image/vnd.jpeg-png</string>
+      <string>image/vnd.jpeg-png8</string>
    </mimeFormats>
    <gridSubsets>
       <gridSubset>
@@ -66,6 +66,11 @@ REQ_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
          <gridSetName>EPSG:900913</gridSetName>
       </gridSubset>
    </gridSubsets>
+   <expireCache>0</expireCache>
+   <expireClients>0</expireClients>
+   <autoCacheStyles>true</autoCacheStyles>
+   <gutter>0</gutter>
+   <cacheWarningSkips/>
 </GeoServerLayer>"""
 
 
@@ -73,9 +78,36 @@ class Command(BaseCommand):
     help = "Create missing TileLayers in GWC"
 
     def add_arguments(self, parser):
-        pass
+        parser.add_argument(
+            '-f',
+            '--force',
+            dest="force",
+            action='store_true',
+            help="Force tile layer re-creation also if it already exists in GWC")
+
+        parser.add_argument(
+            '-l',
+            '--layer',
+            dest="layers",
+            action='append',
+            help="Only process specified layers ")
+
+        parser.add_argument(
+            '-d',
+            '--dry-run',
+            dest="dry-run",
+            action='store_true',
+            help="Do not actually perform any change on GWC")
 
     def handle(self, **options):
+        force = options.get('force')
+        requested_layers = options.get('layers')
+        dry_run = options.get('dry-run')
+
+        logger.debug(f"FORCE is {force}")
+        logger.debug(f"DRY-RUN is {dry_run}")
+        logger.debug(f"LAYERS is {requested_layers}")
+
         try:
             baseurl = settings.OGC_SERVER["default"]["LOCATION"]
             user = settings.OGC_SERVER["default"]["USER"]
@@ -91,24 +123,38 @@ class Command(BaseCommand):
             cnt_old = 0
             cnt_new = 0
             cnt_bad = 0
+            cnt_skip = 0
+            cnt_force = 0
             for layer in layers:
                 i += 1
                 logger.info(f"- {i}/{tot} Processing layer: {layer.typename}")
+
+                if requested_layers and layer.typename not in requested_layers:
+                    logger.info("  - Layer filtered out by args")
+                    cnt_skip += 1
+                    continue
+
                 r = requests.get(f"{baseurl}gwc/rest/layers/{layer.typename}.xml", auth=HTTPBasicAuth(user, passwd))
 
                 if r.status_code == 200:
-                    logger.info("  - Layer already configured")
-                    cnt_old += 1
-                    continue
+                    if force:
+                        logger.info("  - Forcing layer configuration in GWC")
+                        cnt_force += 1
+                    else:
+                        logger.info("  - Layer already configured in GWC")
+                        cnt_old += 1
+                        continue
                 try:
                     data = REQ_TEMPLATE.format(layer.name)
                     url = f"{baseurl}gwc/rest/layers/{layer.typename}.xml"
                     logger.info("  - Configuring...")
-                    response = requests.put(
-                        url, data=data, headers={"Content-Type": "text/xml"}, auth=HTTPBasicAuth(user, passwd)
-                    )
 
-                    if response.status_code == 200:
+                    if not dry_run:
+                        response = requests.put(
+                            url, data=data, headers={"Content-Type": "text/xml"}, auth=HTTPBasicAuth(user, passwd)
+                        )
+
+                    if dry_run or response.status_code == 200:
                         logger.info(f"  - Done {layer.name}")
                         cnt_new += 1
                     else:
@@ -121,6 +167,7 @@ class Command(BaseCommand):
             raise e
 
         logger.info("Work completed")
-        logger.info(f"- TileLayers configured: {cnt_new}")
+        logger.info(f"- TileLayers configured: {cnt_new}" + (f" (forced {cnt_force})" if cnt_force else ""))
         logger.info(f"- TileLayers in error  : {cnt_bad}")
-        logger.info(f"- TileLayers found     : {cnt_old}")
+        logger.info(f"- TileLayers untouched : {cnt_old}")
+        logger.info(f"- TileLayers skipped   : {cnt_skip}")

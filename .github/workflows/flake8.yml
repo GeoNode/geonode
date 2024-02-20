@@ -27,7 +27,7 @@ jobs:
         python-version: ${{matrix.python-version}}
 
     - name: Install flake8 & black
-      run: pip install flake8 black
+      run: pip install --upgrade $(grep 'flake8\|black' requirements.txt)
 
     - name: "Check: flake8"
       run: |

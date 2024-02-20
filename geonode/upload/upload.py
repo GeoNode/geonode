@@ -39,7 +39,6 @@ logger = logging.getLogger(__name__)
 
 
 class UploaderSession:
-
     """All objects held must be able to survive a good pickling"""
 
     # the gsimporter session object
