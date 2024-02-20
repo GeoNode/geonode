@@ -246,7 +246,7 @@ def get_user_visible_groups(user, include_public_invite: bool = False):
     from geonode.groups.models import GroupProfile
 
     metadata_author_groups = []
-    if user.is_superuser or user.is_staff:
+    if user != None and (user.is_superuser or user.is_staff):
         metadata_author_groups = GroupProfile.objects.all()
     else:
         if include_public_invite:

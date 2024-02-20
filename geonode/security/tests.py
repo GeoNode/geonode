@@ -2312,11 +2312,12 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             "resource-date_type": "publication",
             "resource-language": self.resource.language,
             "resource-is_approved": "on",
-            "resource-group": self.resource_group.group.id,
+            "resource-group": self.resource_group.id,
             "dataset_attribute_set-TOTAL_FORMS": 0,
             "dataset_attribute_set-INITIAL_FORMS": 0,
         }
         self.url = reverse("dataset_metadata", args=(self.resource.alternate,))
+        import copy
 
         # Assign manage perms to user member_with_perms
         for perm in self.dataset_perms:
@@ -2343,7 +2344,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertSetEqual(set(resource_perm_specs["groups"][self.owner_group.group]), set(self.safe_perms))
         self.assertSetEqual(set(resource_perm_specs["groups"][self.resource_group.group]), set(self.safe_perms))
 
-    def test_permissions_on_approve_and_publish_changes(self):
+    def test_permissions_on_approve_and_publish_changes(self):  # kjo ben fail
         # Group manager approves a resource
         self.group_manager.set_password("group_manager")
         self.group_manager.save()
