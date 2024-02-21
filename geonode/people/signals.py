@@ -111,9 +111,12 @@ def profile_post_save(instance, sender, **kwargs):
         is_anonymous = instance.username == "AnonymousUser"
 
         if not is_anonymous:
-            if Group.objects.filter(name="contributors").count() and not (instance.is_staff or instance.is_superuser):
-                cont_group = Group.objects.get(name="contributors")
-                instance.groups.add(cont_group)
+            if settings.AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS:
+                if Group.objects.filter(name="contributors").count() and not (
+                    instance.is_staff or instance.is_superuser
+                ):
+                    cont_group = Group.objects.get(name="contributors")
+                    instance.groups.add(cont_group)
             if Group.objects.filter(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME).count():
                 registeredmembers_group = Group.objects.get(name=groups_settings.REGISTERED_MEMBERS_GROUP_NAME)
                 instance.groups.add(registeredmembers_group)

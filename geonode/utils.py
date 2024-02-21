@@ -137,7 +137,6 @@ class ServerDoesNotExist(Exception):
 
 
 class OGC_Server(object):  # LGTM: @property will not work in old-style classes
-
     """
     OGC Server object.
     """
@@ -211,7 +210,6 @@ class OGC_Server(object):  # LGTM: @property will not work in old-style classes
 
 
 class OGC_Servers_Handler:
-
     """
     OGC Server Settings Convenience dict.
     """

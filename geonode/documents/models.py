@@ -37,7 +37,6 @@ logger = logging.getLogger(__name__)
 
 
 class Document(ResourceBase):
-
     """
     A document is any kind of information that can be attached to a map such as pdf, images, videos, xls...
     """
@@ -47,7 +46,7 @@ class Document(ResourceBase):
     doc_url = models.URLField(
         blank=True,
         null=True,
-        max_length=255,
+        max_length=512,
         help_text=_("The URL of the document if it is external."),
         verbose_name=_("URL"),
     )

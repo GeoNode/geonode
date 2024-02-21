@@ -92,9 +92,7 @@ def generate_env_file(args):
         _vals_to_replace["letsencrypt_mode"] = (
             "disabled"
             if not _vals_to_replace.get("https_host")
-            else "staging"
-            if _jsfile.get("env_type", args.env_type) in ["test"]
-            else "production"
+            else "staging" if _jsfile.get("env_type", args.env_type) in ["test"] else "production"
         )
         _vals_to_replace["debug"] = False if _jsfile.get("env_type", args.env_type) in ["prod", "test"] else True
         _vals_to_replace["email"] = _jsfile.get("email", args.email)
@@ -124,7 +122,7 @@ if __name__ == "__main__":
         prog="ENV file builder",
         description="Tool for generate environment file automatically. The information can be passed or via CLI or via JSON file ( --file /path/env.json)",
         usage="python create-envfile.py localhost -f /path/to/json/file.json",
-        allow_abbrev=False
+        allow_abbrev=False,
     )
     parser.add_argument(
         "--noinput",

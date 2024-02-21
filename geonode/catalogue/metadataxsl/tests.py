@@ -25,7 +25,6 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 
 
 class MetadataXSLTest(GeoNodeBaseTestSupport):
-
     """
     Tests geonode.catalogue.metadataxsl app/module
     """
