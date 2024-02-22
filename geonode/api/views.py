@@ -63,7 +63,7 @@ def user_info(request):
         return json_response(out, status=401)
 
     access_token = get_auth_token(user)
-    
+
     groups = [group.name for group in user.groups.all()]
     if user.is_superuser:
         groups.append("admin")
