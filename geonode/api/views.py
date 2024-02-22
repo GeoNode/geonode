@@ -55,7 +55,6 @@ def verify_access_token(request, key):
 
 @csrf_exempt
 def user_info(request):
-    headers = extract_headers(request)
     user = request.user
 
     if not user or user.is_anonymous:
