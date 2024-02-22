@@ -32,7 +32,7 @@ from allauth.account.utils import user_field, user_email, user_username
 
 from ..utils import json_response
 from ..decorators import superuser_or_apiauth
-from ..base.auth import get_token_object_from_session, extract_headers, get_auth_token
+from ..base.auth import get_token_object_from_session, get_auth_token
 
 
 def verify_access_token(request, key):
