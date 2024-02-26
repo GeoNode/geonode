@@ -24,6 +24,11 @@ from django.contrib.auth.decorators import login_required
 from .views import ProfileAutocomplete, SetUserLayerPermission
 from . import views
 
+from dynamic_rest import routers
+
+router = routers.DynamicRouter()
+router.register("users", views.UserViewSet, "users")
+
 urlpatterns = [  # 'geonode.people.views',
     re_path(r"^$", TemplateView.as_view(template_name="people/profile_list.html"), name="profile_browse"),
     re_path(r"^edit/$", views.profile_edit, name="profile_edit"),
@@ -33,3 +38,5 @@ urlpatterns = [  # 'geonode.people.views',
     re_path(r"^autocomplete/$", login_required(ProfileAutocomplete.as_view()), name="autocomplete_profile"),
     re_path(r"^dataset/permission/$", SetUserLayerPermission.as_view(), name="set_user_dataset_permissions"),
 ]
+
+urlpatterns.extend(router.urls)
