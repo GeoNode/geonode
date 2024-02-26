@@ -144,7 +144,7 @@ docker==7.0.0
 invoke==2.2.0
 
 # tests
-coverage==7.4.1
+coverage==7.4.3
 requests-toolbelt==1.0.0
 flake8==7.0.0
 black==24.2.0
