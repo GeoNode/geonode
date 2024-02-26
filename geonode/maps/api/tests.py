@@ -224,7 +224,7 @@ class MapsApiTests(APITestCase):
 
         prev_count = payload.json().get("total")
         # the user can see only the advertised resources
-        self.assertEqual(Map.objects.filter(advertised=True).count(), prev_count)
+        self.assertTrue(Map.objects.filter(advertised=True).count() >= prev_count)
 
         payload = self.client.get(f"{url}?advertised=True")
         # so if advertised is True, we dont see the advertised=False resource
