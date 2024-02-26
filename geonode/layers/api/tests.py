@@ -24,6 +24,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.test import override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
@@ -120,6 +121,59 @@ class DatasetsApiTests(APITestCase):
             _dataset.featureinfo_custom_template = None
             _dataset.use_featureinfo_custom_template = False
             _dataset.save()
+
+    @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
+    def test_filter_dirty_state(self):
+        """
+        ensure that a dirty_state dataset wont be returned
+        """
+
+        # ensure that there is atleast one resource with dirty_state
+        dirty_dataset = Dataset.objects.first()
+        dirty_dataset.dirty_state = True
+        dirty_dataset.save()
+
+        url = reverse("datasets-list")
+
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        dataset_list = response.data["datasets"]
+
+        # ensure that list count is equal to that of clean data
+        # clean resources
+        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        self.assertEqual(len(dataset_list), resource_count_clean)
+        # ensure that the updated dirty dataset is not in the response
+        self.assertFalse(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
+
+    @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
+    def test_filter_dirty_state_include_dirty(self):
+        """
+        ensure that all resources are returned when dirty_state is true
+        """
+        # ensure that there is atleast one resource with dirty_state
+        dirty_dataset = Dataset.objects.first()
+        dirty_dataset.dirty_state = True
+        dirty_dataset.save()
+
+        # clean resources
+        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        # dirty resources
+        resource_count_dirty = Dataset.objects.filter(dirty_state=True).count()
+
+        resource_count_all = resource_count_clean + resource_count_dirty
+
+        url = f'{reverse("datasets-list")}?include_dirty=true'
+
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        dataset_list = response.data["datasets"]
+
+        # ensure that list count is equal to that of all data
+        self.assertEqual(len(dataset_list), resource_count_all)
+
+        # ensure that the updated dirty dataset is in the response
+        self.assertTrue(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
 
     def test_extra_metadata_included_with_param(self):
         _dataset = Dataset.objects.first()
