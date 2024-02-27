@@ -18,7 +18,6 @@
 #########################################################################
 
 """Tools for performing validation of uploaded spatial files."""
-import re
 import os.path
 import logging
 import zipfile
