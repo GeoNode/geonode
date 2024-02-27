@@ -56,7 +56,6 @@ Project Steering Committee:
 * Alessio Fabiani:
 * Francesco Bartoli:
 * Giovanni Allegri:
-* Simone Dalmasso:
 * Toni Schoenbuchner:
 * Florian Hoedt:
 
