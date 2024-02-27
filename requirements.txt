@@ -148,7 +148,7 @@ coverage==7.4.3
 requests-toolbelt==1.0.0
 flake8==7.0.0
 black==24.2.0
-pytest==8.0.0
+pytest==8.0.2
 pytest-bdd==7.0.1
 splinter==0.21.0
 pytest-splinter==3.3.2
