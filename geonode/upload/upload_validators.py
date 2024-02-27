@@ -121,8 +121,8 @@ def _validate_shapefile_components(possible_filenames):
         shape_component = shp_files[0]
     except IndexError:
         return None
-    base_name, base_extension = os.path.splitext(os.path.basename(shape_component))
-    components = [base_extension[1:]]
+    base_name = os.path.splitext(os.path.basename(shape_component))[0].lower()
+    components = [os.path.splitext(shape_component)[1][1:].lower()]
     shapefile_additional = [
         ShapefileAux(extension="dbf", mandatory=aux_mandatory),
         ShapefileAux(extension="shx", mandatory=aux_mandatory),
@@ -132,17 +132,19 @@ def _validate_shapefile_components(possible_filenames):
     ]
     for additional_component in shapefile_additional:
         for path in possible_filenames:
-            additional_name = os.path.splitext(os.path.basename(path))[0]
-            matches_main_name = bool(re.match(base_name, additional_name, re.I))
+            additional_name = os.path.splitext(os.path.basename(path))[0].lower()
             extension = os.path.splitext(path)[1][1:].lower()
             found_component = extension == additional_component.extension
+            matches_main_name = base_name == additional_name
             if found_component and matches_main_name:
                 components.append(additional_component.extension)
                 break
         else:
             if additional_component.mandatory:
                 raise forms.ValidationError(
-                    f"Could not find {additional_component.extension} file, which is mandatory for " "shapefile uploads"
+                    _("Could not find {extension} file, which is mandatory for shapefile uploads").format(
+                        extension=additional_component.extension
+                    )
                 )
     logger.debug(f"shapefile components: {components}")
     return components
