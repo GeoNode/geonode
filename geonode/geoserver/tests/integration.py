@@ -56,7 +56,6 @@ def _log(msg, *args):
 
 @override_settings(SITEURL="http://localhost:8001/")
 class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
-
     """
     Tests GeoNode/GeoServer syncronization
     """
@@ -104,7 +103,6 @@ class GeoNodeGeoServerSync(GeoNodeLiveTestSupport):
 
 @override_settings(SITEURL="http://localhost:8002/")
 class GeoNodeGeoServerCapabilities(GeoNodeLiveTestSupport):
-
     """
     Tests GeoNode/GeoServer GetCapabilities per layer, user, category and map
     """

@@ -31,7 +31,6 @@ logger = logging.getLogger("geonode.geoapps.models")
 
 
 class GeoApp(ResourceBase):
-
     """
     A GeoApp it is a generic container for every client applications the
     user might want to create or define.

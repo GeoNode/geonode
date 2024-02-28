@@ -386,7 +386,6 @@ class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
 
 class SearchApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
     """Test the search"""
 
     #  loading test thesausuri and initial data
