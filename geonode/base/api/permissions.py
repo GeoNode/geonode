@@ -47,10 +47,12 @@ class IsSelf(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        """Always return True here.
+        """Always return False here.
         The fine-grained permissions are handled in has_object_permission().
         """
-        return True
+        if request.path.startswith("/api/v2/users"):  # CUTOM CASE FOR users
+            return True
+        return False
 
     def has_object_permission(self, request, view, obj):
         user = request.user

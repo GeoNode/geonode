@@ -49,7 +49,7 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdmin
+from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
@@ -173,7 +173,7 @@ class UserViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdmin,
+        IsSelfOrAdminOrReadOnly,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
@@ -191,6 +191,18 @@ class UserViewSet(DynamicModelViewSet):
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
+
+    def perform_destroy(self, instance):
+        # not implemented added to make tests pass
+        if any(
+            (
+                not self.request.user.is_superuser,
+                not self.request.user.is_staff,
+                self.request.user.pk == int(self.kwargs["pk"]),
+            )
+        ):
+            raise PermissionDenied()
+        instance.delete()
 
     def perform_create(self, serializer):
         user = self.request.user

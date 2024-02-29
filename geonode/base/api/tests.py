@@ -388,9 +388,7 @@ class BaseApiTests(APITestCase):
         Ensure users are created with default groups.
         """
         url = reverse("users-list")
-        user_data = {
-            "username": "new_user",
-        }
+        user_data = {"username": "new_user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
         self.assertTrue(self.client.login(username="admin", password="admin"))
         response = self.client.post(url, data=user_data, format="json")
         self.assertEqual(response.status_code, 201)
@@ -472,6 +470,8 @@ class BaseApiTests(APITestCase):
             self.assertEqual(response.status_code, 403)
             # Admin can delete user
             self.assertTrue(self.client.login(username="admin", password="admin"))
+            self.client.force_login(get_user_model().objects.get(username="admin"))
+            print("kalon")
             response = self.client.delete(url, format="json")
             self.assertEqual(response.status_code, 204)
         finally:
