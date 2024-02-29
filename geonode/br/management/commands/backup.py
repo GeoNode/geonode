@@ -21,7 +21,6 @@ import json
 import os
 import time
 import shutil
-from typing import LiteralString
 
 import requests
 import re
