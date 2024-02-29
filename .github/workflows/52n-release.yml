@@ -39,6 +39,10 @@ jobs:
         name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
+        env:
+          MAJOR_VERSION: ${{ steps.semver_parser.outputs.major }}
+          MAJOR_MINOR_VERSION: ${{ steps.semver_parser.outputs.major }}-${{ steps.semver_parser.outputs.minor }}
+          MAJOR_MINOR_PATCH_VERSION: ${{ steps.semver_parser.outputs.fullversion }}
         with:
           images: ${{ env.IMAGE }}
           labels: |
@@ -49,7 +53,9 @@ jobs:
             "org.opencontainers.image.licenses=${{ env.LICENSE }}"
           tags: |
             latest
-            ${{ steps.semver_parser.outputs.fullversion }}
+            ${{ env.MAJOR_VERSION }}
+            ${{ env.MAJOR_MINOR_VERSION }}
+            ${{ env.MAJOR_MINOR_PATCH_VERSION }}
       -
         name: Login to Docker Hub
         uses: docker/login-action@v2
