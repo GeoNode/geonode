@@ -59,7 +59,11 @@ class Command(BaseCommand):
         # Named (optional) arguments
         utils.option(parser)
 
-        utils.geoserver_option_list(parser)
+        parser.add_argument(
+            "--geoserver-data-dir",
+            dest="gs_data_dir",
+            default=None,
+            help="Geoserver data directory")
 
         parser.add_argument(
             "-i",
@@ -107,7 +111,7 @@ class Command(BaseCommand):
             "--recovery-file",
             dest="recovery_file",
             default=None,
-            help="Backup archive containing GeoNode data to restore.",
+            help="Archive that shall be used to restore the original content of GeoNode should the restore fail.",
         )
 
         parser.add_argument(
@@ -165,7 +169,7 @@ class Command(BaseCommand):
         skip_read_only = options.get("skip_read_only")
         config = Configuration.load()
 
-        # activate read only mode and store it's original config value
+        # activate read only mode and store its original config value
         if not skip_read_only:
             original_read_only_value = config.read_only
             config.read_only = True
@@ -261,21 +265,6 @@ class Command(BaseCommand):
                 # Write Checks
                 media_root = settings.MEDIA_ROOT
                 media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
-                static_root = settings.STATIC_ROOT
-                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
-                static_folders = settings.STATICFILES_DIRS
-                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
-                template_folders = []
-                try:
-                    template_folders = settings.TEMPLATE_DIRS
-                except Exception:
-                    try:
-                        template_folders = settings.TEMPLATES[0]["DIRS"]
-                    except Exception:
-                        pass
-                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
-                locale_folders = settings.LOCALE_PATHS
-                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
 
                 try:
                     logger.info("*** Performing some checks...")
@@ -283,20 +272,6 @@ class Command(BaseCommand):
                     chmod_tree(restore_folder)
                     logger.info(f"[Sanity Check] Full Write Access to media root: '{media_root}' ...")
                     chmod_tree(media_root)
-                    logger.info(f"[Sanity Check] Full Write Access to static root: '{static_root}' ...")
-                    chmod_tree(static_root)
-                    for folder in static_folders:
-                        if getattr(settings, "PROJECT_ROOT", None) and folder.startswith(settings.PROJECT_ROOT):
-                            logger.info(f"[Sanity Check] Full Write Access to static file folder: '{folder}' ...")
-                            chmod_tree(folder)
-                    for folder in template_folders:
-                        if getattr(settings, "PROJECT_ROOT", None) and folder.startswith(settings.PROJECT_ROOT):
-                            logger.info(f"[Sanity Check] Full Write Access to template folder: '{folder}' ...")
-                            chmod_tree(folder)
-                    for folder in locale_folders:
-                        if getattr(settings, "PROJECT_ROOT", None) and folder.startswith(settings.PROJECT_ROOT):
-                            logger.info(f"[Sanity Check] Full Write Access to locale files folder: '{folder}' ...")
-                            chmod_tree(folder)
                 except Exception as e:
                     if notify:
                         restore_notification.apply_async(
@@ -361,14 +336,6 @@ class Command(BaseCommand):
                     logger.info("*** Align the database schema")
                     # call_command('makemigrations', interactive=False)
                     call_command("migrate", interactive=False)
-
-                    # db_name = settings.DATABASES['default']['NAME']
-                    # db_user = settings.DATABASES['default']['USER']
-                    # db_port = settings.DATABASES['default']['PORT']
-                    # db_host = settings.DATABASES['default']['HOST']
-                    # db_passwd = settings.DATABASES['default']['PASSWORD']
-                    #
-                    # utils.patch_db(db_name, db_user, db_port, db_host, db_passwd, settings.MONITORING_ENABLED)
                 except Exception as e:
                     logger.warning(f"Error while aligning the db: {e}", exc_info=e)
 
@@ -397,8 +364,15 @@ class Command(BaseCommand):
                         err_cnt = 0
 
                         logger.info("*** Restoring GeoNode fixtures...")
+
+                        fixtures_folder = os.path.join(target_folder, "fixtures")
+                        if not os.path.exists(fixtures_folder):
+                            # fixtures folder was introduced on 2024-02; make the restore command lenient about
+                            # dumps created without such a folder (this behaviour may be removed in a short while)
+                            fixtures_folder = target_folder
+
                         for app_name, dump_name in zip(config.app_names, config.dump_names):
-                            fixture_file = os.path.join(target_folder, f"{dump_name}.json")
+                            fixture_file = os.path.join(fixtures_folder, f"{dump_name}.json")
 
                             logger.info(f" - restoring '{fixture_file}'")
                             try:
@@ -429,109 +403,6 @@ class Command(BaseCommand):
                         copy_tree(media_folder, media_root)
                         chmod_tree(media_root)
                         logger.info(f"Media files restored into '{media_root}'.")
-
-                        # Restore Static Root
-                        logger.info("*** Restore static root...")
-                        if config.gs_data_dt_filter[0] is None:
-                            shutil.rmtree(static_root, ignore_errors=True)
-
-                        if not os.path.exists(static_root):
-                            os.makedirs(static_root, exist_ok=True)
-
-                        copy_tree(static_folder, static_root)
-                        chmod_tree(static_root)
-                        logger.info(f"Static root restored into '{static_root}'.")
-
-                        # Restore Static Folders
-                        logger.info("*** Restore static folders...")
-
-                        for folder in static_folders:
-                            logger.info(f"* Restoring {folder}...")
-
-                            # skip restoration of static files of apps not located under PROJECT_ROOT path
-                            # (check to prevent overriding files from site-packages
-                            #  in project-template based GeoNode projects)
-                            if getattr(settings, "PROJECT_ROOT", None) and not folder.startswith(settings.PROJECT_ROOT):
-                                logger.info(
-                                    f"Skipping static directory: {folder}. "
-                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
-                                )
-                                continue
-
-                            if config.gs_data_dt_filter[0] is None:
-                                logger.info(f"Cleaning {folder}...")
-                                shutil.rmtree(folder, ignore_errors=True)
-
-                            logger.info(f"Restoring {folder}...")
-                            if not os.path.exists(folder):
-                                os.makedirs(folder, exist_ok=True)
-
-                            copy_tree(
-                                os.path.join(static_files_folders, os.path.basename(os.path.normpath(folder))), folder
-                            )
-                            chmod_tree(folder)
-                            logger.info(f"Static files restored into '{folder}'.")
-
-                        # Restore Template Folders
-                        logger.info("*** Restore template folders...")
-                        for folder in template_folders:
-                            logger.info(f"* Restoring {folder}...")
-
-                            # skip restoration of template files of apps not located under PROJECT_ROOT path
-                            # (check to prevent overriding files from site-packages
-                            #  in project-template based GeoNode projects)
-                            if getattr(settings, "PROJECT_ROOT", None) and not folder.startswith(settings.PROJECT_ROOT):
-                                logger.info(
-                                    f"Skipping template directory: {folder}. "
-                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
-                                )
-                                continue
-
-                            if config.gs_data_dt_filter[0] is None:
-                                logger.info(f"Cleaning {folder}...")
-                                shutil.rmtree(folder, ignore_errors=True)
-
-                            logger.info(f"Restoring {folder}...")
-                            if not os.path.exists(folder):
-                                os.makedirs(folder, exist_ok=True)
-
-                            copy_tree(
-                                os.path.join(template_files_folders, os.path.basename(os.path.normpath(folder))), folder
-                            )
-                            chmod_tree(folder)
-                            logger.info(f"Template files restored into '{folder}'.")
-
-                        # Restore Locale Folders
-                        logger.info("*** Restore locale folders...")
-                        for folder in locale_folders:
-                            logger.info(f"* Restoring {folder}...")
-
-                            # skip restoration of locale files of apps not located under PROJECT_ROOT path
-                            # (check to prevent overriding files from site-packages
-                            #  in project-template based GeoNode projects)
-                            if getattr(settings, "PROJECT_ROOT", None) and not folder.startswith(settings.PROJECT_ROOT):
-                                logger.info(
-                                    f"Skipping locale directory: {folder}. "
-                                    f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
-                                )
-                                continue
-
-                            if config.gs_data_dt_filter[0] is None:
-                                logger.info(f"Cleaning {folder}...")
-                                shutil.rmtree(folder, ignore_errors=True)
-
-                            logger.info(f"Restoring {folder}...")
-                            if not os.path.exists(folder):
-                                os.makedirs(folder, exist_ok=True)
-
-                            copy_tree(
-                                os.path.join(locale_files_folders, os.path.basename(os.path.normpath(folder))), folder
-                            )
-                            chmod_tree(folder)
-                            logger.info(f"Locale Files Restored into '{folder}'.")
-
-                        logger.info("*** Calling collectstatic...")
-                        call_command("collectstatic", interactive=False)
 
                     # store backup info
                     restored_backup = RestoredBackup(
@@ -771,7 +642,7 @@ class Command(BaseCommand):
 
                         gs_bk_exec_status = gs_backup["restore"]["execution"]["status"]
                         gs_bk_exec_progress = gs_backup["restore"]["execution"]["progress"]
-                        logger.info(f"Async backup status: {gs_bk_exec_status} - {gs_bk_exec_progress}")
+                        logger.info(f"Async restore status: {gs_bk_exec_status} - {gs_bk_exec_progress}")
                         time.sleep(3)
                     else:
                         raise ValueError(error_backup.format(url, r.status_code, r.text))
