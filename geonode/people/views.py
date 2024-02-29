@@ -20,6 +20,7 @@ from allauth.account.views import SignupView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.forms import ValidationError as ValidationErrorForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -28,14 +29,14 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from django.views import View
-
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
 from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
-
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
 from dal import autocomplete
 
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -48,13 +49,15 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.base.api.permissions import IsSelfOrAdmin
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
+from geonode.settings import ACCOUNT_EMAIL_REQUIRED
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 
 class SetUserLayerPermission(View):
@@ -170,7 +173,7 @@ class UserViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
+        IsSelfOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
@@ -188,6 +191,38 @@ class UserViewSet(DynamicModelViewSet):
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if not (user.is_superuser or user.is_staff):
+            raise PermissionDenied()
+
+        email_payload = self.request.data.get("email", "")
+        password_payload = self.request.data.get("password", "")
+
+        if ACCOUNT_EMAIL_REQUIRED and email_payload == "":
+            raise ValidationError(detail="email missing from payload")
+        try:
+            validate_password(password_payload, user=None, password_validators=None)
+            self.request.data["password"] = make_password(password_payload)
+        except ValidationErrorForm as err:
+            raise ValidationError(detail=",".join(err.messages))
+        instance = serializer.save()
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        kwargs["partial"] = True
+        if not self.request.user.is_superuser:
+            request.data.pop("is_superuser", None)
+            request.data.pop("is_staff", None)
+        password_payload = self.request.data.get("password", "")
+        if password_payload:
+            try:
+                validate_password(password_payload, user=None, password_validators=None)
+                request.data["password"] = make_password(password_payload)
+            except ValidationErrorForm as err:
+                raise ValidationError(detail=",".join(err.messages))
+        return super().update(request, *args, **kwargs)
 
     @extend_schema(
         methods=["get"],

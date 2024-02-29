@@ -47,10 +47,10 @@ class IsSelf(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        """Always return False here.
+        """Always return True here.
         The fine-grained permissions are handled in has_object_permission().
         """
-        return False
+        return True
 
     def has_object_permission(self, request, view, obj):
         user = request.user
