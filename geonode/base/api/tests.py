@@ -417,7 +417,7 @@ class BaseApiTests(APITestCase):
                 username="user_test_delete", email="user_test_delete@geonode.org", password="user"
             )
             url = reverse("users-detail", kwargs={"pk": user.pk})
-            data = {"first_name": "user"}
+            data = {"first_name": "user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
             # Anonymous
             response = self.client.patch(url, data=data, format="json")
             self.assertEqual(response.status_code, 403)
@@ -428,14 +428,15 @@ class BaseApiTests(APITestCase):
             # User self profile
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.patch(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200)
             # Group manager
             group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
             group.join(user)
             group.join(get_user_model().objects.get(username="norman"), role="manager")
             self.assertTrue(self.client.login(username="norman", password="norman"))
             response = self.client.post(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            # malformed url on post
+            self.assertEqual(response.status_code, 405)
             # Admin can edit user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.patch(url, data={"first_name": "user_admin"}, format="json")
@@ -470,8 +471,6 @@ class BaseApiTests(APITestCase):
             self.assertEqual(response.status_code, 403)
             # Admin can delete user
             self.assertTrue(self.client.login(username="admin", password="admin"))
-            self.client.force_login(get_user_model().objects.get(username="admin"))
-            print("kalon")
             response = self.client.delete(url, format="json")
             self.assertEqual(response.status_code, 204)
         finally:

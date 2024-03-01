@@ -50,7 +50,7 @@ class IsSelf(permissions.BasePermission):
         """Always return False here.
         The fine-grained permissions are handled in has_object_permission().
         """
-        if request.path.startswith("/api/v2/users"):  # CUTOM CASE FOR users
+        if view.basename == "users":  # CUTOM CASE FOR users
             return True
         return False
 
