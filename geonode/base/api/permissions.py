@@ -40,30 +40,6 @@ from guardian.shortcuts import get_groups_with_perms
 logger = logging.getLogger(__name__)
 
 
-class IsSelfOrAdminOrReadOnlyUsers(permissions.BasePermission):
-    """Grant permission only if the current instance is the request user.
-    Used to allow users to edit their own account).
-    """
-
-    def has_permission(self, request, view):
-        """Always return True here.
-        The fine-grained permissions are handled in has_object_permission().
-        """
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        user = request.user
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        if user and (user.is_superuser or user.is_staff):
-            return True
-        if user and isinstance(obj, get_user_model()) and obj.pk == user.pk:
-            if request.method == "DELETE":
-                return False
-            return True
-        return False
-
-
 class IsSelf(permissions.BasePermission):
     """Grant permission only if the current instance is the request user.
     Used to allow users to edit their own account, nothing to others (even
@@ -74,6 +50,8 @@ class IsSelf(permissions.BasePermission):
         """Always return False here.
         The fine-grained permissions are handled in has_object_permission().
         """
+        if request.user:
+            return True
         return False
 
     def has_object_permission(self, request, view, obj):

@@ -49,7 +49,7 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnlyUsers
+from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
@@ -178,10 +178,11 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
 
+    http_method_names = ["get", "post", "patch"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdminOrReadOnlyUsers,
+        IsSelfOrAdminOrReadOnly,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
