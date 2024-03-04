@@ -160,7 +160,7 @@ pixelmatch==0.3.0
 factory-boy==3.3.0
 flaky==3.7.0
 selenium>=4.15.1,<5.0.0
-selenium-requests==2.0.3
+selenium-requests==2.0.4
 webdriver_manager==4.0.1
 
 # Security and audit
