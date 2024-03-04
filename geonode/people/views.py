@@ -49,7 +49,7 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.base.api.permissions import IsSelfOrAdminOrReadOnlyUsers
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
@@ -165,6 +165,14 @@ def forgot_username(request):
     return render(request, "people/forgot_username_form.html", context={"message": message, "form": username_form})
 
 
+def password_validation(password_payload):
+    try:
+        validate_password(password_payload)
+    except ValidationErrorForm as err:
+        raise ValidationError(detail=",".join(err.messages))
+    return make_password(password_payload)
+
+
 class UserViewSet(DynamicModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -173,7 +181,7 @@ class UserViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
+        IsSelfOrAdminOrReadOnlyUsers,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
@@ -192,18 +200,6 @@ class UserViewSet(DynamicModelViewSet):
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
 
-    def perform_destroy(self, instance):
-        # not implemented added to make tests pass
-        if any(
-            (
-                not self.request.user.is_superuser,
-                not self.request.user.is_staff,
-                self.request.user.pk == int(self.kwargs["pk"]),
-            )
-        ):
-            raise PermissionDenied()
-        instance.delete()
-
     def perform_create(self, serializer):
         user = self.request.user
         if not (user.is_superuser or user.is_staff):
@@ -214,26 +210,19 @@ class UserViewSet(DynamicModelViewSet):
 
         if ACCOUNT_EMAIL_REQUIRED and email_payload == "":
             raise ValidationError(detail="email missing from payload")
-        try:
-            validate_password(password_payload, user=None, password_validators=None)
-            self.request.data["password"] = make_password(password_payload)
-        except ValidationErrorForm as err:
-            raise ValidationError(detail=",".join(err.messages))
+        self.request.data["password"] = password_validation(password_payload)
         instance = serializer.save()
         return instance
 
     def update(self, request, *args, **kwargs):
         kwargs["partial"] = True
-        if not self.request.user.is_superuser:
+        user = self.request.user
+        if not (user.is_superuser or user.is_staff):
             request.data.pop("is_superuser", None)
             request.data.pop("is_staff", None)
         password_payload = self.request.data.get("password", "")
         if password_payload:
-            try:
-                validate_password(password_payload, user=None, password_validators=None)
-                request.data["password"] = make_password(password_payload)
-            except ValidationErrorForm as err:
-                raise ValidationError(detail=",".join(err.messages))
+            request.data["password"] = password_validation(password_payload)
         return super().update(request, *args, **kwargs)
 
     @extend_schema(
