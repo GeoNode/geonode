@@ -24,7 +24,7 @@ jsonschema==4.21.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
-smart_open==6.4.0
+smart_open==7.0.1
 PyMuPDF==1.23.25
 pathvalidate==3.2.0
 
