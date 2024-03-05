@@ -626,7 +626,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
 
         # endpoint throws Exception on missing email
-        self.assertTrue(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         self.assertTrue("email missing from payload" in response.json()["errors"])
 
     @override_settings(

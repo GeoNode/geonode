@@ -49,14 +49,13 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrAdmin
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
-from geonode.settings import ACCOUNT_EMAIL_REQUIRED
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
 
@@ -182,7 +181,7 @@ class UserViewSet(DynamicModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
+        IsOwnerOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
@@ -209,7 +208,7 @@ class UserViewSet(DynamicModelViewSet):
         email_payload = self.request.data.get("email", "")
         password_payload = self.request.data.get("password", "")
 
-        if ACCOUNT_EMAIL_REQUIRED and email_payload == "":
+        if settings.ACCOUNT_EMAIL_REQUIRED and email_payload == "":
             raise ValidationError(detail="email missing from payload")
         self.request.data["password"] = password_validation(password_payload)
         instance = serializer.save()
