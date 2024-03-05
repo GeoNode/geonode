@@ -488,7 +488,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
-        self.assertTrue(response.status_code, 201)
+        self.assertEqual(response.status_code, 201)
 
     def test_users_api_post_not_admin(self):
         data = {
@@ -683,7 +683,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
 
         self.client.login(username="admin", password="admin")
         response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
-        self.assertTrue(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
 
         for error in error_codes:
             self.assertTrue(error in response.json()["errors"][0])
