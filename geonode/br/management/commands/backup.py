@@ -156,6 +156,9 @@ class Command(BaseCommand):
                 # Dump Fixtures
                 logger.info("*** Dumping GeoNode fixtures...")
 
+                fixtures_target = os.path.join(target_folder, "fixtures")
+                os.makedirs(fixtures_target, exist_ok=True)
+
                 for app_name, dump_name in zip(config.app_names, config.dump_names):
                     # prevent dumping BackupRestore application
                     if app_name == "br":
@@ -163,7 +166,7 @@ class Command(BaseCommand):
 
                     logger.info(f" - Dumping '{app_name}' into '{dump_name}.json'")
                     # Point stdout at a file for dumping data to.
-                    with open(os.path.join(target_folder, f"{dump_name}.json"), "w") as output:
+                    with open(os.path.join(fixtures_target, f"{dump_name}.json"), "w") as output:
                         call_command("dumpdata", app_name, format="json", indent=2, stdout=output)
 
                 # Store Media Root
@@ -180,126 +183,6 @@ class Command(BaseCommand):
                     ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
                 )
                 logger.info(f"Saved media files from '{media_root}'")
-
-                # Store Static Root
-                logger.info("*** Dumping GeoNode static folder...")
-
-                static_root = settings.STATIC_ROOT
-                static_folder = os.path.join(target_folder, utils.STATIC_ROOT)
-                if not os.path.exists(static_folder):
-                    os.makedirs(static_folder, exist_ok=True)
-
-                copy_tree(
-                    static_root,
-                    static_folder,
-                    ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
-                )
-                logger.info(f"Saved static root from '{static_root}'.")
-
-                # Store Static Folders
-                logger.info("*** Dumping GeoNode static files...")
-
-                static_folders = settings.STATICFILES_DIRS
-                static_files_folders = os.path.join(target_folder, utils.STATICFILES_DIRS)
-                if not os.path.exists(static_files_folders):
-                    os.makedirs(static_files_folders, exist_ok=True)
-
-                for static_files_folder in static_folders:
-                    # skip dumping of static files of apps not located under PROJECT_ROOT path
-                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, "PROJECT_ROOT", None) and not static_files_folder.startswith(
-                        settings.PROJECT_ROOT
-                    ):
-                        logger.info(
-                            f"Skipping static directory: {static_files_folder}. "
-                            f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
-                        )
-                        continue
-
-                    static_folder = os.path.join(
-                        static_files_folders, os.path.basename(os.path.normpath(static_files_folder))
-                    )
-                    if not os.path.exists(static_folder):
-                        os.makedirs(static_folder, exist_ok=True)
-
-                    copy_tree(
-                        static_files_folder,
-                        static_folder,
-                        ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
-                    )
-                    logger.info(f"Saved static files from '{static_files_folder}'.")
-
-                # Store Template Folders
-                logger.info("*** Dumping GeoNode template folders...")
-
-                template_folders = []
-                try:
-                    template_folders = settings.TEMPLATE_DIRS
-                except Exception:
-                    try:
-                        template_folders = settings.TEMPLATES[0]["DIRS"]
-                    except Exception:
-                        pass
-                template_files_folders = os.path.join(target_folder, utils.TEMPLATE_DIRS)
-                if not os.path.exists(template_files_folders):
-                    os.makedirs(template_files_folders, exist_ok=True)
-
-                for template_files_folder in template_folders:
-                    # skip dumping of template files of apps not located under PROJECT_ROOT path
-                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, "PROJECT_ROOT", None) and not template_files_folder.startswith(
-                        settings.PROJECT_ROOT
-                    ):
-                        logger.info(
-                            f"Skipping template directory: {template_files_folder}. "
-                            f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
-                        )
-                        continue
-
-                    template_folder = os.path.join(
-                        template_files_folders, os.path.basename(os.path.normpath(template_files_folder))
-                    )
-                    if not os.path.exists(template_folder):
-                        os.makedirs(template_folder, exist_ok=True)
-
-                    copy_tree(
-                        template_files_folder,
-                        template_folder,
-                        ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
-                    )
-                    logger.info(f"Saved template files from '{template_files_folder}'.")
-
-                # Store Locale Folders
-                logger.info("*** Dumping GeoNode locale folders...")
-                locale_folders = settings.LOCALE_PATHS
-                locale_files_folders = os.path.join(target_folder, utils.LOCALE_PATHS)
-                if not os.path.exists(locale_files_folders):
-                    os.makedirs(locale_files_folders, exist_ok=True)
-
-                for locale_files_folder in locale_folders:
-                    # skip dumping of locale files of apps not located under PROJECT_ROOT path
-                    # (check to prevent saving files from site-packages in project-template based GeoNode projects)
-                    if getattr(settings, "PROJECT_ROOT", None) and not locale_files_folder.startswith(
-                        settings.PROJECT_ROOT
-                    ):
-                        logger.info(
-                            f"Skipping locale directory: {locale_files_folder}. "
-                            f"It's not located under PROJECT_ROOT path: {settings.PROJECT_ROOT}."
-                        )
-                        continue
-
-                    locale_folder = os.path.join(
-                        locale_files_folders, os.path.basename(os.path.normpath(locale_files_folder))
-                    )
-                    if not os.path.exists(locale_folder):
-                        os.makedirs(locale_folder, exist_ok=True)
-
-                    copy_tree(
-                        locale_files_folder,
-                        locale_folder,
-                        ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
-                    )
-                    logger.info(f"Saved Locale Files from '{locale_files_folder}'.")
 
                 # Create Final ZIP Archive
                 logger.info("*** Creating final ZIP archive...")
