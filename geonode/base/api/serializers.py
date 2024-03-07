@@ -378,8 +378,8 @@ class UserSerializer(BaseDynamicModelSerializer):
             data.pop("is_superuser", None)
             data.pop("is_staff", None)
         # username cant be changed
-        if request.method in ("PUT", "PATCH"):
-            data.pop("username", None)
+        if request.method in ("PUT", "PATCH") and data.get("username"):
+            raise serializers.ValidationError(detail="username cannot be updated")
         email = data.get("email")
         # Email is required on post
         if request.method in ("POST") and settings.ACCOUNT_EMAIL_REQUIRED and not email:

@@ -20,7 +20,6 @@ from allauth.account.views import SignupView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.forms import ValidationError as ValidationErrorForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -35,8 +34,6 @@ from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.password_validation import validate_password
 from dal import autocomplete
 
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -56,7 +53,7 @@ from geonode.base.api.pagination import GeoNodeApiPagination
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import PermissionDenied
 
 
 class SetUserLayerPermission(View):
@@ -164,14 +161,6 @@ def forgot_username(request):
     return render(request, "people/forgot_username_form.html", context={"message": message, "form": username_form})
 
 
-def password_validation(password_payload):
-    try:
-        validate_password(password_payload)
-    except ValidationErrorForm as err:
-        raise ValidationError(detail=",".join(err.messages))
-    return make_password(password_payload)
-
-
 class UserViewSet(DynamicModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -204,6 +193,7 @@ class UserViewSet(DynamicModelViewSet):
         user = self.request.user
         if not (user.is_superuser or user.is_staff):
             raise PermissionDenied()
+        serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         return instance
 

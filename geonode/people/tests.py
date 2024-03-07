@@ -753,3 +753,36 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertTrue("A user is already registered with that email" in response.json()["errors"])
+
+    def test_users_api_add_existing_username(self):
+        bobby = get_user_model().objects.get(username="bobby")
+
+        data = {"username": bobby.get_username(), "password": "@!2XJSL_S&V^0nt", "email": "bobby@bobby.com"}
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("A user with that username already exists." in response.json()["errors"])
+
+    def test_users_api_patch_username(self):
+
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        # admin wants to edit his bobby's data
+        data = {
+            "first_name": "Robert Baratheon",
+            "username": "bob",
+            "password": "@!2XJSL_S&V^0nt000",
+            "email": "bob@bob.com",
+        }
+
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+
+        # username cannot be updated
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("username cannot be updated" in response.json()["errors"])
