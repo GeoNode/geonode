@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 import os
 import shutil
@@ -49,7 +50,7 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from webdriver_manager.firefox import GeckoDriverManager
 
 from geonode.tests.base import GeoNodeLiveTestSupport
-from geonode.geoserver.helpers import ogc_server_settings
+from geonode.geoserver.helpers import gs_catalog, ogc_server_settings
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.tests.utils import GEONODE_USER, GEONODE_PASSWD, rest_upload_by_path
 
@@ -229,25 +230,36 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             return response, response.content
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
+    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
     def test_rest_uploads(self):
         """
         Ensure we can access the Local Server Uploads list.
         """
-        # Try to upload a good raster file and check the session IDs
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-        resp, data = rest_upload_by_path(fname, self.client)
-        self.assertEqual(resp.status_code, 201)
+        # cleanup existing dataset in geoserver
+        store = gs_catalog.get_store("relief_san_andres")
+        if store:
+            gs_catalog.delete(store, purge="all", recurse=False)
+        try:
+            # Try to upload a good raster file and check the session IDs
+            fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
+            resp, data = rest_upload_by_path(fname, self.client)
+            self.assertEqual(resp.status_code, 201)
 
-        url = reverse("uploads-list")
-        # Anonymous
-        self.client.logout()
-        response = self.client.get(url, format="json")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 5)
-        self.assertEqual(response.data["total"], 0)
-        # Pagination
-        self.assertEqual(len(response.data["uploads"]), 0)
-        logger.debug(response.data)
+            url = reverse("uploads-list")
+            # Anonymous
+            self.client.logout()
+            response = self.client.get(url, format="json")
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(response.data), 5)
+            self.assertEqual(response.data["total"], 0)
+            # Pagination
+            self.assertEqual(len(response.data["uploads"]), 0)
+            logger.debug(response.data)
+        finally:
+            dt = Dataset.objects.filter(title="relief_san_andres").first()
+            if dt:
+                dt.delete()
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_rest_uploads_non_interactive(self):
