@@ -28,14 +28,12 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from django.views import View
-
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
 from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
-
 from dal import autocomplete
 
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -48,13 +46,14 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrAdmin
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
+from rest_framework.exceptions import PermissionDenied
 
 
 class SetUserLayerPermission(View):
@@ -167,10 +166,11 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
 
+    http_method_names = ["get", "post", "patch"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
+        IsOwnerOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
@@ -188,6 +188,21 @@ class UserViewSet(DynamicModelViewSet):
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if not (user.is_superuser or user.is_staff):
+            raise PermissionDenied()
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     @extend_schema(
         methods=["get"],

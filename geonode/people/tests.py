@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import django
 from django.test.utils import override_settings
 from mock import MagicMock, PropertyMock, patch
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -471,3 +472,317 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         """
         new_user = get_user_model().objects.create(username="random_username")
         self.assertFalse("contributors" in [x.name for x in new_user.groups.iterator()])
+
+    def test_users_api_valid_post(self):
+        data = {
+            "username": "usernam3e",
+            "first_name": "Registered",
+            "password": "@!2XJSL_S&V^0nt",
+            "last_name": "Test",
+            "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+            "perms": ["add_resource"],
+            "is_superuser": False,
+            "is_staff": False,
+            "email": "fpglf@poc.com",
+        }
+
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+
+    def test_users_api_post_not_admin(self):
+        data = {
+            "username": "usernam3e",
+            "first_name": "Registered",
+            "password": "@!2XJSL_S&V^0nt",
+            "last_name": "Test",
+            "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+            "perms": ["add_resource"],
+            "is_superuser": True,
+            "is_staff": True,
+            "email": "fpglf@poc.com",
+        }
+        bobby = get_user_model().objects.get(username="bobby")
+        self.client.login(username="bobby", password="bob")
+        # assert that bobby is not a super user or staff
+        self.assertFalse(bobby.is_superuser)
+        self.assertFalse(bobby.is_staff)
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 403)
+
+    def test_users_api_patch_self(self):
+
+        bobby = get_user_model().objects.get(username="bobby")
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # bobby wants to edit his own data
+        data = {"first_name": "Robert"}
+        # before change
+        self.assertNotEqual(bobby.first_name, "Robert")
+
+        # and can acess even if he's not admin or staff
+        self.assertFalse(bobby.is_superuser)
+        self.assertFalse(bobby.is_staff)
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+        response_json = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json["user"]["first_name"], "Robert")
+
+    def test_users_api_patch_self_as_superuser(self):
+
+        bobby = get_user_model().objects.get(username="bobby")
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # bobby wants to edit his own data
+        data = {
+            "first_name": "Robert",
+            "is_superuser": True,
+            "is_staff": True,
+        }
+        # before change
+        self.assertNotEqual(bobby.first_name, "Robert")
+
+        # and can acess even if he's not admin or staff
+        self.assertFalse(bobby.is_superuser)
+        self.assertFalse(bobby.is_staff)
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+        response_json = response.json()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_json["user"]["first_name"], "Robert")
+
+        self.assertFalse(response_json["user"]["is_superuser"])
+        self.assertFalse(response_json["user"]["is_staff"])
+        # check db side too
+        bobby = get_user_model().objects.get(username="bobby")
+        self.assertFalse(bobby.is_superuser)
+        self.assertFalse(bobby.is_staff)
+
+    def test_users_api_patch_others_from_non_admin(self):
+
+        bobby = get_user_model().objects.get(username="bobby")
+        profile = get_user_model().objects.get(username="user1")
+
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # bobby wants to edit his user's data
+        data = {"first_name": "Norman Sky", "password": "@!2XJSL_S&V^0nt", "email": "bob@bob.com"}
+
+        # Bobby is not superuser or staff
+        self.assertFalse(bobby.is_superuser)
+        self.assertFalse(bobby.is_staff)
+
+        url = f"{reverse('users-list')}/{profile.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+
+        # bobby is not permitted to update user data
+        self.assertEqual(response.status_code, 403)
+
+    def test_users_api_patch_others_from_admin(self):
+
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        self.assertTrue(admin.is_authenticated)
+        # admin wants to edit his bobby's data
+        data = {"first_name": "Robert Baratheon", "password": "@!2XJSL_S&V^0nt000", "email": "bob@bob.com"}
+
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+
+        # admin is  permitted to update bobby's data
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.json()["user"]["first_name"], "Robert Baratheon")
+
+    @override_settings(ACCOUNT_EMAIL_REQUIRED=True)
+    def test_users_api_empty_email(self):
+        """
+        If the environment variable ACCOUNT_EMAIL_REQUIRED is set to True,
+        the email will be mandatory in the payload.
+        """
+        data = {
+            "username": "usernam3e",
+            "first_name": "Registered",
+            "password": "@!2XJSL_S&V^0nt",
+            "last_name": "Test",
+            "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+            "perms": ["add_resource"],
+            "is_superuser": False,
+            "is_staff": False,
+        }
+        # ensure there is no email in payload
+        data.pop("email", None)
+
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+
+        # endpoint throws Exception on missing email
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("email missing from payload" in response.json()["errors"])
+
+    @override_settings(
+        AUTH_PASSWORD_VALIDATORS=[
+            {
+                "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+            },
+            {
+                "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+                "OPTIONS": {
+                    "min_length": 14,
+                },
+            },
+            {
+                "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+            },
+            {
+                "NAME": "geonode.people.password_validators.UppercaseValidator",
+            },
+            {
+                "NAME": "geonode.people.password_validators.NumberValidator",
+                "OPTIONS": {
+                    "min_digits": 1,
+                },
+            },
+            {
+                "NAME": "geonode.people.password_validators.LowercaseValidator",
+            },
+            {
+                "NAME": "geonode.people.password_validators.SpecialCharsValidator",
+            },
+        ]
+    )
+    def test_users_api_invalid_password(self):
+        """
+        If a password validator is set via AUTH_PASSWORD_VALIDATORS,
+        the API will return an error if the validation fails
+        """
+        error_codes = [
+            "This password is too short. It must contain at least 14 characters.",
+            "The password must contain at least1 digit(s), 0-9.",
+        ]
+        data = {
+            "username": "usernam3e",
+            "first_name": "Registered",
+            "password": "whitetext",
+            "last_name": "Test",
+            "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+            "perms": ["add_resource"],
+            "is_superuser": False,
+            "is_staff": False,
+            "email": "fpglf@poc.com",
+        }
+
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+        for error in error_codes:
+            self.assertTrue(error in response.json()["errors"][0])
+
+    @override_settings(
+        ACCOUNT_EMAIL_VERIFICATION="mandatory",
+        EMAIL_HOST="localhost",
+        EMAIL_HOST_USER="",
+        EMAIL_HOST_PASSWORD="",
+        EMAIL_PORT="25",
+    )
+    def test_users_register_email_verification(self):
+        """
+        If the email confirmation requirement is configured,
+        a verification email will be sent to the user before allowing them to log in.
+        """
+        data = {
+            "username": "usernam3e",
+            "email": "user@exampl2e.com",
+            "password1": "@!2XJSL_S&V^0nt",
+            "password2": "@!2XJSL_S&V^0nt",
+        }
+
+        response = self.client.post(reverse("account_signup"), data=data, format="json")
+        # response should be a redirect to the confirmation email
+        self.assertEqual(response.status_code, 302)
+
+        # check that user was created
+        get_user_model().objects.get(email=data["email"])
+
+        email_box = django.core.mail.outbox
+        # assert that an email was sent to the email provided in the payload
+        self.assertEqual(len(email_box), 1)
+        self.assertTrue(data["email"] in email_box[0].to)
+
+    def test_users_api_patch_password_from_admin(self):
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        self.assertTrue(admin.is_authenticated)
+
+        # admin wants to edit his bobby's data
+        data = {"password": "@!2XJSL_S&V^0nt000"}
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+        old_pass = bobby.password
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+
+        # admin is  permitted to update bobby's data
+        self.assertEqual(response.status_code, 200)
+        # bobbys password has changed
+        bobby.refresh_from_db()
+        # asserting not equal from the password salt
+        self.assertNotEqual(bobby.password, old_pass)
+
+    def test_users_api_add_existing_email(self):
+        data = {"username": "teddy", "password": "@!2XJSL_S&V^0nt", "email": "teddy@teddy.com"}
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+
+        # try to readd the same email
+        data = {"username": "teddy1", "password": "@!2XJSL_S&V^0nt", "email": "teddy@teddy.com"}
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("A user is already registered with that email" in response.json()["errors"])
+
+    def test_users_api_add_existing_username(self):
+        bobby = get_user_model().objects.get(username="bobby")
+
+        data = {"username": bobby.get_username(), "password": "@!2XJSL_S&V^0nt", "email": "bobby@bobby.com"}
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("A user with that username already exists." in response.json()["errors"])
+
+    def test_users_api_patch_username(self):
+
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        # admin wants to edit his bobby's data
+        data = {
+            "first_name": "Robert Baratheon",
+            "username": "bob",
+            "password": "@!2XJSL_S&V^0nt000",
+            "email": "bob@bob.com",
+        }
+
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+
+        # username cannot be updated
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("username cannot be updated" in response.json()["errors"])
