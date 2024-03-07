@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+
 from slugify import slugify
 from urllib.parse import urljoin
 import json
@@ -30,6 +31,9 @@ from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from geonode.people import Roles
 from django.http import QueryDict
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
+from django.forms import ValidationError as ValidationErrorForm
 
 from deprecated import deprecated
 from rest_framework import serializers
@@ -357,6 +361,37 @@ class UserSerializer(BaseDynamicModelSerializer):
         name = "user"
         view_name = "users-list"
         fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff", "email")
+
+    @staticmethod
+    def password_validation(password_payload):
+        try:
+            validate_password(password_payload)
+        except ValidationErrorForm as err:
+            raise serializers.ValidationError(detail=",".join(err.messages))
+        return make_password(password_payload)
+
+    def validate(self, data):
+        request = self.context["request"]
+        user = request.user
+        # only admins/staff can edit these permissions
+        if not (user.is_superuser or user.is_staff):
+            data.pop("is_superuser", None)
+            data.pop("is_staff", None)
+        # username cant be changed
+        if request.method in ("PUT", "PATCH"):
+            data.pop("username", None)
+        email = data.get("email")
+        # Email is required on post
+        if request.method in ("POST") and settings.ACCOUNT_EMAIL_REQUIRED and not email:
+            raise serializers.ValidationError(detail="email missing from payload")
+        # email should be unique
+        if get_user_model().objects.filter(email=email).exists():
+            raise serializers.ValidationError("A user is already registered with that email")
+        # password validation
+        password = request.data.get("password")
+        if password:
+            data["password"] = self.password_validation(password)
+        return data
 
     @classmethod
     def setup_eager_loading(cls, queryset):

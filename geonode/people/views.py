@@ -204,26 +204,15 @@ class UserViewSet(DynamicModelViewSet):
         user = self.request.user
         if not (user.is_superuser or user.is_staff):
             raise PermissionDenied()
-
-        email_payload = self.request.data.get("email", "")
-        password_payload = self.request.data.get("password", "")
-
-        if settings.ACCOUNT_EMAIL_REQUIRED and email_payload == "":
-            raise ValidationError(detail="email missing from payload")
-        self.request.data["password"] = password_validation(password_payload)
         instance = serializer.save()
         return instance
 
     def update(self, request, *args, **kwargs):
-        kwargs["partial"] = True
-        user = self.request.user
-        if not (user.is_superuser or user.is_staff):
-            request.data.pop("is_superuser", None)
-            request.data.pop("is_staff", None)
-        password_payload = self.request.data.get("password", "")
-        if password_payload:
-            request.data["password"] = password_validation(password_payload)
-        return super().update(request, *args, **kwargs)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     @extend_schema(
         methods=["get"],

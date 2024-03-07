@@ -718,3 +718,38 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # assert that an email was sent to the email provided in the payload
         self.assertEqual(len(email_box), 1)
         self.assertTrue(data["email"] in email_box[0].to)
+
+    def test_users_api_patch_password_from_admin(self):
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+        self.assertTrue(admin.is_authenticated)
+
+        # admin wants to edit his bobby's data
+        data = {"password": "@!2XJSL_S&V^0nt000"}
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+        old_pass = bobby.password
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.patch(url, data=data, content_type="application/json")
+
+        # admin is  permitted to update bobby's data
+        self.assertEqual(response.status_code, 200)
+        # bobbys password has changed
+        bobby.refresh_from_db()
+        # asserting not equal from the password salt
+        self.assertNotEqual(bobby.password, old_pass)
+
+    def test_users_api_add_existing_email(self):
+        data = {"username": "teddy", "password": "@!2XJSL_S&V^0nt", "email": "teddy@teddy.com"}
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+
+        # try to readd the same email
+        data = {"username": "teddy1", "password": "@!2XJSL_S&V^0nt", "email": "teddy@teddy.com"}
+        response = self.client.post(reverse("users-list"), data=data, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue("A user is already registered with that email" in response.json()["errors"])
