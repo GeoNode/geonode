@@ -29,6 +29,7 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode import settings
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
+from geonode.base.api.mixins import AdvertisedListMixin
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.base.api.views import base_linked_resources
@@ -49,7 +50,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DocumentViewSet(DynamicModelViewSet):
+class DocumentViewSet(DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows documents to be viewed or edited.
     """

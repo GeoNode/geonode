@@ -24,6 +24,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
+from geonode.base.api.mixins import AdvertisedListMixin
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
 from geonode.geoapps.models import GeoApp
@@ -36,7 +37,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class GeoAppViewSet(DynamicModelViewSet):
+class GeoAppViewSet(DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows geoapps to be viewed or edited.
     """

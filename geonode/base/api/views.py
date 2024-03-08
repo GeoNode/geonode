@@ -17,7 +17,6 @@
 #
 #########################################################################
 import ast
-from distutils.util import strtobool
 import json
 import re
 
@@ -66,8 +65,7 @@ from geonode.base.api.filters import (
     FavoriteFilter,
     TKeywordsFilter,
 )
-from geonode.groups.models import GroupProfile, GroupMember
-from geonode.people.utils import get_available_users
+from geonode.groups.models import GroupProfile
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
@@ -79,10 +77,9 @@ from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.resource.manager import resource_manager
 
-from guardian.shortcuts import get_objects_for_user
 
+from geonode.base.api.mixins import AdvertisedListMixin
 from .permissions import (
-    IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
@@ -110,71 +107,6 @@ from geonode.base.utils import validate_extra_metadata
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-class UserViewSet(DynamicModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [
-        IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
-    ]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
-    serializer_class = UserSerializer
-    pagination_class = GeoNodeApiPagination
-
-    def get_queryset(self):
-        """
-        Filters and sorts users.
-        """
-        if self.request and self.request.user:
-            queryset = get_available_users(self.request.user)
-        else:
-            queryset = get_user_model().objects.all()
-
-        # Set up eager loading to avoid N+1 selects
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset.order_by("username")
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Resources visible to the user.",
-    )
-    @action(detail=True, methods=["get"])
-    def resources(self, request, pk=None):
-        user = self.get_object()
-        permitted = get_objects_for_user(user, "base.view_resourcebase")
-        qs = ResourceBase.objects.all().filter(id__in=permitted).order_by("title")
-
-        resources = get_visible_resources(
-            qs,
-            user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        )
-
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(resources, request)
-        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
-        return paginator.get_paginated_response({"resources": serializer.data})
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: GroupProfileSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Groups the user is member of.",
-    )
-    @action(detail=True, methods=["get"])
-    def groups(self, request, pk=None):
-        user = self.get_object()
-        qs_ids = GroupMember.objects.filter(user=user).values_list("group", flat=True)
-        groups = GroupProfile.objects.filter(id__in=qs_ids)
-        return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
 
 class GroupViewSet(DynamicModelViewSet):
@@ -337,7 +269,7 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         return queryset.order_by("username")
 
 
-class ResourceBaseViewSet(DynamicModelViewSet):
+class ResourceBaseViewSet(DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
@@ -364,41 +296,6 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # advertised
-        # if superuser, all resources will be visible, otherwise only the advertised once and
-        # the resource which the user is owner will be returned
-        # if the filter{advertised} is sent, is going to be used after the list of the
-        # resources is generated
-        user = request.user
-        try:
-            _filter = request.query_params.get("advertised", "None")
-            advertised = strtobool(_filter) if _filter.lower() != "all" else "all"
-        except Exception:
-            advertised = None
-
-        if advertised is not None and advertised != "all":
-            queryset = queryset.filter(advertised=advertised)
-        else:
-            is_admin = user.is_superuser if user and user.is_authenticated else False
-
-            if advertised == "all":
-                pass
-            elif not is_admin and user and not user.is_anonymous:
-                queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
-            elif not user or user.is_anonymous:
-                queryset = queryset.filter(advertised=True)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
     @extend_schema(
         methods=["get"],

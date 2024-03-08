@@ -129,6 +129,39 @@ class DocumentsApiTests(APITransactionTestCase):
         self.assertEqual(400, actual.status_code)
         self.assertDictEqual(expected, actual.json())
 
+    def test_document_listing_advertised(self):
+        document = Document.objects.first()
+        document.advertised = False
+        document.save()
+
+        url = reverse("documents-list")
+
+        payload = self.client.get(url)
+
+        prev_count = payload.json().get("total")
+        # the user can see only the advertised resources
+        self.assertTrue(Document.objects.count() > prev_count)
+
+        payload = self.client.get(f"{url}?advertised=True")
+        # so if advertised is True, we dont see the advertised=False resource
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count)
+
+        payload = self.client.get(f"{url}?advertised=False")
+        # so if advertised is False, we see only the resource with advertised==False
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, 1)
+
+        # if all is requested, we will see all the resources
+        payload = self.client.get(f"{url}?advertised=all")
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count + 1)
+
+        Document.objects.update(advertised=True)
+
     def test_creation_should_create_the_doc(self):
         """
         If file_path is not available, should raise error

@@ -213,6 +213,39 @@ class MapsApiTests(APITestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(expected_error, response.json())
 
+    def test_map_listing_advertised(self):
+        app = Map.objects.first()
+        app.advertised = False
+        app.save()
+
+        url = reverse("maps-list")
+
+        payload = self.client.get(url)
+
+        prev_count = payload.json().get("total")
+        # the user can see only the advertised resources
+        self.assertTrue(Map.objects.filter(advertised=True).count() >= prev_count)
+
+        payload = self.client.get(f"{url}?advertised=True")
+        # so if advertised is True, we dont see the advertised=False resource
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count)
+
+        payload = self.client.get(f"{url}?advertised=False")
+        # so if advertised is False, we see only the resource with advertised==False
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, 1)
+
+        # if all is requested, we will see all the resources
+        payload = self.client.get(f"{url}?advertised=all")
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count + 1)
+
+        Map.objects.update(advertised=True)
+
     def test_create_map(self):
         """
         Post to maps/
