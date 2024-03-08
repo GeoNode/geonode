@@ -54,6 +54,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
 from rest_framework.exceptions import PermissionDenied
+from geonode.people.utils import call_validators
 
 
 class SetUserLayerPermission(View):
@@ -166,7 +167,7 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
 
-    http_method_names = ["get", "post", "patch"]
+    http_method_names = ["get", "post", "patch", "delete"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
@@ -203,6 +204,13 @@ class UserViewSet(DynamicModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+    def perform_destroy(self, instance):
+        # self delete check
+        if self.request.user.pk == int(self.kwargs["pk"]):
+            raise PermissionDenied()
+        call_validators(instance)
+        instance.delete()
 
     @extend_schema(
         methods=["get"],

@@ -22,8 +22,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from geonode import GeoNodeException
+from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.groups.conf import settings as groups_settings
+from rest_framework.exceptions import PermissionDenied
+from django.conf import settings
+from django.utils.module_loading import import_string
 
 
 def get_default_user():
@@ -140,3 +144,22 @@ def get_available_users(user):
         member_ids.extend(users_ids)
 
     return get_user_model().objects.filter(id__in=member_ids)
+
+
+def has_resources(profile) -> bool:
+    return ResourceBase.objects.filter(owner_id=profile.pk).exists()
+
+
+def is_manager(profile) -> bool:
+    return GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER).exists()
+
+
+def call_validators(profile, reset=False):
+    if reset:
+        globals()["user_deletion_modules"] = []
+    if not globals().get("user_deletion_modules"):
+        storer_module_path = settings.USER_DELETION_RULES if hasattr(settings, "USER_DELETION_RULES") else []
+        globals()["user_deletion_modules"] = [import_string(storer_path) for storer_path in storer_module_path]
+    for not_valid in globals().get("user_deletion_modules", []):
+        if not_valid(profile):
+            raise PermissionDenied()

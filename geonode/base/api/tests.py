@@ -464,15 +464,15 @@ class BaseApiTests(APITestCase):
             # Bob can't delete user
             self.assertTrue(self.client.login(username="bobby", password="bob"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 405)
+            self.assertEqual(response.status_code, 403)
             # User can not delete self profile
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 405)
+            self.assertEqual(response.status_code, 403)
             # Admin can delete user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 405)
+            self.assertEqual(response.status_code, 204)
         finally:
             user.delete()
 
