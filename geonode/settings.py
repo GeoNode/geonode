@@ -1942,7 +1942,7 @@ ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "none"
 
 # Since django-allauth 0.43.0.
 ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get("ACCOUNT_SIGNUP_REDIRECT_URL", os.getenv("SITEURL", _default_siteurl))
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = int(os.getenv("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", "3"))
+ACCOUNT_RATE_LIMITS = {"login_failed": int(os.getenv("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", "3"))}
 ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv("ACCOUNT_MAX_EMAIL_ADDRESSES", "2"))
 
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get("SOCIALACCOUNT_AUTO_SIGNUP", "True"))
@@ -2328,7 +2328,9 @@ IMPORTER_HANDLERS = ast.literal_eval(
     'importer.handlers.shapefile.handler.ShapeFileHandler',\
     'importer.handlers.kml.handler.KMLFileHandler',\
     'importer.handlers.csv.handler.CSVFileHandler',\
-    'importer.handlers.geotiff.handler.GeoTiffFileHandler'\
+    'importer.handlers.geotiff.handler.GeoTiffFileHandler',\
+    'importer.handlers.xml.handler.XMLFileHandler',\
+    'importer.handlers.sld.handler.SLDFileHandler',\
 ]",
     )
 )
