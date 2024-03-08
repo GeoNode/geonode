@@ -54,7 +54,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
 from rest_framework.exceptions import PermissionDenied
-from geonode.people.utils import call_validators
+from geonode.people.utils import call_user_deletion_rules
 
 
 class SetUserLayerPermission(View):
@@ -209,7 +209,7 @@ class UserViewSet(DynamicModelViewSet):
         # self delete check
         if self.request.user.pk == int(self.kwargs["pk"]):
             raise PermissionDenied()
-        call_validators(instance)
+        call_user_deletion_rules(instance)
         instance.delete()
 
     @extend_schema(

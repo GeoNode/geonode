@@ -29,6 +29,8 @@ from rest_framework.exceptions import PermissionDenied
 from django.conf import settings
 from django.utils.module_loading import import_string
 
+# from geonode.people.models import Profile
+
 
 def get_default_user():
     """Create a default user"""
@@ -147,19 +149,47 @@ def get_available_users(user):
 
 
 def has_resources(profile) -> bool:
+    """
+    checks if user has any resource in ownership
+
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        bool: profile is the owner of any resources
+    """
     return ResourceBase.objects.filter(owner_id=profile.pk).exists()
 
 
 def is_manager(profile) -> bool:
+    """
+    Checks if user is the manager of any group
+
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        bool: profile is mangager or not
+
+    """
     return GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER).exists()
 
 
-def call_validators(profile, reset=False):
-    if reset:
-        globals()["user_deletion_modules"] = []
+def call_user_deletion_rules(profile) -> None:
+    """
+    calls a set of defined rules specific to the deletion of a user
+    which are read from settings.USER_DELETION_RULES
+    new rules can be added as long as they take as parameter the userprofile
+    and return a boolean
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        None : Raises PermissionDenied Exception in case any of the deletion rule Fail
+    """
     if not globals().get("user_deletion_modules"):
-        storer_module_path = settings.USER_DELETION_RULES if hasattr(settings, "USER_DELETION_RULES") else []
-        globals()["user_deletion_modules"] = [import_string(storer_path) for storer_path in storer_module_path]
+        rule_path = settings.USER_DELETION_RULES if hasattr(settings, "USER_DELETION_RULES") else []
+        globals()["user_deletion_modules"] = [import_string(deletion_rule) for deletion_rule in rule_path]
     for not_valid in globals().get("user_deletion_modules", []):
         if not_valid(profile):
             raise PermissionDenied()

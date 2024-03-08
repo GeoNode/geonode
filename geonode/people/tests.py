@@ -21,7 +21,6 @@ from django.test.utils import override_settings
 from mock import MagicMock, PropertyMock, patch
 from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupMember, GroupProfile
-from geonode.people.utils import call_validators
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.core import mail
@@ -817,9 +816,8 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertEqual(get_user_model().objects.filter(username="tim").first(), None)
 
     @override_settings(USER_DELETION_RULES=[])
+    @patch("geonode.people.utils.user_deletion_modules", [])
     def test_delete_without_validators(self):
-        # reset global
-        call_validators(None, reset=True)
 
         norman = get_user_model().objects.get(username="norman")
         admin = get_user_model().objects.get(username="admin")
@@ -839,10 +837,9 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # Ensure norman is now a member
         self.assertTrue(self.bar.user_is_member(norman))
 
-        # promotion
+        # p romote norman to a manager
         self.bar.promote(norman)
         # Ensure norman is in the managers queryset
-        # self.bar.join(norman, role=GroupMember.MANAGER)
         self.assertTrue(norman in self.bar.get_managers())
 
         url = f"{reverse('users-list')}/{norman.pk}"
@@ -872,10 +869,9 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # Ensure norman is now a member
         self.assertTrue(self.bar.user_is_member(norman))
 
-        # promotion
+        # promote norman to a manager
         self.bar.promote(norman)
         # Ensure norman is in the managers queryset
-        # self.bar.join(norman, role=GroupMember.MANAGER)
         self.assertTrue(norman in self.bar.get_managers())
 
         url = f"{reverse('users-list')}/{norman.pk}"
