@@ -19,6 +19,8 @@
 import django
 from django.test.utils import override_settings
 from mock import MagicMock, PropertyMock, patch
+from geonode.base.models import ResourceBase
+from geonode.groups.models import GroupMember, GroupProfile
 from geonode.tests.base import GeoNodeBaseTestSupport
 
 from django.core import mail
@@ -58,6 +60,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.permission_type = ("view", "download", "edit")
         self.groups = Group.objects.all()[:3]
         self.group_ids = ",".join(str(element.pk) for element in self.groups)
+        self.bar = GroupProfile.objects.get(slug="bar")
 
     def test_redirect_on_get_request(self):
         """
@@ -786,3 +789,125 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # username cannot be updated
         self.assertEqual(response.status_code, 400)
         self.assertTrue("username cannot be updated" in response.json()["errors"])
+
+    @override_settings(
+        USER_DELETION_RULES=["geonode.people.utils.user_has_resources", "geonode.people.utils.user_is_manager"]
+    )
+    def test_valid_delete(self):
+        # create a new user
+        tim = get_user_model().objects.create(username="tim")
+
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        # admin wants to delete tim
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+        # check that tim is not manager
+        # nor has any resources
+        self.assertFalse(ResourceBase.objects.filter(owner_id=tim.pk).exists())
+        self.assertFalse(GroupMember.objects.filter(user_id=tim.pk, role="manager").exists())
+
+        url = f"{reverse('users-list')}/{tim.pk}"
+        response = self.client.delete(url, content_type="application/json")
+
+        # admin is  permitted to delete
+        self.assertEqual(response.status_code, 200)
+        # tim has been deleted
+        self.assertEqual(get_user_model().objects.filter(username="tim").first(), None)
+
+    @override_settings(USER_DELETION_RULES=[])
+    @patch("geonode.people.utils.user_deletion_modules", [])
+    def test_delete_without_validators(self):
+
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        # admin wants to delete norman but norman is already promoted
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+
+        # Make sure norman is not a member
+        self.assertFalse(self.bar.user_is_member(norman))
+
+        # Add norman to the self.bar group
+        self.bar.join(norman)
+
+        # Ensure norman is now a member
+        self.assertTrue(self.bar.user_is_member(norman))
+
+        # promote norman to a manager
+        self.bar.promote(norman)
+        # Ensure norman is in the managers queryset
+        self.assertTrue(norman in self.bar.get_managers())
+
+        url = f"{reverse('users-list')}/{norman.pk}"
+        response = self.client.delete(url, content_type="application/json")
+
+        # norman can be deleted because validator rules are not applied
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(get_user_model().objects.filter(username="norman").first(), None)
+
+    @override_settings(
+        USER_DELETION_RULES=["geonode.people.utils.user_has_resources", "geonode.people.utils.user_is_manager"]
+    )
+    def test_delete_a_manger(self):
+        norman = get_user_model().objects.get(username="norman")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        # admin wants to delete norman but norman is already promoted
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+
+        # Make sure norman is not a member
+        self.assertFalse(self.bar.user_is_member(norman))
+
+        # Add norman to the self.bar group
+        self.bar.join(norman)
+
+        # Ensure norman is now a member
+        self.assertTrue(self.bar.user_is_member(norman))
+
+        # promote norman to a manager
+        self.bar.promote(norman)
+        # Ensure norman is in the managers queryset
+        self.assertTrue(norman in self.bar.get_managers())
+
+        url = f"{reverse('users-list')}/{norman.pk}"
+        response = self.client.delete(url, content_type="application/json")
+
+        # norman cant be deleted
+        self.assertEqual(response.status_code, 403)
+        self.assertNotEqual(get_user_model().objects.filter(username="norman").first(), None)
+        #
+        self.assertTrue("user_is_manager" in response.json()["errors"][0])
+
+    @override_settings(USER_DELETION_RULES=["geonode.people.utils.user_has_resources"])
+    def test_delete_a_user_with_resource(self):
+        # create a new user
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        # admin wants to delete bobby
+        # Admin is superuser or staff
+        self.assertTrue(admin.is_superuser or admin.is_staff)
+        # check that bobby is not manager
+        # but he has resources already assigned
+        self.assertTrue(ResourceBase.objects.filter(owner_id=bobby.pk).exists())
+        self.assertFalse(GroupMember.objects.filter(user_id=bobby.pk, role="manager").exists())
+
+        url = f"{reverse('users-list')}/{bobby.pk}"
+        response = self.client.delete(url, content_type="application/json")
+
+        # admin is  permitted to delete
+        self.assertEqual(response.status_code, 403)
+        # bobby cant be deleted
+        self.assertNotEqual(get_user_model().objects.filter(username="bobby").first(), None)
+        self.assertTrue("user_has_resources" in response.json()["errors"][0])
