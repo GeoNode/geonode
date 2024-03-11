@@ -148,7 +148,7 @@ def get_available_users(user):
     return get_user_model().objects.filter(id__in=member_ids)
 
 
-def has_resources(profile) -> bool:
+def user_has_resources(profile) -> bool:
     """
     checks if user has any resource in ownership
 
@@ -161,7 +161,7 @@ def has_resources(profile) -> bool:
     return ResourceBase.objects.filter(owner_id=profile.pk).exists()
 
 
-def is_manager(profile) -> bool:
+def user_is_manager(profile) -> bool:
     """
     Checks if user is the manager of any group
 
@@ -190,6 +190,9 @@ def call_user_deletion_rules(profile) -> None:
     if not globals().get("user_deletion_modules"):
         rule_path = settings.USER_DELETION_RULES if hasattr(settings, "USER_DELETION_RULES") else []
         globals()["user_deletion_modules"] = [import_string(deletion_rule) for deletion_rule in rule_path]
-    for not_valid in globals().get("user_deletion_modules", []):
-        if not_valid(profile):
-            raise PermissionDenied()
+    error_list = []
+    for not_deletable in globals().get("user_deletion_modules", []):
+        if not_deletable(profile):
+            error_list.append(not_deletable.__name__)
+    if error_list:
+        raise PermissionDenied(f"Deletion rule Violated: {', '.join(error_list)}")

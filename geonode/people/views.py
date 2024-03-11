@@ -205,10 +205,12 @@ class UserViewSet(DynamicModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response("User deleted sucessfully", status=200)
+
     def perform_destroy(self, instance):
-        # self delete check
-        if self.request.user.pk == int(self.kwargs["pk"]):
-            raise PermissionDenied()
         call_user_deletion_rules(instance)
         instance.delete()
 

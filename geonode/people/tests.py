@@ -790,7 +790,9 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 400)
         self.assertTrue("username cannot be updated" in response.json()["errors"])
 
-    @override_settings(USER_DELETION_RULES=["geonode.people.utils.has_resources", "geonode.people.utils.is_manager"])
+    @override_settings(
+        USER_DELETION_RULES=["geonode.people.utils.user_has_resources", "geonode.people.utils.user_is_manager"]
+    )
     def test_valid_delete(self):
         # create a new user
         tim = get_user_model().objects.create(username="tim")
@@ -811,7 +813,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.delete(url, content_type="application/json")
 
         # admin is  permitted to delete
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
         # tim has been deleted
         self.assertEqual(get_user_model().objects.filter(username="tim").first(), None)
 
@@ -837,7 +839,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # Ensure norman is now a member
         self.assertTrue(self.bar.user_is_member(norman))
 
-        # p romote norman to a manager
+        # promote norman to a manager
         self.bar.promote(norman)
         # Ensure norman is in the managers queryset
         self.assertTrue(norman in self.bar.get_managers())
@@ -846,10 +848,12 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.delete(url, content_type="application/json")
 
         # norman can be deleted because validator rules are not applied
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(get_user_model().objects.filter(username="norman").first(), None)
 
-    @override_settings(USER_DELETION_RULES=["geonode.people.utils.has_resources", "geonode.people.utils.is_manager"])
+    @override_settings(
+        USER_DELETION_RULES=["geonode.people.utils.user_has_resources", "geonode.people.utils.user_is_manager"]
+    )
     def test_delete_a_manger(self):
         norman = get_user_model().objects.get(username="norman")
         admin = get_user_model().objects.get(username="admin")
@@ -880,8 +884,10 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # norman cant be deleted
         self.assertEqual(response.status_code, 403)
         self.assertNotEqual(get_user_model().objects.filter(username="norman").first(), None)
+        #
+        self.assertTrue("user_is_manager" in response.json()["errors"][0])
 
-    @override_settings(USER_DELETION_RULES=["geonode.people.utils.has_resources", "geonode.people.utils.is_manager"])
+    @override_settings(USER_DELETION_RULES=["geonode.people.utils.user_has_resources"])
     def test_delete_a_user_with_resource(self):
         # create a new user
         bobby = get_user_model().objects.get(username="bobby")
@@ -904,3 +910,4 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 403)
         # bobby cant be deleted
         self.assertNotEqual(get_user_model().objects.filter(username="bobby").first(), None)
+        self.assertTrue("user_has_resources" in response.json()["errors"][0])
