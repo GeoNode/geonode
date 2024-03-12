@@ -784,7 +784,7 @@ class ResourceBaseSerializer(
             "is_copyable",
             "blob",
             "metadata",
-            "executions"
+            "executions",
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,

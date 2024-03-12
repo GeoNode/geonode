@@ -104,7 +104,6 @@ class StreamToLogger:
 
 
 class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
-
     """
     Tests for the Geonode security app.
     """

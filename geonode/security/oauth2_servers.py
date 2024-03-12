@@ -46,7 +46,6 @@ from .oauth2_grant_types import OAuth2AuthorizationCodeGrant, OpenIDAuthorizatio
 class OIDCServer(
     AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, ResourceEndpoint, RevocationEndpoint, UserInfoEndpoint
 ):
-
     """An all-in-one endpoint featuring all four major grant types."""
 
     def __init__(

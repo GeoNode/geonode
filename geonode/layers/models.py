@@ -61,7 +61,6 @@ TIME_REGEX_FORMAT = {"[0-9]{8}": "%Y%m%d", "[0-9]{8}T[0-9]{6}": "%Y%m%dT%H%M%S",
 
 
 class Style(models.Model, PermissionLevelMixin):
-
     """Model for storing styles."""
 
     name = models.CharField(_("style name"), max_length=255, unique=True)
@@ -103,7 +102,6 @@ class DatasetManager(ResourceBaseManager):
 
 
 class Dataset(ResourceBase):
-
     """
     Dataset (inherits ResourceBase fields)
     """
@@ -376,7 +374,6 @@ class Dataset(ResourceBase):
 
 
 class AttributeManager(models.Manager):
-
     """Helper class to access filtered attributes"""
 
     def visible(self):
@@ -384,7 +381,6 @@ class AttributeManager(models.Manager):
 
 
 class Attribute(models.Model):
-
     """
      Auxiliary model for storing layer attributes.
 

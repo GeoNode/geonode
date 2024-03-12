@@ -805,6 +805,7 @@ OPTIONS = {
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
@@ -2368,3 +2369,7 @@ FACET_PROVIDERS = [
 DEFAULT_DATASET_DOWNLOAD_HANDLER = "geonode.layers.download_handler.DatasetDownloadHandler"
 
 DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLERS", "[]"))
+
+AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
+    os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
+)
