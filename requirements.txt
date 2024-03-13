@@ -95,7 +95,7 @@ git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geon
 git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
 django-activity-stream==2.0.0
 gn-arcrest==10.5.6
-geoserver-restconfig~=2.0.10
+geoserver-restconfig~=2.0.11
 gn-gsimporter==2.0.4
 gisdata==0.5.4
 
