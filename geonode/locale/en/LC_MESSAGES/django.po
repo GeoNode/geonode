@@ -1168,6 +1168,9 @@ msgstr "Files to be uploaded"
 msgid "Is Upload Metadata XML Form"
 msgstr "Is Upload Metadata XML Form"
 
+msgid "This will most probably overwrite the current metadata!"
+msgstr "This will most probably overwrite the current metadata!"
+
 msgid "Upload files"
 msgstr "Upload files"
 
