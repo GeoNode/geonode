@@ -333,7 +333,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                 if groupprofile:
                     groupprofile.join(user)
                     if group_role_mapper.is_manager(role_name):
-                        groupprofile.promote()
+                        groupprofile.promote(user)
         except (AttributeError, NotImplementedError):
             pass  # extractor doesn't define a method for extracting field
         return user
