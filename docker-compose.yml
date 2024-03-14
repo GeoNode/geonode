@@ -117,7 +117,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.24.2-lates
+    image: geonode/geoserver_data:2.24.2-latest
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
