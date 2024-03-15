@@ -404,6 +404,14 @@ define(function (require, exports) {
         });
     };
 
+    LayerInfo.prototype.markEnd = function () {
+        this.logStatus({
+            msg: 'Your upload was succesfull!',
+            level: 'alert-success',
+            empty: 'true'
+        });
+    };
+
     LayerInfo.prototype.doResume = function (event) {
         $(this).text(gettext('Finalizing')).attr('disabled', 'disabled').after('<img class="pull-right" src="../../static/geonode/img/loading.gif">');
         var id = (new Date()).getTime();
@@ -479,13 +487,34 @@ define(function (require, exports) {
         });
     };
 
-    LayerInfo.prototype.startPolling = function() {
+    LayerInfo.prototype.startPolling = function(execution_id) {
         var self = this;
         if (self.polling) {
-            $.ajax({ url: updateUrl(siteUrl + "upload/progress", 'id', self.id), type: 'GET', success: function(data){
+            $.ajax({ 
+                url: siteUrl + executions_status_endpoint + "?import&filter{source}=upload&page=1&page_size=99999", type: 'GET', success: function(data){
                 // TODO: Not sure we need to do anything here?
                 //console.log('polling');
-            }, dataType: "json", complete: setTimeout(function() {self.startPolling()}, 3000), timeout: 30000 });
+                }, 
+                dataType: "json", 
+                success: function(resp, code) {
+                    if (resp.requests && resp.requests.length>0) {
+                        const execution_data = resp.requests.find((req) => req.exec_id === execution_id);
+                        if (execution_data.status == 'finished'){
+                            self.polling = false;
+                            self.markEnd();
+                            if (execution_data.output_params && execution_data.output_params['detail_url']) {
+                                const detail_url = execution_data.output_params['detail_url'];
+                                if (detail_url != '') {
+                                    window.location = detail_url;
+                                }
+                            }
+                            
+                        }
+                    }
+                    setTimeout(function() {self.startPolling()}, 3000)
+                },
+                timeout: 30000
+            })
         }
     };
 
@@ -675,8 +704,6 @@ define(function (require, exports) {
             },
             beforeSend: function () {
                 self.markStart();
-                self.polling = true;
-                self.startPolling();
             },
             error: function (jqXHR) {
                 self.polling = false;
@@ -713,13 +740,16 @@ define(function (require, exports) {
                 callback(array);
             },
             success: function (resp, status) {
-                self.logStatus({
+                /*self.logStatus({
                     msg: '<p>' + gettext('Layer files uploaded, configuring in GeoServer') + '</p>',
                     level: 'alert-success',
                     empty: 'true'
                 });
                 self.id = resp.id;
                 self.doStep(resp, callback, array);
+                */
+                self.polling = true;
+                self.startPolling(resp.execution_id);
             }
          });
      };
