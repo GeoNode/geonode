@@ -158,7 +158,7 @@ pip==24.0
 Twisted==24.3.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
-flaky==3.8.0
+flaky==3.8.1
 selenium>=4.15.1,<5.0.0
 selenium-requests==2.0.4
 webdriver_manager==4.0.1
