@@ -61,6 +61,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.groups = Group.objects.all()[:3]
         self.group_ids = ",".join(str(element.pk) for element in self.groups)
         self.bar = GroupProfile.objects.get(slug="bar")
+        self.group_profiles = [GroupProfile.objects.create(title=f"group_{c}", slug=f"slug_{c}") for c in range(5)]
 
     def test_redirect_on_get_request(self):
         """
@@ -911,3 +912,116 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # bobby cant be deleted
         self.assertNotEqual(get_user_model().objects.filter(username="bobby").first(), None)
         self.assertTrue("user_has_resources" in response.json()["errors"][0])
+
+    def test_remove_self_from_group_manager_all(self):
+        """
+        user is manager of some groups
+        and is quitting all
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # call the api that removes him from all assigned groups as manager
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": "ALL"},
+        )
+        self.assertTrue(response.status_code == 200)
+        # check that bobby is manager no more
+        for group in self.group_profiles:
+            self.assertFalse(bobby in group.get_managers())
+            self.assertTrue(group.title in response.json()["success"])
+
+    def test_remove_self_as_group_manager_list(self):
+        """
+        user is manager of some groups
+        and is quitting some of them
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # call the api that removes him from all assigned groups as manager
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": ",".join([str(group.group_id) for group in self.group_profiles[:3]])},
+        )
+        self.assertTrue(response.status_code == 200)
+        # check that bobby is  no more manager in the first groups
+        for group in self.group_profiles[:3]:
+            self.assertFalse(bobby in group.get_managers())
+            self.assertTrue(group.title in response.json()["success"])
+        # but still manager in the others
+        for group in self.group_profiles[4:]:
+            self.assertTrue(bobby in group.get_managers())
+
+    def test_remove_user_as_group_manager_empty(self):
+        """
+        user is manager of some groups
+        and is sending empty payload
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # call the api that removes him from all assigned groups as manager
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": ""},
+        )
+        self.assertTrue(response.status_code == 400)
+        self.assertTrue("Empty payload" in response.json()["error"])
+        # check that bobby is still manager at all groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+
+    def test_remove_user_as_group_manager_of_invalid_groups(self):
+        """
+        user is manager of some groups
+        and is trying to remove himself as a manger of a group hes not part of
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+        newgroup = GroupProfile.objects.create(title="newgroup")
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # and not for the new group
+        self.assertFalse(bobby in newgroup.get_managers())
+        # call the api that removes him from all assigned groups as manager"
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": newgroup.group_id},
+        )
+        self.assertTrue(response.status_code == 400)
+        # check that bobby is still manager at all groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # assert the invalid group is in the payload
+        self.assertTrue("Following groups were invalid" in response.json()["error"])
+        self.assertTrue(f"{newgroup.group_id}" in response.json()["error"])

@@ -251,6 +251,35 @@ class UserViewSet(DynamicModelViewSet):
         groups = GroupProfile.objects.filter(id__in=qs_ids)
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
+    @action(detail=True, methods=["post"])
+    def remove_from_group_manager(self, request, pk=None):
+        user = self.get_object()  # admini
+        target_ids = request.data.get("groups", "")
+        user_groups = []
+        invalid_groups = []
+
+        if not target_ids:
+            return Response({"error": "Empty payload"}, status=400)
+
+        if target_ids == "ALL":
+            user_groups = GroupProfile.groups_for_user(user)
+        else:
+            target_ids = set(map(int, target_ids.split(",")))
+            user_groups = GroupProfile.groups_for_user(user).filter(group_id__in=target_ids)
+            # check for invalid groups:
+            invalid_groups.extend(target_ids - set(ug.group_id for ug in user_groups))
+
+        for group in user_groups:
+            group.demote(user)
+        group_names = [group.title for group in user_groups]
+
+        payload = {"success": f"User removed as a group manager from : {', '.join(group_names)}"}
+
+        if invalid_groups:
+            payload["error"] = f"Following groups were invalid : {invalid_groups}"
+            return Response(payload, status=400)
+        return Response(payload, status=200)
+
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
