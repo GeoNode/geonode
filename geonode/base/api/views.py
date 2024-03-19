@@ -17,6 +17,7 @@
 #
 #########################################################################
 import ast
+import functools
 import json
 import re
 
@@ -87,7 +88,6 @@ from .permissions import (
 )
 from .serializers import (
     FavoriteSerializer,
-    SimpleResourceSerializer,
     UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
@@ -1422,62 +1422,52 @@ class ResourceBaseViewSet(DynamicModelViewSet, AdvertisedListMixin):
 
 
 def base_linked_resources(instance, user, params):
-    try:
-        visibile_resources = get_visible_resources(
-            ResourceBase.objects,
-            user=user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        ).order_by("-pk")
 
+    try:
         resource_type = params.get("resource_type")
         link_type = params.get("link_type")
+        type_list = resource_type.split(",") if resource_type else []
 
-        if resource_type:
-            resource_list = resource_type.split(",")
-            visibile_resources = visibile_resources.filter(resource_type__in=resource_list)
-
-        visible_ids = [res.id for res in visibile_resources]
-
-        linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
-        linked_by = [lres for lres in instance.get_linked_resources(as_target=True) if lres.source.id in visible_ids]
-
-        warnings = {
-            "DEPRECATION": "'resources' field is deprecated, please use 'linked_to'",
-        }
+        warnings = {}
 
         if "page_size" in params or "page" in params:
             warnings["PAGINATION"] = "Pagination is not supported on this call"
 
-        # "resources" will be deprecated, so next block is temporary
-        # "resources" at the moment it's the only element rendered, so we want to add there both the linked_resources and the linked_by
-        # we want to tell them apart, so we're adding an attr to store this info, that will be used in the SimpleResourceSerializer
-        resources = []
-        for lres in linked_resources:
-            res = lres.target
-            setattr(res, "is_target", True)
-            resources.append(res)
-        for lres in linked_by:
-            res = lres.source
-            setattr(res, "is_target", False)
-            resources.append(res)
+        ret = {"WARNINGS": warnings}
 
-        ret = {
-            "WARNINGS": warnings,
-            "resources": SimpleResourceSerializer(resources, embed=True, many=True).data,  # deprecated
-            "linked_to": LinkedResourceSerializer(linked_resources, embed=True, many=True).data,
-            "linked_by": LinkedResourceSerializer(
+        get_visible_resources_p = functools.partial(
+            get_visible_resources,
+            user=user,
+            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        )
+
+        if not link_type or link_type == "linked_to":
+            qs_linked_to = instance.get_linked_resources()
+            visible_to = get_visible_resources_p(
+                ResourceBase.objects.filter(id__in=qs_linked_to.values("target_id"))
+            ).order_by("-pk")
+
+            visible_to = visible_to.filter(resource_type__in=type_list) if type_list else visible_to
+            visible_ids_to = visible_to.values_list("id", flat=True)
+            linked_to = [lres for lres in qs_linked_to if lres.target.id in visible_ids_to]
+
+            ret["linked_to"] = LinkedResourceSerializer(linked_to, embed=True, many=True).data
+
+        if not link_type or link_type == "linked_by":
+            qs_linked_by = instance.get_linked_resources(as_target=True)
+            visible_by = get_visible_resources_p(
+                ResourceBase.objects.filter(id__in=qs_linked_to.values("source_id")),
+            ).order_by("-pk")
+
+            visible_by = visible_by.filter(resource_type__in=type_list) if type_list else visible_by
+            visible_ids_by = visible_by.values_list("id", flat=True)
+            linked_by = [lres for lres in qs_linked_by if lres.source.id in visible_ids_by]
+
+            ret["linked_by"] = LinkedResourceSerializer(
                 instance=linked_by, serialize_source=True, embed=True, many=True
-            ).data,
-        }
-
-        # [Issue #11944] Implement filtering for linked_resources
-        if link_type:
-            if link_type == "linked_to":
-                ret.pop("linked_by")
-            elif link_type == "linked_by":
-                ret.pop("linked_to")
+            ).data
 
         return Response(ret)
 
