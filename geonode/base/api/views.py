@@ -1444,14 +1444,17 @@ def base_linked_resources(instance, user, params):
         )
 
         if not link_type or link_type == "linked_to":
-            # list of linked resources, probably extended by ResourceBase's child class - may not be a queryset
+            # list of linked resources, probably extended by ResourceBase's child class - may be loopable only once
             linked_to_over = instance.get_linked_resources()
-            # resolve the ids of linked resources - using either e QuerySet (preferred)  or a list
-            linked_to_id_values = (
-                linked_to_over.values("target_id")
-                if isinstance(linked_to_over, QuerySet)
-                else (lr.target_id for lr in linked_to_over)
-            )
+
+            # resolve the ids of linked resources - using either e QuerySet (preferred) or a list
+            if isinstance(linked_to_over, QuerySet):
+                linked_to_over_loopable = linked_to_over
+                linked_to_id_values = linked_to_over.values("target_id")
+            else:
+                linked_to_over_loopable = [lr for lr in linked_to_over]
+                linked_to_id_values = [lr.target_id for lr in linked_to_over_loopable]
+
             # filter resources by visibility / permissions
             linked_to_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_to_id_values)).order_by(
                 "-pk"
@@ -1459,24 +1462,26 @@ def base_linked_resources(instance, user, params):
             # optionally filter by resource type
             linked_to_visib = linked_to_visib.filter(resource_type__in=type_list) if type_list else linked_to_visib
             linked_to_visib_ids = linked_to_visib.values_list("id", flat=True)
-            linked_to = [lres for lres in linked_to_over if lres.target.id in linked_to_visib_ids]
+            linked_to = [lres for lres in linked_to_over_loopable if lres.target.id in linked_to_visib_ids]
 
             ret["linked_to"] = LinkedResourceSerializer(linked_to, embed=True, many=True).data
 
         if not link_type or link_type == "linked_by":
             linked_by_over = instance.get_linked_resources(as_target=True)
-            linked_by_id_values = (
-                linked_by_over.values("source_id")
-                if isinstance(linked_by_over, QuerySet)
-                else (lr.source_id for lr in linked_by_over)
+            if isinstance(linked_by_over, QuerySet):
+                linked_by_over_loopable = linked_by_over
+                linked_by_id_values = linked_by_over.values("source_id")
+            else:
+                linked_by_over_loopable = [lr for lr in linked_by_over]
+                linked_by_id_values = [lr.source_id for lr in linked_by_over_loopable]
+
+            linked_by_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_by_id_values)).order_by(
+                "-pk"
             )
-            linked_by_visib = get_visible_resources_p(
-                ResourceBase.objects.filter(id__in=linked_by_id_values),
-            ).order_by("-pk")
 
             linked_by_visib = linked_by_visib.filter(resource_type__in=type_list) if type_list else linked_by_visib
             linked_by_visib_ids = linked_by_visib.values_list("id", flat=True)
-            linked_by = [lres for lres in linked_by_over if lres.source.id in linked_by_visib_ids]
+            linked_by = [lres for lres in linked_by_over_loopable if lres.source.id in linked_by_visib_ids]
 
             ret["linked_by"] = LinkedResourceSerializer(
                 instance=linked_by, serialize_source=True, embed=True, many=True
