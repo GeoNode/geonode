@@ -258,19 +258,21 @@ class UserViewSet(DynamicModelViewSet):
             get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
         )  # admin=get_object_or_404(get_user_model(),username=admin)
         target_user = request.data.get("owner")
-        # initalize as self
-        target = user
+
+        target = None
         if target_user == "DEFAULT":
             if not admin:
                 return Response("Principal User not found", status=500)
             target = admin
         else:
             target = get_object_or_404(get_user_model(), id=target_user)
+
+        if target == user:
+            return Response("Cannot reassign to self", status=400)
+
         # transfer to target
-        user_resources = ResourceBase.objects.filter(owner=user).all()
-        for resource in user_resources:
-            resource.owner = target
-            resource.save()
+        ResourceBase.objects.filter(owner=user).update(owner=target or user)
+
         return Response("Resources transfered successfully", status=200)
 
 
