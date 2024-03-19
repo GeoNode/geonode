@@ -958,7 +958,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # call the api that removes him from all assigned groups as manager
         response = self.client.post(
             path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
-            data={"groups": ",".join([str(group.group_id) for group in self.group_profiles[:3]])},
+            data={"groups": [group.group_id for group in self.group_profiles[:3]]},
         )
         self.assertTrue(response.status_code == 200)
         # check that bobby is  no more manager in the first groups
@@ -991,7 +991,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
             data={"groups": ""},
         )
         self.assertTrue(response.status_code == 400)
-        self.assertTrue("Empty payload" in response.json()["error"])
+        self.assertTrue("No groups IDs were provided" in response.json()["error"])
         # check that bobby is still manager at all groups
         for group in self.group_profiles:
             self.assertTrue(bobby in group.get_managers())
@@ -1016,7 +1016,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # call the api that removes him from all assigned groups as manager"
         response = self.client.post(
             path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
-            data={"groups": newgroup.group_id},
+            data={"groups": [newgroup.group_id]},
         )
         self.assertTrue(response.status_code == 400)
         # check that bobby is still manager at all groups
