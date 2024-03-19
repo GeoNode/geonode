@@ -251,6 +251,28 @@ class UserViewSet(DynamicModelViewSet):
         groups = GroupProfile.objects.filter(id__in=qs_ids)
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
+    @action(detail=True, methods=["post"])
+    def transfer_resources(self, request, pk=None):
+        user = self.get_object()
+        admin = (
+            get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
+        )  # admin=get_object_or_404(get_user_model(),username=admin)
+        target_user = request.data.get("owner")
+        # initalize as self
+        target = user
+        if target_user == "DEFAULT":
+            if not admin:
+                return Response("Principal User not found", status=500)
+            target = admin
+        else:
+            target = get_object_or_404(get_user_model(), id=target_user)
+        # transfer to target
+        user_resources = ResourceBase.objects.filter(owner=user).all()
+        for resource in user_resources:
+            resource.owner = target
+            resource.save()
+        return Response("Resources transfered successfully", status=200)
+
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
