@@ -932,6 +932,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.post(
             path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
             data={"groups": "ALL"},
+            content_type="application/json",
         )
         self.assertTrue(response.status_code == 200)
         # check that bobby is manager no more
@@ -959,6 +960,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.post(
             path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
             data={"groups": [group.group_id for group in self.group_profiles[:3]]},
+            content_type="application/json",
         )
         self.assertTrue(response.status_code == 200)
         # check that bobby is  no more manager in the first groups
@@ -989,6 +991,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.post(
             path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
             data={"groups": ""},
+            content_type="application/json",
         )
         self.assertTrue(response.status_code == 400)
         self.assertTrue("No groups IDs were provided" in response.json()["error"])
@@ -1017,11 +1020,12 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         response = self.client.post(
             path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
             data={"groups": [newgroup.group_id]},
+            content_type="application/json",
         )
         self.assertTrue(response.status_code == 400)
         # check that bobby is still manager at all groups
         for group in self.group_profiles:
             self.assertTrue(bobby in group.get_managers())
         # assert the invalid group is in the payload
-        self.assertTrue("Following groups were invalid" in response.json()["error"])
+        self.assertTrue("User is not manager of the following groups" in response.json()["error"])
         self.assertTrue(f"{newgroup.group_id}" in response.json()["error"])

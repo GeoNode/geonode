@@ -264,7 +264,7 @@ class UserViewSet(DynamicModelViewSet):
         if target_ids == "ALL":
             user_groups = GroupProfile.groups_for_user(user)
         else:
-            # target_ids = set(map(int, target_ids.split(",")))
+            target_ids = set(target_ids)
             user_groups = GroupProfile.groups_for_user(user).filter(group_id__in=target_ids)
             # check for groups that user is not part of:
             invalid_groups.extend(target_ids - set(ug.group_id for ug in user_groups))
