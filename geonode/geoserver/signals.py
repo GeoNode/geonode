@@ -92,7 +92,7 @@ def geoserver_pre_save_maplayer(instance, sender, **kwargs):
     try:
         instance.local = isinstance(gs_catalog.get_layer(instance.name), GsLayer)
     except ConnectionError as e:
-        logger.warning(f"Could not connect to catalog to verify if layer {instance.name} was local")
+        logger.warning(f"Could not connect to catalog to verify if layer {instance.name} was local: {e}")
     except OSError as e:
         logger.warning(f"***** OSERROR TYPE:{type(e)} ERR:{e} ERRNO:{e.errno}")
         if e.errno == errno.ECONNREFUSED:
