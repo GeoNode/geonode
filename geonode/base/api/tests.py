@@ -1919,10 +1919,10 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.json(), "The url must be of an image with format (png, jpeg or jpg)")
 
         # using Base64 data as an ASCII byte string
-        data["file"] = (
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
+        data[
+            "file"
+        ] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
         fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
-        )
         with patch("geonode.base.models.is_monochromatic_image") as _mck:
             _mck.return_value = False
             response = self.client.put(url, data=data, format="json")
@@ -2748,7 +2748,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.dataset.id in list_connected_targets))
 
     def test_insert_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2766,7 +2765,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((invalid_id in response_json["error"]))
 
     def test_insert_valid_and_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2785,7 +2783,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.map.id in response_json["success"]))
 
     def test_delete_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))

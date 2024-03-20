@@ -22,7 +22,6 @@ from rest_framework.response import Response
 
 
 class AdvertisedListMixin(ListModelMixin):
-
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 

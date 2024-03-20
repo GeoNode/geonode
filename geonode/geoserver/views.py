@@ -25,7 +25,6 @@ import warnings
 import traceback
 from lxml import etree
 from owslib.etree import etree as dlxml
-from os.path import isfile
 
 from urllib.parse import urlsplit, urljoin, unquote, parse_qsl
 
@@ -48,17 +47,14 @@ from geonode.client.hooks import hookset
 from geonode.compat import ensure_string
 from geonode.base.auth import get_auth_user, get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
-from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Dataset, Style
 from geonode.layers.views import _resolve_dataset, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy, fetch_response_headers
 from .tasks import geoserver_update_datasets
 from geonode.utils import (
-    json_response,
     _get_basic_auth_info,
     http_client,
-    safe_path_leaf,
     get_headers,
     get_dataset_workspace,
 )
@@ -67,10 +63,8 @@ from geonode.geoserver.signals import gs_catalog, geoserver_post_save_local
 from .helpers import (
     get_stores,
     ogc_server_settings,
-    extract_name_from_sld,
     set_styles,
     style_update,
-    set_dataset_style,
     ows_endpoint_in_path,
     temp_style_name_regex,
     get_dataset_capabilities_url,
@@ -142,45 +136,6 @@ def dataset_style(request, layername):
         pass
 
     return HttpResponse(f"Default style for {layer.name} changed to {style_name}", status=200)
-
-
-@login_required
-def dataset_style_upload(request, layername):
-    def respond(*args, **kw):
-        kw["content_type"] = "text/html"
-        return json_response(*args, **kw)
-
-    form = LayerStyleUploadForm(request.POST, request.FILES)
-    if not form.is_valid():
-        return respond(errors="Please provide an SLD file.")
-
-    data = form.cleaned_data
-    layer = _resolve_dataset(request, layername, "base.change_resourcebase", _PERMISSION_MSG_MODIFY)
-
-    sld = request.FILES["sld"].read()
-    sld_name = None
-    try:
-        # Check SLD is valid
-        try:
-            _allowed_sld_extensions = [".sld", ".xml", ".css", ".txt", ".yml"]
-            if sld and os.path.splitext(safe_path_leaf(sld))[1].lower() in _allowed_sld_extensions:
-                if isfile(sld):
-                    with open(sld) as sld_file:
-                        sld = sld_file.read()
-                etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
-        except Exception:
-            logger.exception("The uploaded SLD file is not valid XML")
-            raise Exception("The uploaded SLD file is not valid XML")
-
-        sld_name = extract_name_from_sld(gs_catalog, sld, sld_file=request.FILES["sld"])
-    except Exception as e:
-        respond(errors=f"The uploaded SLD file is not valid XML: {e}")
-
-    name = data.get("name") or sld_name
-
-    set_dataset_style(layer, data.get("title") or name, sld)
-
-    return respond(body={"success": True, "style": data.get("title") or name, "updated": data["update"]})
 
 
 @login_required
