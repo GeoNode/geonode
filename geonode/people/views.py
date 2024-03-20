@@ -252,6 +252,7 @@ class UserViewSet(DynamicModelViewSet):
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
     @action(detail=True, methods=["post"])
+
     def remove_from_group_manager(self, request, pk=None):
         user = self.get_object()
         target_ids = request.data.get("groups", [])
@@ -279,6 +280,28 @@ class UserViewSet(DynamicModelViewSet):
             payload["error"] = f"User is not manager of the following groups: : {invalid_groups}"
             return Response(payload, status=400)
         return Response(payload, status=200)
+
+    def transfer_resources(self, request, pk=None):
+        user = self.get_object()
+        admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
+        target_user = request.data.get("owner")
+
+        target = None
+        if target_user == "DEFAULT":
+            if not admin:
+                return Response("Principal User not found", status=500)
+            target = admin
+        else:
+            target = get_object_or_404(get_user_model(), id=target_user)
+
+        if target == user:
+            return Response("Cannot reassign to self", status=400)
+
+        # transfer to target
+        ResourceBase.objects.filter(owner=user).update(owner=target or user)
+
+        return Response("Resources transfered successfully", status=200)
+
 
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
