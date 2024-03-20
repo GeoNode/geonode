@@ -253,7 +253,7 @@ class UserViewSet(DynamicModelViewSet):
 
     @action(detail=True, methods=["post"])
     def remove_from_group_manager(self, request, pk=None):
-        user = self.get_object()  # admini
+        user = self.get_object()
         target_ids = request.data.get("groups", [])
         user_groups = []
         invalid_groups = []

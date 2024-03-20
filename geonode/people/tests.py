@@ -1029,3 +1029,105 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         # assert the invalid group is in the payload
         self.assertTrue("User is not manager of the following groups" in response.json()["error"])
         self.assertTrue(f"{newgroup.group_id}" in response.json()["error"])
+
+    def test_non_admin_remove_user_as_group_manager(self):
+        """
+        a non admin user tries to remove another user as the group manager
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        norman = get_user_model().objects.get(username="norman")
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # login as norman
+        self.client.force_login(norman)
+        self.assertTrue(norman.is_authenticated)
+        # assert that norman is neither a super user or staff
+        self.assertFalse(norman.is_superuser)
+        self.assertFalse(norman.is_staff)
+
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": "ALL"},
+            content_type="application/json",
+        )
+        self.assertTrue(response.status_code == 403)
+        # check that bobby is still manager at all groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # assert that norman has no permission for this action
+        self.assertEqual("permission_denied", response.json()["code"])
+
+    def test_admin_remove_user_as_group_manager(self):
+        """
+        an admin user tries to remove another user as the group manager
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # login as admin
+        self.client.force_login(admin)
+        self.assertTrue(admin.is_authenticated)
+        # assert that admin is  a super user , staff
+        self.assertTrue(admin.is_superuser)
+        self.assertTrue(admin.is_staff)
+
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": "ALL"},
+            content_type="application/json",
+        )
+        # assert that admin has permission for this action
+        self.assertTrue(response.status_code == 200)
+        # check that bobby is not manager in all his groups
+        for group in self.group_profiles:
+            self.assertFalse(bobby in group.get_managers())
+        self.assertTrue("User removed as a group manager" in response.json()["success"])
+        for group in self.group_profiles:
+            self.assertTrue(f"{group.title}" in response.json()["success"])
+
+    def test_staff_remove_user_as_group_manager(self):
+        """
+        an staff user tries to remove another user as the group manager
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        admin = get_user_model().objects.get(username="admin")
+        admin.is_superuser = False
+        admin.save()
+        for group in self.group_profiles:
+            group.join(bobby)
+            group.promote(bobby)
+
+        # assert that bobby is manager of these groups
+        for group in self.group_profiles:
+            self.assertTrue(bobby in group.get_managers())
+        # login as admin
+        self.client.force_login(admin)
+        self.assertTrue(admin.is_authenticated)
+        # assert that admin is only a staff user
+        self.assertFalse(admin.is_superuser)
+        self.assertTrue(admin.is_staff)
+
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/remove_from_group_manager",
+            data={"groups": "ALL"},
+            content_type="application/json",
+        )
+        # assert that admin has permission for this action
+        self.assertTrue(response.status_code == 200)
+        # check that bobby is not manager in all his groups
+        for group in self.group_profiles:
+            self.assertFalse(bobby in group.get_managers())
+        self.assertTrue("User removed as a group manager" in response.json()["success"])
+        for group in self.group_profiles:
+            self.assertTrue(f"{group.title}" in response.json()["success"])
