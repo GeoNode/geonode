@@ -269,7 +269,7 @@ class UserViewSet(DynamicModelViewSet):
             return Response("Cannot reassign to self", status=400)
 
         # transfer to target
-        ResourceBase.objects.filter(owner=user).update(owner=target)
+        ResourceBase.objects.filter(owner=user).update(owner=target or user)
 
         return Response("Resources transfered successfully", status=200)
 
