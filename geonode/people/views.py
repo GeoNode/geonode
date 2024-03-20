@@ -252,7 +252,6 @@ class UserViewSet(DynamicModelViewSet):
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
     @action(detail=True, methods=["post"])
-
     def remove_from_group_manager(self, request, pk=None):
         user = self.get_object()
         target_ids = request.data.get("groups", [])
@@ -301,7 +300,6 @@ class UserViewSet(DynamicModelViewSet):
         ResourceBase.objects.filter(owner=user).update(owner=target or user)
 
         return Response("Resources transfered successfully", status=200)
-
 
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):

@@ -914,7 +914,6 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertNotEqual(get_user_model().objects.filter(username="bobby").first(), None)
         self.assertTrue("user_has_resources" in response.json()["errors"][0])
 
-
     def test_remove_self_from_group_manager_all(self):
         """
         user is manager of some groups
@@ -1286,4 +1285,3 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
-
