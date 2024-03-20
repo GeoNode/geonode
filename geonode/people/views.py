@@ -252,6 +252,35 @@ class UserViewSet(DynamicModelViewSet):
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
     @action(detail=True, methods=["post"])
+
+    def remove_from_group_manager(self, request, pk=None):
+        user = self.get_object()
+        target_ids = request.data.get("groups", [])
+        user_groups = []
+        invalid_groups = []
+
+        if not target_ids:
+            return Response({"error": "No groups IDs were provided"}, status=400)
+
+        if target_ids == "ALL":
+            user_groups = GroupProfile.groups_for_user(user)
+        else:
+            target_ids = set(target_ids)
+            user_groups = GroupProfile.groups_for_user(user).filter(group_id__in=target_ids)
+            # check for groups that user is not part of:
+            invalid_groups.extend(target_ids - set(ug.group_id for ug in user_groups))
+
+        for group in user_groups:
+            group.demote(user)
+        group_names = [group.title for group in user_groups]
+
+        payload = {"success": f"User removed as a group manager from : {', '.join(group_names)}"}
+
+        if invalid_groups:
+            payload["error"] = f"User is not manager of the following groups: : {invalid_groups}"
+            return Response(payload, status=400)
+        return Response(payload, status=200)
+
     def transfer_resources(self, request, pk=None):
         user = self.get_object()
         admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
@@ -272,6 +301,7 @@ class UserViewSet(DynamicModelViewSet):
         ResourceBase.objects.filter(owner=user).update(owner=target or user)
 
         return Response("Resources transfered successfully", status=200)
+
 
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
