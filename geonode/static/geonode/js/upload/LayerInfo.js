@@ -489,9 +489,10 @@ define(function (require, exports) {
 
     LayerInfo.prototype.startPolling = function(execution_id) {
         var self = this;
+        const baseUrl = siteUrl + executions_status_endpoint;
         if (self.polling) {
             $.ajax({ 
-                url: siteUrl + executions_status_endpoint + "?import&filter{source}=upload&page=1&page_size=99999", type: 'GET', success: function(data){
+                url: baseUrl + "?import&filter{source}=resource_file_upload&page=1&page_size=99999", type: 'GET', success: function(data){
                 // TODO: Not sure we need to do anything here?
                 //console.log('polling');
                 }, 
@@ -502,6 +503,7 @@ define(function (require, exports) {
                         if (execution_data.status == 'finished'){
                             self.polling = false;
                             self.markEnd();
+                            $.ajax({url: baseUrl + "/" + execution_id, type: "DELETE"});
                             if (execution_data.output_params && execution_data.output_params['detail_url']) {
                                 const detail_url = execution_data.output_params['detail_url'];
                                 if (detail_url != '') {
@@ -511,7 +513,7 @@ define(function (require, exports) {
                             
                         }
                     }
-                    setTimeout(function() {self.startPolling()}, 3000)
+                    setTimeout(function() {self.startPolling(execution_id)}, 3000)
                 },
                 timeout: 30000
             })
