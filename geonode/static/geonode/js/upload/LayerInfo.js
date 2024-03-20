@@ -489,7 +489,7 @@ define(function (require, exports) {
 
     LayerInfo.prototype.startPolling = function(execution_id) {
         var self = this;
-        const baseUrl = siteUrl + executions_status_endpoint;
+        const baseUrl = executions_status_endpoint;
         if (self.polling) {
             $.ajax({ 
                 url: baseUrl + "?import&filter{source}=resource_file_upload&page=1&page_size=99999", type: 'GET', success: function(data){
