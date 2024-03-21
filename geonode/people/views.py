@@ -213,7 +213,7 @@ class UserViewSet(DynamicModelViewSet):
     def perform_destroy(self, instance):
         deletable, errors = check_user_deletion_rules(instance)
         if not deletable:
-            raise PermissionDenied(f"Deletion rule Violated: {errors}")
+            raise PermissionDenied(f"One or more validation rules are violated: {errors}")
         instance.delete()
 
     @extend_schema(
