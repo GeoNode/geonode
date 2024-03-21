@@ -54,7 +54,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
 from rest_framework.exceptions import PermissionDenied
-from geonode.people.utils import call_user_deletion_rules
+from geonode.people.utils import check_user_deletion_rules
 
 
 class SetUserLayerPermission(View):
@@ -211,7 +211,9 @@ class UserViewSet(DynamicModelViewSet):
         return Response("User deleted sucessfully", status=200)
 
     def perform_destroy(self, instance):
-        call_user_deletion_rules(instance)
+        deletable, errors = check_user_deletion_rules(instance)
+        if not deletable:
+            raise PermissionDenied(f"Deletion rule Violated: {errors}")
         instance.delete()
 
     @extend_schema(
