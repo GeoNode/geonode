@@ -28,14 +28,12 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from django.views import View
-
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
 from geonode.people.utils import get_available_users
 from geonode.base.auth import get_or_create_token
 from geonode.people.forms import ForgotUsernameForm
 from geonode.base.views import user_and_group_permission
-
 from dal import autocomplete
 
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -48,13 +46,15 @@ from rest_framework.permissions import IsAuthenticated
 from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
-from geonode.base.api.permissions import IsSelfOrAdminOrReadOnly
+from geonode.base.api.permissions import IsOwnerOrAdmin
 from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
+from rest_framework.exceptions import PermissionDenied
+from geonode.people.utils import check_user_deletion_rules
 
 
 class SetUserLayerPermission(View):
@@ -167,10 +167,11 @@ class UserViewSet(DynamicModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
 
+    http_method_names = ["get", "post", "patch", "delete"]
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [
         IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
+        IsOwnerOrAdmin,
     ]
     filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
     serializer_class = UserSerializer
@@ -188,6 +189,32 @@ class UserViewSet(DynamicModelViewSet):
         # Set up eager loading to avoid N+1 selects
         queryset = self.get_serializer_class().setup_eager_loading(queryset)
         return queryset.order_by("username")
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if not (user.is_superuser or user.is_staff):
+            raise PermissionDenied()
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response("User deleted sucessfully", status=200)
+
+    def perform_destroy(self, instance):
+        deletable, errors = check_user_deletion_rules(instance)
+        if not deletable:
+            raise PermissionDenied(f"One or more validation rules are violated: {errors}")
+        instance.delete()
 
     @extend_schema(
         methods=["get"],
@@ -225,6 +252,57 @@ class UserViewSet(DynamicModelViewSet):
         qs_ids = GroupMember.objects.filter(user=user).values_list("group", flat=True)
         groups = GroupProfile.objects.filter(id__in=qs_ids)
         return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
+
+    @action(detail=True, methods=["post"])
+    def remove_from_group_manager(self, request, pk=None):
+        user = self.get_object()
+        target_ids = request.data.get("groups", [])
+        user_groups = []
+        invalid_groups = []
+
+        if not target_ids:
+            return Response({"error": "No groups IDs were provided"}, status=400)
+
+        if target_ids == "ALL":
+            user_groups = GroupProfile.groups_for_user(user)
+        else:
+            target_ids = set(target_ids)
+            user_groups = GroupProfile.groups_for_user(user).filter(group_id__in=target_ids)
+            # check for groups that user is not part of:
+            invalid_groups.extend(target_ids - set(ug.group_id for ug in user_groups))
+
+        for group in user_groups:
+            group.demote(user)
+        group_names = [group.title for group in user_groups]
+
+        payload = {"success": f"User removed as a group manager from : {', '.join(group_names)}"}
+
+        if invalid_groups:
+            payload["error"] = f"User is not manager of the following groups: : {invalid_groups}"
+            return Response(payload, status=400)
+        return Response(payload, status=200)
+
+    @action(detail=True, methods=["post"])
+    def transfer_resources(self, request, pk=None):
+        user = self.get_object()
+        admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
+        target_user = request.data.get("owner")
+
+        target = None
+        if target_user == "DEFAULT":
+            if not admin:
+                return Response("Principal User not found", status=500)
+            target = admin
+        else:
+            target = get_object_or_404(get_user_model(), id=target_user)
+
+        if target == user:
+            return Response("Cannot reassign to self", status=400)
+
+        # transfer to target
+        ResourceBase.objects.filter(owner=user).update(owner=target or user)
+
+        return Response("Resources transfered successfully", status=200)
 
 
 class ProfileAutocomplete(autocomplete.Select2QuerySetView):
