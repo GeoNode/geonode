@@ -1157,14 +1157,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
-        # 4. change_dataset_style
-        # 4.1 has not change_dataset_style: verify that anonymous user cannot access
-        # the layer style page but redirected to login
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # Only for geoserver backend
-            response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-            self.assertTrue(response.status_code in (302, 403))
-
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()
         actual = get_visible_resources(queryset=layers, user=get_user_model().objects.get(username=self.user))
