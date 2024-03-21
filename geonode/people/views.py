@@ -280,6 +280,7 @@ class UserViewSet(DynamicModelViewSet):
             return Response(payload, status=400)
         return Response(payload, status=200)
 
+    @action(detail=True, methods=["post"])
     def transfer_resources(self, request, pk=None):
         user = self.get_object()
         admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
