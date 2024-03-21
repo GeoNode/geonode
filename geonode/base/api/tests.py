@@ -2748,7 +2748,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.dataset.id in list_connected_targets))
 
     def test_insert_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2766,7 +2765,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((invalid_id in response_json["error"]))
 
     def test_insert_valid_and_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2785,7 +2783,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.map.id in response_json["success"]))
 
     def test_delete_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
