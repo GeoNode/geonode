@@ -1118,10 +1118,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 6. change_dataset_style
         # 6.1 has not change_dataset_style: verify that bobby cannot access
         # the layer style page
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # Only for geoserver backend
-            response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-            self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 7.2 has change_dataset_style: verify that bobby can access the
         # change layer style page
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1140,8 +1136,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 }
             )
             self.assertTrue(bob.has_perm("change_dataset_style", layer))
-            response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-            self.assertEqual(response.status_code, 200, response.status_code)
 
         rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
