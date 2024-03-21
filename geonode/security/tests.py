@@ -150,7 +150,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             reverse("account_reset_password"),
             reverse("forgot_username"),
             reverse("dataset_acls"),
-            reverse("dataset_resolve_user"),
         ]
 
         black_list = [

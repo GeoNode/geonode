@@ -887,7 +887,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             "HTTP_AUTHORIZATION": f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
-        response = self.client.get(reverse("dataset_resolve_user"), **valid_auth_headers)
+        response = self.client.get(reverse("dataset_resolve_user_dep"), **valid_auth_headers)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode("UTF-8")
@@ -906,7 +906,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
 
         # Basic check that the returned content is at least valid json
-        response = self.client.get(reverse("dataset_resolve_user"))
+        response = self.client.get(reverse("dataset_resolve_user_dep"))
         content = response.content
         if isinstance(content, bytes):
             content = content.decode("UTF-8")
