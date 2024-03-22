@@ -73,7 +73,10 @@ logger = logging.getLogger(__name__)
 
 
 def user_serializer():
-    from geonode.people.api.serializers import UserSerializer  # noqa
+    # from geonode.people.api.serializers import UserSerializer  # noqa
+    import geonode.people.api.serializers as ser
+
+    return ser.UserSerializer
 
 
 class BaseDynamicModelSerializer(DynamicModelSerializer):
