@@ -2484,6 +2484,27 @@ class BaseApiTests(APITestCase):
         download_url = response.json().get("resource").get("download_urls")
         self.assertEqual(expected_payload, download_url)
 
+    def test_include_linked_resources(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                for include in (True, False):
+                    url = reverse(viewname, args=[resource.id])
+                    url = f"{url}{'?include[]=linked_resources' if include else ''}"
+                    response = self.client.get(url, format="json").json()
+                    json = next(iter(response.values()))
+                    if include:
+                        self.assertIn("linked_resources", json, "Missing content")
+                    else:
+                        self.assertNotIn("linked_resources", json, "Unexpected content")
+
     def test_api_should_return_all_resources_for_admin(self):
         """
         Api whould return all resources even if advertised=False.
