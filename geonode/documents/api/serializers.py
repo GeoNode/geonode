@@ -60,6 +60,7 @@ class DocumentSerializer(ResourceBaseSerializer):
             "doc_file",
             "doc_url",
             "metadata",
+            "linked_resources",
         )
 
     def to_representation(self, obj):

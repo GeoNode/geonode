@@ -3022,13 +3022,14 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             # call the API w/ pagination
             url = reverse("base-resources-linked_resources", args=[self.doc.id])
-            response = self.client.get(f"{url}?page_size=1")
+            url = f"{url}?page_size=1"
+            response = self.client.get(url)
 
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
+            self.assertIn("WARNINGS", payload, f"Missing WARNINGS element for URL {url}")
             self.assertIn("PAGINATION", payload["WARNINGS"], "Missing PAGINATION element")
 
             # call the API w/o pagination
@@ -3039,8 +3040,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
-            self.assertNotIn("PAGINATION", payload["WARNINGS"], "Unexpected PAGINATION element")
+            self.assertNotIn("WARNINGS", payload, "Missing WARNINGS element")
 
         finally:
             for d in _d:
@@ -3090,7 +3090,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
             for type in res_types_payload:
                 self.assertTrue(type in res_types_orig)
-            self.assertTrue({"linked_to", "WARNINGS"} == set(payload.keys()))
+            self.assertSetEqual({"linked_to"}, set(payload.keys()))
 
         finally:
             for d in _d:
@@ -3115,8 +3115,8 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
             for type in res_types_payload:
                 self.assertTrue(type in res_types_orig)
-            payload_keys = {"linked_by", "linked_to", "WARNINGS"}
-            self.assertTrue(payload_keys == set(payload.keys()))
+            payload_keys = {"linked_by", "linked_to"}
+            self.assertSetEqual(payload_keys, set(payload.keys()))
 
         finally:
             for d in _d:

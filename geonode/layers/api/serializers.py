@@ -181,6 +181,7 @@ class DatasetSerializer(ResourceBaseSerializer):
             "subtype",
             "ptype",
             "executions",
+            "linked_resources",
         )
 
     name = serializers.CharField(read_only=True)

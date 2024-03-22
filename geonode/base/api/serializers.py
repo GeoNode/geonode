@@ -530,6 +530,20 @@ class ResourceExecutionRequestSerializer(DynamicModelSerializer):
         return data
 
 
+class LinkedResourceEmbeddedSerializer(DynamicModelSerializer):
+    class Meta:
+        model = ResourceBase
+        fields = ("pk",)
+
+    def to_representation(self, instance):
+        from geonode.base.api.views import base_linked_resources_payload
+
+        request = self.context.get("request", None)
+        _resource = ResourceBase.objects.get(pk=instance)
+
+        return base_linked_resources_payload(_resource, request.user) if request and request.user and _resource else {}
+
+
 api_bbox_settable_resource_models = [Document, GeoApp]
 
 
@@ -692,6 +706,7 @@ class ResourceBaseSerializer(
             "blob",
             "metadata",
             "executions",
+            "linked_resources",
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
@@ -783,6 +798,10 @@ class ResourceBaseSerializer(
         deferred=True,
         required=False,
         read_only=True,
+    )
+
+    linked_resources = DynamicRelationField(
+        LinkedResourceEmbeddedSerializer, source="id", deferred=True, required=False, read_only=True
     )
 
 
