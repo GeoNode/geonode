@@ -86,9 +86,9 @@ from .permissions import (
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
+
 from .serializers import (
     FavoriteSerializer,
-    UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer,
@@ -101,6 +101,7 @@ from .serializers import (
     ExtraMetadataSerializer,
     LinkedResourceSerializer,
 )
+from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
 

@@ -28,6 +28,7 @@ from django.conf import settings
 from django.http import HttpResponseForbidden
 from django.db.models import Q
 from django.views import View
+from geonode.people.api.serializers import UserSerializer
 from geonode.tasks.tasks import send_email
 from geonode.people.forms import ProfileForm
 from geonode.people.utils import get_available_users
@@ -47,9 +48,8 @@ from geonode.base.models import ResourceBase
 from geonode.base.api.filters import DynamicSearchFilter
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.base.api.permissions import IsOwnerOrAdmin
-from geonode.base.api.serializers import UserSerializer, GroupProfileSerializer, ResourceBaseSerializer
+from geonode.base.api.serializers import GroupProfileSerializer, ResourceBaseSerializer
 from geonode.base.api.pagination import GeoNodeApiPagination
-
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from geonode.security.utils import get_visible_resources
 from guardian.shortcuts import get_objects_for_user
