@@ -150,40 +150,6 @@ class FeatureInfoTemplateField(DynamicComputedField):
 
 
 class DatasetSerializer(ResourceBaseSerializer):
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model = Dataset
-        name = "dataset"
-        view_name = "datasets-list"
-        fields = (
-            "pk",
-            "uuid",
-            "name",
-            "metadata",
-            "attribute_set",
-            "charset",
-            "is_mosaic",
-            "has_time",
-            "has_elevation",
-            "time_regex",
-            "elevation_regex",
-            "featureinfo_custom_template",
-            "ows_url",
-            "capabilities_url",
-            "dataset_ows_url",
-            "workspace",
-            "default_style",
-            "styles",
-            "store",
-            "subtype",
-            "ptype",
-            "executions",
-            "linked_resources",
-        )
-
     name = serializers.CharField(read_only=True)
     workspace = serializers.CharField(read_only=True)
     store = serializers.CharField(read_only=True)
@@ -193,32 +159,48 @@ class DatasetSerializer(ResourceBaseSerializer):
     styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
 
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
-
     featureinfo_custom_template = FeatureInfoTemplateField()
+
+    class Meta:
+        model = Dataset
+        name = "dataset"
+        view_name = "datasets-list"
+        fields = list(
+            set(
+                ResourceBaseSerializer.Meta.fields
+                + (
+                    "uuid",
+                    "name",
+                    "metadata",
+                    "attribute_set",
+                    "charset",
+                    "is_mosaic",
+                    "has_time",
+                    "has_elevation",
+                    "time_regex",
+                    "elevation_regex",
+                    "featureinfo_custom_template",
+                    "ows_url",
+                    "capabilities_url",
+                    "dataset_ows_url",
+                    "workspace",
+                    "default_style",
+                    "styles",
+                    "store",
+                    "subtype",
+                    "ptype",
+                )
+            )
+        )
 
 
 class DatasetListSerializer(DatasetSerializer):
     class Meta(DatasetSerializer.Meta):
-        fields = (
-            "pk",
-            "uuid",
-            "name",
-            "workspace",
-            "store",
-            "subtype",
-            "charset",
-            "is_mosaic",
-            "has_time",
-            "has_elevation",
-            "time_regex",
-            "elevation_regex",
-            "featureinfo_custom_template",
-            "ptype",
-            "default_style",
-            "styles",
-        )
-
-    featureinfo_custom_template = FeatureInfoTemplateField()
+        fields = [
+            f
+            for f in DatasetSerializer.Meta.fields
+            if f not in ("attribute_set", "capabilities_url", "dataset_ows_url", "ows_url")
+        ]
 
 
 class MetadataFileField(DynamicComputedField):
