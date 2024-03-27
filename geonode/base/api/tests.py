@@ -2381,6 +2381,14 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         resource.delete()
 
+    def _get_for_object(self, o, viewname):
+        url = reverse(viewname, args=[o.id])
+        response = self.client.get(url, format="json")
+        return response.json()
+
+    def _get_for_map(self, viewname):
+        return self._get_for_object(Map.objects.first(), viewname)
+
     def test_base_resources_return_download_link_if_document(self):
         """
         Ensure we can access the Resource Base list.
@@ -2388,14 +2396,13 @@ class BaseApiTests(APITestCase):
         doc = Document.objects.first()
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[doc.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(doc, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
         self.assertEqual(build_absolute_uri(doc.download_url), download_url)
 
         # from documents api
-        url = reverse("documents-detail", args=[doc.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(doc, "documents-detail")
+        download_url = json.get("document").get("download_url")
         self.assertEqual(build_absolute_uri(doc.download_url), download_url)
 
     def test_base_resources_return_download_link_if_dataset(self):
@@ -2405,46 +2412,41 @@ class BaseApiTests(APITestCase):
         _dataset = Dataset.objects.first()
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[_dataset.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
         # from dataset api
-        url = reverse("datasets-detail", args=[_dataset.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
     def test_base_resources_dont_return_download_link_if_map(self):
         """
         Ensure we can access the Resource Base list.
         """
-        _map = Map.objects.first()
         # From resource base API
-        url = reverse("base-resources-detail", args=[_map.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url", None)
+        json = self._get_for_map("base-resources-detail")
+        download_url = json.get("resource").get("download_url", None)
         self.assertIsNone(download_url)
 
         # from maps api
-        url = reverse("maps-detail", args=[_map.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_map("maps-detail")
+        download_url = json.get("map").get("download_url")
         self.assertIsNone(download_url)
 
     def test_base_resources_return_not_download_links_for_maps(self):
         """
         Ensure we can access the Resource Base list.
         """
-        _map = Map.objects.first()
         # From resource base API
-        url = reverse("base-resources-detail", args=[_map.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls", None)
+        json = self._get_for_map("base-resources-detail")
+        download_url = json.get("resource").get("download_urls", None)
         self.assertListEqual([], download_url)
 
         # from maps api
-        url = reverse("maps-detail", args=[_map.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_map("maps-detail")
+        download_url = json.get("map").get("download_urls")
         self.assertListEqual([], download_url)
 
     def test_base_resources_return_download_links_for_documents(self):
@@ -2454,14 +2456,13 @@ class BaseApiTests(APITestCase):
         doc = Document.objects.first()
         expected_payload = [{"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}]
         # From resource base API
-        url = reverse("base-resources-detail", args=[doc.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(doc, "base-resources-detail")
+        download_url = json.get("resource").get("download_urls")
         self.assertListEqual(expected_payload, download_url)
 
         # from documents api
-        url = reverse("documents-detail", args=[doc.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(doc, "documents-detail")
+        download_url = json.get("document").get("download_urls")
         self.assertListEqual(expected_payload, download_url)
 
     def test_base_resources_return_download_links_for_datasets(self):
@@ -2474,14 +2475,13 @@ class BaseApiTests(APITestCase):
         ]
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[_dataset.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_urls")
         self.assertEqual(expected_payload, download_url)
 
         # from dataset api
-        url = reverse("datasets-detail", args=[_dataset.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_urls")
         self.assertEqual(expected_payload, download_url)
 
     def test_api_should_return_all_resources_for_admin(self):
