@@ -1987,7 +1987,7 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
     "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
     "UID_FIELD": "unique_name",
     "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
-    "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
+    "ACCOUNT_CLASS": "allauth.socialaccount.providers.microsoft.provider.MicrosoftGraphAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
     "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
     "PROFILE_URL": "https://graph.microsoft.com/v1.0/me",
