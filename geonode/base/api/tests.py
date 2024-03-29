@@ -2526,6 +2526,27 @@ class BaseApiTests(APITestCase):
                     self.assertIn("link", json, "Missing content")
                     self.assertEqual(2, len(json), f"Only expected content was '{field}', found: {json}")
 
+    def test_presets_base(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                url = reverse(viewname, args=[resource.id])
+                url = f"{url}?api_preset=bare"
+                response = self.client.get(url, format="json").json()
+                json = next(iter(response.values()))
+                self.assertSetEqual(
+                    {"pk", "title", "link"},
+                    set(json.keys()),
+                    f"Bad json content for object {type(resource)} JSON:{json}",
+                )
+
     def test_api_should_return_all_resources_for_admin(self):
         """
         Api whould return all resources even if advertised=False.

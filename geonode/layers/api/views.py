@@ -32,6 +32,7 @@ from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.mixins import AdvertisedListMixin
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
+from geonode.base.api.views import ApiPresetsInitializer
 from geonode.layers.api.exceptions import GeneralDatasetException, InvalidDatasetException, InvalidMetadataException
 from geonode.layers.metadata import parse_metadata
 from geonode.layers.models import Dataset
@@ -53,7 +54,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DatasetViewSet(DynamicModelViewSet, AdvertisedListMixin):
+class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows layers to be viewed or edited.
     """
