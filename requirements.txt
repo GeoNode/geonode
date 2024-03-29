@@ -25,7 +25,7 @@ zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
 smart_open==7.0.1
-PyMuPDF==1.23.26
+PyMuPDF==1.24.0
 
 # Django Apps
 django-allauth==0.61.1
@@ -80,7 +80,7 @@ drf-extensions==0.7.1
 drf-writable-nested==0.7.0
 drf-spectacular==0.27.1
 git+https://github.com/AltSchool/dynamic-rest.git@v2.2.0#egg=dynamic_rest
-Markdown==3.5.2
+Markdown==3.6
 
 git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-notifications
 
@@ -104,9 +104,9 @@ django-bootstrap3-datetimepicker-2==2.8.3
 # storage manager dependencies
 django-storages==1.14.2
 dropbox==11.36.2
-google-cloud-storage==2.15.0
+google-cloud-storage==2.16.0
 google-cloud-core==2.4.1
-boto3==1.34.59
+boto3==1.34.69
 
 # Django Caches
 python-memcached<=1.62
@@ -143,10 +143,10 @@ docker==7.0.0
 invoke==2.2.0
 
 # tests
-coverage==7.4.3
+coverage==7.4.4
 requests-toolbelt==1.0.0
 flake8==7.0.0
-black==24.2.0
+black==24.3.0
 pytest==8.1.1
 pytest-bdd==7.1.1
 splinter==0.21.0
@@ -157,7 +157,7 @@ pip==24.0
 Twisted==24.3.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
-flaky==3.8.0
+flaky==3.8.1
 selenium>=4.15.1,<5.0.0
 selenium-requests==2.0.4
 webdriver_manager==4.0.1
