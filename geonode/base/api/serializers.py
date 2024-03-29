@@ -457,85 +457,6 @@ class LinkedResourceEmbeddedSerializer(DynamicModelSerializer):
 api_bbox_settable_resource_models = [Document, GeoApp]
 
 
-
-class ResourceBaseSerializer(
-    ResourceBaseToRepresentationSerializerMixin,
-    BaseDynamicModelSerializer,
-):
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
-
-        self.fields["pk"] = serializers.CharField(read_only=True)
-        self.fields["uuid"] = serializers.CharField(read_only=True)
-        self.fields["resource_type"] = serializers.CharField(required=False)
-        self.fields["polymorphic_ctype_id"] = serializers.CharField(read_only=True)
-        self.fields["owner"] = DynamicRelationField(user_serializer(), embed=True, many=False, read_only=True)
-        self.fields["metadata_author"] = ContactRoleField(Roles.METADATA_AUTHOR.name, required=False)
-        self.fields["processor"] = ContactRoleField(Roles.PROCESSOR.name, required=False)
-        self.fields["publisher"] = ContactRoleField(Roles.PUBLISHER.name, required=False)
-        self.fields["custodian"] = ContactRoleField(Roles.CUSTODIAN.name, required=False)
-        self.fields["poc"] = ContactRoleField(Roles.POC.name, required=False)
-        self.fields["distributor"] = ContactRoleField(Roles.DISTRIBUTOR.name, required=False)
-        self.fields["resource_user"] = ContactRoleField(Roles.RESOURCE_USER.name, required=False)
-        self.fields["resource_provider"] = ContactRoleField(Roles.RESOURCE_PROVIDER.name, required=False)
-        self.fields["originator"] = ContactRoleField(Roles.ORIGINATOR.name, required=False)
-        self.fields["principal_investigator"] = ContactRoleField(Roles.PRINCIPAL_INVESTIGATOR.name, required=False)
-        self.fields["title"] = serializers.CharField(required=False)
-        self.fields["abstract"] = serializers.CharField(required=False)
-        self.fields["attribution"] = serializers.CharField(required=False)
-        self.fields["doi"] = serializers.CharField(required=False)
-        self.fields["alternate"] = serializers.CharField(read_only=True, required=False)
-        self.fields["date"] = serializers.DateTimeField(required=False)
-        self.fields["date_type"] = serializers.CharField(required=False)
-        self.fields["temporal_extent_start"] = serializers.DateTimeField(required=False)
-        self.fields["temporal_extent_end"] = serializers.DateTimeField(required=False)
-        self.fields["edition"] = serializers.CharField(required=False)
-        self.fields["purpose"] = serializers.CharField(required=False)
-        self.fields["maintenance_frequency"] = serializers.CharField(required=False)
-        self.fields["constraints_other"] = serializers.CharField(required=False)
-        self.fields["language"] = serializers.CharField(required=False)
-        self.fields["supplemental_information"] = serializers.CharField(required=False)
-        self.fields["data_quality_statement"] = serializers.CharField(required=False)
-        self.fields["bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
-        self.fields["ll_bbox_polygon"] = fields.GeometryField(read_only=True, required=False)
-        self.fields["extent"] = ExtentBboxField(required=False)
-        self.fields["srid"] = serializers.CharField(required=False)
-        self.fields["group"] = ComplexDynamicRelationField(GroupSerializer, embed=True, many=False)
-        self.fields["popular_count"] = serializers.CharField(required=False)
-        self.fields["share_count"] = serializers.CharField(required=False)
-        self.fields["rating"] = serializers.CharField(required=False)
-        self.fields["featured"] = serializers.BooleanField(required=False)
-        self.fields["advertised"] = serializers.BooleanField(required=False)
-        self.fields["is_published"] = serializers.BooleanField(required=False, read_only=True)
-        self.fields["is_approved"] = serializers.BooleanField(required=False, read_only=True)
-        self.fields["detail_url"] = DetailUrlField(read_only=True)
-        self.fields["created"] = serializers.DateTimeField(read_only=True)
-        self.fields["last_updated"] = serializers.DateTimeField(read_only=True)
-        self.fields["raw_abstract"] = serializers.CharField(read_only=True)
-        self.fields["raw_purpose"] = serializers.CharField(read_only=True)
-        self.fields["raw_constraints_other"] = serializers.CharField(read_only=True)
-        self.fields["raw_supplemental_information"] = serializers.CharField(read_only=True)
-        self.fields["raw_data_quality_statement"] = serializers.CharField(read_only=True)
-        self.fields["metadata_only"] = serializers.BooleanField(required=False)
-        self.fields["processed"] = serializers.BooleanField(read_only=True)
-        self.fields["state"] = serializers.CharField(read_only=True)
-        self.fields["sourcetype"] = serializers.CharField(read_only=True)
-        self.fields["embed_url"] = EmbedUrlField(required=False)
-        self.fields["thumbnail_url"] = ThumbnailUrlField(read_only=True)
-        self.fields["keywords"] = ComplexDynamicRelationField(
-            SimpleHierarchicalKeywordSerializer, embed=False, many=True
-        )
-        self.fields["tkeywords"] = ComplexDynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
-        self.fields["regions"] = DynamicRelationField(SimpleRegionSerializer, embed=True, many=True, read_only=True)
-        self.fields["category"] = ComplexDynamicRelationField(SimpleTopicCategorySerializer, embed=True, many=False)
-        self.fields["restriction_code_type"] = ComplexDynamicRelationField(
-            RestrictionCodeTypeSerializer, embed=True, many=False
-        )
-        self.fields["license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
-        self.fields["spatial_representation_type"] = ComplexDynamicRelationField(
-            SpatialRepresentationTypeSerializer, embed=True, many=False
-
 class PermsSerializer(DynamicModelSerializer):
     class Meta:
         model = ResourceBase
@@ -552,7 +473,6 @@ class PermsSerializer(DynamicModelSerializer):
             )
             if request and request.user and resource
             else []
-
         )
 
 
@@ -577,7 +497,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
     uuid = serializers.CharField(read_only=True)
     resource_type = serializers.CharField(required=False)
     polymorphic_ctype_id = serializers.CharField(read_only=True)
-    owner = DynamicRelationField(UserSerializer, embed=True, read_only=True)
+    owner = DynamicRelationField(user_serializer(), embed=True, read_only=True)
     metadata_author = ContactRoleField(Roles.METADATA_AUTHOR.name, required=False)
     processor = ContactRoleField(Roles.PROCESSOR.name, required=False)
     publisher = ContactRoleField(Roles.PUBLISHER.name, required=False)
