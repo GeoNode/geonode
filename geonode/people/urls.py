@@ -24,9 +24,6 @@ from django.contrib.auth.decorators import login_required
 from .views import ProfileAutocomplete, SetUserLayerPermission
 from . import views
 
-from geonode.api.urls import router
-
-router.register("users", views.UserViewSet, "users")
 
 urlpatterns = [  # 'geonode.people.views',
     re_path(r"^$", TemplateView.as_view(template_name="people/profile_list.html"), name="profile_browse"),

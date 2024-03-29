@@ -94,6 +94,7 @@ urlpatterns += [
     re_path(r"^account/", include("allauth.urls")),
     re_path(r"^invitations/", include("geonode.invitations.urls", namespace="geonode.invitations")),
     re_path(r"^people/", include("geonode.people.urls")),
+    re_path(r"^api/v2/users/", include("geonode.people.api.urls")),
     re_path(r"^avatar/", include("avatar.urls")),
     re_path(r"^activity/", include("actstream.urls")),
     re_path(r"^announcements/", include("announcements.urls")),

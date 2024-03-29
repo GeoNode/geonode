@@ -30,10 +30,6 @@ from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
 from geonode.people import Roles
 from django.http import QueryDict
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.password_validation import validate_password
-from django.forms import ValidationError as ValidationErrorForm
-
 from deprecated import deprecated
 from rest_framework import serializers
 from rest_framework_gis import fields
@@ -73,6 +69,12 @@ from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
 
 logger = logging.getLogger(__name__)
+
+
+def user_serializer():
+    import geonode.people.api.serializers as ser
+
+    return ser.UserSerializer
 
 
 class BaseDynamicModelSerializer(DynamicModelSerializer):
@@ -323,67 +325,6 @@ class FavoriteField(DynamicComputedField):
         return False
 
 
-class UserSerializer(BaseDynamicModelSerializer):
-    class Meta:
-        ref_name = "UserProfile"
-        model = get_user_model()
-        name = "user"
-        view_name = "users-list"
-        fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff", "email")
-
-    @staticmethod
-    def password_validation(password_payload):
-        try:
-            validate_password(password_payload)
-        except ValidationErrorForm as err:
-            raise serializers.ValidationError(detail=",".join(err.messages))
-        return make_password(password_payload)
-
-    def validate(self, data):
-        request = self.context["request"]
-        user = request.user
-        # only admins/staff can edit these permissions
-        if not (user.is_superuser or user.is_staff):
-            data.pop("is_superuser", None)
-            data.pop("is_staff", None)
-        # username cant be changed
-        if request.method in ("PUT", "PATCH") and data.get("username"):
-            raise serializers.ValidationError(detail="username cannot be updated")
-        email = data.get("email")
-        # Email is required on post
-        if request.method in ("POST") and settings.ACCOUNT_EMAIL_REQUIRED and not email:
-            raise serializers.ValidationError(detail="email missing from payload")
-        # email should be unique
-        if get_user_model().objects.filter(email=email).exists():
-            raise serializers.ValidationError("A user is already registered with that email")
-        # password validation
-        password = request.data.get("password")
-        if password:
-            data["password"] = self.password_validation(password)
-        return data
-
-    @classmethod
-    def setup_eager_loading(cls, queryset):
-        """Perform necessary eager loading of data."""
-        queryset = queryset.prefetch_related()
-        return queryset
-
-    def to_representation(self, instance):
-        # Dehydrate users private fields
-        request = self.context.get("request")
-        data = super().to_representation(instance)
-        if not request or not request.user or not request.user.is_authenticated:
-            if "perms" in data:
-                del data["perms"]
-        elif not request.user.is_superuser and not request.user.is_staff:
-            if data["username"] != request.user.username:
-                if "perms" in data:
-                    del data["perms"]
-        return data
-
-    avatar = AvatarUrlField(240, read_only=True)
-
-
 class ContactRoleField(DynamicComputedField):
     default_error_messages = {
         "required": ("ContactRoleField This field is required."),
@@ -397,7 +338,7 @@ class ContactRoleField(DynamicComputedField):
         return getattr(instance, self.contact_type)
 
     def to_representation(self, value):
-        return [UserSerializer(embed=True, many=False).to_representation(v) for v in value]
+        return [user_serializer()(embed=True, many=False).to_representation(v) for v in value]
 
     def get_pks_of_users_to_set(self, value):
         pks_of_users_to_set = []
@@ -556,7 +497,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
     uuid = serializers.CharField(read_only=True)
     resource_type = serializers.CharField(required=False)
     polymorphic_ctype_id = serializers.CharField(read_only=True)
-    owner = DynamicRelationField(UserSerializer, embed=True, read_only=True)
+    owner = DynamicRelationField(user_serializer(), embed=True, read_only=True)
     metadata_author = ContactRoleField(Roles.METADATA_AUTHOR.name, required=False)
     processor = ContactRoleField(Roles.PROCESSOR.name, required=False)
     publisher = ContactRoleField(Roles.PUBLISHER.name, required=False)
