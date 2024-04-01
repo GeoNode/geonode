@@ -172,4 +172,4 @@ jwcrypto>=1.5.6 # not directly required, pinned by Snyk to avoid a vulnerability
 cryptography>=41.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
 aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
 dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
-nh3==0.2.15
+nh3==0.2.17
