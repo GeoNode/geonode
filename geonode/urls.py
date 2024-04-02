@@ -108,6 +108,11 @@ urlpatterns += [
         geonode.views.moderator_contacted,
         name="moderator_contacted",
     ),
+    re_path(
+        r"^account/moderation_needed/",
+        geonode.views.moderator_needed,
+        name="moderator_needed",
+    ),
     # OAuth2/OIDC Provider
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),

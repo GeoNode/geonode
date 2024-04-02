@@ -1,0 +1,14 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Account Pending Approval" %}{% endblock %}
+
+{% block body %}
+
+<div class="page-header">
+  <h2>{% trans "Account Pending Approval" %}</h2>
+</div>
+
+    <p>{% blocktrans %}We invite you to contact the administrator to reset the email {% endblocktrans %}</p>
+{% endblock %}
