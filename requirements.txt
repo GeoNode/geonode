@@ -31,7 +31,7 @@ PyMuPDF==1.24.0
 django-allauth==0.61.1
 django-appconf==1.0.6
 django-celery-results==2.5.1
-django-filter==24.1
+django-filter==24.2
 django-imagekit==5.0.0
 django-taggit==5.0.1
 django-markdownify==0.9.3
