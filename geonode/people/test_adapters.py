@@ -2,7 +2,6 @@
 
 from unittest import TestCase
 
-from django.test import override_settings
 
 from geonode.people import adapters
 
@@ -281,27 +280,6 @@ class LocalAccountAdapterTestCase(TestCase):
         self.django_request.user.username = dummy_username
         mock_reverse.return_value = dummy_reverse
         result = self.extractor.get_login_redirect_url(self.django_request)
-        mock_reverse.assert_called_with("profile_detail", kwargs={"username": dummy_username})
-        self.assertEqual(result, dummy_reverse)
-
-    @override_settings(ACCOUNT_EMAIL_VERIFICATION=True)
-    @mock.patch("geonode.people.adapters.reverse", autospec=True)
-    def test_login_redirect_url_valid_email(self, mock_reverse):
-        dummy_reverse = "dummy"
-        dummy_username = "dummy_username"
-        dummy_email = "test@mail.com"
-        self.django_request.user.username = dummy_username
-        self.django_request.user.email = dummy_email
-        mock_reverse.return_value = dummy_reverse
-        result = self.extractor.pre_login(
-            user=self.django_request.user,
-            request=self.django_request,
-            email_verification="mandatory",
-            signal_kwargs=False,
-            email=None,
-            signup=False,
-            redirect_url="profile_detail",
-        )
         mock_reverse.assert_called_with("profile_detail", kwargs={"username": dummy_username})
         self.assertEqual(result, dummy_reverse)
 

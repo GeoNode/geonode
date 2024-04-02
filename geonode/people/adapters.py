@@ -203,7 +203,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         return _respond_inactive_user(user)
 
     def check_user_invalid_email(self, request, user):
-        return _handle_user_invalid_email(request, user)
+        return _handle_user_invalid_email(user)
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
