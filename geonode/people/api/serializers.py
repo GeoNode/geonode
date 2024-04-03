@@ -13,12 +13,26 @@ logger = logging.getLogger(__name__)
 
 
 class UserSerializer(base_serializers.BaseDynamicModelSerializer):
+
+    link = base_serializers.AutoLinkField(read_only=True)
+
     class Meta:
         ref_name = "UserProfile"
         model = get_user_model()
         name = "user"
         view_name = "users-list"
-        fields = ("pk", "username", "first_name", "last_name", "avatar", "perms", "is_superuser", "is_staff", "email")
+        fields = (
+            "pk",
+            "username",
+            "first_name",
+            "last_name",
+            "avatar",
+            "perms",
+            "is_superuser",
+            "is_staff",
+            "email",
+            "link",
+        )
 
     @staticmethod
     def password_validation(password_payload):

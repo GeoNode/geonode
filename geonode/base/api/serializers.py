@@ -87,6 +87,9 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
                     path = f"{path}/"
                 url = urljoin(path, str(instance.pk))
                 data["link"] = build_absolute_uri(url)
+                logger.warning(
+                    f"Deprecated: BaseDynamicModelSerializer should be replaced with proper Field - Root: {type(self).__name__}"
+                )
             except (TypeError, NoReverseMatch) as e:
                 logger.exception(e)
         return data
@@ -268,7 +271,7 @@ class DownloadLinkField(DynamicComputedField):
     def get_attribute(self, instance):
         try:
             logger.info(
-                "This field is deprecated, and will be removed in the future GeoNode version. Please refer to download_urls"
+                f"Field {self.field_name} is deprecated and will be removed in the future GeoNode version. Please refer to download_urls"
             )
             _instance = instance.get_real_instance()
             return _instance.download_url if hasattr(_instance, "download_url") else None
@@ -323,6 +326,21 @@ class FavoriteField(DynamicComputedField):
         if _user and not _user.user.is_anonymous:
             return Favorite.objects.filter(object_id=instance.pk, user=_user.user).exists()
         return False
+
+
+class AutoLinkField(DynamicComputedField):
+
+    def get_attribute(self, instance):
+        try:
+            path = reverse(self.root.Meta.view_name)
+            if not path.endswith("/"):
+                path = f"{path}/"
+            url = urljoin(path, str(instance.pk))
+            return build_absolute_uri(url)
+
+        except Exception as e:
+            logger.exception(e)
+            return None
 
 
 class ContactRoleField(DynamicComputedField):
@@ -492,7 +510,7 @@ class LinksSerializer(DynamicModelSerializer):
         return ret
 
 
-class ResourceBaseSerializer(BaseDynamicModelSerializer):
+class ResourceBaseSerializer(DynamicModelSerializer):
     pk = serializers.CharField(read_only=True)
     uuid = serializers.CharField(read_only=True)
     resource_type = serializers.CharField(required=False)
@@ -574,6 +592,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
     linked_resources = DynamicRelationField(
         LinkedResourceEmbeddedSerializer, source="id", deferred=True, required=False, read_only=True
     )
+    link = AutoLinkField(read_only=True)
 
     class Meta:
         model = ResourceBase
@@ -656,6 +675,7 @@ class ResourceBaseSerializer(BaseDynamicModelSerializer):
             "favorite",
             "thumbnail_url",
             "links",
+            "link",
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
