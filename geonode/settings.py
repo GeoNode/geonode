@@ -549,6 +549,11 @@ REST_API_DEFAULT_PAGE = os.getenv("REST_API_DEFAULT_PAGE", 1)
 REST_API_DEFAULT_PAGE_SIZE = os.getenv("REST_API_DEFAULT_PAGE_SIZE", 10)
 REST_API_DEFAULT_PAGE_QUERY_PARAM = os.getenv("REST_API_DEFAULT_PAGE_QUERY_PARAM", "page_size")
 
+REST_API_PRESETS = {
+    "bare": {"exclude[]": ["*"], "include[]": ["pk", "title"]},
+    "basic": {"exclude[]": ["*"], "include[]": ["pk", "title", "abstract", "resource_type"]},
+}
+
 DYNAMIC_REST = {
     # DEBUG: enable/disable internal debugging
     "DEBUG": False,
