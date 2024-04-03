@@ -1951,10 +1951,10 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.json(), "The url must be of an image with format (png, jpeg or jpg)")
 
         # using Base64 data as an ASCII byte string
-        data[
-            "file"
-        ] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
+        data["file"] = (
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABHNCSVQICAgI\
         fAhkiAAAABl0RVh0U29mdHdhcmUAZ25vbWUtc2NyZWVuc2hvdO8Dvz4AAAANSURBVAiZYzAxMfkPAALYAZzx61+bAAAAAElFTkSuQmCC"
+        )
         with patch("geonode.base.models.is_monochromatic_image") as _mck:
             _mck.return_value = False
             response = self.client.put(url, data=data, format="json")
@@ -2623,15 +2623,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(
-                payload,
-                "resources",
-                (
-                    {"pk": self.map.id, "title": ">>> " + self.map.title},
-                    {"pk": self.dataset.id, "title": ">>> " + self.dataset.title},
-                ),
-            )
             self.assert_linkedres_size(payload, "linked_to", 2)
             self.assert_linkedres_contains(
                 payload,
@@ -2644,7 +2635,11 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 d.delete()
 
     def assert_linkedres_size(self, payload, element: str, expected_size: int):
-        self.assertEqual(expected_size, len(payload[element]), f"Mismatching payload size of {element}")
+        self.assertEqual(
+            expected_size,
+            len(payload[element]),
+            f"Mismatching payload size of '{element}': exp:{expected_size} found:{payload[element]}",
+        )
 
     def assert_linkedres_contains(self, payload, element: str, expected_elements: Iterable):
         res_list = payload[element]
@@ -2684,15 +2679,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
 
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(
-                payload,
-                "resources",
-                (
-                    {"pk": self.doc.id, "title": "<<< " + self.doc.title},
-                    {"pk": self.dataset.id, "title": ">>> " + self.dataset.title},
-                ),
-            )
             self.assert_linkedres_size(payload, "linked_to", 1)
             self.assert_linkedres_contains(
                 payload, "linked_to", ({"pk": self.dataset.id, "title": self.dataset.title},)
@@ -2705,6 +2691,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 d.delete()
 
     def test_linked_resources_for_maps(self):
+        _m = None
         try:
             # data preparation
             _m = MapLayer.objects.create(
@@ -2723,10 +2710,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
 
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 1)
-            self.assert_linkedres_contains(
-                payload, "resources", ({"pk": self.dataset.id, "title": ">>> " + self.dataset.title},)
-            )
             self.assert_linkedres_size(payload, "linked_to", 1)
             self.assert_linkedres_contains(
                 payload, "linked_to", ({"pk": self.dataset.id, "title": self.dataset.title},)
@@ -2757,10 +2740,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
 
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 1)
-            self.assert_linkedres_contains(
-                payload, "resources", ({"pk": self.map.id, "title": "<<< " + self.map.title},)
-            )
             self.assert_linkedres_size(payload, "linked_to", 0)
             self.assert_linkedres_size(payload, "linked_by", 1)
             self.assert_linkedres_contains(payload, "linked_by", ({"pk": self.map.id, "title": self.map.title},))
@@ -2791,15 +2770,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(
-                payload,
-                "resources",
-                (
-                    {"pk": self.doc.id, "title": "<<< " + self.doc.title},
-                    {"pk": self.map.id, "title": "<<< " + self.map.title},
-                ),
-            )
             self.assert_linkedres_size(payload, "linked_to", 0)
             self.assert_linkedres_size(payload, "linked_by", 2)
             self.assert_linkedres_contains(
@@ -2843,6 +2813,82 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
             self.assertNotIn("PAGINATION", payload["WARNINGS"], "Unexpected PAGINATION element")
+
+        finally:
+            for d in _d:
+                d.delete()
+
+    def test_linked_resource_filter_one_resource_type(self):
+        _d = []
+        try:
+            # data preparation
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            resource_type_param = "dataset"
+            # call api with single resource_type param
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?resource_type={resource_type_param}")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            res_types_orig = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
+            for r in res_types_payload:
+                self.assertTrue(r in res_types_orig)
+
+        finally:
+            for d in _d:
+                d.delete()
+
+    def test_linked_resource_filter_multiple_resource_type_linktype(self):
+        _d = []
+        try:
+            # data preparation
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            resource_type_param = "map"
+            link_type = "linked_to"
+            # call the API w/ both parameters
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?resource_type={resource_type_param}&link_type={link_type}")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            res_types_orig = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
+            for type in res_types_payload:
+                self.assertTrue(type in res_types_orig)
+            self.assertTrue({"linked_to", "WARNINGS"} == set(payload.keys()))
+
+        finally:
+            for d in _d:
+                d.delete()
+
+    def test_linked_resource_filter_multiple_resource_type_without_linktype(self):
+        _d = []
+        try:
+            # data preparation
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
+            _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
+            resource_type_param = "dataset,map"
+            # call the API w/ resource_type
+            url = reverse("base-resources-linked_resources", args=[self.doc.id])
+            response = self.client.get(f"{url}?resource_type={resource_type_param}")
+
+            # validation
+            self.assertEqual(response.status_code, 200)
+            payload = response.json()
+
+            res_types_orig = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
+            for type in res_types_payload:
+                self.assertTrue(type in res_types_orig)
+            payload_keys = {"linked_by", "linked_to", "WARNINGS"}
+            self.assertTrue(payload_keys == set(payload.keys()))
 
         finally:
             for d in _d:

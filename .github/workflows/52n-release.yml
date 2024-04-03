@@ -41,7 +41,7 @@ jobs:
         uses: docker/metadata-action@v4
         env:
           MAJOR_VERSION: ${{ steps.semver_parser.outputs.major }}
-          MAJOR_MINOR_VERSION: ${{ steps.semver_parser.outputs.major }}-${{ steps.semver_parser.outputs.minor }}
+          MAJOR_MINOR_VERSION: ${{ steps.semver_parser.outputs.major }}.${{ steps.semver_parser.outputs.minor }}
           MAJOR_MINOR_PATCH_VERSION: ${{ steps.semver_parser.outputs.fullversion }}
         with:
           images: ${{ env.IMAGE }}
