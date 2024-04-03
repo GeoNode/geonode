@@ -9,7 +9,7 @@ env:
 
 on:
   push:
-    tags: 
+    tags:
       - "v*-thuenen"
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v3
       -
         name: Parse semver string
-        id: semver_parser 
+        id: semver_parser
         uses: booxmedialtd/ws-action-parse-semver@v1
         with:
           input_string: "${{github.ref_name}}"
@@ -31,13 +31,13 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - 
+      -
         name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
         env:
           MAJOR_VERSION: ${{ steps.semver_parser.outputs.major }}
-          MAJOR_MINOR_VERSION: ${{ steps.semver_parser.outputs.major }}-${{ steps.semver_parser.outputs.minor }}
+          MAJOR_MINOR_VERSION: ${{ steps.semver_parser.outputs.major }}.${{ steps.semver_parser.outputs.minor }}
           MAJOR_MINOR_PATCH_VERSION: ${{ steps.semver_parser.outputs.fullversion }}
         with:
           images: ${{ env.IMAGE }}
