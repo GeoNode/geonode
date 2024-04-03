@@ -2549,7 +2549,7 @@ class BaseApiTests(APITestCase):
                 response = self.client.get(url, format="json").json()
                 json = next(iter(response.values()))
                 self.assertSetEqual(
-                    {"pk", "title", "link"},
+                    {"pk", "title"},
                     set(json.keys()),
                     f"Bad json content for object {type(resource)} JSON:{json}",
                 )
