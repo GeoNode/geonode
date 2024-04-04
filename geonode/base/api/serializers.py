@@ -87,8 +87,16 @@ class BaseDynamicModelSerializer(DynamicModelSerializer):
                     path = f"{path}/"
                 url = urljoin(path, str(instance.pk))
                 data["link"] = build_absolute_uri(url)
+
+                parents = []
+                parent = self.parent
+                while parent:
+                    parents.append(type(parent).__name__)
+                    parent = parent.parent
+
                 logger.warning(
-                    f"Deprecated: BaseDynamicModelSerializer should be replaced with proper Field - Root: {type(self).__name__}"
+                    f"Deprecated: BaseDynamicModelSerializer should be replaced with proper Field"
+                    f" - Parents: {parents} Root: {type(self).__name__}"
                 )
             except (TypeError, NoReverseMatch) as e:
                 logger.exception(e)
@@ -331,12 +339,26 @@ class FavoriteField(DynamicComputedField):
 class AutoLinkField(DynamicComputedField):
 
     def get_attribute(self, instance):
+        parents = []
+        parent = self.parent
+        while parent:
+            parents.append(type(parent).__name__)
+            parent = parent.parent
+
+        logger.debug(
+            f"AutoLinkField reading Meta from first parent - Parents: {parents} root: {type(self.root).__name__}"
+        )
+
         try:
-            path = reverse(self.root.Meta.view_name)
+            path = reverse(self.parent.Meta.view_name)
             if not path.endswith("/"):
                 path = f"{path}/"
             url = urljoin(path, str(instance.pk))
             return build_absolute_uri(url)
+
+        except AttributeError as e:
+            logger.exception(f"Parents: {parents} root: {type(self.root).__name__}", exc_info=e)
+            return None
 
         except Exception as e:
             logger.exception(e)
