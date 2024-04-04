@@ -12,7 +12,7 @@ import geonode.base.api.serializers as base_serializers
 logger = logging.getLogger(__name__)
 
 
-class UserSerializer(base_serializers.BaseDynamicModelSerializer):
+class UserSerializer(base_serializers.DynamicModelSerializer):
 
     link = base_serializers.AutoLinkField(read_only=True)
 
