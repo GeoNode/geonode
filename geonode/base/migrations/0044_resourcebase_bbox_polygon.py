@@ -2,6 +2,16 @@
 
 import django.contrib.gis.db.models.fields
 from django.db import migrations
+from django.contrib.gis.geos import Polygon
+
+
+def populate_polygon(apps, schema_editor):
+    ResourceBase = apps.get_model('base', 'ResourceBase')
+    for res in ResourceBase.objects.all():
+        bbox = [getattr(res, key, None) for key in ('bbox_x0', 'bbox_y0', 'bbox_x1', 'bbox_y1')]
+        if all(bbox):
+            res.bbox_polygon = Polygon.from_bbox(bbox)
+            res.save()
 
 
 class Migration(migrations.Migration):
@@ -16,4 +26,5 @@ class Migration(migrations.Migration):
             name='bbox_polygon',
             field=django.contrib.gis.db.models.fields.PolygonField(null=True, blank=True, srid=4326),
         ),
+        migrations.RunPython(populate_polygon, migrations.RunPython.noop),
     ]
