@@ -1,6 +1,5 @@
 from django.db import migrations, connection
 
-from geonode.base.models import ResourceBase
 from geonode.storage.manager import storage_manager
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 import logging
@@ -13,6 +12,9 @@ def update_thumbnail_urls_and_delete_curated_thumbs_folder(apps, schema_editor):
     INNER JOIN base_curatedthumbnail
     ON base_resourcebase.id=base_curatedthumbnail.resource_id;
     '''
+    # use historical model
+    ResourceBase = apps.get_model('base', 'ResourceBase')
+
     c = connection.cursor()
     c.execute(query)
     results = c.fetchall()
