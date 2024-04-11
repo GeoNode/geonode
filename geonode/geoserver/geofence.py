@@ -441,6 +441,10 @@ class GeoFenceUtils:
         """Delete all Rules related to a specific Layer"""
         try:
             batch = self.collect_delete_layer_rules(workspace_name, layer_name)
+            if not batch:
+                logger.error(f"Error removing rules for {workspace_name}:{layer_name}")
+                return False
+
             logger.debug(f"Going to remove {batch.length()} rules for layer {workspace_name}:{layer_name}")
             return self.geofence.run_batch(batch)
 
