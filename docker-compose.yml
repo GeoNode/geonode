@@ -4,6 +4,9 @@ version: '3.9'
 x-common-django:
   &default-common-django
   image: geonode/geonode:4.2.3
+  build:
+      context: ./
+      dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
     - .env
