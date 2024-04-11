@@ -22,6 +22,9 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     << : *default-common-django
+    build:
+      context: ./
+      dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
