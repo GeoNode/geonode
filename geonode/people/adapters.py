@@ -267,7 +267,12 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
         provider = provider or self.provider_id
         provider_class = registry.get_class(provider)
         if provider_class is None or provider_class.uses_apps:
-            app = self.get_app(request, provider=provider)
+            # check if first app provider contains client_id, mutiple apps in a single provider
+            # get seperated into multiple providers, an this function gets called multiple times
+            # https://github.com/pennersr/django-allauth/blob/main/docs/socialaccount/providers/openid_connect.rst
+            if not self.list_apps(request)[0].client_id:
+                raise (ImproperlyConfigured(f"Missing client_id parameter in provider: {provider} configuration"))
+            app = self.get_app(request, provider=provider, client_id=self.list_apps(request)[0].client_id)
             if not provider_class:
                 # In this case, the `provider` argument passed was a
                 # `provider_id`.
