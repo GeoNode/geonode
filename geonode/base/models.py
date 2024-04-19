@@ -1755,9 +1755,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             ContactRole.objects.filter(role=role, resource=self).delete()
             return __create_role__(self, role, user_profile)
 
-        elif isinstance(user_profile, list) and all(isinstance(x, get_user_model()) for x in user_profile):
+        elif isinstance(user_profile, list) and all(
+            get_user_model().objects.filter(username=x).exists() for x in user_profile
+        ):
             ContactRole.objects.filter(role=role, resource=self).delete()
-            return [__create_role__(self, role, profile) for profile in user_profile]
+            return [
+                __create_role__(self, role, user) for user in get_user_model().objects.filter(username__in=user_profile)
+            ]
 
         elif user_profile is None:
             ContactRole.objects.filter(role=role, resource=self).delete()
