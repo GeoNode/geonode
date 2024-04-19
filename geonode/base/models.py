@@ -1710,8 +1710,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         failed = False
         for role in self.get_multivalue_role_property_names():
             try:
-                if resource_base_form.cleaned_data[role].exists():
-                    self.__setattr__(role, resource_base_form.cleaned_data[role])
+                self.__setattr__(role, resource_base_form.cleaned_data[role])
             except AttributeError:
                 logger.warning(f"unable to set contact role {role} for {self} ...")
                 failed = True
