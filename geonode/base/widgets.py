@@ -36,6 +36,5 @@ class TaggitProfileSelect2Custom(TaggitSelect2):
         if type(data) is dict and "name" in data:
             return data["name"]
         elif type(data) is QueryDict:
-            print("QUERYDICT")
             return data.getlist(name)
         return []
