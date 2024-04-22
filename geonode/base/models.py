@@ -904,8 +904,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Metadata"), default=False, help_text=_("If true, will be excluded from search")
     )
 
-    files = JSONField(null=True, default=list, blank=True)
-
     blob = JSONField(null=True, default=dict, blank=True)
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
@@ -1278,10 +1276,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def is_copyable(self):
-        from geonode.geoserver.helpers import select_relevant_files
-
         if self.resource_type == "dataset":
-            allowed_file = select_relevant_files(get_allowed_extensions(), self.files)
+            from geonode.assets.utils import get_default_asset
+            from geonode.geoserver.helpers import select_relevant_files
+
+            asset = get_default_asset(self)  # TODO: maybe we need to filter by original files
+            allowed_file = select_relevant_files(get_allowed_extensions(), asset.location) if asset else []
             return len(allowed_file) != 0
         return True
 
@@ -2021,6 +2021,7 @@ class Link(models.Model):
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
     mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(max_length=1000)
+    asset = models.ForeignKey("assets.Asset", null=True, on_delete=models.CASCADE)
 
     objects = LinkManager()
 

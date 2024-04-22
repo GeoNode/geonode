@@ -174,18 +174,19 @@ class StorageManager(StorageManagerInterface):
             updated_files["files"] = [self.replace_single_file(resource.files[0], files)]
         return updated_files
 
-    def copy(self, resource):
-        updated_files = {}
-        if len(resource.files):
-            updated_files["files"] = self.copy_files_list(resource.files)
-        return updated_files
+    def copy(self, resource, target=None):
+        raise Exception("This is not the copy you're looking for")
+        # updated_files = {}
+        # if len(resource.files):
+        #     updated_files["files"] = self.copy_files_list(resource.files)
+        # return updated_files
 
-    def copy_files_list(self, files: List[str]):
+    def copy_files_list(self, files: List[str], dir=None, dir_prefix=None, dir_suffix=None):
         from geonode.utils import mkdtemp
 
         out = []
         random_suffix = f"{uuid1().hex[:8]}"
-        new_path = mkdtemp()
+        new_path = mkdtemp(dir=dir, prefix=dir_prefix, suffix=dir_suffix)
 
         if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
             # value is always set by default as None

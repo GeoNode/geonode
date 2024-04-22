@@ -38,6 +38,8 @@ from django.utils.module_loading import import_string
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, FieldDoesNotExist
 
+
+from geonode.base.models import ResourceBase, LinkedResource, Link
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
@@ -45,9 +47,10 @@ from geonode.security.utils import perms_as_set, get_user_groups, skip_registere
 
 from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save
+from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link
+from geonode.assets.handlers import asset_handler_registry
 
 from ..base import enumerations
-from ..base.models import ResourceBase, LinkedResource
 from ..security.utils import AdvancedSecurityWorkflowManager
 from ..layers.metadata import parse_metadata
 from ..documents.models import Document
@@ -313,10 +316,23 @@ class ResourceManager(ResourceManagerInterface):
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid4())
-        _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=defaults)
+        resource_dict = {  # TODO: cleanup params and dicts
+            k: v
+            for k, v in defaults.items()
+            if k not in ("data_title", "data_type", "description", "files", "link_type")
+        }
+        _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
             _resource.set_processing_state(enumerations.STATE_RUNNING)
             try:
+                # if files exist: create an Asset out of them and link it to the Resource
+                asset, link = (None, None)  # safe init in case of exception
+                asset, link = (
+                    create_asset_and_link_dict(_resource, defaults, clone_files=True)
+                    if defaults.get("files", None)
+                    else (None, None)
+                )
+
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(
@@ -327,6 +343,7 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
+                rollback_asset_and_link(asset, link)
                 self.delete(_resource.uuid, instance=_resource)
                 raise e
         return _resource
@@ -440,19 +457,17 @@ class ResourceManager(ResourceManagerInterface):
     ) -> ResourceBase:
         instance = None
         to_update = defaults.copy()
-        if "files" in to_update:
-            to_update.pop("files")
         try:
             with transaction.atomic():
                 if resource_type == Document:
                     if "name" in to_update:
                         to_update.pop("name")
-                    if files:
-                        to_update["files"] = storage_manager.copy_files_list(files)
                     instance = self.create(uuid, resource_type=Document, defaults=to_update)
                 elif resource_type == Dataset:
+                    logger.warning(f"Will not create a Dataset without any file. Values: {defaults}")
                     if files:
                         instance = self.create(uuid, resource_type=Dataset, defaults=to_update)
+
                 if instance:
                     instance = self._concrete_resource_manager.ingest(
                         storage_manager.copy_files_list(files),
@@ -480,6 +495,18 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 instance.clear_dirty_state()
         return instance
+
+    def _copy_data(self, resource, target=None) -> list[Link]:
+        links = []
+        links_with_assets = Link.objects.filter(resource=resource, asset__isnull=False).prefetch_related("asset")
+
+        for link in links_with_assets:
+            link.asset = asset_handler_registry.get_handler(link.asset).clone(link.asset)
+            link.pk = None
+            link.resource = target
+            link.save()
+            links.append(link)
+        return links
 
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
@@ -523,12 +550,14 @@ class ResourceManager(ResourceManagerInterface):
                             _maplayer.pk = _maplayer.id = None
                             _maplayer.map = _resource.get_real_instance()
                             _maplayer.save()
-                    to_update = {}
-                    try:
-                        to_update = storage_manager.copy(_resource).copy()
-                    except Exception as e:
-                        logger.exception(e)
 
+                    links = self._copy_data(instance, target=_resource)
+                    # we're just merging all the files together: it won't work once we have multiple assets per resource
+                    # TODO: get the files from the proper Asset
+                    files = []
+                    for link in links:
+                        files.extend(link.asset.location)
+                    to_update = {"files": files}
                     _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
 
             except Exception as e:

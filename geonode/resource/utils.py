@@ -29,8 +29,10 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
-from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
+
+from geonode.assets.utils import get_default_asset
+from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
@@ -322,9 +324,9 @@ def get_alternate_name(instance):
 
 def document_post_save(instance, *args, **kwargs):
     instance.csw_type = "document"
-
-    if instance.files:
-        _, extension = os.path.splitext(os.path.basename(instance.files[0]))
+    asset = get_default_asset(instance)
+    if asset:
+        _, extension = os.path.splitext(os.path.basename(asset.location[0]))
         instance.extension = extension[1:]
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, "DOCUMENT_TYPE_MAP", {}))
@@ -344,7 +346,7 @@ def document_post_save(instance, *args, **kwargs):
     mime = mime_type_map.get(ext, "text/plain")
     url = None
 
-    if instance.id and instance.files:
+    if instance.id and asset:
         name = "Hosted Document"
         site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
         url = f"{site_url}{reverse('document_download', args=(instance.id,))}"

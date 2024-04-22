@@ -281,13 +281,13 @@ class OGC_Servers_Handler:
         return [self[alias] for alias in self]
 
 
-def mkdtemp(dir=settings.MEDIA_ROOT):
+def mkdtemp(dir=settings.MEDIA_ROOT, prefix=None, suffix=None):
     if not os.path.exists(dir):
         os.makedirs(dir, exist_ok=True)
     tempdir = None
     while not tempdir:
         try:
-            tempdir = tempfile.mkdtemp(dir=dir)
+            tempdir = tempfile.mkdtemp(dir=dir, prefix=prefix, suffix=suffix)
             if os.path.exists(tempdir) and os.path.isdir(tempdir):
                 if os.listdir(tempdir):
                     raise Exception("Directory is not empty")
