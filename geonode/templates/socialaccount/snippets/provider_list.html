@@ -5,7 +5,7 @@
 {% get_providers as socialaccount_providers %}
 
 {% for provider in socialaccount_providers %}
-        {% if provider.id == "openid" %}
+        {% if provider.id == "openid_connect" %}
             {% for brand in provider.get_brands %}
                 <a class="list-group-item" title="{{brand.name}}" href="{% provider_login_url provider openid=brand.openid_url process=process %}">
                     {{brand.name}}
