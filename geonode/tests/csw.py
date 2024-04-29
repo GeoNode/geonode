@@ -122,6 +122,8 @@ class GeoNodeCSWTest(GeoNodeBaseTestSupport):
 
         csw = get_catalogue()
 
+        
+        
         # search for 'san_andres_y_providencia_location', output as Dublin Core
         dataset_query_like = PropertyIsLike("csw:AnyText", "%san_andres_y_providencia_location%")
         csw.catalogue.getrecords2(

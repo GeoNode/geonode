@@ -33,7 +33,7 @@ from PIL import Image
 from io import BytesIO
 from time import sleep
 from uuid import uuid4
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from urllib.parse import urljoin
 from datetime import date, timedelta
 
@@ -2306,9 +2306,10 @@ class BaseApiTests(APITestCase):
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
     @override_settings(ASYNC_SIGNALS=False, FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777)
-    def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
+    @patch("importer.celery_tasks.connections")
+    def test_resource_service_copy_with_perms_dataset_set_default_perms(self, conn):
         with self.settings(ASYNC_SIGNALS=False):
-
+            conn = MagicMock()
             files_as_dict, resource = self._import_dataset()
 
             _, _ = create_asset_and_link(
@@ -2327,7 +2328,7 @@ class BaseApiTests(APITestCase):
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
             payload = QueryDict("", mutable=True)
-            payload.update({"defaults": '{"title": ' + resource.title + " }"})
+            payload.update({"defaults": '{"title": "' + resource.title + '" }'})
             response = self.client.put(copy_url, data=payload)
             self.assertEqual(response.status_code, 200)
 
@@ -2343,10 +2344,10 @@ class BaseApiTests(APITestCase):
 
     def _import_dataset(self):
         files_as_dict = {
-            "base_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp"),
-            "dbf_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.dbf"),
-            "prj_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shx"),
-            "shx_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.prj"),
+            "base_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_location.shp"),
+            "dbf_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_location.dbf"),
+            "prj_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_location.shx"),
+            "shx_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_location.prj"),
         }
         payload = {_filename: open(_file, "rb") for _filename, _file in files_as_dict.items()}
 
@@ -2357,7 +2358,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(201, response.status_code)
 
         resource = ResourceHandlerInfo.objects.get(execution_request_id=response.json()["execution_id"])
-        return files_as_dict, resource
+        return files_as_dict, resource.resource
 
     def test_resource_service_copy_with_perms_doc(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
