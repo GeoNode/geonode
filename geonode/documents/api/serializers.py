@@ -36,35 +36,26 @@ class DocumentFieldField(DynamicComputedField):
 
 
 class DocumentSerializer(ResourceBaseSerializer):
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
-
-    file_path = GeonodeFilePathField(required=False)
-    doc_file = DocumentFieldField(required=False)
+    file_path = GeonodeFilePathField(required=False, write_only=True)
+    doc_file = DocumentFieldField(required=False, write_only=True)
 
     class Meta:
         model = Document
         name = "document"
         view_name = "documents-list"
-        fields = (
-            "pk",
-            "uuid",
-            "name",
-            "href",
-            "subtype",
-            "extension",
-            "mime_type",
-            "executions",
-            "file_path",
-            "doc_file",
-            "doc_url",
-            "metadata",
+        fields = list(
+            set(
+                ResourceBaseSerializer.Meta.fields
+                + (
+                    "uuid",
+                    "name",
+                    "href",
+                    "subtype",
+                    "extension",
+                    "mime_type",
+                    "file_path",
+                    "doc_file",
+                    "doc_url",
+                )
+            )
         )
-
-    def to_representation(self, obj):
-        _doc = super(DocumentSerializer, self).to_representation(obj)
-        # better to hide internal server file path
-        _doc.pop("file_path")
-        _doc.pop("doc_file")
-        return _doc

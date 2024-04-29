@@ -32,7 +32,6 @@ from django.db.models import F
 from django.http import Http404
 from django.contrib import messages
 from django.shortcuts import render
-from django.utils.html import escape
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import PermissionDenied
@@ -42,27 +41,18 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.decorators.http import require_http_methods
 
 from geonode import geoserver
-from geonode.layers.metadata import parse_metadata
 from geonode.resource.manager import resource_manager
-from geonode.geoserver.helpers import set_dataset_style
-from geonode.resource.utils import update_resource
-
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
 from geonode.base.models import Thesaurus, TopicCategory
-from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
-from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm, NewLayerUploadForm
+from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm
 from geonode.layers.models import Dataset, Attribute
 from geonode.layers.utils import (
-    is_sld_upload_only,
-    is_xml_upload_only,
     get_default_dataset_download_handler,
-    validate_input_source,
 )
 from geonode.services.models import Service
 from geonode.base import register_event
@@ -70,9 +60,8 @@ from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
 from geonode.people.forms import ProfileForm
-from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object, mkdtemp
-from geonode.geoserver.helpers import ogc_server_settings, select_relevant_files, write_uploaded_files_to_disk
-from geonode.geoserver.security import set_geowebcache_invalidate_cache
+from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
+from geonode.geoserver.helpers import ogc_server_settings
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog
@@ -138,116 +127,6 @@ def _resolve_dataset(request, alternate, permission="base.view_resourcebase", ms
     elif test_query.count() > 1:
         query = {"id": test_query.last().id}
     return resolve_object(request, Dataset, query, permission=permission, permission_msg=msg, **kwargs)
-
-
-# Basic Dataset Views #
-
-
-@login_required
-@require_http_methods(["POST"])
-def dataset_upload(request):
-    if is_xml_upload_only(request):
-        return dataset_upload_metadata(request)
-    elif is_sld_upload_only(request):
-        return dataset_style_upload(request)
-    out = {"errormsgs": "Please, execute a valid upload request"}
-    return HttpResponse(json.dumps(out), content_type="application/json", status=500)
-
-
-def dataset_upload_metadata(request):
-    out = {}
-    errormsgs = []
-
-    form = NewLayerUploadForm(request.POST, request.FILES)
-
-    if form.is_valid():
-        tempdir = mkdtemp()
-        relevant_files = select_relevant_files(["xml"], iter(request.FILES.values()))
-        logger.debug(f"relevant_files: {relevant_files}")
-        write_uploaded_files_to_disk(tempdir, relevant_files)
-        base_file = os.path.join(tempdir, form.cleaned_data["base_file"].name)
-        layer = _resolve_dataset(
-            request, form.cleaned_data.get("dataset_title"), "base.change_resourcebase", _PERMISSION_MSG_MODIFY
-        )
-        if layer:
-            dataset_uuid, vals, regions, keywords, _ = parse_metadata(open(base_file).read())
-            if dataset_uuid and layer.uuid != dataset_uuid:
-                out["success"] = False
-                out["errors"] = "The UUID identifier from the XML Metadata, is different from the one saved"
-                return HttpResponse(json.dumps(out), content_type="application/json", status=404)
-            updated_dataset = update_resource(layer, base_file, regions, keywords, vals)
-            updated_dataset.save()
-            out["status"] = ["finished"]
-            out["url"] = updated_dataset.get_absolute_url()
-            out["bbox"] = updated_dataset.bbox_string
-            out["crs"] = {"type": "name", "properties": updated_dataset.srid}
-            out["ogc_backend"] = settings.OGC_SERVER["default"]["BACKEND"]
-            if hasattr(updated_dataset, "upload_session"):
-                upload_session = updated_dataset.upload_session
-                upload_session.processed = True
-                upload_session.save()
-            status_code = 200
-            out["success"] = True
-            return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
-        else:
-            out["success"] = False
-            out["errors"] = "Dataset selected does not exists"
-            status_code = 404
-        return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
-    else:
-        for e in form.errors.values():
-            errormsgs.extend([escape(v) for v in e])
-        out["errors"] = form.errors
-        out["errormsgs"] = errormsgs
-
-    return HttpResponse(json.dumps(out), content_type="application/json", status=500)
-
-
-def dataset_style_upload(request):
-    out = {}
-    errormsgs = []
-
-    form = NewLayerUploadForm(request.POST, request.FILES)
-
-    if form.is_valid():
-        status_code = 200
-        try:
-            data = form.cleaned_data
-            out = {
-                "success": True,
-                "style": data.get("dataset_title"),
-            }
-
-            layer = _resolve_dataset(
-                request, data.get("dataset_title"), "base.change_resourcebase", _PERMISSION_MSG_MODIFY
-            )
-
-            if layer:
-                sld = request.FILES["sld_file"].read()
-
-                set_dataset_style(layer, data.get("dataset_title"), sld)
-                out["url"] = layer.get_absolute_url()
-                out["bbox"] = layer.bbox_string
-                out["crs"] = {"type": "name", "properties": layer.srid}
-                out["ogc_backend"] = settings.OGC_SERVER["default"]["BACKEND"]
-                out["status"] = ["finished"]
-            else:
-                out["success"] = False
-                out["errors"] = "Dataset selected does not exists"
-                status_code = 404
-        except Exception as e:
-            status_code = 500
-            out["success"] = False
-            out["errors"] = str(e.args[0])
-
-        return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
-    else:
-        for e in form.errors.values():
-            errormsgs.extend([escape(v) for v in e])
-        out["errors"] = errormsgs
-        out["errormsgs"] = errormsgs
-
-    return HttpResponse(json.dumps(out), content_type="application/json", status=500)
 
 
 # Loads the data using the OWS lib when the "Do you want to filter it"
@@ -697,94 +576,6 @@ def dataset_metadata_advanced(request, layername):
 def dataset_download(request, layername):
     handler = get_default_dataset_download_handler()
     return handler(request, layername).get_download_response()
-
-
-@login_required
-def dataset_replace(request, layername, template="datasets/dataset_replace.html"):
-    return dataset_append_replace_view(request, layername, template, action_type="replace")
-
-
-@login_required
-def dataset_append(request, layername, template="datasets/dataset_append.html"):
-    return dataset_append_replace_view(request, layername, template, action_type="append")
-
-
-def dataset_append_replace_view(request, layername, template, action_type):
-    try:
-        dataset = _resolve_dataset(request, layername, "base.change_resourcebase", _PERMISSION_MSG_MODIFY)
-    except PermissionDenied:
-        return HttpResponse("Not allowed", status=403)
-    except Exception:
-        raise Http404("Not found")
-    if not dataset:
-        raise Http404("Not found")
-
-    if request.method == "GET":
-        ctx = {
-            "charsets": CHARSETS,
-            "resource": dataset,
-            "is_featuretype": dataset.is_vector(),
-            "is_dataset": True,
-        }
-        return render(request, template, context=ctx)
-    elif request.method == "POST":
-        from geonode.upload.forms import LayerUploadForm as UploadForm
-
-        form = UploadForm(request.POST, request.FILES, user=request.user)
-        out = {}
-        if form.is_valid():
-            storage_manager = form.cleaned_data.get("storage_manager")
-            try:
-                store_spatial_files = form.cleaned_data.get("store_spatial_files", True)
-
-                file_paths = storage_manager.get_retrieved_paths()
-                base_file = file_paths.get("base_file")
-                files = {_file.split(".")[1]: _file for _file in file_paths.values()}
-
-                resource_is_valid = validate_input_source(
-                    layer=dataset, filename=base_file, files=files, action_type=action_type
-                )
-                out = {}
-                if resource_is_valid:
-                    xml_file = file_paths.pop("xml_file", None)
-                    sld_file = file_paths.pop("sld_file", None)
-
-                    call_kwargs = {
-                        "instance": dataset,
-                        "vals": {"files": list(files.values()), "user": request.user},
-                        "store_spatial_files": store_spatial_files,
-                        "xml_file": xml_file,
-                        "metadata_uploaded": True if xml_file is not None else False,
-                        "sld_file": sld_file,
-                        "sld_uploaded": True if sld_file is not None else False,
-                    }
-
-                    getattr(resource_manager, action_type)(**call_kwargs)
-
-                    out["success"] = True
-                    out["url"] = dataset.get_absolute_url()
-                    #  invalidating resource chache
-                    set_geowebcache_invalidate_cache(dataset.typename)
-            except Exception as e:
-                logger.exception(e)
-                raise e
-            finally:
-                if not store_spatial_files:
-                    storage_manager.delete_retrieved_paths(force=True)
-        else:
-            errormsgs = []
-            for e in form.errors.values():
-                errormsgs.append([escape(v) for v in e])
-            out["errors"] = form.errors
-            out["errormsgs"] = errormsgs
-
-        if out["success"]:
-            status_code = 200
-            register_event(request, "change", dataset)
-        else:
-            status_code = 400
-
-        return HttpResponse(json.dumps(out), content_type="application/json", status=status_code)
 
 
 @login_required

@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.filters import BaseFilterBackend
+from geonode.people.utils import get_available_users
 from geonode.security.permissions import (
     BASIC_MANAGE_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
@@ -138,6 +139,11 @@ class IsOwnerOrAdmin(permissions.BasePermission):
             _request_matches = obj.owner == request.user
         elif hasattr(obj, "user"):
             _request_matches = obj.user == request.user
+
+        if isinstance(obj, get_user_model()) and not request.user.is_anonymous:
+            if request.method in permissions.SAFE_METHODS and obj in get_available_users(request.user):
+                return True
+            return _request_matches
 
         if not _request_matches:
             _request_matches = request.user in get_users_with_perms(obj)

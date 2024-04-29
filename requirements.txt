@@ -1,6 +1,6 @@
 # native dependencies
-Pillow==10.2.0
-lxml==5.1.0
+Pillow==10.3.0
+lxml==5.2.1
 psycopg2==2.9.9
 Django==4.2.9
 
@@ -9,13 +9,13 @@ amqp==5.2.0
 beautifulsoup4==4.12.3
 httplib2<0.22.1
 hyperlink==21.0.0
-idna>=2.5,<3.7
+idna>=2.5,<4
 urllib3==1.26.18
 Paver==1.3.4
 python-slugify==8.0.4
 decorator==5.1.1
-celery==5.3.6
-kombu==5.3.5
+celery==5.4.0
+kombu==5.3.7
 vine==5.1.0
 tqdm==4.66.2
 Deprecated==1.2.14
@@ -24,15 +24,14 @@ jsonschema==4.21.1
 zipstream-new==1.1.8
 schema==0.7.5
 rdflib==6.3.2
-smart_open==7.0.1
-PyMuPDF==1.23.26
-pathvalidate==3.2.0
+smart_open==7.0.4
+PyMuPDF==1.24.2
 
 # Django Apps
 django-allauth==0.61.1
 django-appconf==1.0.6
 django-celery-results==2.5.1
-django-filter==24.1
+django-filter==24.2
 django-imagekit==5.0.0
 django-taggit==5.0.1
 django-markdownify==0.9.3
@@ -43,7 +42,7 @@ django-guardian<2.4.1
 django-downloadview==2.3.0
 django-polymorphic==3.1.0
 django-tastypie<0.15.0
-django-tinymce==3.7.1
+django-tinymce==4.0.0
 django-grappelli==3.0.8
 django-uuid-upload-path==1.0.0
 django-widget-tweaks==1.5.0
@@ -56,7 +55,7 @@ pyjwt==2.8.0
 pyproj<3.7.0
 OWSLib==0.30.0
 pycsw==2.6.1
-SQLAlchemy==2.0.28 # required by PyCSW
+SQLAlchemy==2.0.29 # required by PyCSW
 Shapely==1.8.5.post1
 mercantile==1.2.1
 numpy==1.26.*
@@ -79,9 +78,9 @@ djangorestframework-gis==1.0
 djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
-drf-spectacular==0.27.1
-git+https://github.com/GeoNode/dynamic-rest.git@master#egg=dynamic_rest
-Markdown==3.5.2
+drf-spectacular==0.27.2
+git+https://github.com/AltSchool/dynamic-rest.git@v2.2.0#egg=dynamic_rest
+Markdown==3.6
 
 git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-notifications
 
@@ -105,12 +104,11 @@ django-bootstrap3-datetimepicker-2==2.8.3
 # storage manager dependencies
 django-storages==1.14.2
 dropbox==11.36.2
-google-cloud-storage==2.15.0
+google-cloud-storage==2.16.0
 google-cloud-core==2.4.1
-boto3==1.34.59
+boto3==1.34.88
 
 # Django Caches
-python-memcached<=1.62
 whitenoise==6.6.0
 Brotli==1.1.0
 
@@ -132,33 +130,33 @@ django-cors-headers==4.3.1
 user-agents
 django-user-agents
 xmljson
-django-ipware<6.1
+django-ipware<7.1
 # no version here, use latest one with fresh data
 pycountry
 
 # production
-uWSGI==2.0.24
-gunicorn==21.2.0
-ipython==8.22.2
+uWSGI==2.0.25.1
+gunicorn==22.0.0
+ipython==8.23.0
 docker==7.0.0
 invoke==2.2.0
 
 # tests
-coverage==7.4.3
+coverage==7.4.4
 requests-toolbelt==1.0.0
 flake8==7.0.0
-black==24.2.0
+black==24.4.0
 pytest==8.1.1
-pytest-bdd==7.1.1
+pytest-bdd==7.1.2
 splinter==0.21.0
 pytest-splinter==3.3.2
 pytest-django==4.8.0
-setuptools>=65.5.1,<69.2.0
+setuptools>=65.5.1,<69.6.0
 pip==24.0
 Twisted==24.3.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
-flaky==3.8.0
+flaky==3.8.1
 selenium>=4.15.1,<5.0.0
 selenium-requests==2.0.4
 webdriver_manager==4.0.1
@@ -166,11 +164,12 @@ webdriver_manager==4.0.1
 # Security and audit
 mistune==3.0.2
 protobuf==3.20.3
-mako==1.3.2
+mako==1.3.3
 paramiko==3.4.0 # not directly required, fixes Blowfish deprecation warning
 certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
 jwcrypto>=1.5.6 # not directly required, pinned by Snyk to avoid a vulnerability
 cryptography>=41.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
 aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
 dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
-nh3==0.2.15
+nh3==0.2.17
+sqlparse>=0.5.0 # not directly required, pinned by Snyk to avoid a vulnerability

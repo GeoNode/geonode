@@ -32,7 +32,7 @@ from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.mixins import AdvertisedListMixin
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import UserHasPerms
-from geonode.base.api.views import base_linked_resources
+from geonode.base.api.views import base_linked_resources, ApiPresetsInitializer
 from geonode.base import enumerations
 from geonode.documents.api.exceptions import DocumentException
 from geonode.documents.models import Document
@@ -50,7 +50,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class DocumentViewSet(DynamicModelViewSet, AdvertisedListMixin):
+class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows documents to be viewed or edited.
     """

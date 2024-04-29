@@ -37,7 +37,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         model = GeoApp
         name = "geoapp"
         view_name = "geoapps-list"
-        fields = ("pk", "uuid", "data", "name", "executions", "metadata")
+        fields = list(set(ResourceBaseSerializer.Meta.fields + ("name",)))
 
     def extra_update_checks(self, validated_data):
         _user_profiles = {}

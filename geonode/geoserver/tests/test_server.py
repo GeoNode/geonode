@@ -595,24 +595,6 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.DATABASE_DEFAULT_SETTINGS = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "development.db"}}
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
-    def test_style_manager(self):
-        """
-        Ensures the dataset_style_manage route returns a 200.
-        """
-        layer = Dataset.objects.first()
-
-        bob = get_user_model().objects.get(username="bobby")
-        assign_perm("change_dataset_style", bob, layer)
-
-        self.assertTrue(self.client.login(username="bobby", password="bob"))
-        response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200)
-
-        form_data = {"default_style": "polygon"}
-        response = self.client.post(reverse("dataset_style_manage", args=(layer.alternate,)), data=form_data)
-        self.assertEqual(response.status_code, 302)
-
-    @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_style_validity_and_name(self):
         # Check that including an SLD with a valid shapefile results in the SLD
         # getting picked up
@@ -905,7 +887,7 @@ class LayerTests(GeoNodeBaseTestSupport):
             "HTTP_AUTHORIZATION": f"basic {base64.b64encode(invalid_uname_pw).decode()}",
         }
 
-        response = self.client.get(reverse("dataset_resolve_user"), **valid_auth_headers)
+        response = self.client.get(reverse("dataset_resolve_user_dep"), **valid_auth_headers)
         content = response.content
         if isinstance(content, bytes):
             content = content.decode("UTF-8")
@@ -924,7 +906,7 @@ class LayerTests(GeoNodeBaseTestSupport):
         self.client.login(username="admin", password="admin")
 
         # Basic check that the returned content is at least valid json
-        response = self.client.get(reverse("dataset_resolve_user"))
+        response = self.client.get(reverse("dataset_resolve_user_dep"))
         content = response.content
         if isinstance(content, bytes):
             content = content.decode("UTF-8")

@@ -16,11 +16,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base.api.serializers import BaseDynamicModelSerializer
+from dynamic_rest.serializers import DynamicModelSerializer
+
+from geonode.base.api.serializers import AutoLinkField
 from geonode.resource.models import ExecutionRequest
 
 
-class ExecutionRequestSerializer(BaseDynamicModelSerializer):
+class ExecutionRequestSerializer(DynamicModelSerializer):
+
+    link = AutoLinkField(read_only=True)
+
     class Meta:
         model = ExecutionRequest
         name = "request"

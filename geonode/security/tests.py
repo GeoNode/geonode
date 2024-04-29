@@ -150,7 +150,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             reverse("account_reset_password"),
             reverse("forgot_username"),
             reverse("dataset_acls"),
-            reverse("dataset_resolve_user"),
         ]
 
         black_list = [
@@ -198,7 +197,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         middleware = LoginRequiredMiddleware(None)
 
-        black_listed_url = reverse("dataset_upload")
+        black_listed_url = reverse("load_dataset_data")
         white_listed_url = reverse("account_login")
 
         # unauthorized request to black listed URL should be redirected to `redirect_to` URL
@@ -229,7 +228,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         """
 
         site_url_settings = [f"{settings.SITEURL}login/custom", "/login/custom", "login/custom"]
-        black_listed_url = reverse("dataset_upload")
+        black_listed_url = reverse("load_dataset_data")
 
         for setting in site_url_settings:
             with override_settings(LOGIN_URL=setting):
@@ -1068,18 +1067,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         response = self.client.get(reverse("dataset_embed", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
 
-        # 2. change_resourcebase
-        # 2.1 has not change_resourcebase: verify that bobby cannot access the
-        # layer replace page
-        response = self.client.get(reverse("dataset_replace", args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (401, 403), response.status_code)
-        # 2.2 has change_resourcebase: verify that bobby can access the layer
-        # replace page
-        layer.set_permissions({"users": {"bobby": ["change_resourcebase"]}, "groups": []})
-        self.assertTrue(bob.has_perm("change_resourcebase", layer.get_self_resource()))
-        response = self.client.get(reverse("dataset_replace", args=(layer.alternate,)))
-        self.assertEqual(response.status_code, 200, response.status_code)
-
         # 3. change_resourcebase_metadata
         # 3.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
@@ -1118,10 +1105,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 6. change_dataset_style
         # 6.1 has not change_dataset_style: verify that bobby cannot access
         # the layer style page
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # Only for geoserver backend
-            response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-            self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 7.2 has change_dataset_style: verify that bobby can access the
         # change layer style page
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1140,8 +1123,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 }
             )
             self.assertTrue(bob.has_perm("change_dataset_style", layer))
-            response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-            self.assertEqual(response.status_code, 200, response.status_code)
 
         rules_count = 0
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1170,25 +1151,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         response = self.client.get(reverse("dataset_embed", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
 
-        # 2. change_resourcebase
-        # 2.1 has not change_resourcebase: verify that anonymous user cannot
-        # access the layer replace page but redirected to login
-        response = self.client.get(reverse("dataset_replace", args=(layer.alternate,)))
-        self.assertTrue(response.status_code in (302, 403))
-
         # 3. change_resourcebase_metadata
         # 3.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
         response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
         self.assertTrue(response.status_code in (302, 403))
-
-        # 4. change_dataset_style
-        # 4.1 has not change_dataset_style: verify that anonymous user cannot access
-        # the layer style page but redirected to login
-        if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-            # Only for geoserver backend
-            response = self.client.get(reverse("dataset_style_manage", args=(layer.alternate,)))
-            self.assertTrue(response.status_code in (302, 403))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
         layers = Dataset.objects.all()

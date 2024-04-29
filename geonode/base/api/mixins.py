@@ -22,7 +22,6 @@ from rest_framework.response import Response
 
 
 class AdvertisedListMixin(ListModelMixin):
-
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -36,14 +35,13 @@ class AdvertisedListMixin(ListModelMixin):
         except Exception:
             advertised = None
 
-        if advertised is not None and advertised != "all":
+        if advertised == "all":
+            pass
+        elif advertised is not None:
             queryset = queryset.filter(advertised=advertised)
         else:
             is_admin = user.is_superuser if user and user.is_authenticated else False
-
-            if advertised == "all":
-                pass
-            elif not is_admin and user and not user.is_anonymous:
+            if not is_admin and user and not user.is_anonymous:
                 queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
             elif not user or user.is_anonymous:
                 queryset = queryset.filter(advertised=True)

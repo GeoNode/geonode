@@ -388,9 +388,7 @@ class BaseApiTests(APITestCase):
         Ensure users are created with default groups.
         """
         url = reverse("users-list")
-        user_data = {
-            "username": "new_user",
-        }
+        user_data = {"username": "new_user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
         self.assertTrue(self.client.login(username="admin", password="admin"))
         response = self.client.post(url, data=user_data, format="json")
         self.assertEqual(response.status_code, 201)
@@ -419,7 +417,7 @@ class BaseApiTests(APITestCase):
                 username="user_test_delete", email="user_test_delete@geonode.org", password="user"
             )
             url = reverse("users-detail", kwargs={"pk": user.pk})
-            data = {"first_name": "user"}
+            data = {"first_name": "user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
             # Anonymous
             response = self.client.patch(url, data=data, format="json")
             self.assertEqual(response.status_code, 403)
@@ -430,14 +428,15 @@ class BaseApiTests(APITestCase):
             # User self profile
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.patch(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200)
             # Group manager
             group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
             group.join(user)
             group.join(get_user_model().objects.get(username="norman"), role="manager")
             self.assertTrue(self.client.login(username="norman", password="norman"))
             response = self.client.post(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            # malformed url on post
+            self.assertEqual(response.status_code, 405)
             # Admin can edit user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.patch(url, data={"first_name": "user_admin"}, format="json")
@@ -466,14 +465,20 @@ class BaseApiTests(APITestCase):
             self.assertTrue(self.client.login(username="bobby", password="bob"))
             response = self.client.delete(url, format="json")
             self.assertEqual(response.status_code, 403)
-            # User can not delete self profile
+            # User can delete self profile
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(get_user_model().objects.filter(username="user_test_delete").first(), None)
+            # recreate user that was deleted
+            user = get_user_model().objects.create_user(
+                username="user_test_delete", email="user_test_delete@geonode.org", password="user"
+            )
+            url = reverse("users-detail", kwargs={"pk": user.pk})
             # Admin can delete user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 204)
+            self.assertEqual(response.status_code, 200)
         finally:
             user.delete()
 
@@ -2376,6 +2381,14 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         resource.delete()
 
+    def _get_for_object(self, o, viewname):
+        url = reverse(viewname, args=[o.id])
+        response = self.client.get(url, format="json")
+        return response.json()
+
+    def _get_for_map(self, viewname):
+        return self._get_for_object(Map.objects.first(), viewname)
+
     def test_base_resources_return_download_link_if_document(self):
         """
         Ensure we can access the Resource Base list.
@@ -2383,14 +2396,13 @@ class BaseApiTests(APITestCase):
         doc = Document.objects.first()
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[doc.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(doc, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
         self.assertEqual(build_absolute_uri(doc.download_url), download_url)
 
         # from documents api
-        url = reverse("documents-detail", args=[doc.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(doc, "documents-detail")
+        download_url = json.get("document").get("download_url")
         self.assertEqual(build_absolute_uri(doc.download_url), download_url)
 
     def test_base_resources_return_download_link_if_dataset(self):
@@ -2400,46 +2412,41 @@ class BaseApiTests(APITestCase):
         _dataset = Dataset.objects.first()
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[_dataset.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
         # from dataset api
-        url = reverse("datasets-detail", args=[_dataset.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
     def test_base_resources_dont_return_download_link_if_map(self):
         """
         Ensure we can access the Resource Base list.
         """
-        _map = Map.objects.first()
         # From resource base API
-        url = reverse("base-resources-detail", args=[_map.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url", None)
+        json = self._get_for_map("base-resources-detail")
+        download_url = json.get("resource").get("download_url", None)
         self.assertIsNone(download_url)
 
         # from maps api
-        url = reverse("maps-detail", args=[_map.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_map("maps-detail")
+        download_url = json.get("map").get("download_url")
         self.assertIsNone(download_url)
 
     def test_base_resources_return_not_download_links_for_maps(self):
         """
         Ensure we can access the Resource Base list.
         """
-        _map = Map.objects.first()
         # From resource base API
-        url = reverse("base-resources-detail", args=[_map.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls", None)
+        json = self._get_for_map("base-resources-detail")
+        download_url = json.get("resource").get("download_urls", None)
         self.assertListEqual([], download_url)
 
         # from maps api
-        url = reverse("maps-detail", args=[_map.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_map("maps-detail")
+        download_url = json.get("map").get("download_urls")
         self.assertListEqual([], download_url)
 
     def test_base_resources_return_download_links_for_documents(self):
@@ -2449,14 +2456,13 @@ class BaseApiTests(APITestCase):
         doc = Document.objects.first()
         expected_payload = [{"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}]
         # From resource base API
-        url = reverse("base-resources-detail", args=[doc.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(doc, "base-resources-detail")
+        download_url = json.get("resource").get("download_urls")
         self.assertListEqual(expected_payload, download_url)
 
         # from documents api
-        url = reverse("documents-detail", args=[doc.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(doc, "documents-detail")
+        download_url = json.get("document").get("download_urls")
         self.assertListEqual(expected_payload, download_url)
 
     def test_base_resources_return_download_links_for_datasets(self):
@@ -2469,15 +2475,84 @@ class BaseApiTests(APITestCase):
         ]
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[_dataset.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_urls")
         self.assertEqual(expected_payload, download_url)
 
         # from dataset api
-        url = reverse("datasets-detail", args=[_dataset.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_urls")
         self.assertEqual(expected_payload, download_url)
+
+    def test_include_linked_resources(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                for include in (True, False):
+                    url = reverse(viewname, args=[resource.id])
+                    url = f"{url}{'?include[]=linked_resources' if include else ''}"
+                    response = self.client.get(url, format="json").json()
+                    json = next(iter(response.values()))
+                    if include:
+                        self.assertIn("linked_resources", json, "Missing content")
+                    else:
+                        self.assertNotIn("linked_resources", json, "Unexpected content")
+
+    def test_exclude_all_but_one(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                for field in (
+                    "pk",
+                    "title",
+                    "perms",
+                    "links",
+                    "linked_resources",
+                    "data",
+                    "link",
+                ):  # test some random fields
+                    url = reverse(viewname, args=[resource.id])
+                    url = f"{url}?exclude[]=*&include[]={field}"
+                    response = self.client.get(url, format="json").json()
+                    json = next(iter(response.values()))
+
+                    self.assertIn(field, json, "Missing content")
+                    self.assertEqual(1, len(json), f"Only expected content was '{field}', found: {json}")
+
+    def test_presets_base(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                url = reverse(viewname, args=[resource.id])
+                url = f"{url}?api_preset=bare"
+                response = self.client.get(url, format="json").json()
+                json = next(iter(response.values()))
+                self.assertSetEqual(
+                    {"pk", "title"},
+                    set(json.keys()),
+                    f"Bad json content for object {type(resource)} JSON:{json}",
+                )
 
     def test_api_should_return_all_resources_for_admin(self):
         """
@@ -2748,7 +2823,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.dataset.id in list_connected_targets))
 
     def test_insert_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2766,7 +2840,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((invalid_id in response_json["error"]))
 
     def test_insert_valid_and_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2785,7 +2858,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.map.id in response_json["success"]))
 
     def test_delete_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -3020,13 +3092,14 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             # call the API w/ pagination
             url = reverse("base-resources-linked_resources", args=[self.doc.id])
-            response = self.client.get(f"{url}?page_size=1")
+            url = f"{url}?page_size=1"
+            response = self.client.get(url)
 
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
+            self.assertIn("WARNINGS", payload, f"Missing WARNINGS element for URL {url}")
             self.assertIn("PAGINATION", payload["WARNINGS"], "Missing PAGINATION element")
 
             # call the API w/o pagination
@@ -3037,8 +3110,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
-            self.assertNotIn("PAGINATION", payload["WARNINGS"], "Unexpected PAGINATION element")
+            self.assertNotIn("WARNINGS", payload, "Missing WARNINGS element")
 
         finally:
             for d in _d:
@@ -3088,7 +3160,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
             for type in res_types_payload:
                 self.assertTrue(type in res_types_orig)
-            self.assertTrue({"linked_to", "WARNINGS"} == set(payload.keys()))
+            self.assertSetEqual({"linked_to"}, set(payload.keys()))
 
         finally:
             for d in _d:
@@ -3113,8 +3185,8 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
             for type in res_types_payload:
                 self.assertTrue(type in res_types_orig)
-            payload_keys = {"linked_by", "linked_to", "WARNINGS"}
-            self.assertTrue(payload_keys == set(payload.keys()))
+            payload_keys = {"linked_by", "linked_to"}
+            self.assertSetEqual(payload_keys, set(payload.keys()))
 
         finally:
             for d in _d:

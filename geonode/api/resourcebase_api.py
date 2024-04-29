@@ -287,6 +287,8 @@ class CommonModelApi(ModelResource):
             if formatted_obj.get("metadata", None):
                 formatted_obj["metadata"] = [model_to_dict(_m) for _m in formatted_obj["metadata"]]
 
+            formatted_obj["detail_url"] = obj.detail_url
+
             formatted_objects.append(formatted_obj)
 
         return formatted_objects

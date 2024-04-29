@@ -29,7 +29,6 @@ js_info_dict = {
 
 urlpatterns = [
     # 'geonode.layers.views',
-    re_path(r"^upload$", views.dataset_upload, name="dataset_upload"),
     re_path(r"^upload_metadata$", views.dataset_metadata_upload, name="dataset_metadata_upload"),
     re_path(r"^load_dataset_data$", views.load_dataset_data, name="load_dataset_data"),
     re_path(r"^(?P<layername>[^/]*)/metadata$", views.dataset_metadata, name="dataset_metadata"),
@@ -41,8 +40,6 @@ urlpatterns = [
         views.dataset_granule_remove,
         name="dataset_granule_remove",
     ),
-    re_path(r"^(?P<layername>[^/]*)/replace$", views.dataset_replace, name="dataset_replace"),
-    re_path(r"^(?P<layername>[^/]*)/append$", views.dataset_append, name="dataset_append"),
     re_path(r"^(?P<layername>[^/]*)/get$", views.get_dataset, name="get_dataset"),
     re_path(r"^(?P<layername>[^/]*)/metadata_detail$", views.dataset_metadata_detail, name="dataset_metadata_detail"),
     re_path(r"^(?P<layername>[^/]*)/metadata_upload$", views.dataset_metadata_upload, name="dataset_metadata_upload"),

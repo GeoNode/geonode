@@ -17,13 +17,10 @@
 #
 #########################################################################
 
-import io
 import itertools
 import os
 import shutil
-import gisdata
 import logging
-import zipfile
 
 from uuid import uuid4
 from unittest.mock import MagicMock, patch
@@ -33,7 +30,6 @@ from django.urls import reverse
 from django.test import TestCase
 from django.forms import ValidationError
 from django.test.client import RequestFactory
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
@@ -63,7 +59,7 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
-from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, JSONField, LayerUploadForm
+from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, JSONField
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -71,14 +67,11 @@ from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadat
 from geonode.groups.models import GroupProfile
 
 from geonode.layers.utils import (
-    is_sld_upload_only,
-    is_xml_upload_only,
     dataset_type,
     get_files,
     get_valid_name,
     get_valid_dataset_name,
     surrogate_escape_string,
-    validate_input_source,
 )
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
@@ -398,134 +391,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
         nn = get_anonymous_user()
         self.assertRaises(GeoNodeException, get_valid_user, nn)
-
-    def testShapefileValidation(self):
-        files = dict(
-            base_file=SimpleUploadedFile("foo.shp", b" "),
-            shx_file=SimpleUploadedFile("foo.shx", b" "),
-            dbf_file=SimpleUploadedFile("foo.dbf", b" "),
-            prj_file=SimpleUploadedFile("foo.prj", b" "),
-        )
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(
-            base_file=SimpleUploadedFile("foo.SHP", b" "),
-            shx_file=SimpleUploadedFile("foo.SHX", b" "),
-            dbf_file=SimpleUploadedFile("foo.DBF", b" "),
-            prj_file=SimpleUploadedFile("foo.PRJ", b" "),
-        )
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(
-            base_file=SimpleUploadedFile("foo.SHP", b" "),
-            shx_file=SimpleUploadedFile("foo.shx", b" "),
-            dbf_file=SimpleUploadedFile("foo.dbf", b" "),
-        )
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(
-            base_file=SimpleUploadedFile("foo.SHP", b" "),
-            shx_file=SimpleUploadedFile("foo.shx", b" "),
-            dbf_file=SimpleUploadedFile("foo.dbf", b" "),
-            prj_file=SimpleUploadedFile("foo.PRJ", b" "),
-        )
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(
-            base_file=SimpleUploadedFile("foo.SHP", b" "),
-            shx_file=SimpleUploadedFile("bar.shx", b" "),
-            dbf_file=SimpleUploadedFile("bar.dbf", b" "),
-            prj_file=SimpleUploadedFile("bar.PRJ", b" "),
-        )
-        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(
-            base_file=SimpleUploadedFile("foo.shp", b" "),
-            dbf_file=SimpleUploadedFile("foo.dbf", b" "),
-            prj_file=SimpleUploadedFile("foo.PRJ", b" "),
-        )
-        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(
-            base_file=SimpleUploadedFile("foo.txt", b" "),
-            shx_file=SimpleUploadedFile("foo.shx", b" "),
-            dbf_file=SimpleUploadedFile("foo.sld", b" "),
-            prj_file=SimpleUploadedFile("foo.prj", b" "),
-        )
-        self.assertFalse(LayerUploadForm(dict(), files).is_valid())
-
-    def testGeoTiffValidation(self):
-        files = dict(base_file=SimpleUploadedFile("foo.tif", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.TIF", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.tiff", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.TIF", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.geotif", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.GEOTIF", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.geotiff", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.GEOTIF", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-    def testASCIIValidation(self):
-        files = dict(base_file=SimpleUploadedFile("foo.asc", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-        files = dict(base_file=SimpleUploadedFile("foo.ASC", b" "))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-
-    def testZipValidation(self):
-        the_zip = zipfile.ZipFile("test_upload.zip", "w")
-        in_memory_file = io.StringIO()
-        in_memory_file.write("test")
-        the_zip.writestr("foo.shp", in_memory_file.getvalue())
-        the_zip.writestr("foo.dbf", in_memory_file.getvalue())
-        the_zip.writestr("foo.shx", in_memory_file.getvalue())
-        the_zip.writestr("foo.prj", in_memory_file.getvalue())
-        the_zip.close()
-        files = dict(base_file=SimpleUploadedFile("test_upload.zip", open("test_upload.zip", mode="rb").read()))
-        self.assertTrue(LayerUploadForm(dict(), files).is_valid())
-        os.remove("test_upload.zip")
-
-    def testWriteFiles(self):
-        files = dict(
-            base_file=SimpleUploadedFile("foo.shp", b" "),
-            shx_file=SimpleUploadedFile("foo.shx", b" "),
-            dbf_file=SimpleUploadedFile("foo.dbf", b" "),
-            prj_file=SimpleUploadedFile("foo.prj", b" "),
-        )
-        form = LayerUploadForm(dict(), files)
-        self.assertTrue(form.is_valid())
-
-        tempdir = form.write_files()[0]
-        self.assertEqual(set(os.listdir(tempdir)), {"foo.shp", "foo.shx", "foo.dbf", "foo.prj"})
-
-        the_zip = zipfile.ZipFile("test_upload.zip", "w")
-        in_memory_file = io.StringIO()
-        in_memory_file.write("test")
-        the_zip.writestr("foo.shp", in_memory_file.getvalue())
-        the_zip.writestr("foo.dbf", in_memory_file.getvalue())
-        the_zip.writestr("foo.shx", in_memory_file.getvalue())
-        the_zip.writestr("foo.prj", in_memory_file.getvalue())
-        the_zip.close()
-        files = dict(base_file=SimpleUploadedFile("test_upload.zip", open("test_upload.zip", mode="rb").read()))
-        form = LayerUploadForm(dict(), files)
-        self.assertTrue(form.is_valid())
-        tempdir = form.write_files()[0]
-        self.assertEqual(set(os.listdir(tempdir)), {"foo.shp", "foo.shx", "foo.dbf", "foo.prj"})
-        os.remove("test_upload.zip")
 
     def test_dataset_type(self):
         self.assertEqual(dataset_type("foo.shp"), "vector")
@@ -945,226 +810,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
 
         if group_profile:
             group_profile.delete()
-
-    def test_xml_form_without_files_should_raise_500(self):
-        files = dict()
-        files["permissions"] = "{}"
-        files["charset"] = "utf-8"
-        self.client.login(username="admin", password="admin")
-        resp = self.client.post(reverse("dataset_upload"), data=files)
-        self.assertEqual(500, resp.status_code)
-
-    def test_xml_should_return_404_if_the_dataset_does_not_exists(self):
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "dataset_title": "Fake layer title",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8",
-        }
-
-        self.client.login(username="admin", password="admin")
-        resp = self.client.post(reverse("dataset_upload"), params)
-        self.assertEqual(404, resp.status_code)
-
-    def test_xml_should_update_the_dataset_with_the_expected_values(self):
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "dataset_title": "geonode:single_point",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8",
-        }
-
-        self.client.login(username="admin", password="admin")
-        prev_dataset = Dataset.objects.get(typename="geonode:single_point")
-        self.assertEqual(0, prev_dataset.keywords.count())
-        resp = self.client.post(reverse("dataset_upload"), params)
-        self.assertEqual(404, resp.status_code)
-        self.assertEqual(
-            resp.json()["errors"], "The UUID identifier from the XML Metadata, is different from the one saved"
-        )
-
-    def test_sld_should_raise_500_if_is_invalid(self):
-        layer = Dataset.objects.get(typename="geonode:single_point")
-
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.sld_path),
-            "sld_file": open(self.sld_path),
-            "dataset_title": "random",
-            "metadata_upload_form": False,
-            "time": False,
-            "charset": "UTF-8",
-        }
-
-        self.client.login(username="admin", password="admin")
-        self.assertGreaterEqual(layer.styles.count(), 1)
-        self.assertIsNotNone(layer.styles.first())
-        resp = self.client.post(reverse("dataset_upload"), params)
-        self.assertEqual(500, resp.status_code)
-        self.assertFalse(resp.json().get("success"))
-        self.assertEqual("No Dataset matches the given query.", resp.json().get("errors"))
-
-    def test_sld_should_update_the_dataset_with_the_expected_values(self):
-        layer = Dataset.objects.get(typename="geonode:single_point")
-
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.sld_path),
-            "sld_file": open(self.sld_path),
-            "dataset_title": f"geonode:{layer.name}",
-            "metadata_upload_form": False,
-            "time": False,
-            "charset": "UTF-8",
-        }
-
-        self.client.login(username="admin", password="admin")
-        self.assertGreaterEqual(layer.styles.count(), 1)
-        self.assertIsNotNone(layer.styles.first())
-        resp = self.client.post(reverse("dataset_upload"), params)
-        self.assertEqual(200, resp.status_code)
-        updated_dataset = Dataset.objects.get(alternate=f"geonode:{layer.name}")
-        # just checking some values if are updated
-        self.assertGreaterEqual(updated_dataset.styles.all().count(), 1)
-        self.assertIsNotNone(updated_dataset.styles.first())
-        self.assertEqual(layer.styles.first().sld_title, updated_dataset.styles.first().sld_title)
-
-    def test_xml_should_raise_an_error_if_the_uuid_is_changed(self):
-        """
-        If the UUID coming from the XML and the one saved in the DB are different
-        The system should raise an error
-        """
-        params = {
-            "permissions": '{ "users": {"AnonymousUser": ["view_resourcebase"]} , "groups":{}}',
-            "base_file": open(self.exml_path),
-            "xml_file": open(self.exml_path),
-            "dataset_title": "geonode:single_point",
-            "metadata_upload_form": True,
-            "time": False,
-            "charset": "UTF-8",
-        }
-
-        self.client.login(username="admin", password="admin")
-        prev_dataset = Dataset.objects.get(typename="geonode:single_point")
-        self.assertEqual(0, prev_dataset.keywords.count())
-        resp = self.client.post(reverse("dataset_upload"), params)
-        self.assertEqual(404, resp.status_code)
-        expected = {
-            "success": False,
-            "errors": "The UUID identifier from the XML Metadata, is different from the one saved",
-        }
-        self.assertDictEqual(expected, resp.json())
-
-    def test_will_raise_exception_for_replace_vector_dataset_with_raster(self):
-        layer = Dataset.objects.get(name="single_point")
-        filename = "/tpm/filename.tif"
-        files = ["/opt/file1.shp", "/opt/file2.ccc"]
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector dataset with a raster."
-        self.assertEqual(expected, e.exception.args[0])
-
-    def test_will_raise_exception_for_replace_dataset_with_unknown_format(self):
-        layer = Dataset.objects.get(name="single_point")
-        filename = "/tpm/filename.ccc"
-        file_path = gisdata.VECTOR_DATA
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/san_andres_y_providencia_highway.asd",
-            "prj": f"{file_path}/san_andres_y_providencia_highway.asd",
-            "shx": f"{file_path}/san_andres_y_providencia_highway.asd",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = "You are attempting to append a vector dataset with an unknown format."
-        self.assertEqual(expected, e.exception.args[0])
-
-    def test_will_raise_exception_for_replace_dataset_with_different_file_name(self):
-        layer = Dataset.objects.get(name="single_point")
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/san_andres_y_providencia_highway.sbf",
-            "prj": f"{file_path}/san_andres_y_providencia_highway.prj",
-            "shx": f"{file_path}/san_andres_y_providencia_highway.shx",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = (
-            "Some error occurred while trying to access the uploaded schema: "
-            "Please ensure the name is consistent with the file you are trying to append."
-        )
-        self.assertEqual(expected, e.exception.args[0])
-
-    @patch("geonode.layers.utils.gs_catalog")
-    def test_will_raise_exception_for_not_existing_dataset_in_the_catalog(self, catalog):
-        catalog.get_layer.return_value = None
-        create_single_dataset("san_andres_y_providencia_water")
-        layer = Dataset.objects.get(name="san_andres_y_providencia_water")
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_water.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/san_andres_y_providencia_water.sbf",
-            "prj": f"{file_path}/san_andres_y_providencia_water.prj",
-            "shx": f"{file_path}/san_andres_y_providencia_water.shx",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = (
-            "Some error occurred while trying to access the uploaded schema: "
-            "The selected Dataset does not exists in the catalog."
-        )
-        self.assertEqual(expected, e.exception.args[0])
-
-    @patch("geonode.layers.utils.gs_catalog")
-    def test_will_raise_exception_if_schema_is_not_equal_between_catalog_and_file(self, catalog):
-        attr = namedtuple("GSCatalogAttr", ["attributes"])
-        attr.attributes = []
-        self.r.resource = attr
-        catalog.get_layer.return_value = self.r
-        create_single_dataset("san_andres_y_providencia_water")
-        layer = Dataset.objects.filter(name="san_andres_y_providencia_water")[0]
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_water.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/san_andres_y_providencia_water.sbf",
-            "prj": f"{file_path}/san_andres_y_providencia_water.prj",
-            "shx": f"{file_path}/san_andres_y_providencia_water.shx",
-        }
-        with self.assertRaises(Exception) as e:
-            validate_input_source(layer, filename, files, action_type="append")
-        expected = (
-            "Some error occurred while trying to access the uploaded schema: "
-            "Please ensure that the dataset structure is consistent with the file you are trying to append."
-        )
-        self.assertEqual(expected, e.exception.args[0])
-
-    @patch("geonode.layers.utils.gs_catalog")
-    def test_validation_will_pass_for_valid_append(self, catalog):
-        attr = namedtuple("GSCatalogAttr", ["attributes"])
-        attr.attributes = ["NATURAL", "NAME"]
-        self.r.resource = attr
-        catalog.get_layer.return_value = self.r
-        create_single_dataset("san_andres_y_providencia_water")
-        layer = Dataset.objects.filter(name="san_andres_y_providencia_water")[0]
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_water.shp")
-        files = {
-            "shp": filename,
-            "dbf": f"{file_path}/san_andres_y_providencia_water.sbf",
-            "prj": f"{file_path}/san_andres_y_providencia_water.prj",
-            "shx": f"{file_path}/san_andres_y_providencia_water.shx",
-        }
-        actual = validate_input_source(layer, filename, files, action_type="append")
-        self.assertTrue(actual)
 
     def test_dataset_download_not_found_for_non_existing_dataset(self):
         self.client.login(username="admin", password="admin")
@@ -1739,56 +1384,6 @@ def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
     keywords = "Passed through new parser"
     regions.append("Europe")
     return uuid, vals, regions, keywords, custom
-
-
-class TestIsXmlUploadOnly(TestCase):
-    """
-    This function will check if the files uploaded is a metadata file
-    """
-
-    def setUp(self):
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
-        self.request = RequestFactory()
-
-    def test_give_single_file_should_return_True(self):
-        with open(self.exml_path, "rb") as f:
-            request = self.request.post("/random/url")
-            request.FILES["base_file"] = f
-        actual = is_xml_upload_only(request)
-        self.assertTrue(actual)
-
-    def test_give_single_file_should_return_False(self):
-        base_path = gisdata.GOOD_DATA
-        with open(f"{base_path}/vector/single_point.shp", "rb") as f:
-            request = self.request.post("/random/url")
-            request.FILES["base_file"] = f
-        actual = is_xml_upload_only(request)
-        self.assertFalse(actual)
-
-
-class TestIsSldUploadOnly(TestCase):
-    """
-    This function will check if the files uploaded is a metadata file
-    """
-
-    def setUp(self):
-        self.exml_path = f"{settings.PROJECT_ROOT}/base/fixtures/test_sld.sld"
-        self.request = RequestFactory()
-
-    def test_give_single_file_should_return_True(self):
-        with open(self.exml_path, "rb") as f:
-            request = self.request.post("/random/url")
-            request.FILES["base_file"] = f
-        actual = is_sld_upload_only(request)
-        self.assertTrue(actual)
-
-    def test_give_single_file_should_return_False(self):
-        base_path = gisdata.GOOD_DATA
-        with open(f"{base_path}/vector/single_point.shp", "rb") as f:
-            request = self.request.post("/random/url")
-            request.FILES["base_file"] = f
-        actual = is_sld_upload_only(request)
-        self.assertFalse(actual)
 
 
 class TestDatasetForm(GeoNodeBaseTestSupport):
