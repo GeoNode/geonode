@@ -25,9 +25,10 @@ import logging
 from builtins import Exception
 from typing import Iterable
 
+from django.http import QueryDict
 from django.test import RequestFactory, override_settings
 import gisdata
-
+from importer.models import ResourceHandlerInfo
 from PIL import Image
 from io import BytesIO
 from time import sleep
@@ -2304,20 +2305,12 @@ class BaseApiTests(APITestCase):
         self._assertCloningWithPerms(resource)
 
     @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
-    @override_settings(ASYNC_SIGNALS=False)
+    @override_settings(ASYNC_SIGNALS=False, FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
-            files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
-            files_as_dict, _ = get_files(files)
-            resource = Dataset.objects.create(
-                owner=get_user_model().objects.get(username="admin"),
-                name="test_copy_with_perms",
-                store="geonode_data",
-                subtype="vector",
-                alternate="geonode:test_copy_with_perms",
-                resource_type="dataset",
-                uuid=str(uuid4()),
-            )
+           
+            files_as_dict, resource = self._import_dataset()
+
             _, _ = create_asset_and_link(
                 resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
             )
@@ -2333,8 +2326,9 @@ class BaseApiTests(APITestCase):
             copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
-
-            response = self.client.put(copy_url)
+            payload = QueryDict("", mutable=True)
+            payload.update({"defaults": '{"title": ' + resource.title + ' }'})
+            response = self.client.put(copy_url, data=payload)
             self.assertEqual(response.status_code, 200)
 
             resouce_service_dispatcher.apply((response.json().get("execution_id"),))
@@ -2346,6 +2340,26 @@ class BaseApiTests(APITestCase):
         logger.warning(f"ALL LEVEL INFO {_resource.get_all_level_info()}")
         self.assertNotIn("bobby", [x.username for x in _resource.get_all_level_info().get("users", [])])
         self.assertIn("admin", [x.username for x in _resource.get_all_level_info().get("users", [])])
+
+    def _import_dataset(self):
+        files_as_dict = {
+                "base_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp"),
+                "dbf_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.dbf"),
+                "prj_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shx"),
+                "shx_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.prj"),
+            }
+        payload = {
+                _filename: open(_file, "rb") for _filename, _file in files_as_dict.items()
+            }
+
+        _url = reverse("importer_upload")
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+
+        response = self.client.post(_url, data=payload)
+        self.assertEqual(201, response.status_code)
+
+        resource = ResourceHandlerInfo.objects.get(execution_request_id=response.json()['execution_id'])
+        return files_as_dict,resource
 
     def test_resource_service_copy_with_perms_doc(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
