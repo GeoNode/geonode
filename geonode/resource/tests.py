@@ -157,7 +157,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res = self.rm.ingest(
             dt_files,
             resource_type=Dataset,
-            defaults={"owner": self.user, "title": "Testing Dataset", "files": dt_files},
+            defaults={"owner": self.user, "title": "Testing Dataset"},
         )
         self.assertTrue(isinstance(res, Dataset))
         _copy_assert_resource(res, "Testing Dataset 2")

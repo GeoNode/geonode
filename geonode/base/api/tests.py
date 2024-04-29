@@ -2308,7 +2308,7 @@ class BaseApiTests(APITestCase):
     @override_settings(ASYNC_SIGNALS=False, FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
-           
+
             files_as_dict, resource = self._import_dataset()
 
             _, _ = create_asset_and_link(
@@ -2327,7 +2327,7 @@ class BaseApiTests(APITestCase):
 
             self.assertTrue(self.client.login(username="admin", password="admin"))
             payload = QueryDict("", mutable=True)
-            payload.update({"defaults": '{"title": ' + resource.title + ' }'})
+            payload.update({"defaults": '{"title": ' + resource.title + " }"})
             response = self.client.put(copy_url, data=payload)
             self.assertEqual(response.status_code, 200)
 
@@ -2343,14 +2343,12 @@ class BaseApiTests(APITestCase):
 
     def _import_dataset(self):
         files_as_dict = {
-                "base_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp"),
-                "dbf_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.dbf"),
-                "prj_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shx"),
-                "shx_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.prj"),
-            }
-        payload = {
-                _filename: open(_file, "rb") for _filename, _file in files_as_dict.items()
-            }
+            "base_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp"),
+            "dbf_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.dbf"),
+            "prj_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shx"),
+            "shx_file": os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.prj"),
+        }
+        payload = {_filename: open(_file, "rb") for _filename, _file in files_as_dict.items()}
 
         _url = reverse("importer_upload")
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2358,8 +2356,8 @@ class BaseApiTests(APITestCase):
         response = self.client.post(_url, data=payload)
         self.assertEqual(201, response.status_code)
 
-        resource = ResourceHandlerInfo.objects.get(execution_request_id=response.json()['execution_id'])
-        return files_as_dict,resource
+        resource = ResourceHandlerInfo.objects.get(execution_request_id=response.json()["execution_id"])
+        return files_as_dict, resource
 
     def test_resource_service_copy_with_perms_doc(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")

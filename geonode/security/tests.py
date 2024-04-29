@@ -785,7 +785,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # test view_resourcebase permission on anonymous user
         response = requests.get(url)
-        self.assertTrue(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b"Could not find layer" in response.content)
         self.assertEqual(response.headers.get("Content-Type"), "application/vnd.ogc.se_xml;charset=UTF-8")
 
         # test WMS with authenticated user that has access to the Dataset
@@ -795,7 +796,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                 username=settings.OGC_SERVER["default"]["USER"], password=settings.OGC_SERVER["default"]["PASSWORD"]
             ),
         )
-        self.assertTrue(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers.get("Content-Type"), "image/png")
 
         # test WMS with authenticated user that has no view_resourcebase:

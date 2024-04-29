@@ -40,6 +40,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError, FieldDoe
 
 
 from geonode.base.models import ResourceBase, LinkedResource, Link
+from geonode.geoapps.models import GeoApp
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
@@ -554,10 +555,13 @@ class ResourceManager(ResourceManagerInterface):
                     links = self._copy_data(instance, target=_resource)
                     # we're just merging all the files together: it won't work once we have multiple assets per resource
                     # TODO: get the files from the proper Asset
-                    files = []
-                    for link in links:
-                        files.extend(link.asset.location)
-                    to_update = {"files": files}
+                    to_update = {}
+
+                    if not isinstance(instance.get_real_instance(), (Map, GeoApp)):
+                        files = [link.asset.location for link in links]
+                        if files:
+                            to_update = {"files": files}
+
                     _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
 
             except Exception as e:

@@ -418,7 +418,9 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         # Setup some document names to work with
         superuser = get_user_model().objects.get(pk=2)
         document = resource_manager.create(
-            None, resource_type=Document, defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True)
+            None,
+            resource_type=Document,
+            defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
         )
         document_id = document.id
         invalid_document_id = 20
@@ -809,7 +811,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         # Access resource with user logged-in
         self.client.login(username=self.not_admin.username, password="very-secret")
         response = self.client.get(self.doc_link_url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
         # test document link with external url
         doc = resource_manager.create(
             None,

@@ -88,7 +88,6 @@ from geonode.people.enumerations import ROLE_VALUES
 from urllib.parse import urlsplit, urljoin
 from geonode.storage.manager import storage_manager
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -607,10 +606,14 @@ class ResourceBaseManager(PolymorphicManager):
     @staticmethod
     def cleanup_uploaded_files(resource_id):
         """Remove uploaded files, if any"""
+        from geonode.assets.utils import get_default_asset
+
         if ResourceBase.objects.filter(id=resource_id).exists():
             _resource = ResourceBase.objects.filter(id=resource_id).get()
             _uploaded_folder = None
-            if _resource.files:
+            asset = get_default_asset(_resource)
+            files = asset.location if asset else []
+            if files:
                 for _file in _resource.files:
                     try:
                         if storage_manager.exists(_file):

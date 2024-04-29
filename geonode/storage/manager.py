@@ -181,7 +181,7 @@ class StorageManager(StorageManagerInterface):
         #     updated_files["files"] = self.copy_files_list(resource.files)
         # return updated_files
 
-    def copy_files_list(self, files: List[str], dir=None, dir_prefix=None, dir_suffix=None):
+    def copy_files_list(self, files: List[str], dir=settings.MEDIA_ROOT, dir_prefix=None, dir_suffix=None):
         from geonode.utils import mkdtemp
 
         out = []

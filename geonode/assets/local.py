@@ -60,7 +60,7 @@ class LocalAssetHandler(AssetHandlerInterface):
         for dir in removed_dir:
             if not os.listdir(dir):
                 logger.info(f"Removing empty asset directory {dir}")
-                os.remove(dir)
+                os.rmdir(dir)
 
     def replace_data(self, asset: LocalAsset, files: list):
         self.remove_data(asset)
