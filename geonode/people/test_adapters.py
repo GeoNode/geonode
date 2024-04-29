@@ -2,7 +2,6 @@
 
 from unittest import TestCase
 
-
 from geonode.people import adapters
 
 try:
@@ -237,7 +236,7 @@ class RespondInvalidEmailUserTestCase(TestCase):
         phony_user = phony_user_class.return_value
         phony_user.email = fake_email
         mock_reverse.return_value = phony_reverse
-        adapters._handle_user_invalid_email(phony_user)
+        adapters.handle_user_invalid_email(phony_user)
         mock_reverse.assert_called_with("moderator_needed")
         mock_http_response_redirect_class.assert_called_with(phony_reverse)
 
@@ -254,7 +253,7 @@ class RespondInvalidEmailUserTestCase(TestCase):
         phony_user.email = fake_email
         phony_user.username = fake_username
         mock_reverse.return_value = phony_reverse
-        adapters._handle_user_invalid_email(phony_user)
+        adapters.handle_user_invalid_email(phony_user)
         mock_reverse.assert_not_called()
         mock_http_response_redirect_class.assert_not_called()
 

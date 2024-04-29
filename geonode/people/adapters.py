@@ -125,7 +125,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
     def pre_login(self, request, user, *, email_verification, signal_kwargs, email, signup, redirect_url):
 
         if email_verification == "mandatory" and not (user.is_superuser or user.is_staff):
-            self.check_user_invalid_email(request, user)
+            return self.check_user_invalid_email(request, user)
 
         return super().pre_login(
             request,
@@ -203,7 +203,7 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
         return _respond_inactive_user(user)
 
     def check_user_invalid_email(self, request, user):
-        return _handle_user_invalid_email(user)
+        return handle_user_invalid_email(user)
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -258,9 +258,9 @@ def _respond_inactive_user(user):
     return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
 
 
-def _handle_user_invalid_email(user):
+def handle_user_invalid_email(user):
     email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
-    if not (re.fullmatch(email_regex, user.email)):
+    if not user.email or not (re.fullmatch(email_regex, user.email)):
         return HttpResponseRedirect(reverse("moderator_needed"))
 
 
