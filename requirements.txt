@@ -28,7 +28,7 @@ smart_open==7.0.4
 PyMuPDF==1.24.2
 
 # Django Apps
-django-allauth==0.61.1
+django-allauth==0.62.1
 django-appconf==1.0.6
 django-celery-results==2.5.1
 django-filter==24.2
