@@ -2309,7 +2309,7 @@ class BaseApiTests(APITestCase):
     @patch("importer.celery_tasks.connections")
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self, conn):
         with self.settings(ASYNC_SIGNALS=False):
-            conn = MagicMock()
+            _ = MagicMock()
             files_as_dict, resource = self._import_dataset()
 
             _, _ = create_asset_and_link(
