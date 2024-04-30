@@ -20,9 +20,11 @@
 import json
 import base64
 import logging
+import os
 import requests
 import importlib
 import mock
+import gisdata
 
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
@@ -39,7 +41,9 @@ from django.contrib.auth.models import AnonymousUser
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
 from geonode import geoserver
-from geonode.geoserver.helpers import geofence, gf_utils
+from geonode.geoserver.helpers import geofence, gf_utils, gs_catalog
+from geonode.geoserver.manager import GeoServerResourceManager
+from geonode.layers.utils import get_files
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.documents.models import Document
@@ -741,8 +745,19 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
         # Test permissions on a layer
+        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_poi.shp")
+        files_as_dict, self.tmpdir = get_files(files)
+
         bobby = get_user_model().objects.get(username="bobby")
-        layer = create_single_dataset("san_andres_y_providencia_poi")
+        layer = create_single_dataset(
+            "san_andres_y_providencia_poi",
+            {
+                "owner": self.user,
+                "title": "Testing Dataset",
+                "data_title": "relief_san_andres",
+                "data_type": "tif",
+            },
+        )
         layer = resource_manager.update(
             layer.uuid, instance=layer, notify=False, vals=dict(owner=bobby, workspace=settings.DEFAULT_WORKSPACE)
         )
@@ -772,6 +787,15 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         perm_spec = {"users": {"AnonymousUser": []}, "groups": []}
         layer.set_permissions(perm_spec)
+
+        gs_layer = gs_catalog.get_layer("3Asan_andres_y_providencia_poi")
+        if gs_layer is None:
+            GeoServerResourceManager()._execute_resource_import(
+                layer,
+                list(files_as_dict.values()),
+                get_user_model().objects.get(username="admin"),
+                action_type="create",
+            )
 
         url = (
             f"{settings.GEOSERVER_LOCATION}ows?"

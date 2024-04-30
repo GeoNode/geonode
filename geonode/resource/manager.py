@@ -21,6 +21,7 @@ import os
 import copy
 import typing
 import logging
+import itertools
 
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
@@ -337,7 +338,7 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     _resource.set_missing_info()
                     _resource = self._concrete_resource_manager.create(
-                        uuid, resource_type=resource_type, defaults=defaults
+                        uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
                 resourcebase_post_save(_resource.get_real_instance())
@@ -458,16 +459,18 @@ class ResourceManager(ResourceManagerInterface):
     ) -> ResourceBase:
         instance = None
         to_update = defaults.copy()
+        to_update_with_files = {**to_update, **{"files": files}}
         try:
             with transaction.atomic():
                 if resource_type == Document:
                     if "name" in to_update:
                         to_update.pop("name")
-                    instance = self.create(uuid, resource_type=Document, defaults=to_update)
+                    instance = self.create(uuid, resource_type=Document, defaults=to_update_with_files)
                 elif resource_type == Dataset:
-                    logger.warning(f"Will not create a Dataset without any file. Values: {defaults}")
                     if files:
-                        instance = self.create(uuid, resource_type=Dataset, defaults=to_update)
+                        instance = self.create(uuid, resource_type=Dataset, defaults=to_update_with_files)
+                    else:
+                        logger.warning(f"Will not create a Dataset without any file. Values: {defaults}")
 
                 if instance:
                     instance = self._concrete_resource_manager.ingest(
@@ -558,7 +561,7 @@ class ResourceManager(ResourceManagerInterface):
                     to_update = {}
 
                     if not isinstance(instance.get_real_instance(), (Map, GeoApp)):
-                        files = [link.asset.location for link in links]
+                        files = list(itertools.chain.from_iterable([link.asset.location for link in links]))
                         if files:
                             to_update = {"files": files}
 

@@ -148,7 +148,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
 
         # copy with documents
         res = self.rm.ingest(
-            dt_files, resource_type=Document, defaults={"title": "relief_san_andres", "owner": self.user}
+            dt_files,
+            resource_type=Document,
+            defaults={
+                "title": "relief_san_andres",
+                "owner": self.user,
+                "extension": "tif",
+                "data_title": "relief_san_andres",
+                "data_type": "tif",
+            },
         )
         self.assertTrue(isinstance(res, Document))
         _copy_assert_resource(res, "Testing Document 2")
@@ -157,7 +165,12 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res = self.rm.ingest(
             dt_files,
             resource_type=Dataset,
-            defaults={"owner": self.user, "title": "Testing Dataset"},
+            defaults={
+                "owner": self.user,
+                "title": "Testing Dataset",
+                "data_title": "relief_san_andres",
+                "data_type": "tif",
+            },
         )
         self.assertTrue(isinstance(res, Dataset))
         _copy_assert_resource(res, "Testing Dataset 2")

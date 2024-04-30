@@ -243,10 +243,13 @@ def update_resource(
     ]
 
     to_update.update(defaults)
+    resource_dict = {  # TODO: cleanup params and dicts
+        k: v for k, v in to_update.items() if k not in ("data_title", "data_type", "description", "files", "link_type")
+    }
     try:
-        instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
+        instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**resource_dict)
     except Exception as e:
-        logger.error(f"{e} - {to_update}")
+        logger.error(f"{e} - {resource_dict}")
         raise
 
     # Check for "remote services" availability

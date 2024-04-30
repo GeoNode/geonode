@@ -105,11 +105,11 @@ def create_asset_and_link_dict(resource, values: dict, clone_files=True):
         resource,
         values["owner"],
         values["files"],
-        title=values.get("data_title", None),
-        description=values.get("description", None),
-        link_type=values.get("link_type", None),
-        extension=values.get("extension", None),
-        asset_type=values.get("data_type", None),
+        title=values.pop("data_title", None),
+        description=values.pop("description", None),
+        link_type=values.pop("link_type", None),
+        extension=values.pop("extension", None),
+        asset_type=values.pop("data_type", None),
         clone_files=clone_files,
     )
 
