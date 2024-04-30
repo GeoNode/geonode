@@ -25,15 +25,13 @@ import logging
 from builtins import Exception
 from typing import Iterable
 
-from django.http import QueryDict
 from django.test import RequestFactory, override_settings
 import gisdata
-from importer.models import ResourceHandlerInfo
 from PIL import Image
 from io import BytesIO
 from time import sleep
 from uuid import uuid4
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from urllib.parse import urljoin
 from datetime import date, timedelta
 
