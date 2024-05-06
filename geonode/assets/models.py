@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils.timezone import now
 from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 from django.db.models import signals
@@ -15,7 +14,7 @@ class Asset(PolymorphicModel):
     description = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=255, null=False, blank=False)
     owner = models.ForeignKey(get_user_model(), null=False, blank=False, on_delete=models.CASCADE)
-    created = models.DateTimeField(default=now)
+    created = models.DateTimeField(auto_now_add=True)
 
     objects = PolymorphicManager()
 

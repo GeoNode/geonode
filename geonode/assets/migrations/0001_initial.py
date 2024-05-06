@@ -2,7 +2,6 @@
 
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
 import django.utils.timezone
 
 
@@ -23,7 +22,7 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(max_length=255)),
                 ("description", models.TextField(blank=True, null=True)),
                 ("type", models.CharField(max_length=255)),
-                ("created", models.DateTimeField(default=django.utils.timezone.now)),
+                ("created", models.DateTimeField(auto_now_add=True)),
                 ("owner", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 (
                     "polymorphic_ctype",
