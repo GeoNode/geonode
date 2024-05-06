@@ -442,7 +442,8 @@ class UserSerializer(BaseDynamicModelSerializer):
                   "keywords",
                   "country",
                   "language",
-                  "timezone"
+                  "timezone",
+                  "orcid_identifier"
                   )
 
     @classmethod
