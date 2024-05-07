@@ -2223,6 +2223,8 @@ class BaseApiTests(APITestCase):
         )
 
     def test_resource_service_copy(self):
+        from importer.models import ResourceHandlerInfo
+        ResourceHandlerInfo.object.all().delete()
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Dataset.objects.create(
@@ -2306,6 +2308,10 @@ class BaseApiTests(APITestCase):
     @override_settings(ASYNC_SIGNALS=False)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
+
+            from importer.models import ResourceHandlerInfo
+            ResourceHandlerInfo.object.all().delete()
+
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
 
