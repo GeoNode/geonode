@@ -423,6 +423,7 @@ class _HierarchicalTagManager(_TaggableManager):
                 reverse=False,
                 model=self.through.tag_model(),
                 pk_set=new_ids,
+                using='default',
             )
 
             for tag in tag_objs:
@@ -438,6 +439,7 @@ class _HierarchicalTagManager(_TaggableManager):
                 reverse=False,
                 model=self.through.tag_model(),
                 pk_set=new_ids,
+                using='default',
             )
         except IntegrityError as e:
             logger.warning("The keyword provided already exists", exc_info=e)
