@@ -5,4 +5,4 @@ set -a
 set +a
 
 paver setup_data
-coverage run --branch --source=geonode manage.py test -v 3 --noinput $@
+coverage run --branch --source=geonode manage.py test -v 3 --keepdb $@

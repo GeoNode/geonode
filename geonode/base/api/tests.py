@@ -2225,14 +2225,18 @@ class BaseApiTests(APITestCase):
     def test_resource_service_copy(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = Dataset.objects.create(
-            owner=get_user_model().objects.get(username="admin"),
-            name="test_copy",
-            store="geonode_data",
-            subtype="vector",
-            alternate="geonode:test_copy",
-            uuid=str(uuid4()),
+        resource = resource_manager.create(
+            str(uuid4()),
+            Dataset,
+            defaults={
+                "owner": get_user_model().objects.get(username="admin"),
+                "name": "test_copy",
+                "store": "geonode_data",
+                "subtype": "vector",
+                "alternate": "geonode:test_copy",
+            }
         )
+
         asset, link = create_asset_and_link(
             resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
         )
@@ -2271,19 +2275,14 @@ class BaseApiTests(APITestCase):
         asset.location = ["/path/invalid_file.wrong"]
         asset.save()
         response = self.client.put(copy_url)
-        logger.error("####################")
-        logger.error(response.json())
-        logger.error("####################")        
+
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Resource can not be cloned.")
         # clone dataset with no files
         link.delete()
         asset.delete()
         response = self.client.put(copy_url)
-        logger.error("####################")
-        logger.error(response.json())
-        logger.error("####################")
-        
+
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Resource can not be cloned.")
         # clean
@@ -2313,13 +2312,8 @@ class BaseApiTests(APITestCase):
     @override_settings(ASYNC_SIGNALS=False)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
-
-            from importer.models import ResourceHandlerInfo
-            ResourceHandlerInfo.object.all().delete()
-
             files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-
             resource = resource_manager.create(
                 None,
                 resource_type=Dataset,
@@ -2350,11 +2344,8 @@ class BaseApiTests(APITestCase):
             response = self.client.put(copy_url)
             self.assertEqual(response.status_code, 200)
 
-            # resouce_service_dispatcher.apply((response.json().get("execution_id"),))
+            resouce_service_dispatcher.apply((response.json().get("execution_id"),))
 
-        logger.error("####################")
-        logger.error(response.json())
-        logger.error("####################")
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
