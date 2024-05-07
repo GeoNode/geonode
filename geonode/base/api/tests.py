@@ -2234,7 +2234,7 @@ class BaseApiTests(APITestCase):
                 "store": "geonode_data",
                 "subtype": "vector",
                 "alternate": "geonode:test_copy",
-            }
+            },
         )
 
         asset, link = create_asset_and_link(
