@@ -610,26 +610,9 @@ class ResourceBaseManager(PolymorphicManager):
 
         if ResourceBase.objects.filter(id=resource_id).exists():
             _resource = ResourceBase.objects.filter(id=resource_id).get()
-            _uploaded_folder = None
-            asset = get_default_asset(_resource)
-            files = asset.location if asset else []
-            if files:
-                for _file in _resource.files:
-                    try:
-                        if storage_manager.exists(_file):
-                            if not _uploaded_folder:
-                                _uploaded_folder = os.path.split(storage_manager.path(_file))[0]
-                            storage_manager.delete(_file)
-                    except Exception as e:
-                        logger.warning(e)
-                try:
-                    if _uploaded_folder and storage_manager.exists(_uploaded_folder):
-                        storage_manager.delete(_uploaded_folder)
-                except Exception as e:
-                    logger.warning(e)
-
-                # Do we want to delete the files also from the resource?
-                ResourceBase.objects.filter(id=resource_id).update(files={})
+            asset = get_default_asset(_resource)  # TODO: make sure to select the proper "uploaded" asset
+            if asset:
+                asset.delete()
 
             # Remove generated thumbnails, if any
             filename = f"{_resource.get_real_instance().resource_type}-{_resource.get_real_instance().uuid}"

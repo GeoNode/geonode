@@ -114,6 +114,19 @@ def create_asset_and_link_dict(resource, values: dict, clone_files=True):
     )
 
 
+def copy_assets_and_links(resource, target=None) -> list:
+    assets_and_links = []
+    links_with_assets = Link.objects.filter(resource=resource, asset__isnull=False).prefetch_related("asset")
+
+    for link in links_with_assets:
+        link.asset = asset_handler_registry.get_handler(link.asset).clone(link.asset)
+        link.pk = None
+        link.resource = target
+        link.save()
+        assets_and_links.append((link.asset, link))
+    return assets_and_links
+
+
 def rollback_asset_and_link(asset, link):
     try:
         if link:

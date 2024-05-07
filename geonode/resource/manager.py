@@ -49,7 +49,7 @@ from geonode.security.utils import perms_as_set, get_user_groups, skip_registere
 
 from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save
-from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link
+from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links
 from geonode.assets.handlers import asset_handler_registry
 
 from ..base import enumerations
@@ -500,18 +500,6 @@ class ResourceManager(ResourceManagerInterface):
                 instance.clear_dirty_state()
         return instance
 
-    def _copy_data(self, resource, target=None) -> list[Link]:
-        links = []
-        links_with_assets = Link.objects.filter(resource=resource, asset__isnull=False).prefetch_related("asset")
-
-        for link in links_with_assets:
-            link.asset = asset_handler_registry.get_handler(link.asset).clone(link.asset)
-            link.pk = None
-            link.resource = target
-            link.save()
-            links.append(link)
-        return links
-
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
@@ -555,15 +543,14 @@ class ResourceManager(ResourceManagerInterface):
                             _maplayer.map = _resource.get_real_instance()
                             _maplayer.save()
 
-                    links = self._copy_data(instance, target=_resource)
+                    assets_and_links = copy_assets_and_links(instance, target=_resource)
                     # we're just merging all the files together: it won't work once we have multiple assets per resource
-                    # TODO: get the files from the proper Asset
+                    # TODO: get the files from the proper Asset, or make the _concrete_resource_manager.copy use assets
                     to_update = {}
 
-                    if not isinstance(instance.get_real_instance(), (Map, GeoApp)):
-                        files = list(itertools.chain.from_iterable([link.asset.location for link in links]))
-                        if files:
-                            to_update = {"files": files}
+                    files = list(itertools.chain.from_iterable([asset.location for asset, _ in assets_and_links]))
+                    if files:
+                        to_update = {"files": files}
 
                     _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
 
