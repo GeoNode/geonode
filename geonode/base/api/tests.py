@@ -2350,8 +2350,8 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertFalse("bobby" in "bobby" in [x.username for x in _resource.get_all_level_info().get("users", [])])
-        self.assertTrue("admin" in "admin" in [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertNotIn("bobby", [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertIn("admin", [x.username for x in _resource.get_all_level_info().get("users", [])])
 
     def test_resource_service_copy_with_perms_doc(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
