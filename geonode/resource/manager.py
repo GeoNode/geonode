@@ -321,7 +321,7 @@ class ResourceManager(ResourceManagerInterface):
         resource_dict = {  # TODO: cleanup params and dicts
             k: v
             for k, v in defaults.items()
-            if k not in ("data_title", "data_type", "description", "files", "link_type")
+            if k not in ("data_title", "data_type", "description", "files", "link_type", "extension")
         }
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
