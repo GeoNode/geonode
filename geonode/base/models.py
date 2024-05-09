@@ -1070,6 +1070,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
         resource_manager.remove_permissions(self.uuid, instance=self.get_real_instance())
 
+        # delete assets. TODO: when standalone Assets will be allowed, only dependable Assets shall be removed
+        links_with_assets = Link.objects.filter(resource=self, asset__isnull=False).prefetch_related("asset")
+        for link in links_with_assets:
+            link.asset.delete()
+
         if hasattr(self, "class_name") and notify:
             notice_type_label = f"{self.class_name.lower()}_deleted"
             recipients = get_notification_recipients(notice_type_label, resource=self)

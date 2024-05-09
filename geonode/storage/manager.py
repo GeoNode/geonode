@@ -124,8 +124,8 @@ class StorageManager(StorageManagerInterface):
     treat as a file_system file
     """
 
-    def __init__(self, remote_files: Mapping = {}):
-        self._concrete_storage_manager = self._get_concrete_manager()
+    def __init__(self, remote_files: Mapping = {}, concrete_storage_manager=None):
+        self._concrete_storage_manager = concrete_storage_manager or self._get_concrete_manager()
         self.data_retriever = DataRetriever(remote_files, tranfer_at_creation=False)
 
     def _get_concrete_manager(self):
@@ -267,8 +267,8 @@ class StorageManager(StorageManagerInterface):
 
 
 class DefaultStorageManager(StorageManagerInterface):
-    def __init__(self):
-        self._fsm = FileSystemStorage()
+    def __init__(self, **kwargs):
+        self._fsm = FileSystemStorage(**kwargs)
 
     def _get_concrete_manager(self):
         return DefaultStorageManager()

@@ -302,8 +302,8 @@ STATIC_ROOT = os.getenv("STATIC_ROOT", os.path.join(PROJECT_ROOT, "static_root")
 
 # Absolute path to the directory that hold assets files
 # This dir should not be made publicly accessible by nginx, since its content may be private
-# Using a subdir of MEDIA_ROOT as default for backward compatibility
-ASSETS_ROOT = os.getenv("ASSETS_ROOT", os.path.join(MEDIA_ROOT, "assets"))
+# Using a sibling of MEDIA_ROOT as default
+ASSETS_ROOT = os.getenv("ASSETS_ROOT", os.path.join(os.path.dirname(MEDIA_ROOT.rstrip("/")), "assets"))
 
 # Cache Bustin Settings: enable WhiteNoise compression and caching support
 # ref: http://whitenoise.evans.io/en/stable/django.html#add-compression-and-caching-support
