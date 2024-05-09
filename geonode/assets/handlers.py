@@ -81,10 +81,10 @@ class AssetHandlerRegistry:
         asset_cls = asset if isinstance(asset, type) else asset.__class__
         ret = self._registry.get(asset_cls, None)
         if not ret:
-            logger.warning(f"Could not find handler for asset {asset_cls}::{asset.__class__}")
-            logger.warning("available asset types:")
+            logger.warning(f"Could not find asset handler for {asset_cls}::{asset.__class__}")
+            logger.warning("Available asset types:")
             for k, v in self._registry.items():
-                logger.warning(f"{k} --> {v}")
+                logger.warning(f"{k} --> {v.__class__.__name__}")
         return ret
 
 

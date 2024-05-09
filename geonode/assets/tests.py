@@ -36,11 +36,17 @@ TEST_GIF = os.path.join(os.path.dirname(os.path.dirname(__file__)), "base/tests/
 
 class AssetsTests(APITestCase):
 
-    def test_default_handler(self):
+    def test_handler_registry(self):
+        # Test registry
+        self.assertIsNotNone(asset_handler_registry)
+        # Test default handler
         asset_handler = asset_handler_registry.get_default_handler()
         self.assertIsNotNone(asset_handler)
-        # in the default config, the default handler is the Local one
         self.assertIsInstance(asset_handler, LocalAssetHandler, "Bad default Asset handler found")
+        # Test None
+        self.assertIsNone(asset_handler_registry.get_handler(None))
+        # Test class without handler
+        self.assertIsNone(asset_handler_registry.get_handler(AssetsTests))
 
     def test_creation_and_delete_data_cloned(self):
         u, _ = get_user_model().objects.get_or_create(username="admin")
