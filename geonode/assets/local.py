@@ -47,17 +47,27 @@ class LocalAssetHandler(AssetHandlerInterface):
         asset.save()
         return asset
 
-    def remove_data(self, asset: LocalAsset):
+    def remove_data(self, asset: LocalAsset, force=False):
+        """
+        Removes the files related to an Asset.
+        By default, only files within the Assets directory are removed, unless `force` is set.
+        """
         removed_dir = set()
         for file in asset.location:
-            if file.startswith(settings.ASSETS_ROOT):
-                logger.info(f"Removing asset file {file}")
+            is_managed = self._is_file_managed(file)
+            if is_managed or force:
+                logger.info(f"Removing asset file {file} {'FORCED' if force and not is_managed else ''}")
                 storage_manager.delete(file)
+                # TODO: in case of forcing deletion of unmanaged files, reconsider the deletion of directories
                 removed_dir.add(os.path.dirname(file))
             else:
                 logger.info(f"Not removing asset file outside asset directory {file}")
 
+        # TODO: in case of subdirs, make sure that all the tree is removed in the proper order
         for dir in removed_dir:
+            if not os.path.exists(dir):
+                logger.warning(f"Trying to remove not existing asset directory {dir}")
+                continue
             if not os.listdir(dir):
                 logger.info(f"Removing empty asset directory {dir}")
                 os.rmdir(dir)
@@ -67,11 +77,20 @@ class LocalAssetHandler(AssetHandlerInterface):
         asset.location = files
         asset.save()
 
-    def clone(self, asset: LocalAsset) -> LocalAsset:
-        prefix = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        asset.location = storage_manager.copy_files_list(asset.location, dir=settings.ASSETS_ROOT, dir_prefix=prefix)
+    def clone(self, source: LocalAsset) -> LocalAsset:
+        # get a new asset instance to be edited and stored back
+        asset = LocalAsset.objects.get(pk=source.pk)
+        # only copy files if they are managed
+        if self._are_files_managed(asset.location):
+            asset.location = storage_manager.copy_files_list(
+                asset.location, dir=settings.ASSETS_ROOT, dir_prefix=datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            )
+        # it's a polymorphic object, we need to null both IDs
+        # https://django-polymorphic.readthedocs.io/en/stable/advanced.html#copying-polymorphic-objects
         asset.pk = None
+        asset.id = None
         asset.save()
+        asset.refresh_from_db()
         return asset
 
     def create_download_url(self, asset) -> str:
@@ -79,6 +98,28 @@ class LocalAssetHandler(AssetHandlerInterface):
 
     def create_link_url(self, asset) -> str:
         return build_absolute_uri(reverse("assets-link", args=(asset.pk,)))
+
+    def _is_file_managed(self, file) -> bool:
+        assets_root = os.path.normpath(settings.ASSETS_ROOT)
+        return file.startswith(assets_root)
+
+    def _are_files_managed(self, files: list) -> bool:
+        """
+        :param files: files to be checked
+        :return: True if all files are managed, False is no file is managed
+        :raise: ValueError if both managed and unmanaged files are in the list
+        """
+        managed = unmanaged = None
+        for file in files:
+            if self._is_file_managed(file):
+                managed = True
+            else:
+                unmanaged = True
+            if managed and unmanaged:
+                logger.error(f"Both managed and unmanaged files are present: {files}")
+                raise ValueError("Both managed and unmanaged files are present")
+
+        return bool(managed)
 
 
 class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):

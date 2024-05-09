@@ -17,7 +17,7 @@ class AssetHandlerInterface:
     def create(self, title, description, type, owner, *args, **kwargs):
         raise NotImplementedError()
 
-    def remove_data(self, asset: Asset):
+    def remove_data(self, asset: Asset, **kwargs):
         raise NotImplementedError()
 
     def replace_data(self, asset: Asset, files: list):

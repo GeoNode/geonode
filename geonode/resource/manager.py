@@ -40,8 +40,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, FieldDoesNotExist
 
 
-from geonode.base.models import ResourceBase, LinkedResource, Link
-from geonode.geoapps.models import GeoApp
+from geonode.base.models import ResourceBase, LinkedResource
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
@@ -50,7 +49,6 @@ from geonode.security.utils import perms_as_set, get_user_groups, skip_registere
 from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save
 from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links
-from geonode.assets.handlers import asset_handler_registry
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
