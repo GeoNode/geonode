@@ -179,8 +179,13 @@ class DocumentUploadView(CreateView):
                     files=[storage_path],
                 ),
             )
-            if tempdir != os.path.dirname(storage_path):
-                shutil.rmtree(tempdir, ignore_errors=True)
+
+            # Removing the temp file
+            # TODO: creating a file and then cloning it as an Asset may be slow: we may want to
+            #       create the file directly in the asset dir or to move it
+            logger.info(f"Removing document temp dir {tempdir}")
+            shutil.rmtree(tempdir, ignore_errors=True)
+
         else:
             self.object = resource_manager.create(
                 None,

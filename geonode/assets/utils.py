@@ -72,7 +72,9 @@ def create_asset_and_link(
     asset = link = None
     try:
         default_title, default_ext = os.path.splitext(files[0]) if len(files) == 1 else (None, None)
-        link_type = link_type or find_type(default_ext[1:]) if default_ext else None
+        if default_ext:
+            default_ext = default_ext.lstrip(".")
+        link_type = link_type or find_type(default_ext) if default_ext else None
 
         asset = asset_handler.create(
             title=title or default_title or "Unknown",
