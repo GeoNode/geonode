@@ -88,7 +88,6 @@ from geonode.people.enumerations import ROLE_VALUES
 from urllib.parse import urlsplit, urljoin
 from geonode.storage.manager import storage_manager
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -607,26 +606,13 @@ class ResourceBaseManager(PolymorphicManager):
     @staticmethod
     def cleanup_uploaded_files(resource_id):
         """Remove uploaded files, if any"""
+        from geonode.assets.utils import get_default_asset
+
         if ResourceBase.objects.filter(id=resource_id).exists():
             _resource = ResourceBase.objects.filter(id=resource_id).get()
-            _uploaded_folder = None
-            if _resource.files:
-                for _file in _resource.files:
-                    try:
-                        if storage_manager.exists(_file):
-                            if not _uploaded_folder:
-                                _uploaded_folder = os.path.split(storage_manager.path(_file))[0]
-                            storage_manager.delete(_file)
-                    except Exception as e:
-                        logger.warning(e)
-                try:
-                    if _uploaded_folder and storage_manager.exists(_uploaded_folder):
-                        storage_manager.delete(_uploaded_folder)
-                except Exception as e:
-                    logger.warning(e)
-
-                # Do we want to delete the files also from the resource?
-                ResourceBase.objects.filter(id=resource_id).update(files={})
+            asset = get_default_asset(_resource)  # TODO: make sure to select the proper "uploaded" asset
+            if asset:
+                asset.delete()
 
             # Remove generated thumbnails, if any
             filename = f"{_resource.get_real_instance().resource_type}-{_resource.get_real_instance().uuid}"
@@ -904,8 +890,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Metadata"), default=False, help_text=_("If true, will be excluded from search")
     )
 
-    files = JSONField(null=True, default=list, blank=True)
-
     blob = JSONField(null=True, default=dict, blank=True)
 
     subtype = models.CharField(max_length=128, null=True, blank=True)
@@ -1085,6 +1069,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         from geonode.resource.manager import resource_manager
 
         resource_manager.remove_permissions(self.uuid, instance=self.get_real_instance())
+
+        # delete assets. TODO: when standalone Assets will be allowed, only dependable Assets shall be removed
+        links_with_assets = Link.objects.filter(resource=self, asset__isnull=False).prefetch_related("asset")
+        for link in links_with_assets:
+            link.asset.delete()
 
         if hasattr(self, "class_name") and notify:
             notice_type_label = f"{self.class_name.lower()}_deleted"
@@ -1278,10 +1267,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def is_copyable(self):
-        from geonode.geoserver.helpers import select_relevant_files
-
         if self.resource_type == "dataset":
-            allowed_file = select_relevant_files(get_allowed_extensions(), self.files)
+            from geonode.assets.utils import get_default_asset
+            from geonode.geoserver.helpers import select_relevant_files
+
+            asset = get_default_asset(self)  # TODO: maybe we need to filter by original files
+            allowed_file = select_relevant_files(get_allowed_extensions(), asset.location) if asset else []
             return len(allowed_file) != 0
         return True
 
@@ -2024,6 +2015,7 @@ class Link(models.Model):
     name = models.CharField(max_length=255, help_text=_('For example "View in Google Earth"'))
     mime = models.CharField(max_length=255, help_text=_('For example "text/xml"'))
     url = models.TextField(max_length=1000)
+    asset = models.ForeignKey("assets.Asset", null=True, on_delete=models.CASCADE)
 
     objects = LinkManager()
 

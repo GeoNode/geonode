@@ -53,6 +53,7 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 from geonode import geoserver  # noqa
 from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
+from geonode.assets.utils import get_default_asset
 
 BUFFER_CHUNK_SIZE = 64 * 1024
 
@@ -281,8 +282,9 @@ def download(request, resourceid, sender=Dataset):
         dataset_files = []
         file_list = []  # Store file info to be returned
         try:
-            files = instance.resourcebase_ptr.files
+            asset_obj = get_default_asset(instance)
             # Copy all Dataset related files into a temporary folder
+            files = asset_obj.location if asset_obj else []
             for file_path in files:
                 if storage_manager.exists(file_path):
                     dataset_files.append(file_path)
