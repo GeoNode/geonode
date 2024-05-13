@@ -1,7 +1,7 @@
 FROM geonode/geonode-base:latest-ubuntu-22.04
 LABEL GeoNode development team
 
-# add bower and grunt command
+# copy local geonode src inside container
 COPY . /usr/src/geonode/
 WORKDIR /usr/src/geonode
 
