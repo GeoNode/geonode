@@ -9,6 +9,12 @@ from geonode.assets.models import Asset
 logger = logging.getLogger(__name__)
 
 
+class AssetDownloadHandlerInterface:
+
+    def create_response(self, asset: Asset, attachment: bool = False, basename=None, path=None) -> HttpResponse:
+        raise NotImplementedError()
+
+
 class AssetHandlerInterface:
 
     def handled_asset_class(self):
@@ -32,16 +38,10 @@ class AssetHandlerInterface:
     def create_link_url(self, asset: Asset) -> str:
         raise NotImplementedError()
 
-    def get_download_handler(self, asset: Asset):
+    def get_download_handler(self, asset: Asset) -> AssetDownloadHandlerInterface:
         raise NotImplementedError()
 
     def get_storage_manager(self, asset):
-        raise NotImplementedError()
-
-
-class AssetDownloadHandlerInterface:
-
-    def create_response(self, asset: Asset, attachment: bool = False, basename=None) -> HttpResponse:
         raise NotImplementedError()
 
 
