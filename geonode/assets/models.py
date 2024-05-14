@@ -36,7 +36,7 @@ class LocalAsset(Asset):
         verbose_name_plural = "Local assets"
 
     def __str__(self) -> str:
-        return super().__str__()
+        return f"{self.__class__.__name__}: {self.type}|{self.title}"
 
 
 def cleanup_asset_data(instance, *args, **kwargs):
