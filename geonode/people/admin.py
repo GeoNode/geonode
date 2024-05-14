@@ -69,6 +69,7 @@ class ProfileAdmin(admin.ModelAdmin):
                     "zipcode",
                     "country",
                     "keywords",
+                    "orcid_identifier",
                 )
             },
         ),

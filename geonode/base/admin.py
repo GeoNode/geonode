@@ -40,6 +40,12 @@ from geonode.base.models import (
     RestrictionCodeType,
     ContactRole,
     Link,
+    RelationType,
+    RelatedIdentifierType,
+    FundingReference,
+    RelatedIdentifier,
+    Funder,
+    RelatedProject,
     License,
     HierarchicalKeyword,
     MenuPlaceholder,
@@ -191,6 +197,60 @@ class LinkAdmin(admin.ModelAdmin):
     form = forms.modelform_factory(Link, fields="__all__")
 
 
+class RelationTypeAdmin(admin.ModelAdmin):
+    model = RelationType
+    list_display = ("label", "description")
+    list_display_links = ("label",)
+    list_filter = ("label",)
+
+    form = forms.modelform_factory(RelationType, fields="__all__")
+
+
+class RelatedIdentifierAdmin(admin.ModelAdmin):
+    model = RelatedIdentifier
+    list_display = ("id", "related_identifier", "related_identifier_type", "relation_type")
+    list_display_links = ("related_identifier", "related_identifier_type", "relation_type")
+    list_filter = ("related_identifier", "related_identifier_type", "relation_type")
+
+    form = forms.modelform_factory(RelatedIdentifier, fields="__all__")
+
+
+class RelatedIdentifierTypeAdmin(admin.ModelAdmin):
+    model = RelatedIdentifierType
+    list_display = ("label", "description")
+    list_display_links = ("label",)
+    list_filter = ("label",)
+
+    form = forms.modelform_factory(RelatedIdentifierType, fields="__all__")
+
+
+class FundingReferenceAdmin(admin.ModelAdmin):
+    model = FundingReference
+    list_display = ("funder_name", "funder_identifier", "funder_identifier_type")
+    list_display_links = []
+    list_filter = ("funder_name", "funder_identifier", "funder_identifier_type")
+
+    form = forms.modelform_factory(FundingReference, fields="__all__")
+
+
+class FunderAdmin(admin.ModelAdmin):
+    model = Funder
+    list_display = ("funding_reference", "award_number", "award_uri", "award_title")
+    list_display_links = ("funding_reference",)
+    list_filter = ("funding_reference", "award_number", "award_uri", "award_title")
+
+    form = forms.modelform_factory(Funder, fields="__all__")
+
+
+class RelatedProjectAdmin(admin.ModelAdmin):
+    model = RelatedProject
+    list_display = ("label", "display_name")
+    list_display_links = []
+    list_filter = ("label", "display_name")
+
+    form = forms.modelform_factory(RelatedProject, fields="__all__")
+
+
 class HierarchicalKeywordAdmin(TreeAdmin):
     search_fields = ("name",)
     form = movenodeform_factory(HierarchicalKeyword)
@@ -326,6 +386,12 @@ admin.site.register(RestrictionCodeType, RestrictionCodeTypeAdmin)
 admin.site.register(ContactRole, ContactRoleAdmin)
 admin.site.register(Link, LinkAdmin)
 admin.site.register(License, LicenseAdmin)
+admin.site.register(RelationType, RelationTypeAdmin)
+admin.site.register(RelatedIdentifierType, RelatedIdentifierTypeAdmin)
+admin.site.register(RelatedIdentifier, RelatedIdentifierAdmin)
+admin.site.register(FundingReference, FundingReferenceAdmin)
+admin.site.register(Funder, FunderAdmin)
+admin.site.register(RelatedProject, RelatedProjectAdmin)
 admin.site.register(HierarchicalKeyword, HierarchicalKeywordAdmin)
 admin.site.register(MenuPlaceholder, MenuPlaceholderAdmin)
 admin.site.register(Menu, MenuAdmin)
