@@ -395,8 +395,8 @@
             "identifier":"CC-NC",
             "name":"CC-NC",
             "abbreviation":"CC-NC",
-            "description":"https://creativecommons.org/licenses/by-nc/2.0/",
-            "url":"https://creativecommons.org/licenses/by-nc/2.0/legalcode",
+            "description":"https://creativecommons.org/licenses/by-nc/4.0/",
+            "url":"https://creativecommons.org/licenses/by-nc/4.0/legalcode",
             "license_text":""
         }
       },
@@ -407,8 +407,8 @@
             "identifier":"CC-ND",
             "name":"CC-ND",
             "abbreviation":"CC-ND",
-            "description":"https://creativecommons.org/licenses/by-nd/2.0/",
-            "url":"https://creativecommons.org/licenses/by-nd/2.0/legalcode",
+            "description":"https://creativecommons.org/licenses/by-nd/4.0/",
+            "url":"https://creativecommons.org/licenses/by-nd/4.0/legalcode",
             "license_text":""
         }
       },
@@ -419,8 +419,8 @@
             "identifier":"CC-NC-SA",
             "name":"CC-NC-SA",
             "abbreviation":"CC-NC-SA",
-            "description":"https://creativecommons.org/licenses/by-nc-sa/2.0/",
-            "url":"https://creativecommons.org/licenses/by-nc-sa/2.0/legalcode",
+            "description":"https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "url":"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode",
             "license_text":""
         }
       },
@@ -431,8 +431,8 @@
             "identifier":"CC-NC-SA",
             "name":"CC-NC-SA",
             "abbreviation":"CC-NC-SA",
-            "description":"https://creativecommons.org/licenses/by-nc-sa/2.0/",
-            "url":"https://creativecommons.org/licenses/by-nc-sa/2.0/legalcode",
+            "description":"https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            "url":"https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode",
             "license_text":""
         }
       },
@@ -5295,6 +5295,22 @@
       "pk": 25,
       "fields": {
         "label": "Reviews",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 26,
+      "fields": {
+        "label": "HasVersion",
+        "description": ""
+      }
+    },
+    {
+      "model": "base.relationtype",
+      "pk": 27,
+      "fields": {
+        "label": "IsVersionOf",
         "description": ""
       }
     },

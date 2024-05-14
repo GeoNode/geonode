@@ -181,6 +181,7 @@ class _ThesaurusKeywordSerializerMixIn:
         for _i18n_label in ThesaurusKeywordLabel.objects.filter(keyword__id=value.id).iterator():
             _i18n[_i18n_label.lang] = _i18n_label.label
         return {
+            "keyword": value.id,
             "name": value.alt_label,
             "slug": slugify(value.about),
             "uri": value.about,
@@ -198,6 +199,13 @@ class SimpleThesaurusKeywordSerializer(_ThesaurusKeywordSerializerMixIn, Dynamic
         model = ThesaurusKeyword
         name = "ThesaurusKeyword"
         fields = ("alt_label",)
+
+
+class SimpleThesaurusKeywordLabelSerializer(DynamicModelSerializer):
+    class Meta:
+        model = ThesaurusKeywordLabel
+        name = "ThesaurusKeywordLabel"
+        fields = ("keyword", "lang", "label")
 
 
 class SimpleRegionSerializer(DynamicModelSerializer):
@@ -280,6 +288,13 @@ class LicenseSerializer(DynamicModelSerializer):
         model = License
         name = "License"
         fields = ("identifier",)
+
+
+class FullLicenseSerializer(DynamicModelSerializer):
+    class Meta:
+        model = License
+        name = "License"
+        fields = ("identifier", "name", "abbreviation", "description", "url", "license_text")
 
 
 class SpatialRepresentationTypeSerializer(DynamicModelSerializer):
@@ -414,37 +429,37 @@ class FavoriteField(DynamicComputedField):
         return False
 
 
-
 class UserSerializer(BaseDynamicModelSerializer):
     class Meta:
         ref_name = "UserProfile"
         model = get_user_model()
         name = "user"
         view_name = "users-list"
-        fields = ("pk",
-                  "username",
-                  "first_name",
-                  "last_name",
-                  "avatar",
-                  "perms",
-                  "is_superuser",
-                  "is_staff",
-                  "email",
-                  "organization",
-                  "profile",
-                  "position",
-                  "voice",
-                  "fax",
-                  "delivery",
-                  "city",
-                  "area",
-                  "zipcode",
-                  "keywords",
-                  "country",
-                  "language",
-                  "timezone",
-                  "orcid_identifier"
-                  )
+        fields = (
+            "pk",
+            "username",
+            "first_name",
+            "last_name",
+            "avatar",
+            "perms",
+            "is_superuser",
+            "is_staff",
+            "email",
+            "organization",
+            "profile",
+            "position",
+            "voice",
+            "fax",
+            "delivery",
+            "city",
+            "area",
+            "zipcode",
+            "keywords",
+            "country",
+            "language",
+            "timezone",
+            "orcid_identifier",
+        )
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -466,10 +481,7 @@ class UserSerializer(BaseDynamicModelSerializer):
         return data
 
     avatar = AvatarUrlField(240, read_only=True)
-    keywords = ComplexDynamicRelationField(
-            SimpleHierarchicalKeywordSerializer, embed=False, many=True
-        )
-
+    keywords = ComplexDynamicRelationField(SimpleHierarchicalKeywordSerializer, embed=False, many=True)
 
 
 class ContactRoleField(DynamicComputedField):
@@ -992,6 +1004,14 @@ class RelatedIdentifierTypeSerializer(DynamicModelSerializer):
         name = "relatedidentifiertypes"
         model = RelatedIdentifierType
         count_type = "relatedidentifiertype"
+        fields = "__all__"
+
+
+class RelatedIdentifierSerializer(DynamicModelSerializer):
+    class Meta:
+        name = "relatedidentifiers"
+        model = RelatedIdentifier
+        count_type = "relatedidentifier"
         fields = "__all__"
 
 
