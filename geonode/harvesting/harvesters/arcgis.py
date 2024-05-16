@@ -203,7 +203,7 @@ class ArcgisMapServiceResourceExtractor(ArcgisServiceResourceExtractor):
             resource_uuid = uuid.UUID(harvestable_resource.geonode_resource.uuid)
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
-        ows_url = harvestable_resource.unique_identifier.rpartition("/")[0]
+        ows_url = harvestable_resource.harvester.remote_url
         store = slugify(ows_url)
         name = layer_representation.get("id", layer_representation.get("name", "Undefined"))
         title = layer_representation.get("name", layer_representation.get("title", "Undefined"))
@@ -305,7 +305,7 @@ class ArcgisImageServiceResourceExtractor(ArcgisServiceResourceExtractor):
             resource_uuid = uuid.UUID(harvestable_resource.geonode_resource.uuid)
         _, service_name, service_type = parse_remote_url(harvestable_resource.unique_identifier)
         epsg_code, spatial_extent = _parse_spatial_extent(layer_representation["extent"])
-        ows_url = harvestable_resource.unique_identifier.rpartition("/")[0]
+        ows_url = harvestable_resource.harvester.remote_url
         store = slugify(ows_url)
         name = layer_representation.get("id", layer_representation.get("name", "Undefined"))
         title = layer_representation.get("name", layer_representation.get("title", "Undefined"))
