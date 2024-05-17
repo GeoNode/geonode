@@ -20,6 +20,7 @@
 import json
 import base64
 import logging
+import uuid
 import requests
 import importlib
 import mock
@@ -2233,6 +2234,53 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.assertSetEqual(
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
+
+    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    def test_if_anonymoys_default_perms_is_false_should_not_assign_perms_to_user_group(self):
+        """
+        if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False, the user's group should not get any permission
+        """
+
+        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        self.assertFalse(self.group_profile.group in resource.get_all_level_info()["groups"].keys())
+
+    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    def test_if_anonymoys_default_download_perms_is_false_should_not_assign_perms_to_user_group(self):
+        """
+        if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False, the user's group should not get any permission
+        """
+
+        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        self.assertFalse(self.group_profile.group in resource.get_all_level_info()["groups"].keys())
+
+    @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
+    @override_settings(RESOURCE_PUBLISHING=True)
+    def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on(self):
+        """
+        if DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION is False and the advanced workflow is activate
+         the user's group should get the view and download permission
+        """
+
+        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+        self.assertTrue(self.group_profile.group in resource.get_all_level_info()["groups"].keys())
+        group_val = resource.get_all_level_info()["groups"][self.group_profile.group]
+        self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
+
+    @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
+    @override_settings(ADMIN_MODERATE_UPLOADS=True)
+    def test_if_anonymoys_default_perms_is_false_should_assign_perms_to_user_group_if_advanced_workflow_is_on_moderate(
+        self,
+    ):
+        """
+        if DEFAULT_ANONYMOUS_VIEW_PERMISSION is False and the advanced workflow is activate
+         the user's group should get the view and download permission
+        """
+
+        resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
+
+        self.assertTrue(self.group_profile.group in resource.get_all_level_info()["groups"].keys())
+        group_val = resource.get_all_level_info()["groups"][self.group_profile.group]
+        self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
 
 @override_settings(RESOURCE_PUBLISHING=True)
