@@ -67,29 +67,38 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.proxy_url = "/proxy/"
         self.url = TEST_URL
 
-    @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
-    def test_validate_host_disabled_in_debug(self):
-        """If PROXY_ALLOWED_HOSTS is empty and DEBUG is True, all hosts pass the proxy."""
-        response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertTrue(response.status_code in (200, 301), response.status_code)
-
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
-    def test_validate_host_disabled_not_in_debug(self):
-        """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertEqual(response.status_code, 403, response.status_code)
-
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(TEST_DOMAIN,))
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is not empty and DEBUG is False requests should return no error."""
         self.client.login(username="admin", password="admin")
         response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertEqual(response.status_code, 200, response.status_code)
+        self.assertEqual(response.status_code, 200, response.status_code)
 
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
+    @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=("request=GetCapabilities",))
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set())
+    def test_proxy_allowed_params(self):
+        response = self.client.get(f"{self.proxy_url}?url=https://example.com?request=GetCapabilities")
+        self.assertNotEqual(response.status_code, 404, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=("request=GetCapabilities",))
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set())
+    def test_proxy_not_allowed_params(self):
+        response = self.client.get(f"{self.proxy_url}?url=http://example.com?param=any")
+        self.assertEqual(response.status_code, 403, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_HOSTS=(), PROXY_ALLOWED_PATH_NEEDLES=("tms",))
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set())
+    def test_proxy_allowed_path(self):
+        response = self.client.get(f"{self.proxy_url}?url=https://example.com/tms/")
+        self.assertNotEqual(response.status_code, 404, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_HOSTS=(), PROXY_ALLOWED_PATH_NEEDLES=("tms",))
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set())
+    def test_proxy_not_allowed_path(self):
+        response = self.client.get(f"{self.proxy_url}?url=http://example.com/xyz")
+        self.assertEqual(response.status_code, 403, response.status_code)
+
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set())
     def test_validate_remote_services_hosts(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
         for Remote Services hosts."""
@@ -108,7 +117,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         # 200 - FOUND
         self.assertTrue(response.status_code in (200, 301))
 
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(".example.org",))
+    @patch("geonode.proxy.views.PROXY_ALLOWED_HOSTS", set([".example.org"]))
     def test_relative_urls(self):
         """Proxying to a URL with a relative path element should normalise the path into
         an absolute path before calling the remote URL."""

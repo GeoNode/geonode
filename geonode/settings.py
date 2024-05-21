@@ -1289,6 +1289,11 @@ except ValueError:
         else re.split(r" *[,|:;] *", os.getenv("PROXY_ALLOWED_HOSTS"))
     )
 
+# Tuple with valid strings to be matched inside the request querystring to let it pass through the proxy
+PROXY_ALLOWED_PARAMS_NEEDLES = ()
+# Tuple with valid strings to be matched inside the request path to let it pass through the proxy
+PROXY_ALLOWED_PATH_NEEDLES = ()
+
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 
