@@ -62,15 +62,42 @@ BUFFER_CHUNK_SIZE = 64 * 1024
 TIMEOUT = 30
 LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
-PROXY_ALLOWED_HOSTS = set(getattr(settings, "PROXY_ALLOWED_HOSTS", ()))
-
 site_url = urlsplit(settings.SITEURL)
-if site_url.hostname not in PROXY_ALLOWED_HOSTS:
-    PROXY_ALLOWED_HOSTS.add(site_url.hostname)
 
-hostname = ogc_server_settings.hostname if ogc_server_settings else None
-if hostname not in PROXY_ALLOWED_HOSTS:
-    PROXY_ALLOWED_HOSTS.add(hostname)
+
+class ProxyUrlsRegistry:
+    def __init__(self):
+        self.proxy_alloed_hosts = set()
+
+        self.proxy_alloed_hosts.add(site_url.hostname)
+
+        hostname = ogc_server_settings.hostname if ogc_server_settings else None
+        if hostname:
+            self.proxy_alloed_hosts.add(hostname)
+
+        for _s in Service.objects.all():
+            _remote_host = urlsplit(_s.base_url).hostname
+            self.proxy_alloed_hosts.add(_remote_host)
+
+    def set(self, hosts):
+        self.proxy_alloed_hosts = set(hosts)
+        return self
+
+    def clear(self):
+        self.proxy_alloed_hosts = set()
+        return self
+
+    def register_host(self, host):
+        self.proxy_alloed_hosts.add(host)
+
+    def unregister_host(self, host):
+        self.proxy_alloed_hosts.remove(host)
+
+    def get_proxy_alloed_hosts(self):
+        return self.proxy_alloed_hosts
+
+
+proxy_urls_registry = ProxyUrlsRegistry()
 
 
 @requires_csrf_token
@@ -109,22 +136,21 @@ def proxy(
         locator += f"#{url.fragment}"
 
     if sec_chk_hosts:
-        if url.hostname not in PROXY_ALLOWED_HOSTS:
+        if url.hostname not in proxy_urls_registry.get_proxy_alloed_hosts():
             if any(needle.lower() in url.query.lower() for needle in PROXY_ALLOWED_PARAMS_NEEDLES) or any(
                 needle.lower() in url.path.lower() for needle in PROXY_ALLOWED_PATH_NEEDLES
             ):
-                PROXY_ALLOWED_HOSTS.add(url.hostname)
+                proxy_urls_registry.register_host(url.hostname)
 
-        if url.hostname not in PROXY_ALLOWED_HOSTS:
-        # Check Remote Services base_urls
+        if url.hostname not in proxy_urls_registry.get_proxy_alloed_hosts():
+            # Check Remote Services base_urls
             for _s in Service.objects.all():
                 _remote_host = urlsplit(_s.base_url).hostname
-                PROXY_ALLOWED_HOSTS.add(_remote_host)
+                proxy_urls_registry.register_host(_remote_host)
 
-        if not validate_host(extract_ip_or_domain(raw_url), PROXY_ALLOWED_HOSTS):
+        if not validate_host(extract_ip_or_domain(raw_url), proxy_urls_registry.get_proxy_alloed_hosts()):
             return HttpResponse(
-                "DEBUG is set to False but the host of the path provided to the proxy service"
-                " is not in the PROXY_ALLOWED_HOSTS setting.",
+                "The path provided to the proxy service" " is not in the PROXY_ALLOWED_HOSTS setting.",
                 status=403,
                 content_type="text/plain",
             )
