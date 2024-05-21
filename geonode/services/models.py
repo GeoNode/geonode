@@ -22,10 +22,9 @@ from urllib.parse import urlparse, urlsplit, ParseResult
 
 from django.db import models
 from django.conf import settings
-from django.db.models import signals
+
 from django.utils.translation import gettext_lazy as _
 
-from geonode.proxy.views import proxy_urls_registry
 from geonode.base.models import ResourceBase
 from geonode.harvesting.models import Harvester
 from geonode.layers.enumerations import GXP_PTYPES
@@ -129,18 +128,3 @@ class ServiceProfileRole(models.Model):
     role = models.CharField(
         choices=ROLE_VALUES, max_length=255, help_text=_("function performed by the responsible party")
     )
-
-
-def service_post_save(instance, sender, **kwargs):
-    service_hostname = urlsplit(instance.base_url).hostname
-    proxy_urls_registry.register_host(service_hostname)
-
-
-def service_post_delete(instance, sender, **kwargs):
-    service_hostname = urlsplit(instance.base_url).hostname
-    proxy_urls_registry.unregister_host(service_hostname)
-
-
-if "geonode.proxy" in settings.INSTALLED_APPS:
-    signals.post_save.connect(service_post_save, sender=Service)
-    signals.post_save.connect(service_post_delete, sender=Service)

@@ -30,8 +30,8 @@ from urllib.parse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.template import loader
 from django.http import HttpResponse, StreamingHttpResponse
+from django.db.models import signals
 from django.views.generic import View
-from distutils.version import StrictVersion
 from django.http.request import validate_host
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import requires_csrf_token
@@ -448,3 +448,17 @@ def fetch_response_headers(response, response_headers):
                 ]:
                     response._headers[_header] = (_header, response_headers.get(_header))
     return response
+
+
+def service_post_save(instance, sender, **kwargs):
+    service_hostname = urlsplit(instance.base_url).hostname
+    proxy_urls_registry.register_host(service_hostname)
+
+
+def service_post_delete(instance, sender, **kwargs):
+    service_hostname = urlsplit(instance.base_url).hostname
+    proxy_urls_registry.unregister_host(service_hostname)
+
+
+signals.post_save.connect(service_post_save, sender=Service)
+signals.post_delete.connect(service_post_delete, sender=Service)
