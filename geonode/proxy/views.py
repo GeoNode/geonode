@@ -56,6 +56,8 @@ from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
 from geonode.geoserver.helpers import ogc_server_settings
 
+from .utils import proxy_urls_registry
+
 logger = logging.getLogger(__name__)
 
 BUFFER_CHUNK_SIZE = 64 * 1024
@@ -63,41 +65,6 @@ TIMEOUT = 30
 LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
 site_url = urlsplit(settings.SITEURL)
-
-
-class ProxyUrlsRegistry:
-    def __init__(self):
-        self.proxy_alloed_hosts = set()
-
-        self.proxy_alloed_hosts.add(site_url.hostname)
-
-        hostname = ogc_server_settings.hostname if ogc_server_settings else None
-        if hostname:
-            self.proxy_alloed_hosts.add(hostname)
-
-        for _s in Service.objects.all():
-            _remote_host = urlsplit(_s.base_url).hostname
-            self.proxy_alloed_hosts.add(_remote_host)
-
-    def set(self, hosts):
-        self.proxy_alloed_hosts = set(hosts)
-        return self
-
-    def clear(self):
-        self.proxy_alloed_hosts = set()
-        return self
-
-    def register_host(self, host):
-        self.proxy_alloed_hosts.add(host)
-
-    def unregister_host(self, host):
-        self.proxy_alloed_hosts.remove(host)
-
-    def get_proxy_alloed_hosts(self):
-        return self.proxy_alloed_hosts
-
-
-proxy_urls_registry = ProxyUrlsRegistry()
 
 
 @requires_csrf_token

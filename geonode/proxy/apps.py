@@ -17,8 +17,19 @@
 #
 #########################################################################
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
+
+from .utils import proxy_urls_registry
+
+
+def run_setup_hooks(*args, **kwargs):
+    proxy_urls_registry.initialize()
 
 
 class GeoNodeProxyAppConfig(AppConfig):
     name = "geonode.proxy"
     verbose_name = "GeoNode Proxy"
+
+    def ready(self):
+        super().ready()
+        run_setup_hooks()

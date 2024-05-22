@@ -52,7 +52,7 @@ from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset
-from geonode.proxy.views import ProxyUrlsRegistry
+from geonode.proxy.utils import ProxyUrlsRegistry
 
 TEST_DOMAIN = ".github.com"
 TEST_URL = f"https://help{TEST_DOMAIN}/"
