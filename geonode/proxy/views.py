@@ -73,7 +73,6 @@ def proxy(
     url=None,
     response_callback=None,
     sec_chk_hosts=True,
-    sec_chk_rules=True,
     timeout=None,
     allowed_hosts=[],
     headers=None,
@@ -109,23 +108,12 @@ def proxy(
             ):
                 proxy_urls_registry.register_host(url.hostname)
 
-        if url.hostname not in proxy_urls_registry.get_proxy_allowed_hosts():
-            # Check Remote Services base_urls
-            for _s in Service.objects.all():
-                _remote_host = urlsplit(_s.base_url).hostname
-                proxy_urls_registry.register_host(_remote_host)
-
         if not validate_host(extract_ip_or_domain(raw_url), proxy_urls_registry.get_proxy_allowed_hosts()):
             return HttpResponse(
                 "The path provided to the proxy service" " is not in the PROXY_ALLOWED_HOSTS setting.",
                 status=403,
                 content_type="text/plain",
             )
-
-    # Security checks based on rules; allow only specific requests
-    if sec_chk_rules:
-        # TODO: Not yet implemented
-        pass
 
     # Collecting headers and cookies
     if not headers:

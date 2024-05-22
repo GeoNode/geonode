@@ -13,9 +13,8 @@ class ProxyUrlsRegistry:
 
         self.proxy_allowed_hosts = set([site_url.hostname])
 
-        hostname = ogc_server_settings.hostname if ogc_server_settings else None
-        if hostname:
-            self.proxy_allowed_hosts.add(hostname)
+        if ogc_server_settings:
+            self.proxy_allowed_hosts.add(ogc_server_settings.hostname)
 
         for _s in Service.objects.all():
             _remote_host = urlsplit(_s.base_url).hostname
