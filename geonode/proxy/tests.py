@@ -54,8 +54,8 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.proxy.utils import ProxyUrlsRegistry
 
-TEST_DOMAIN = "help.github.com"
-TEST_URL = f"https://{TEST_DOMAIN}/"
+TEST_DOMAIN = ".github.com"
+TEST_URL = f"https://help{TEST_DOMAIN}/"
 
 
 class ProxyTest(GeoNodeBaseTestSupport):
@@ -152,7 +152,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wcs")
         self.assertNotEqual(response.status_code, 403, response.status_code)
 
-    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["example.org"]))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([".example.org"]))
     def test_relative_urls(self):
         """Proxying to a URL with a relative path element should normalise the path into
         an absolute path before calling the remote URL."""

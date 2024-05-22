@@ -1919,12 +1919,13 @@ def remove_credentials_from_url(url):
     return cleaned_url
 
 
+ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
+domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
+
+
 def extract_ip_or_domain(url):
     # Decode the URL to handle percent-encoded characters
     _url = remove_credentials_from_url(unquote(url))
-
-    ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
-    domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
 
     match = ip_regex.findall(_url)
     if len(match):
