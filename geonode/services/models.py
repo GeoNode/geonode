@@ -18,7 +18,7 @@
 #########################################################################
 import logging
 
-from urllib.parse import urlparse, urlsplit, ParseResult
+from urllib.parse import urlparse, ParseResult
 
 from django.db import models
 from django.conf import settings
