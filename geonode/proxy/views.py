@@ -110,7 +110,7 @@ def proxy(
 
         if not validate_host(extract_ip_or_domain(raw_url), proxy_urls_registry.get_proxy_allowed_hosts()):
             return HttpResponse(
-                "The path provided to the proxy service" " is not in the PROXY_ALLOWED_HOSTS setting.",
+                "The path provided to the proxy service is not allowed.",
                 status=403,
                 content_type="text/plain",
             )
