@@ -32,4 +32,8 @@ class GeoNodeProxyAppConfig(AppConfig):
 
     def ready(self):
         super().ready()
-        run_setup_hooks()
+        try:
+            run_setup_hooks()
+        except:
+            # This is in case the Service table doesn't exist yet
+            post_migrate.connect(run_setup_hooks, sender=self)
