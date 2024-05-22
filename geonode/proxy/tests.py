@@ -54,8 +54,8 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset
 from geonode.proxy.utils import ProxyUrlsRegistry
 
-TEST_DOMAIN = ".github.com"
-TEST_URL = f"https://help{TEST_DOMAIN}/"
+TEST_DOMAIN = "help.github.com"
+TEST_URL = f"https://{TEST_DOMAIN}/"
 
 
 class ProxyTest(GeoNodeBaseTestSupport):
@@ -118,7 +118,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         # 200 - FOUND
         self.assertTrue(response.status_code in (200, 301))
 
-    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([".example.org"]))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["example.org"]))
     def test_relative_urls(self):
         """Proxying to a URL with a relative path element should normalise the path into
         an absolute path before calling the remote URL."""
@@ -138,7 +138,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.client.get(f"{self.proxy_url}?url={url}")
         assert request_mock.call_args[0][0] == "http://example.org/index.html"
 
-    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([".example.org"]))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["example.org"]))
     def test_proxy_preserve_headers(self):
         """The GeoNode Proxy should preserve the original request headers."""
         import geonode.proxy.views

@@ -103,10 +103,14 @@ def proxy(
 
     if sec_chk_hosts:
         if url.hostname not in proxy_urls_registry.get_proxy_allowed_hosts():
-            if any(needle.lower() in url.query.lower() for needle in PROXY_ALLOWED_PARAMS_NEEDLES) or any(
+            if not any(needle.lower() in url.query.lower() for needle in PROXY_ALLOWED_PARAMS_NEEDLES) and not any(
                 needle.lower() in url.path.lower() for needle in PROXY_ALLOWED_PATH_NEEDLES
             ):
-                proxy_urls_registry.register_host(url.hostname)
+                return HttpResponse(
+                    "The path provided to the proxy service is not allowed.",
+                    status=403,
+                    content_type="text/plain",
+                )
 
         if not validate_host(extract_ip_or_domain(raw_url), proxy_urls_registry.get_proxy_allowed_hosts()):
             return HttpResponse(
