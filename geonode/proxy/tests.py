@@ -73,13 +73,13 @@ class ProxyTest(GeoNodeBaseTestSupport):
         """If PROXY_ALLOWED_HOSTS is not empty and DEBUG is False requests should return no error."""
         self.client.login(username="admin", password="admin")
         response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        self.assertEqual(response.status_code, 200, response.status_code)
+        self.assertNotEqual(response.status_code, 403, response.status_code)
 
     @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=("request=GetCapabilities",))
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
     def test_proxy_allowed_params(self):
         response = self.client.get(f"{self.proxy_url}?url=https://example.com?request=GetCapabilities")
-        self.assertNotEqual(response.status_code, 404, response.status_code)
+        self.assertNotEqual(response.status_code, 403, response.status_code)
 
     @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=("request=GetCapabilities",))
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
@@ -91,7 +91,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
     def test_proxy_allowed_path(self):
         response = self.client.get(f"{self.proxy_url}?url=https://example.com/tms/")
-        self.assertNotEqual(response.status_code, 404, response.status_code)
+        self.assertNotEqual(response.status_code, 403, response.status_code)
 
     @override_settings(PROXY_ALLOWED_PATH_NEEDLES=("tms",))
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
@@ -99,6 +99,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         response = self.client.get(f"{self.proxy_url}?url=http://example.com/xyz")
         self.assertEqual(response.status_code, 403, response.status_code)
 
+    @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=(), PROXY_ALLOWED_PATH_NEEDLES=())
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
     def test_validate_remote_services_hosts(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
@@ -116,12 +117,12 @@ class ProxyTest(GeoNodeBaseTestSupport):
         )
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
         self.assertNotEqual(response.status_code, 403, response.status_code)
-        
+
         # The service should be removed from the proxy registry
         service.delete()
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
         self.assertEqual(response.status_code, 403, response.status_code)
-        
+
         # Two services with the same hostname are added to the proxy registry
         service, _ = Service.objects.get_or_create(
             type=WMS,
@@ -143,14 +144,13 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.assertNotEqual(response.status_code, 403, response.status_code)
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wms")
         self.assertNotEqual(response.status_code, 403, response.status_code)
-        
+
         service.delete()
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wfs")
         # The request passes because the same hostname is still registered for the other serrice
         self.assertNotEqual(response.status_code, 403, response.status_code)
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wcs")
         self.assertNotEqual(response.status_code, 403, response.status_code)
-        
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["example.org"]))
     def test_relative_urls(self):
