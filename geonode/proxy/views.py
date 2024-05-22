@@ -415,8 +415,8 @@ def service_post_save(instance, sender, **kwargs):
 
 
 def service_post_delete(instance, sender, **kwargs):
-    service_hostname = urlsplit(instance.base_url).hostname
-    proxy_urls_registry.unregister_host(service_hostname)
+    # We reinitialize the registry otherwise we might delete a host requested by another service with the same hostanme
+    proxy_urls_registry.initialize()
 
 
 signals.post_save.connect(service_post_save, sender=Service)

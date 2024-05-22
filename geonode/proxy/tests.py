@@ -106,7 +106,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         from geonode.services.models import Service
         from geonode.services.enumerations import WMS, INDEXED
 
-        Service.objects.get_or_create(
+        service, _ = Service.objects.get_or_create(
             type=WMS,
             name="Bogus",
             title="Pocus",
@@ -114,9 +114,43 @@ class ProxyTest(GeoNodeBaseTestSupport):
             method=INDEXED,
             base_url="http://bogus.pocus.com/ows",
         )
-        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows/wms?request=GetCapabilities")
-        # 200 - FOUND
-        self.assertTrue(response.status_code in (200, 301))
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        
+        # The service should be removed from the proxy registry
+        service.delete()
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
+        self.assertEqual(response.status_code, 403, response.status_code)
+        
+        # Two services with the same hostname are added to the proxy registry
+        service, _ = Service.objects.get_or_create(
+            type=WMS,
+            name="Bogus",
+            title="Pocus",
+            owner=self.admin,
+            method=INDEXED,
+            base_url="http://bogus.pocus.com/ows",
+        )
+        Service.objects.get_or_create(
+            type=WMS,
+            name="Bogus2",
+            title="Pocus",
+            owner=self.admin,
+            method=INDEXED,
+            base_url="http://bogus.pocus.com/wms",
+        )
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wms")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        
+        service.delete()
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wfs")
+        # The request passes because the same hostname is still registered for the other serrice
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wcs")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["example.org"]))
     def test_relative_urls(self):
