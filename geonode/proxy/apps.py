@@ -17,8 +17,23 @@
 #
 #########################################################################
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
+
+from .utils import proxy_urls_registry
+
+
+def run_setup_hooks(*args, **kwargs):
+    proxy_urls_registry.initialize()
 
 
 class GeoNodeProxyAppConfig(AppConfig):
     name = "geonode.proxy"
     verbose_name = "GeoNode Proxy"
+
+    def ready(self):
+        super().ready()
+        try:
+            run_setup_hooks()
+        except Exception:
+            # This is in case the Service table doesn't exist yet
+            post_migrate.connect(run_setup_hooks, sender=self)
