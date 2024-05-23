@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("base", "0090_alter_resourcebase_polymorphic_ctype"),
+        ("base", "0091_alter_hierarchicalkeyword_slug"),
     ]
 
     operations = [

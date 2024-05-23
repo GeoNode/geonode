@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("base", "0090_alter_resourcebase_polymorphic_ctype"),
+        ("base", "0091_alter_hierarchicalkeyword_slug"),
         ("assets", "0001_initial"),
     ]
 
