@@ -18,6 +18,7 @@
 #########################################################################
 
 from unittest.mock import MagicMock
+from uuid import uuid4
 import mock
 import logging
 
@@ -38,6 +39,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from owslib.map.wms111 import ContentMetadata
 
+from geonode.harvesting.models import Harvester
 from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
@@ -773,6 +775,32 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.assertSetEqual({"Foo", "OWS", "Service"}, set(list(s.keywords.values_list("name", flat=True))))
             response = self.client.post(reverse("remove_service", args=(s.id,)))
             self.assertEqual(len(Service.objects.all()), 0)
+
+    def test_removing_the_service_delete_also_the_harvester(self):
+        """
+        If the user delete the service, the corrisponding harvester object should be deleted too
+        """
+        owner = get_user_model().objects.get(username="admin")
+        # creating the service
+        dummy_service = Service.objects.create(
+            uuid=str(uuid4()), owner=owner, title="test service removing", is_approved=True
+        )
+        # creating the harvester
+        harvester = Harvester.objects.create(
+            remote_url="http://fake1.com",
+            name="harvester1",
+            default_owner=owner,
+            harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
+        )
+        dummy_service.harvester = harvester
+        dummy_service.save()
+
+        self.client.login(username="admin", password="admin")
+
+        response = self.client.post(reverse("remove_service", args=(dummy_service.id,)))
+        self.assertEqual(302, response.status_code)
+        self.assertFalse(Service.objects.filter(id=dummy_service.id).exists())
+        self.assertFalse(Harvester.objects.filter(id=harvester.id).exists())
 
     @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
