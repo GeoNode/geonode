@@ -10,8 +10,7 @@ from django_downloadview import DownloadResponse
 from geonode.assets.handlers import asset_handler_registry, AssetHandlerInterface, AssetDownloadHandlerInterface
 from geonode.assets.models import LocalAsset
 from geonode.storage.manager import DefaultStorageManager, StorageManager
-from geonode.utils import build_absolute_uri
-
+from geonode.utils import build_absolute_uri, mkdtemp
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +29,11 @@ class LocalAssetHandler(AssetHandlerInterface):
 
     def get_storage_manager(self, asset):
         return _asset_storage_manager
+
+    def _create_asset_dir(self):
+        return os.path.normpath(
+            mkdtemp(dir=settings.ASSETS_ROOT, prefix=datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
+        )
 
     def create(self, title, description, type, owner, files=None, clone_files=False, *args, **kwargs):
         if not files:
