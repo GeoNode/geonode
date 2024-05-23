@@ -87,7 +87,8 @@ git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
 git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
-git+https://github.com/GeoNode/geonode-importer.git@geonode_12124_assets#egg=geonode-importer
+#git+https://github.com/GeoNode/geonode-importer.git@geonode_12124_assets#egg=geonode-importer
+git+https://github.com/GeoNode/geonode-importer.git@assets_data_retriever#egg=geonode-importer
 django-avatar==8.0.0
 git+https://github.com/GeoNode/geonode-oauth-toolkit.git@openid-connect#egg=geonode-oauth-toolkit
 git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
