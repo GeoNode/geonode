@@ -26,7 +26,6 @@ from taggit.models import Tag
 from taggit.models import TaggedItem
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 from django.db.utils import IntegrityError
@@ -36,6 +35,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission, Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from geonode.assets.utils import create_asset_and_link
 from geonode.maps.models import Map
 from geonode.base import enumerations
 from geonode.layers.models import Dataset
@@ -54,7 +54,7 @@ imgfile = BytesIO(
     b"GIF87a\x01\x00\x01\x00\x80\x01\x00\x00\x00\x00ccc,\x00" b"\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02D\x01\x00;"
 )
 f = SimpleUploadedFile("test_img_file.gif", imgfile.read(), "image/gif")
-dfile = [f"{settings.MEDIA_ROOT}/img.gif"]
+dfile = [f"{os.path.dirname(__file__)}/tests/data/img.gif"]
 
 
 def all_public():
@@ -268,11 +268,12 @@ def create_models(type=None, integration=False):
                             bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                             ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
                             srid="EPSG:4326",
-                            files=dfile,
+                            # files=dfile,
                             extension="gif",
                             metadata_only=title == "doc metadata true",
                         ),
                     )
+                    _, _ = create_asset_and_link(m, m.owner, dfile)
                     m.set_default_permissions(owner=user)
                     m.clear_dirty_state()
                     m.set_processing_state(enumerations.STATE_PROCESSED)
@@ -472,11 +473,11 @@ def create_single_doc(name, owner=None, **kwargs):
             bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
             ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
             srid="EPSG:4326",
-            files=dfile,
             resource_type="document",
             **kwargs,
         ),
     )
+    _, _ = create_asset_and_link(m, m.owner, dfile)
     m.set_default_permissions(owner=owner or admin)
     m.clear_dirty_state()
     m.set_processing_state(enumerations.STATE_PROCESSED)
@@ -504,10 +505,10 @@ def create_single_geoapp(name, resource_type="geostory", owner=None, **kwargs):
             bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
             ll_bbox_polygon=Polygon.from_bbox((bbox_x0, bbox_y0, bbox_x1, bbox_y1)),
             srid="EPSG:4326",
-            files=dfile,
             **kwargs,
         ),
     )
+    _, _ = create_asset_and_link(m, m.owner, dfile)
     m.set_default_permissions(owner=owner or admin)
     m.clear_dirty_state()
     m.set_processing_state(enumerations.STATE_PROCESSED)
