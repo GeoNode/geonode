@@ -243,11 +243,13 @@ class StorageManager(StorageManagerInterface):
     def generate_filename(self, filename):
         return self._concrete_storage_manager.generate_filename(filename)
 
-    def clone_remote_files(self) -> Mapping:
+    def clone_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True) -> Mapping:
         """
         Using the data retriever object clone the remote path into a local temporary storage
         """
-        return self.data_retriever.get_paths(allow_transfer=True)
+        return self.data_retriever.get_paths(
+            allow_transfer=True, cloning_directory=cloning_directory, prefix=prefix, create_tempdir=create_tempdir
+        )
 
     def get_retrieved_paths(self) -> Mapping:
         """
