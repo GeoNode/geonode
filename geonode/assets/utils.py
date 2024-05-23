@@ -54,6 +54,28 @@ def find_type(ext):
     return next((datatype for datatype, extensions in DEFAULT_TYPES.items() if ext.lower() in extensions), None)
 
 
+def create_link(resource, asset, link_type=None, extension=None, name=None, mime=None, asset_handler=None, **kwargs):
+    asset_handler = asset_handler or asset_handler_registry.get_handler(asset)
+
+    if not link_type or not extension or not name:
+        fallback_name, fallback_ext = os.path.splitext(asset.location[0]) if len(asset.location) else (None, None)
+        if fallback_ext:
+            fallback_ext = fallback_ext.lstrip(".")
+        link_type = link_type or find_type(fallback_ext) if fallback_ext else None
+
+    link = Link(
+        resource=resource,
+        asset=asset,
+        url=asset_handler.create_link_url(asset),
+        extension=extension or fallback_ext or "Unknown",
+        link_type=link_type or "data",
+        name=name or fallback_name or asset.title,
+        mime=mime or "",
+    )
+    link.save()
+    return link
+
+
 def create_asset_and_link(
     resource,
     owner,
@@ -71,7 +93,7 @@ def create_asset_and_link(
     asset_handler = handler or asset_handler_registry.get_default_handler()
     asset = link = None
     try:
-        default_title, default_ext = os.path.splitext(files[0]) if len(files) == 1 else (None, None)
+        default_title, default_ext = os.path.splitext(next(f for f in files)) if len(files) else (None, None)
         if default_ext:
             default_ext = default_ext.lstrip(".")
         link_type = link_type or find_type(default_ext) if default_ext else None
@@ -85,16 +107,16 @@ def create_asset_and_link(
             clone_files=clone_files,
         )
 
-        link = Link(
-            resource=resource,
-            asset=asset,
-            url=asset_handler.create_link_url(asset),
-            extension=extension or default_ext or "Unknown",
-            link_type=link_type or "data",
-            name=title or asset.title,
-            mime=mime or "",
+        link = create_link(
+            resource,
+            asset,
+            asset_handler=asset_handler,
+            link_type=link_type,
+            extension=extension,
+            name=title,
+            mime=mime,
         )
-        link.save()
+
         return asset, link
     except Exception as e:
         logger.error(f"Error creating Asset for resource {resource}: {e}", exc_info=e)

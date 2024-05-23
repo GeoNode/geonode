@@ -48,7 +48,7 @@ from geonode.security.utils import perms_as_set, get_user_groups, skip_registere
 
 from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save
-from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links
+from geonode.assets.utils import create_asset_and_link_dict, rollback_asset_and_link, copy_assets_and_links, create_link
 
 from ..base import enumerations
 from ..security.utils import AdvancedSecurityWorkflowManager
@@ -319,7 +319,7 @@ class ResourceManager(ResourceManagerInterface):
         resource_dict = {  # TODO: cleanup params and dicts
             k: v
             for k, v in defaults.items()
-            if k not in ("data_title", "data_type", "description", "files", "link_type", "extension")
+            if k not in ("data_title", "data_type", "description", "files", "link_type", "extension", "asset")
         }
         _resource, _created = resource_type.objects.get_or_create(uuid=uuid, defaults=resource_dict)
         if _resource and _created:
@@ -327,11 +327,12 @@ class ResourceManager(ResourceManagerInterface):
             try:
                 # if files exist: create an Asset out of them and link it to the Resource
                 asset, link = (None, None)  # safe init in case of exception
-                asset, link = (
-                    create_asset_and_link_dict(_resource, defaults, clone_files=True)
-                    if defaults.get("files", None)
-                    else (None, None)
-                )
+                if defaults.get("files", None):
+                    logger.debug(f"Found files when creating resource {_resource}: {defaults['files']}")
+                    asset, link = create_asset_and_link_dict(_resource, defaults, clone_files=True)
+                elif defaults.get("asset", None):
+                    logger.debug(f"Found asset when creating resource {_resource}: {defaults['asset']}")
+                    link = create_link(_resource, **defaults)
 
                 with transaction.atomic():
                     _resource.set_missing_info()
@@ -343,7 +344,7 @@ class ResourceManager(ResourceManagerInterface):
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
-                rollback_asset_and_link(asset, link)
+                rollback_asset_and_link(asset, link)  # we are not removing the Asset passed in defaults
                 self.delete(_resource.uuid, instance=_resource)
                 raise e
         return _resource
