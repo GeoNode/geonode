@@ -238,3 +238,48 @@ class GeoAppsApiTests(APITestCase):
         self.assertEqual(exp.exception.category, "geoapp_api")
         self.assertEqual(exp.exception.default_code, "geoapp_exception")
         self.assertEqual(str(exp.exception.detail), "A GeoApp with the same 'name' already exists!")
+
+    def test_geoapp_creation_owner_is_mantained(self):
+        """
+        https://github.com/GeoNode/geonode/issues/12261
+        The geoapp owner should be mantained even if another
+        user save the instance.
+        """
+
+        url = f"{reverse('geoapps-list')}?include[]=data"
+        data = {
+            "name": "Test Create",
+            "title": "Test Create",
+            "resource_type": "geostory",
+            "extent": {"coords": [1123692.0, 5338214.0, 1339852.0, 5482615.0], "srid": "EPSG:3857"},
+        }
+
+        self.assertTrue(self.client.login(username="norman", password="norman"))
+
+        response = self.client.post(url, data=data, format="json")
+
+        self.assertEqual(201, response.status_code)
+        # let's check that the owner is the request one
+        self.assertEqual("norman", response.json()["geoapp"]["owner"]["username"])
+
+        # let's change the user of the request
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        sut = GeoApp.objects.get(pk=response.json()["geoapp"]["pk"])
+        # Update: PATCH
+        # we ensure that norman is the resource owner
+        self.assertEqual("norman", sut.owner.username)
+
+        url = reverse("geoapps-detail", kwargs={"pk": sut.pk})
+        data = {"blob": {"test_data": {"test": ["test_4", "test_5", "test_6"]}}}
+        # sending the update of the geoapp
+        response = self.client.patch(url, data=json.dumps(data), content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+
+        # ensure that the value of the owner is not changed
+        sut.refresh_from_db()
+        self.assertEqual("norman", sut.owner.username)
+
+        # cleanup
+        sut.delete()
