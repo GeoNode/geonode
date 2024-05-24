@@ -201,7 +201,12 @@ class PermissionLevelMixin:
             perm_spec["groups"][anonymous_group] = ["view_resourcebase"]
         else:
             for user_group in user_groups:
-                if not skip_registered_members_common_group(user_group):
+                # if aswm.is_auto_publishing_workflow() is False, means that at least one config of the advanced workflow
+                # is set, which means that users group get view_permissions
+                if (
+                    not skip_registered_members_common_group(user_group)
+                    and not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow()
+                ):
                     perm_spec["groups"][user_group] = ["view_resourcebase"]
 
         anonymous_can_download = settings.DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
@@ -209,7 +214,12 @@ class PermissionLevelMixin:
             perm_spec["groups"][anonymous_group] = ["view_resourcebase", "download_resourcebase"]
         else:
             for user_group in user_groups:
-                if not skip_registered_members_common_group(user_group):
+                # if aswm.is_auto_publishing_workflow() is False, means that at least one config of the advanced workflow
+                # is set, which means that users group get view_permissions
+                if (
+                    not skip_registered_members_common_group(user_group)
+                    and not AdvancedSecurityWorkflowManager.is_auto_publishing_workflow()
+                ):
                     perm_spec["groups"][user_group] = ["view_resourcebase", "download_resourcebase"]
 
         AdvancedSecurityWorkflowManager.handle_moderated_uploads(self.uuid, instance=self)
