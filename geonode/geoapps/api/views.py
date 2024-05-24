@@ -59,3 +59,11 @@ class GeoAppViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMi
     queryset = GeoApp.objects.all().order_by("-created")
     serializer_class = GeoAppSerializer
     pagination_class = GeoNodeApiPagination
+
+    def perform_create(self, serializer):
+        """
+        The owner is not passed from the FE
+        so we force the request.user to be the owner
+        in creation
+        """
+        return serializer.save(owner=self.request.user)
