@@ -61,12 +61,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
 
         self.extra_update_checks(validated_data)
 
-    def validate(self, data):
-        request = self.context.get("request")
-        if request:
-            data["owner"] = request.user
-        return data
-
     def _sanitize_validated_data(self, validated_data, instance=None):
         # Extract users' profiles
         _user_profiles = {}
