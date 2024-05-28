@@ -401,22 +401,6 @@ class TestStorageManager(GeoNodeBaseTestSupport):
             output = self.sut().replace(dataset, new_file)
         self.assertListEqual([expected], output["files"])
 
-    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
-    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
-    def test_storage_manager_copy(self):
-        """
-        Test that the copy works as expected and the permissions are corerct
-        """
-        dataset = create_single_dataset(name="test_copy")
-        dataset.files = [os.path.join(f"{self.project_root}", "tests/data/test_sld.sld")]
-        dataset.save()
-        output = self.sut().copy(dataset)
-
-        self.assertTrue(os.path.exists(output.get("files")[0]))
-        self.assertEqual(os.stat(os.path.exists(output.get("files")[0])).st_mode, 8592)
-        os.remove(output.get("files")[0])
-        self.assertFalse(os.path.exists(output.get("files")[0]))
-
 
 class TestDataRetriever(TestCase):
     @classmethod

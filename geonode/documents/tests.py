@@ -42,6 +42,8 @@ from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_anonymous_user
 
+from geonode.assets.utils import create_asset_and_link
+from geonode.base.forms import LinkedResourceForm
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
@@ -58,7 +60,9 @@ from geonode.base.populate_test_data import all_public, create_models, create_si
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
-from ..base.forms import LinkedResourceForm
+
+
+TEST_GIF = os.path.join(os.path.dirname(__file__), "tests/data/img.gif")
 
 
 class DocumentsTest(GeoNodeBaseTestSupport):
@@ -113,10 +117,10 @@ class DocumentsTest(GeoNodeBaseTestSupport):
     def test_create_document_with_no_rel(self, thumb):
         """Tests the creation of a document with no relations"""
         thumb.return_value = True
-        f = [f"{settings.MEDIA_ROOT}/img.gif"]
 
         superuser = get_user_model().objects.get(pk=2)
-        c = Document.objects.create(files=f, owner=superuser, title="theimg")
+        c = Document.objects.create(owner=superuser, title="theimg")
+        _, _ = create_asset_and_link(c, superuser, [TEST_GIF])
         c.set_default_permissions()
         self.assertEqual(Document.objects.get(pk=c.id).title, "theimg")
 
@@ -412,11 +416,11 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         """Verify that the ajax_document_permissions view is behaving as expected"""
         create_thumb.return_value = True
         # Setup some document names to work with
-        f = [f"{settings.MEDIA_ROOT}/img.gif"]
-
         superuser = get_user_model().objects.get(pk=2)
         document = resource_manager.create(
-            None, resource_type=Document, defaults=dict(files=f, owner=superuser, title="theimg", is_approved=True)
+            None,
+            resource_type=Document,
+            defaults=dict(files=[TEST_GIF], owner=superuser, title="theimg", is_approved=True),
         )
         document_id = document.id
         invalid_document_id = 20
@@ -630,10 +634,10 @@ class DocumentResourceLinkTestCase(GeoNodeBaseTestSupport):
 
     def test_create_document_with_links(self):
         """Tests the creation of document links."""
-        f = [f"{settings.MEDIA_ROOT}/img.gif"]
         superuser = get_user_model().objects.get(pk=2)
 
-        d = Document.objects.create(files=f, owner=superuser, title="theimg")
+        d = Document.objects.create(owner=superuser, title="theimg")
+        _, _ = create_asset_and_link(d, superuser, [TEST_GIF])
 
         self.assertEqual(Document.objects.get(pk=d.id).title, "theimg")
 
@@ -679,11 +683,10 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.not_admin = get_user_model().objects.create(username="r-lukaku", is_active=True)
         self.not_admin.set_password("very-secret")
         self.not_admin.save()
-        self.files = [f"{settings.MEDIA_ROOT}/img.gif"]
         self.test_doc = resource_manager.create(
             None,
             resource_type=Document,
-            defaults=dict(files=self.files, owner=self.not_admin, title="test", is_approved=True),
+            defaults=dict(files=[TEST_GIF], owner=self.not_admin, title="test", is_approved=True),
         )
         self.perm_spec = {"users": {"AnonymousUser": []}}
         self.doc_link_url = reverse("document_link", args=(self.test_doc.pk,))
@@ -808,7 +811,7 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         # Access resource with user logged-in
         self.client.login(username=self.not_admin.username, password="very-secret")
         response = self.client.get(self.doc_link_url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
         # test document link with external url
         doc = resource_manager.create(
             None,
