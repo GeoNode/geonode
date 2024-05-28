@@ -1467,7 +1467,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
 
-
     DEFAULT_MS2_BACKGROUNDS = [
         {
             "type": "osm",
