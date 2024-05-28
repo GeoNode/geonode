@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+import ast
 import os
 import re
 import sys
@@ -40,10 +41,16 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 
+from owslib.etree import etree
+
 from rest_framework.test import APITestCase
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
+from geonode.catalogue import get_catalogue
+from geonode.catalogue.models import catalogue_post_save
+from geonode.catalogue.views import csw_global_dispatch
+from geonode.resource.manager import resource_manager
 from guardian.shortcuts import get_anonymous_user
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport
@@ -3298,3 +3305,121 @@ class TestApiAdditionalBBoxCalculation(GeoNodeBaseTestSupport):
             "code": "invalid_resource_exception",
         }
         self.assertDictEqual(expected, response.json())
+
+
+pycsw_settings_all = settings.PYCSW.copy()
+
+pycsw_settings_all["FILTER"] = {"resource_type__in": ["dataset", "resourcebase"]}
+
+
+class TestBaseResourceBase(GeoNodeBaseTestSupport):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.user = get_user_model().objects.get(username="admin")
+
+    def test_simple_resourcebase_can_be_created_by_resourcemanager(self):
+        self.maxDiff = None
+        resource = resource_manager.create(
+            str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
+        )
+
+        self.assertIsNotNone(resource)
+        # minimum resource checks
+        self.assertEqual("resourcebase", resource.resource_type)
+        self.assertTrue(resource.link_set.all().exists())
+        self.assertEqual("simple resourcebase", resource.title)
+        self.assertTrue(self.user == resource.owner)
+        # check if the perms are set
+        anonymous_group = Group.objects.get(name="anonymous")
+        perms_expected = {
+            "users": {
+                self.user: set(
+                    [
+                        "delete_resourcebase",
+                        "publish_resourcebase",
+                        "change_resourcebase_permissions",
+                        "view_resourcebase",
+                        "change_resourcebase_metadata",
+                        "change_resourcebase",
+                    ]
+                )
+            },
+            "groups": {anonymous_group: set(["view_resourcebase"])},
+        }
+
+        actual_perms = resource.get_all_level_info().copy()
+        self.assertIsNotNone(actual_perms)
+        self.assertTrue(self.user in actual_perms["users"].keys())
+        self.assertTrue(anonymous_group in actual_perms["groups"].keys())
+        self.assertSetEqual(perms_expected["users"][self.user], set(actual_perms["users"][self.user]))
+        self.assertSetEqual(perms_expected["groups"][anonymous_group], set(actual_perms["groups"][anonymous_group]))
+
+        # check if is returned from the API
+
+        self.assertTrue(self.client.login(username="admin", password="admin"))
+
+        response = self.client.get(reverse("base-resources-list"))
+
+        self.assertTrue(resource.pk in [int(x["pk"]) for x in response.json()["resources"]])
+
+        # checking csw call
+        catalogue_post_save(instance=resource, sender=resource.__class__)
+        # get all records
+        csw = get_catalogue()
+        record = csw.get_record(resource.uuid)
+        self.assertIsNotNone(record)
+        self.assertEqual(record.identification[0].title, resource.title)
+
+    def test_csw_should_not_return_resourcebase_by_default(self):
+        resource = resource_manager.create(
+            str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
+        )
+        dt = resource_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
+        )
+
+        self.assertTrue(ResourceBase.objects.filter(pk=resource.pk).exists())
+        self.assertTrue(ResourceBase.objects.filter(pk=dt.pk).exists())
+
+        request = self.__csw_request_factory()
+
+        response = csw_global_dispatch(request)
+        root = etree.fromstring(response.content)
+        child = [x.attrib for x in root if "numberOfRecordsMatched" in x.attrib]
+        returned_results = ast.literal_eval(child[0].get("numberOfRecordsMatched", "0")) if child else 0
+        self.assertEqual(1, returned_results)
+
+    @override_settings(PYCSW=pycsw_settings_all)
+    def test_csw_should_return_resourcebase_if_defined_in_settings(self):
+        resource = resource_manager.create(
+            str(uuid4()), resource_type=ResourceBase, defaults={"title": "simple resourcebase", "owner": self.user}
+        )
+        dt = resource_manager.create(
+            str(uuid4()), resource_type=Dataset, defaults={"title": "simple dataset", "owner": self.user}
+        )
+
+        self.assertTrue(ResourceBase.objects.filter(pk=resource.pk).exists())
+        self.assertTrue(ResourceBase.objects.filter(pk=dt.pk).exists())
+
+        request = self.__csw_request_factory()
+
+        response = csw_global_dispatch(request)
+        root = etree.fromstring(response.content)
+        child = [x.attrib for x in root if "numberOfRecordsMatched" in x.attrib]
+        returned_results = ast.literal_eval(child[0].get("numberOfRecordsMatched", "0")) if child else 0
+        self.assertEqual(2, returned_results)
+
+    @staticmethod
+    def __csw_request_factory():
+        from django.contrib.auth.models import AnonymousUser
+
+        factory = RequestFactory()
+        url = "http://localhost:8000/catalogue/csw?request=GetRecords"
+        url += "&service=CSW&version=2.0.2&outputschema=http%3A%2F%2Fwww.isotc211.org%2F2005%2Fgmd"
+        url += "&elementsetname=brief&typenames=csw:Record&resultType=results"
+        request = factory.get(url)
+
+        request.user = AnonymousUser()
+        return request
