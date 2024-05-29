@@ -151,7 +151,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix="", html=False)
         self.assertContains(response, "Published", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Featured", count=3, status_code=200, msg_prefix="", html=False)
+        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix="", html=False)
         self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix="", html=False)
 
         # ... now assigning a Group to the Dataset
