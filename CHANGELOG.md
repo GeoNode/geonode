@@ -1,4 +1,97 @@
-# Change Log
+# Changelogs
+
+## [4.3.0](https://github.com/GeoNode/geonode/releases/tag/4.3.0) (2024-05-30)
+### New features and improvements
+
+- **3D and MapSore catalog plugins available for maps**: This release includes a major upgrade of the MapStore framework upon which the GeoNode client is built. One of the key benefits brought by the alignment to the latest MapStore versions, is the integration of new plugins powered by MapStore. Two of these plugins have been enabled by default for maps: **3D view**, powered by Cesium and the [**Catalog tool**](https://docs.mapstore.geosolutionsgroup.com/en/latest/user-guide/catalog/) which gives users the option to include external layers (from WMS, TMS, CSW, etc. services) directly into a map. The 3D view is the first step toward the publishing of 3D content with GeoNode. Meanwhile external 3D Tiles sources can already be viewed inside a GeoNode map thanks to the [Catalog service for 3D Tiles](https://docs.mapstore.geosolutionsgroup.com/en/v2023.02.01/user-guide/catalog/#3d-tiles-catalog).
+- **Map Viewers**: Thanks again to the work done to extend the integration with MapStore, its concept of Application Contexts have been adapted and integrated in GeoNode under the the name "Map Viewers". With a Map Viewer the list of tools and plugins available in a map can be configured. Map Viewers can be created from a map (the feature is available under the Edit menu) and they can be used by multiple maps. With Map Viewers all the plugins offered by MapStore can be used inside GeoNode maps.
+- **Hiding resources from catalog listing**: There are cases where a resource is created only to be used within other resources. Images uploaded to be included in a geostory, datasets only meant to be viewed inside maps, are examples. Sometimes we don't want these resoruces to be visibile inside the catalog list, or inside search results. For these cases a new "Advertized" attribute is available under the Settings tab of the Metadata editor. When this flag is turned off the resource will only be listed to its owner. This doesn't affect the permissions on the resource. Users with view permissions can still visualize the resource, but it won't be listed in the catalog to them.
+- **Extended Users API**: The User API has been extended to support the full management of GeoNode accounts. This API makes GeoNode compliant with the Data policies that request to give users the option to delete their account and their data from apps. The new APIs also support the transfer of resource ownership to another user and the ability to step down from the Group Manager role for a user.
+- **Groups facet**: A new facet (filter) has been added to the filters panel for filtering resources by Group.
+
+### Other minor improvements and fixes
+
+ - **Backup/Restore**: Several improvements that make the B/R service more robust and performant. Code customizations (layouts, etc.) are excluded now from projects backups.
+ - **Owner was update when geoapp were saved**: This fixes a problem with geoapps (geostories and dashboards) where the current user was assigned as owner when the resource was saved.
+ - **Fixed textara for rich HTML metadata fields**: It wasn't editable due to a regression introduced in previous versions.
+ - **Metadata and SLD file uploads**: Fixed a problem with the legacy code that prevented the upload of XML and SLD metadata files for an existing resource.
+
+ ### Software upgrades:
+ - Django 4.2.9
+ - Geoserver 2.24.3
+ - MapStore 2024.01.00
+
+The full list of changes [here](https://github.com/GeoNode/geonode/milestone/43?closed=1)
+
+## [4.2.0](https://github.com/GeoNode/geonode/releases/tag/4.2.0) (2024-01-10)
+
+### New features and improvements
+
+- **Enhanced faceted filtering**: Filtering of resources has undergone a deep refactoring with the goal of improving its performance and implement proper (cascaded) faceted filtering. The resoruces, and their counting, are calculated from the intersection of the topics selected between different filters (AND logic) and the union of the optics selected from the same filter (OR logic). An improvement is planned for a future version to let users select additional topics from the same filter that happen to be hidden because not cointained in the current results.
+- **Location view and management**: A new "Location" tab is available inside the information side panel, where the bounding box of the resoruce and its centroid are displayed. The location for spatial resources (datasets and maps) are automatically retrieved by the data itself. For non-spatial resources the same panel gives editors the tools to set the bounding bos and the position of the resource.
+- **Linked resources**: The options to link resources has been extended to any type of resource. It's possible to related any resource with any other resource (one or many), and the relationship is disaplyed inside the new "Lined resources" tab inside the information side panel. The direction of the relationship is also visible, since linked resources are disaplyed under two distinct groups "Linked from" and "Lined to".
+
+### Other minor improvements
+ - Implemented a generic and pluggable OIDC SocialAccount Provider, which extends and improves the one provided by the `allauth` module already available in GeoNode
+ - Documents from remote URLs can be created from the client
+ - Regions are not assigned to new resources automatically anymore. A pluggable and configurable option lets administrators implement specific logic for the automatic assignmenet if required
+ - Option to configure a WMTS service to generate thumbnail backgrounds
+ - The rendering of thumbnails for the maps now take into account ordering and opacity 
+ - Implemented the option to do not register new users as contributors automatically (default behaviour)
+ 
+### Software upgrades:
+ - Django 3.2.23
+ - Geoserver 2.23.3
+ - PostgreSQL 15.3 / PostGIS 3.3
+ - Nginx 1.25.3
+ 
+The full list of changes [here](https://github.com/GeoNode/geonode/milestone/37?closed=1)
+
+## [4.1.0](https://github.com/GeoNode/geonode/releases/tag/4.1.0) (2023-06-05)
+
+### New upload engine
+GeoNode integrates a brand new importer module based on [GDAL/OGR](https://gdal.org/), which offers increased robustness and reliability to the upload UI and API services. GeoPackage (vector), GeoJSON, KML/KMZ formats and a new CSV handler have been implemented.
+
+### Thesaurus faceting and date filtering
+If thesaurus and thesaurus keywords are configured and assigned to resources, they will be available inside the filters panel, along with the number of associated resources.
+Date filtering (from/top) has also been added.
+
+### Time series configurable after the upload
+The configuration of (potential) time series at upload time was confusing for users, and not very robust.
+With the new importer, the optional configuration of vector time series can be done afterward, through the Settings tab inside the Metadata editing page
+Only vector fomats that provide date(time) fields natively are supported. Conversion from string fields is not implemented.
+
+### Linked resources
+This restore a functionality available in previous versions of GeoNode.
+A tab inside the info panel has been added where relationships between datasets, maps and documents are reported. 
+
+### Vector dataset attributes
+A tab inside the info panel has been added showing the attributes of vector datasets
+
+### Remote documents
+The API has been extended to permit the creation of document resources referencing remote URLs
+
+### ISO-19115 XML upload via API
+The API now supports the upload of a metadata XML file along with the resource data
+
+### Software upgrades
+
+ - [Geoserver 2.23.0](https://geoserver.org/announcements/2023/04/05/geoserver-2-23-0-released.html) is now the reference version. This version includes Geofence WPS rules which are employed by GeoNode to strengthen the security of the OGC/WPS processes.
+- [MapStore 2022.02.xx](https://github.com/geosolutions-it/MapStore2/tree/2022.02.xx)
+- [Django 3.2.19](https://docs.djangoproject.com/en/4.2/releases/3.2.19/)
+- PostgreSQL 13 and PostGIS 3.3.3
+
+
+### Security and Bug Fixes
+- [CVE-2023-26043](https://github.com/GeoNode/geonode/security/advisories/GHSA-mcmc-c59m-pqq8)
+Fixed a vulnerability to XML External Entity (XXE) injection
+- [CVE-2023-28442](https://github.com/GeoNode/geonode/security/advisories/GHSA-87mh-vw7c-5v6w)
+Fixed information leak
+
+You can see the **full list of closed issues [here](https://github.com/GeoNode/geonode/compare/4.1.0...4.0.3)**.
+
+## System requirements
+Python >3.9 is required to run GeoNode 4.1.0, since many of its dependencies have dropped support for older versions.
 
 ## [4.0.2](https://github.com/GeoNode/geonode/tree/4.0.2) (2022-12-20)
 
