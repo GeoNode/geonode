@@ -2345,6 +2345,7 @@ IMPORTER_HANDLERS = ast.literal_eval(
     'importer.handlers.geotiff.handler.GeoTiffFileHandler',\
     'importer.handlers.xml.handler.XMLFileHandler',\
     'importer.handlers.sld.handler.SLDFileHandler',\
+    'importer.handlers.tiles3d.handler.Tiles3DFileHandler',\
 ]",
     )
 )
