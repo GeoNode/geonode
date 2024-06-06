@@ -1006,6 +1006,15 @@ class RelatedIdentifierTypeSerializer(DynamicModelSerializer):
         count_type = "relatedidentifiertype"
         fields = "__all__"
 
+
+class RelatedIdentifierSerializer(DynamicModelSerializer):
+    class Meta:
+        name = "relatedidentifiers"
+        model = RelatedIdentifier
+        count_type = "relatedidentifier"
+        fields = "__all__"
+
+
 class RelatedProjectSerializer(DynamicModelSerializer):
     class Meta:
         name = "relatedprojects"
