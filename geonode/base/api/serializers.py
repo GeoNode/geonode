@@ -414,37 +414,37 @@ class FavoriteField(DynamicComputedField):
         return False
 
 
-
 class UserSerializer(BaseDynamicModelSerializer):
     class Meta:
         ref_name = "UserProfile"
         model = get_user_model()
         name = "user"
         view_name = "users-list"
-        fields = ("pk",
-                  "username",
-                  "first_name",
-                  "last_name",
-                  "avatar",
-                  "perms",
-                  "is_superuser",
-                  "is_staff",
-                  "email",
-                  "organization",
-                  "profile",
-                  "position",
-                  "voice",
-                  "fax",
-                  "delivery",
-                  "city",
-                  "area",
-                  "zipcode",
-                  "keywords",
-                  "country",
-                  "language",
-                  "timezone",
-                  "orcid_identifier"
-                  )
+        fields = (
+            "pk",
+            "username",
+            "first_name",
+            "last_name",
+            "avatar",
+            "perms",
+            "is_superuser",
+            "is_staff",
+            "email",
+            "organization",
+            "profile",
+            "position",
+            "voice",
+            "fax",
+            "delivery",
+            "city",
+            "area",
+            "zipcode",
+            "keywords",
+            "country",
+            "language",
+            "timezone",
+            "orcid_identifier",
+        )
 
     @classmethod
     def setup_eager_loading(cls, queryset):
@@ -466,10 +466,7 @@ class UserSerializer(BaseDynamicModelSerializer):
         return data
 
     avatar = AvatarUrlField(240, read_only=True)
-    keywords = ComplexDynamicRelationField(
-            SimpleHierarchicalKeywordSerializer, embed=False, many=True
-        )
-
+    keywords = ComplexDynamicRelationField(SimpleHierarchicalKeywordSerializer, embed=False, many=True)
 
 
 class ContactRoleField(DynamicComputedField):
@@ -992,14 +989,6 @@ class RelatedIdentifierTypeSerializer(DynamicModelSerializer):
         name = "relatedidentifiertypes"
         model = RelatedIdentifierType
         count_type = "relatedidentifiertype"
-        fields = "__all__"
-
-
-class FundingReferenceSerializer(DynamicModelSerializer):
-    class Meta:
-        name = "fundingreferences"
-        model = FundingReference
-        count_type = "fundingreferences"
         fields = "__all__"
 
 

@@ -53,7 +53,7 @@ class FundersDynamicRelationField(DynamicRelationField):
             funder = Funder.objects.get_or_create(**data)
         except TypeError:
             raise ParseError(detail="Could not convert related_identifier to internal object ...", code=400)
-        return funder
+        return funder[0]
 
 
 class ComplexDynamicRelationField(DynamicRelationField):
