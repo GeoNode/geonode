@@ -1015,14 +1015,6 @@ class RelatedIdentifierSerializer(DynamicModelSerializer):
         fields = "__all__"
 
 
-class FundingReferenceSerializer(DynamicModelSerializer):
-    class Meta:
-        name = "fundingreferences"
-        model = FundingReference
-        count_type = "fundingreferences"
-        fields = "__all__"
-
-
 class RelatedProjectSerializer(DynamicModelSerializer):
     class Meta:
         name = "relatedprojects"
