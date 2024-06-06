@@ -181,6 +181,7 @@ class _ThesaurusKeywordSerializerMixIn:
         for _i18n_label in ThesaurusKeywordLabel.objects.filter(keyword__id=value.id).iterator():
             _i18n[_i18n_label.lang] = _i18n_label.label
         return {
+            "keyword": value.id,
             "name": value.alt_label,
             "slug": slugify(value.about),
             "uri": value.about,
@@ -198,6 +199,13 @@ class SimpleThesaurusKeywordSerializer(_ThesaurusKeywordSerializerMixIn, Dynamic
         model = ThesaurusKeyword
         name = "ThesaurusKeyword"
         fields = ("alt_label",)
+
+
+class SimpleThesaurusKeywordLabelSerializer(DynamicModelSerializer):
+    class Meta:
+        model = ThesaurusKeywordLabel
+        name = "ThesaurusKeywordLabel"
+        fields = ("keyword", "lang", "label")
 
 
 class SimpleRegionSerializer(DynamicModelSerializer):
@@ -280,6 +288,13 @@ class LicenseSerializer(DynamicModelSerializer):
         model = License
         name = "License"
         fields = ("identifier",)
+
+
+class FullLicenseSerializer(DynamicModelSerializer):
+    class Meta:
+        model = License
+        name = "License"
+        fields = ("identifier", "name", "abbreviation", "description", "url", "license_text")
 
 
 class SpatialRepresentationTypeSerializer(DynamicModelSerializer):
@@ -990,7 +1005,6 @@ class RelatedIdentifierTypeSerializer(DynamicModelSerializer):
         model = RelatedIdentifierType
         count_type = "relatedidentifiertype"
         fields = "__all__"
-
 
 class RelatedProjectSerializer(DynamicModelSerializer):
     class Meta:

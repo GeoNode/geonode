@@ -118,6 +118,12 @@ class IsSelfOrAdminOrAuthenticatedReadOnly(IsSelfOrAdmin):
         return IsSelfOrAdmin.has_object_permission(self, request, view, obj)
 
 
+class IsAdminOrStaffOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+
+
 class IsOwnerOrAdmin(permissions.BasePermission):
     """
     Object-level permission to only allow admin and owners of an object to edit it.

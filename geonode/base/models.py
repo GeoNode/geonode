@@ -1198,10 +1198,10 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     @property
     def metadata_standard_name(self):
         return "BonaRes Metadata Schema (https://doi.org/10.20387/BonaRes-5PGG-8YRP)"
-      
+
     def metadata_standard_version(self):
-        return "Version 1.0"  
-      
+        return "Version 1.0"
+
     @property
     def raw_abstract(self):
         return self._remove_html_tags(self.abstract)
