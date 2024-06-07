@@ -1665,7 +1665,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         ),
                     )
 
-                if instance.subtype == "vector":
+                if instance.subtype == "vector" or instance.subtype == "tabular":
                     ogc_wfs_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                     ogc_wfs_name = f"OGC WFS: {instance.workspace} Service"
                     if (
