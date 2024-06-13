@@ -130,6 +130,7 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
+        instance.set_bbox_polygon(self.request.data['blob']['map']['maxExtent'], self.request.data['blob']['map']['projection'])
         # Handle thumbnail generation
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
 

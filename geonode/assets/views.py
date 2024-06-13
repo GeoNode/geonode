@@ -27,7 +27,7 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from geonode.assets.handlers import asset_handler_registry
@@ -50,7 +50,7 @@ class AssetViewSet(DynamicModelViewSet):
     """
 
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
+    permission_classes = [IsAuthenticated, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
