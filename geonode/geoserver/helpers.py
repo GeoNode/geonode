@@ -103,6 +103,7 @@ WPS_ACCEPTABLE_FORMATS = [
     ("application/wfs-collection-1.1", "vector"),
     ("application/zip", "vector"),
     ("text/csv", "vector"),
+    ("text/csv", "tabular"),
 ]
 
 DEFAULT_STYLE_NAME = ["generic", "line", "point", "polygon", "raster"]
@@ -1126,14 +1127,18 @@ def clean_styles(layer, gs_catalog: Catalog):
         style = None
         gs_catalog.reset()
         gs_dataset = get_dataset(layer, gs_catalog)
-        if gs_dataset is not None:
+        if gs_dataset is None:
+            if gs_dataset.default_style is None:
+                # ignore dataset without style
+                pass
+            
             logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
             style = gs_catalog.get_style(name=gs_dataset.default_style.name, workspace=None, recursive=True)
-        if style:
-            gs_catalog.delete(style, purge=True, recurse=False)
-            logger.debug(f"clean_styles: Style removed: {gs_dataset.default_style.name}")
-        else:
-            logger.debug(f"clean_styles: Style does not exist: {gs_dataset.default_style.name}")
+            if style:
+                gs_catalog.delete(style, purge=True, recurse=False)
+                logger.debug(f"clean_styles: Style removed: {gs_dataset.default_style.name}")
+            else:
+                logger.debug(f"clean_styles: Style does not exist: {gs_dataset.default_style.name}")
     except Exception as e:
         logger.warning(f"Could not clean style for layer {layer.name}", exc_info=e)
         logger.debug(f"Could not clean style for layer {layer.name} - STACK INFO", stack_info=True)
