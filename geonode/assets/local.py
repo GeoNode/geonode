@@ -131,7 +131,7 @@ class LocalAssetHandler(AssetHandlerInterface):
         return build_absolute_uri(reverse("assets-download", args=(asset.pk,)))
 
     def create_link_url(self, asset) -> str:
-        return build_absolute_uri(reverse("assets-link", args=(asset.pk,)))
+        return build_absolute_uri(reverse("assets-link", args=(asset.pk,))) + f"/{os.path.basename(asset.location[0])}"
 
     @classmethod
     def _is_file_managed(cls, file) -> bool:
