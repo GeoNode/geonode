@@ -72,11 +72,6 @@ class LocalAssetHandler(AssetHandlerInterface):
         asset.location = files
         asset.save()
 
-    def _create_asset_dir(self):
-        return os.path.normpath(
-            mkdtemp(dir=settings.ASSETS_ROOT, prefix=datetime.datetime.now().strftime("%Y%m%d%H%M%S"))
-        )
-
     def _copy_data(self, files):
         new_path = self._create_asset_dir()
         logger.info(f"Copying asset data from {files} into {new_path}")
