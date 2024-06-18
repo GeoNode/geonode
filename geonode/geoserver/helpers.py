@@ -1015,7 +1015,7 @@ def set_attributes_from_geoserver(layer, overwrite=False):
             tb = traceback.format_exc()
             logger.debug(tb)
             attribute_map = []
-    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time"}:
+    elif layer.subtype in {"vector", "tileStore", "remote", "wmsStore", "vector_time", "tabular"}:
         typename = layer.alternate if layer.alternate else layer.typename
         dft_url_path = re.sub(r"\/wms\/?$", "/", server_url)
         dft_query = urlencode(
