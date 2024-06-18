@@ -30,6 +30,7 @@ import zipfile
 from urllib.parse import urljoin
 
 from django.conf import settings
+from geonode.assets.utils import create_asset_and_link
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -308,12 +309,15 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         fopen.return_value = SimpleUploadedFile("foo_file.shp", b"scc")
         dataset = Dataset.objects.all().first()
 
-        dataset.files = [
+        dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx",
         ]
+        asset, link = create_asset_and_link(
+            dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         dataset.save()
 
@@ -331,6 +335,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertEqual("application/zip", response.headers.get("Content-Type"))
         self.assertEqual('attachment; filename="CA.zip"', response.headers.get("Content-Disposition"))
 
+        link.delete()
+        asset.delete()
+
     @patch("geonode.storage.manager.storage_manager.exists")
     @patch("geonode.storage.manager.storage_manager.open")
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -339,12 +346,15 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         fopen.return_value = SimpleUploadedFile("foo_file.shp", b"scc")
         dataset = Dataset.objects.all().first()
 
-        dataset.files = [
+        dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx",
         ]
+        asset, link = create_asset_and_link(
+            dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         dataset.save()
 
@@ -367,6 +377,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertIn(".dbf", "".join(zip_files))
         self.assertIn(".shx", "".join(zip_files))
         self.assertIn(".prj", "".join(zip_files))
+
+        link.delete()
+        asset.delete()
 
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):
@@ -420,12 +433,16 @@ class TestProxyTags(GeoNodeBaseTestSupport):
 
         assert upload
 
-        self.resource.files = [
+        dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx",
         ]
+
+        asset, link = create_asset_and_link(
+            self.resource, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         self.resource.save()
 
@@ -433,3 +450,6 @@ class TestProxyTags(GeoNodeBaseTestSupport):
 
         actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
         self.assertTrue(actual)
+
+        link.delete()
+        asset.delete()
