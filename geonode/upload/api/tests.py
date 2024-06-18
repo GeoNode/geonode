@@ -231,6 +231,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             return response, response.content
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
+    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
     def test_rest_uploads(self):
         """
         Ensure we can access the Local Server Uploads list.
@@ -268,6 +270,8 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             self._cleanup_layer(layer_name)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
+    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
     def test_rest_uploads_non_interactive(self):
         """
         Ensure we can access the Local Server Uploads list.

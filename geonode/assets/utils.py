@@ -58,7 +58,9 @@ def create_link(resource, asset, link_type=None, extension=None, name=None, mime
     asset_handler = asset_handler or asset_handler_registry.get_handler(asset)
 
     if not link_type or not extension or not name:
-        fallback_name, fallback_ext = os.path.splitext(asset.location[0]) if len(asset.location) else (None, None)
+        fallback_name, fallback_ext = (
+            os.path.splitext(os.path.basename(asset.location[0])) if len(asset.location) else (None, None)
+        )
         if fallback_ext:
             fallback_ext = fallback_ext.lstrip(".")
         link_type = link_type or find_type(fallback_ext) if fallback_ext else None
