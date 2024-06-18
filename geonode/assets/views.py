@@ -27,7 +27,7 @@ from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from geonode.assets.handlers import asset_handler_registry
@@ -50,7 +50,7 @@ class AssetViewSet(DynamicModelViewSet):
     """
 
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
+    permission_classes = [IsAuthenticated, UserHasPerms]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
@@ -85,28 +85,29 @@ class AssetViewSet(DynamicModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def _get_file(self, request, pk, attachment: bool):
+    def _get_file(self, request, pk, attachment: bool = False, path=None):
         asset = get_object_or_404(Asset, pk=pk)
         if bad_response := get_perms_response(request, asset):
             return bad_response
         asset_handler = asset_handler_registry.get_handler(asset)
         # TODO: register_event(request, EventType.EVENT_DOWNLOAD, asset)
-        return asset_handler.get_download_handler(asset).create_response(asset, attachment)
+        return asset_handler.get_download_handler(asset).create_response(asset, path=path, attachment=attachment)
 
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/download",  # noqa
+        url_path="(?P<pk>\d+)/download(/(?P<path>.*))?",  # noqa
         # url_name="asset-download",
         methods=["get"],
     )
-    def download(self, request, pk=None, *args, **kwargs):
-        return self._get_file(request, pk, True)
+    def download(self, request, pk=None, path=None, *args, **kwargs):
+        return self._get_file(request, pk, attachment=True, path=path)
 
     @action(
         detail=False,
-        url_path="(?P<pk>\d+)/link",  # noqa
+        url_path="(?P<pk>\d+)/link(?:/(?P<path>.*))?",  # noqa
         # url_name="asset-link",
         methods=["get"],
     )
-    def link(self, request, pk=None, *args, **kwargs):
-        return self._get_file(request, pk, False)
+    def link(self, request, pk=None, path=None, *args, **kwargs):
+        logger.warning(f"REQUESTED ASSET LINK FOR PK:{pk} PATH:{path}")
+        return self._get_file(request, pk, attachment=False, path=path)

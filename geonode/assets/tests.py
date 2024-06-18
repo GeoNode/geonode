@@ -19,9 +19,13 @@
 
 import os
 import logging
+import shutil
+import io
+import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 from rest_framework.test import APITestCase
 
@@ -31,7 +35,9 @@ from geonode.assets.models import Asset, LocalAsset
 
 logger = logging.getLogger(__name__)
 
-TEST_GIF = os.path.join(os.path.dirname(os.path.dirname(__file__)), "base/tests/data/img.gif")
+ONE_JSON = os.path.join(os.path.dirname(__file__), "tests/data/one.json")
+TWO_JSON = os.path.join(os.path.dirname(__file__), "tests/data/two.json")
+THREE_JSON = os.path.join(os.path.dirname(__file__), "tests/data/three.json")
 
 
 class AssetsTests(APITestCase):
@@ -58,7 +64,7 @@ class AssetsTests(APITestCase):
             description="Description of test asset",
             type="NeverMind",
             owner=u,
-            files=[TEST_GIF],
+            files=[ONE_JSON],
             clone_files=True,
         )
         asset.save()
@@ -69,14 +75,17 @@ class AssetsTests(APITestCase):
         self.assertIsInstance(reloaded, LocalAsset)
         file = reloaded.location[0]
         self.assertTrue(os.path.exists(file), "Asset file does not exist")
-        self.assertTrue(file.startswith(assets_root), f"Asset file is not inside the assets root: {file}")
+        self.assertTrue(
+            os.path.normpath(file).startswith(os.path.normpath(assets_root)),
+            f"Asset file is not inside the assets root: {file}",
+        )
 
         cloned_file = file
         reloaded.delete()
         self.assertFalse(Asset.objects.filter(pk=asset.pk).exists())
         self.assertFalse(os.path.exists(cloned_file))
         self.assertFalse(os.path.exists(os.path.dirname(cloned_file)))
-        self.assertTrue(os.path.exists(TEST_GIF))
+        self.assertTrue(os.path.exists(ONE_JSON))
 
     def test_creation_and_delete_data_external(self):
         u, _ = get_user_model().objects.get_or_create(username="admin")
@@ -87,7 +96,7 @@ class AssetsTests(APITestCase):
             description="Description of test asset",
             type="NeverMind",
             owner=u,
-            files=[TEST_GIF],
+            files=[ONE_JSON],
             clone_files=False,
         )
         asset.save()
@@ -97,11 +106,11 @@ class AssetsTests(APITestCase):
         self.assertIsNotNone(reloaded)
         self.assertIsInstance(reloaded, LocalAsset)
         file = reloaded.location[0]
-        self.assertEqual(TEST_GIF, file)
+        self.assertEqual(ONE_JSON, file)
 
         reloaded.delete()
         self.assertFalse(Asset.objects.filter(pk=asset.pk).exists())
-        self.assertTrue(os.path.exists(TEST_GIF))
+        self.assertTrue(os.path.exists(ONE_JSON))
 
     def test_clone_and_delete_data_managed(self):
         u, _ = get_user_model().objects.get_or_create(username="admin")
@@ -112,7 +121,7 @@ class AssetsTests(APITestCase):
             description="Description of test asset",
             type="NeverMind",
             owner=u,
-            files=[TEST_GIF],
+            files=[ONE_JSON],
             clone_files=True,
         )
         asset.save()
@@ -122,8 +131,8 @@ class AssetsTests(APITestCase):
         cloned = asset_handler.clone(reloaded)
         self.assertNotEqual(reloaded.pk, cloned.pk)
 
-        reloaded_file = reloaded.location[0]
-        cloned_file = cloned.location[0]
+        reloaded_file = os.path.normpath(reloaded.location[0])
+        cloned_file = os.path.normpath(cloned.location[0])
 
         self.assertNotEqual(reloaded_file, cloned_file)
         self.assertTrue(os.path.exists(reloaded_file))
@@ -145,7 +154,7 @@ class AssetsTests(APITestCase):
             description="Description of test asset",
             type="NeverMind",
             owner=u,
-            files=[TEST_GIF],
+            files=[ONE_JSON],
             clone_files=False,
         )
         asset.save()
@@ -172,7 +181,7 @@ class AssetsTests(APITestCase):
             description="Description of test asset",
             type="NeverMind",
             owner=u,
-            files=[TEST_GIF],
+            files=[ONE_JSON],
             clone_files=True,
         )
         managed_asset.save()
@@ -183,7 +192,7 @@ class AssetsTests(APITestCase):
             description="Description of test asset",
             type="NeverMind",
             owner=u,
-            files=[TEST_GIF, managed_asset.location[0]],
+            files=[THREE_JSON, managed_asset.location[0]],
             clone_files=False,  # let's keep both managed and unmanaged together
         )
 
@@ -195,5 +204,57 @@ class AssetsTests(APITestCase):
         except ValueError:
             pass
 
-        mixed_asset.delete()
         managed_asset.delete()
+
+        try:
+            mixed_asset.delete()
+            self.fail("Missed mixed LocalAsset detection")
+        except ValueError:
+            pass
+
+
+class AssetsDownloadTests(APITestCase):
+
+    fixtures = ["initial_data.json", "group_test_data.json", "default_oauth_apps.json"]
+
+    def _get_streaming_content(self, response):
+        with io.BytesIO(b"".join(response.streaming_content)) as buf_bytes:
+            return buf_bytes.read()
+
+    def test_download_file(self):
+        u, _ = get_user_model().objects.get_or_create(username="admin")
+        self.assertTrue(self.client.login(username="admin", password="admin"), "Login failed")
+
+        asset_handler = asset_handler_registry.get_default_handler()
+        asset = asset_handler.create(
+            title="Test Asset",
+            description="Description of test asset",
+            type="NeverMind",
+            owner=u,
+            files=[ONE_JSON],
+            clone_files=True,
+        )
+        asset.save()
+        self.assertIsInstance(asset, LocalAsset)
+
+        reloaded = Asset.objects.get(pk=asset.pk)
+
+        # put two more files in the asset dir
+        asset_dir = os.path.dirname(reloaded.location[0])
+        sub_dir = os.path.join(asset_dir, "subdir")
+        os.mkdir(sub_dir)
+        shutil.copy(TWO_JSON, asset_dir)
+        shutil.copy(THREE_JSON, sub_dir)
+
+        for path, key in ((None, "one"), ("one.json", "one"), ("two.json", "two"), ("subdir/three.json", "three")):
+            # args = [asset.pk, path] if path else [asset.pk]
+            args = {"pk": asset.pk, "path": path} if path else {"pk": asset.pk}
+            logger.info(f"*** Testing path '{path}' args {args}")
+            url = reverse("assets-link", kwargs=args)
+            logger.info(f"REVERSE url is {url}")
+            response = self.client.get(url)
+            content = self._get_streaming_content(response)
+            rjson = json.loads(content)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(key, rjson, f"Key '{key}' not found in path '{path}': {rjson} URL {url}")
+            logger.info(f"Test for path '{path}' OK")

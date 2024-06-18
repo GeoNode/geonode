@@ -524,7 +524,7 @@ class LinksSerializer(DynamicModelSerializer):
         ret = []
         link_fields = ["extension", "link_type", "name", "mime", "url"]
         links = Link.objects.filter(
-            resource_id=instance, link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
+            resource_id=instance,  # link_type__in=["OGC:WMS", "OGC:WFS", "OGC:WCS", "image", "metadata"]
         )
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
