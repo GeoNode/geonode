@@ -10,7 +10,7 @@ beautifulsoup4==4.12.3
 httplib2<0.22.1
 hyperlink==21.0.0
 idna>=2.5,<4
-urllib3==1.26.18
+urllib3==1.26.19
 Paver==1.3.4
 python-slugify==8.0.4
 decorator==5.1.1
@@ -119,7 +119,7 @@ jdcal==1.4.1
 mock<6.0.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
-requests==2.31.0
+requests==2.32.2
 timeout-decorator==0.5.0
 pylibmc==1.6.3
 sherlock==0.4.1
