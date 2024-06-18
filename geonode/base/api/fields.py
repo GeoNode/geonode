@@ -23,7 +23,14 @@ from django.core.exceptions import ValidationError
 from rest_framework.exceptions import ParseError
 from dynamic_rest.fields.fields import DynamicRelationField
 
-from geonode.base.models import RelatedIdentifierType, RelationType, RelatedIdentifier, FundingReference, Funder
+from geonode.base.models import (
+    RelatedIdentifierType,
+    RelationType,
+    RelatedIdentifier,
+    FundingReference,
+    Funder,
+    HierarchicalKeyword,
+)
 
 
 class RelatedIdentifierDynamicRelationField(DynamicRelationField):
@@ -78,19 +85,28 @@ class KeywordsDynamicRelationField(DynamicRelationField):
         except ValueError:
             return super().to_internal_value_single(data, serializer)
 
-        if isinstance(data, dict):
-            try:
-                if hasattr(serializer, "many") and serializer.many is True:
-                    return [serializer.get_model().objects.get_or_create(**d) for d in data]
-
-                return serializer.get_model().objects.get_or_create(**data)
-            except related_model.DoesNotExist:
-                raise ValidationError(
-                    "Invalid value for '%s': %s object with ID=%s not found"
-                    % (self.field_name, related_model.__name__, data)
-                )
-        else:
+        if not isinstance(data, dict):
             return super().to_internal_value_single(data, serializer)
+
+        def __set_full_keyword__(d):
+            if "name" not in d:
+                raise ValidationError('No "name" object found for given keyword ...')
+            if "slug" not in d:
+                d["slug"] = d["name"]
+            if "depth" not in d:
+                d["depth"] = 1
+            if "path" not in d:
+                d["path"] = d["name"]
+            return d
+
+        data = __set_full_keyword__(data)
+        keyword = HierarchicalKeyword.objects.filter(name=data["name"]).first()
+        if keyword is None:
+            keyword = HierarchicalKeyword.objects.create(
+                name=data["name"], slug=data["slug"], depth=data["depth"], path=data["path"]
+            )
+        keyword.save()
+        return keyword
 
 
 class ComplexDynamicRelationField(DynamicRelationField):

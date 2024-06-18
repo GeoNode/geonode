@@ -883,7 +883,7 @@ class ResourceBaseSerializer(
         instance = super().save(**kwargs)
         if keywords is not None:
             instance.keywords.clear()
-            [instance.keywords.add(keyword) for keyword in keywords]
+            [instance.keywords.add(keyword.name) for keyword in keywords]
         if extent and instance.get_real_instance()._meta.model in api_bbox_settable_resource_models:
             srid = extent.get("srid", "EPSG:4326")
             coords = extent.get("coords")
