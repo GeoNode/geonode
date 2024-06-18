@@ -25,7 +25,7 @@ class LocalAssetHandler(AssetHandlerInterface):
     def handled_asset_class():
         return LocalAsset
 
-    def get_download_handler(self, asset):
+    def get_download_handler(self, asset=None):
         return LocalAssetDownloadHandler()
 
     def get_storage_manager(self, asset):
