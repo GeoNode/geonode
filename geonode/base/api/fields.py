@@ -56,6 +56,43 @@ class FundersDynamicRelationField(DynamicRelationField):
         return funder[0]
 
 
+class KeywordsDynamicRelationField(DynamicRelationField):
+    def to_internal_value_single(self, data, serializer):
+        """Overwrite of DynamicRelationField implementation to handle complex data structure initialization
+
+        Args:
+            data (Union[str, Dict]}): serialized or deserialized data from http calls (POST, GET ...),
+                                      if content-type application/json is used, data shows up as dict
+            serializer (DynamicModelSerializer): Serializer for the given data
+
+        Raises:
+            ValidationError: raised when requested data does not exist
+
+            django.db.models.QuerySet: return QuerySet object of the request or set data
+        """
+
+        related_model = serializer.Meta.model
+        try:
+            if isinstance(data, str):
+                data = json.loads(data)
+        except ValueError:
+            return super().to_internal_value_single(data, serializer)
+
+        if isinstance(data, dict):
+            try:
+                if hasattr(serializer, "many") and serializer.many is True:
+                    return [serializer.get_model().objects.get_or_create(**d) for d in data]
+
+                return serializer.get_model().objects.get_or_create(**data)
+            except related_model.DoesNotExist:
+                raise ValidationError(
+                    "Invalid value for '%s': %s object with ID=%s not found"
+                    % (self.field_name, related_model.__name__, data)
+                )
+        else:
+            return super().to_internal_value_single(data, serializer)
+
+
 class ComplexDynamicRelationField(DynamicRelationField):
     def to_internal_value_single(self, data, serializer):
         """Overwrite of DynamicRelationField implementation to handle complex data structure initialization

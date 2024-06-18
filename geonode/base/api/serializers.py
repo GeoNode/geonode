@@ -72,6 +72,7 @@ from geonode.base.api.fields import (
     ComplexDynamicRelationField,
     RelatedIdentifierDynamicRelationField,
     FundersDynamicRelationField,
+    KeywordsDynamicRelationField,
 )
 from geonode.layers.utils import get_dataset_download_handlers, get_default_dataset_download_handler
 from geonode.utils import build_absolute_uri
@@ -703,7 +704,7 @@ class ResourceBaseSerializer(
         self.fields["sourcetype"] = serializers.CharField(read_only=True)
         self.fields["embed_url"] = EmbedUrlField(required=False)
         self.fields["thumbnail_url"] = ThumbnailUrlField(read_only=True)
-        self.fields["keywords"] = ComplexDynamicRelationField(
+        self.fields["keywords"] = KeywordsDynamicRelationField(
             SimpleHierarchicalKeywordSerializer, embed=False, many=True
         )
         self.fields["tkeywords"] = ComplexDynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
