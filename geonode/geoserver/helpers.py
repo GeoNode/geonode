@@ -1571,7 +1571,7 @@ def fetch_gs_resource(instance, values, tries):
         else:
             values = {}
 
-        _subtype = gs_resource.store.resource_type
+        _subtype = "tabular" if instance.subtype == "tabular" else gs_resource.store.resource_type 
         if (
             getattr(gs_resource, "metadata", None)
             and gs_resource.metadata.get("time", False)
