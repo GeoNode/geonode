@@ -781,6 +781,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "other restrictions and legal prerequisites for accessing and using the resource or" " metadata"
     )
     license_help_text = _("license of the dataset")
+    metadata_license_help_text = _("license of the metadata")
     language_help_text = _("language used within the dataset")
     category_help_text = _(
         "high-level geographic data thematic classification to assist in the grouping and search of "
@@ -962,6 +963,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
         verbose_name=_("License"),
         help_text=license_help_text,
+        on_delete=models.SET_NULL,
+    )
+
+    metadata_license = models.ForeignKey(
+        License,
+        null=True,
+        blank=True,
+        related_name="metadata_license",
+        verbose_name=_("Metadata License"),
+        help_text=metadata_license_help_text,
         on_delete=models.SET_NULL,
     )
     language = models.CharField(
