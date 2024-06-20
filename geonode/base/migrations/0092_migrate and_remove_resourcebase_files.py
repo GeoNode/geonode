@@ -50,7 +50,7 @@ def migrate_files(apps, schema_editor):
             # no existing "uploaded" links exist, so create them right away
             # otherwise we create the link with the assigned asset
             if dataset_hm := Dataset_hm.objects.filter(pk=res_hm.id).first():
-                url = build_absolute_uri(reverse("assets-download", args=(asset.pk,)))
+                url = build_absolute_uri(reverse("assets-link", args=(asset.pk,)))
             elif doc_hm := Document_hm.objects.filter(pk=res_hm.id).first():
                 url = build_absolute_uri(reverse("assets-link", args=(asset.pk,)))
             else:

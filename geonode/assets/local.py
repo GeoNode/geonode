@@ -20,16 +20,32 @@ _asset_storage_manager = StorageManager(
 )
 
 
+class DefaultLocalLinkUrlHandler:
+    def get_link_url(self, asset: LocalAsset):
+        return build_absolute_uri(reverse("assets-link", args=(asset.pk,)))
+
+
+class IndexLocalLinkUrlHandler:
+    def get_link_url(self, asset: LocalAsset):
+        return build_absolute_uri(reverse("assets-link", args=(asset.pk,))) + f"/{os.path.basename(asset.location[0])}"
+
+
 class LocalAssetHandler(AssetHandlerInterface):
+
+    link_url_handlers = {"gpkg": IndexLocalLinkUrlHandler()}
+
     @staticmethod
     def handled_asset_class():
         return LocalAsset
 
-    def get_download_handler(self, asset):
+    def get_download_handler(self, asset=None):
         return LocalAssetDownloadHandler()
 
     def get_storage_manager(self, asset):
         return _asset_storage_manager
+
+    def get_link_url_handler(self, asset):
+        return self.link_url_handlers.get(asset.type, None) or DefaultLocalLinkUrlHandler()
 
     def _create_asset_dir(self):
         return os.path.normpath(
@@ -126,7 +142,7 @@ class LocalAssetHandler(AssetHandlerInterface):
         return build_absolute_uri(reverse("assets-download", args=(asset.pk,)))
 
     def create_link_url(self, asset) -> str:
-        return build_absolute_uri(reverse("assets-link", args=(asset.pk,))) + f"/{os.path.basename(asset.location[0])}"
+        return self.get_link_url_handler(asset).get_link_url(asset)
 
     @classmethod
     def _is_file_managed(cls, file) -> bool:
@@ -175,6 +191,10 @@ class LocalAssetHandler(AssetHandlerInterface):
                 base_common = base
 
         managed_dir = os.path.join(assets_root, base_common)
+
+        if not os.path.exists(managed_dir):
+            raise ValueError(f"Common dir '{managed_dir}' does not exist - Asset {asset.pk}")
+
         if not os.path.isdir(managed_dir):
             raise ValueError(f"Common dir '{managed_dir}' does not seem to be a directory - Asset {asset.pk}")
 

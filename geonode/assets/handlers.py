@@ -38,10 +38,10 @@ class AssetHandlerInterface:
     def create_link_url(self, asset: Asset) -> str:
         raise NotImplementedError()
 
-    def get_download_handler(self, asset: Asset) -> AssetDownloadHandlerInterface:
+    def get_download_handler(self, asset: Asset = None) -> AssetDownloadHandlerInterface:
         raise NotImplementedError()
 
-    def get_storage_manager(self, asset):
+    def get_storage_manager(self, asset=None):
         raise NotImplementedError()
 
 
