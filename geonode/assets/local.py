@@ -32,9 +32,7 @@ class IndexLocalLinkUrlHandler:
 
 class LocalAssetHandler(AssetHandlerInterface):
 
-    link_url_handlers = {
-        # 'sample_index_type': IndexLocalLinkUrlHandler()
-    }
+    link_url_handlers = {"gpkg": IndexLocalLinkUrlHandler()}
 
     @staticmethod
     def handled_asset_class():
