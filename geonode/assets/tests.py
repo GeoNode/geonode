@@ -43,11 +43,11 @@ THREE_JSON = os.path.join(os.path.dirname(__file__), "tests/data/three.json")
 class AssetsTests(APITestCase):
 
     def test_api_is_closed_if_not_logged_in(self):
-        response = self.client.get(reverse('assets-list'))
+        response = self.client.get(reverse("assets-list"))
         self.assertEqual(response.status_code, 403)
 
         self.assertTrue(self.client.force_login(username="admin", password="admin"), "Login failed")
-        response = self.client.get(reverse('assets-list'))
+        response = self.client.get(reverse("assets-list"))
         self.assertEqual(response.status_code, 200)
 
     def test_handler_registry(self):

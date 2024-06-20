@@ -302,19 +302,22 @@ class DownloadArrayLinkField(DynamicComputedField):
             raise e
 
         asset = get_default_asset(_instance)
-        asset_url = asset_handler_registry.get_handler(asset)\
-            .create_download_url(asset)
+        if asset is not None:
+            asset_url = asset_handler_registry.get_handler(asset).create_download_url(asset)
 
         if _instance.resource_type in ["map"] + get_geoapp_subtypes():
             return []
         elif _instance.resource_type in ["document"]:
-            return [
+            payload = [
                 {
                     "url": _instance.download_url,
                     "ajax_safe": _instance.download_is_ajax_safe,
                 },
-                {"url": asset_url, "ajax_safe": False, "default": False},
             ]
+            if asset:
+                payload.append({"url": asset_url, "ajax_safe": False, "default": False})
+            return payload
+
         elif _instance.resource_type in ["dataset"]:
             download_urls = []
             # lets get only the default one first to set it
@@ -328,7 +331,8 @@ class DownloadArrayLinkField(DynamicComputedField):
                 if obj.download_url:
                     download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
 
-            download_urls.append({"url": asset_url, "ajax_safe": True, "default": False if download_urls else True})
+            if asset:
+                download_urls.append({"url": asset_url, "ajax_safe": True, "default": False if download_urls else True})
 
             return download_urls
         else:
