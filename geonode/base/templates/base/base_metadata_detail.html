@@ -1,0 +1,6 @@
+{% extends "metadata_detail.html" %}
+{% load i18n %}
+{% block metaget_absolute_url %}
+    <dt>{% trans "Metadata Page" %}</dt>
+    <dd><a href="{% url "resourcebase_metadata_detail" resource.id %}">{% url "resourcebase_metadata_detail" resource.id %}</a></dd>
+{% endblock metaget_absolute_url %}

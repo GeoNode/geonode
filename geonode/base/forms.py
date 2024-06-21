@@ -623,6 +623,8 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
         return json.dumps(validate_extra_metadata(cleaned_data, self.instance), indent=4)
 
     class Meta:
+        model = ResourceBase
+
         exclude = (
             "contacts",
             "name",
