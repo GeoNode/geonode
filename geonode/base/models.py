@@ -1330,8 +1330,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ""
 
     def get_absolute_url(self):
+        from geonode.client.hooks import hookset
+
         try:
-            return self.get_real_instance().get_absolute_url() if self != self.get_real_instance() else None
+            return (
+                self.get_real_instance().get_absolute_url()
+                if self != self.get_real_instance()
+                else hookset.get_absolute_url(self)
+            )
         except Exception as e:
             logger.exception(e)
             return None

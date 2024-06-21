@@ -32,7 +32,7 @@ class IndexLocalLinkUrlHandler:
 
 class LocalAssetHandler(AssetHandlerInterface):
 
-    link_url_handlers = {"gpkg": IndexLocalLinkUrlHandler()}
+    link_url_handlers = {"3dtiles": IndexLocalLinkUrlHandler()}
 
     @staticmethod
     def handled_asset_class():

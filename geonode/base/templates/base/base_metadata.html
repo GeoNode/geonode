@@ -1,0 +1,87 @@
+{% extends "metadata_base.html" %}
+{% load i18n %}
+{% load bootstrap_tags %}
+{% load base_tags %}
+{% load guardian_tags %}
+{% load floppyforms %}
+
+{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+
+{% block body_class %}data{% endblock body_class %}
+
+{% block body_outer %}
+
+<div class="container-fluid page-header" style="position: relative;">
+  <h2 class="page-title">{% trans "Metadata" %}&nbsp;{% blocktrans with resource.title as map_title %}for {{ map_title }}{% endblocktrans %}</h2>
+  <div id="profileCompleteness" class="alert alert-info" style="position: absolute; right: 0; top: 0; padding: 4px;">
+    <strong>{% trans "Completeness" %}</strong>
+    <div style="padding: 2px;">
+      <small class="completed text-success" style="display: none; "><i class="fa fa-check"></i>{% trans "Metadata Schema mandatory fields completed" %}</small>
+      <small class="not-completed text-danger" style="display: none; "><i class="fa fa-remove"></i>{% trans "Check Schema mandatory fields" %}</small>
+    </div>
+    <div class="progress" style="margin-bottom:2px;">
+    <div class="progress-bar progress-bar-striped" role="progress-bar" >
+      70%
+    </div>
+    </div>
+  </div>
+</div>
+
+    <form id="metadata_update" class="form-horizontal" action="{{ resource.get_absolute_url }}/metadata" method="POST">
+      {% if resource.metadata_uploaded %}
+      <div style="background-color: orange;">{% blocktrans %}Note: this resource's orginal metadata was populated by importing a metadata XML file.
+        GeoNode's metadata import supports a subset of ISO, FGDC, and Dublin Core metadata elements.
+        Some of your original metadata may have been lost.{% endblocktrans %}</div>
+      {% endif %}
+
+      {% if resourcebase_form.errors or category_form.errors or tkeywords_form.errors %}
+      <div style="background-color: pink">{% blocktrans %}Error updating metadata.  Please check the following fields: {% endblocktrans %}
+        <ul>
+        {% for field in resourcebase_form %}
+            {% if field.errors %}
+                <li>{{ field.label }}</li>
+            {% endif %}
+        {% endfor %}
+
+        {% if category_form.errors %}
+            <li>{{ category_form.errors.as_ul }}</li>
+        {% endif %}
+        {% if tkeywords_form.errors %}
+            <li>{{ tkeywords_form.errors.as_ul }}</li>
+        {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% csrf_token %}
+        <div id="mdeditor_form" class="col-md-12 form-controls">
+          {% form resourcebase_form using panel_template %}
+          {# resourcebase_form|as_bootstrap #}
+        </div>
+
+          <div class="row">
+            <div class="col-md-12 grid-spacer">
+              <fieldset class="form-controls modal-forms modal hide fade" id="poc_form" >
+                <h2>{% trans "Point of Contact" %}</h2>
+                {{ poc_form|as_bootstrap }}
+                <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
+              </fieldset>
+              <fieldset class="form-controls modal-forms modal hide fade" id="metadata_form">
+                <h2>{% trans "Metadata Provider" %}</h2>
+                {{ metadata_author_form|as_bootstrap }}
+                <button type='button' class="modal-cloose-btn btn btn-primary">{% trans "Done" %}</button>
+              </fieldset>
+
+                <div class="form-actions">
+                  <input type="button" id="btn_back_dwn" class="btn btn-primary" style="display: none" value="{% trans "<< Back" %}"/>
+                  <input type="submit" id="btn_upd_md_dwn" class="btn btn-primary" value="{% trans "Update" %}"/>
+                  <input type="button" id="btn_next_dwn" class="btn btn-primary" value="{% trans "Next >>" %}"/>
+                </div>
+            </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+{{ block.super }}
+{% endblock body_outer %}
