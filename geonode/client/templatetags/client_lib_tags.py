@@ -187,6 +187,11 @@ class GeoNodeClientLibraryTag(template.Node):
         elif self.tag_name == "get_geoapp_download":
             t = context.template.engine.get_template(hookset.geoapp_download_template(context=context))
 
+        # 3DTILES
+
+        if self.tag_name == "get_resourcebase_embed":
+            t = context.template.engine.get_template(hookset.resourcebase_embed_template(context=context))
+
         if t:
             return t.render(context)
         else:
@@ -225,3 +230,5 @@ register.tag("get_geoapp_edit", do_get_client_library_template)
 register.tag("get_geoapp_update", do_get_client_library_template)
 register.tag("get_geoapp_embed", do_get_client_library_template)
 register.tag("get_geoapp_download", do_get_client_library_template)
+
+register.tag("get_resourcebase_embed", do_get_client_library_template)
