@@ -517,7 +517,7 @@ def _resolve_resourcebase(request, id, permission="base.change_resourcebase", ms
 
 
 @xframe_options_sameorigin
-def resourcebase_edit(request, resourcebaseid, template="base/base_edit.html"):
+def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
     """
     The view that returns the app composer opened to
     the app with the given app ID.

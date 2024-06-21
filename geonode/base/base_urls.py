@@ -39,8 +39,8 @@ urlpatterns = [
     ),
     re_path(
         r"^(?P<resourcebaseid>[^/]+)/embed$",
-        views.resourcebase_edit,
-        {"template": "apps/app_embed.html"},
+        views.resourcebase_embed,
+        {"template": "base/base_embed.html"},
         name="resourcebase_embed",
     ),
 ]
