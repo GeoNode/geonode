@@ -32,7 +32,7 @@ from django.template.defaultfilters import filesizeformat
 from geonode.base.forms import ResourceBaseForm, get_tree_data
 from geonode.documents.models import Document
 from geonode.upload.models import UploadSizeLimit
-from geonode.upload.api.exceptions import FileUploadLimitException
+from geonode.upload.api.exception import FileUploadLimitException
 
 logger = logging.getLogger(__name__)
 

@@ -33,7 +33,6 @@ from django.contrib.auth import get_user_model
 from geonode.maps.models import Map
 from geonode.base import enumerations
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
@@ -76,7 +75,7 @@ logger = logging.getLogger(__name__)
 
 @dataclasses.dataclass()
 class GeoServerImporterSessionInfo:
-    upload_session: Upload
+    #upload_session: Upload
     import_session: Session
     spatial_files_type: SpatialFilesLayerType
     dataset_name: typing.AnyStr
@@ -334,9 +333,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if not spatial_files_type:
             raise Exception(f"No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
 
-        upload_session, _ = Upload.objects.get_or_create(
-            resource=instance.get_real_instance().resourcebase_ptr, user=user
-        )
+        upload_session = 1 # TODO to be verified
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
         upload_session.save()
 

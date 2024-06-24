@@ -32,6 +32,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import sitemap
 
 import geonode.proxy.urls
+from geonode.upload.api.views import ImporterViewSet, ResourceImporter
 from . import views
 from . import version
 
@@ -129,6 +130,16 @@ urlpatterns += [
     re_path(r"^api/v2/", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
     re_path(r"", include(api.urls)),
+    re_path(
+        r"uploads/upload",
+        ImporterViewSet.as_view({"post": "create"}),
+        name="importer_upload",
+    ),
+    re_path(
+        r"resources/(?P<pk>\w+)/copy",
+        ResourceImporter.as_view({"put": "copy"}),
+        name="importer_resource_copy",
+    ),
 ]
 
 # tinymce WYSIWYG HTML Editor

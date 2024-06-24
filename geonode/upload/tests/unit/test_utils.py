@@ -30,39 +30,6 @@ from geonode.upload.utils import get_max_upload_size, get_max_upload_parallelism
 
 
 class UtilsTestCase(GeoNodeBaseTestSupport):
-    def test_pages(self):
-        self.assertIn("kml-overlay", utils._pages)
-
-    def test_get_kml_doc(self):
-        kml_bytes = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <kml xmlns="http://earth.google.com/kml/2.1">
-            <Document>
-              <name>CSR5r3_annual</name>
-              <GroundOverlay id="groundoverlay">
-                <name>CSR5r3_annual</name>
-                <description><![CDATA[]]></description>
-                <color>ffffffff</color>
-                <visibility>1</visibility>
-                <extrude>0</extrude>
-                <Icon>
-                  <href>CSR5r3_annual.png</href>
-                  <viewBoundScale>1</viewBoundScale>
-                </Icon>
-                <LatLonBox>
-                  <north>70.000000</north>
-                  <south>-60.500000</south>
-                  <east>180.000000</east>
-                  <west>-180.000000</west>
-                  <rotation>0.0000000000000000</rotation>
-                </LatLonBox>
-              </GroundOverlay>
-            </Document>
-            </kml>
-        """.strip()
-        kml_doc, ns = utils.get_kml_doc(kml_bytes)
-        self.assertTrue(etree.QName(kml_doc.tag).localname, "kml")
-        self.assertIn("kml", ns.keys())
 
     def test_get_max_upload_size(self):
         upload_size = UploadSizeLimit.objects.create(slug="test_slug", max_size=1000, description="test description")

@@ -24,8 +24,34 @@ class UploadAppConfig(AppConfig):
     name = "geonode.upload"
 
     def ready(self):
-        super().ready()
-        settings.CELERY_BEAT_SCHEDULE["clean-up-old-task-result"] = {
+        """Finalize setup"""
+        run_setup_hooks()
+        super(UploadAppConfig, self).ready()
+
+
+def run_setup_hooks(*args, **kwargs):
+    """
+    Run basic setup configuration for the importer app.
+    Here we are overriding the upload API url
+    """
+    from geonode.urls import urlpatterns
+    from django.urls import re_path, include
+
+    url_already_injected = any(
+        [
+            "upload.urls" in x.urlconf_name.__name__
+            for x in urlpatterns
+            if hasattr(x, "urlconf_name") and not isinstance(x.urlconf_name, list)
+        ]
+    )
+
+    if not url_already_injected:
+        urlpatterns.insert(
+            0,
+            re_path(r"^api/v2/", include("upload.api.urls")),
+        )
+
+    settings.CELERY_BEAT_SCHEDULE["clean-up-old-task-result"] = {
             "task": "geonode.upload.tasks.cleanup_celery_task_entries",
             "schedule": 86400.0,
         }

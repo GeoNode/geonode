@@ -2296,8 +2296,8 @@ SUPPORTED_DATASET_FILE_TYPES = [
 ]
 INSTALLED_APPS += (
     "dynamic_models",
-    "importer",
-    "importer.handlers",
+    #"importer",
+    "geonode.upload.handlers",
 )
 
 CELERY_TASK_QUEUES += (
@@ -2329,7 +2329,7 @@ CELERY_TASK_QUEUES += (
     Queue("importer.rollback", GEONODE_EXCHANGE, routing_key="importer.rollback"),
 )
 
-DATABASE_ROUTERS = ["importer.db_router.DatastoreRouter"]
+DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES += ("importer_upload",)
 
@@ -2337,14 +2337,14 @@ IMPORTER_HANDLERS = ast.literal_eval(
     os.getenv(
         "IMPORTER_HANDLERS",
         "[\
-    'importer.handlers.gpkg.handler.GPKGFileHandler',\
-    'importer.handlers.geojson.handler.GeoJsonFileHandler',\
-    'importer.handlers.shapefile.handler.ShapeFileHandler',\
-    'importer.handlers.kml.handler.KMLFileHandler',\
-    'importer.handlers.csv.handler.CSVFileHandler',\
-    'importer.handlers.geotiff.handler.GeoTiffFileHandler',\
-    'importer.handlers.xml.handler.XMLFileHandler',\
-    'importer.handlers.sld.handler.SLDFileHandler',\
+    'geonode.upload.handlers.gpkg.handler.GPKGFileHandler',\
+    'geonode.upload.handlers.geojson.handler.GeoJsonFileHandler',\
+    'geonode.upload.handlers.shapefile.handler.ShapeFileHandler',\
+    'geonode.upload.handlers.kml.handler.KMLFileHandler',\
+    'geonode.upload.handlers.csv.handler.CSVFileHandler',\
+    'geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler',\
+    'geonode.upload.handlers.xml.handler.XMLFileHandler',\
+    'geonode.upload.handlers.sld.handler.SLDFileHandler',\
 ]",
     )
 )
