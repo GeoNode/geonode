@@ -131,17 +131,12 @@ class BaseRasterFileHandler(BaseHandler):
                     upload_data=False,
                 )
             except Exception as e:
-                if (
-                    f"Resource named {_resource.get('name')} already exists in store:"
-                    in str(e)
-                ):
+                if f"Resource named {_resource.get('name')} already exists in store:" in str(e):
                     continue
                 raise e
         return True
 
-    def overwrite_geoserver_resource(
-        self, resource: List[str], catalog, store, workspace
-    ):
+    def overwrite_geoserver_resource(self, resource: List[str], catalog, store, workspace):
         # we need to delete the resource before recreating it
         self._delete_resource(resource, catalog, workspace)
         self._delete_store(resource, catalog, workspace)
@@ -187,22 +182,17 @@ class BaseRasterFileHandler(BaseHandler):
     def perform_last_step(execution_id):
         BaseHandler.perform_last_step(execution_id=execution_id)
 
-    def extract_resource_to_publish(
-        self, files, action, layer_name, alternate, **kwargs
-    ):
+    def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
             return [
                 {
                     "name": alternate,
                     "crs": ResourceBase.objects.filter(
-                        Q(alternate__icontains=layer_name)
-                        | Q(title__icontains=layer_name)
+                        Q(alternate__icontains=layer_name) | Q(title__icontains=layer_name)
                     )
                     .first()
                     .srid,
-                    "raster_path": kwargs["kwargs"]
-                    .get("new_file_location")
-                    .get("files")[0],
+                    "raster_path": kwargs["kwargs"].get("new_file_location").get("files")[0],
                 }
             ]
 
@@ -212,9 +202,7 @@ class BaseRasterFileHandler(BaseHandler):
         return [
             {
                 "name": alternate or layer_name,
-                "crs": (
-                    self.identify_authority(layers) if layers.GetSpatialRef() else None
-                ),
+                "crs": (self.identify_authority(layers) if layers.GetSpatialRef() else None),
                 "raster_path": files.get("base_file"),
             }
         ]
@@ -228,15 +216,11 @@ class BaseRasterFileHandler(BaseHandler):
                 layer_proj4 = layer.GetSpatialRef().ExportToProj4()
                 _code = pyproj.CRS(layer_proj4).to_epsg(min_confidence=20)
                 if _code is None:
-                    raise Exception(
-                        "CRS authority code not found, fallback to default behaviour"
-                    )
+                    raise Exception("CRS authority code not found, fallback to default behaviour")
         except Exception:
             spatial_ref = layer.GetSpatialRef()
             spatial_ref.AutoIdentifyEPSG()
-            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue(
-                "AUTHORITY", 0
-            )
+            _name = spatial_ref.GetAuthorityName(None) or spatial_ref.GetAttrValue("AUTHORITY", 0)
             _code = (
                 spatial_ref.GetAuthorityCode("PROJCS")
                 or spatial_ref.GetAuthorityCode("GEOGCS")
@@ -254,9 +238,7 @@ class BaseRasterFileHandler(BaseHandler):
         logger.info("Total number of layers available: 1")
         _exec = self._get_execution_request_object(execution_id)
         _input = {**_exec.input_params, **{"total_layers": 1}}
-        orchestrator.update_execution_request_status(
-            execution_id=str(execution_id), input_params=_input
-        )
+        orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
 
         try:
             filename = Path(files.get("base_file")).stem
@@ -272,9 +254,7 @@ class BaseRasterFileHandler(BaseHandler):
                 overwrite_existing_layer=should_be_overwritten,
             ):
                 workspace = DataPublisher(None).workspace
-                user_datasets = Dataset.objects.filter(
-                    owner=_exec.user, alternate=f"{workspace.name}:{layer_name}"
-                )
+                user_datasets = Dataset.objects.filter(owner=_exec.user, alternate=f"{workspace.name}:{layer_name}")
 
                 dataset_exists = user_datasets.exists()
 
@@ -387,22 +367,16 @@ class BaseRasterFileHandler(BaseHandler):
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
 
-            resource_manager.set_thumbnail(
-                dataset.uuid, instance=dataset, overwrite=True
-            )
+            resource_manager.set_thumbnail(dataset.uuid, instance=dataset, overwrite=True)
             dataset.refresh_from_db()
             return dataset
         elif not dataset.exists() and _overwrite:
             logger.warning(
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
-            return self.create_geonode_resource(
-                layer_name, alternate, execution_id, resource_type, asset
-            )
+            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
         elif not dataset.exists() and not _overwrite:
-            logger.warning(
-                "The resource does not exists, please use 'create_geonode_resource' to create one"
-            )
+            logger.warning("The resource does not exists, please use 'create_geonode_resource' to create one")
         return
 
     def handle_xml_file(self, saved_dataset: Dataset, _exec: ExecutionRequest):
@@ -462,9 +436,7 @@ class BaseRasterFileHandler(BaseHandler):
                 kwargs=kwargs.get("kwargs", {}) or kwargs,
             )
             return
-        return self.create_resourcehandlerinfo(
-            handler_module_path, resource, execution_id, **kwargs
-        )
+        return self.create_resourcehandlerinfo(handler_module_path, resource, execution_id, **kwargs)
 
     def copy_geonode_resource(
         self,
@@ -479,9 +451,7 @@ class BaseRasterFileHandler(BaseHandler):
             layer_name=data_to_update.get("title"),
             alternate=new_alternate,
             execution_id=str(_exec.exec_id),
-            asset=kwargs.get("kwargs", {})
-            .get("new_file_location", {})
-            .get("asset", []),
+            asset=kwargs.get("kwargs", {}).get("new_file_location", {}).get("asset", []),
         )
         resource.refresh_from_db()
         return resource
@@ -496,9 +466,7 @@ class BaseRasterFileHandler(BaseHandler):
         """
         return storage_manager.copy(dataset)
 
-    def rollback(
-        self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs
-    ):
+    def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
         steps = self.ACTIONS.get(action_to_rollback)
         if rollback_from_step not in steps:
             logger.info(f"Step not found {rollback_from_step}, skipping")
@@ -513,15 +481,11 @@ class BaseRasterFileHandler(BaseHandler):
         reversed_steps = steps_to_rollback[::-1]
         istance_name = None
         try:
-            istance_name = (
-                find_key_recursively(kwargs, "new_dataset_alternate") or args[3]
-            )
+            istance_name = find_key_recursively(kwargs, "new_dataset_alternate") or args[3]
         except Exception:
             pass
 
-        logger.warning(
-            f"Starting rollback for execid: {exec_id} resource published was: {istance_name}"
-        )
+        logger.warning(f"Starting rollback for execid: {exec_id} resource published was: {istance_name}")
 
         for step in reversed_steps:
             normalized_step_name = step.split(".")[-1]
@@ -529,9 +493,7 @@ class BaseRasterFileHandler(BaseHandler):
                 function = getattr(self, f"_{normalized_step_name}_rollback")
                 function(exec_id, istance_name, *args, **kwargs)
 
-        logger.warning(
-            f"Rollback for execid: {exec_id} resource published was: {istance_name} completed"
-        )
+        logger.warning(f"Rollback for execid: {exec_id} resource published was: {istance_name} completed")
 
     def _import_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
         """
@@ -552,15 +514,11 @@ class BaseRasterFileHandler(BaseHandler):
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(istance_name)
 
-    def _create_geonode_resource_rollback(
-        self, exec_id, istance_name=None, *args, **kwargs
-    ):
+    def _create_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
         """
         The handler will remove the resource from geonode
         """
-        logger.info(
-            f"Rollback geonode step in progress for execid: {exec_id} resource created was: {istance_name}"
-        )
+        logger.info(f"Rollback geonode step in progress for execid: {exec_id} resource created was: {istance_name}")
         resource = ResourceBase.objects.filter(alternate__icontains=istance_name)
         if resource.exists():
             resource.delete()
@@ -568,9 +526,7 @@ class BaseRasterFileHandler(BaseHandler):
     def _copy_dynamic_model_rollback(self, exec_id, istance_name=None, *args, **kwargs):
         self._import_resource_rollback(exec_id, istance_name=istance_name)
 
-    def _copy_geonode_resource_rollback(
-        self, exec_id, istance_name=None, *args, **kwargs
-    ):
+    def _copy_geonode_resource_rollback(self, exec_id, istance_name=None, *args, **kwargs):
         self._create_geonode_resource_rollback(exec_id, istance_name=istance_name)
 
 
@@ -583,9 +539,7 @@ class BaseRasterFileHandler(BaseHandler):
     ignore_result=False,
     task_track_started=True,
 )
-def copy_raster_file(
-    exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs
-):
+def copy_raster_file(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Perform a copy of the original raster file"""
 
@@ -600,9 +554,7 @@ def copy_raster_file(
             "The original file of the dataset is not available, Is not possible to copy the dataset"
         )
 
-    new_file_location = orchestrator.load_handler(
-        handler_module_path
-    ).copy_original_file(original_dataset)
+    new_file_location = orchestrator.load_handler(handler_module_path).copy_original_file(original_dataset)
 
     new_dataset_alternate = create_alternate(original_dataset.title, exec_id)
 

@@ -5,9 +5,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-wgs84OneOverRadii = np.array(
-    [1.0 / 6378137.0, 1.0 / 6378137.0, 1.0 / 6356752.3142451793]
-)
+wgs84OneOverRadii = np.array([1.0 / 6378137.0, 1.0 / 6378137.0, 1.0 / 6356752.3142451793])
 wgs84OneOverRadiiSquared = np.array(
     [
         1.0 / (6378137.0 * 6378137.0),
@@ -30,9 +28,7 @@ def fromOrientedBoundingBox(center, halfAxes):
     return {"center": center, "radius": np.linalg.norm(u)}
 
 
-def scaleToGeodeticSurface(
-    cartesian, oneOverRadii, oneOverRadiiSquared, centerToleranceSquared
-):
+def scaleToGeodeticSurface(cartesian, oneOverRadii, oneOverRadiiSquared, centerToleranceSquared):
     # https://github.com/CesiumGS/cesium/blob/main/packages/engine/Source/Core/scaleToGeodeticSurface.js#L25
     positionX = cartesian[0]
     positionY = cartesian[1]
@@ -63,9 +59,7 @@ def scaleToGeodeticSurface(
     gradient[1] = intersection[1] * oneOverRadiiSquaredY * 2.0
     gradient[2] = intersection[2] * oneOverRadiiSquaredZ * 2.0
 
-    _lambda = ((1.0 - ratio) * np.linalg.norm(cartesian)) / (
-        0.5 * np.linalg.norm(gradient)
-    )
+    _lambda = ((1.0 - ratio) * np.linalg.norm(cartesian)) / (0.5 * np.linalg.norm(gradient))
     correction = 0.0
 
     while True:

@@ -44,14 +44,10 @@ class TestGeoTiffFileHandler(TestCase):
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_tiff, user=self.user)
@@ -64,27 +60,19 @@ class TestGeoTiffFileHandler(TestCase):
         self.handler.is_valid(files=self.valid_files, user=self.user)
 
     def test_is_valid_should_raise_exception_if_the_tif_is_invalid(self):
-        data = {
-            "base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.tif"
-        }
+        data = {"base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.tif"}
         with self.assertRaises(InvalidGeoTiffException) as _exc:
             self.handler.is_valid(files=data, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "Please remove the additional dots in the filename"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("Please remove the additional dots in the filename" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_tif_is_invalid_format(self):
         with self.assertRaises(InvalidGeoTiffException) as _exc:
             self.handler.is_valid(files=self.invalid_tiff, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "Please remove the additional dots in the filename"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("Please remove the additional dots in the filename" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_tif_not_provided(self):
         with self.assertRaises(InvalidGeoTiffException) as _exc:

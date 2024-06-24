@@ -23,11 +23,7 @@ class SLDFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".sld")
-            if isinstance(base, str)
-            else base.name.endswith(".sld")
-        )
+        return base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")
 
     @staticmethod
     def is_valid(files, user):
@@ -40,18 +36,14 @@ class SLDFileHandler(MetadataFileHandler):
             with open(files.get("base_file")) as _xml:
                 dlxml.fromstring(_xml.read().encode())
         except Exception as err:
-            raise InvalidSldException(
-                f"Uploaded document is not SLD or is invalid: {str(err)}"
-            )
+            raise InvalidSldException(f"Uploaded document is not SLD or is invalid: {str(err)}")
         return True
 
     def handle_metadata_resource(self, _exec, dataset, original_handler):
         if original_handler.can_handle_sld_file:
             original_handler.handle_sld_file(dataset, _exec)
         else:
-            _path = _exec.input_params.get("files", {}).get(
-                "sld_file", _exec.input_params.get("base_file", {})
-            )
+            _path = _exec.input_params.get("files", {}).get("sld_file", _exec.input_params.get("base_file", {}))
             resource_manager.exec(
                 "set_style",
                 None,

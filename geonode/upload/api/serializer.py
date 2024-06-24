@@ -5,7 +5,7 @@ from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from dynamic_rest.serializers import DynamicModelSerializer
 
 
-#class ImporterSerializer(DynamicModelSerializer):
+# class ImporterSerializer(DynamicModelSerializer):
 class ImporterSerializer(DynamicModelSerializer):
     class Meta:
         ref_name = "ImporterSerializer"
@@ -28,7 +28,6 @@ class ImporterSerializer(DynamicModelSerializer):
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     source = serializers.CharField(required=False, default="upload")
-
 
 
 class UploadSizeLimitSerializer(BaseDynamicModelSerializer):

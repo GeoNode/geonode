@@ -69,11 +69,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         _base = data.get("base_file")
         if not _base:
             return False
-        if (
-            _base.endswith("shp")
-            if isinstance(_base, str)
-            else _base.name.endswith("shp")
-        ):
+        if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
             return ShapeFileSerializer
         return False
 
@@ -111,11 +107,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
 
         _filename = Path(_file).stem
 
-        _shp_ext_needed = [
-            x["requires"]
-            for x in get_supported_datasets_file_types()
-            if x["id"] == "shp"
-        ][0]
+        _shp_ext_needed = [x["requires"] for x in get_supported_datasets_file_types() if x["id"] == "shp"][0]
 
         """
         Check if the ext required for the shape file are available in the files uploaded
@@ -150,18 +142,14 @@ class ShapeFileHandler(BaseVectorFileHandler):
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
         """
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
-            files, original_name, ovverwrite_layer, alternate
-        )
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
         layers = ogr.Open(files.get("base_file"))
         layer = layers.GetLayer(original_name)
 
         encoding = ShapeFileHandler._get_encoding(files)
 
         additional_options = []
-        if layer is not None and "Point" not in ogr.GeometryTypeToName(
-            layer.GetGeomType()
-        ):
+        if layer is not None and "Point" not in ogr.GeometryTypeToName(layer.GetGeomType()):
             additional_options.append("-nlt PROMOTE_TO_MULTI")
         if encoding:
             additional_options.append(f"-lco ENCODING={encoding}")

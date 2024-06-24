@@ -23,11 +23,7 @@ class XMLFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".xml")
-            if isinstance(base, str)
-            else base.name.endswith(".xml")
-        )
+        return base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")
 
     @staticmethod
     def is_valid(files, user=None):
@@ -39,18 +35,14 @@ class XMLFileHandler(MetadataFileHandler):
             with open(files.get("base_file")) as _xml:
                 dlxml.fromstring(_xml.read().encode())
         except Exception as err:
-            raise InvalidXmlException(
-                f"Uploaded document is not XML or is invalid: {str(err)}"
-            )
+            raise InvalidXmlException(f"Uploaded document is not XML or is invalid: {str(err)}")
         return True
 
     def handle_metadata_resource(self, _exec, dataset, original_handler):
         if original_handler.can_handle_xml_file:
             original_handler.handle_xml_file(dataset, _exec)
         else:
-            _path = _exec.input_params.get("files", {}).get(
-                "xml_file", _exec.input_params.get("base_file", {})
-            )
+            _path = _exec.input_params.get("files", {}).get("xml_file", _exec.input_params.get("base_file", {}))
             resource_manager.update(
                 None,
                 instance=dataset,

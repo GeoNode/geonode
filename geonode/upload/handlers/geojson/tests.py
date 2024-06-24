@@ -26,9 +26,7 @@ class TestGeoJsonFileHandler(TestCase):
         cls.invalid_files = {"base_file": cls.invalid_geojson}
         cls.valid_files = {"base_file": cls.valid_geojson}
         cls.owner = get_user_model().objects.first()
-        cls.layer = create_single_dataset(
-            name="stazioni_metropolitana", owner=cls.owner
-        )
+        cls.layer = create_single_dataset(name="stazioni_metropolitana", owner=cls.owner)
 
     def test_task_list_is_the_expected_one(self):
         expected = (
@@ -52,14 +50,10 @@ class TestGeoJsonFileHandler(TestCase):
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -72,26 +66,19 @@ class TestGeoJsonFileHandler(TestCase):
         self.handler.is_valid(files=self.valid_files, user=self.user)
 
     def test_is_valid_should_raise_exception_if_the_geojson_is_invalid(self):
-        data = {
-            "base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.geojson"
-        }
+        data = {"base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.geojson"}
         with self.assertRaises(InvalidGeoJsonException) as _exc:
             self.handler.is_valid(files=data, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "Please remove the additional dots in the filename"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("Please remove the additional dots in the filename" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_geojson_is_invalid_format(self):
         with self.assertRaises(InvalidGeoJsonException) as _exc:
             self.handler.is_valid(files=self.invalid_files, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "The provided GeoJson is not valid" in str(_exc.exception.detail)
-        )
+        self.assertTrue("The provided GeoJson is not valid" in str(_exc.exception.detail))
 
     def test_get_ogr2ogr_driver_should_return_the_expected_driver(self):
         expected = ogr.GetDriverByName("GEOJSON")
@@ -107,9 +94,7 @@ class TestGeoJsonFileHandler(TestCase):
         self.assertFalse(actual)
 
     @patch("importer.handlers.common.vector.Popen")
-    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(
-        self, _open
-    ):
+    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()

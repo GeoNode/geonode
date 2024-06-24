@@ -55,9 +55,7 @@ def should_be_imported(layer: str, user: get_user_model(), **kwargs) -> bool:  #
         - geonode should update it
     """
     workspace = DataPublisher(None).workspace
-    exists = ResourceBase.objects.filter(
-        alternate=f"{workspace.name}:{layer}", owner=user
-    ).exists()
+    exists = ResourceBase.objects.filter(alternate=f"{workspace.name}:{layer}", owner=user).exists()
 
     if exists and kwargs.get("skip_existing_layer", False):
         return False
@@ -72,9 +70,7 @@ def create_alternate(layer_name, execution_id):
     """
     _hash = hashlib.md5(f"{layer_name}_{execution_id}".encode("utf-8")).hexdigest()
     alternate = f"{layer_name}_{_hash}"
-    if (
-        len(alternate) > 63
-    ):  # 63 is the max table lengh in postgres to stay safe, we cut at 12
+    if len(alternate) > 63:  # 63 is the max table lengh in postgres to stay safe, we cut at 12
         return f"{layer_name[:50]}{_hash[:12]}"
     return alternate
 
@@ -131,9 +127,7 @@ def evaluate_error(celery_task, exc, task_id, args, kwargs, einfo):
         state="FAILURE",
         meta={"exec_id": str(exec_id.exec_id), "reason": _log},
     )
-    orchestrator.update_execution_request_status(
-        execution_id=str(exec_id.exec_id), output_params=output_params
-    )
+    orchestrator.update_execution_request_status(execution_id=str(exec_id.exec_id), output_params=output_params)
 
     orchestrator.evaluate_execution_progress(
         get_uuid(args), _log=str(exc.detail if hasattr(exc, "detail") else exc.args[0])

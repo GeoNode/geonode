@@ -111,9 +111,7 @@ class KMLFileHandler(BaseVectorFileHandler):
         if len(filename.split(".")) > 2:
             # means that there is a dot other than the one needed for the extension
             # if we keep it ogr2ogr raise an error, better to remove it
-            raise InvalidKmlException(
-                "Please remove the additional dots in the filename"
-            )
+            raise InvalidKmlException("Please remove the additional dots in the filename")
         return True
 
     def get_ogr2ogr_driver(self):
@@ -132,7 +130,5 @@ class KMLFileHandler(BaseVectorFileHandler):
         This is a default command that is needed to import a vector file
         """
 
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
-            files, original_name, ovverwrite_layer, alternate
-        )
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
         return f"{base_command } -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} --config OGR_SKIP LibKML"

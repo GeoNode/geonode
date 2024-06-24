@@ -57,14 +57,10 @@ class TestShapeFileFileHandler(TestCase):
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_shp, user=self.user)
@@ -124,9 +120,7 @@ class TestShapeFileFileHandler(TestCase):
             self.assertIn("ENCODING=UTF-8", actual)
 
     @patch("importer.handlers.common.vector.Popen")
-    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(
-        self, _open
-    ):
+    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()

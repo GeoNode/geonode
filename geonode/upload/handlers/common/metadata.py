@@ -68,9 +68,7 @@ class MetadataFileHandler(BaseHandler):
             dataset = get_object_or_404(Dataset, alternate=alternate)
 
         # retrieving the handler used for the dataset
-        original_handler = orchestrator.load_handler(
-            dataset.resourcehandlerinfo_set.first().handler_module_path
-        )()
+        original_handler = orchestrator.load_handler(dataset.resourcehandlerinfo_set.first().handler_module_path)()
 
         ResourceHandlerInfo.objects.create(
             handler_module_path=dataset.resourcehandlerinfo_set.first().handler_module_path,
@@ -83,9 +81,7 @@ class MetadataFileHandler(BaseHandler):
 
         dataset.refresh_from_db()
 
-        orchestrator.evaluate_execution_progress(
-            execution_id, handler_module_path=str(self)
-        )
+        orchestrator.evaluate_execution_progress(execution_id, handler_module_path=str(self))
         return dataset
 
     def handle_metadata_resource(self, _exec, dataset, original_handler):

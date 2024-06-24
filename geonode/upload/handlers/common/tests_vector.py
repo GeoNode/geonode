@@ -31,9 +31,7 @@ class TestBaseVectorFileHandler(TestCase):
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
         cls.valid_files = {"base_file": "/tmp/valid.gpkg"}
         cls.owner = get_user_model().objects.first()
-        cls.layer = create_single_dataset(
-            name="stazioni_metropolitana", owner=cls.owner
-        )
+        cls.layer = create_single_dataset(name="stazioni_metropolitana", owner=cls.owner)
 
     def setUp(self) -> None:
         shutil.copy(self.valid_gpkg, "/tmp")
@@ -60,9 +58,7 @@ class TestBaseVectorFileHandler(TestCase):
                 step="step",
                 input_params={"files": self.valid_files, "skip_existing_layer": True},
             )
-            schema, _ = ModelSchema.objects.get_or_create(
-                name="test_handler", db_name="datastore"
-            )
+            schema, _ = ModelSchema.objects.get_or_create(name="test_handler", db_name="datastore")
             layers = ogr.Open(self.valid_gpkg)
 
             # starting the tests
@@ -77,9 +73,7 @@ class TestBaseVectorFileHandler(TestCase):
             self.assertIsNotNone(dynamic_model)
             self.assertIsInstance(celery_group, group)
             self.assertEqual(1, len(celery_group.tasks))
-            self.assertEqual(
-                "importer.create_dynamic_structure", celery_group.tasks[0].name
-            )
+            self.assertEqual("importer.create_dynamic_structure", celery_group.tasks[0].name)
         finally:
             if schema:
                 schema.delete()
@@ -101,16 +95,12 @@ class TestBaseVectorFileHandler(TestCase):
         self._assert_test_result(overwrite=True)
 
     def test_setup_dynamic_model_no_dataset_with_modelschema_overwrite_false(self):
-        ModelSchema.objects.get_or_create(
-            name="stazioni_metropolitana", db_name="datastore"
-        )
+        ModelSchema.objects.get_or_create(name="stazioni_metropolitana", db_name="datastore")
         self._assert_test_result(overwrite=False)
 
     def test_setup_dynamic_model_with_dataset_with_modelschema_overwrite_false(self):
         create_single_dataset(name="stazioni_metropolitana", owner=self.user)
-        ModelSchema.objects.create(
-            name="stazioni_metropolitana", db_name="datastore", managed=True
-        )
+        ModelSchema.objects.create(name="stazioni_metropolitana", db_name="datastore", managed=True)
         self._assert_test_result(overwrite=False)
 
     def _assert_test_result(self, overwrite=False):
@@ -140,9 +130,7 @@ class TestBaseVectorFileHandler(TestCase):
 
             self.assertIsInstance(celery_group, group)
             self.assertEqual(1, len(celery_group.tasks))
-            self.assertEqual(
-                "importer.create_dynamic_structure", celery_group.tasks[0].name
-            )
+            self.assertEqual("importer.create_dynamic_structure", celery_group.tasks[0].name)
         finally:
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
@@ -166,9 +154,7 @@ class TestBaseVectorFileHandler(TestCase):
 
             with self.assertRaises(Exception) as exception:
                 # start the resource import
-                self.handler.import_resource(
-                    files=self.valid_files, execution_id=str(exec_id)
-                )
+                self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
             self.assertIn(
                 "No valid layers found",
                 exception.exception.args[0],
@@ -193,9 +179,7 @@ class TestBaseVectorFileHandler(TestCase):
             )
 
             # start the resource import
-            self.handler.import_resource(
-                files=self.valid_files, execution_id=str(exec_id)
-            )
+            self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
 
             celery_chord.assert_called_once()
         finally:
@@ -216,9 +200,7 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertEqual("importer.import_with_ogr2ogr", actual.task)
 
     @patch("importer.handlers.common.vector.Popen")
-    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(
-        self, _open
-    ):
+    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()
@@ -282,9 +264,7 @@ class TestBaseVectorFileHandler(TestCase):
 
     @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"}, clear=True)
     @patch("importer.handlers.common.vector.Popen")
-    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(
-        self, _open
-    ):
+    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()
@@ -353,8 +333,6 @@ class TestBaseVectorFileHandler(TestCase):
         handler.create_resourcehandlerinfo(str(handler), resource, exec_obj)
         # calling the last_step
         handler.perform_last_step(str(exec_id))
-        expected_output = {
-            "resources": [{"id": resource.pk, "detail_url": resource.detail_url}]
-        }
+        expected_output = {"resources": [{"id": resource.pk, "detail_url": resource.detail_url}]}
         exec_obj.refresh_from_db()
         self.assertDictEqual(expected_output, exec_obj.output_params)

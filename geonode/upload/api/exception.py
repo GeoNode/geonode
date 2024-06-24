@@ -51,6 +51,7 @@ class HandlerException(APIException):
     default_code = "handler_exception"
     category = "handler"
 
+
 class GeneralUploadException(APIException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     default_detail = "Exception during resource upload"

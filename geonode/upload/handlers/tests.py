@@ -37,9 +37,7 @@ class TestHandlersUtils(TestCase):
         """
         user, _ = get_user_model().objects.get_or_create(username="admin")
         dataset = create_single_dataset(name="single_dataset", owner=user)
-        result = should_be_imported(
-            layer=dataset.name, user=user, skip_existing_layer=True
-        )
+        result = should_be_imported(layer=dataset.name, user=user, skip_existing_layer=True)
         self.assertFalse(result)
 
     def test_create_alternate_shuould_appen_an_hash(self):
@@ -52,15 +50,11 @@ class TestHandlersUtils(TestCase):
             layer_name="this_is_a_really_long_name_for_a_layer_but_we_need_it_for_test_the_function",
             execution_id="1234",
         )
-        self.assertEqual(
-            "this_is_a_really_long_name_for_a_layer_but_we_need", actual[:50]
-        )
+        self.assertEqual("this_is_a_really_long_name_for_a_layer_but_we_need", actual[:50])
         self.assertTrue(len(actual) <= 63)
 
     def test_drop_dynamic_model_schema(self):
-        _model_schema = ModelSchema(
-            name="model_schema", db_name="datastore", managed=True
-        )
+        _model_schema = ModelSchema(name="model_schema", db_name="datastore", managed=True)
         _model_schema.save()
 
         self.assertTrue(ModelSchema.objects.filter(name="model_schema").exists())

@@ -75,7 +75,7 @@ logger = logging.getLogger(__name__)
 
 @dataclasses.dataclass()
 class GeoServerImporterSessionInfo:
-    #upload_session: Upload
+    # upload_session: Upload
     import_session: Session
     spatial_files_type: SpatialFilesLayerType
     dataset_name: typing.AnyStr
@@ -333,7 +333,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
         if not spatial_files_type:
             raise Exception(f"No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
 
-        upload_session = 1 # TODO to be verified
+        upload_session = 1  # TODO to be verified
         upload_session.resource = instance.get_real_instance().resourcebase_ptr
         upload_session.save()
 

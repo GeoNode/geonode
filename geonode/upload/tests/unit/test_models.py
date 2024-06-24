@@ -16,9 +16,7 @@ class TestModelSchemaSignal(TransactionImporterBaseTestSupport):
             resource=self.resource,
             handler_module_path="importer.handlers.shapefile.handler.ShapeFileHandler",
         )
-        self.dynamic_model = ModelSchema.objects.create(
-            name=self.resource.name, db_name="datastore"
-        )
+        self.dynamic_model = ModelSchema.objects.create(name=self.resource.name, db_name="datastore")
         self.dynamic_model_field = FieldSchema.objects.create(
             name="field",
             class_name="django.db.models.IntegerField",
@@ -38,8 +36,4 @@ class TestModelSchemaSignal(TransactionImporterBaseTestSupport):
         )
         self.resource.delete()
         self.assertFalse(ModelSchema.objects.filter(name="test_dataset").exists())
-        self.assertFalse(
-            FieldSchema.objects.filter(
-                model_schema=self.dynamic_model, name="field"
-            ).exists()
-        )
+        self.assertFalse(FieldSchema.objects.filter(model_schema=self.dynamic_model, name="field").exists())

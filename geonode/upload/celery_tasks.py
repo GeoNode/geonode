@@ -141,9 +141,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         _files = _exec.input_params.get("files")
 
         # initiating the data store manager
-        _datastore = DataStoreManager(
-            _files, handler_module_path, _exec.user, execution_id
-        )
+        _datastore = DataStoreManager(_files, handler_module_path, _exec.user, execution_id)
 
         # starting file validation
         if not _datastore.input_is_valid():
@@ -224,14 +222,10 @@ def publish_resource(
         _publisher = DataPublisher(handler_module_path)
 
         # extracting the crs and the resource name, are needed for publish the resource
-        data = _publisher.extract_resource_to_publish(
-            _files, action, layer_name, alternate, **kwargs
-        )
+        data = _publisher.extract_resource_to_publish(_files, action, layer_name, alternate, **kwargs)
         if data:
             # we should not publish resource without a crs
-            if not _overwrite or (
-                _overwrite and not _publisher.get_resource(alternate)
-            ):
+            if not _overwrite or (_overwrite and not _publisher.get_resource(alternate)):
                 _publisher.publish_resources(data)
             else:
                 _publisher.overwrite_resources(data)
@@ -246,9 +240,7 @@ def publish_resource(
             logger.error(
                 f"Layer: {alternate} raised: Only resources with a CRS provided can be published for execution_id: {execution_id}"
             )
-            raise PublishResourceException(
-                "Only resources with a CRS provided can be published"
-            )
+            raise PublishResourceException("Only resources with a CRS provided can be published")
 
         # at the end recall the import_orchestrator for the next step
 
@@ -354,13 +346,9 @@ def create_geonode_resource(
             )
 
         if _overwrite:
-            handler.overwrite_resourcehandlerinfo(
-                handler_module_path, resource, _exec, **kwargs
-            )
+            handler.overwrite_resourcehandlerinfo(handler_module_path, resource, _exec, **kwargs)
         else:
-            handler.create_resourcehandlerinfo(
-                handler_module_path, resource, _exec, **kwargs
-            )
+            handler.create_resourcehandlerinfo(handler_module_path, resource, _exec, **kwargs)
 
         # at the end recall the import_orchestrator for the next step
         import_orchestrator.apply_async(
@@ -398,9 +386,7 @@ def create_geonode_resource(
     ignore_result=False,
     task_track_started=True,
 )
-def copy_geonode_resource(
-    exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs
-):
+def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Copy the geonode resource and create a new one. an assert is performed to be sure that the new resource
     have the new generated alternate
@@ -517,9 +503,7 @@ def create_dynamic_structure(
     """
     dynamic_model_schema = ModelSchema.objects.filter(id=dynamic_model_schema_id)
     if not dynamic_model_schema.exists():
-        raise DynamicModelError(
-            f"The model with id {dynamic_model_schema_id} does not exists."
-        )
+        raise DynamicModelError(f"The model with id {dynamic_model_schema_id} does not exists.")
 
     dynamic_model_schema = dynamic_model_schema.first()
 
@@ -547,9 +531,7 @@ def create_dynamic_structure(
             row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
         else:
             # otherwise if is an overwrite, we update the existing one and create the one that does not exists
-            _field_exists = FieldSchema.objects.filter(
-                name=field["name"], model_schema=dynamic_model_schema
-            )
+            _field_exists = FieldSchema.objects.filter(name=field["name"], model_schema=dynamic_model_schema)
             if _field_exists.exists():
                 _field_exists.update(
                     class_name=field["class_name"],
@@ -557,9 +539,7 @@ def create_dynamic_structure(
                     kwargs=_kwargs,
                 )
             else:
-                row_to_insert.append(
-                    _create_field(dynamic_model_schema, field, _kwargs)
-                )
+                row_to_insert.append(_create_field(dynamic_model_schema, field, _kwargs))
 
     if row_to_insert:
         # the build creation improves the overall permformance with the DB
@@ -575,9 +555,7 @@ def create_dynamic_structure(
     queue="importer.copy_dynamic_model",
     task_track_started=True,
 )
-def copy_dynamic_model(
-    exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs
-):
+def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
@@ -604,9 +582,7 @@ def copy_dynamic_model(
 
         if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
             dynamic_schema = ModelSchema.objects.filter(name=alternate.split(":")[1])
-            alternative_dynamic_schema = ModelSchema.objects.filter(
-                name=new_dataset_alternate
-            )
+            alternative_dynamic_schema = ModelSchema.objects.filter(name=new_dataset_alternate)
 
             if dynamic_schema.exists() and not alternative_dynamic_schema.exists():
                 # Creating the dynamic schema object
@@ -662,9 +638,7 @@ def copy_dynamic_model(
     queue="importer.copy_geonode_data_table",
     task_track_started=True,
 )
-def copy_geonode_data_table(
-    exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs
-):
+def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs):
     """
     Once the base resource is copied, is time to copy also the dynamic model
     """
@@ -676,9 +650,7 @@ def copy_geonode_data_table(
             step=gettext_lazy("importer.copy_geonode_data_table"),
         )
 
-        original_dataset_alternate = (
-            kwargs.get("kwargs").get("original_dataset_alternate").split(":")[1]
-        )
+        original_dataset_alternate = kwargs.get("kwargs").get("original_dataset_alternate").split(":")[1]
 
         new_dataset_alternate = kwargs.get("kwargs").get("new_dataset_alternate")
 
@@ -686,17 +658,13 @@ def copy_geonode_data_table(
 
         db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
         if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
-            schema_exists = ModelSchema.objects.filter(
-                name=new_dataset_alternate
-            ).first()
+            schema_exists = ModelSchema.objects.filter(name=new_dataset_alternate).first()
             if schema_exists:
                 db_name = schema_exists.db_name
 
         with transaction.atomic():
             with connections[db_name].cursor() as cursor:
-                cursor.execute(
-                    f'CREATE TABLE {new_dataset_alternate} AS TABLE "{original_dataset_alternate}";'
-                )
+                cursor.execute(f'CREATE TABLE {new_dataset_alternate} AS TABLE "{original_dataset_alternate}";')
 
         task_params = (
             {},
@@ -759,10 +727,7 @@ def rollback(self, *args, **kwargs):
 
     handler = import_string(handler_module_path)()
     handler.rollback(exec_id, rollback_from_step, action_to_rollback, *args, **kwargs)
-    error = (
-        find_key_recursively(kwargs, "error")
-        or "Some issue has occured, please check the logs"
-    )
+    error = find_key_recursively(kwargs, "error") or "Some issue has occured, please check the logs"
     orchestrator.set_as_failed(exec_id, reason=error, delete_file=False)
     return exec_id, kwargs
 

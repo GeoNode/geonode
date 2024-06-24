@@ -67,9 +67,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         )
 
     @patch("importer.celery_tasks.orchestrator.perform_next_step")
-    def test_import_orchestrator_dont_create_exececution_request_if_not__none(
-        self, importer
-    ):
+    def test_import_orchestrator_dont_create_exececution_request_if_not__none(self, importer):
         user = get_user_model().objects.first()
         count = ExecutionRequest.objects.count()
 
@@ -154,9 +152,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
     ):
         try:
             publish_resources.return_value = True
-            extract_resource_to_publish.return_value = [
-                {"crs": 12345, "name": "dataset3"}
-            ]
+            extract_resource_to_publish.return_value = [{"crs": 12345, "name": "dataset3"}]
 
             publish_resource(
                 str(self.exec_id),
@@ -193,9 +189,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         """
         try:
             publish_resources.return_value = True
-            extract_resource_to_publish.return_value = [
-                {"crs": 12345, "name": "dataset3"}
-            ]
+            extract_resource_to_publish.return_value = [{"crs": 12345, "name": "dataset3"}]
             exec_id = orchestrator.create_execution_request(
                 user=get_user_model().objects.get(username=self.user),
                 func_name="dummy_func",
@@ -247,9 +241,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             with self.assertRaises(Exception):
                 get_resource.return_falue = True
                 publish_resources.return_value = True
-                extract_resource_to_publish.return_value = [
-                    {"crs": 4326, "name": "dataset3"}
-                ]
+                extract_resource_to_publish.return_value = [{"crs": 4326, "name": "dataset3"}]
                 exec_id = orchestrator.create_execution_request(
                     user=get_user_model().objects.get(username=self.user),
                     func_name="dummy_func",
@@ -311,9 +303,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 Dataset.objects.filter(alternate=alternate).delete()
 
     @patch("importer.celery_tasks.call_rollback_function")
-    def test_copy_geonode_resource_should_raise_exeption_if_the_alternate_not_exists(
-        self, call_rollback_function
-    ):
+    def test_copy_geonode_resource_should_raise_exeption_if_the_alternate_not_exists(self, call_rollback_function):
         with self.assertRaises(Exception):
             copy_geonode_resource(
                 str(self.exec_id),
@@ -349,9 +339,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 },
             )
 
-            self.assertTrue(
-                ResourceBase.objects.filter(alternate__icontains=new_alternate).exists()
-            )
+            self.assertTrue(ResourceBase.objects.filter(alternate__icontains=new_alternate).exists())
             async_call.assert_called_once()
 
         finally:
@@ -363,9 +351,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
     @patch("importer.handlers.gpkg.handler.GPKGFileHandler._import_resource_rollback")
     @patch("importer.handlers.gpkg.handler.GPKGFileHandler._publish_resource_rollback")
-    @patch(
-        "importer.handlers.gpkg.handler.GPKGFileHandler._create_geonode_resource_rollback"
-    )
+    @patch("importer.handlers.gpkg.handler.GPKGFileHandler._create_geonode_resource_rollback")
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_rollback_works_as_expected_vector_step(
         self,
@@ -419,15 +405,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 if exec_id:
                     ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
-    @patch(
-        "importer.handlers.geotiff.handler.GeoTiffFileHandler._import_resource_rollback"
-    )
-    @patch(
-        "importer.handlers.geotiff.handler.GeoTiffFileHandler._publish_resource_rollback"
-    )
-    @patch(
-        "importer.handlers.geotiff.handler.GeoTiffFileHandler._create_geonode_resource_rollback"
-    )
+    @patch("importer.handlers.geotiff.handler.GeoTiffFileHandler._import_resource_rollback")
+    @patch("importer.handlers.geotiff.handler.GeoTiffFileHandler._publish_resource_rollback")
+    @patch("importer.handlers.geotiff.handler.GeoTiffFileHandler._create_geonode_resource_rollback")
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_rollback_works_as_expected_raster(
         self,
@@ -552,9 +532,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
         try:
             name = str(self.exec_id)
 
-            schema = ModelSchema.objects.create(
-                name=f"schema_{name}", db_name="datastore"
-            )
+            schema = ModelSchema.objects.create(name=f"schema_{name}", db_name="datastore")
             dynamic_fields = [
                 {"name": "field1", "class_name": None, "null": True},
             ]
@@ -579,9 +557,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
         try:
             name = str(self.exec_id)
 
-            schema = ModelSchema.objects.create(
-                name=f"schema_{name}", db_name="datastore"
-            )
+            schema = ModelSchema.objects.create(name=f"schema_{name}", db_name="datastore")
             dynamic_fields = [
                 {
                     "name": "field1",
@@ -625,9 +601,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             layer.alternate = f"geonode:schema_{name}"
             layer.save()
 
-            self.assertTrue(
-                ModelSchema.objects.filter(name__icontains="schema_").count() == 1
-            )
+            self.assertTrue(ModelSchema.objects.filter(name__icontains="schema_").count() == 1)
 
             copy_dynamic_model(
                 exec_id=str(self.exec_id),
@@ -642,9 +616,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             )
             # the alternate is generated internally
             self.assertTrue(ModelSchema.objects.filter(name=f"schema_{name}").exists())
-            self.assertTrue(
-                ModelSchema.objects.filter(name__icontains="schema_").count() == 2
-            )
+            self.assertTrue(ModelSchema.objects.filter(name__icontains="schema_").count() == 2)
 
             schema = ModelSchema.objects.all()
             for val in schema:
@@ -659,12 +631,8 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
     @patch("importer.celery_tasks.import_orchestrator.apply_async")
     @patch("importer.celery_tasks.connections")
     def test_copy_geonode_data_table_should_work(self, mock_connection, async_call):
-        mock_cursor = mock_connection.__getitem__(
-            "datastore"
-        ).cursor.return_value.__enter__.return_value
-        ModelSchema.objects.create(
-            name=f"schema_copy_{str(self.exec_id)}", db_name="datastore"
-        )
+        mock_cursor = mock_connection.__getitem__("datastore").cursor.return_value.__enter__.return_value
+        ModelSchema.objects.create(name=f"schema_copy_{str(self.exec_id)}", db_name="datastore")
 
         copy_geonode_data_table(
             exec_id=str(self.exec_id),

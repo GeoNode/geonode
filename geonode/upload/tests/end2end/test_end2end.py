@@ -49,9 +49,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
         _user, _password = ogc_server_settings.credentials
 
-        cls.cat = Catalog(
-            service_url=ogc_server_settings.rest, username=_user, password=_password
-        )
+        cls.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
 
     def setUp(self) -> None:
         self.admin = get_user_model().objects.get(username="admin")
@@ -81,18 +79,14 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
             if ast.literal_eval(os.getenv("ASYNC_SIGNALS", "False")):
                 tentative = 1
                 while (
-                    ExecutionRequest.objects.get(
-                        exec_id=response.json().get("execution_id")
-                    )
+                    ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
                     != ExecutionRequest.STATUS_FINISHED
                     and tentative <= 10
                 ):
                     time.sleep(10)
                     tentative += 1
             if (
-                ExecutionRequest.objects.get(
-                    exec_id=response.json().get("execution_id")
-                ).status
+                ExecutionRequest.objects.get(exec_id=response.json().get("execution_id")).status
                 != ExecutionRequest.STATUS_FINISHED
             ):
                 raise Exception("Async still in progress after 1 min of waiting")
@@ -102,9 +96,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 _schema_id = ModelSchema.objects.filter(name__icontains=initial_name)
                 self.assertTrue(_schema_id.exists())
                 schema_entity = _schema_id.first()
-                self.assertTrue(
-                    FieldSchema.objects.filter(model_schema=schema_entity).exists()
-                )
+                self.assertTrue(FieldSchema.objects.filter(model_schema=schema_entity).exists())
 
                 # Verify that ogr2ogr created the table with some data in it
                 entries = ModelSchema.objects.filter(id=schema_entity.id).first()
@@ -112,8 +104,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
             # check if the geonode resource exists
             resource = ResourceBase.objects.filter(
-                Q(alternate__icontains=f"geonode:{initial_name}")
-                | Q(alternate__icontains=initial_name)
+                Q(alternate__icontains=f"geonode:{initial_name}") | Q(alternate__icontains=initial_name)
             )
             self.assertTrue(resource.exists())
 
@@ -125,17 +116,14 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                 self.assertTrue(resource.first().last_updated > last_update)
         finally:
             resource = ResourceBase.objects.filter(
-                Q(alternate__icontains=f"geonode:{initial_name}")
-                | Q(alternate__icontains=initial_name)
+                Q(alternate__icontains=f"geonode:{initial_name}") | Q(alternate__icontains=initial_name)
             )
             resource.delete()
 
 
 class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geopackage(self):
         layer = self.cat.get_layer("geonode:stazioni_metropolitana")
         if layer:
@@ -150,9 +138,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
             self.cat.delete(layer)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_gpkg_overwrite(self):
         prev_dataset = create_single_dataset(name="stazioni_metropolitana")
 
@@ -164,9 +150,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "stazioni_metropolitana"
         payload["overwrite_existing_layer"] = True
-        self._assertimport(
-            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated
-        )
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         layer = self.cat.get_layer("geonode:stazioni_metropolitana")
         if layer:
             self.cat.delete(layer)
@@ -175,9 +159,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
 class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
     @override_settings(ASYNC_SIGNALS=False)
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geopackage_with_no_crs_table(self):
         layer = self.cat.get_layer("geonode:mattia_test")
         if layer:
@@ -199,12 +181,8 @@ class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
 
     @override_settings(ASYNC_SIGNALS=False)
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
-    @mock.patch(
-        "importer.handlers.common.vector.BaseVectorFileHandler._select_valid_layers"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
+    @mock.patch("importer.handlers.common.vector.BaseVectorFileHandler._select_valid_layers")
     @override_settings(MEDIA_ROOT="/tmp/", ASSETS_ROOT="/tmp/")
     def test_import_geopackage_with_no_crs_table_should_raise_error_if_all_layer_are_invalid(
         self, _select_valid_layers
@@ -236,9 +214,7 @@ class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
 
 class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geojson(self):
         layer = self.cat.get_layer("geonode:valid")
         if layer:
@@ -254,9 +230,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
             self.cat.delete(layer)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geojson_overwrite(self):
         prev_dataset = create_single_dataset(name="valid")
 
@@ -268,9 +242,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "valid"
         payload["overwrite_existing_layer"] = True
-        self._assertimport(
-            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated
-        )
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         layer = self.cat.get_layer("geonode:valid")
         if layer:
             self.cat.delete(layer)
@@ -278,9 +250,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
 
 class ImporterGCSVImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geojson(self):
         layer = self.cat.get_layer("geonode:valid")
         if layer:
@@ -296,9 +266,7 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
             self.cat.delete(layer)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_csv_overwrite(self):
         prev_dataset = create_single_dataset(name="valid")
 
@@ -310,9 +278,7 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "valid"
         payload["overwrite_existing_layer"] = True
-        self._assertimport(
-            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated
-        )
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         layer = self.cat.get_layer("geonode:valid")
         if layer:
             self.cat.delete(layer)
@@ -320,9 +286,7 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
 
 class ImporterKMLImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_kml(self):
         layer = self.cat.get_layer("geonode:sample_point_dataset")
         if layer:
@@ -337,9 +301,7 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
             self.cat.delete(layer)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_kml_overwrite(self):
         prev_dataset = create_single_dataset(name="sample_point_dataset")
 
@@ -351,9 +313,7 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "sample_point_dataset"
         payload["overwrite_existing_layer"] = True
-        self._assertimport(
-            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated
-        )
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         layer = self.cat.get_layer("geonode:sample_point_dataset")
         if layer:
             self.cat.delete(layer)
@@ -361,16 +321,12 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
 
 class ImporterShapefileImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_shapefile(self):
         layer = self.cat.get_layer("geonode:san_andres_y_providencia_highway")
         if layer:
             self.cat.delete(layer)
-        payload = {
-            _filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()
-        }
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         initial_name = "san_andres_y_providencia_highway"
         self._assertimport(payload, initial_name)
         if layer:
@@ -378,9 +334,7 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
             self.cat.delete(layer)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_shapefile_overwrite(self):
 
         prev_dataset = create_single_dataset(name="san_andres_y_providencia_highway")
@@ -388,14 +342,10 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         layer = self.cat.get_layer("geonode:san_andres_y_providencia_highway")
         if layer:
             self.cat.delete(layer)
-        payload = {
-            _filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()
-        }
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         initial_name = "san_andres_y_providencia_highway"
         payload["overwrite_existing_layer"] = True
-        self._assertimport(
-            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated
-        )
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         layer = self.cat.get_layer("geonode:san_andres_y_providencia_highway")
         if layer:
             self.cat.delete(layer)
@@ -403,9 +353,7 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
 
 class ImporterRasterImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_raster(self):
         layer = self.cat.get_layer("test_grid")
         if layer:
@@ -421,9 +369,7 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
             self.cat.delete(layer)
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_raster_overwrite(self):
         prev_dataset = create_single_dataset(name="test_grid")
 
@@ -435,9 +381,7 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "test_grid"
         payload["overwrite_existing_layer"] = True
-        self._assertimport(
-            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated
-        )
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         layer = self.cat.get_layer("test_grid")
         if layer:
             self.cat.delete(layer)

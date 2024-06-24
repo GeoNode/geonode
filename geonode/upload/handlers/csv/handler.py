@@ -67,11 +67,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.lower().endswith(".csv")
-            if isinstance(base, str)
-            else base.name.lower().endswith(".csv")
-        )
+        return base.lower().endswith(".csv") if isinstance(base, str) else base.name.lower().endswith(".csv")
 
     @staticmethod
     def is_valid(files, user):
@@ -101,16 +97,11 @@ class CSVFileHandler(BaseVectorFileHandler):
             )
 
         schema_keys = [x.name.lower() for layer in layers for x in layer.schema]
-        geom_is_in_schema = any(
-            x in schema_keys for x in CSVFileHandler().possible_geometry_column_name
-        )
+        geom_is_in_schema = any(x in schema_keys for x in CSVFileHandler().possible_geometry_column_name)
         has_lat = any(x in CSVFileHandler().possible_lat_column for x in schema_keys)
         has_long = any(x in CSVFileHandler().possible_long_column for x in schema_keys)
 
-        fields = (
-            CSVFileHandler().possible_geometry_column_name
-            + CSVFileHandler().possible_latlong_column
-        )
+        fields = CSVFileHandler().possible_geometry_column_name + CSVFileHandler().possible_latlong_column
         if has_lat and not has_long:
             raise InvalidCSVException(
                 f"Longitude is missing. Supported names: {', '.join(CSVFileHandler().possible_long_column)}"
@@ -122,9 +113,7 @@ class CSVFileHandler(BaseVectorFileHandler):
             )
 
         if not geom_is_in_schema and not has_lat and not has_long:
-            raise InvalidCSVException(
-                f"Not enough geometry field are set. The possibilities are: {','.join(fields)}"
-            )
+            raise InvalidCSVException(f"Not enough geometry field are set. The possibilities are: {','.join(fields)}")
 
         return True
 
@@ -137,9 +126,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         Define the ogr2ogr command to be executed.
         This is a default command that is needed to import a vector file
         """
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
-            files, original_name, ovverwrite_layer, alternate
-        )
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
         additional_option = ' -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"'
         return (
             f"{base_command } -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name} "
@@ -155,85 +142,54 @@ class CSVFileHandler(BaseVectorFileHandler):
         layer_name: str,
     ):
         # retrieving the field schema from ogr2ogr and converting the type to Django Types
-        layer_schema = [
-            {"name": x.name.lower(), "class_name": self._get_type(x), "null": True}
-            for x in layer.schema
-        ]
+        layer_schema = [{"name": x.name.lower(), "class_name": self._get_type(x), "null": True} for x in layer.schema]
         if (
             layer.GetGeometryColumn()
             or self.default_geometry_column_name
-            and ogr.GeometryTypeToName(layer.GetGeomType())
-            not in ["Geometry Collection", "Unknown (any)"]
+            and ogr.GeometryTypeToName(layer.GetGeomType()) not in ["Geometry Collection", "Unknown (any)"]
         ):
             # the geometry colum is not returned rom the layer.schema, so we need to extract it manually
             # checking if the geometry has been wrogly read as string
             schema_keys = [x["name"] for x in layer_schema]
-            geom_is_in_schema = (
-                x in schema_keys for x in self.possible_geometry_column_name
-            )
-            if (
-                any(geom_is_in_schema) and layer.GetGeomType() == 100
-            ):  # 100 means None so Geometry not found
-                field_name = [
-                    x for x in self.possible_geometry_column_name if x in schema_keys
-                ][0]
+            geom_is_in_schema = (x in schema_keys for x in self.possible_geometry_column_name)
+            if any(geom_is_in_schema) and layer.GetGeomType() == 100:  # 100 means None so Geometry not found
+                field_name = [x for x in self.possible_geometry_column_name if x in schema_keys][0]
                 index = layer.GetFeature(1).keys().index(field_name)
                 geom = [x for x in layer.GetFeature(1)][index]
-                class_name = GEOM_TYPE_MAPPING.get(
-                    self.promote_to_multi(geom.split("(")[0].replace(" ", "").title())
-                )
+                class_name = GEOM_TYPE_MAPPING.get(self.promote_to_multi(geom.split("(")[0].replace(" ", "").title()))
                 layer_schema = [x for x in layer_schema if field_name not in x["name"]]
             elif any(x in self.possible_latlong_column for x in schema_keys):
                 class_name = GEOM_TYPE_MAPPING.get(self.promote_to_multi("Point"))
             else:
-                class_name = GEOM_TYPE_MAPPING.get(
-                    self.promote_to_multi(ogr.GeometryTypeToName(layer.GetGeomType()))
-                )
+                class_name = GEOM_TYPE_MAPPING.get(self.promote_to_multi(ogr.GeometryTypeToName(layer.GetGeomType())))
 
             layer_schema += [
                 {
-                    "name": layer.GetGeometryColumn()
-                    or self.default_geometry_column_name,
+                    "name": layer.GetGeometryColumn() or self.default_geometry_column_name,
                     "class_name": class_name,
-                    "dim": (
-                        2
-                        if not ogr.GeometryTypeToName(layer.GetGeomType())
-                        .lower()
-                        .startswith("3d")
-                        else 3
-                    ),
+                    "dim": (2 if not ogr.GeometryTypeToName(layer.GetGeomType()).lower().startswith("3d") else 3),
                 }
             ]
 
         # ones we have the schema, here we create a list of chunked value
         # so the async task will handle max of 30 field per task
-        list_chunked = [
-            layer_schema[i : i + 30] for i in range(0, len(layer_schema), 30)  # noqa
-        ]
+        list_chunked = [layer_schema[i : i + 30] for i in range(0, len(layer_schema), 30)]  # noqa
 
         # definition of the celery group needed to run the async workflow.
         # in this way each task of the group will handle only 30 field
         celery_group = group(
-            create_dynamic_structure.s(
-                execution_id, schema, dynamic_model_schema.id, overwrite, layer_name
-            )
+            create_dynamic_structure.s(execution_id, schema, dynamic_model_schema.id, overwrite, layer_name)
             for schema in list_chunked
         )
 
         return dynamic_model_schema, celery_group
 
-    def extract_resource_to_publish(
-        self, files, action, layer_name, alternate, **kwargs
-    ):
+    def extract_resource_to_publish(self, files, action, layer_name, alternate, **kwargs):
         if action == exa.COPY.value:
             return [
                 {
                     "name": alternate,
-                    "crs": ResourceBase.objects.filter(
-                        alternate__istartswith=layer_name
-                    )
-                    .first()
-                    .srid,
+                    "crs": ResourceBase.objects.filter(alternate__istartswith=layer_name).first().srid,
                 }
             ]
 

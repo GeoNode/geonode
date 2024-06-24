@@ -106,22 +106,15 @@ class ImporterViewSet(DynamicModelViewSet):
         data.is_valid(raise_exception=True)
         _data = {
             **data.data.copy(),
-            **{
-                key: value[0] if isinstance(value, list) else value
-                for key, value in request.FILES.items()
-            },
+            **{key: value[0] if isinstance(value, list) else value for key, value in request.FILES.items()},
         }
 
         if "zip_file" in _data or "kmz_file" in _data:
             # if a zipfile is provided, we need to unzip it before searching for an handler
             zipname = Path(_data["base_file"].name).stem
-            storage_manager = StorageManager(
-                remote_files={"base_file": _data.get("zip_file", _data.get("kmz_file"))}
-            )
+            storage_manager = StorageManager(remote_files={"base_file": _data.get("zip_file", _data.get("kmz_file"))})
             # cloning and unzip the base_file
-            storage_manager.clone_remote_files(
-                cloning_directory=asset_dir, create_tempdir=False
-            )
+            storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
             # update the payload with the unziped paths
             _data.update(
                 {
@@ -141,19 +134,13 @@ class ImporterViewSet(DynamicModelViewSet):
                     # means that the storage manager is not initialized yet, so
                     # the file is not a zip
                     storage_manager = StorageManager(remote_files=_data)
-                    storage_manager.clone_remote_files(
-                        cloning_directory=asset_dir, create_tempdir=False
-                    )
+                    storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
                 # get filepath
-                asset, files = self.generate_asset_and_retrieve_paths(
-                    request, storage_manager, handler
-                )
+                asset, files = self.generate_asset_and_retrieve_paths(request, storage_manager, handler)
 
                 upload_validator = UploadLimitValidator(request.user)
                 upload_validator.validate_parallelism_limit_per_user()
-                upload_validator.validate_files_sum_of_sizes(
-                    storage_manager.data_retriever
-                )
+                upload_validator.validate_files_sum_of_sizes(storage_manager.data_retriever)
 
                 action = ExecutionRequestAction.IMPORT.value
 
@@ -174,9 +161,7 @@ class ImporterViewSet(DynamicModelViewSet):
                     source=extracted_params.get("source"),
                 )
 
-                sig = import_orchestrator.s(
-                    files, str(execution_id), handler=str(handler), action=action
-                )
+                sig = import_orchestrator.s(files, str(execution_id), handler=str(handler), action=action)
                 sig.apply_async()
                 return Response(data={"execution_id": execution_id}, status=201)
             except Exception as e:
@@ -248,9 +233,7 @@ class ResourceImporter(DynamicModelViewSet):
     def copy(self, request, *args, **kwargs):
         resource = self.get_object()
         if resource.resourcehandlerinfo_set.exists():
-            handler_module_path = (
-                resource.resourcehandlerinfo_set.first().handler_module_path
-            )
+            handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
 
             action = ExecutionRequestAction.COPY.value
 
@@ -263,9 +246,7 @@ class ResourceImporter(DynamicModelViewSet):
 
             step = next(iter(handler.get_task_list(action=action)))
 
-            extracted_params, _data = handler.extract_params_from_data(
-                request.data, action=action
-            )
+            extracted_params, _data = handler.extract_params_from_data(request.data, action=action)
 
             execution_id = orchestrator.create_execution_request(
                 user=request.user,
@@ -297,18 +278,15 @@ class ResourceImporter(DynamicModelViewSet):
                     "execution_id": execution_id,
                     "status_url": urljoin(
                         settings.SITEURL,
-                        reverse(
-                            "rs-execution-status", kwargs={"execution_id": execution_id}
-                        ),
+                        reverse("rs-execution-status", kwargs={"execution_id": execution_id}),
                     ),
                 },
                 status=200,
             )
 
-        return ResourceBaseViewSet(
-            request=request, format_kwarg=None, args=args, kwargs=kwargs
-        ).resource_service_copy(request, pk=kwargs.get("pk"))
-
+        return ResourceBaseViewSet(request=request, format_kwarg=None, args=args, kwargs=kwargs).resource_service_copy(
+            request, pk=kwargs.get("pk")
+        )
 
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):

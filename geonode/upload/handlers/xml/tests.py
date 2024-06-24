@@ -47,9 +47,7 @@ class TestXMLFileHandler(TestCase):
             self.handler.is_valid(files=self.invalid_files)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "Uploaded document is not XML or is invalid" in str(_exc.exception.detail)
-        )
+        self.assertTrue("Uploaded document is not XML or is invalid" in str(_exc.exception.detail))
 
     def test_is_valid_should_pass_with_valid_xml(self):
         self.handler.is_valid(files=self.valid_files)

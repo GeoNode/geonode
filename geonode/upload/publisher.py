@@ -24,9 +24,7 @@ class DataPublisher:
 
         _user, _password = ogc_server_settings.credentials
 
-        self.cat = Catalog(
-            service_url=ogc_server_settings.rest, username=_user, password=_password
-        )
+        self.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
         self.workspace = self._get_default_workspace(create=True)
 
         self.store = None
@@ -34,9 +32,7 @@ class DataPublisher:
         if handler_module_path is not None:
             self.handler = import_string(handler_module_path)()
 
-    def extract_resource_to_publish(
-        self, files: dict, action: str, layer_name, alternate=None, **kwargs
-    ):
+    def extract_resource_to_publish(self, files: dict, action: str, layer_name, alternate=None, **kwargs):
         """
         Will try to extract the layers name from the original file
         this is needed since we have to publish the resources
@@ -47,15 +43,11 @@ class DataPublisher:
         ]
         """
 
-        return self.handler.extract_resource_to_publish(
-            files, action, layer_name, alternate, **kwargs
-        )
+        return self.handler.extract_resource_to_publish(files, action, layer_name, alternate, **kwargs)
 
     def get_resource(self, resource_name, return_bool=True) -> bool:
         self.get_or_create_store(default=resource_name)
-        _res = self.cat.get_resource(
-            resource_name, store=self.store, workspace=self.workspace
-        )
+        _res = self.cat.get_resource(resource_name, store=self.store, workspace=self.workspace)
         if return_bool:
             return True if _res else False
         return _res
@@ -96,16 +88,12 @@ class DataPublisher:
             self.cat.delete(layer, purge="all", recurse=True)
         store = self.cat.get_store(
             resource_name.split(":")[-1],
-            workspace=os.getenv(
-                "DEFAULT_WORKSPACE", os.getenv("CASCADE_WORKSPACE", "geonode")
-            ),
+            workspace=os.getenv("DEFAULT_WORKSPACE", os.getenv("CASCADE_WORKSPACE", "geonode")),
         )
         if not store:
             store = self.cat.get_store(
                 resource_name,
-                workspace=os.getenv(
-                    "DEFAULT_WORKSPACE", os.getenv("CASCADE_WORKSPACE", "geonode")
-                ),
+                workspace=os.getenv("DEFAULT_WORKSPACE", os.getenv("CASCADE_WORKSPACE", "geonode")),
             )
         if store:
             self.cat.delete(store, purge="all", recurse=True)
@@ -114,9 +102,7 @@ class DataPublisher:
         """
         Evaluate if the store exists. if not is created
         """
-        store_name, to_be_created = self.handler.get_geoserver_store_name(
-            default=default
-        )
+        store_name, to_be_created = self.handler.get_geoserver_store_name(default=default)
 
         if self.store and self.store.name == store_name:
             # if we already initialize the store, we can skip the checks
@@ -133,13 +119,9 @@ class DataPublisher:
         self.store = self.cat.get_store(name=store_name, workspace=self.workspace)
         if not self.store:
             logger.warning(f"The store does not exists: {store_name} creating...")
-            self.store = create_geoserver_db_featurestore(
-                store_name=store_name, workspace=self.workspace.name
-            )
+            self.store = create_geoserver_db_featurestore(store_name=store_name, workspace=self.workspace.name)
 
-    def publish_geoserver_view(
-        self, layer_name, crs, view_name, sql=None, geometry=None
-    ):
+    def publish_geoserver_view(self, layer_name, crs, view_name, sql=None, geometry=None):
         """
         Let the handler create a geoserver view given the input parameters
         """
@@ -172,10 +154,7 @@ class DataPublisher:
             res = list(
                 filter(
                     None,
-                    (
-                        self.cat.get_resource(x, workspace=self.workspace)
-                        for x in possible_layer_name
-                    ),
+                    (self.cat.get_resource(x, workspace=self.workspace) for x in possible_layer_name),
                 )
             )
             if not res or (res and not res[0].projection):

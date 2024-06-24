@@ -23,20 +23,14 @@ class TestTiles3DFileHandler(TestCase):
         cls.handler = Tiles3DFileHandler()
         cls.valid_3dtile = f"{project_dir}/tests/fixture/3dtilesample/valid_3dtiles.zip"
         cls.valid_tileset = f"{project_dir}/tests/fixture/3dtilesample/tileset.json"
-        cls.valid_tileset_with_region = (
-            f"{project_dir}/tests/fixture/3dtilesample/tileset_with_region.json"
-        )
-        cls.invalid_tileset = (
-            f"{project_dir}/tests/fixture/3dtilesample/invalid_tileset.json"
-        )
+        cls.valid_tileset_with_region = f"{project_dir}/tests/fixture/3dtilesample/tileset_with_region.json"
+        cls.invalid_tileset = f"{project_dir}/tests/fixture/3dtilesample/invalid_tileset.json"
         cls.invalid_3dtile = f"{project_dir}/tests/fixture/3dtilesample/invalid.zip"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_3dtile}
         cls.valid_files = {"base_file": cls.valid_3dtile}
         cls.owner = get_user_model().objects.exclude(username="AnonymousUser").first()
-        cls.layer = create_single_dataset(
-            name="urban_forestry_street_tree_benefits_epsg_26985", owner=cls.owner
-        )
+        cls.layer = create_single_dataset(name="urban_forestry_street_tree_benefits_epsg_26985", owner=cls.owner)
         cls.asset_handler = asset_handler_registry.get_default_handler()
         cls.default_bbox = [-180.0, 180.0, -90.0, 90.0, "EPSG:4326"]
 
@@ -58,14 +52,10 @@ class TestTiles3DFileHandler(TestCase):
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -94,23 +84,16 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(actual, {"title": "title_of_the_cloned_resource"})
 
     def test_is_valid_should_raise_exception_if_the_3dtiles_is_invalid(self):
-        data = {
-            "base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.json"
-        }
+        data = {"base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.json"}
         with self.assertRaises(Invalid3DTilesException) as _exc:
             self.handler.is_valid(files=data, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "Please remove the additional dots in the filename"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("Please remove the additional dots in the filename" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_3dtiles_is_invalid_format(self):
         with self.assertRaises(Invalid3DTilesException) as _exc:
-            self.handler.is_valid(
-                files={"base_file": self.invalid_tileset}, user=self.user
-            )
+            self.handler.is_valid(files={"base_file": self.invalid_tileset}, user=self.user)
 
         self.assertIsNotNone(_exc)
         self.assertTrue(
@@ -131,10 +114,7 @@ class TestTiles3DFileHandler(TestCase):
             self.handler.is_valid(files={"base_file": _path}, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "The mandatory 'version' for the key 'asset' is missing"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("The mandatory 'version' for the key 'asset' is missing" in str(_exc.exception.detail))
         os.remove(_path)
 
     def test_validate_should_raise_exception_for_invalid_root_boundingVolume(self):
@@ -150,10 +130,7 @@ class TestTiles3DFileHandler(TestCase):
             self.handler.is_valid(files={"base_file": _path}, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "The mandatory 'boundingVolume' for the key 'root' is missing"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("The mandatory 'boundingVolume' for the key 'root' is missing" in str(_exc.exception.detail))
         os.remove(_path)
 
     def test_validate_should_raise_exception_for_invalid_root_geometricError(self):
@@ -169,10 +146,7 @@ class TestTiles3DFileHandler(TestCase):
             self.handler.is_valid(files={"base_file": _path}, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "The mandatory 'geometricError' for the key 'root' is missing"
-            in str(_exc.exception.detail)
-        )
+        self.assertTrue("The mandatory 'geometricError' for the key 'root' is missing" in str(_exc.exception.detail))
         os.remove(_path)
 
     def test_get_ogr2ogr_driver_should_return_the_expected_driver(self):
@@ -226,9 +200,7 @@ class TestTiles3DFileHandler(TestCase):
             alternate="alternate",
         )
 
-        actual = self.handler.generate_resource_payload(
-            "Layer name", "alternate", "asset", _exec_obj, None
-        )
+        actual = self.handler.generate_resource_payload("Layer name", "alternate", "asset", _exec_obj, None)
         self.assertSetEqual(set(list(actual.keys())), set(list(expected.keys())))
         self.assertDictEqual(actual, expected)
 
@@ -263,26 +235,26 @@ class TestTiles3DFileHandler(TestCase):
             "geometricError": 1.0,
             "root": {
                 "transform": [
-                        96.86356343768793,
-                        24.848542777253734,
-                        0,
-                        0,
-                        -15.986465724980844,
-                        62.317780594908875,
-                        76.5566922962899,
-                        0,
-                        19.02322243409411,
-                        -74.15554020821229,
-                        64.3356267137516,
-                        0,
-                        1215107.7612304366,
-                        -4736682.902037748,
-                        4081926.095098698,
-                        1,
+                    96.86356343768793,
+                    24.848542777253734,
+                    0,
+                    0,
+                    -15.986465724980844,
+                    62.317780594908875,
+                    76.5566922962899,
+                    0,
+                    19.02322243409411,
+                    -74.15554020821229,
+                    64.3356267137516,
+                    0,
+                    1215107.7612304366,
+                    -4736682.902037748,
+                    4081926.095098698,
+                    1,
                 ],
                 "boundingVolume": {
                     "box": [0, 0, 0, 7.0955, 0, 0, 0, 3.1405, 0, 0, 0, 5.0375],
-                }
+                },
             },
         }
 

@@ -12,8 +12,6 @@ from django.template.defaultfilters import filesizeformat
 from django.utils.translation import gettext_lazy as _
 
 
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,9 +24,7 @@ def delete_dynamic_model(instance, sender, **kwargs):
 
     try:
         if instance.resourcehandlerinfo_set.exists():
-            handler_module_path = (
-                instance.resourcehandlerinfo_set.first().handler_module_path
-            )
+            handler_module_path = instance.resourcehandlerinfo_set.first().handler_module_path
             handler = orchestrator.load_handler(handler_module_path)
             handler.delete_resource(instance)
         # Removing Field Schema
@@ -41,21 +37,13 @@ class ResourceHandlerInfo(models.Model):
     Here we save the relation between the geonode resource created and the handler that created that resource
     """
 
-    resource = models.ForeignKey(
-        ResourceBase, blank=False, null=False, on_delete=models.CASCADE
-    )
+    resource = models.ForeignKey(ResourceBase, blank=False, null=False, on_delete=models.CASCADE)
     handler_module_path = models.CharField(max_length=250, blank=False, null=False)
-    execution_request = models.ForeignKey(
-        ExecutionRequest, null=True, default=None, on_delete=models.SET_NULL
-    )
-    kwargs = models.JSONField(
-        verbose_name="Storing strictly related information of the handler", default=dict
-    )
+    execution_request = models.ForeignKey(ExecutionRequest, null=True, default=None, on_delete=models.SET_NULL)
+    kwargs = models.JSONField(verbose_name="Storing strictly related information of the handler", default=dict)
 
 
 ###################################
-
-
 
 
 class UploadSizeLimitManager(models.Manager):

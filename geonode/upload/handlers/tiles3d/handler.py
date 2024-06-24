@@ -85,18 +85,14 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         if len(filename.split(".")) > 2:
             # means that there is a dot other than the one needed for the extension
             # if we keep it ogr2ogr raise an error, better to remove it
-            raise Invalid3DTilesException(
-                "Please remove the additional dots in the filename"
-            )
+            raise Invalid3DTilesException("Please remove the additional dots in the filename")
 
         try:
             with open(_file, "r") as _readed_file:
                 _file = json.loads(_readed_file.read())
             # required key described in the specification of 3dtiles
             # https://docs.ogc.org/cs/22-025r4/22-025r4.html#toc92
-            is_valid = all(
-                key in _file.keys() for key in ("asset", "geometricError", "root")
-            )
+            is_valid = all(key in _file.keys() for key in ("asset", "geometricError", "root"))
 
             if not is_valid:
                 raise Invalid3DTilesException(
@@ -106,20 +102,14 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             # if the keys are there, let's check if the mandatory child are there too
             asset = _file.get("asset", {}).get("version", None)
             if not asset:
-                raise Invalid3DTilesException(
-                    "The mandatory 'version' for the key 'asset' is missing"
-                )
+                raise Invalid3DTilesException("The mandatory 'version' for the key 'asset' is missing")
             volume = _file.get("root", {}).get("boundingVolume", None)
             if not volume:
-                raise Invalid3DTilesException(
-                    "The mandatory 'boundingVolume' for the key 'root' is missing"
-                )
+                raise Invalid3DTilesException("The mandatory 'boundingVolume' for the key 'root' is missing")
 
             error = _file.get("root", {}).get("geometricError", None)
             if error is None:
-                raise Invalid3DTilesException(
-                    "The mandatory 'geometricError' for the key 'root' is missing"
-                )
+                raise Invalid3DTilesException("The mandatory 'geometricError' for the key 'root' is missing")
 
         except Exception as e:
             raise Invalid3DTilesException(e)
@@ -151,13 +141,8 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
 
         _input = {**_exec.input_params, **{"total_layers": 1}}
 
-        orchestrator.update_execution_request_status(
-            execution_id=str(execution_id), input_params=_input
-        )
-        filename = (
-            _exec.input_params.get("original_zip_name")
-            or Path(files.get("base_file")).stem
-        )
+        orchestrator.update_execution_request_status(execution_id=str(execution_id), input_params=_input)
+        filename = _exec.input_params.get("original_zip_name") or Path(files.get("base_file")).stem
         # start looping on the layers available
         layer_name = self.fixup_name(filename)
         should_be_overwritten = _exec.input_params.get("overwrite_existing_layer")
@@ -169,9 +154,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             overwrite_existing_layer=should_be_overwritten,
         ):
 
-            user_datasets = ResourceBase.objects.filter(
-                owner=_exec.user, alternate=layer_name
-            )
+            user_datasets = ResourceBase.objects.filter(owner=_exec.user, alternate=layer_name)
 
             dataset_exists = user_datasets.exists()
 
@@ -210,9 +193,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         asset.location = [path for path in asset.location if "tileset.json" in path]
         asset.save()
 
-        resource = super().create_geonode_resource(
-            layer_name, alternate, execution_id, ResourceBase, asset
-        )
+        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
 
         # fixing-up bbox for the 3dtile object
         js_file = None
@@ -246,9 +227,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         # checking if the region is inside the json file
         region = js_file.get("root", {}).get("boundingVolume", {}).get("region", None)
         if not region:
-            logger.info(
-                f"No region found, the BBOX will not be updated for 3dtiles: {resource.title}"
-            )
+            logger.info(f"No region found, the BBOX will not be updated for 3dtiles: {resource.title}")
             return resource
         west, south, east, nord = region[:4]
         # [xmin, ymin, xmax, ymax]

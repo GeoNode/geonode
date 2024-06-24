@@ -52,6 +52,6 @@ def run_setup_hooks(*args, **kwargs):
         )
 
     settings.CELERY_BEAT_SCHEDULE["clean-up-old-task-result"] = {
-            "task": "geonode.upload.tasks.cleanup_celery_task_entries",
-            "schedule": 86400.0,
-        }
+        "task": "geonode.upload.tasks.cleanup_celery_task_entries",
+        "schedule": 86400.0,
+    }

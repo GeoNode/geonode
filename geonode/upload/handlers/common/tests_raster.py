@@ -51,9 +51,7 @@ class TestBaseRasterFileHandler(TestCase):
             )
 
             # start the resource import
-            self.handler.import_resource(
-                files=self.valid_files, execution_id=str(exec_id)
-            )
+            self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
 
             celery_chord.assert_not_called()
         finally:
@@ -71,9 +69,7 @@ class TestBaseRasterFileHandler(TestCase):
             )
 
             # start the resource import
-            self.handler.import_resource(
-                files=self.valid_files, execution_id=str(exec_id)
-            )
+            self.handler.import_resource(files=self.valid_files, execution_id=str(exec_id))
 
             import_orchestrator.assert_called_once()
         finally:

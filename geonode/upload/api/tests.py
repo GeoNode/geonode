@@ -157,9 +157,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         )
         payload = QueryDict("", mutable=True)
         payload.update({"defaults": '{"title":"stili_di_vita_4scenari"}'})
-        response = self.client.put(
-            self.copy_url, data=payload, content_type="application/json"
-        )
+        response = self.client.put(self.copy_url, data=payload, content_type="application/json")
 
         self.assertEqual(200, response.status_code)
         _orc.s.assert_called_once()
@@ -191,9 +189,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         asset_handler.objects.filter(id=_exec.input_params["asset_id"]).delete()
 
     @patch("importer.api.views.import_orchestrator")
-    @patch(
-        "importer.api.views.UploadLimitValidator.validate_parallelism_limit_per_user"
-    )
+    @patch("importer.api.views.UploadLimitValidator.validate_parallelism_limit_per_user")
     def test_asset_should_be_deleted_if_created_during_with_exception(
         self, validate_parallelism_limit_per_user, patch_upload
     ):

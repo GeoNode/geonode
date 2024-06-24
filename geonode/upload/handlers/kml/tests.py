@@ -53,14 +53,10 @@ class TestKMLHandler(TestCase):
         self.assertTrue("The kml provided is invalid" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, _ = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, _ = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -72,14 +68,10 @@ class TestKMLHandler(TestCase):
     def test_is_valid_should_raise_exception_if_layer_are_greater_than_max_parallel_upload(
         self,
     ):
-        parallelism, _ = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, _ = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=1)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=1)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)

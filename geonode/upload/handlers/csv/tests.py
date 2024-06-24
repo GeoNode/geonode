@@ -57,20 +57,14 @@ class TestCSVHandler(TestCase):
             self.handler.is_valid(files=self.invalid_files, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "The CSV provided is invalid, no layers found" in str(_exc.exception.detail)
-        )
+        self.assertTrue("The CSV provided is invalid, no layers found" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_csv_missing_geom(self):
         with self.assertRaises(InvalidCSVException) as _exc:
-            self.handler.is_valid(
-                files={"base_file": self.missing_geom}, user=self.user
-            )
+            self.handler.is_valid(files={"base_file": self.missing_geom}, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue(
-            "Not enough geometry field are set" in str(_exc.exception.detail)
-        )
+        self.assertTrue("Not enough geometry field are set" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_csv_missing_lat(self):
         with self.assertRaises(InvalidCSVException) as _exc:
@@ -81,22 +75,16 @@ class TestCSVHandler(TestCase):
 
     def test_is_valid_should_raise_exception_if_the_csv_missing_long(self):
         with self.assertRaises(InvalidCSVException) as _exc:
-            self.handler.is_valid(
-                files={"base_file": self.missing_long}, user=self.user
-            )
+            self.handler.is_valid(files={"base_file": self.missing_long}, user=self.user)
 
         self.assertIsNotNone(_exc)
         self.assertTrue("Longitude is missing" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -108,14 +96,10 @@ class TestCSVHandler(TestCase):
     def test_is_valid_should_raise_exception_if_layer_are_greater_than_max_parallel_upload(
         self,
     ):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=1)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=1)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -141,9 +125,7 @@ class TestCSVHandler(TestCase):
         self.assertFalse(actual)
 
     @patch("importer.handlers.common.vector.Popen")
-    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(
-        self, _open
-    ):
+    def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 
         comm = MagicMock()

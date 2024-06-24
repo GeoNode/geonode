@@ -45,10 +45,7 @@ class DatastoreRouter:
         """
         Redirect to the datastore model for the FeatureOfInterest
         """
-        if (
-            obj1._meta.app_label in self.foi_model.get("app_label")
-            or obj2._meta.app_label == "layer"
-        ):
+        if obj1._meta.app_label in self.foi_model.get("app_label") or obj2._meta.app_label == "layer":
             return True
         return None
 

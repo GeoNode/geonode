@@ -42,9 +42,7 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
 
         _user, _password = ogc_server_settings.credentials
 
-        cls.cat = Catalog(
-            service_url=ogc_server_settings.rest, username=_user, password=_password
-        )
+        cls.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
 
     def setUp(self) -> None:
         for el in Dataset.objects.all():
@@ -82,9 +80,7 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
         self.assertTrue(dataset.exists())
         dataset = dataset.first()
         # check if the dynamic model is created
-        _schema_id = ModelSchema.objects.filter(
-            name__icontains=dataset.alternate.split(":")[1]
-        )
+        _schema_id = ModelSchema.objects.filter(name__icontains=dataset.alternate.split(":")[1])
         self.assertTrue(_schema_id.exists())
         schema_entity = _schema_id.first()
         self.assertTrue(FieldSchema.objects.filter(model_schema=schema_entity).exists())
@@ -111,16 +107,12 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
             print("is false")
             tentative = 1
             while (
-                ExecutionRequest.objects.get(exec_id=response.json().get(_id))
-                != ExecutionRequest.STATUS_FINISHED
+                ExecutionRequest.objects.get(exec_id=response.json().get(_id)) != ExecutionRequest.STATUS_FINISHED
                 and tentative <= 6
             ):
                 time.sleep(10)
                 tentative += 1
-        if (
-            ExecutionRequest.objects.get(exec_id=response.json().get(_id)).status
-            != ExecutionRequest.STATUS_FINISHED
-        ):
+        if ExecutionRequest.objects.get(exec_id=response.json().get(_id)).status != ExecutionRequest.STATUS_FINISHED:
             print(ExecutionRequest.objects.get(exec_id=response.json().get(_id)))
             raise Exception("Async still in progress after 1 min of waiting")
 
@@ -133,9 +125,7 @@ class ImporterCopyEnd2EndGpkgTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_geopackage(self):
         payload = {
             "base_file": open(self.valid_gkpg, "rb"),
@@ -156,9 +146,7 @@ class ImporterCopyEnd2EndGeoJsonTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_geojson(self):
         payload = {
             "base_file": open(self.valid_geojson, "rb"),
@@ -178,13 +166,9 @@ class ImporterCopyEnd2EndShapeFileTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_shapefile(self):
-        payload = {
-            _filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()
-        }
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         initial_name = "san_andres_y_providencia_highway"
         # first we need to import a resource
         with transaction.atomic():
@@ -200,9 +184,7 @@ class ImporterCopyEnd2EndKMLTest(BaseClassEnd2End):
             "IMPORTER_ENABLE_DYN_MODELS": "True",
         },
     )
-    @override_settings(
-        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data"
-    )
+    @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_kml(self):
         payload = {
             "base_file": open(self.valid_kml, "rb"),

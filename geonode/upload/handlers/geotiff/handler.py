@@ -78,7 +78,5 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
         if len(filename.split(".")) > 2:
             # means that there is a dot other than the one needed for the extension
             # if we keep it ogr2ogr raise an error, better to remove it
-            raise InvalidGeoTiffException(
-                "Please remove the additional dots in the filename"
-            )
+            raise InvalidGeoTiffException("Please remove the additional dots in the filename")
         return True

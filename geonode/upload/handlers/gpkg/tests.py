@@ -29,9 +29,7 @@ class TestGPKGHandler(TestCase):
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
         cls.valid_files = {"base_file": cls.valid_gpkg}
         cls.owner = get_user_model().objects.first()
-        cls.layer = create_single_dataset(
-            name="stazioni_metropolitana", owner=cls.owner
-        )
+        cls.layer = create_single_dataset(name="stazioni_metropolitana", owner=cls.owner)
 
     def test_task_list_is_the_expected_one(self):
         expected = (
@@ -62,14 +60,10 @@ class TestGPKGHandler(TestCase):
         self.assertTrue("Error layer: INVALID LAYER_name" in str(_exc.exception.detail))
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=0)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=0)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -81,14 +75,10 @@ class TestGPKGHandler(TestCase):
     def test_is_valid_should_raise_exception_if_layer_are_greater_than_max_parallel_upload(
         self,
     ):
-        parallelism, created = UploadParallelismLimit.objects.get_or_create(
-            slug="default_max_parallel_uploads"
-        )
+        parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
         old_value = parallelism.max_number
         try:
-            UploadParallelismLimit.objects.filter(
-                slug="default_max_parallel_uploads"
-            ).update(max_number=1)
+            UploadParallelismLimit.objects.filter(slug="default_max_parallel_uploads").update(max_number=1)
 
             with self.assertRaises(UploadParallelismLimitException):
                 self.handler.is_valid(files=self.valid_files, user=self.user)
@@ -145,9 +135,7 @@ class TestGPKGHandler(TestCase):
             },
         )
 
-        started_entry = TaskResult.objects.create(
-            task_id=str(exec_id), status="STARTED", task_args=str(exec_id)
-        )
+        started_entry = TaskResult.objects.create(task_id=str(exec_id), status="STARTED", task_args=str(exec_id))
 
         celery_task_handler = SingleMessageErrorHandler()
         """

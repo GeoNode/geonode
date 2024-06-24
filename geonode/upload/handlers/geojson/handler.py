@@ -97,9 +97,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
         if len(filename.split(".")) > 2:
             # means that there is a dot other than the one needed for the extension
             # if we keep it ogr2ogr raise an error, better to remove it
-            raise InvalidGeoJsonException(
-                "Please remove the additional dots in the filename"
-            )
+            raise InvalidGeoJsonException("Please remove the additional dots in the filename")
 
         try:
             with open(_file, "r") as _readed_file:
@@ -119,7 +117,5 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
         This is a default command that is needed to import a vector file
         """
 
-        base_command = BaseVectorFileHandler.create_ogr2ogr_command(
-            files, original_name, ovverwrite_layer, alternate
-        )
+        base_command = BaseVectorFileHandler.create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate)
         return f"{base_command } -lco GEOMETRY_NAME={BaseVectorFileHandler().default_geometry_column_name}"

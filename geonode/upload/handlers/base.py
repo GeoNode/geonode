@@ -232,9 +232,7 @@ class BaseHandler(ABC):
         """
         return NotImplementedError
 
-    def create_geonode_resource(
-        self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset
-    ):
+    def create_geonode_resource(self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset):
         """
         Base function to create the resource into geonode. Each handler can specify
         and handle the resource in a different way
@@ -244,9 +242,7 @@ class BaseHandler(ABC):
     def create_resourcehandlerinfo(self, handler_module_path, resource, **kwargs):
         return NotImplementedError
 
-    def get_ogr2ogr_task_group(
-        self, execution_id, files, layer, should_be_overwritten, alternate
-    ):
+    def get_ogr2ogr_task_group(self, execution_id, files, layer, should_be_overwritten, alternate):
         """
         implement custom ogr2ogr task group
         """
