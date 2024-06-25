@@ -184,16 +184,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
             _resource = ResourceManager._get_instance(uuid)
             if _resource and isinstance(_resource.get_real_instance(), Dataset):
                 importer_session_opts = defaults.get("importer_session_opts", {})
-                if not importer_session_opts:
-                    _src_upload_session = Upload.objects.filter(resource=instance.get_real_instance().resourcebase_ptr)
-                    if _src_upload_session.exists():
-                        _src_upload_session = _src_upload_session.get()
-                        if _src_upload_session and _src_upload_session.get_session:
-                            try:
-                                _src_importer_session = _src_upload_session.get_session.import_session.reload()
-                                importer_session_opts.update({"transforms": _src_importer_session.tasks[0].transforms})
-                            except Exception as e:
-                                logger.exception(e)
                 return self.import_dataset(
                     "import_dataset",
                     uuid,

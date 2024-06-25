@@ -123,6 +123,11 @@ urlpatterns += [
     re_path(r"^api/roles", roles, name="roles"),
     re_path(r"^api/adminRole", admin_role, name="adminRole"),
     re_path(r"^api/users", users, name="users"),
+    re_path(
+        r"api/v2/resources/(?P<pk>\w+)/copy",
+        ResourceImporter.as_view({"put": "copy"}),
+        name="importer_resource_copy",
+    ),
     re_path(r"^api/v2/", include(router.urls)),
     re_path(r"^api/v2/", include("geonode.api.urls")),
     re_path(r"^api/v2/", include("geonode.management_commands_http.urls")),
@@ -134,11 +139,6 @@ urlpatterns += [
         r"uploads/upload",
         ImporterViewSet.as_view({"post": "create"}),
         name="importer_upload",
-    ),
-    re_path(
-        r"resources/(?P<pk>\w+)/copy",
-        ResourceImporter.as_view({"put": "copy"}),
-        name="importer_resource_copy",
     ),
 ]
 

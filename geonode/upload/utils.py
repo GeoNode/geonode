@@ -140,3 +140,19 @@ class UploadLimitValidator:
                 ).values_list("input_params__total_layers", flat=True),
             )
         )
+
+def get_max_upload_size(slug):
+    try:
+        max_size = UploadSizeLimit.objects.get(slug=slug).max_size
+    except ObjectDoesNotExist:
+        max_size = getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600)
+    return max_size
+
+
+def get_max_upload_parallelism_limit(slug):
+    try:
+        max_number = UploadParallelismLimit.objects.get(slug=slug).max_number
+    except ObjectDoesNotExist:
+        max_number = getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
+    return max_number
+
