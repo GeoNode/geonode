@@ -717,6 +717,7 @@ class ResourceBaseSerializer(
             RestrictionCodeTypeSerializer, embed=True, many=True
         )
         self.fields["license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
+        self.fields["metadata_license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
         self.fields["spatial_representation_type"] = ComplexDynamicRelationField(
             SpatialRepresentationTypeSerializer, embed=True, many=False
         )
