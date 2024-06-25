@@ -1218,7 +1218,7 @@ def set_styles(layer, gs_catalog: Catalog):
                 layer.default_style,
             ]
         ):
-            if style:
+            if style and layer.subtype != "tabular":
                 style_name = os.path.basename(urlparse(style.sld_url).path).split(".")[0]
                 legend_url = get_legend_url(layer, style_name)
                 if dataset_legends.filter(resource=layer.resourcebase_ptr, name="Legend", url=legend_url).count() < 2:

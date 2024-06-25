@@ -1486,7 +1486,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         # Set download links for WMS, WCS or WFS and KML
         logger.debug(" -- Resource Links[Set download links for WMS, WCS or WFS and KML]...")
         instance_ows_url = f"{instance.ows_url}?" if instance.ows_url else f"{ogc_server_settings.public_url}ows?"
-        links = wms_links(instance_ows_url, instance.alternate, bbox, srid, height, width)
+        links = wms_links(instance_ows_url, instance.alternate, bbox, srid, height, width) if instance.subtype != "tabular" else []
 
         for ext, name, mime, wms_url in links:
             try:
@@ -1506,7 +1506,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                     resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image"
                 ).update(**_d)
 
-        if instance.subtype == "vector":
+        if instance.subtype == "vector" or instance.subtype == "tabular":
             links = wfs_links(
                 instance_ows_url,
                 instance.alternate,
@@ -1592,7 +1592,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                         instance.default_style,
                     ]
                 ):
-                    if style:
+                    if style and instance.subtype != "tabular":
                         style_name = os.path.basename(urlparse(style.sld_url).path).split(".")[0]
                         legend_url = get_legend_url(instance, style_name)
                         if Link.objects.filter(resource=instance.resourcebase_ptr, url=legend_url).count() < 2:
@@ -1650,6 +1650,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 ogc_wms_url = instance.ows_url or urljoin(ogc_server_settings.public_url, "ows")
                 ogc_wms_name = f"OGC WMS: {instance.workspace} Service"
                 if (
+                    instance.subtype != "tabular" and
                     Link.objects.filter(resource=instance.resourcebase_ptr, name=ogc_wms_name, url=ogc_wms_url).count()
                     < 2
                 ):
