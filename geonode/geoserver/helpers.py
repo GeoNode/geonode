@@ -1779,7 +1779,7 @@ def style_update(request, url, workspace=None):
 
         # Invalidate GeoWebCache so it doesn't retain old style in tiles
         try:
-            if dataset_name:
+            if dataset_name and layer.subtype != "tabular":
                 _stylefilterparams_geowebcache_dataset(dataset_name)
                 _invalidate_geowebcache_dataset(dataset_name)
         except Exception:
@@ -2186,12 +2186,13 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     except Exception as e:
                         logger.warning(e)
 
-                    # Invalidate GeoWebCache for the updated resource
-                    try:
-                        _stylefilterparams_geowebcache_dataset(instance.alternate)
-                        _invalidate_geowebcache_dataset(instance.alternate)
-                    except Exception as e:
-                        logger.warning(e)
+                    if instance.subtype != "tabular":
+                        # Invalidate GeoWebCache for the updated resource
+                        try:
+                            _stylefilterparams_geowebcache_dataset(instance.alternate)
+                            _invalidate_geowebcache_dataset(instance.alternate)
+                        except Exception as e:
+                            logger.warning(e)
 
         # Refreshing dataset links
         logger.debug(f"... Creating Default Resource Links for Dataset {instance.title}")

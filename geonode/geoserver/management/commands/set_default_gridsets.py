@@ -43,7 +43,7 @@ class Command(BaseCommand):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            layers = Dataset.objects.all()
+            layers = Dataset.objects.filter(subtype__not="tabular")
             print(f"Total layers to be updated: {layers.count()}")
             for layer in layers:
                 print(f"Processing layer: {layer.typename}")

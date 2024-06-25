@@ -116,7 +116,7 @@ class Command(BaseCommand):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            layers = Dataset.objects.all()
+            layers = Dataset.objects.filter(subtype__not="tabular")
             tot = len(layers)
             logger.info(f"Total layers in GeoNode: {tot}")
             i = 0
