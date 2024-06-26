@@ -84,7 +84,7 @@ class Command(BaseCommand):
 
             if dryrun:
                 logger.info(f"Files found: {asset.location}")
-                return
+                continue
 
             if settings.ASSETS_ROOT in source:
                 logger.info("The location is already the asset root, skipping...")
