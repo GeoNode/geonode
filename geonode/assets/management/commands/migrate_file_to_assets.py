@@ -131,8 +131,10 @@ class Command(BaseCommand):
 
                 raster_file = [x for x in asset.location if os.path.basename(x).split('.')[-1] in ["tiff", "tif", "geotiff", "geotif"]]
                 store_to_update.url = f"file:{raster_file[0]}"
-
-                gs_catalog.save(store_to_update)
+                try:
+                    gs_catalog.save(store_to_update)
+                except Exception:
+                    logger.error(f"Error during GeoServer update for resource {resource}, please check GeoServer logs")
                 logger.info("Geoserver Updated")
 
         logger.info("Migration completed")
