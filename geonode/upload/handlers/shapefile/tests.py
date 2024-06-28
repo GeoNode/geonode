@@ -7,7 +7,7 @@ from django.test import TestCase
 from geonode.upload.api.exception import UploadParallelismLimitException
 from geonode.upload.models import UploadParallelismLimit
 from mock import MagicMock, patch, mock_open
-from importer import project_dir
+from geonode.upload import project_dir
 from geonode.upload.handlers.common.vector import import_with_ogr2ogr
 from geonode.upload.handlers.shapefile.handler import ShapeFileHandler
 from osgeo import ogr

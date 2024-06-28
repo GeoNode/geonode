@@ -226,7 +226,7 @@ class UploaderBase(GeoNodeBaseTestSupport):
             self.check_dataset_complete(dataset_page, dataset_name)
 
     def finish_upload(self, current_step, dataset_name, is_raster=False, skip_srs=False):
-        if not is_raster and _ALLOW_TIME_STEP:
+        if not is_raster:
             resp, data = self.check_and_pass_through_timestep(current_step)
             self.assertEqual(resp.status_code, 200)
             if not isinstance(data, str):
@@ -261,20 +261,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
         except Exception:
             return current_step
 
-    def check_upload_model(self, original_name):
-        # we can only test this if we're using the same DB as the test instance
-        if not settings.OGC_SERVER["default"]["DATASTORE"]:
-            return
-        upload = None
-        try:
-            upload = Upload.objects.filter(name__icontains=str(original_name)).last()
-            # Making sure the Upload object is present on the DB and
-            # the import session is COMPLETE
-            if upload and not upload.complete:
-                logger.warning(f"Upload not complete for Dataset {original_name}")
-        except Upload.DoesNotExist:
-            self.fail(f"expected to find Upload object for {original_name}")
-
     def check_dataset_complete(self, dataset_page, original_name):
         """check everything to verify the dataset is complete"""
         self.check_dataset_geonode_page(dataset_page)
@@ -299,7 +285,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 pass
         if not caps_found:
             logger.warning(f"Could not recognize Dataset {original_name} on GeoServer WMS Capa")
-        self.check_upload_model(dataset_name)
 
     def check_invalid_projection(self, dataset_name, resp, data):
         """Makes sure that we got the correct response from an dataset

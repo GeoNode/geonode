@@ -449,12 +449,6 @@ def dataset_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
-        from geonode.upload.models import Upload
-
-        up_sessions = Upload.objects.filter(resource_id=layer.resourcebase_ptr_id)
-        if up_sessions.exists() and up_sessions[0].user != layer.owner:
-            up_sessions.update(user=layer.owner)
-
         dataset_form.save_linked_resources()
 
         register_event(request, EventType.EVENT_CHANGE_METADATA, layer)

@@ -551,7 +551,7 @@ class ResourceManager(ResourceManagerInterface):
                     if files:
                         to_update = {"files": files}
 
-#                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
+            #                    _resource = self._concrete_resource_manager.copy(instance, uuid=_resource.uuid, defaults=to_update)
 
             except Exception as e:
                 logger.exception(e)

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.kml.exceptions import InvalidKmlException
 from geonode.upload.handlers.kml.handler import KMLFileHandler
-from importer import project_dir
+from geonode.upload import project_dir
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exception import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
