@@ -49,6 +49,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import strip_tags
+from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image, ImageOps
@@ -1330,8 +1331,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ""
 
     def get_absolute_url(self):
+        from geonode.client.hooks import hookset
+
         try:
-            return self.get_real_instance().get_absolute_url() if self != self.get_real_instance() else None
+            return (
+                self.get_real_instance().get_absolute_url()
+                if self != self.get_real_instance()
+                else hookset.get_absolute_url(self)
+            )
         except Exception as e:
             logger.exception(e)
             return None
@@ -1452,7 +1459,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def embed_url(self):
-        return self.get_real_instance().embed_url if self != self.get_real_instance() else None
+        return (
+            self.get_real_instance().embed_url
+            if self != self.get_real_instance()
+            else reverse("resourcebase_embed", kwargs={"resourcebaseid": self.pk})
+        )
 
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist."""
