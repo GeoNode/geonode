@@ -151,10 +151,12 @@ class DataRetriever(object):
         if tranfer_at_creation:
             self.transfer_remote_files()
 
-    def transfer_remote_files(self):
+    def transfer_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True):
         from geonode.utils import mkdtemp
 
-        self.temporary_folder = mkdtemp()
+        self.temporary_folder = cloning_directory or settings.MEDIA_ROOT
+        if create_tempdir:
+            self.temporary_folder = mkdtemp(cloning_directory or settings.MEDIA_ROOT, prefix=prefix)
         for name, data_item_retriever in self.data_items.items():
             file_path = data_item_retriever.transfer_remote_file(self.temporary_folder)
             self.file_paths[name] = Path(file_path)
@@ -172,10 +174,12 @@ class DataRetriever(object):
             os.chmod(self.temporary_folder, settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS)
         return self.file_paths
 
-    def get_paths(self, allow_transfer=False):
+    def get_paths(self, allow_transfer=False, cloning_directory=None, prefix=None, create_tempdir=True):
         if not self.file_paths:
             if allow_transfer:
-                self.transfer_remote_files()
+                self.transfer_remote_files(
+                    cloning_directory=cloning_directory, prefix=prefix, create_tempdir=create_tempdir
+                )
             else:
                 raise DataRetrieverExcepion(detail="You can't retrieve paths without clone file first!")
         return self.file_paths.copy()

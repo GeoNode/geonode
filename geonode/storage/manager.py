@@ -124,8 +124,8 @@ class StorageManager(StorageManagerInterface):
     treat as a file_system file
     """
 
-    def __init__(self, remote_files: Mapping = {}):
-        self._concrete_storage_manager = self._get_concrete_manager()
+    def __init__(self, remote_files: Mapping = {}, concrete_storage_manager=None):
+        self._concrete_storage_manager = concrete_storage_manager or self._get_concrete_manager()
         self.data_retriever = DataRetriever(remote_files, tranfer_at_creation=False)
 
     def _get_concrete_manager(self):
@@ -174,18 +174,19 @@ class StorageManager(StorageManagerInterface):
             updated_files["files"] = [self.replace_single_file(resource.files[0], files)]
         return updated_files
 
-    def copy(self, resource):
-        updated_files = {}
-        if len(resource.files):
-            updated_files["files"] = self.copy_files_list(resource.files)
-        return updated_files
+    def copy(self, resource, target=None):
+        raise Exception("This is not the copy you're looking for")
+        # updated_files = {}
+        # if len(resource.files):
+        #     updated_files["files"] = self.copy_files_list(resource.files)
+        # return updated_files
 
-    def copy_files_list(self, files: List[str]):
+    def copy_files_list(self, files: List[str], dir=settings.MEDIA_ROOT, dir_prefix=None, dir_suffix=None):
         from geonode.utils import mkdtemp
 
         out = []
         random_suffix = f"{uuid1().hex[:8]}"
-        new_path = mkdtemp()
+        new_path = mkdtemp(dir=dir, prefix=dir_prefix, suffix=dir_suffix)
 
         if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
             # value is always set by default as None
@@ -242,11 +243,13 @@ class StorageManager(StorageManagerInterface):
     def generate_filename(self, filename):
         return self._concrete_storage_manager.generate_filename(filename)
 
-    def clone_remote_files(self) -> Mapping:
+    def clone_remote_files(self, cloning_directory=None, prefix=None, create_tempdir=True) -> Mapping:
         """
         Using the data retriever object clone the remote path into a local temporary storage
         """
-        return self.data_retriever.get_paths(allow_transfer=True)
+        return self.data_retriever.get_paths(
+            allow_transfer=True, cloning_directory=cloning_directory, prefix=prefix, create_tempdir=create_tempdir
+        )
 
     def get_retrieved_paths(self) -> Mapping:
         """
@@ -266,8 +269,8 @@ class StorageManager(StorageManagerInterface):
 
 
 class DefaultStorageManager(StorageManagerInterface):
-    def __init__(self):
-        self._fsm = FileSystemStorage()
+    def __init__(self, **kwargs):
+        self._fsm = FileSystemStorage(**kwargs)
 
     def _get_concrete_manager(self):
         return DefaultStorageManager()

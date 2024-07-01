@@ -507,7 +507,7 @@ default_dataset_download_handler = None
 dataset_download_handler_list = []
 
 
-def get_dataset_download_handlers():
+def get_download_handlers():
     if not dataset_download_handler_list and getattr(settings, "DATASET_DOWNLOAD_HANDLERS", None):
         dataset_download_handler_list.append(import_string(settings.DATASET_DOWNLOAD_HANDLERS[0]))
 

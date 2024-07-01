@@ -1,0 +1,607 @@
+{% load i18n %}
+{% load static %}
+{% load floppyforms %}
+{% load contact_roles %}
+
+<!-- Required to make select2 fields work for autocomplete -->
+<link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
+<script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/autocomplete_light.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/select2/dist/js/i18n/en.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
+
+<script src="{% static "geonode/js/crop_widget/crop_widget_es5.js" %}"></script>
+<link rel="stylesheet" href="{% static "geonode/css/crop_widget.css" %}">
+
+<style>
+/* general panel styles */
+#mdeditor_form .panel-group .panel{
+  overflow: visible;
+}
+/* date fields proper sizes */
+#mdeditor_form .input-group.date {
+  width: 100%;
+}
+
+/* resizable text-areas */
+#mdeditor_form textarea {
+  resize: vertical;
+  height: 120px;
+}
+
+/* question mark (info) distance fom label*/
+form #mdeditor_form label{
+  margin-right: 0.3em;
+}
+/* regions */
+#regions_multiselect_container .fstElement {
+  width: 100%;
+}
+#regions_multiselect_container .fstChoiceItem {
+  background-color: #2c689c;
+  border: #2c689c;
+}
+
+#mdeditor_form .mandatory-hint,#mdeditor_form .advanced-hint {
+  cursor: pointer;
+}
+
+/* publishing checkboxes */
+#mdeditor_form #id_resource-metadata_uploaded_preserve,
+#mdeditor_form #id_resource-is_approved,
+#mdeditor_form #id_resource-is_published,
+#mdeditor_form #id_resource-advertised,
+#mdeditor_form #id_resource-featured  {
+  float: right;
+}
+
+/* mosaiking checkboxes */
+#mdeditor_form #id_resource-is_mosaic,
+#mdeditor_form #id_resource-has_time,
+#mdeditor_form #id_resource-has_elevation  {
+  float: right;
+}
+
+/* keywords */
+#mdeditor_form .tokenfield.form-control {
+  height: auto;
+}
+
+#mdeditor_form .thesauri_keywords label {
+  display: block;
+}
+#mdeditor_form span.autocomplete-light-widget {
+  width: 100%;
+}
+</style>
+<style>
+/* metadata edit workflow wizard */
+.wizard--progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  color: #2c689c;
+}
+.wizard--progress > li {
+  position: relative;
+  display: table-cell;
+  text-align: center;
+  font-size: 0.8em;
+}
+.wizard--progress > li:hover {
+  cursor: pointer;
+}
+.wizard--progress > li:before {
+  transition: background 0.5s ease 0.1s;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+  content: attr(data-step);
+  display: block;
+  margin: 0 auto;
+  background: #DFE3E4;
+  width: 3em;
+  height: 3em;
+  text-align: center;
+  margin-bottom: 0.25em;
+  line-height: 3em;
+  border-radius: 100%;
+  position: relative;
+  z-index: 1000;
+}
+.wizard--progress > li:after {
+  transition: background 1s ease, width 1s ease;
+  width: 0px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.5);
+  content: '';
+  position: absolute;
+  display: block;
+  background: #DFE3E4;
+  height: 0.5em;
+  top: 1.25em;
+  left: 50%;
+  margin-left: 1.5em\9;
+  z-index: -1;
+}
+
+.wizard--progress > li:last-child:after {
+  display: none;
+}
+.wizard--progress > li.is-complete {
+  color: #333333;
+}
+.wizard--progress > li.is-complete:before, .wizard--progress > li.is-complete:after {
+  color: #FFF;
+  background: #333333;
+}
+.wizard--progress > li.is-complete:before {
+  z-index: 1;
+}
+.wizard--progress > li.is-complete:after {
+  transition: background 1s ease, width 1s ease;
+  z-index: 0;
+  width: 100%;
+}
+.wizard--progress > li a {
+  color: #2c689c;
+}
+.wizard--progress > li.is-active {
+  color: #2c689c;
+}
+.wizard--progress > li.is-active:before {
+  color: #FFF;
+  background: #2c689c;
+}
+
+.wizard--progress > li.is-complete a {
+  color: #000;
+}
+
+/**
+ * Needed for IE8
+ */
+.wizard--progress__last:after {
+  display: none !important;
+}
+
+/**
+ * Size Extensions
+ */
+.wizard--progress--medium {
+  font-size: 1.5em;
+}
+
+.wizard--progress--large {
+  font-size: 2em;
+}
+.wizard--progress > li:before {
+    text-decoration: none;
+}
+.wizard--progress li:hover a{
+  text-decoration: underline;
+}
+.wizard--progress a, .wizard--progress a:hover:before {
+  text-decoration: none;
+}
+
+</style>
+
+<style>
+/* draggable table */
+span.grippy {
+  content: '....';
+  width: 15px;
+  height: 26px;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 5px;
+  padding: 3px 4px;
+  cursor: move;
+  vertical-align: middle;
+
+  font-size: 12px;
+  font-family: sans-serif;
+  letter-spacing: 2px;
+  color: #cccccc;
+  text-shadow: 1px 0 1px black;
+}
+span.grippy::after {
+  content: '.. .. .. ..';
+}
+</style>
+<!-- button class="btn btn-success metadata-edit-done" id="btn_upd_md_done" type="submit" style="float:right; opacity: 0;" >{% trans "Done!" %}</button -->
+{% block body_outer %}
+<ul id="md_tabs" class="nav nav-tabs">
+  <li id="metadata_edit_tab" class="active">
+      <a data-toggle="tab" href="#edit-metadata"><i class="fa fa-pencil"></i>{% trans "Edit" %}</a>
+  </li>
+    <!-- li id="preview_tab" data-toggle="tab" dhref="#preview">
+        <a data-toggle="tab" href="#preview">Preview</a>
+    </li -->
+    <li id="settings_tab" dhref="#settings">
+        <a data-toggle="tab" href="#settings"><i class="fa fa-cog"></i>{% trans "Settings" %}</a>
+    </li>
+    <li class="pull-right">
+      <div class="form-actions">
+        <a href="{% url "resourcebase_metadata_advanced" resource.id %}" class="btn btn-primary">{% trans "Advanced Metadata" %}</a>
+      </div>
+    </li>
+</ul>
+
+<div class="tab-content">
+<div id="edit-metadata" class="tab-content tab-pane fade in active">
+  <div id="completeness-hints" class="progress">
+
+  <div class="mandatory-hint progress-bar" role="progressbar" style="width:33%">
+    {% trans "Mandatory" %}
+  </div>
+  <div class="advanced-hint progress-bar" role="progressbar" style="width:34%">
+    {% trans "Mandatory" %}
+  </div>
+  <div class="progress-bar" role="progressbar" style="width:33%">
+    {% trans "Optional" %}
+  </div>
+</div>
+  <ul class="wizard--progress wizard--progress--medium">
+      <li data-step="1" id="first" class="is-active" data-toggle="tab" href="#mandatory">
+          <a>{% trans "Basic Metadata" %}</a>
+      </li>
+      <li data-step="2" id="second"  data-toggle="tab" href="#advanced">
+          <a>{% trans "Location and Licenses" %}</a>
+      </li>
+      <li data-step="3" data-toggle="tab" href="#ownership">
+          <a>{% trans "Optional Metadata" %}</a>
+      </li>
+      {% block extra_metadata_steps %}
+      {% endblock %}
+  </ul>
+    <div id="mandatory" class="tab-pane fade in active">
+        <!--<br />-->
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <!-- div class="panel-heading">Data info</div -->
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col">
+                            <div id="basicInfo" class="container-fluid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div id="basicDescriptiveInfo" class="container-fluid">
+                                <div class="col-lg-3">
+                                    <img id="image" style="max-height: 100%; max-width: 100%; min-height: 100%; min-width: 100%">
+                                    <script>
+                                        const image = document.getElementById('image');
+                                        const path = location.pathname.split('/');
+                                        const id = path[path.length - 2];
+                                        const prefetch_url = "{{ resource.thumbnail_url }}";
+                                        const c_widget = new CropWidget(image,
+                                            parseInt(
+                                                id
+                                            ),
+                                            '/api/documents/',
+                                            prefetch_url
+                                        );
+                                        c_widget.init();
+                                    </script>
+                                </div>
+                                <div class="col-lg-4">
+                                  {% block resourcebase_title %}
+                                    <span><label for="{{ resourcebase_form.title|id }}">{{ resourcebase_form.title.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Name by which the cited resource is known)</p>-->
+                                        {{ resourcebase_form.title }}
+                                    {% endblock %}
+                                    <div>
+                                        <span><label for="{{ resourcebase_form.abstract|id }}">{{ resourcebase_form.abstract.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Brief narrative summary of the content of the resource/s)</p>-->
+                                        {{ resourcebase_form.abstract }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ resourcebase_form.date_type|id }}">{{ resourcebase_form.date_type.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
+                                        {{ resourcebase_form.date_type }}
+                                    </div>
+                                    <div class="col-lg-6 col-xs-12">
+                                        <span><label for="{{ resourcebase_form.date|id }}">{{ resourcebase_form.date.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                                        {{ resourcebase_form.date }}
+                                    </div>
+                                    {% block resourcebase_category %}
+                                    <div id="basicCategoryInfo" class="col-lg-12">
+                                        <span><label for="{{ category_form.category_choice_field|id }}" class="control-label required-field">{% trans "Category" %}</label></span>
+                                        <select
+                                            data-live-search="true"
+                                            data-size="5"
+                                            name="category_choice_field"
+                                            id="category_form"
+                                            class="selectpicker form-control"
+                                            >
+                                            <option {% if not category_form.initial %} selected="selected" {% endif %} value="">---</option>
+                                          {% for choice in category_form.category_choice_field.field.choices %}
+                                              <option
+                                              {% if category_form.initial == choice.0 %} selected="selected" {% endif %}
+                                              value="{{ choice.0 }}"
+                                              data-content="<span class='has-popover' data-container='body' data-toggle='popover' data-placement='top'  data-content=' {{ choice.2.description }}' rigger='hover'><i class='fa {{choice.2.fa_class}}'></i> {{ choice.2.gn_description }}<span>"
+                                              >{{ choice.2.gn_description }}</option>
+                                          {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% endblock resourcebase_category %}
+                                    <div id="basicGroupInfo" class="col-lg-12">
+                                        <span><label for="id_resource-group" class="control-label required-field">{% trans "Group" %}</label></span>
+                                        <select
+                                            title="{% trans "Choose one of the following..." %}"
+                                            data-live-search="true"
+                                            data-size="5"
+                                            name="resource-group"
+                                            id="id_resource-group"
+                                            class="selectpicker form-control"
+                                            >
+                                            <option {% if not group %} selected="selected" {% endif %} value="">---</option>
+                                            {% for group in metadata_author_groups %}
+                                            <option
+                                                value="{{ group.group.id }}"
+                                                {% if resource.group == group.group %} selected="selected" {% endif %}
+                                                >
+                                                {{ group.title }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <span><label for="{{ resourcebase_form.date_type|id }}">{{ resourcebase_form.keywords.label }}</label></span>
+                                        {{ resourcebase_form.keywords }}
+                                    </div>
+                                    {% if THESAURI_FILTERS %}
+                                    <div class="col-lg-12 thesauri_keywords">
+                                      {{tkeywords_form.as_p}}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="advanced" class="tab-pane fade">
+        <div class="panel-group">
+                <div class="panel panel-default">
+                    <!-- div class="panel-heading">Metadata info</div -->
+                    <div class="panel-body">
+                        <div class="" id="mdinfo">
+                            <div class="">
+                                {% block resourcebase_attributes %}
+                                <div class="col-lg-4">
+                                    <div>
+                                        <span><label for="{{ resourcebase_form.language|id }}">{{ resourcebase_form.language.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Language used within the dataset)</p>-->
+                                        {{ resourcebase_form.language }}
+                                    </div>
+                                    <div>
+                                        <span><label for="{{ resourcebase_form.license|id }}">{{ resourcebase_form.license.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(License of the dataset)</p>-->
+                                        {{ resourcebase_form.license }}
+                                    </div>
+                                    <div>
+                                        <span><label for="{{ resourcebase_form.attribution|id }}">{{ resourcebase_form.attribution.label }}</label></span>
+                                        {{ resourcebase_form.attribution }}
+                                    </div>
+                                </div>
+                                {% endblock resourcebase_attributes %}
+                                <div class="col-lg-4">
+                                      <div id="regions_multiselect_container">
+                                        <span><label for="{{ resourcebase_form.regions|id }}">{{ resourcebase_form.regions.label }}</label></span>
+                                        {{ resourcebase_form.regions }}
+                                      </div>
+                                      <div>
+                                        <span><label for="{{ resourcebase_form.data_quality_statement|id }}">{{ resourcebase_form.data_quality_statement.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(General explanation of the data producer's knowledge about the lineage)</p>-->
+                                        {{ resourcebase_form.data_quality_statement }}
+                                      </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div>
+                                        <span><label for="{{ resourcebase_form.restriction_code_type|id }}">{{ resourcebase_form.restriction_code_type.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
+                                        {{ resourcebase_form.restriction_code_type }}
+                                    </div>
+                                    <div>
+                                        <span><label for="{{ resourcebase_form.constraints_other|id }}">{{ resourcebase_form.constraints_other.label }}</label></span>
+                                        <!--<p class="xxs-font-size">(Other restrictions and legal prerequisites for accessing or use data and metadata)</p>-->
+                                        {{ resourcebase_form.constraints_other }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <div id="ownership" class="tab-pane fade">
+        <div class="panel-group"><div class="panel panel-default"><div class="panel-body">
+        <div id="mdinfo">
+            <div class="col-xs-12 col-lg-4">
+              <p>{% trans "Other, Optional, Metadata" %}</p>
+                <div>
+                    <span><label for="{{ resourcebase_form.edition|id }}">{{ resourcebase_form.edition.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Version of the cited resource)</p>-->
+                    {{ resourcebase_form.edition }}
+                </div>
+                <div>
+                    <span><label for="{{ resourcebase_form.doi|id }}">{{ resourcebase_form.doi.label }}</label></span>
+                    {{ resourcebase_form.doi }}
+                </div>
+                <div>
+                    <span><label for="{{ resourcebase_form.purpose|id }}">{{ resourcebase_form.purpose.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Brief narrative summary of the intentions with which the resource/s ...)</p>-->
+                    {{ resourcebase_form.purpose }}
+                </div>
+                <div>
+                    <span><label for="{{ resourcebase_form.supplemental_information|id }}">{{ resourcebase_form.supplemental_information.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Any other descriptive information about the dataset)</p>-->
+                    {{ resourcebase_form.supplemental_information }}
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-5">
+                {% block resourcebase_temporal_extent_start %}
+                <div class="col-xs-12 col-lg-6">
+                  <div class="input-group date">
+                    <span><label for="{{ resourcebase_form.temporal_extent_start|id }}">{{ resourcebase_form.temporal_extent_start.label }}</label></span>
+                    <!--<p class="xxs-font-size">(When a given event occurred on the resource)</p>-->
+                    {{ resourcebase_form.temporal_extent_start }}
+                    </div>
+                </div>
+                {% endblock resourcebase_temporal_extent_start %}
+                {% block resourcebase_temporal_extent_end %}
+                <div class="col-xs-12 col-lg-6" id="req_date">
+                    <div class="input-group date">
+                    <span><label for="{{ resourcebase_form.temporal_extent_end|id }}">{{ resourcebase_form.temporal_extent_end.label }}</label></span>
+                    <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
+                    {{ resourcebase_form.temporal_extent_end }}
+                    </div>
+                </div>
+                {% endblock resourcebase_temporal_extent_end %}
+                {% block maintenance_block %}
+                <div class="col-xs-12">
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ resourcebase_form.maintenance_frequency|id }}">{{ resourcebase_form.maintenance_frequency.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Identification of when a given event occurred)</p>-->
+                        {{ resourcebase_form.maintenance_frequency }}
+                    </div>
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ resourcebase_form.spatial_representation_type|id }}">{{ resourcebase_form.spatial_representation_type.label }}</label></span>
+                        <!--<p class="xxs-font-size">(Method used to represent geographic information in the dataset)</p>-->
+                        {{ resourcebase_form.spatial_representation_type }}
+                    </div>
+                    {% block resourcebase_extra_metadata %}
+                    <div style="margin-top: 5px">
+                        <span><label for="{{ resourcebase_form.extra_metadata|id }}">{{ resourcebase_form.extra_metadata.label }}</label></span>
+                        {{ resourcebase_form.extra_metadata }}
+                    </div>
+                    {% endblock resourcebase_extra_metadata %}
+                    {% block resourcebase_linked_resources %}
+                        <div id="linked_resources">
+                          <span><label for="{{ resourcebase_form.linked_resources|id }}">{% trans "Related resources" %}</label></span>
+                          {{ resourcebase_form.linked_resources }}
+                        </div>
+                    {% endblock resourcebase_linked_resources %}
+
+                </div>
+                {% endblock maintenance_block %}
+            </div>
+            <div class="col-xs-12 col-lg-3">
+              {% block resourcebase_poc %}
+              <div class="panel panel-default" style="margin-top: 5px">
+                  <div class="panel-heading">{% trans "Responsible Parties" %}</div>
+                  <div class="panel-body">
+                      <span><label for="{{ resourcebase_form.poc|id }}">{{ resourcebase_form.poc.label }}</label></span>
+                      {{ resourcebase_form.poc }}
+                  </div>
+              </div>
+              {% endblock %}
+              <div class="panel panel-default">
+                  <div class="panel-heading">{% trans "Responsible and Permissions" %}</div>
+                  {% block resourcebase_owner %}
+                  <div class="panel-body">
+                      <div>
+                        <span><label for="{{ resourcebase_form.owner|id }}">{{ resourcebase_form.owner.label }}</label></span>
+                        {{ resourcebase_form.owner }}
+                    </div>
+                  {% endblock resourcebase_owner %}
+                </div>
+              </div>
+            <a href="#id-more-metadata-panel" data-toggle="collapse">{% trans "toggle more Contact Roles" %}</a>
+            {% block resourcebase_more_contact_roles %}
+            <div class="panel panel-default panel-collapse collapse" collapsed id='id-more-metadata-panel'>
+              <div class="panel-heading">{% trans "more metadata contact roles" %}</div>
+                {% for contact_role in UI_ROLES_IN_TOGGLE_VIEW %}
+                  {% getattribute resourcebase_form contact_role as cr %}
+                  <div class="panel-body">
+                    <div>
+                      <span><label for="{{cr|id}}">{{cr.label}}</label></span>
+                      {{ cr}}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endblock resourcebase_more_contact_roles %}
+          </div>
+          <!--End Contact Roles -->
+        </div>
+      </div>
+    </div>
+    {% block extra_metadata_content %}
+    {% endblock %}
+</div>
+<div id="settings" class="tab-pane fade" style="overflow: hidden;">
+  <!--<br />-->
+    <div class="col-xs-12 col-lg-4">
+      <div class="panel-group">
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="panel panel-default" >
+                  <div class="panel-heading">{% trans "Publishing" %}</div>
+                  <div class="panel-body">
+                    <div>
+                        <span><label for="{{ resourcebase_form.metadata_uploaded_preserve|id }}">{{ resourcebase_form.metadata_uploaded_preserve.label }}</label></span>
+                        {{ resourcebase_form.metadata_uploaded_preserve }}
+                    </div>
+                    <div>
+                        <span><label for="{{ resourcebase_form.is_approved|id }}">{{ resourcebase_form.is_approved.label }}</label></span>
+                        {{ resourcebase_form.is_approved }}
+                    </div>
+                    <div>
+                        <span><label for="{{ resourcebase_form.is_published|id }}">{{ resourcebase_form.is_published.label }}</label></span>
+                        {{ resourcebase_form.is_published }}
+                    </div>
+                    {% if user.is_superuser %}
+                    <div>
+                        <span><label for="{{ resourcebase_form.featured|id }}">{{ resourcebase_form.featured.label }}</label></span>
+                        {{ resourcebase_form.featured }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <span><label for="{{ resourcebase_form.advertised|id }}">{{ resourcebase_form.advertised.label }}</label></span>
+                        {{ resourcebase_form.advertised }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-lg-4">
+      <div class="panel-group">
+          <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="panel panel-default" >
+                  <div class="panel-heading">{% trans "Other Settings" %}</div>
+                  <div class="panel-body">
+                    <div>
+                        <span><label for="{{ resourcebase_form.id }}">{{ resourcebase_form.id }}</label></span>
+                        {{ resourcebase_form.id }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+</div>
+</div>
+{% endblock %}

@@ -28,6 +28,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from geonode import settings
 
+from geonode.assets.utils import create_asset_and_link
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter
 from geonode.base.api.mixins import AdvertisedListMixin
 from geonode.base.api.pagination import GeoNodeApiPagination
@@ -46,6 +47,7 @@ from .serializers import DocumentSerializer
 from .permissions import DocumentPermissionsFilter
 
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -119,15 +121,19 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
                 "extension": extension,
                 "resource_type": "document",
             }
-            if file:
-                manager = StorageManager(remote_files={"base_file": file})
-                manager.clone_remote_files()
-                payload["files"] = [manager.get_retrieved_paths().get("base_file")]
             if doc_url:
                 payload["doc_url"] = doc_url
                 payload["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
 
             resource = serializer.save(**payload)
+
+            if file:
+                manager = StorageManager(remote_files={"base_file": file})
+                manager.clone_remote_files()
+                create_asset_and_link(
+                    resource, self.request.user, [manager.get_retrieved_paths().get("base_file")], clone_files=True
+                )
+                manager.delete_retrieved_paths(force=True)
 
             resource.set_missing_info()
             resourcebase_post_save(resource.get_real_instance())
@@ -136,6 +142,7 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource
         except Exception as e:
+            logger.error(f"Error creating document {serializer.validated_data}", exc_info=e)
             if manager:
                 manager.delete_retrieved_paths()
             raise e

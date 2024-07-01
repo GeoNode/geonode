@@ -119,6 +119,9 @@ class BaseHookSet:
     def geoapp_detail_url(self, geoapp):
         return NotImplemented
 
+    def resourcebase_embed_template(self, context=None):
+        return None
+
     # Documents
     def document_list_url(self):
         return NotImplemented
@@ -139,3 +142,6 @@ class BaseHookSet:
         if "metadata_uri" in url:
             return url.replace("/metadata_uri", "")
         return url.replace("/metadata", "")
+
+    def get_absolute_url(self, context=None):
+        return None

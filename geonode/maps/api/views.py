@@ -130,6 +130,7 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
             create_action_perfomed=True,
             additional_data=post_creation_data,
         )
+
         # Handle thumbnail generation
         resource_manager.set_thumbnail(instance.uuid, instance=instance, overwrite=False)
 

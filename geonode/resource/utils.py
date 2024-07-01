@@ -29,8 +29,10 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import gettext_lazy as _
-from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
+
+from geonode.assets.utils import get_default_asset
+from geonode.utils import OGC_Servers_Handler
 
 from ..base import enumerations
 from ..base.models import (
@@ -241,10 +243,13 @@ def update_resource(
     ]
 
     to_update.update(defaults)
+    resource_dict = {  # TODO: cleanup params and dicts
+        k: v for k, v in to_update.items() if k not in ("data_title", "data_type", "description", "files", "link_type")
+    }
     try:
-        instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**to_update)
+        instance.get_real_concrete_instance_class().objects.filter(id=instance.id).update(**resource_dict)
     except Exception as e:
-        logger.error(f"{e} - {to_update}")
+        logger.error(f"{e} - {resource_dict}")
         raise
 
     # Check for "remote services" availability
@@ -322,9 +327,9 @@ def get_alternate_name(instance):
 
 def document_post_save(instance, *args, **kwargs):
     instance.csw_type = "document"
-
-    if instance.files:
-        _, extension = os.path.splitext(os.path.basename(instance.files[0]))
+    asset = get_default_asset(instance)
+    if asset:
+        _, extension = os.path.splitext(os.path.basename(asset.location[0]))
         instance.extension = extension[1:]
         doc_type_map = DOCUMENT_TYPE_MAP
         doc_type_map.update(getattr(settings, "DOCUMENT_TYPE_MAP", {}))
@@ -344,7 +349,7 @@ def document_post_save(instance, *args, **kwargs):
     mime = mime_type_map.get(ext, "text/plain")
     url = None
 
-    if instance.id and instance.files:
+    if instance.id and asset:
         name = "Hosted Document"
         site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
         url = f"{site_url}{reverse('document_download', args=(instance.id,))}"
@@ -455,8 +460,10 @@ def resourcebase_post_save(instance, *args, **kwargs):
         if hasattr(instance, "abstract") and not getattr(instance, "abstract", None):
             instance.abstract = _("No abstract provided")
         if hasattr(instance, "title") and not getattr(instance, "title", None) or getattr(instance, "title", "") == "":
-            if isinstance(instance, Document) and instance.files:
-                instance.title = os.path.basename(instance.files[0])
+            asset = get_default_asset(instance)
+            files = asset.location if asset else []
+            if isinstance(instance, Document) and files:
+                instance.title = os.path.basename(files[0])
             if hasattr(instance, "name") and getattr(instance, "name", None):
                 instance.title = instance.name
         if (

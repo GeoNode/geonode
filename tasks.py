@@ -341,8 +341,9 @@ def statics(ctx):
     try:
         static_root = os.environ.get("STATIC_ROOT", "/mnt/volumes/statics/static/")
         media_root = os.environ.get("MEDIA_ROOT", "/mnt/volumes/statics/uploaded/")
+        assets_root = os.environ.get("ASSETS_ROOT", "/mnt/volumes/statics/assets/")
 
-        ctx.run(f"mkdir -pv {static_root} {media_root}")
+        ctx.run(f"mkdir -pv {static_root} {media_root} {assets_root}")
         ctx.run(
             f"python manage.py collectstatic --noinput --settings={_localsettings()}",
             pty=True,

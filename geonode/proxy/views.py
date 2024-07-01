@@ -55,6 +55,7 @@ from geonode import geoserver  # noqa
 from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.assets.utils import get_default_asset
 
 from .utils import proxy_urls_registry
 
@@ -245,8 +246,9 @@ def download(request, resourceid, sender=Dataset):
         dataset_files = []
         file_list = []  # Store file info to be returned
         try:
-            files = instance.resourcebase_ptr.files
+            asset_obj = get_default_asset(instance)
             # Copy all Dataset related files into a temporary folder
+            files = asset_obj.location if asset_obj else []
             for file_path in files:
                 if storage_manager.exists(file_path):
                     dataset_files.append(file_path)

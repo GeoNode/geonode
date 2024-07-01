@@ -19,7 +19,7 @@
 
 from django.utils.translation import gettext_lazy as _
 
-LINK_TYPES = ["original", "data", "image", "metadata", "html", "OGC:WMS", "OGC:WFS", "OGC:WCS"]
+LINK_TYPES = ["original", "uploaded", "data", "image", "metadata", "html", "OGC:WMS", "OGC:WFS", "OGC:WCS"]
 
 HIERARCHY_LEVELS = (
     ("series", _("series")),

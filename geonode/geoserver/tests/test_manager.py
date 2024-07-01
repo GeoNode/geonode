@@ -19,6 +19,7 @@
 import os
 import base64
 import shutil
+from django.test import override_settings
 import gisdata
 import requests
 
@@ -54,8 +55,14 @@ class TestGeoServerResourceManager(GeoNodeBaseTestSupport):
         return super().tearDown()
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
+    @override_settings(ASYNC_SIGNALS=False, FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777)
     def test_revise_resource_value_in_append_should_add_expected_rows_in_the_catalog(self):
         layer = Dataset.objects.get(name=self.sut.name)
+        gs_layer = self.cat.get_layer("san_andres_y_providencia_water")
+        if gs_layer is None:
+            _gs_import_session_info = self.geoserver_manager._execute_resource_import(
+                layer, list(self.files_as_dict.values()), self.user, action_type="create"
+            )
         _gs_import_session_info = self.geoserver_manager._execute_resource_import(
             layer, list(self.files_as_dict.values()), self.user, action_type="append"
         )
