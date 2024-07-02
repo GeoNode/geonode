@@ -33,8 +33,8 @@ class TestBaseRasterFileHandler(TestCase):
         expected = "Task: foo_task_name raised an error during actions for layer: alternate: my exception"
         self.assertEqual(expected, actual)
 
-    @patch("importer.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
-    @patch("importer.handlers.common.vector.chord")
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
+    @patch("geonode.upload.handlers.common.vector.chord")
     def test_import_resource_should_not_be_imported(self, celery_chord, ogr2ogr_driver):
         """
         If the resource exists and should be skept, the celery task
@@ -58,7 +58,7 @@ class TestBaseRasterFileHandler(TestCase):
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
 
-    @patch("importer.handlers.common.raster.import_orchestrator.apply_async")
+    @patch("geonode.upload.handlers.common.raster.import_orchestrator.apply_async")
     def test_import_resource_should_work(self, import_orchestrator):
         try:
             exec_id = orchestrator.create_execution_request(

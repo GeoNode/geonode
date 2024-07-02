@@ -112,14 +112,14 @@ class TestShapeFileFileHandler(TestCase):
         shp_with_cst = self.valid_shp.copy()
         cst_file = self.valid_shp["base_file"].replace("shp", "cst")
         shp_with_cst["cst_file"] = cst_file
-        patch_location = "importer.handlers.shapefile.handler.open"
+        patch_location = "geonode.upload.handlers.shapefile.handler.open"
         with patch(patch_location, new=mock_open(read_data="UTF-8")) as _file:
             actual = self.handler.create_ogr2ogr_command(shp_with_cst, "a", False, "a")
 
             _file.assert_called_once_with(cst_file, "r")
             self.assertIn("ENCODING=UTF-8", actual)
 
-    @patch("importer.handlers.common.vector.Popen")
+    @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 

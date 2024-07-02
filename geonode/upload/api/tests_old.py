@@ -53,7 +53,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
-from geonode.upload.tests.utils import GEONODE_USER, GEONODE_PASSWD, rest_upload_by_path
+from geonode.upload.tests.utils import rest_upload_by_path
 
 LIVE_SERVER_URL = "http://localhost:8001/"
 GEOSERVER_URL = ogc_server_settings.LOCATION
@@ -125,7 +125,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         selector = f"//button[contains(., '{label}')]"
         self.selenium.find_element_by_xpath(selector).click()
 
-    def do_login(self, username=GEONODE_USER, password=GEONODE_PASSWD):
+    def do_login(self, username="admin", password="admin"):
         """Method to login the GeoNode site"""
         assert authenticate(username=username, password=password)
         self.assertTrue(self.client.login(username=username, password=password))  # Native django test client
@@ -246,7 +246,7 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             resp, data = rest_upload_by_path(fname, self.client)
             self.assertEqual(resp.status_code, 201)
 
-            url = reverse("uploads-list")
+            url = reverse("importer_upload")
             # Anonymous
             self.client.logout()
             response = self.client.get(url, format="json")

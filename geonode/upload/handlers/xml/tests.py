@@ -75,7 +75,7 @@ class TestXMLFileHandler(TestCase):
         )
         ResourceHandlerInfo.objects.create(
             resource=self.layer,
-            handler_module_path="importer.handlers.shapefile.handler.ShapeFileHandler",
+            handler_module_path="geonode.upload.handlers.shapefile.handler.ShapeFileHandler",
         )
 
         self.assertEqual(self.layer.title, "extruded_polygon")

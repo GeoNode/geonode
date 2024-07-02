@@ -62,13 +62,13 @@ class TestDataPublisher(TestCase):
         )
         self.assertListEqual([], values_found)
 
-    @patch("importer.publisher.create_geoserver_db_featurestore")
+    @patch("geonode.upload.publisher.create_geoserver_db_featurestore")
     def test_get_or_create_store_creation_should_called(self, datastore):
         with patch.dict(os.environ, {"GEONODE_GEODATABASE": "not_existsing_db"}, clear=True):
             self.publisher.get_or_create_store()
             datastore.assert_called_once()
 
-    @patch("importer.publisher.Catalog.publish_featuretype")
+    @patch("geonode.upload.publisher.Catalog.publish_featuretype")
     def test_publish_resources_should_raise_exception_if_any_error_happen(self, publish_featuretype):
         publish_featuretype.side_effect = Exception("Exception")
 
@@ -76,7 +76,7 @@ class TestDataPublisher(TestCase):
             self.publisher.publish_resources(resources=[{"crs": "EPSG:32632", "name": "stazioni_metropolitana"}])
         publish_featuretype.assert_called_once()
 
-    @patch("importer.publisher.Catalog.publish_featuretype")
+    @patch("geonode.upload.publisher.Catalog.publish_featuretype")
     def test_publish_resources_should_work(self, publish_featuretype):
         publish_featuretype.return_value = True
         self.publisher.sanity_checks = MagicMock()

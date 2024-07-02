@@ -66,7 +66,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             },
         )
 
-    @patch("importer.celery_tasks.orchestrator.perform_next_step")
+    @patch("geonode.upload.celery_tasks.orchestrator.perform_next_step")
     def test_import_orchestrator_dont_create_exececution_request_if_not__none(self, importer):
         user = get_user_model().objects.first()
         count = ExecutionRequest.objects.count()
@@ -81,8 +81,8 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         self.assertEqual(count, ExecutionRequest.objects.count())
         importer.assert_called_once()
 
-    @patch("importer.celery_tasks.orchestrator.perform_next_step")
-    @patch("importer.celery_tasks.DataStoreManager.input_is_valid")
+    @patch("geonode.upload.celery_tasks.orchestrator.perform_next_step")
+    @patch("geonode.upload.celery_tasks.DataStoreManager.input_is_valid")
     def test_import_resource_should_rase_exp_if_is_invalid(
         self,
         is_valid,
@@ -109,10 +109,10 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         self.assertEqual(expected_msg, str(_exc.exception.detail))
         ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
-    @patch("importer.celery_tasks.orchestrator.perform_next_step")
-    @patch("importer.celery_tasks.DataStoreManager.input_is_valid")
-    @patch("importer.celery_tasks.DataStoreManager.prepare_import")
-    @patch("importer.celery_tasks.DataStoreManager.start_import")
+    @patch("geonode.upload.celery_tasks.orchestrator.perform_next_step")
+    @patch("geonode.upload.celery_tasks.DataStoreManager.input_is_valid")
+    @patch("geonode.upload.celery_tasks.DataStoreManager.prepare_import")
+    @patch("geonode.upload.celery_tasks.DataStoreManager.start_import")
     def test_import_resource_should_work(
         self,
         prepare_import,
@@ -141,9 +141,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         start_import.assert_called_once()
         ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
-    @patch("importer.celery_tasks.DataPublisher.extract_resource_to_publish")
-    @patch("importer.celery_tasks.DataPublisher.publish_resources")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.DataPublisher.extract_resource_to_publish")
+    @patch("geonode.upload.celery_tasks.DataPublisher.publish_resources")
     def test_publish_resource_should_work(
         self,
         publish_resources,
@@ -174,9 +174,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             if self.exec_id:
                 ExecutionRequest.objects.filter(exec_id=str(self.exec_id)).delete()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
-    @patch("importer.celery_tasks.DataPublisher.extract_resource_to_publish")
-    @patch("importer.celery_tasks.DataPublisher.publish_resources")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.DataPublisher.extract_resource_to_publish")
+    @patch("geonode.upload.celery_tasks.DataPublisher.publish_resources")
     def test_publish_resource_if_overwrite_should_call_the_publishing(
         self,
         publish_resources,
@@ -221,10 +221,10 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
-    @patch("importer.celery_tasks.DataPublisher.extract_resource_to_publish")
-    @patch("importer.celery_tasks.DataPublisher.publish_resources")
-    @patch("importer.celery_tasks.DataPublisher.get_resource")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.DataPublisher.extract_resource_to_publish")
+    @patch("geonode.upload.celery_tasks.DataPublisher.publish_resources")
+    @patch("geonode.upload.celery_tasks.DataPublisher.get_resource")
     def test_publish_resource_if_overwrite_should_not_call_the_publishing(
         self,
         get_resource,
@@ -273,7 +273,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
     def test_create_geonode_resource(self, import_orchestrator):
         try:
             alternate = "geonode:alternate_foo_dataset"
@@ -302,7 +302,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             if Dataset.objects.filter(alternate=alternate).exists():
                 Dataset.objects.filter(alternate=alternate).delete()
 
-    @patch("importer.celery_tasks.call_rollback_function")
+    @patch("geonode.upload.celery_tasks.call_rollback_function")
     def test_copy_geonode_resource_should_raise_exeption_if_the_alternate_not_exists(self, call_rollback_function):
         with self.assertRaises(Exception):
             copy_geonode_resource(
@@ -319,7 +319,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             )
         call_rollback_function.assert_called_once()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
     def test_copy_geonode_resource(self, async_call):
         alternate = "geonode:cloning"
         new_alternate = None
@@ -405,9 +405,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 if exec_id:
                     ExecutionRequest.objects.filter(exec_id=str(exec_id)).delete()
 
-    @patch("importer.handlers.geotiff.handler.GeoTiffFileHandler._import_resource_rollback")
-    @patch("importer.handlers.geotiff.handler.GeoTiffFileHandler._publish_resource_rollback")
-    @patch("importer.handlers.geotiff.handler.GeoTiffFileHandler._create_geonode_resource_rollback")
+    @patch("geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler._import_resource_rollback")
+    @patch("geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler._publish_resource_rollback")
+    @patch("geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler._create_geonode_resource_rollback")
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_rollback_works_as_expected_raster(
         self,
@@ -444,7 +444,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                         "files": {"base_file": "/tmp/filepath"},
                         "overwrite_existing_layer": True,
                         "store_spatial_files": True,
-                        "handler_module_path": "importer.handlers.geotiff.handler.GeoTiffFileHandler",
+                        "handler_module_path": "geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler",
                     },
                 )
                 rollback(str(exec_id))
@@ -463,7 +463,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_import_metadata_should_work_as_expected(self):
-        handler = "importer.handlers.xml.handler.XMLFileHandler"
+        handler = "geonode.upload.handlers.xml.handler.XMLFileHandler"
         # lets copy the file to the temporary folder
         # later will be removed
         valid_xml = f"{settings.PROJECT_ROOT}/base/fixtures/test_xml.xml"
@@ -487,7 +487,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         )
         ResourceHandlerInfo.objects.create(
             resource=layer,
-            handler_module_path="importer.handlers.shapefile.handler.ShapeFileHandler",
+            handler_module_path="geonode.upload.handlers.shapefile.handler.ShapeFileHandler",
         )
 
         import_resource(str(exec_id), handler, "import")
@@ -580,7 +580,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             ModelSchema.objects.filter(name=f"schema_{name}").delete()
             FieldSchema.objects.filter(name="field1").delete()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
     @patch.dict(os.environ, {"IMPORTER_ENABLE_DYN_MODELS": "True"})
     def test_copy_dynamic_model_should_work(self, async_call):
         try:
@@ -628,8 +628,8 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             ModelSchema.objects.filter(name="schema_").delete()
             FieldSchema.objects.filter(name="field_").delete()
 
-    @patch("importer.celery_tasks.import_orchestrator.apply_async")
-    @patch("importer.celery_tasks.connections")
+    @patch("geonode.upload.celery_tasks.import_orchestrator.apply_async")
+    @patch("geonode.upload.celery_tasks.connections")
     def test_copy_geonode_data_table_should_work(self, mock_connection, async_call):
         mock_cursor = mock_connection.__getitem__("datastore").cursor.return_value.__enter__.return_value
         ModelSchema.objects.create(name=f"schema_copy_{str(self.exec_id)}", db_name="datastore")

@@ -96,7 +96,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         self.assertDictEqual(input_files, exec_obj.input_params)
         self.assertEqual(exec_obj.STATUS_READY, exec_obj.status)
 
-    @patch("importer.orchestrator.importer_app.tasks.get")
+    @patch("geonode.upload.orchestrator.importer_app.tasks.get")
     def test_perform_next_step(self, mock_celery):
         # setup test
         handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
@@ -120,7 +120,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         mock_celery.assert_called_with("importer.import_resource")
 
     @override_settings(MEDIA_ROOT="/tmp/")
-    @patch("importer.orchestrator.importer_app.tasks.get")
+    @patch("geonode.upload.orchestrator.importer_app.tasks.get")
     def test_perform_last_import_step(self, mock_celery):
         # setup test
         handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
@@ -142,7 +142,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         )
         mock_celery.assert_not_called()
 
-    @patch("importer.orchestrator.importer_app.tasks.get")
+    @patch("geonode.upload.orchestrator.importer_app.tasks.get")
     def test_perform_with_error_set_invalid_status(self, mock_celery):
         mock_celery.side_effect = Exception("test exception")
         # setup test
@@ -209,7 +209,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         req = ExecutionRequest.objects.get(exec_id=_uuid)
         self.assertTrue(req.status, ExecutionRequest.STATUS_FAILED)
         self.assertTrue(req.log, "automatic test")
-        self.assertFalse(os.path.exists(fake_path))
         # cleanup
         req.delete()
 

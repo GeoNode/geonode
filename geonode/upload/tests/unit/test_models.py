@@ -14,7 +14,7 @@ class TestModelSchemaSignal(TransactionImporterBaseTestSupport):
         self.resource = create_single_dataset(name=f"test_dataset_{uuid.uuid4()}")
         ResourceHandlerInfo.objects.create(
             resource=self.resource,
-            handler_module_path="importer.handlers.shapefile.handler.ShapeFileHandler",
+            handler_module_path="geonode.upload.handlers.shapefile.handler.ShapeFileHandler",
         )
         self.dynamic_model = ModelSchema.objects.create(name=self.resource.name, db_name="datastore")
         self.dynamic_model_field = FieldSchema.objects.create(

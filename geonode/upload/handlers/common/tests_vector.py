@@ -135,8 +135,8 @@ class TestBaseVectorFileHandler(TestCase):
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
 
-    @patch("importer.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
-    @patch("importer.handlers.common.vector.chord")
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
+    @patch("geonode.upload.handlers.common.vector.chord")
     def test_import_resource_should_not_be_imported(self, celery_chord, ogr2ogr_driver):
         """
         If the resource exists and should be skept, the celery task
@@ -166,8 +166,8 @@ class TestBaseVectorFileHandler(TestCase):
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
 
-    @patch("importer.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
-    @patch("importer.handlers.common.vector.chord")
+    @patch("geonode.upload.handlers.common.vector.BaseVectorFileHandler.get_ogr2ogr_driver")
+    @patch("geonode.upload.handlers.common.vector.chord")
     def test_import_resource_should_work(self, celery_chord, ogr2ogr_driver):
         try:
             ogr2ogr_driver.return_value = ogr.GetDriverByName("GPKG")
@@ -199,7 +199,7 @@ class TestBaseVectorFileHandler(TestCase):
         self.assertIsInstance(actual, (Signature,))
         self.assertEqual("importer.import_with_ogr2ogr", actual.task)
 
-    @patch("importer.handlers.common.vector.Popen")
+    @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 
@@ -232,7 +232,7 @@ class TestBaseVectorFileHandler(TestCase):
             shell=True,  # noqa
         )
 
-    @patch("importer.handlers.common.vector.Popen")
+    @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_with_errors_should_raise_exception(self, _open):
         _uuid = uuid.uuid4()
 
@@ -263,7 +263,7 @@ class TestBaseVectorFileHandler(TestCase):
         )
 
     @patch.dict(os.environ, {"OGR2OGR_COPY_WITH_DUMP": "True"}, clear=True)
-    @patch("importer.handlers.common.vector.Popen")
+    @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command_if_dump_is_enabled(self, _open):
         _uuid = uuid.uuid4()
 

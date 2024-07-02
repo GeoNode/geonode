@@ -124,7 +124,7 @@ class TestCSVHandler(TestCase):
         actual = self.handler.can_handle({"base_file": "random.file"})
         self.assertFalse(actual)
 
-    @patch("importer.handlers.common.vector.Popen")
+    @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
         _uuid = uuid.uuid4()
 

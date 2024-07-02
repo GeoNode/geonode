@@ -70,7 +70,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertEqual(400, response.status_code)
         self.assertEqual(expected, response.json())
 
-    @patch("importer.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_gpkg_task_is_called(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
 
@@ -87,7 +87,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertEqual(201, response.status_code)
 
-    @patch("importer.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_geojson_task_is_called(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
 
@@ -106,7 +106,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         self.assertTrue(201, response.status_code)
 
-    @patch("importer.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_zip_file_is_unzip_and_the_handler_is_found(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
 
@@ -133,8 +133,8 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         response = self.client.patch(self.copy_url)
         self.assertEqual(405, response.status_code)
 
-    @patch("importer.api.views.import_orchestrator")
-    @patch("importer.api.views.ResourceBaseViewSet.resource_service_copy")
+    @patch("geonode.upload.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.ResourceBaseViewSet.resource_service_copy")
     def test_redirect_to_old_upload_if_file_handler_is_not_set(self, copy_view, _orc):
         copy_view.return_value = HttpResponse()
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -145,7 +145,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         _orc.assert_not_called()
         copy_view.assert_called_once()
 
-    @patch("importer.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_copy_ther_resource_if_file_handler_is_set(self, _orc):
         user = get_user_model().objects.get(username="admin")
         user.is_superuser = True
@@ -162,7 +162,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.assertEqual(200, response.status_code)
         _orc.s.assert_called_once()
 
-    @patch("importer.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.import_orchestrator")
     def test_asset_is_created_before_the_import_start(self, patch_upload):
         patch_upload.apply_async.side_effect = MagicMock()
 
@@ -188,8 +188,8 @@ class TestImporterViewSet(ImporterBaseTestSupport):
 
         asset_handler.objects.filter(id=_exec.input_params["asset_id"]).delete()
 
-    @patch("importer.api.views.import_orchestrator")
-    @patch("importer.api.views.UploadLimitValidator.validate_parallelism_limit_per_user")
+    @patch("geonode.upload.api.views.import_orchestrator")
+    @patch("geonode.upload.api.views.UploadLimitValidator.validate_parallelism_limit_per_user")
     def test_asset_should_be_deleted_if_created_during_with_exception(
         self, validate_parallelism_limit_per_user, patch_upload
     ):
