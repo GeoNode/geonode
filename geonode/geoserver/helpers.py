@@ -1650,7 +1650,7 @@ def _stylefilterparams_geowebcache_dataset(dataset_name):
 
     # check/write GWC filter parameters
     body = None
-    tree = dlxml.fromstring(_)
+    tree = dlxml.fromstring(content.encode())
     param_filters = tree.findall("parameterFilters")
     if param_filters and len(param_filters) > 0:
         if not param_filters[0].findall("styleParameterFilter"):
@@ -2034,33 +2034,8 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
         if not _is_remote_instance:
             values = None
             _tries = 0
-            _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
-
-            # If the store in None then it's a new instance from an upload,
-            # only in this case run the geoserver_upload method
-            if getattr(instance, "overwrite", False):
-                base_file, info = instance.get_base_file()
-
-                # There is no need to process it if there is no file.
-                if base_file:
-                    from geonode.geoserver.upload import geoserver_upload
-
-                    gs_name, workspace, values, gs_resource = geoserver_upload(
-                        instance,
-                        base_file.file.path,
-                        instance.owner,
-                        instance.name,
-                        overwrite=True,
-                        title=instance.title,
-                        abstract=instance.abstract,
-                        charset=instance.charset,
-                    )
 
             values, gs_resource = fetch_gs_resource(instance, values, _tries)
-            while not gs_resource and _tries < _max_tries:
-                values, gs_resource = fetch_gs_resource(instance, values, _tries)
-                _tries += 1
-                time.sleep(3)
 
             # Get metadata links
             metadata_links = []

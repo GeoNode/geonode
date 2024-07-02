@@ -5,7 +5,7 @@ from django.test import TestCase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.upload.handlers.tiles3d.handler import Tiles3DFileHandler
 from django.contrib.auth import get_user_model
-from importer import project_dir
+from upload import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exception import UploadParallelismLimitException

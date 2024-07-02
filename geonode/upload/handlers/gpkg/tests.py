@@ -1,10 +1,9 @@
-import os
 import shutil
 from django.test import TestCase, override_settings
 from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
-from importer import project_dir
+from upload import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exception import UploadParallelismLimitException

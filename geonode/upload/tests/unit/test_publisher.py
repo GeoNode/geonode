@@ -1,7 +1,7 @@
 import os
 from django.test import TestCase
 from mock import patch
-from importer import project_dir
+from upload import project_dir
 from geonode.upload.publisher import DataPublisher
 from unittest.mock import MagicMock
 

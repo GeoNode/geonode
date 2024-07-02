@@ -197,10 +197,6 @@ def _harvest_resource(self, harvestable_resource_id: int, harvesting_session_id:
         harvested_resource_info = worker.get_resource(harvestable_resource)
         now_ = timezone.now()
         if harvested_resource_info is not None:
-            if worker.should_copy_resource(harvestable_resource):
-                copied_path = worker.copy_resource(harvestable_resource, harvested_resource_info)
-                if copied_path is not None:
-                    harvested_resource_info.copied_resources.append(copied_path)
             try:
                 worker.update_geonode_resource(
                     harvested_resource_info,

@@ -6,7 +6,7 @@ from geonode.upload.handlers.common.vector import import_with_ogr2ogr
 from geonode.upload.handlers.geojson.exceptions import InvalidGeoJsonException
 from geonode.upload.handlers.geojson.handler import GeoJsonFileHandler
 from django.contrib.auth import get_user_model
-from importer import project_dir
+from upload import project_dir
 from geonode.upload.models import UploadParallelismLimit
 from geonode.upload.api.exception import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset

@@ -50,7 +50,7 @@ class GeoNodeHarvesterWorkerTestCase(GeoNodeBaseSimpleTestSupport):
             {
                 "harvest_documents": True,
                 "harvest_datasets": True,
-                "copy_datasets": True,
+                "copy_datasets": False,
                 "copy_documents": True,
                 "resource_title_filter": "something",
                 "start_date_filter": now,

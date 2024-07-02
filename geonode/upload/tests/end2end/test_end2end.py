@@ -1,7 +1,6 @@
 import ast
 import os
 import time
-from uuid import uuid4
 
 import mock
 from django.conf import settings
@@ -13,13 +12,12 @@ from geonode.layers.models import Dataset
 from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
-from importer import project_dir
+from upload import project_dir
 from geonode.upload.tests.utils import ImporterBaseTestSupport
 import gisdata
 from geonode.base.populate_test_data import create_single_dataset
 from django.db.models import Q
 from geonode.base.models import ResourceBase
-from geonode.resource.manager import resource_manager
 
 geourl = settings.GEODATABASE_URL
 

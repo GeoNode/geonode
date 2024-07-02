@@ -40,7 +40,7 @@ def get_default_asset(resource: ResourceBase, link_type=None) -> Asset or None:
     In this first implementation we select the first one --
     in the future there may be further flags to identify the preferred one
     """
-    filters = {"link__resource": resource}
+    filters = {"link__resource": resource.resourcebase_ptr}
     if link_type:
         filters["link__link_type"] = link_type
 

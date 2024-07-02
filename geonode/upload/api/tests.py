@@ -5,7 +5,7 @@ from django.urls import reverse
 from unittest.mock import MagicMock, patch
 
 # Create your tests here.
-from importer import project_dir
+from upload import project_dir
 from geonode.base.populate_test_data import create_single_dataset
 from django.http import HttpResponse, QueryDict
 
