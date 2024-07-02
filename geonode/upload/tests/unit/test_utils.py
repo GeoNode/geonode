@@ -22,7 +22,6 @@
 from django.conf import settings
 
 from geonode.tests.base import GeoNodeBaseTestSupport
-
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
 from geonode.upload.utils import get_max_upload_size, get_max_upload_parallelism_limit
 

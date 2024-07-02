@@ -11,7 +11,8 @@ def dataset_migration(apps, _):
         pk__in=NewResources.objects.values_list("resource_id", flat=True)
     ).exclude(subtype__in=["remote", None]):
         # generating orchestrator expected data file
-        if not old_resource.files:
+        converted_files = []
+        if not hasattr(old_resource, "files") or not old_resource.files:
             if old_resource.is_vector():
                 converted_files = [{"base_file": "placeholder.shp"}]
             else:

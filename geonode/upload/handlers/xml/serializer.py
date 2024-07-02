@@ -6,8 +6,8 @@ from geonode.upload.models import UploadSizeLimit
 
 class MetadataFileSerializer(DynamicModelSerializer):
     class Meta:
-        ref_name = "MetadataFileSerializer"
         model = UploadSizeLimit
+        ref_name = "MetadataFileSerializer"
         view_name = "importer_upload"
         fields = ("dataset_title", "base_file", "source")
 
