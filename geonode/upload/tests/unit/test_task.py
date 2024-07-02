@@ -28,7 +28,7 @@ from geonode.assets.handlers import asset_handler_registry
 from dynamic_models.models import ModelSchema, FieldSchema
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from geonode.upload.models import ResourceHandlerInfo
-from upload import project_dir
+from geonode.upload import project_dir
 
 from geonode.upload.tests.utils import (
     ImporterBaseTestSupport,
@@ -103,7 +103,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             import_resource(
                 str(exec_id),
                 action=ExecutionRequestAction.IMPORT.value,
-                handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
         expected_msg = f"Invalid format type. Request: {str(exec_id)}"
         self.assertEqual(expected_msg, str(_exc.exception.detail))
@@ -134,7 +134,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             str(exec_id),
             resource_type="gpkg",
             action=ExecutionRequestAction.IMPORT.value,
-            handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+            handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
 
         prepare_import.assert_called_once()
@@ -161,7 +161,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 layer_name="dataset3",
                 alternate="alternate_dataset3",
                 action=ExecutionRequestAction.IMPORT.value,
-                handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
 
             # Evaluation
@@ -207,7 +207,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 layer_name="dataset3",
                 alternate="alternate_dataset3",
                 action=ExecutionRequestAction.IMPORT.value,
-                handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
 
             # Evaluation
@@ -259,7 +259,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     layer_name="dataset3",
                     alternate="alternate_dataset3",
                     action=ExecutionRequestAction.IMPORT.value,
-                    handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                    handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                 )
 
                 # Evaluation
@@ -285,7 +285,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 step_name="create_geonode_resource",
                 layer_name="foo_dataset",
                 alternate="alternate_foo_dataset",
-                handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                 action="import",
             )
 
@@ -310,7 +310,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 "importer.copy_geonode_resource",
                 "cloning",
                 "invalid_alternate",
-                "importer.handlers.gpkg.handler.GPKGFileHandler",
+                "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                 "copy",
                 kwargs={
                     "original_dataset_alternate": "geonode:example_dataset",
@@ -331,7 +331,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 "importer.copy_geonode_resource",
                 "cloning",
                 rasource.alternate,
-                "importer.handlers.gpkg.handler.GPKGFileHandler",
+                "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                 "copy",
                 kwargs={
                     "original_dataset_alternate": "geonode:cloning",
@@ -349,9 +349,9 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             if new_alternate:
                 Dataset.objects.filter(alternate=new_alternate).delete()
 
-    @patch("importer.handlers.gpkg.handler.GPKGFileHandler._import_resource_rollback")
-    @patch("importer.handlers.gpkg.handler.GPKGFileHandler._publish_resource_rollback")
-    @patch("importer.handlers.gpkg.handler.GPKGFileHandler._create_geonode_resource_rollback")
+    @patch("geonode.upload.handlers.gpkg.handler.GPKGFileHandler._import_resource_rollback")
+    @patch("geonode.upload.handlers.gpkg.handler.GPKGFileHandler._publish_resource_rollback")
+    @patch("geonode.upload.handlers.gpkg.handler.GPKGFileHandler._create_geonode_resource_rollback")
     @override_settings(MEDIA_ROOT="/tmp/")
     def test_rollback_works_as_expected_vector_step(
         self,
@@ -388,7 +388,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                         "files": {"base_file": self.existing_file},
                         "overwrite_existing_layer": True,
                         "store_spatial_files": True,
-                        "handler_module_path": "importer.handlers.gpkg.handler.GPKGFileHandler",
+                        "handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                     },
                 )
                 rollback(str(exec_id))
@@ -608,7 +608,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
                 actual_step="copy",
                 layer_name=f"schema_{name}",
                 alternate=f"geonode:schema_{name}",
-                handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                 action=ExecutionRequestAction.COPY.value,
                 kwargs={
                     "original_dataset_alternate": f"geonode:schema_{name}",
@@ -639,7 +639,7 @@ class TestDynamicModelSchema(TransactionImporterBaseTestSupport):
             actual_step="copy",
             layer_name=f"schema_{str(self.exec_id)}",
             alternate=f"geonode:schema_{str(self.exec_id)}",
-            handlers_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+            handlers_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             action=ExecutionRequestAction.COPY.value,
             kwargs={
                 "original_dataset_alternate": f"geonode:schema_{str(self.exec_id)}",

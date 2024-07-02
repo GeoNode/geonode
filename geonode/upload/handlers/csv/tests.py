@@ -6,7 +6,7 @@ from django.test import TestCase
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.upload.api.exception import UploadParallelismLimitException
 from geonode.upload.models import UploadParallelismLimit
-from upload import project_dir
+from geonode.upload import project_dir
 from geonode.upload.handlers.common.vector import import_with_ogr2ogr
 from geonode.upload.handlers.csv.exceptions import InvalidCSVException
 from geonode.upload.handlers.csv.handler import CSVFileHandler

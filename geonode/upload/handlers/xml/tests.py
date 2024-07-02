@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from geonode.base.populate_test_data import create_single_dataset
-from upload import project_dir
+from geonode.upload import project_dir
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.handlers.xml.exceptions import InvalidXmlException

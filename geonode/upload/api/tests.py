@@ -5,7 +5,7 @@ from django.urls import reverse
 from unittest.mock import MagicMock, patch
 
 # Create your tests here.
-from upload import project_dir
+from geonode.upload import project_dir
 from geonode.base.populate_test_data import create_single_dataset
 from django.http import HttpResponse, QueryDict
 
@@ -153,7 +153,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         ResourceHandlerInfo.objects.create(
             resource=self.dataset,
-            handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+            handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
         payload = QueryDict("", mutable=True)
         payload.update({"defaults": '{"title":"stili_di_vita_4scenari"}'})

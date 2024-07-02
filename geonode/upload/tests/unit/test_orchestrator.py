@@ -29,7 +29,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         _data = {"base_file": "file.gpkg"}
         actual = self.orchestrator.get_handler(_data)
         self.assertIsNotNone(actual)
-        self.assertEqual("importer.handlers.gpkg.handler.GPKGFileHandler", str(actual))
+        self.assertEqual("geonode.upload.handlers.gpkg.handler.GPKGFileHandler", str(actual))
 
     def test_get_handler_should_return_none_if_is_not_available(self):
         _data = {"base_file": "file.not_supported"}
@@ -53,7 +53,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         )
 
     def test_load_handler(self):
-        actual = self.orchestrator.load_handler("importer.handlers.gpkg.handler.GPKGFileHandler")
+        actual = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         self.assertIsInstance(actual(), BaseHandler)
 
     def test_load_handler_by_id(self):
@@ -76,7 +76,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             ExecutionRequest.objects.filter(exec_id=_uuid).delete()
 
     def test_create_execution_request(self):
-        handler = self.orchestrator.load_handler("importer.handlers.gpkg.handler.GPKGFileHandler")
+        handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         count = ExecutionRequest.objects.count()
         input_files = {
             "files": {"base_file": "/tmp/file.txt"},
@@ -99,7 +99,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     @patch("importer.orchestrator.importer_app.tasks.get")
     def test_perform_next_step(self, mock_celery):
         # setup test
-        handler = self.orchestrator.load_handler("importer.handlers.gpkg.handler.GPKGFileHandler")
+        handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name=next(iter(handler.get_task_list(action="import"))),
@@ -114,7 +114,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             _id,
             "import",
             step="start_import",
-            handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+            handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
         mock_celery.assert_called_once()
         mock_celery.assert_called_with("importer.import_resource")
@@ -123,7 +123,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     @patch("importer.orchestrator.importer_app.tasks.get")
     def test_perform_last_import_step(self, mock_celery):
         # setup test
-        handler = self.orchestrator.load_handler("importer.handlers.gpkg.handler.GPKGFileHandler")
+        handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name=next(iter(handler.get_task_list(action="import"))),
@@ -138,7 +138,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             _id,
             "import",
             step="importer.create_geonode_resource",
-            handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+            handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
         mock_celery.assert_not_called()
 
@@ -146,7 +146,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     def test_perform_with_error_set_invalid_status(self, mock_celery):
         mock_celery.side_effect = Exception("test exception")
         # setup test
-        handler = self.orchestrator.load_handler("importer.handlers.gpkg.handler.GPKGFileHandler")
+        handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name=next(iter(handler.get_task_list(action="import"))),
@@ -162,7 +162,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
                 _id,
                 "import",
                 step="start_import",
-                handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+                handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
 
         _excec = ExecutionRequest.objects.filter(exec_id=_id).first()

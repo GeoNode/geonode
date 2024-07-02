@@ -1,7 +1,7 @@
 import os
 from django.test import TestCase
 from mock import patch
-from upload import project_dir
+from geonode.upload import project_dir
 from geonode.upload.publisher import DataPublisher
 from unittest.mock import MagicMock
 
@@ -14,7 +14,7 @@ class TestDataPublisher(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.publisher = DataPublisher(handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler")
+        cls.publisher = DataPublisher(handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         cls.gpkg_path = f"{project_dir}/tests/fixture/valid.gpkg"
 
     def setUp(self):

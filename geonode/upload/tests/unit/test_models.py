@@ -32,7 +32,7 @@ class TestModelSchemaSignal(TransactionImporterBaseTestSupport):
 
         ResourceHandlerInfo.objects.create(
             resource=self.resource,
-            handler_module_path="importer.handlers.gpkg.handler.GPKGFileHandler",
+            handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
         self.resource.delete()
         self.assertFalse(ModelSchema.objects.filter(name="test_dataset").exists())

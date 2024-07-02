@@ -284,7 +284,7 @@ Once the new handler is defined, it must be registered in the settings like a Dj
 
 ```
 IMPORTER_HANDLERS = os.getenv('IMPORTER_HANDLERS', [
-    'importer.handlers.gpkg.handler.GPKGFileHandler',
+    'geonode.upload.handlers.gpkg.handler.GPKGFileHandler',
     'path.to.my.new.Handler.' <----
 ])
 ```
