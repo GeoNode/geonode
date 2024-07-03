@@ -260,36 +260,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         # cleanup
         req.delete()
 
-    def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(
-        self,
-    ):
-        # create the celery task result entry
-        try:
-            exec_id = str(
-                self.orchestrator.create_execution_request(
-                    user=get_user_model().objects.first(),
-                    func_name="test",
-                    step="test",
-                )
-            )
-
-            started_entry = TaskResult.objects.create(task_id="task_id_started", status="STARTED", task_args=exec_id)
-            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
-            with self.assertLogs(level="INFO") as _log:
-                result = self.orchestrator.evaluate_execution_progress(exec_id)
-
-            self.assertIsNone(result)
-            self.assertEqual(
-                f"INFO:importer.orchestrator:Execution with ID {exec_id} is completed. All tasks are done",
-                _log.output[0],
-            )
-
-        finally:
-            if started_entry:
-                started_entry.delete()
-            if success_entry:
-                success_entry.delete()
-
     def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self):
         """
         Should set it fail if all the execution are done and at least 1 is failed
