@@ -60,7 +60,7 @@ class BaseVectorFileHandler(BaseHandler):
         and a boolean to know if the store should be created.
         For vector, the store must be created
         """
-        return os.environ.get("GEONODE_GEODATABASE", "geonode_data"), True
+        return settings.DATABASES.get("datastore", {}).get("NAME", "geonode_data"), True
 
     @staticmethod
     def is_valid(files, user):

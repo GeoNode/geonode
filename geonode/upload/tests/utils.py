@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 
 logger = logging.getLogger(__name__)
 
+
 class ImporterBaseTestSupport(TestCase):
     databases = ("default", "datastore")
     multi_db = True
@@ -56,6 +57,7 @@ class TransactionImporterBaseTestSupport(TransactionTestCase):
         ]
 
         call_command("loaddata", *fixture, **{"verbosity": 0, "database": "default"})
+
 
 def rest_upload_by_path(_file, client, username="admin", password="admin", non_interactive=False):
     """function that uploads a file, or a collection of files, to
