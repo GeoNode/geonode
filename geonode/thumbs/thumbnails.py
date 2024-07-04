@@ -234,8 +234,11 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp, Res
 
     elif isinstance(instance, GeoApp):
         file_name = f"geoapp-{instance.uuid}-thumb.png"
-    else:
+
+    elif isinstance(instance, ResourceBase):
         file_name = f"resourcebase-{instance.uuid}-thumb.png"
+    else:
+        raise ThumbnailError("Thumbnail generation didn't recognize the provided instance.")
 
     return file_name
 
