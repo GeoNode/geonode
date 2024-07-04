@@ -39,7 +39,6 @@ from geonode.base.api.filters import (
     DynamicSearchFilter,
 )
 from geonode.base.api.pagination import GeoNodeApiPagination
-from geonode.base.api.permissions import UserHasPerms
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +49,7 @@ class AssetViewSet(DynamicModelViewSet):
     """
 
     authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [
         DynamicFilterBackend,
         DynamicSortingFilter,
