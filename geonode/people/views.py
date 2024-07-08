@@ -51,8 +51,8 @@ class CustomSignupView(SignupView):
         ret = super().get_context_data(**kwargs)
         ret.update({"account_geonode_local_signup": settings.SOCIALACCOUNT_WITH_GEONODE_LOCAL_SINGUP})
         # Push captcha field at the end
-        form = ret['form']
-        form.field_order = [f for f in form.fields.keys() if f != 'captcha'] + ['captcha']
+        form = ret["form"]
+        form.field_order = [f for f in form.fields.keys() if f != "captcha"] + ["captcha"]
         form.order_fields(form.field_order)
         return ret
 
