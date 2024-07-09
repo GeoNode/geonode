@@ -80,11 +80,14 @@ def catalogue_post_save(instance, sender, **kwargs):
                     resource=resources.get(), url=metadata_url, extension="xml", link_type="metadata"
                 ).update(**_d)
 
-    # generate an XML document (GeoNode's default is ISO)
     if instance.metadata_uploaded and instance.metadata_uploaded_preserve:
         md_doc = etree.tostring(dlxml.fromstring(instance.metadata_xml))
     else:
-        md_doc = catalogue.catalogue.csw_gen_xml(instance, settings.CATALOG_METADATA_TEMPLATE)
+        # generate an XML document (GeoNode's default is ISO)
+        raw_xml = catalogue.catalogue.csw_gen_xml(instance, settings.CATALOG_METADATA_TEMPLATE)
+        md_obj = dlxml.fromstring(raw_xml, parser=etree.XMLParser(remove_blank_text=True))
+        md_doc = etree.tostring(md_obj, pretty_print=True, encoding="unicode")
+
     try:
         csw_anytext = catalogue.catalogue.csw_gen_anytext(md_doc)
     except Exception as e:
