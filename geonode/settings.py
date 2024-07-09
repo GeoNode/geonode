@@ -848,6 +848,7 @@ SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get("SECURE_BROWSER_XSS_
 SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get("SECURE_SSL_REDIRECT", "False"))
 SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "3600"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True"))
+SECURE_REFERRER_POLICY = os.environ.get("SECURE_REFERRER_POLICY", "strict-origin-when-cross-origin")
 
 # Replacement of the default authentication backend in order to support
 # permissions per object.
