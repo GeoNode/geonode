@@ -1,17 +1,16 @@
-version: '3.9'
+version: "3.9"
 
 # Common Django template for GeoNode and Celery services below
-x-common-django:
-  &default-common-django
+x-common-django: &default-common-django
   image: geonode/geonode:local
   build:
-      context: ./
-      dockerfile: Dockerfile
+    context: ./
+    dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
     - .env
   volumes:
-    - '.:/usr/src/geonode'
+    - ".:/usr/src/geonode"
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
@@ -22,10 +21,9 @@ x-common-django:
       condition: service_healthy
 
 services:
-
   # Our custom django application. It includes Geonode.
   django:
-    << : *default-common-django
+    <<: *default-common-django
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
@@ -36,11 +34,14 @@ services:
     environment:
       - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
+    # command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    ports:
+      - "8000:8000"
 
   # Celery worker that executes celery tasks created by Django.
   celery:
-    << : *default-common-django
+    <<: *default-common-django
     container_name: celery4${COMPOSE_PROJECT_NAME}
     depends_on:
       django:
@@ -79,7 +80,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.24.3-latest
+    image: geonode/geoserver:2.24.3-v1
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -105,7 +106,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.24.3-latest
+    image: geonode/geoserver_data:2.24.3-v1
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
@@ -129,8 +130,8 @@ services:
     healthcheck:
       test: "pg_isready -d postgres -U postgres"
     # uncomment to enable remote connections to postgres
-    #ports:
-    #  - "5432:5432"
+    ports:
+      - "5432:5432"
 
   # Vanilla RabbitMQ service. This is needed by celery
   rabbitmq:
