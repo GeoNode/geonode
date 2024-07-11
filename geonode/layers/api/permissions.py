@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from distutils.util import strtobool
 from django.conf import settings
 from rest_framework.filters import BaseFilterBackend
 
@@ -47,6 +48,10 @@ class DatasetPermissionsFilter(BaseFilterBackend):
         resources = get_objects_for_user(user, "base.view_resourcebase", **self.shortcut_kwargs).filter(
             polymorphic_ctype__model="dataset"
         )
+        try:
+            include_dirty = strtobool(request.query_params.get("include_dirty", "False"))
+        except Exception:
+            include_dirty = False
 
         obj_with_perms = get_visible_resources(
             resources,
@@ -54,6 +59,7 @@ class DatasetPermissionsFilter(BaseFilterBackend):
             admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
             unpublished_not_visible=settings.RESOURCE_PUBLISHING,
             private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+            include_dirty=include_dirty,
         )
 
         return queryset.filter(id__in=obj_with_perms.values("id"))

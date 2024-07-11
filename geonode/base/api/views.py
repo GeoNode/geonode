@@ -17,7 +17,7 @@
 #
 #########################################################################
 import ast
-from distutils.util import strtobool
+import functools
 import json
 import re
 
@@ -30,7 +30,7 @@ from django.core.validators import URLValidator
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
-from django.db.models import Subquery
+from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 
@@ -45,6 +45,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -66,8 +67,7 @@ from geonode.base.api.filters import (
     FavoriteFilter,
     TKeywordsFilter,
 )
-from geonode.groups.models import GroupProfile, GroupMember
-from geonode.people.utils import get_available_users
+from geonode.groups.models import GroupProfile
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
@@ -79,19 +79,17 @@ from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.resource.manager import resource_manager
 
-from guardian.shortcuts import get_objects_for_user
 
+from geonode.base.api.mixins import AdvertisedListMixin
 from .permissions import (
-    IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
+
 from .serializers import (
     FavoriteSerializer,
-    SimpleResourceSerializer,
-    UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer,
@@ -104,77 +102,13 @@ from .serializers import (
     ExtraMetadataSerializer,
     LinkedResourceSerializer,
 )
+from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
 
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-class UserViewSet(DynamicModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [
-        IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
-    ]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
-    serializer_class = UserSerializer
-    pagination_class = GeoNodeApiPagination
-
-    def get_queryset(self):
-        """
-        Filters and sorts users.
-        """
-        if self.request and self.request.user:
-            queryset = get_available_users(self.request.user)
-        else:
-            queryset = get_user_model().objects.all()
-
-        # Set up eager loading to avoid N+1 selects
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset.order_by("username")
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Resources visible to the user.",
-    )
-    @action(detail=True, methods=["get"])
-    def resources(self, request, pk=None):
-        user = self.get_object()
-        permitted = get_objects_for_user(user, "base.view_resourcebase")
-        qs = ResourceBase.objects.all().filter(id__in=permitted).order_by("title")
-
-        resources = get_visible_resources(
-            qs,
-            user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        )
-
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(resources, request)
-        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
-        return paginator.get_paginated_response({"resources": serializer.data})
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: GroupProfileSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Groups the user is member of.",
-    )
-    @action(detail=True, methods=["get"])
-    def groups(self, request, pk=None):
-        user = self.get_object()
-        qs_ids = GroupMember.objects.filter(user=user).values_list("group", flat=True)
-        groups = GroupProfile.objects.filter(id__in=qs_ids)
-        return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
 
 class GroupViewSet(DynamicModelViewSet):
@@ -337,7 +271,33 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         return queryset.order_by("username")
 
 
-class ResourceBaseViewSet(DynamicModelViewSet):
+class ApiPresetsInitializer(APIView):
+    """
+    Replaces the `api_preset` query params with the configured params
+    """
+
+    def initialize_request(self, request, *args, **kwargs):
+        self.replace_presets(request)
+        return super().initialize_request(request, *args, **kwargs)
+
+    def replace_presets(self, request):
+        # we must make the GET mutable since in the filters, some queryparams are popped
+        request.GET._mutable = True
+        try:
+            for preset_name in request.GET.pop("api_preset", []):
+                presets = settings.REST_API_PRESETS.get(preset_name, None)
+                if not presets:
+                    logger.info(f'Preset "{preset_name}" is not defined')  # maybe return 404?
+                    return
+                for param_name in presets.keys():
+                    for param_value in presets.get(param_name):
+                        if param_value not in request.GET.get(param_name, []):
+                            request.GET.appendlist(param_name, param_value)
+        finally:
+            request.GET._mutable = False
+
+
+class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
@@ -364,41 +324,6 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         result_page = paginator.paginate_queryset(resources, request)
         serializer = ResourceBaseSerializer(result_page, embed=True, many=True)
         return paginator.get_paginated_response({"resources": serializer.data})
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # advertised
-        # if superuser, all resources will be visible, otherwise only the advertised once and
-        # the resource which the user is owner will be returned
-        # if the filter{advertised} is sent, is going to be used after the list of the
-        # resources is generated
-        user = request.user
-        try:
-            _filter = request.query_params.get("advertised", "None")
-            advertised = strtobool(_filter) if _filter.lower() != "all" else "all"
-        except Exception:
-            advertised = None
-
-        if advertised is not None and advertised != "all":
-            queryset = queryset.filter(advertised=advertised)
-        else:
-            is_admin = user.is_superuser if user and user.is_authenticated else False
-
-            if advertised == "all":
-                pass
-            elif not is_admin and user and not user.is_anonymous:
-                queryset = (queryset.filter(advertised=True) | queryset.filter(owner=user)).distinct()
-            elif not user or user.is_anonymous:
-                queryset = queryset.filter(advertised=True)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
     @extend_schema(
         methods=["get"],
@@ -1526,64 +1451,77 @@ class ResourceBaseViewSet(DynamicModelViewSet):
 
 def base_linked_resources(instance, user, params):
     try:
-        visibile_resources = get_visible_resources(
-            ResourceBase.objects,
-            user=user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        ).order_by("-pk")
-
-        resource_type = params.get("resource_type")
-        link_type = params.get("link_type")
-
-        if resource_type:
-            resource_list = resource_type.split(",")
-            visibile_resources = visibile_resources.filter(resource_type__in=resource_list)
-
-        visible_ids = [res.id for res in visibile_resources]
-
-        linked_resources = [lres for lres in instance.get_linked_resources() if lres.target.id in visible_ids]
-        linked_by = [lres for lres in instance.get_linked_resources(as_target=True) if lres.source.id in visible_ids]
-
-        warnings = {
-            "DEPRECATION": "'resources' field is deprecated, please use 'linked_to'",
-        }
-
-        if "page_size" in params or "page" in params:
-            warnings["PAGINATION"] = "Pagination is not supported on this call"
-
-        # "resources" will be deprecated, so next block is temporary
-        # "resources" at the moment it's the only element rendered, so we want to add there both the linked_resources and the linked_by
-        # we want to tell them apart, so we're adding an attr to store this info, that will be used in the SimpleResourceSerializer
-        resources = []
-        for lres in linked_resources:
-            res = lres.target
-            setattr(res, "is_target", True)
-            resources.append(res)
-        for lres in linked_by:
-            res = lres.source
-            setattr(res, "is_target", False)
-            resources.append(res)
-
-        ret = {
-            "WARNINGS": warnings,
-            "resources": SimpleResourceSerializer(resources, embed=True, many=True).data,  # deprecated
-            "linked_to": LinkedResourceSerializer(linked_resources, embed=True, many=True).data,
-            "linked_by": LinkedResourceSerializer(
-                instance=linked_by, serialize_source=True, embed=True, many=True
-            ).data,
-        }
-
-        # [Issue #11944] Implement filtering for linked_resources
-        if link_type:
-            if link_type == "linked_to":
-                ret.pop("linked_by")
-            elif link_type == "linked_by":
-                ret.pop("linked_to")
-
-        return Response(ret)
-
+        return Response(base_linked_resources_payload(instance, user, params))
     except Exception as e:
         logger.exception(e)
         return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
+
+
+def base_linked_resources_payload(instance, user, params={}):
+    resource_type = params.get("resource_type", None)
+    link_type = params.get("link_type", None)
+    type_list = resource_type.split(",") if resource_type else []
+
+    warnings = {}
+
+    if "page_size" in params or "page" in params:
+        warnings["PAGINATION"] = "Pagination is not supported on this call"
+
+    ret = {"WARNINGS": warnings}
+
+    get_visible_resources_p = functools.partial(
+        get_visible_resources,
+        user=user,
+        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+    )
+
+    if not link_type or link_type == "linked_to":
+        # list of linked resources, probably extended by ResourceBase's child class - may be loopable only once
+        linked_to_over = instance.get_linked_resources()
+
+        # resolve the ids of linked resources - using either e QuerySet (preferred) or a list
+        if isinstance(linked_to_over, QuerySet):
+            linked_to_over_loopable = linked_to_over
+            linked_to_id_values = linked_to_over.values("target_id")
+        else:
+            linked_to_over_loopable = [lr for lr in linked_to_over]
+            linked_to_id_values = [lr.target_id for lr in linked_to_over_loopable]
+
+        # filter resources by visibility / permissions
+        linked_to_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_to_id_values)).order_by(
+            "-pk"
+        )
+        # optionally filter by resource type
+        linked_to_visib = linked_to_visib.filter(resource_type__in=type_list) if type_list else linked_to_visib
+        linked_to_visib_ids = linked_to_visib.values_list("id", flat=True)
+        linked_to = [lres for lres in linked_to_over_loopable if lres.target.id in linked_to_visib_ids]
+
+        ret["linked_to"] = LinkedResourceSerializer(linked_to, embed=True, many=True).data
+
+    if not link_type or link_type == "linked_by":
+        linked_by_over = instance.get_linked_resources(as_target=True)
+        if isinstance(linked_by_over, QuerySet):
+            linked_by_over_loopable = linked_by_over
+            linked_by_id_values = linked_by_over.values("source_id")
+        else:
+            linked_by_over_loopable = [lr for lr in linked_by_over]
+            linked_by_id_values = [lr.source_id for lr in linked_by_over_loopable]
+
+        linked_by_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_by_id_values)).order_by(
+            "-pk"
+        )
+
+        linked_by_visib = linked_by_visib.filter(resource_type__in=type_list) if type_list else linked_by_visib
+        linked_by_visib_ids = linked_by_visib.values_list("id", flat=True)
+        linked_by = [lres for lres in linked_by_over_loopable if lres.source.id in linked_by_visib_ids]
+
+        ret["linked_by"] = LinkedResourceSerializer(
+            instance=linked_by, serialize_source=True, embed=True, many=True
+        ).data
+
+    if not ret["WARNINGS"]:
+        ret.pop("WARNINGS")
+
+    return ret

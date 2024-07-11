@@ -29,6 +29,7 @@ geonode/local_settings.py
 
 # Uploaded files
 geonode/uploaded
+geonode/assets_data
 
 #Testing output
 .coverage

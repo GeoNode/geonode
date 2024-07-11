@@ -22,8 +22,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 
 from geonode import GeoNodeException
+from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupProfile, GroupMember
 from geonode.groups.conf import settings as groups_settings
+from django.conf import settings
+from django.utils.module_loading import import_string
 
 
 def get_default_user():
@@ -140,3 +143,54 @@ def get_available_users(user):
         member_ids.extend(users_ids)
 
     return get_user_model().objects.filter(id__in=member_ids)
+
+
+def user_has_resources(profile) -> bool:
+    """
+    checks if user has any resource in ownership
+
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        bool: profile is the owner of any resources
+    """
+    return ResourceBase.objects.filter(owner_id=profile.pk).exists()
+
+
+def user_is_manager(profile) -> bool:
+    """
+    Checks if user is the manager of any group
+
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        bool: profile is mangager or not
+
+    """
+    return GroupMember.objects.filter(user_id=profile.pk, role=GroupMember.MANAGER).exists()
+
+
+def check_user_deletion_rules(profile) -> None:
+    """
+    calls a set of defined rules specific to the deletion of a user
+    which are read from settings.USER_DELETION_RULES
+    new rules can be added as long as they take as parameter the userprofile
+    and return a boolean
+    Args:
+        profile (Profile) : accepts a userprofile instance.
+
+    Returns:
+        Tuple : with a boolean result, and the error list
+    """
+    if not globals().get("user_deletion_modules"):
+        rule_path = settings.USER_DELETION_RULES if hasattr(settings, "USER_DELETION_RULES") else []
+        globals()["user_deletion_modules"] = [import_string(deletion_rule) for deletion_rule in rule_path]
+    error_list = []
+    for not_deletable in globals().get("user_deletion_modules", []):
+        if not_deletable(profile):
+            error_list.append(not_deletable.__name__)
+    if error_list:
+        return False, ", ".join(error_list)
+    return True, None

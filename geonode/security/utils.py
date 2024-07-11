@@ -59,6 +59,7 @@ def get_visible_resources(
     admin_approval_required=False,
     unpublished_not_visible=False,
     private_groups_not_visibile=False,
+    include_dirty=False,
 ):
     # Get the list of objects the user has access to
     from geonode.groups.models import GroupProfile
@@ -80,41 +81,42 @@ def get_visible_resources(
     except Exception:
         pass
 
-    filter_set = queryset.filter(dirty_state=False)
-
     if metadata_only is not None:
         # Hide Dirty State Resources
-        filter_set = filter_set.filter(metadata_only=metadata_only)
+        queryset = queryset.filter(metadata_only=metadata_only)
+
+    if not include_dirty:
+        queryset = queryset.filter(dirty_state=False)
 
     if not is_admin:
         if user:
             _allowed_resources = get_objects_for_user(
                 user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
             )
-            filter_set = filter_set.filter(id__in=_allowed_resources.values("id"))
+            queryset = queryset.filter(id__in=_allowed_resources.values("id"))
 
         if admin_approval_required and not AdvancedSecurityWorkflowManager.is_simplified_workflow():
             if not user or not user.is_authenticated or user.is_anonymous:
-                filter_set = filter_set.filter(
+                queryset = queryset.filter(
                     Q(is_published=True) | Q(group__in=public_groups) | Q(group__in=groups)
                 ).exclude(is_approved=False)
 
         # Hide Unpublished Resources to Anonymous Users
         if unpublished_not_visible:
             if not user or not user.is_authenticated or user.is_anonymous:
-                filter_set = filter_set.exclude(is_published=False)
+                queryset = queryset.exclude(is_published=False)
 
         # Hide Resources Belonging to Private Groups
         if private_groups_not_visibile:
             private_groups = GroupProfile.objects.filter(access="private").values("group")
             if user and user.is_authenticated:
-                filter_set = filter_set.exclude(
+                queryset = queryset.exclude(
                     Q(group__in=private_groups) & ~(Q(owner__username__iexact=str(user)) | Q(group__in=group_list_all))
                 )
             else:
-                filter_set = filter_set.exclude(group__in=private_groups)
+                queryset = queryset.exclude(group__in=private_groups)
 
-    return filter_set
+    return queryset
 
 
 def get_users_with_perms(obj):
@@ -187,6 +189,7 @@ def get_resources_with_perms(user, filter_options={}, shortcut_kwargs={}):
         admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
         unpublished_not_visible=settings.RESOURCE_PUBLISHING,
         private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+        include_dirty=False,
     )
 
     if filter_options:
@@ -221,8 +224,7 @@ def get_geoapp_subtypes():
 
 
 def skip_registered_members_common_group(user_group):
-    _members_group_name = groups_settings.REGISTERED_MEMBERS_GROUP_NAME
-    if (settings.RESOURCE_PUBLISHING or settings.ADMIN_MODERATE_UPLOADS) and _members_group_name == user_group.name:
+    if groups_settings.REGISTERED_MEMBERS_GROUP_NAME == user_group.name:
         return True
     return False
 

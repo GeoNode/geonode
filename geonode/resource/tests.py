@@ -28,7 +28,7 @@ from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import ResourceManager
-from geonode.base.models import ResourceBase
+from geonode.base.models import LinkedResource, ResourceBase
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
@@ -148,7 +148,15 @@ class TestResourceManager(GeoNodeBaseTestSupport):
 
         # copy with documents
         res = self.rm.ingest(
-            dt_files, resource_type=Document, defaults={"title": "relief_san_andres", "owner": self.user}
+            dt_files,
+            resource_type=Document,
+            defaults={
+                "title": "relief_san_andres",
+                "owner": self.user,
+                "extension": "tif",
+                "data_title": "relief_san_andres",
+                "data_type": "tif",
+            },
         )
         self.assertTrue(isinstance(res, Document))
         _copy_assert_resource(res, "Testing Document 2")
@@ -157,13 +165,38 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         res = self.rm.ingest(
             dt_files,
             resource_type=Dataset,
-            defaults={"owner": self.user, "title": "Testing Dataset", "files": dt_files},
+            defaults={
+                "owner": self.user,
+                "title": "Testing Dataset",
+                "data_title": "relief_san_andres",
+                "data_type": "tif",
+            },
         )
         self.assertTrue(isinstance(res, Dataset))
         _copy_assert_resource(res, "Testing Dataset 2")
 
         # copy with maps
         res = create_single_map("A Test Map")
+        self.assertTrue(isinstance(res, Map))
+        _copy_assert_resource(res, "A Test Map 2")
+
+    def test_resource_copy_with_linked_resources(self):
+        def _copy_assert_resource(res, title):
+            dataset_copy = None
+            try:
+                dataset_copy = self.rm.copy(res, defaults=dict(title=title))
+                self.assertIsNotNone(dataset_copy)
+                self.assertEqual(dataset_copy.title, title)
+            finally:
+                if dataset_copy:
+                    dataset_copy.delete()
+                self.assertIsNotNone(res)
+                res.delete()
+
+        # copy with maps
+        res = create_single_map("A Test Map")
+        target = ResourceBase.objects.first()
+        LinkedResource.objects.get_or_create(source_id=res.id, target_id=target.id)
         self.assertTrue(isinstance(res, Map))
         _copy_assert_resource(res, "A Test Map 2")
 

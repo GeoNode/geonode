@@ -2207,17 +2207,6 @@ def get_dataset_storetype(element):
     return LAYER_SUBTYPES.get(element, element)
 
 
-def write_uploaded_files_to_disk(target_dir, files):
-    result = []
-    for django_file in files:
-        path = os.path.join(target_dir, django_file.name)
-        with open(path, "wb") as fh:
-            for chunk in django_file.chunks():
-                fh.write(chunk)
-        result = path
-    return result
-
-
 def select_relevant_files(allowed_extensions, files):
     """Filter the input files list for relevant files only
 

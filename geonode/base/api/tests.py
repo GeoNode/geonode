@@ -22,11 +22,11 @@ import re
 import sys
 import json
 import logging
+from builtins import Exception
 from typing import Iterable
 
 from django.test import RequestFactory, override_settings
 import gisdata
-
 from PIL import Image
 from io import BytesIO
 from time import sleep
@@ -43,10 +43,14 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-
+from geonode.resource.manager import resource_manager
 from guardian.shortcuts import get_anonymous_user
+
+from geonode.assets.utils import create_asset_and_link
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.assets.utils import get_default_asset
+from geonode.assets.handlers import asset_handler_registry
 
 from geonode.base import enumerations
 from geonode.base.api.serializers import ResourceBaseSerializer
@@ -388,9 +392,7 @@ class BaseApiTests(APITestCase):
         Ensure users are created with default groups.
         """
         url = reverse("users-list")
-        user_data = {
-            "username": "new_user",
-        }
+        user_data = {"username": "new_user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
         self.assertTrue(self.client.login(username="admin", password="admin"))
         response = self.client.post(url, data=user_data, format="json")
         self.assertEqual(response.status_code, 201)
@@ -401,6 +403,15 @@ class BaseApiTests(APITestCase):
         response = self.client.post(url, data={"username": "new_user_1"}, format="json")
         self.assertEqual(response.status_code, 403)
 
+    def test_acess_profile_edit(self):
+        # Registered member
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        user = get_user_model().objects.get(username="bobby")
+
+        url = f'{reverse("profile_edit")}{user.username}'
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+
     def test_update_user_profile(self):
         """
         Ensure users cannot update others.
@@ -410,7 +421,7 @@ class BaseApiTests(APITestCase):
                 username="user_test_delete", email="user_test_delete@geonode.org", password="user"
             )
             url = reverse("users-detail", kwargs={"pk": user.pk})
-            data = {"first_name": "user"}
+            data = {"first_name": "user", "password": "@!2XJSL_S&V^0nt", "email": "user@exampl2e.com"}
             # Anonymous
             response = self.client.patch(url, data=data, format="json")
             self.assertEqual(response.status_code, 403)
@@ -421,14 +432,15 @@ class BaseApiTests(APITestCase):
             # User self profile
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.patch(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200)
             # Group manager
             group = GroupProfile.objects.create(slug="test_group_manager", title="test_group_manager")
             group.join(user)
             group.join(get_user_model().objects.get(username="norman"), role="manager")
             self.assertTrue(self.client.login(username="norman", password="norman"))
             response = self.client.post(url, data=data, format="json")
-            self.assertEqual(response.status_code, 403)
+            # malformed url on post
+            self.assertEqual(response.status_code, 405)
             # Admin can edit user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.patch(url, data={"first_name": "user_admin"}, format="json")
@@ -457,14 +469,20 @@ class BaseApiTests(APITestCase):
             self.assertTrue(self.client.login(username="bobby", password="bob"))
             response = self.client.delete(url, format="json")
             self.assertEqual(response.status_code, 403)
-            # User can not delete self profile
+            # User can delete self profile
             self.assertTrue(self.client.login(username="user_test_delete", password="user"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(get_user_model().objects.filter(username="user_test_delete").first(), None)
+            # recreate user that was deleted
+            user = get_user_model().objects.create_user(
+                username="user_test_delete", email="user_test_delete@geonode.org", password="user"
+            )
+            url = reverse("users-detail", kwargs={"pk": user.pk})
             # Admin can delete user
             self.assertTrue(self.client.login(username="admin", password="admin"))
             response = self.client.delete(url, format="json")
-            self.assertEqual(response.status_code, 204)
+            self.assertEqual(response.status_code, 200)
         finally:
             user.delete()
 
@@ -2207,16 +2225,22 @@ class BaseApiTests(APITestCase):
         )
 
     def test_resource_service_copy(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = Dataset.objects.create(
-            owner=get_user_model().objects.get(username="admin"),
-            name="test_copy",
-            store="geonode_data",
-            subtype="vector",
-            alternate="geonode:test_copy",
-            uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
+        resource = resource_manager.create(
+            str(uuid4()),
+            Dataset,
+            defaults={
+                "owner": get_user_model().objects.get(username="admin"),
+                "name": "test_copy",
+                "store": "geonode_data",
+                "subtype": "vector",
+                "alternate": "geonode:test_copy",
+            },
+        )
+
+        asset, link = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
         )
         bobby = get_user_model().objects.get(username="bobby")
         copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
@@ -2248,22 +2272,29 @@ class BaseApiTests(APITestCase):
         cloned_resource = Dataset.objects.last()
         self.assertEqual(cloned_resource.owner.username, "admin")
         # clone dataset with invalid file
-        resource.files = ["/path/invalid_file.wrong"]
-        resource.save()
+        # resource.files = ["/path/invalid_file.wrong"]
+        # resource.save()
+        asset.location = ["/path/invalid_file.wrong"]
+        asset.save()
         response = self.client.put(copy_url)
+
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Resource can not be cloned.")
         # clone dataset with no files
-        resource.files = []
-        resource.save()
+        link.delete()
+        asset.delete()
         response = self.client.put(copy_url)
+
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Resource can not be cloned.")
         # clean
-        resource.delete()
+        try:
+            resource.delete()
+        except Exception as e:
+            logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
     def test_resource_service_copy_with_perms_dataset(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Dataset.objects.create(
             owner=get_user_model().objects.get(username="admin"),
@@ -2273,7 +2304,9 @@ class BaseApiTests(APITestCase):
             alternate="geonode:test_copy",
             resource_type="dataset",
             uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
+        )
+        _, _ = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
         )
         self._assertCloningWithPerms(resource)
 
@@ -2281,21 +2314,25 @@ class BaseApiTests(APITestCase):
     @override_settings(ASYNC_SIGNALS=False)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
-            files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+            files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-            resource = Dataset.objects.create(
-                owner=get_user_model().objects.get(username="admin"),
-                name="test_copy_with_perms",
-                store="geonode_data",
-                subtype="vector",
-                alternate="geonode:test_copy_with_perms",
-                resource_type="dataset",
-                uuid=str(uuid4()),
-                files=list(files_as_dict.values()),
+            resource = resource_manager.create(
+                None,
+                resource_type=Dataset,
+                defaults={
+                    "owner": get_user_model().objects.first(),
+                    "title": "test_copy_with_perms",
+                    "name": "test_copy_with_perms",
+                    "is_approved": True,
+                    "store": "geonode_data",
+                    "subtype": "vector",
+                    "resource_type": "dataset",
+                    "files": files_as_dict.values(),
+                },
             )
             _perms = {
                 "users": {"bobby": ["base.add_resourcebase", "base.download_resourcebase"]},
-                "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebae"]},
+                "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebase"]},
             }
             resource.set_permissions(_perms)
             # checking that bobby is in the original dataset perms list
@@ -2314,11 +2351,11 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertFalse("bobby" in "bobby" in [x.username for x in _resource.get_all_level_info().get("users", [])])
-        self.assertTrue("admin" in "admin" in [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertNotIn("bobby", [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertIn("admin", [x.username for x in _resource.get_all_level_info().get("users", [])])
 
     def test_resource_service_copy_with_perms_doc(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Document.objects.create(
             owner=get_user_model().objects.get(username="admin"),
@@ -2326,23 +2363,25 @@ class BaseApiTests(APITestCase):
             alternate="geonode:test_copy",
             resource_type="document",
             uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
         )
-
+        _, _ = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
+        )
         self._assertCloningWithPerms(resource)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_resource_service_copy_with_perms_map(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Document.objects.create(
             owner=get_user_model().objects.get(username="admin"),
             alternate="geonode:test_copy",
             resource_type="map",
             uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
         )
-
+        _, _ = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
+        )
         self._assertCloningWithPerms(resource)
 
     def _assertCloningWithPerms(self, resource):
@@ -2367,6 +2406,14 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         resource.delete()
 
+    def _get_for_object(self, o, viewname):
+        url = reverse(viewname, args=[o.id])
+        response = self.client.get(url, format="json")
+        return response.json()
+
+    def _get_for_map(self, viewname):
+        return self._get_for_object(Map.objects.first(), viewname)
+
     def test_base_resources_return_download_link_if_document(self):
         """
         Ensure we can access the Resource Base list.
@@ -2374,14 +2421,13 @@ class BaseApiTests(APITestCase):
         doc = Document.objects.first()
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[doc.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(doc, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
         self.assertEqual(build_absolute_uri(doc.download_url), download_url)
 
         # from documents api
-        url = reverse("documents-detail", args=[doc.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(doc, "documents-detail")
+        download_url = json.get("document").get("download_url")
         self.assertEqual(build_absolute_uri(doc.download_url), download_url)
 
     def test_base_resources_return_download_link_if_dataset(self):
@@ -2391,46 +2437,41 @@ class BaseApiTests(APITestCase):
         _dataset = Dataset.objects.first()
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[_dataset.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
         # from dataset api
-        url = reverse("datasets-detail", args=[_dataset.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_url")
         self.assertEqual(_dataset.download_url, download_url)
 
     def test_base_resources_dont_return_download_link_if_map(self):
         """
         Ensure we can access the Resource Base list.
         """
-        _map = Map.objects.first()
         # From resource base API
-        url = reverse("base-resources-detail", args=[_map.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_url", None)
+        json = self._get_for_map("base-resources-detail")
+        download_url = json.get("resource").get("download_url", None)
         self.assertIsNone(download_url)
 
         # from maps api
-        url = reverse("maps-detail", args=[_map.id])
-        download_url = response.json().get("resource").get("download_url")
+        json = self._get_for_map("maps-detail")
+        download_url = json.get("map").get("download_url")
         self.assertIsNone(download_url)
 
     def test_base_resources_return_not_download_links_for_maps(self):
         """
         Ensure we can access the Resource Base list.
         """
-        _map = Map.objects.first()
         # From resource base API
-        url = reverse("base-resources-detail", args=[_map.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls", None)
+        json = self._get_for_map("base-resources-detail")
+        download_url = json.get("resource").get("download_urls", None)
         self.assertListEqual([], download_url)
 
         # from maps api
-        url = reverse("maps-detail", args=[_map.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_map("maps-detail")
+        download_url = json.get("map").get("download_urls")
         self.assertListEqual([], download_url)
 
     def test_base_resources_return_download_links_for_documents(self):
@@ -2438,16 +2479,20 @@ class BaseApiTests(APITestCase):
         Ensure we can access the Resource Base list.
         """
         doc = Document.objects.first()
-        expected_payload = [{"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}]
+        asset = get_default_asset(doc)
+        handler = asset_handler_registry.get_handler(asset)
+        expected_payload = [
+            {"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe},
+            {"ajax_safe": False, "default": False, "url": handler.create_download_url(asset)},
+        ]
         # From resource base API
-        url = reverse("base-resources-detail", args=[doc.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(doc, "base-resources-detail")
+        download_url = json.get("resource").get("download_urls")
         self.assertListEqual(expected_payload, download_url)
 
         # from documents api
-        url = reverse("documents-detail", args=[doc.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(doc, "documents-detail")
+        download_url = json.get("document").get("download_urls")
         self.assertListEqual(expected_payload, download_url)
 
     def test_base_resources_return_download_links_for_datasets(self):
@@ -2460,15 +2505,84 @@ class BaseApiTests(APITestCase):
         ]
 
         # From resource base API
-        url = reverse("base-resources-detail", args=[_dataset.id])
-        response = self.client.get(url, format="json")
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(_dataset, "base-resources-detail")
+        download_url = json.get("resource").get("download_urls")
         self.assertEqual(expected_payload, download_url)
 
         # from dataset api
-        url = reverse("datasets-detail", args=[_dataset.id])
-        download_url = response.json().get("resource").get("download_urls")
+        json = self._get_for_object(_dataset, "datasets-detail")
+        download_url = json.get("dataset").get("download_urls")
         self.assertEqual(expected_payload, download_url)
+
+    def test_include_linked_resources(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                for include in (True, False):
+                    url = reverse(viewname, args=[resource.id])
+                    url = f"{url}{'?include[]=linked_resources' if include else ''}"
+                    response = self.client.get(url, format="json").json()
+                    json = next(iter(response.values()))
+                    if include:
+                        self.assertIn("linked_resources", json, "Missing content")
+                    else:
+                        self.assertNotIn("linked_resources", json, "Unexpected content")
+
+    def test_exclude_all_but_one(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                for field in (
+                    "pk",
+                    "title",
+                    "perms",
+                    "links",
+                    "linked_resources",
+                    "data",
+                    "link",
+                ):  # test some random fields
+                    url = reverse(viewname, args=[resource.id])
+                    url = f"{url}?exclude[]=*&include[]={field}"
+                    response = self.client.get(url, format="json").json()
+                    json = next(iter(response.values()))
+
+                    self.assertIn(field, json, "Missing content")
+                    self.assertEqual(1, len(json), f"Only expected content was '{field}', found: {json}")
+
+    def test_presets_base(self):
+        dataset = Dataset.objects.first()
+        doc = Document.objects.first()
+        map = Map.objects.first()
+
+        for resource, typed_viewname in (
+            (dataset, "datasets-detail"),
+            (doc, "documents-detail"),
+            (map, "maps-detail"),
+        ):
+            for viewname in (typed_viewname, "base-resources-detail"):
+                url = reverse(viewname, args=[resource.id])
+                url = f"{url}?api_preset=bare"
+                response = self.client.get(url, format="json").json()
+                json = next(iter(response.values()))
+                self.assertSetEqual(
+                    {"pk", "title"},
+                    set(json.keys()),
+                    f"Bad json content for object {type(resource)} JSON:{json}",
+                )
 
     def test_api_should_return_all_resources_for_admin(self):
         """
@@ -2739,7 +2853,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.dataset.id in list_connected_targets))
 
     def test_insert_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2757,7 +2870,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((invalid_id in response_json["error"]))
 
     def test_insert_valid_and_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2776,7 +2888,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
         self.assertTrue((self.map.id in response_json["success"]))
 
     def test_delete_invalid_linked_resource(self):
-
         url = reverse("base-resources-linked_resources", args=[self.doc.id])
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
@@ -2840,15 +2951,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(
-                payload,
-                "resources",
-                (
-                    {"pk": self.map.id, "title": ">>> " + self.map.title},
-                    {"pk": self.dataset.id, "title": ">>> " + self.dataset.title},
-                ),
-            )
             self.assert_linkedres_size(payload, "linked_to", 2)
             self.assert_linkedres_contains(
                 payload,
@@ -2861,7 +2963,11 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 d.delete()
 
     def assert_linkedres_size(self, payload, element: str, expected_size: int):
-        self.assertEqual(expected_size, len(payload[element]), f"Mismatching payload size of {element}")
+        self.assertEqual(
+            expected_size,
+            len(payload[element]),
+            f"Mismatching payload size of '{element}': exp:{expected_size} found:{payload[element]}",
+        )
 
     def assert_linkedres_contains(self, payload, element: str, expected_elements: Iterable):
         res_list = payload[element]
@@ -2901,15 +3007,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
 
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(
-                payload,
-                "resources",
-                (
-                    {"pk": self.doc.id, "title": "<<< " + self.doc.title},
-                    {"pk": self.dataset.id, "title": ">>> " + self.dataset.title},
-                ),
-            )
             self.assert_linkedres_size(payload, "linked_to", 1)
             self.assert_linkedres_contains(
                 payload, "linked_to", ({"pk": self.dataset.id, "title": self.dataset.title},)
@@ -2922,6 +3019,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
                 d.delete()
 
     def test_linked_resources_for_maps(self):
+        _m = None
         try:
             # data preparation
             _m = MapLayer.objects.create(
@@ -2940,10 +3038,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
 
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 1)
-            self.assert_linkedres_contains(
-                payload, "resources", ({"pk": self.dataset.id, "title": ">>> " + self.dataset.title},)
-            )
             self.assert_linkedres_size(payload, "linked_to", 1)
             self.assert_linkedres_contains(
                 payload, "linked_to", ({"pk": self.dataset.id, "title": self.dataset.title},)
@@ -2974,10 +3068,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
 
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 1)
-            self.assert_linkedres_contains(
-                payload, "resources", ({"pk": self.map.id, "title": "<<< " + self.map.title},)
-            )
             self.assert_linkedres_size(payload, "linked_to", 0)
             self.assert_linkedres_size(payload, "linked_by", 1)
             self.assert_linkedres_contains(payload, "linked_by", ({"pk": self.map.id, "title": self.map.title},))
@@ -3008,15 +3098,6 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
-            self.assert_linkedres_size(payload, "resources", 2)
-            self.assert_linkedres_contains(
-                payload,
-                "resources",
-                (
-                    {"pk": self.doc.id, "title": "<<< " + self.doc.title},
-                    {"pk": self.map.id, "title": "<<< " + self.map.title},
-                ),
-            )
             self.assert_linkedres_size(payload, "linked_to", 0)
             self.assert_linkedres_size(payload, "linked_by", 2)
             self.assert_linkedres_contains(
@@ -3041,13 +3122,14 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
 
             # call the API w/ pagination
             url = reverse("base-resources-linked_resources", args=[self.doc.id])
-            response = self.client.get(f"{url}?page_size=1")
+            url = f"{url}?page_size=1"
+            response = self.client.get(url)
 
             # validation
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
+            self.assertIn("WARNINGS", payload, f"Missing WARNINGS element for URL {url}")
             self.assertIn("PAGINATION", payload["WARNINGS"], "Missing PAGINATION element")
 
             # call the API w/o pagination
@@ -3058,8 +3140,7 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            self.assertIn("WARNINGS", payload, "Missing WARNINGS element")
-            self.assertNotIn("PAGINATION", payload["WARNINGS"], "Unexpected PAGINATION element")
+            self.assertNotIn("WARNINGS", payload, "Missing WARNINGS element")
 
         finally:
             for d in _d:
@@ -3080,10 +3161,10 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            res_from_filter = resource_type_param.split(",")
-            res_types = [res["resource_type"] for res in payload["resources"]]
-            for r in res_types:
-                self.assertTrue(r in res_from_filter)
+            res_types_orig = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
+            for r in res_types_payload:
+                self.assertTrue(r in res_types_orig)
 
         finally:
             for d in _d:
@@ -3095,8 +3176,8 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             # data preparation
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.dataset.id))
             _d.append(LinkedResource.objects.create(source_id=self.doc.id, target_id=self.map.id))
-            resource_type_param = "dataset,map"
-            link_type = "linked_by"
+            resource_type_param = "map"
+            link_type = "linked_to"
             # call the API w/ both parameters
             url = reverse("base-resources-linked_resources", args=[self.doc.id])
             response = self.client.get(f"{url}?resource_type={resource_type_param}&link_type={link_type}")
@@ -3105,13 +3186,11 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            res_filter = resource_type_param.split(",")
-            res_types_payload = [res["resource_type"] for res in payload["resources"]]
-            for r in res_types_payload:
-                self.assertTrue(r in res_filter)
-            payload_keys = {"linked_by", "resources", "WARNINGS"}
-            self.assertTrue(payload_keys == set(payload.keys()))
-            # assert that only linked_by is in payload
+            res_types_orig = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
+            for type in res_types_payload:
+                self.assertTrue(type in res_types_orig)
+            self.assertSetEqual({"linked_to"}, set(payload.keys()))
 
         finally:
             for d in _d:
@@ -3132,12 +3211,12 @@ class TestApiLinkedResources(GeoNodeBaseTestSupport):
             self.assertEqual(response.status_code, 200)
             payload = response.json()
 
-            res_from_filter = resource_type_param.split(",")
-            res_types = [res["resource_type"] for res in payload["resources"]]
-            for r in res_types:
-                self.assertTrue(r in res_from_filter)
-            payload_keys = {"linked_by", "linked_to", "resources", "WARNINGS"}
-            self.assertTrue(payload_keys == set(payload.keys()))
+            res_types_orig = resource_type_param.split(",")
+            res_types_payload = [res["resource_type"] for res in payload["linked_to"]]
+            for type in res_types_payload:
+                self.assertTrue(type in res_types_orig)
+            payload_keys = {"linked_by", "linked_to"}
+            self.assertSetEqual(payload_keys, set(payload.keys()))
 
         finally:
             for d in _d:

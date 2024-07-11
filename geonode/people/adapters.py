@@ -25,6 +25,7 @@ django-allauth.
 """
 
 import logging
+import re
 import jwt
 import requests
 
@@ -121,6 +122,24 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
 
     """
 
+    def pre_login(self, request, user, *, email_verification, signal_kwargs, email, signup, redirect_url):
+
+        if email_verification == "mandatory" and not (user.is_superuser or user.is_staff):
+            check_result = self.check_user_invalid_email(request, user)
+            # None means that the user is valid
+            if check_result is not None:
+                return check_result
+
+        return super().pre_login(
+            request,
+            user,
+            email_verification=email_verification,
+            signal_kwargs=signal_kwargs,
+            email=email,
+            signup=signup,
+            redirect_url=redirect_url,
+        )
+
     def is_open_for_signup(self, request):
         return _site_allows_signup(request)
 
@@ -186,6 +205,9 @@ class LocalAccountAdapter(DefaultAccountAdapter, BaseInvitationsAdapter):
     def respond_user_inactive(self, request, user):
         return _respond_inactive_user(user)
 
+    def check_user_invalid_email(self, request, user):
+        return handle_user_invalid_email(user)
+
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     """Customizations for social accounts
@@ -237,6 +259,12 @@ def _site_allows_signup(django_request):
 
 def _respond_inactive_user(user):
     return HttpResponseRedirect(reverse("moderator_contacted", kwargs={"inactive_user": user.id}))
+
+
+def handle_user_invalid_email(user):
+    email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b"
+    if not user.email or not (re.fullmatch(email_regex, user.email)):
+        return HttpResponseRedirect(reverse("moderator_needed"))
 
 
 PROVIDER_ID = getattr(settings, "SOCIALACCOUNT_OIDC_PROVIDER", "geonode_openid_connect")
@@ -333,7 +361,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                 if groupprofile:
                     groupprofile.join(user)
                     if group_role_mapper.is_manager(role_name):
-                        groupprofile.promote()
+                        groupprofile.promote(user)
         except (AttributeError, NotImplementedError):
             pass  # extractor doesn't define a method for extracting field
         return user

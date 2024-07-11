@@ -30,6 +30,7 @@ def geoserver_urls(request):
         GEOSERVER_BASE_URL=ogc_server_settings.public_url,
         UPLOADER_URL=reverse("importer_upload"),
         LAYER_ANCILLARY_FILES_UPLOAD_URL=reverse("importer_upload"),
+        EXECUTION_STATUS_ENDPOINT=reverse("executionrequest-list"),
         MAPFISH_PRINT_ENABLED=getattr(ogc_server_settings, "MAPFISH_PRINT_ENABLED", False),
         PRINT_NG_ENABLED=getattr(ogc_server_settings, "PRINT_NG_ENABLED", False),
         GEONODE_SECURITY_ENABLED=getattr(ogc_server_settings, "GEONODE_SECURITY_ENABLED", False),

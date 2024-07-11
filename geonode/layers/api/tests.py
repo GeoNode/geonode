@@ -19,16 +19,15 @@
 from io import BytesIO
 import logging
 
-from unittest.mock import patch
 from django.contrib.auth import get_user_model
 from urllib.parse import urljoin
 
 from django.conf import settings
+from django.test import override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from guardian.shortcuts import assign_perm, get_anonymous_user
-from geonode.geoserver.createlayer.utils import create_dataset
 
 from geonode.base.models import Link
 from geonode.base.populate_test_data import create_models, create_single_dataset
@@ -121,6 +120,92 @@ class DatasetsApiTests(APITestCase):
             _dataset.use_featureinfo_custom_template = False
             _dataset.save()
 
+    @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
+    def test_filter_dirty_state(self):
+        """
+        ensure that a dirty_state dataset wont be returned
+        """
+
+        # ensure that there is atleast one resource with dirty_state
+        dirty_dataset = Dataset.objects.first()
+        dirty_dataset.dirty_state = True
+        dirty_dataset.save()
+
+        url = reverse("datasets-list")
+
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        dataset_list = response.data["datasets"]
+
+        # ensure that list count is equal to that of clean data
+        # clean resources
+        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        self.assertEqual(len(dataset_list), resource_count_clean)
+        # ensure that the updated dirty dataset is not in the response
+        self.assertFalse(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
+
+    @override_settings(REST_API_DEFAULT_PAGE_SIZE=100)
+    def test_filter_dirty_state_include_dirty(self):
+        """
+        ensure that all resources are returned when dirty_state is true
+        """
+        # ensure that there is atleast one resource with dirty_state
+        dirty_dataset = Dataset.objects.first()
+        dirty_dataset.dirty_state = True
+        dirty_dataset.save()
+
+        # clean resources
+        resource_count_clean = Dataset.objects.filter(dirty_state=False).count()
+        # dirty resources
+        resource_count_dirty = Dataset.objects.filter(dirty_state=True).count()
+
+        resource_count_all = resource_count_clean + resource_count_dirty
+
+        url = f'{reverse("datasets-list")}?include_dirty=true'
+
+        response = self.client.get(url, format="json")
+        self.assertEqual(response.status_code, 200)
+        dataset_list = response.data["datasets"]
+
+        # ensure that list count is equal to that of all data
+        self.assertEqual(len(dataset_list), resource_count_all)
+
+        # ensure that the updated dirty dataset is in the response
+        self.assertTrue(dirty_dataset.pk in [int(dataset["pk"]) for dataset in dataset_list])
+
+    def test_dataset_listing_advertised(self):
+        app = Dataset.objects.first()
+        app.advertised = False
+        app.save()
+
+        url = reverse("datasets-list")
+
+        payload = self.client.get(url)
+
+        prev_count = payload.json().get("total")
+        # the user can see only the advertised resources
+        self.assertEqual(Dataset.objects.filter(advertised=True).count(), prev_count)
+
+        payload = self.client.get(f"{url}?advertised=True")
+        # so if advertised is True, we dont see the advertised=False resource
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count)
+
+        payload = self.client.get(f"{url}?advertised=False")
+        # so if advertised is False, we see only the resource with advertised==False
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, 1)
+
+        # if all is requested, we will see all the resources
+        payload = self.client.get(f"{url}?advertised=all")
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count + 1)
+
+        Dataset.objects.update(advertised=True)
+
     def test_extra_metadata_included_with_param(self):
         _dataset = Dataset.objects.first()
         url = urljoin(f"{reverse('datasets-list')}/", f"{_dataset.pk}")
@@ -196,133 +281,6 @@ class DatasetsApiTests(APITestCase):
         self.assertEqual(response.data["dataset"]["raw_constraints_other"], "None")
         self.assertEqual(response.data["dataset"]["raw_supplemental_information"], "No information provided í £682m")
         self.assertEqual(response.data["dataset"]["raw_data_quality_statement"], "OK    1 2   a b")
-
-    def test_layer_replace_anonymous_should_raise_error(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-replace-dataset", args=(layer.id,))
-
-        expected = {
-            "success": False,
-            "errors": ["Authentication credentials were not provided."],
-            "code": "not_authenticated",
-        }
-
-        response = self.client.patch(url)
-        self.assertEqual(403, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_layer_replace_should_redirect_for_not_accepted_method(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-replace-dataset", args=(layer.id,))
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.post(url)
-        self.assertEqual(405, response.status_code)
-
-        response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
-
-    def test_layer_replace_should_raise_error_if_layer_does_not_exists(self):
-        url = reverse("datasets-replace-dataset", args=(999999999999999,))
-
-        expected = {"success": False, "errors": ["Layer with ID 999999999999999 is not available"], "code": "not_found"}
-
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.patch(url)
-        self.assertEqual(404, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_dataset_append_anonymous_should_raise_error(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-append-dataset", args=(layer.id,))
-
-        expected = {
-            "success": False,
-            "errors": ["Authentication credentials were not provided."],
-            "code": "not_authenticated",
-        }
-
-        response = self.client.patch(url)
-        self.assertEqual(403, response.status_code)
-        self.assertDictEqual(expected, response.json())
-
-    def test_dataset_append_should_redirect_for_not_accepted_method(self):
-        layer = Dataset.objects.first()
-        url = reverse("datasets-append-dataset", args=(layer.id,))
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.post(url)
-        self.assertEqual(405, response.status_code)
-
-        response = self.client.get(url)
-        self.assertEqual(405, response.status_code)
-
-    def test_dataset_append_should_raise_error_if_layer_does_not_exists(self):
-        url = reverse("datasets-append-dataset", args=(999999999999999,))
-
-        expected = {"success": False, "errors": ["Layer with ID 999999999999999 is not available"], "code": "not_found"}
-
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.patch(url)
-        self.assertEqual(404, response.status_code, response.json())
-        self.assertDictEqual(expected, response.json())
-
-    @patch("geonode.layers.api.views.validate_input_source")
-    def test_layer_replace_should_work(self, _validate_input_source):
-        _validate_input_source.return_value = True
-
-        admin = get_user_model().objects.get(username="admin")
-
-        if Dataset.objects.filter(name="single_point").exists():
-            """
-            If the dataset already exists in the test env, we dont want that the test fail
-            so we rename it and then we will rollback the cnahge
-            """
-            _dataset = Dataset.objects.get(name="single_point")
-            _dataset.name = "single_point_2"
-            _dataset.save()
-
-        try:
-            layer = create_dataset(
-                "single_point",
-                "single_point",
-                admin,
-                "Point",
-            )
-        except Exception as e:
-            if "There is already a layer named" not in e.args[0]:
-                raise e
-            else:
-                layer = create_single_dataset("single_point")
-
-        cnt = Dataset.objects.count()
-
-        layer.refresh_from_db()
-        logger.error(layer.alternate)
-        # renaming the file in the same way as the lasyer name
-        # the filename must be consiste with the layer name
-
-        github_path = "https://github.com/GeoNode/gisdata/tree/master/gisdata/data/good/vector/"
-        payload = {
-            "store_spatial_files": False,
-            "base_file": f"{github_path}/single_point.shp",
-            "dbf_file": f"{github_path}/single_point.dbf",
-            "shx_file": f"{github_path}/single_point.shx",
-            "prj_file": f"{github_path}/single_point.prj",
-        }
-
-        url = reverse("datasets-replace-dataset", args=(layer.id,))
-
-        self.client.login(username="admin", password="admin")
-
-        response = self.client.patch(url, data=payload)
-        self.assertEqual(200, response.status_code, response.json())
-
-        layer.refresh_from_db()
-        # evaluate that the number of available layer is not changed
-        self.assertEqual(Dataset.objects.count(), cnt)
 
     def test_patch_point_of_contact(self):
         layer = Dataset.objects.first()

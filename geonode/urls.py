@@ -69,6 +69,7 @@ urlpatterns = [
 urlpatterns += [
     # ResourceBase views
     re_path(r"^base/", include("geonode.base.urls")),
+    re_path(r"^resources/", include("geonode.base.base_urls")),
     # Dataset views
     re_path(r"^datasets/", include("geonode.layers.urls")),
     # Remote Services views
@@ -94,6 +95,7 @@ urlpatterns += [
     re_path(r"^account/", include("allauth.urls")),
     re_path(r"^invitations/", include("geonode.invitations.urls", namespace="geonode.invitations")),
     re_path(r"^people/", include("geonode.people.urls")),
+    re_path(r"^api/v2/users/", include("geonode.people.api.urls")),
     re_path(r"^avatar/", include("avatar.urls")),
     re_path(r"^activity/", include("actstream.urls")),
     re_path(r"^announcements/", include("announcements.urls")),
@@ -108,6 +110,11 @@ urlpatterns += [
         geonode.views.moderator_contacted,
         name="moderator_contacted",
     ),
+    re_path(
+        r"^account/moderation_needed/",
+        geonode.views.moderator_needed,
+        name="moderator_needed",
+    ),
     # OAuth2/OIDC Provider
     re_path(r"^o/", include((base_urlpatterns + oidc_urlpatterns, oauth2_app_name), namespace="oauth2_provider")),
     re_path(r"^api/o/v4/tokeninfo", verify_token, name="tokeninfo"),
@@ -121,6 +128,7 @@ urlpatterns += [
     re_path(r"^api/v2/", include("geonode.management_commands_http.urls")),
     re_path(r"^api/v2/api-auth/", include("rest_framework.urls", namespace="geonode_rest_framework")),
     re_path(r"^api/v2/", include("geonode.facets.urls")),
+    re_path(r"^api/v2/", include("geonode.assets.urls")),
     re_path(r"", include(api.urls)),
 ]
 

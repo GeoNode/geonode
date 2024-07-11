@@ -26,6 +26,8 @@ from celery.utils.log import get_task_logger
 
 from geonode.celery_app import app
 from geonode.storage.manager import StorageManager
+from geonode.assets.handlers import asset_handler_registry
+from geonode.assets.utils import get_default_asset
 
 from ..base.models import ResourceBase
 from .models import Document
@@ -90,7 +92,7 @@ def create_document_thumbnail(self, object_id):
     """
     logger.debug(f"Generating thumbnail for document #{object_id}.")
 
-    storage_manager = StorageManager()
+    default_storage_manager = StorageManager()
 
     try:
         document = Document.objects.get(id=object_id)
@@ -104,15 +106,24 @@ def create_document_thumbnail(self, object_id):
     centering = (0.5, 0.5)
 
     doc_path = None
-    if document.files:
-        doc_path = storage_manager.path(document.files[0])
+
+    # get asset of the resource
+    asset = get_default_asset(document)
+    if not asset and not document.doc_url:
+        raise Exception("Document has neither an associated Asset nor a link, cannot generate thumbnail")
+
+    if asset:
+        handler = asset_handler_registry.get_handler(asset)
+        asset_storage_manager = handler.get_storage_manager(asset)
+        doc_path = asset_storage_manager.path(asset.location[0])
     elif document.doc_url:
         doc_path = document.doc_url
         remove_tmp_file = True
+        asset_storage_manager = default_storage_manager
 
     if document.is_image:
         try:
-            image_file = storage_manager.open(doc_path)
+            image_file = asset_storage_manager.open(doc_path)
         except Exception as e:
             logger.debug(f"Could not generate thumbnail from remote document {document.doc_url}: {e}")
 
@@ -129,12 +140,12 @@ def create_document_thumbnail(self, object_id):
                 if image_file is not None:
                     image_file.close()
                     if remove_tmp_file:
-                        storage_manager.delete(doc_path)
+                        default_storage_manager.delete(doc_path)
 
     elif doc_renderer.supports(doc_path):
         # in case it's a remote document we want to retrieve it first
         if document.doc_url:
-            doc_path = storage_manager.open(doc_path).name
+            doc_path = default_storage_manager.open(doc_path).name
             remove_tmp_file = True
         try:
             thumbnail_content = doc_renderer.render(doc_path)
@@ -145,7 +156,7 @@ def create_document_thumbnail(self, object_id):
             print(e)
         finally:
             if remove_tmp_file:
-                storage_manager.delete(doc_path)
+                default_storage_manager.delete(doc_path)
     if not thumbnail_content:
         logger.warning(f"Thumbnail for document #{object_id} empty.")
         ResourceBase.objects.filter(id=document.id).update(thumbnail_url=None)

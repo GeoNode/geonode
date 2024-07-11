@@ -4,6 +4,9 @@ version: '3.9'
 x-common-django:
   &default-common-django
   image: geonode/geonode:local
+  build:
+      context: ./
+      dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
     - .env
@@ -23,9 +26,6 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     << : *default-common-django
-    build:
-      context: ./
-      dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
@@ -79,7 +79,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.23.3-latest
+    image: geonode/geoserver:2.24.3-latest
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -105,7 +105,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.23.3-latest
+    image: geonode/geoserver_data:2.24.3-latest
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:

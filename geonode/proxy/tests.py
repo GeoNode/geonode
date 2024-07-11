@@ -30,6 +30,7 @@ import zipfile
 from urllib.parse import urljoin
 
 from django.conf import settings
+from geonode.assets.utils import create_asset_and_link
 from geonode.proxy.templatetags.proxy_lib_tags import original_link_available
 from django.test.client import RequestFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -52,6 +53,7 @@ from geonode.layers.models import Dataset
 from geonode.decorators import on_ogc_backend
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.base.populate_test_data import create_models, create_single_dataset
+from geonode.proxy.utils import ProxyUrlsRegistry
 
 TEST_DOMAIN = ".github.com"
 TEST_URL = f"https://help{TEST_DOMAIN}/"
@@ -67,36 +69,46 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.proxy_url = "/proxy/"
         self.url = TEST_URL
 
-    @override_settings(DEBUG=True, PROXY_ALLOWED_HOSTS=())
-    def test_validate_host_disabled_in_debug(self):
-        """If PROXY_ALLOWED_HOSTS is empty and DEBUG is True, all hosts pass the proxy."""
-        response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertTrue(response.status_code in (200, 301), response.status_code)
-
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
-    def test_validate_host_disabled_not_in_debug(self):
-        """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 403."""
-        response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertEqual(response.status_code, 403, response.status_code)
-
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(TEST_DOMAIN,))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([TEST_DOMAIN]))
     def test_proxy_allowed_host(self):
         """If PROXY_ALLOWED_HOSTS is not empty and DEBUG is False requests should return no error."""
         self.client.login(username="admin", password="admin")
         response = self.client.get(f"{self.proxy_url}?url={self.url}")
-        if response.status_code != 404:  # 404 - NOT FOUND
-            self.assertEqual(response.status_code, 200, response.status_code)
+        self.assertNotEqual(response.status_code, 403, response.status_code)
 
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=())
+    @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=("request=GetCapabilities",))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
+    def test_proxy_allowed_params(self):
+        response = self.client.get(f"{self.proxy_url}?url=https://example.com?request=GetCapabilities")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=("request=GetCapabilities",))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
+    def test_proxy_not_allowed_params(self):
+        response = self.client.get(f"{self.proxy_url}?url=http://example.com?param=any")
+        self.assertEqual(response.status_code, 403, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_PATH_NEEDLES=("tms",))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
+    def test_proxy_allowed_path(self):
+        response = self.client.get(f"{self.proxy_url}?url=https://example.com/tms/")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_PATH_NEEDLES=("tms",))
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
+    def test_proxy_not_allowed_path(self):
+        response = self.client.get(f"{self.proxy_url}?url=http://example.com/xyz")
+        self.assertEqual(response.status_code, 403, response.status_code)
+
+    @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=(), PROXY_ALLOWED_PATH_NEEDLES=())
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
     def test_validate_remote_services_hosts(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
         for Remote Services hosts."""
         from geonode.services.models import Service
         from geonode.services.enumerations import WMS, INDEXED
 
-        Service.objects.get_or_create(
+        service, _ = Service.objects.get_or_create(
             type=WMS,
             name="Bogus",
             title="Pocus",
@@ -104,11 +116,44 @@ class ProxyTest(GeoNodeBaseTestSupport):
             method=INDEXED,
             base_url="http://bogus.pocus.com/ows",
         )
-        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows/wms?request=GetCapabilities")
-        # 200 - FOUND
-        self.assertTrue(response.status_code in (200, 301))
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
 
-    @override_settings(DEBUG=False, PROXY_ALLOWED_HOSTS=(".example.org",))
+        # The service should be removed from the proxy registry
+        service.delete()
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
+        self.assertEqual(response.status_code, 403, response.status_code)
+
+        # Two services with the same hostname are added to the proxy registry
+        service, _ = Service.objects.get_or_create(
+            type=WMS,
+            name="Bogus",
+            title="Pocus",
+            owner=self.admin,
+            method=INDEXED,
+            base_url="http://bogus.pocus.com/ows",
+        )
+        Service.objects.get_or_create(
+            type=WMS,
+            name="Bogus2",
+            title="Pocus",
+            owner=self.admin,
+            method=INDEXED,
+            base_url="http://bogus.pocus.com/wms",
+        )
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wms")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+
+        service.delete()
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wfs")
+        # The request passes because the same hostname is still registered for the other serrice
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wcs")
+        self.assertNotEqual(response.status_code, 403, response.status_code)
+
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([".example.org"]))
     def test_relative_urls(self):
         """Proxying to a URL with a relative path element should normalise the path into
         an absolute path before calling the remote URL."""
@@ -128,6 +173,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.client.get(f"{self.proxy_url}?url={url}")
         assert request_mock.call_args[0][0] == "http://example.org/index.html"
 
+    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set(["example.org"]))
     def test_proxy_preserve_headers(self):
         """The GeoNode Proxy should preserve the original request headers."""
         import geonode.proxy.views
@@ -164,23 +210,22 @@ class ProxyTest(GeoNodeBaseTestSupport):
 
         response = self.client.get(f"{self.proxy_url}?url={url}")
         self.assertDictContainsSubset(
-            dict(response.headers.copy()),
             {
-                "Content-Type": "text/plain",
+                "Content-Type": "image/tiff",
                 "Vary": "Authorization, Accept-Language, Cookie, origin",
                 "X-Content-Type-Options": "nosniff",
                 "X-XSS-Protection": "1; mode=block",
-                "Referrer-Policy": "same-origin",
+                "Referrer-Policy": "strict-origin-when-cross-origin",
                 "Cross-Origin-Opener-Policy": "same-origin",
                 "X-Frame-Options": "SAMEORIGIN",
-                "Content-Language": "en-us",
-                "Content-Length": "119",
+                "Content-Language": "en",
+                "Content-Length": "11",
                 "Content-Disposition": 'attachment; filename="filename.tif"',
             },
+            dict(response.headers.copy()),
         )
 
     def test_proxy_url_forgery(self):
-        """The GeoNode Proxy should preserve the original request headers."""
         import geonode.proxy.views
         from urllib.parse import urlsplit
 
@@ -192,7 +237,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
                 "Vary": "Authorization, Accept-Language, Cookie, origin",
                 "X-Content-Type-Options": "nosniff",
                 "X-XSS-Protection": "1; mode=block",
-                "Referrer-Policy": "same-origin",
+                "Referrer-Policy": "strict-origin-when-cross-origin",
                 "X-Frame-Options": "SAMEORIGIN",
                 "Content-Language": "en-us",
                 "Content-Length": "119",
@@ -264,12 +309,15 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         fopen.return_value = SimpleUploadedFile("foo_file.shp", b"scc")
         dataset = Dataset.objects.all().first()
 
-        dataset.files = [
+        dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx",
         ]
+        asset, link = create_asset_and_link(
+            dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         dataset.save()
 
@@ -287,6 +335,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertEqual("application/zip", response.headers.get("Content-Type"))
         self.assertEqual('attachment; filename="CA.zip"', response.headers.get("Content-Disposition"))
 
+        link.delete()
+        asset.delete()
+
     @patch("geonode.storage.manager.storage_manager.exists")
     @patch("geonode.storage.manager.storage_manager.open")
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -295,12 +346,15 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         fopen.return_value = SimpleUploadedFile("foo_file.shp", b"scc")
         dataset = Dataset.objects.all().first()
 
-        dataset.files = [
+        dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx",
         ]
+        asset, link = create_asset_and_link(
+            dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         dataset.save()
 
@@ -323,6 +377,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         self.assertIn(".dbf", "".join(zip_files))
         self.assertIn(".shx", "".join(zip_files))
         self.assertIn(".prj", "".join(zip_files))
+
+        link.delete()
+        asset.delete()
 
 
 class OWSApiTestCase(GeoNodeBaseTestSupport):
@@ -376,12 +433,16 @@ class TestProxyTags(GeoNodeBaseTestSupport):
 
         assert upload
 
-        self.resource.files = [
+        dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",
             "/tmpe1exb9e9/foo_file.shp",
             "/tmpe1exb9e9/foo_file.shx",
         ]
+
+        asset, link = create_asset_and_link(
+            self.resource, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         self.resource.save()
 
@@ -389,3 +450,6 @@ class TestProxyTags(GeoNodeBaseTestSupport):
 
         actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
         self.assertTrue(actual)
+
+        link.delete()
+        asset.delete()

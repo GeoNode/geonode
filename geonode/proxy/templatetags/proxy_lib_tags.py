@@ -17,6 +17,7 @@
 #
 #########################################################################
 
+from geonode.assets.utils import get_default_asset
 from geonode.base.models import ResourceBase
 import traceback
 
@@ -52,7 +53,10 @@ def original_link_available(context, resourceid, url):
     dataset_files = []
     if isinstance(instance, ResourceBase):
         try:
-            for file in instance.files:
+            asset_obj = get_default_asset(instance)
+            # Copy all Dataset related files into a temporary folder
+            files = asset_obj.location if asset_obj else []
+            for file in files:
                 dataset_files.append(file)
                 if not storage_manager.exists(file):
                     return False

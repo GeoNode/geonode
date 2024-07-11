@@ -1,6 +1,7 @@
 from typing import List
 
 from dal_select2_taggit.widgets import TaggitSelect2
+from django.http.request import QueryDict
 
 
 class TaggitSelect2Custom(TaggitSelect2):
@@ -32,9 +33,8 @@ class TaggitProfileSelect2Custom(TaggitSelect2):
 
         returns list of selected elements
         """
-        try:
-            ret_list = data[name]
-        except KeyError:
-            ret_list = []
-        finally:
-            return ret_list
+        if type(data) is dict and name in data:
+            return data[name]
+        elif type(data) is QueryDict:
+            return data.getlist(name)
+        return []

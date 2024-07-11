@@ -32,7 +32,7 @@ from allauth.account.utils import user_field, user_email, user_username
 
 from ..utils import json_response
 from ..decorators import superuser_or_apiauth
-from ..base.auth import get_token_object_from_session, extract_headers, get_auth_token
+from ..base.auth import get_token_object_from_session, get_auth_token
 
 
 def verify_access_token(request, key):
@@ -55,21 +55,13 @@ def verify_access_token(request, key):
 
 @csrf_exempt
 def user_info(request):
-    headers = extract_headers(request)
     user = request.user
 
-    if not user:
+    if not user or user.is_anonymous:
         out = {"success": False, "status": "error", "errors": {"user": ["User is not authenticated"]}}
         return json_response(out, status=401)
 
-    access_token = None
-    if "Authorization" not in headers or "Bearer" not in headers["Authorization"]:
-        access_token = get_auth_token(user)
-        if not access_token:
-            out = {"success": False, "status": "error", "errors": {"auth": ["No token provided."]}}
-            return json_response(out, status=403)
-    else:
-        access_token = headers["Authorization"].replace("Bearer ", "")
+    access_token = get_auth_token(user)
 
     groups = [group.name for group in user.groups.all()]
     if user.is_superuser:

@@ -1,0 +1,13 @@
+{% extends "geonode_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Account Pending Approval" %}{% endblock %}
+
+{% block body %}
+
+<div class="page-header">
+  <h2>{% trans "Account Pending Approval" %}</h2>
+</div>
+<p>{% blocktrans %}The account email verification is enabled and the email associated with this account is invalid or not set.<br> We invite you to contact the administrator to reset the email.{% endblocktrans %}</p>
+{% endblock %}

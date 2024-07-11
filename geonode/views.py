@@ -169,6 +169,11 @@ def moderator_contacted(request, inactive_user=None):
     return TemplateResponse(request, template="account/admin_approval_sent.html", context={"email": user.email})
 
 
+def moderator_needed(request):
+    """Used when a user signs in with an invalid or empty email if ACCOUNT_EMAIL_REQUIRED is True."""
+    return TemplateResponse(request, template="account/admin_approval_needed.html")
+
+
 @login_required
 def metadata_update_redirect(request):
     url = request.POST["url"]

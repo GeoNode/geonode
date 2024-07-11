@@ -37,7 +37,7 @@ class GeoAppSerializer(ResourceBaseSerializer):
         model = GeoApp
         name = "geoapp"
         view_name = "geoapps-list"
-        fields = ("pk", "uuid", "data", "name", "executions", "metadata")
+        fields = list(set(ResourceBaseSerializer.Meta.fields + ("name",)))
 
     def extra_update_checks(self, validated_data):
         _user_profiles = {}
@@ -60,12 +60,6 @@ class GeoAppSerializer(ResourceBaseSerializer):
             raise DuplicateGeoAppException("A GeoApp with the same 'name' already exists!")
 
         self.extra_update_checks(validated_data)
-
-    def validate(self, data):
-        request = self.context.get("request")
-        if request:
-            data["owner"] = request.user
-        return data
 
     def _sanitize_validated_data(self, validated_data, instance=None):
         # Extract users' profiles
