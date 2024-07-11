@@ -290,7 +290,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                     _to_update = {
                         "name": _name,
                         "title": instance.title or _gs_import_session_info.dataset_name,
-                        "files": kwargs.get("files", None),
                         "workspace": _gs_import_session_info.workspace,
                         "alternate": _alternate,
                         "typename": _alternate,

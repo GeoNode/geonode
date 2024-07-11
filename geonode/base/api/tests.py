@@ -23,11 +23,11 @@ import re
 import sys
 import json
 import logging
+from builtins import Exception
 from typing import Iterable
 
 from django.test import RequestFactory, override_settings
 import gisdata
-
 from PIL import Image
 from io import BytesIO
 from time import sleep
@@ -50,10 +50,15 @@ from rest_framework.parsers import JSONParser
 from geonode.catalogue import get_catalogue
 from geonode.catalogue.models import catalogue_post_save
 from geonode.catalogue.views import csw_global_dispatch
+
 from geonode.resource.manager import resource_manager
 from guardian.shortcuts import get_anonymous_user
+
+from geonode.assets.utils import create_asset_and_link
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.assets.utils import get_default_asset
+from geonode.assets.handlers import asset_handler_registry
 
 from geonode.base import enumerations
 from geonode.base.api.serializers import ResourceBaseSerializer
@@ -2228,16 +2233,22 @@ class BaseApiTests(APITestCase):
         )
 
     def test_resource_service_copy(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
-        resource = Dataset.objects.create(
-            owner=get_user_model().objects.get(username="admin"),
-            name="test_copy",
-            store="geonode_data",
-            subtype="vector",
-            alternate="geonode:test_copy",
-            uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
+        resource = resource_manager.create(
+            str(uuid4()),
+            Dataset,
+            defaults={
+                "owner": get_user_model().objects.get(username="admin"),
+                "name": "test_copy",
+                "store": "geonode_data",
+                "subtype": "vector",
+                "alternate": "geonode:test_copy",
+            },
+        )
+
+        asset, link = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
         )
         bobby = get_user_model().objects.get(username="bobby")
         copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
@@ -2269,22 +2280,29 @@ class BaseApiTests(APITestCase):
         cloned_resource = Dataset.objects.last()
         self.assertEqual(cloned_resource.owner.username, "admin")
         # clone dataset with invalid file
-        resource.files = ["/path/invalid_file.wrong"]
-        resource.save()
+        # resource.files = ["/path/invalid_file.wrong"]
+        # resource.save()
+        asset.location = ["/path/invalid_file.wrong"]
+        asset.save()
         response = self.client.put(copy_url)
+
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Resource can not be cloned.")
         # clone dataset with no files
-        resource.files = []
-        resource.save()
+        link.delete()
+        asset.delete()
         response = self.client.put(copy_url)
+
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()["message"], "Resource can not be cloned.")
         # clean
-        resource.delete()
+        try:
+            resource.delete()
+        except Exception as e:
+            logger.warning(f"Can't delete test resource {resource}", exc_info=e)
 
     def test_resource_service_copy_with_perms_dataset(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Dataset.objects.create(
             owner=get_user_model().objects.get(username="admin"),
@@ -2294,7 +2312,9 @@ class BaseApiTests(APITestCase):
             alternate="geonode:test_copy",
             resource_type="dataset",
             uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
+        )
+        _, _ = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
         )
         self._assertCloningWithPerms(resource)
 
@@ -2302,21 +2322,25 @@ class BaseApiTests(APITestCase):
     @override_settings(ASYNC_SIGNALS=False)
     def test_resource_service_copy_with_perms_dataset_set_default_perms(self):
         with self.settings(ASYNC_SIGNALS=False):
-            files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+            files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
             files_as_dict, _ = get_files(files)
-            resource = Dataset.objects.create(
-                owner=get_user_model().objects.get(username="admin"),
-                name="test_copy_with_perms",
-                store="geonode_data",
-                subtype="vector",
-                alternate="geonode:test_copy_with_perms",
-                resource_type="dataset",
-                uuid=str(uuid4()),
-                files=list(files_as_dict.values()),
+            resource = resource_manager.create(
+                None,
+                resource_type=Dataset,
+                defaults={
+                    "owner": get_user_model().objects.first(),
+                    "title": "test_copy_with_perms",
+                    "name": "test_copy_with_perms",
+                    "is_approved": True,
+                    "store": "geonode_data",
+                    "subtype": "vector",
+                    "resource_type": "dataset",
+                    "files": files_as_dict.values(),
+                },
             )
             _perms = {
                 "users": {"bobby": ["base.add_resourcebase", "base.download_resourcebase"]},
-                "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebae"]},
+                "groups": {"anonymous": ["base.view_resourcebase", "base.download_resourcebase"]},
             }
             resource.set_permissions(_perms)
             # checking that bobby is in the original dataset perms list
@@ -2335,11 +2359,11 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertFalse("bobby" in "bobby" in [x.username for x in _resource.get_all_level_info().get("users", [])])
-        self.assertTrue("admin" in "admin" in [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertNotIn("bobby", [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertIn("admin", [x.username for x in _resource.get_all_level_info().get("users", [])])
 
     def test_resource_service_copy_with_perms_doc(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Document.objects.create(
             owner=get_user_model().objects.get(username="admin"),
@@ -2347,23 +2371,25 @@ class BaseApiTests(APITestCase):
             alternate="geonode:test_copy",
             resource_type="document",
             uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
         )
-
+        _, _ = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
+        )
         self._assertCloningWithPerms(resource)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
     def test_resource_service_copy_with_perms_map(self):
-        files = os.path.join(gisdata.GOOD_DATA, "vector/san_andres_y_providencia_water.shp")
+        files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
         files_as_dict, _ = get_files(files)
         resource = Document.objects.create(
             owner=get_user_model().objects.get(username="admin"),
             alternate="geonode:test_copy",
             resource_type="map",
             uuid=str(uuid4()),
-            files=list(files_as_dict.values()),
         )
-
+        _, _ = create_asset_and_link(
+            resource, get_user_model().objects.get(username="admin"), list(files_as_dict.values())
+        )
         self._assertCloningWithPerms(resource)
 
     def _assertCloningWithPerms(self, resource):
@@ -2461,7 +2487,12 @@ class BaseApiTests(APITestCase):
         Ensure we can access the Resource Base list.
         """
         doc = Document.objects.first()
-        expected_payload = [{"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}]
+        asset = get_default_asset(doc)
+        handler = asset_handler_registry.get_handler(asset)
+        expected_payload = [
+            {"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe},
+            {"ajax_safe": False, "default": False, "url": handler.create_download_url(asset)},
+        ]
         # From resource base API
         json = self._get_for_object(doc, "base-resources-detail")
         download_url = json.get("resource").get("download_urls")

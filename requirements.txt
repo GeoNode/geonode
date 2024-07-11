@@ -1,5 +1,5 @@
 # native dependencies
-Pillow==10.3.0
+Pillow==10.4.0
 lxml==5.2.1
 psycopg2==2.9.9
 Django==4.2.9
@@ -79,19 +79,19 @@ djangorestframework-guardian==0.3.0
 drf-extensions==0.7.1
 drf-writable-nested==0.7.0
 drf-spectacular==0.27.2
-git+https://github.com/AltSchool/dynamic-rest.git@v2.2.0#egg=dynamic_rest
+dynamic-rest==2.3.0
 Markdown==3.6
 
-git+https://github.com/GeoNode/pinax-notifications.git@django_upgrade#egg=pinax-notifications
+geonode-pinax-notifications==6.0.0.2
 
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
 git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
 git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
 django-avatar==8.0.0
-git+https://github.com/GeoNode/geonode-oauth-toolkit.git@openid-connect#egg=geonode-oauth-toolkit
-git+https://github.com/GeoNode/geonode-user-messages.git@django_upgrade#egg=geonode-user-messages
-git+https://github.com/GeoNode/geonode-announcements.git@django_upgrade#egg=geonode-announcements
+geonode-oauth-toolkit==2.2.2.2
+geonode-user-messages==2.0.2.2
+geonode-announcements==2.0.2.2
 django-activity-stream==2.0.0
 gn-arcrest==10.5.6
 geoserver-restconfig~=2.0.12
@@ -151,8 +151,8 @@ pytest-bdd==7.1.2
 splinter==0.21.0
 pytest-splinter==3.3.2
 pytest-django==4.8.0
-setuptools>=65.5.1,<69.6.0
-pip==24.0
+pip==24.1.2
+setuptools>=70.2.0,<70.3.0
 Twisted==24.3.0
 pixelmatch==0.3.0
 factory-boy==3.3.0
@@ -173,3 +173,4 @@ aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
 dnspython>=2.6.0rc1 # not directly required, pinned by Snyk to avoid a vulnerability
 nh3==0.2.17
 sqlparse>=0.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
