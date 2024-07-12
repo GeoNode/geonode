@@ -62,6 +62,9 @@ class GroupFacetProvider(FacetProvider):
             logger.debug("Filtering by keys %r", keys)
             filters["group__id__in"] = keys
 
+        if topic_contains:
+            filters["group__name__icontains"] = topic_contains
+
         visible_groups = get_user_visible_groups(user=kwargs["user"])
 
         q = (
