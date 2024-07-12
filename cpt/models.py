@@ -23,13 +23,15 @@ class Campaign(models.Model):
     campaign_url_name = models.CharField(max_length=30, unique=True, validators=[
         RegexValidator(regex=r'^[a-z0-9\-_]+$', message='Only lowercase letters, numbers, hyphens, and underscores allowed.')
     ], null=True, blank=True)
-    allow_drawings = models.BooleanField(default=True, null=True, blank=True)
-    rate_enabled = models.BooleanField(default=True, null=True, blank=True)  # Changed rate to a boolean field
     campaing_title = models.CharField(max_length=255, blank=True, null=True)
-    campaing_short_description = models.TextField(max_length=400,blank=True, null=True)
+    campaing_short_description = models.CharField(max_length=255,blank=True, null=True)
     campaing_detailed_description = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     category_type = models.ForeignKey(CategoryType, on_delete=models.CASCADE, related_name='campaigns', null=True, blank=True)
+    geoserver_workspace = models.CharField(max_length=100, blank=True, null=True)  # Add this line
+    allow_drawings = models.BooleanField(default=True, null=True)
+    rate_enabled = models.BooleanField(default=True, null=True, blank=True)  # Changed rate to a boolean field
+
     def __str__(self):
         return self.campaign_name
