@@ -55,8 +55,8 @@ class GenericOpenIDConnectProvider(OAuth2Provider):
         scope = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("SCOPE", "")
         return scope
 
-    def get_auth_params(self, request, action):
-        ret = super(GenericOpenIDConnectProvider, self).get_auth_params(request, action)
+    def get_auth_params_from_request(self, request, action):
+        ret = super(GenericOpenIDConnectProvider, self).get_auth_params_from_request(request, action)
         if action == AuthAction.REAUTHENTICATE:
             ret["prompt"] = (
                 getattr(settings, "SOCIALACCOUNT_PROVIDERS", {})
