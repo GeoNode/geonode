@@ -53,7 +53,6 @@ class GenericOpenIDConnectProvider(OAuth2Provider):
         )
     )
     oauth2_adapter_class = GenericOpenIDConnectAdapter
-    
 
     def get_default_scope(self):
         scope = getattr(settings, "SOCIALACCOUNT_PROVIDERS", {}).get(PROVIDER_ID, {}).get("SCOPE", "")
