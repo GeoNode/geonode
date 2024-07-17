@@ -1,7 +1,10 @@
 import datetime
+from glob import iglob
+from io import BytesIO
 import logging
 import os
 import shutil
+import zipfile
 
 from django.conf import settings
 from django.http import HttpResponse
@@ -238,20 +241,51 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
             logger.debug(f"Requested path {dir0} + {path}")
 
         if os.path.isfile(localfile):
-            filename = os.path.basename(localfile)
-            orig_base, ext = os.path.splitext(filename)
-            outname = f"{basename or orig_base or 'file'}{ext}"
+            match attachment:
+                case True:
+                    return self.create_downloadable_zip(asset)
+                case False:
+                    filename = os.path.basename(localfile)
+                    orig_base, ext = os.path.splitext(filename)
+                    outname = f"{basename or orig_base or 'file'}{ext}"
 
-            logger.info(f"Returning file '{localfile}' with name '{outname}'")
+                    logger.info(f"Returning file '{localfile}' with name '{outname}'")
 
-            return DownloadResponse(
-                _asset_storage_manager.open(localfile).file,
-                basename=f"{outname}",
-                attachment=attachment,
-            )
+                    return DownloadResponse(
+                        _asset_storage_manager.open(localfile).file,
+                        basename=f"{outname}",
+                        attachment=attachment,
+                    )
         else:
             logger.warning(f"Internal file {localfile} not found for asset {asset.id}")
             return HttpResponse(f"Internal file not found for asset {asset.id}", status=404 if path else 500)
+
+    def create_downloadable_zip(self, asset):
+        # Open StringIO to grab in-memory ZIP contents
+
+        s = BytesIO()
+
+        # Opening the zip
+        zf = zipfile.ZipFile(s, "w")
+
+        # getting the asset handler
+        handler = asset_handler_registry.get_handler(asset)
+
+        # looping in all files and putting them in the zip
+        for fpath in iglob(f"{handler._get_managed_dir(asset)}/*", recursive=True):
+            # Calculate path for file in zip
+            fdir, fname = os.path.split(fpath)
+            # Add file, at correct path
+            zf.write(fpath, fname)
+
+        # closing zip for all contents to be written
+        zf.close()
+
+        # Grab ZIP file from in-memory
+        resp = HttpResponse(s.getvalue(), content_type="application/x-zip-compressed")
+
+        resp["Content-Disposition"] = f'attachment; filename={asset.title.replace(".", "_")}.zip'
+        return resp
 
 
 asset_handler_registry.register(LocalAssetHandler)
