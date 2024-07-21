@@ -44,9 +44,12 @@ def shuffle(chars):
 
 
 _simple_chars = shuffle(string.ascii_letters + string.digits)
-_strong_chars = shuffle(
-    string.ascii_letters + string.digits + string.punctuation.replace('"', "").replace("'", "").replace("`", "")
-)
+
+punctuation_without_dollar = string.punctuation.replace('$', '')
+_strong_chars = list(string.ascii_letters + string.digits + punctuation_without_dollar)
+
+# Shuffle the characters
+random.shuffle(_strong_chars)
 
 
 def generate_env_file(args):
