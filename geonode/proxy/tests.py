@@ -310,11 +310,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.all().first()
 
         dataset_files = [
-            "/tmpe1exb9e9/foo_file.dbf",
-            "/tmpe1exb9e9/foo_file.prj",
-            "/tmpe1exb9e9/foo_file.shp",
-            "/tmpe1exb9e9/foo_file.shx",
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
+
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
         )
@@ -333,7 +331,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 200)
         self.assertEqual("application/zip", response.headers.get("Content-Type"))
-        self.assertEqual('attachment; filename="CA.zip"', response.headers.get("Content-Disposition"))
+        self.assertEqual("attachment; filename=CA.zip", response.headers.get("Content-Disposition"))
 
         link.delete()
         asset.delete()
@@ -347,11 +345,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.all().first()
 
         dataset_files = [
-            "/tmpe1exb9e9/foo_file.dbf",
-            "/tmpe1exb9e9/foo_file.prj",
-            "/tmpe1exb9e9/foo_file.shp",
-            "/tmpe1exb9e9/foo_file.shx",
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
+
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
         )
@@ -367,16 +363,12 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         # headers and status assertions
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get("content-type"), "application/zip")
-        self.assertEqual(response.get("content-disposition"), f'attachment; filename="{dataset.name}.zip"')
+        self.assertEqual(response.get("content-disposition"), f"attachment; filename={dataset.name}.zip")
         # Inspect content
         zip_content = io.BytesIO(b"".join(response.streaming_content))
         zip = zipfile.ZipFile(zip_content)
         zip_files = zip.namelist()
-        self.assertEqual(len(zip_files), 4)
-        self.assertIn(".shp", "".join(zip_files))
-        self.assertIn(".dbf", "".join(zip_files))
-        self.assertIn(".shx", "".join(zip_files))
-        self.assertIn(".prj", "".join(zip_files))
+        self.assertIn(".json", "".join(zip_files))
 
         link.delete()
         asset.delete()

@@ -21,7 +21,6 @@ tqdm==4.66.4
 Deprecated==1.2.14
 wrapt==1.16.0
 jsonschema==4.22.0
-zipstream-new==1.1.8
 schema==0.7.7
 rdflib==6.3.2
 smart_open==7.0.4
