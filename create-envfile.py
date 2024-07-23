@@ -183,3 +183,27 @@ if __name__ == "__main__":
             logger.error("Please enter a valid response")
         if overwrite_env == "y":
             generate_env_file(args)
+
+    docker_compose_file_path = 'docker-compose.yml'
+    patterns_to_uncomment = [
+        '  #build:',
+        '  #    context: ./',
+        '  #    dockerfile: Dockerfile'
+    ]
+
+    patterns_to_uncomment = [pattern.replace('  #', ' *#') for pattern in patterns_to_uncomment]
+
+    with open(docker_compose_file_path, 'r') as file:
+        lines = file.readlines()
+
+    modified_lines = []
+    for line in lines:
+        modified_line = line
+        for pattern in patterns_to_uncomment:
+            if re.match(pattern.replace(' *#', ' *#?'), line):
+                modified_line = re.sub(' *#', '  ', line, count=1)
+                break
+        modified_lines.append(modified_line)
+
+    with open(docker_compose_file_path, 'w') as file:
+        file.writelines(modified_lines)
