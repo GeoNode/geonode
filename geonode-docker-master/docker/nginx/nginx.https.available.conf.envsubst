@@ -1,0 +1,37 @@
+# NOTE : $VARIABLES are env variables replaced by entrypoint.sh using envsubst
+# not to be mistaken for nginx variables (also starting with $, but usually lowercase)
+
+# This file is to be included in the main nginx.conf configuration if HTTPS_HOST is set
+ssl_session_cache   shared:SSL:10m;
+ssl_session_timeout 10m;
+
+# this is the actual HTTPS host
+server {
+    listen              443 ssl;
+    server_name         $HTTPS_HOST;
+    keepalive_timeout   70;
+
+    ssl_certificate     /certificate_symlink/fullchain.pem;
+    ssl_certificate_key /certificate_symlink/privkey.pem;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    include sites-enabled/*.conf;
+}
+
+# if we try to connect from http, we redirect to https
+server {
+    listen 80;
+    server_name $HTTPS_HOST $HTTP_HOST; # TODO : once geoserver supports relative urls, we should allow access though both HTTP and HTTPS at the same time and hence remove HTTP_HOST from this line
+    
+    # Except for let's encrypt challenge
+    location /.well-known {
+        alias /geonode-certificates/.well-known;
+        include  /etc/nginx/mime.types;
+    }
+
+    # Redirect to https
+    location / {
+       return 302 https://$HTTPS_HOST$request_uri; # TODO : we should use 301 (permanent redirect, but not practical for debug)
+    }
+}

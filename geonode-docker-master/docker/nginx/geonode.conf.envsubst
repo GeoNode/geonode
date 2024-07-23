@@ -1,0 +1,134 @@
+include /etc/nginx/mime.types;
+
+# This is the main geonode conf
+charset     utf-8;
+
+# max upload size
+client_max_body_size 100G;
+client_body_buffer_size 256K;
+client_body_timeout 600s;
+large_client_header_buffers 4 64k;
+
+proxy_connect_timeout       600;
+proxy_send_timeout          600;
+proxy_read_timeout          600;
+uwsgi_read_timeout          600;
+send_timeout                600;
+
+fastcgi_hide_header Set-Cookie;
+
+etag on;
+
+# compression
+gzip on;
+gzip_vary on;
+gzip_proxied any;
+gzip_http_version 1.1;
+gzip_disable "MSIE [1-6]\.";
+gzip_buffers 16 8k;
+gzip_min_length 1100;
+gzip_comp_level 6;
+gzip_types
+        text/css
+        text/javascript
+        text/xml
+        text/plain
+        application/xml
+        application/xml+rss
+        application/javascript
+        application/x-javascript
+        application/json;
+
+# GeoServer
+location /geoserver {
+  # Using a variable is a trick to let Nginx start even if upstream host is not up yet
+  # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
+  set $upstream $GEOSERVER_LB_HOST_IP:$GEOSERVER_LB_PORT;
+
+  proxy_set_header X-Forwarded-Host $host;
+  proxy_set_header X-Forwarded-Server $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-Proto $HTTP_SCHEME;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection "upgrade";
+  proxy_hide_header X-Frame-Options;
+  proxy_pass http://$upstream;
+  proxy_http_version 1.1;
+  proxy_redirect http://$upstream $HTTP_SCHEME://$HTTP_HOST;
+  proxy_request_buffering  off;
+  client_max_body_size 0;
+}
+
+# GeoNode
+location /static/ {
+  alias $STATIC_ROOT;
+
+  location ~* \.(?:html|js|jpg|jpeg|gif|png|css|tgz|gz|rar|bz2|doc|pdf|ppt|tar|wav|bmp|ttf|rtf|swf|ico|flv|txt|woff|woff2|svg|xml)$ {
+      gzip_static always;
+      expires 30d;
+      access_log off;
+      add_header Pragma "public";
+      add_header Cache-Control "max-age=31536000, public";
+  }
+}
+
+location /uploaded/ {
+  alias $MEDIA_ROOT;
+
+  location ~* \.(?:html|js|jpg|jpeg|gif|png|css|tgz|gz|rar|bz2|doc|pdf|ppt|tar|wav|bmp|ttf|rtf|swf|ico|flv|txt|woff|woff2|svg|xml)$ {
+      gzip_static always;
+      expires 30d;
+      access_log off;
+      add_header Pragma "public";
+      add_header Cache-Control "max-age=31536000, public";
+  }
+}
+
+location / {
+  # Using a variable is a trick to let Nginx start even if upstream host is not up yet
+  # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
+  set $upstream $GEONODE_LB_HOST_IP:$GEONODE_LB_PORT;
+
+  if ($request_method = OPTIONS) {
+      add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, OPTIONS";
+      add_header Access-Control-Allow-Headers "Authorization, Content-Type, Accept";
+      add_header Access-Control-Allow-Credentials true;
+      add_header Content-Length 0;
+      add_header Content-Type text/plain;
+      add_header Access-Control-Max-Age 1728000;
+      return 200;
+  }
+
+  add_header Access-Control-Allow-Credentials false;
+  add_header Access-Control-Allow-Headers "Content-Type, Accept, Authorization, Origin, User-Agent";
+  add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, OPTIONS";
+  
+  proxy_redirect              off;
+  proxy_set_header            Host $host;
+  proxy_set_header            Origin $HTTP_SCHEME://$host;
+  proxy_set_header            X-Real-IP $remote_addr;
+  proxy_set_header            X-Forwarded-Host $server_name;
+  proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header            X-Forwarded-Proto $HTTP_SCHEME;
+  proxy_hide_header           X-Frame-Options;
+  proxy_request_buffering     off;
+
+  # uwsgi_params
+  include /etc/nginx/uwsgi_params;
+
+  proxy_pass http://$upstream;
+  # uwsgi_pass $upstream;
+
+  # when a client closes the connection then keep the channel to uwsgi open. Otherwise uwsgi throws an IOError
+  uwsgi_ignore_client_abort on;
+  uwsgi_request_buffering off;
+
+  location ~* \.(?:js|jpg|jpeg|gif|png|tgz|gz|rar|bz2|doc|pdf|ppt|tar|wav|bmp|ttf|rtf|swf|ico|flv|woff|woff2|svg|xml)$ {
+      gzip_static always;
+      expires 30d;
+      access_log off;
+      add_header Pragma "public";
+      add_header Cache-Control "max-age=31536000, public";
+  }
+}
