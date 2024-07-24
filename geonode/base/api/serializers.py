@@ -543,7 +543,69 @@ class LinksSerializer(DynamicModelSerializer):
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
+            if lnk.asset:
+                extras = {
+                    "type": "asset",
+                    "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
+                }
+                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
+                    lnk.asset
+                )
+                formatted_link["extras"] = extras
+
+        if download_links := self._get_download_links(instance):
+            ret.extend(download_links)
+
         return ret
+
+    class Flopper:
+        status = True
+
+        def get(self):
+            ret = self.status
+            self.status = False
+            return ret
+
+    def _get_download_links(self, instance_id):
+        links = []
+
+        try:
+            instance = ResourceBase.objects.get(pk=instance_id)
+            instance = instance.get_real_instance()
+        except Exception as e:
+            logger.exception(e)
+            raise e
+
+        if not instance or instance.resource_type not in ["dataset"]:
+            return links
+
+        default = self.Flopper()
+
+        default_handler = get_default_dataset_download_handler()
+        obj = default_handler(self.context.get("request"), instance.alternate)
+        if obj.download_url:
+            link = {
+                "url": obj.download_url,
+                # OTHER FIELDS: "extension", "link_type", "name", "mime",
+                "extras": {"type": "download", "content": {"ajax_safe": obj.is_ajax_safe, "default": default.get()}},
+            }
+            links.append(link)
+
+        # then let's prepare the payload with everything
+        for handler in get_download_handlers():
+            obj = handler(self.context.get("request"), instance.alternate)
+            if obj.download_url:
+                link = {
+                    "url": obj.download_url,
+                    # OTHER FIELDS: "extension", "link_type", "name", "mime",
+                    "extras": {
+                        "type": "download",
+                        "content": {"ajax_safe": obj.is_ajax_safe, "default": default.get()},
+                    },
+                }
+                links.append(link)
+
+        return links
 
 
 class ResourceBaseSerializer(DynamicModelSerializer):
