@@ -112,10 +112,9 @@ class DataItemRetriever(object):
                     for chunk in self._django_form_file.chunks():
                         tmp_file.write(chunk)
             else:
-                with (
-                    open(self.file_path, "wb") as tmp_file,
-                    smart_open.open(uri=self._original_file_uri, mode="rb") as original_file,
-                ):
+                with open(self.file_path, "wb") as tmp_file, smart_open.open(
+                    uri=self._original_file_uri, mode="rb"
+                ) as original_file:
                     for chunk in file_chunks_iterable(original_file):
                         tmp_file.write(chunk)
 
