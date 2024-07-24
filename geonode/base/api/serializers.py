@@ -491,7 +491,11 @@ class LinkedResourceEmbeddedSerializer(DynamicModelSerializer):
         request = self.context.get("request", None)
         _resource = ResourceBase.objects.get(pk=instance)
 
-        return base_linked_resources_payload(_resource, request.user) if request and request.user and _resource else {}
+        return (
+            base_linked_resources_payload(_resource.get_real_instance(), request.user)
+            if request and request.user and _resource
+            else {}
+        )
 
 
 api_bbox_settable_resource_models = [Document, GeoApp]
