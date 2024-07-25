@@ -42,7 +42,6 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
@@ -1546,7 +1545,6 @@ def get_store(cat, name, workspace=None):
 
 
 def fetch_gs_resource(instance, values, tries):
-    layer = gs_catalog.get_layer(name=instance.name)
     try:
         gs_resource = gs_catalog.get_resource(name=instance.name, store=instance.store, workspace=instance.workspace)
     except Exception:
@@ -2057,10 +2055,9 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     gs_resource.metadata_links = metadata_links
 
                     """
-                    TODO: Attributions must be set on a Layer, not a Resource. 
+                    TODO: Attributions must be set on a Layer, not a Resource.
                     We should retrive gs_catalog.get_layer(name=instance.alternate), and obtain the resource from Layer.resource
                     but I'm not sure if at this stage the layer is ready. For the moment I disable this block.
-                    
                     default_poc = instance.get_first_contact_of_role(role="pointOfContact")
                     # Update Attribution link
                     if default_poc:
