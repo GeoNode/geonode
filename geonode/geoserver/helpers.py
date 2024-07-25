@@ -2055,7 +2055,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     for link in instance.link_set.metadata():
                         metadata_links.append((link.mime, link.name, link.url))
                     gs_resource.metadata_links = metadata_links
-                    
+
                     """
                     TODO: Attributions must be set on a Layer, not a Resource. 
                     We should retrive gs_catalog.get_layer(name=instance.alternate), and obtain the resource from Layer.resource
