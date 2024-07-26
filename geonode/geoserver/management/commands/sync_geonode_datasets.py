@@ -24,21 +24,21 @@ from django.core.management.base import BaseCommand
 from geonode.layers.models import Dataset
 from geonode.security.views import _perms_info_json
 from geonode.base.utils import remove_duplicate_links
-from geonode.geoserver.helpers import (
-    create_gs_thumbnail,
-    sync_instance_with_geoserver,
-    set_attributes_from_geoserver
-)
+from geonode.geoserver.helpers import create_gs_thumbnail, sync_instance_with_geoserver, set_attributes_from_geoserver
 
 
 def sync_geonode_datasets(
-        ignore_errors, filter, username,
-        removeduplicates,
-        updatepermissions,
-        updatethumbnails,
-        updateattributes,
-        updatebbox):
-    layers = Dataset.objects.all().order_by('name')
+    ignore_errors,
+    filter,
+    username,
+    removeduplicates,
+    updatepermissions,
+    updatethumbnails,
+    updateattributes,
+    updatebbox,
+    updatemetadata,
+):
+    layers = Dataset.objects.all().order_by("name")
     if filter:
         layers = layers.filter(name__icontains=filter)
     if username:
@@ -65,6 +65,9 @@ def sync_geonode_datasets(
             if updatebbox:
                 print("Regenerating BBOX...")
                 sync_instance_with_geoserver(layer.id, updatemetadata=False, updatebbox=True)
+            if updatemetadata:
+                print("Updating metadata...")
+                sync_instance_with_geoserver(layer.id, updatemetadata=True, updatebbox=False)
             if removeduplicates:
                 # remove duplicates
                 print("Removing duplicate links...")
@@ -77,6 +80,7 @@ def sync_geonode_datasets(
                 pass
             else:
                 import traceback
+
                 traceback.print_exc()
                 print("Stopping process because --ignore-errors was not set and an error was found.")
                 return
@@ -86,74 +90,80 @@ def sync_geonode_datasets(
 
 
 class Command(BaseCommand):
-    help = 'Update the GeoNode layers: permissions (including GeoFence database), statistics, thumbnails'
+    help = "Update the GeoNode layers: permissions (including GeoFence database), statistics, thumbnails"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-i',
-            '--ignore-errors',
-            action='store_true',
-            dest='ignore_errors',
+            "-i",
+            "--ignore-errors",
+            action="store_true",
+            dest="ignore_errors",
             default=False,
-            help='Stop after any errors are encountered.'
+            help="Stop after any errors are encountered.",
         )
         parser.add_argument(
-            '-d',
-            '--remove-duplicates',
-            action='store_true',
-            dest='removeduplicates',
+            "-d",
+            "--remove-duplicates",
+            action="store_true",
+            dest="removeduplicates",
             default=False,
-            help='Remove duplicates first.'
+            help="Remove duplicates first.",
         )
         parser.add_argument(
-            '-f',
-            '--filter',
+            "-f",
+            "--filter",
             dest="filter",
             default=None,
-            help="Only update data the layers that match the given filter."),
+            help="Only update data the layers that match the given filter.",
+        ),
         parser.add_argument(
-            '-u',
-            '--username',
-            dest="username",
-            default=None,
-            help="Only update data owned by the specified username.")
+            "-u", "--username", dest="username", default=None, help="Only update data owned by the specified username."
+        )
         parser.add_argument(
-            '--updatepermissions',
-            action='store_true',
+            "--updatepermissions",
+            action="store_true",
             dest="updatepermissions",
             default=False,
-            help="Update the layer permissions.")
+            help="Update the layer permissions.",
+        )
         parser.add_argument(
-            '--updatethumbnails',
-            action='store_true',
+            "--updatethumbnails",
+            action="store_true",
             dest="updatethumbnails",
             default=False,
-            help="Update the layer styles and thumbnails.")
+            help="Update the layer styles and thumbnails.",
+        )
         parser.add_argument(
-            '--updateattributes',
-            action='store_true',
+            "--updateattributes",
+            action="store_true",
             dest="updateattributes",
             default=False,
-            help="Update the layer attributes.")
+            help="Update the layer attributes.",
+        )
         parser.add_argument(
-            '--updatebbox',
-            action='store_true',
-            dest="updatebbox",
+            "--updatebbox", action="store_true", dest="updatebbox", default=False, help="Update the layer BBOX."
+        )
+        parser.add_argument(
+            "--updatemetadata",
+            action="store_true",
+            dest="updatemetadata",
             default=False,
-            help="Update the layer BBOX.")
+            help="Update the Geoserver ayer metadata.",
+        )
 
     def handle(self, **options):
-        ignore_errors = options.get('ignore_errors')
-        removeduplicates = options.get('removeduplicates')
-        updatepermissions = options.get('updatepermissions')
-        updatethumbnails = options.get('updatethumbnails')
-        updateattributes = options.get('updateattributes')
-        updatebbox = options.get('updatebbox')
-        filter = options.get('filter')
-        if not options.get('username'):
+        ignore_errors = options.get("ignore_errors")
+        removeduplicates = options.get("removeduplicates")
+        updatepermissions = options.get("updatepermissions")
+        updatethumbnails = options.get("updatethumbnails")
+        updateattributes = options.get("updateattributes")
+        updatebbox = options.get("updatebbox")
+        updatemetadata = options.get("updatemetadata")
+        filter = options.get("filter")
+        if not options.get("username"):
             username = None
         else:
-            username = options.get('username')
+            username = options.get("username")
         sync_geonode_datasets(
             ignore_errors,
             filter,
@@ -162,4 +172,6 @@ class Command(BaseCommand):
             updatepermissions,
             updatethumbnails,
             updateattributes,
-            updatebbox)
+            updatebbox,
+            updatemetadata,
+        )
