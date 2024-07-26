@@ -42,7 +42,6 @@ import xml.etree.ElementTree as ET
 from django.conf import settings
 from django.utils import timezone
 from django.db import transaction
-from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
@@ -1546,7 +1545,6 @@ def get_store(cat, name, workspace=None):
 
 
 def fetch_gs_resource(instance, values, tries):
-    _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 2)
     try:
         gs_resource = gs_catalog.get_resource(name=instance.name, store=instance.store, workspace=instance.workspace)
     except Exception:
@@ -1587,9 +1585,6 @@ def fetch_gs_resource(instance, values, tries):
     else:
         msg = f"There isn't a geoserver resource for this layer: {instance.name}"
         logger.debug(msg)
-        if tries >= _max_tries:
-            # raise GeoNodeException(msg)
-            return (values, None)
         gs_resource = None
     return (values, gs_resource)
 
@@ -2032,40 +2027,15 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
         gs_resource = None
         if not _is_remote_instance:
-            values = None
+            values = {"title": instance.title, "abstract": instance.raw_abstract}
             _tries = 0
             _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
-
-            # If the store in None then it's a new instance from an upload,
-            # only in this case run the geoserver_upload method
-            if getattr(instance, "overwrite", False):
-                base_file, info = instance.get_base_file()
-
-                # There is no need to process it if there is no file.
-                if base_file:
-                    from geonode.geoserver.upload import geoserver_upload
-
-                    gs_name, workspace, values, gs_resource = geoserver_upload(
-                        instance,
-                        base_file.file.path,
-                        instance.owner,
-                        instance.name,
-                        overwrite=True,
-                        title=instance.title,
-                        abstract=instance.abstract,
-                        charset=instance.charset,
-                    )
 
             values, gs_resource = fetch_gs_resource(instance, values, _tries)
             while not gs_resource and _tries < _max_tries:
                 values, gs_resource = fetch_gs_resource(instance, values, _tries)
                 _tries += 1
                 time.sleep(3)
-
-            # Get metadata links
-            metadata_links = []
-            for link in instance.link_set.metadata():
-                metadata_links.append((link.mime, link.name, link.url))
 
             if gs_resource:
                 logger.debug(f"Found geoserver resource for this dataset: {instance.name}")
@@ -2078,8 +2048,17 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                     setattr(instance, key, get_dataset_storetype(values[key]))
 
                 if updatemetadata:
+                    # Get metadata links
+                    metadata_links = []
+                    for link in instance.link_set.metadata():
+                        metadata_links.append((link.mime, link.name, link.url))
                     gs_resource.metadata_links = metadata_links
-                    default_poc = instance.get_first_contact_of_role(role="poc")
+
+                    """
+                    TODO: Attributions must be set on a Layer, not a Resource.
+                    We should retrive gs_catalog.get_layer(name=instance.alternate), and obtain the resource from Layer.resource
+                    but I'm not sure if at this stage the layer is ready. For the moment I disable this block.
+                    default_poc = instance.get_first_contact_of_role(role="pointOfContact")
                     # Update Attribution link
                     if default_poc:
                         # gsconfig now utilizes an attribution dictionary
@@ -2096,7 +2075,7 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
                             settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
                         )
                         gs_resource.attribution_link = site_url + profile.get_absolute_url()
-
+                    """
                     try:
                         if settings.RESOURCE_PUBLISHING:
                             if instance.is_published != gs_resource.advertised:
