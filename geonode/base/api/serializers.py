@@ -28,7 +28,6 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
-from geonode.assets.utils import get_default_asset
 from geonode.people import Roles
 from django.http import QueryDict
 from deprecated import deprecated
@@ -64,7 +63,6 @@ from geonode.geoapps.models import GeoApp
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.layers.utils import get_download_handlers, get_default_dataset_download_handler
-from geonode.assets.handlers import asset_handler_registry
 from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest

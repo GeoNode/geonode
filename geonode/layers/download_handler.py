@@ -87,7 +87,7 @@ class DatasetDownloadHandler:
         if self.is_link_resource:
             return resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").first().url
 
-        if resource.subtype == '3dtiles':
+        if resource.subtype == "3dtiles":
             asset = get_default_asset(resource)
             if asset is not None:
                 return asset_handler_registry.get_handler(asset).create_download_url(asset)
@@ -100,7 +100,7 @@ class DatasetDownloadHandler:
         """
         if not self._resource:
             try:
-                
+
                 if self.resource_pk:
                     self._resource = _resolve_resourcebase(
                         self.request,
