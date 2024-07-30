@@ -337,29 +337,9 @@ def _datasets_locations(
                         ]
                     )
 
-            if compute_bbox:
-                if dataset.ll_bbox_polygon:
-                    dataset_bbox = utils.clean_bbox(dataset.ll_bbox, target_crs)
-                elif (
-                    dataset.bbox[-1].upper() != "EPSG:3857"
-                    and target_crs.upper() == "EPSG:3857"
-                    and utils.exceeds_epsg3857_area_of_use(dataset.bbox)
-                ):
-                    # handle exceeding the area of use of the default thumb's CRS
-                    dataset_bbox = utils.transform_bbox(utils.crop_to_3857_area_of_use(dataset.bbox), target_crs)
-                else:
-                    dataset_bbox = utils.transform_bbox(dataset.bbox, target_crs)
-
-                if not bbox:
-                    bbox = dataset_bbox
-                else:
-                    # dataset's BBOX: (left, right, bottom, top)
-                    bbox = [
-                        min(bbox[0], dataset_bbox[0]),
-                        max(bbox[1], dataset_bbox[1]),
-                        min(bbox[2], dataset_bbox[2]),
-                        max(bbox[3], dataset_bbox[3]),
-                    ]
+        if compute_bbox:
+            instance.compute_bbox(target_crs)
+            bbox = instance.bbox
 
     if bbox and len(bbox) < 5:
         bbox = list(bbox) + [target_crs]  # convert bbox to list, if it's tuple
