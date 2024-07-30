@@ -110,6 +110,8 @@ def create_thumbnail(
 
     if isinstance(instance, Map):
         is_map_with_datasets = MapLayer.objects.filter(map=instance, local=True).exclude(dataset=None).exists()
+        if is_map_with_datasets:
+            compute_bbox_from_datasets = True
     if bbox:
         bbox = utils.clean_bbox(bbox, target_crs)
     elif instance.ll_bbox_polygon:
