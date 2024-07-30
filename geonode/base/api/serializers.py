@@ -547,6 +547,16 @@ class LinksSerializer(DynamicModelSerializer):
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
+            if lnk.asset:
+                extras = {
+                    "type": "asset",
+                    "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
+                }
+                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
+                    lnk.asset
+                )
+                formatted_link["extras"] = extras
+
         return ret
 
 
