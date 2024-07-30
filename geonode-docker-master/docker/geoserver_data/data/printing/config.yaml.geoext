@@ -1,0 +1,373 @@
+#===========================================================================
+# allowed DPIs
+#===========================================================================
+dpis:
+  - 96
+  - 150
+  - 300
+
+#===========================================================================
+# the allowed scales
+#===========================================================================
+scales:
+  - 0.35
+  - 0.7
+  - 1.5
+  - 3.5
+  - 7.0
+  - 15.0
+  - 35.0
+  - 70.0
+  - 150.0
+  - 273.0
+  - 546.0
+  - 1093.0
+  - 2187.5
+  - 4375.0
+  - 8750.0
+  - 17500.0
+  - 35000.0
+  - 70000.0
+  - 138000.0
+  - 273437.5
+  - 546875.0
+  - 1093750.0
+  - 2187500.0
+  - 4375000.0
+  - 8750000.0
+  - 17500000.0
+  - 35000000.0
+  - 70000000.0
+  - 140000000.0
+  - 280000000.0
+
+outputFilename: 'GeoNode-Map-${date}.pdf'
+
+brokenUrlPlaceholder: 'default'
+# brokenUrlPlaceholder: 'throw'
+
+#===========================================================================
+# the list of allowed ips
+#===========================================================================
+hosts:
+  - !localMatch
+    dummy: true
+  - !acceptAll
+    dummy: true
+  - !dnsMatch
+    host: localhost
+    port: 80
+  - !dnsMatch
+    host: labs.metacarta.com
+    port: 80
+  - !dnsMatch
+    host: terraservice.net
+    port: 80
+  - !dnsMatch
+    host: tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: www.geocat.ch
+    port: 80
+  - !dnsMatch
+    host: otile1.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile2.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile3.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile4.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: otile5.mqcdn.com
+    port: 80
+  - !dnsMatch
+    host: a.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: b.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: c.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: d.tile.openstreetmap.org
+    port: 80
+  - !dnsMatch
+    host: a.tile.openstreetmap.fr
+    port: 80
+  - !dnsMatch
+    host: b.tile.openstreetmap.fr
+    port: 80
+  - !dnsMatch
+    host: c.tile.openstreetmap.fr
+    port: 80
+  - !dnsMatch
+    host: d.tile.openstreetmap.fr
+    port: 80
+  - !dnsMatch
+    host: en.unesco.org
+    port: 80
+  - !dnsMatch
+    host: en.unesco.org/tiles
+    port: 80
+  - !dnsMatch
+    host: en.unesco.org/tiles/geodata
+    port: 80
+  - !dnsMatch
+    host: a.tile.openstreetmap.fr/hot
+    port: 80
+  - !dnsMatch
+    host: api.mapbox.com
+    port: 80
+  - !dnsMatch
+    host: api.mapbox.com/styles/v1/mapbox/satellite-streets-v9/tiles
+    port: 80
+  - !dnsMatch
+    host: api.mapbox.com/styles/v1/mapbox/streets-v9/tiles
+    port: 80
+
+layouts:
+  #===========================================================================
+  A4 :
+  #===========================================================================
+    metaData:
+      title: '${mapTitle}'
+      author: 'GeoNode'
+      subject: 'Simple layout'
+      keywords: 'map,print'
+      creator: 'GeoNode'
+    mainPage:
+      rotation: true
+      pageSize: 802 555
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 535
+          width: 752
+          widths: [260, 522]
+          items:
+            - !image
+              maxWidth: 752
+              url: '/${configDir}/print_header.png'
+            - !text
+              font: Helvetica
+              fontSize: 22
+              fontColor: #0874B8
+              spacingAfter: 100
+              align: left
+              text: '${mapTitle}'
+              maxLength: 100
+        - !map
+          width: 500
+          height: 320
+          absoluteX:30
+          absoluteY:435
+        #legend panel
+        - !columns
+          config:
+            borderWidth: 1
+            cells:
+              - borderWidth: 1
+                borderWidthLeft: 1
+                borderColor: black
+                padding: 2
+                backgroundColor: white
+                vertAlign: bottom
+          widths: [170]
+          absoluteX: 542
+          absoluteY: 435
+          width: 235
+          height: 500
+          items:
+            - !legends
+              horizontalAlignment: left
+              iconMaxWidth: 150
+              iconMaxHeight: 0
+              layerSpace: 5
+              layerFontSize: 6
+              classIndentation: 5
+              classFontSize: 6
+              classSpace: 4
+              backgroundColor: #ffffff
+              failOnBrokenUrl: true
+              overflow: false
+        - !columns
+          absoluteX: 475
+          absoluteY: 165
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file://${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'
+        - !columns
+          absoluteX: 395
+          absoluteY: 430
+          width: 40
+          items:
+            - !image
+              maxWidth: 100
+              maxHeight: 100
+              url: 'file://${configDir}/logo-geonode.png'
+        - !columns
+          config:
+            borderWidth: 0
+            cells:
+              - borderWidth: 0
+                borderWidthLeft: 1
+                borderColor: white
+                padding: 2
+          absoluteX: 30
+          absoluteY: 95
+          width: 752
+          widths: [138, 455, 98]
+          items:
+            - !columns
+              config:
+                borderWidth: 4
+                cells:
+                  - borderWidth: 2
+                    borderWidthLeft: 1
+                    borderColor: white
+                    padding: 3
+              nbColumns: 1
+              items:
+                - !text
+                  width: 420
+                  text: '(c) example.com'
+                  fontEncoding: Cp1252
+                  fontSize: 7
+                  align: justified
+                  vertAlign: top
+                  spacingAfter: 2
+                - !text
+                  width: 420
+                  text: '${now MM.dd.yyyy}'
+                  fontEncoding: Cp1252
+                  fontSize: 5
+                  align: left
+                  vertAlign: bottom
+            - !text
+              align: justified
+              vertAlign: top
+              fontSize: 8
+              text: '${comment}'
+              maxLength: 1200
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 108
+              type: 'bar sub'
+              intervals: 5
+
+  #===========================================================================
+  Wide :
+  #===========================================================================
+    metaData:
+      title: '${mapTitle}'
+      author: 'GeoNode'
+      subject: 'Simple layout'
+      keywords: 'map,print'
+      creator: 'GeoNode'
+    mainPage:
+      rotation: true
+      pageSize: 802 555
+      landscape: false
+      items:
+        - !columns
+          absoluteX: 30
+          absoluteY: 535
+          width: 752
+          widths: [260, 522]
+          items:
+            - !image
+              maxWidth: 752
+              url: '/${configDir}/print_header.png'
+            - !text
+              font: Helvetica
+              fontSize: 22
+              fontColor: #0874B8
+              spacingAfter: 100
+              align: left
+              text: '${mapTitle}'
+              maxLength: 100
+        - !map
+          width: 752
+          height: 320
+          absoluteX:30
+          absoluteY:435
+        - !columns
+          absoluteX: 745
+          absoluteY: 165
+          width: 40
+          items:
+            - !image
+              maxWidth: 40
+              maxHeight: 40
+              url: 'file://${configDir}/Arrow_North_CFCF.svg'
+              rotation: '${rotation}'
+        - !columns
+          absoluteX: 675
+          absoluteY: 430
+          width: 40
+          items:
+            - !image
+              maxWidth: 100
+              maxHeight: 100
+              url: 'file://${configDir}/logo-geonode.png'
+        - !columns
+          config:
+            borderWidth: 0
+            cells:
+              - borderWidth: 0
+                borderWidthLeft: 1
+                borderColor: white
+                padding: 2
+          absoluteX: 30
+          absoluteY: 95
+          width: 752
+          widths: [138, 485, 98]
+          items:
+            - !columns
+              config:
+                borderWidth: 4
+                cells:
+                  - borderWidth: 2
+                    borderWidthLeft: 1
+                    borderColor: white
+                    padding: 3
+              nbColumns: 1
+              items:
+                - !text
+                  width: 420
+                  text: '(c) example.com'
+                  fontEncoding: Cp1252
+                  fontSize: 7
+                  align: justified
+                  vertAlign: top
+                  spacingAfter: 2
+                - !text
+                  width: 420
+                  text: '${now MM.dd.yyyy}'
+                  fontEncoding: Cp1252
+                  fontSize: 5
+                  align: left
+                  vertAlign: bottom
+            - !text
+              align: justified
+              vertAlign: top
+              fontSize: 8
+              text: '${comment}'
+              maxLength: 1200
+            - !scalebar
+              align: right
+              vertAlign: middle
+              maxSize: 108
+              type: 'bar sub'
+              intervals: 5

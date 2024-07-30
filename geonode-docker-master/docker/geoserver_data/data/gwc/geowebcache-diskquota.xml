@@ -1,0 +1,12 @@
+<gwcQuotaConfiguration>
+  <enabled>true</enabled>
+  <cacheCleanUpFrequency>600</cacheCleanUpFrequency>
+  <cacheCleanUpUnits>SECONDS</cacheCleanUpUnits>
+  <maxConcurrentCleanUps>2</maxConcurrentCleanUps>
+  <globalExpirationPolicyName>LFU</globalExpirationPolicyName>
+  <globalQuota>
+    <value>500</value>
+    <units>MiB</units>
+  </globalQuota>
+  <quotaStore>H2</quotaStore>
+</gwcQuotaConfiguration>

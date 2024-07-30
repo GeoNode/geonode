@@ -1,0 +1,32 @@
+<geoNodeOauth2Authentication>
+  <id>-313f4319:15766e137c9:-8000</id>
+  <name>geonode-oauth2</name>
+  <className>org.geoserver.security.oauth2.GeoNodeOAuthAuthenticationFilter</className>
+  <roleSource class="org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig$PreAuthenticatedUserNameRoleSource">RoleService</roleSource>
+  <userGroupServiceName>default</userGroupServiceName>
+  <roleServiceName>geonode REST role service</roleServiceName>
+  <cliendId>Jrchz2oPY3akmzndmgUTYrs9gczlgoV20YPSvqaV</cliendId>
+  <clientSecret>rCnp5txobUo83EpQEblM8fVj3QT5zb5qRfxNsuPzCqZaiRyIoxM4jdgMiZKFfePBHYXCLd7B8NlkfDBY9HKeIQPcy5Cp08KQNpRHQbjpLItDHv12GvkSeXp6OxaUETv3</clientSecret>
+  
+  <!-- GeoNode accessTokenUri -->
+  <accessTokenUri>http://localhost:8000/o/token/</accessTokenUri>
+  
+  <!-- GeoNode userAuthorizationUri -->
+  <userAuthorizationUri>http://localhost:8000/o/authorize/</userAuthorizationUri>
+  
+  <!-- GeoServer Public URL -->
+  <redirectUri>http://localhost:8080/geoserver/index.html</redirectUri>
+  
+  <!-- GeoNode checkTokenEndpointUrl -->
+  <checkTokenEndpointUrl>http://localhost:8000/api/o/v4/tokeninfo/</checkTokenEndpointUrl>
+  
+  <!-- GeoNode logoutUri -->
+  <logoutUri>http://localhost:8000/account/logout/</logoutUri>
+  
+  <scopes>write</scopes>
+  <enableRedirectAuthenticationEntryPoint>false</enableRedirectAuthenticationEntryPoint>
+  <forceAccessTokenUriHttps>false</forceAccessTokenUriHttps>
+  <forceUserAuthorizationUriHttps>false</forceUserAuthorizationUriHttps>
+  <loginEndpoint>/j_spring_oauth2_geonode_login</loginEndpoint>
+  <logoutEndpoint>/j_spring_oauth2_geonode_logout</logoutEndpoint>
+</geoNodeOauth2Authentication>
