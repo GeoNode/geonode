@@ -2490,8 +2490,7 @@ class BaseApiTests(APITestCase):
         asset = get_default_asset(doc)
         handler = asset_handler_registry.get_handler(asset)
         expected_payload = [
-            {"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe},
-            {"ajax_safe": False, "default": False, "url": handler.create_download_url(asset)},
+            {"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}
         ]
         # From resource base API
         json = self._get_for_object(doc, "base-resources-detail")
