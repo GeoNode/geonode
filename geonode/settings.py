@@ -2334,22 +2334,7 @@ DATABASE_ROUTERS = ["importer.db_router.DatastoreRouter"]
 
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES += ("importer_upload",)
 
-IMPORTER_HANDLERS = ast.literal_eval(
-    os.getenv(
-        "IMPORTER_HANDLERS",
-        "[\
-    'importer.handlers.gpkg.handler.GPKGFileHandler',\
-    'importer.handlers.geojson.handler.GeoJsonFileHandler',\
-    'importer.handlers.shapefile.handler.ShapeFileHandler',\
-    'importer.handlers.kml.handler.KMLFileHandler',\
-    'importer.handlers.csv.handler.CSVFileHandler',\
-    'importer.handlers.geotiff.handler.GeoTiffFileHandler',\
-    'importer.handlers.xml.handler.XMLFileHandler',\
-    'importer.handlers.sld.handler.SLDFileHandler',\
-    'importer.handlers.tiles3d.handler.Tiles3DFileHandler',\
-]",
-    )
-)
+IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS",))
 
 INSTALLED_APPS += ("geonode.facets",)
 GEONODE_APPS += ("geonode.facets",)
