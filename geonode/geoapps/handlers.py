@@ -10,6 +10,6 @@ class GeoAppHandler(BaseResourceHandler):
     def can_handle(instance):
         return isinstance(instance, GeoApp)
 
-    def download_urls(self):
+    def download_urls(self, **kwargs):
         logger.debug("Download is not available for maps")
         return []
