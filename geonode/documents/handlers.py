@@ -11,7 +11,7 @@ class DocumentHandler(BaseResourceHandler):
     def can_handle(instance):
         return isinstance(instance, Document)
 
-    def download_urls(self):
+    def download_urls(self, **kwargs):
         """
         Specific method that return the download URL of the document
         """
