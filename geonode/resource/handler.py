@@ -15,7 +15,7 @@ class BaseResourceHandler(ABC):
     REGISTRY = []
 
     def __init__(self) -> None:
-        self.resource = None
+        self.instance = None
 
     def __str__(self):
         return f"{self.__module__}.{self.__class__.__name__}"
@@ -44,7 +44,7 @@ class BaseResourceHandler(ABC):
                 self.init_class(instance)
                 return handler()
         logger.error("No handlers found for the given resource")
-        return None
+        return self
 
     def download_urls(self, **kwargs):
         """
@@ -53,6 +53,7 @@ class BaseResourceHandler(ABC):
         if not self.instance:
             logger.warning("No instance declared, so is not possible to return the download url")
             return None
+        return []
 
     def download_response(self, **kwargs):
         """
