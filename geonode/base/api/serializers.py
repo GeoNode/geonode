@@ -42,7 +42,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 from avatar.templatetags.avatar_tags import avatar_url
 from geonode.utils import bbox_swap
 from geonode.base.api.exceptions import InvalidResourceException
-
+from geonode.assets.handlers import asset_handler_registry
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
     Link,

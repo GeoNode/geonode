@@ -22,7 +22,7 @@ class Tiles3DHandler(BaseResourceHandler):
         asset = get_default_asset(self.instance)
         if asset is not None:
             asset_url = asset_handler_registry.get_handler(asset).create_download_url(asset)
-            return asset_url
+            return [{"url": asset_url, "ajax_safe": True, "default": True}]
 
 
 class DatasetHandler(BaseResourceHandler):
