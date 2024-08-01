@@ -846,7 +846,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
     title = models.CharField(_("title"), max_length=255, help_text=_("name by which the cited resource is known"))
-    title_translated = models.CharField(_("title_translated"), max_length=255, help_text=title_translated_help_text)
+    title_translated = models.CharField(
+        _("title_translated"), max_length=255, blank=True, help_text=title_translated_help_text
+    )
 
     abstract = models.TextField(_("abstract"), max_length=2000, help_text=abstract_help_text)
     abstract_translated = models.TextField(

@@ -127,6 +127,119 @@
           {% endblock thesauri %}
         </div>
 
+        {% block funder_form %}
+          <label > Fundings</label>
+            {{funder_form.management_form }}
+            <div id="DELETE" class="form-group">
+              <input type="hidden" name="FORM-xx-id" value="1" id="id_FORM-xx-id" hidden>
+              <input type="checkbox" name="FORM-xx-DELETE" id="id_FORM-xx-DELETE" hidden>
+              
+            </div>
+            <div class="panel ">
+              <!-- Tab panes -->
+              <div class="panel-heading panel-heading-nav">
+                  <ul class="nav nav-tabs allTabs">
+                      {% for form in funder_form %}
+                        {% if forloop.counter == 1 %}
+                        <li role="presentation" class="active">
+                          <a  href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
+                                  <span class="tabTex">{{ forloop.counter }}   </span> 
+                              <button type="button" class="nav-remove"><icon class="fa fa-minus-circle"></icon>
+                              </button></a>
+                          </li>
+                          {% else %}
+                          <li role="presentation" class="">
+                              <a  href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
+                                  <span class="tabTex">{{ forloop.counter }}   </span>
+                              <button type="button"  class="nav-remove"><icon class="fa fa-minus-circle"></icon>
+                              </button></a>
+                          </li>
+                        {% endif %}
+                    {%endfor%}
+                    <li role="presentation"  class="nav-item enpt tab li-add" >
+                      <a ><button id="nav-add"  class="btn-primary nav-add "  type="button"><icon class="fa fa-plus-circle"> new </button></a>
+                    </li>
+                    <li role="presentation"  class="nav-item enpt tab nav-empty templateTab hidden" >
+                      <a  href="" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
+                                  <span class="newTabTex"></span>
+                              <button type="button" class="nav-remove"><icon class="fa fa-minus-circle"></icon>
+                              </button></a>
+                    </li>
+                  
+                  </ul>
+              </div>
+              <!-- Tab panes -->
+              <div class="tab-content allContent">
+                    {% for form in funder_form %}
+                        {% if forloop.counter == 1 %}
+                          <div class="tab-pane active" id="{{ form.prefix }}" role="tabpanel" >
+                                <div>
+                                  {% if forloop.first %}
+                                    
+                                        {% for field in form.visible_fields %}
+                                            
+                                                <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
+                                                <div id="{{ field.name }}" class="form-group">
+                                                    {{ field }}
+                                                    {{ field.errors.as_ul }}
+                                                </div>
+                                            
+                                        {% endfor %}
+                                  {% endif %}
+                                    {% for hidden in form.hidden_fields %}
+                                            <div>
+                                              {{ hidden }}
+                                            </div> 
+                                        {% endfor %}
+                                </div>
+                          </div>
+                        {% else %}
+                          <div class="tab-pane " id="{{ form.prefix }}" role="tabpanel" >
+                            <div>
+                                
+                                    {% for field in form.visible_fields %}
+                                        <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
+                                        <div id="{{ field.name }}" class="form-group">
+                                            {{ field }}
+                                            {{ field.errors.as_ul }}
+                                        </div>
+                                    {% endfor %}
+                                    {% for hidden in form.hidden_fields %}
+                                        <div>
+                                          {{ hidden }}
+                                        </div> 
+                                    {% endfor %}
+                            </div>
+                          </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                  <div class="tab-pane hidden templateContent" id="templateContent" role="tabpanel" >
+                            <div>
+                                
+                                    {% for field in funder_form.empty_form.visible_fields %}
+                                        <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
+                                        <div id="{{ field.name }}" class="form-group">
+                                            {{ field }}
+                                            {{ field.errors.as_ul }}
+                                        </div>
+                                    {% endfor %}
+                                    {% for hidden in funder_form.empty_form.hidden_fields %}
+                                        <div>
+                                          {{ hidden }}
+                                        </div> 
+                                    {% endfor %}
+                            </div>
+                  </div>
+                    
+              </div>
+            </div> 
+         
+        {% endblock funder_form %}
+
+
+
+
         {% block category %}
         <div class="row">
           <div class="col-md-12">
@@ -263,4 +376,9 @@
             }
         });
     </script>
+    <script>
+          let prefix = "{{funder_form.prefix}}";
+    </script>
+
+    <script type="text/javascript" src="{% static "geonode/js/utils/formsetsInTabs.js" %}"></script>
 {% endblock %}
