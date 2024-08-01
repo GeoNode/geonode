@@ -94,7 +94,7 @@ class DatasetDownloadHandler:
                     self.request,
                     self.resource_name,
                     "base.download_resourcebase",
-                    _("You do not have download permissions for this dataset."),
+                    _("You do not have download permissions for this dataset.")
                 )
             except Exception as e:
                 logger.debug(e)

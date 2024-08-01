@@ -380,7 +380,7 @@ def dump_models(path=None):
         f.write(result)
 
 
-def create_single_dataset(name, keywords=None, owner=None, group=None, **kwargs):
+def create_single_dataset(name, keywords=None, owner=None, group=None, with_asset=False, **kwargs):
     admin, created = get_user_model().objects.get_or_create(username="admin")
     if created:
         admin.is_superuser = True
@@ -415,6 +415,8 @@ def create_single_dataset(name, keywords=None, owner=None, group=None, **kwargs)
 
         if isinstance(keywords, list):
             dataset = add_keywords_to_resource(dataset, keywords)
+        if with_asset:
+            _, _ = create_asset_and_link(dataset, dataset.owner, dfile)
 
         dataset.set_default_permissions(owner=owner or admin)
         dataset.clear_dirty_state()
