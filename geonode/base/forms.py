@@ -418,7 +418,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     abstract_translated = forms.CharField(
         label=_("translated abstract"),
         help_text=ResourceBase.abstract_translated_help_text,
-        required=True,
+        required=False,
         widget=TinyMCE(),
     )
 
@@ -450,6 +450,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
     )
     date_issued = forms.DateTimeField(
+        required=False,
         label=_("Date Issued*"),
         localize=True,
         input_formats=["%Y-%m-%d"],
@@ -738,6 +739,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             "files",
             "was_approved",
             "was_published",
+            "funders",
         )
 
 
