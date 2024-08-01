@@ -14,18 +14,14 @@ class BaseResourceHandler(ABC):
 
     REGISTRY = []
 
-    def __init__(self) -> None:
-        self.instance = None
+    def __init__(self, instance=None) -> None:
+        self.instance = instance
 
     def __str__(self):
         return f"{self.__module__}.{self.__class__.__name__}"
 
     def __repr__(self):
         return self.__str__()
-
-    @classmethod
-    def init_class(cls, instance):
-        cls.instance = instance
 
     @classmethod
     def register(cls):
@@ -41,8 +37,7 @@ class BaseResourceHandler(ABC):
         """
         for handler in self.get_registry():
             if handler.can_handle(instance):
-                self.init_class(instance)
-                return handler()
+                return handler(instance)
         logger.error("No handlers found for the given resource")
         return self
 

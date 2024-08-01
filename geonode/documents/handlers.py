@@ -18,7 +18,7 @@ class DocumentHandler(BaseResourceHandler):
         super().download_urls()
         return [
             {
-                "url": self.instance.download_url,
+                "url": self.instance.download_url if not self.instance.doc_url else self.instance.doc_url,
                 "ajax_safe": self.instance.download_is_ajax_safe,
             },
         ]
