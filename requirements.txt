@@ -32,7 +32,7 @@ zipstream-ng==1.7.1
 django-allauth==0.63.6
 django-appconf==1.0.6
 django-celery-results==2.5.1
-django-filter==24.2
+django-filter==24.3
 django-imagekit==5.0.0
 django-taggit==5.0.1
 django-markdownify==0.9.5
