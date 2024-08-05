@@ -22,6 +22,7 @@ import re
 import gzip
 import logging
 import traceback
+import zipstream
 
 from hyperlink import URL
 from urllib.parse import urlparse, urlsplit, urljoin
@@ -29,7 +30,6 @@ from urllib.parse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.template import loader
 from django.http import HttpResponse, StreamingHttpResponse
-from django.db.models import signals
 from django.views.generic import View
 from django.http.request import validate_host
 from django.utils.translation import gettext_lazy as _
@@ -38,7 +38,6 @@ from django.views.decorators.csrf import requires_csrf_token
 from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
-from geonode.services.models import Service
 from geonode.storage.manager import storage_manager
 from geonode.utils import (
     resolve_object,
@@ -54,8 +53,7 @@ from geonode import geoserver  # noqa
 from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
 from geonode.geoserver.helpers import ogc_server_settings
-from geonode.assets.utils import get_default_asset
-from zipstream import ZipStream
+
 from .utils import proxy_urls_registry
 
 logger = logging.getLogger(__name__)
@@ -243,13 +241,20 @@ def download(request, resourceid, sender=Dataset):
 
     if isinstance(instance, ResourceBase):
         dataset_files = []
+        file_list = []  # Store file info to be returned
         try:
-            asset_obj = get_default_asset(instance)
+            files = instance.resourcebase_ptr.files
             # Copy all Dataset related files into a temporary folder
-            files = asset_obj.location if asset_obj else []
             for file_path in files:
                 if storage_manager.exists(file_path):
                     dataset_files.append(file_path)
+                    filename = os.path.basename(file_path)
+                    file_list.append(
+                        {
+                            "name": filename,
+                            "data_iter": storage_manager.open(file_path),
+                        }
+                    )
                 else:
                     return HttpResponse(
                         loader.render_to_string(
@@ -273,19 +278,27 @@ def download(request, resourceid, sender=Dataset):
 
             # ZIP everything and return
             target_file_name = "".join([instance.name, ".zip"])
-            register_event(request, "download", instance)
-            folder = os.path.dirname(dataset_files[0])
 
-            zs = ZipStream.from_path(folder)
-            return StreamingHttpResponse(
-                zs,
-                content_type="application/zip",
-                headers={
-                    "Content-Disposition": f"attachment; filename={target_file_name}",
-                    "Content-Length": len(zs),
-                    "Last-Modified": zs.last_modified,
-                },
-            )
+            target_zip = zipstream.ZipFile(mode="w", compression=zipstream.ZIP_DEFLATED, allowZip64=True)
+
+            # Iterable: Needed when the file_info has it's data as a stream
+            def _iterable(source_iter):
+                while True:
+                    buf = source_iter.read(BUFFER_CHUNK_SIZE)
+                    if not buf:
+                        break
+                    yield buf
+
+            # Add files to zip
+            for file_info in file_list:
+                target_zip.write_iter(arcname=file_info["name"], iterable=_iterable(file_info["data_iter"]))
+
+            register_event(request, "download", instance)
+
+            # Streaming content response
+            response = StreamingHttpResponse(target_zip, content_type="application/zip")
+            response["Content-Disposition"] = f'attachment; filename="{target_file_name}"'
+            return response
         except (NotImplementedError, Upload.DoesNotExist):
             traceback.print_exc()
             tb = traceback.format_exc()
@@ -388,17 +401,3 @@ def fetch_response_headers(response, response_headers):
                 ]:
                     response._headers[_header] = (_header, response_headers.get(_header))
     return response
-
-
-def service_post_save(instance, sender, **kwargs):
-    service_hostname = urlsplit(instance.base_url).hostname
-    proxy_urls_registry.register_host(service_hostname)
-
-
-def service_post_delete(instance, sender, **kwargs):
-    # We reinitialize the registry otherwise we might delete a host requested by another service with the same hostanme
-    proxy_urls_registry.initialize()
-
-
-signals.post_save.connect(service_post_save, sender=Service)
-signals.post_delete.connect(service_post_delete, sender=Service)
