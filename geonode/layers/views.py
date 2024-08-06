@@ -53,7 +53,7 @@ from geonode.resource.utils import update_resource
 from geonode.base.auth import get_or_create_token
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.views import batch_modify
-from geonode.base.models import Thesaurus, TopicCategory, Funder
+from geonode.base.models import Thesaurus, TopicCategory, Funder, RelatedIdentifier
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm, NewLayerUploadForm
@@ -363,6 +363,14 @@ def dataset_metadata(
         extra=0,
         min_num=1,
     )
+
+    RelatedIdentifierFormset = modelformset_factory(
+        RelatedIdentifier,
+        fields=["related_identifier", "related_identifier_type", "relation_type"],
+        can_delete=True,
+        extra=0,
+        min_num=1,
+    )
     current_keywords = [keyword.name for keyword in layer.keywords.all()]
     topic_category = layer.category
 
@@ -419,10 +427,15 @@ def dataset_metadata(
                 "errors": [re.sub(re.compile("<.*?>"), "", str(err)) for err in attribute_form.errors],
             }
             return HttpResponse(json.dumps(out), content_type="application/json", status=400)
-        funders_intial_values = Funder.objects.all().filter(resourcebase=layer)
+
         funder_form = FunderFormset(
             request.POST,
-            prefix="funder_form",
+            prefix="form_funder",
+        )
+
+        related_identifier_form = RelatedIdentifierFormset(
+            request.POST,
+            prefix="related_identifier_form",
         )
         category_form = CategoryForm(
             request.POST,
@@ -483,7 +496,13 @@ def dataset_metadata(
         )
 
         funders_intial_values = Funder.objects.all().filter(resourcebase=layer)
-        funder_form = FunderFormset(prefix="funder_form", queryset=funders_intial_values)
+        funder_form = FunderFormset(prefix="form_funder", queryset=funders_intial_values)
+
+        related_identifier_intial_values = RelatedIdentifier.objects.all().filter(resourcebase=layer)
+        related_identifier_form = RelatedIdentifierFormset(
+            prefix="related_identifier_form", queryset=related_identifier_intial_values
+        )
+
         category_form = CategoryForm(
             prefix="category_choice_field", initial=topic_category.id if topic_category else None
         )
@@ -555,6 +574,7 @@ def dataset_metadata(
         and dataset_form.is_valid()
         and attribute_form.is_valid()
         and funder_form.is_valid()
+        # and related_identifier_form.is_valid()
         and category_form.is_valid()
         and tkeywords_form.is_valid()
         and timeseries_form.is_valid()
@@ -581,6 +601,11 @@ def dataset_metadata(
         funder_form.save()
         instance = funder_form.save(commit=False)
         layer.funders.add(*instance)
+
+        related_identifier_form.save()
+        instance = related_identifier_form.save(commit=False)
+        layer.related_identifier.add(*instance)
+
         layer.save()
 
         new_keywords = current_keywords if request.keyword_readonly else dataset_form.cleaned_data["keywords"]
@@ -694,6 +719,7 @@ def dataset_metadata(
             "attribute_form": attribute_form,
             "timeseries_form": timeseries_form,
             "funder_form": funder_form,
+            "form_related_identifier": related_identifier_form,
             "category_form": category_form,
             "tkeywords_form": tkeywords_form,
             "preview": getattr(settings, "GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),

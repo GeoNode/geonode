@@ -700,7 +700,7 @@ class FundingReference(models.Model):
 
 
 class Funder(models.Model):
-    funding_reference = models.ForeignKey(FundingReference, null=False, blank=False, on_delete=models.CASCADE)
+    funding_reference = models.ForeignKey(FundingReference, null=True, blank=True, on_delete=models.CASCADE)
     award_number = models.CharField(
         max_length=255, help_text=_("The code assigned by the funder to a sponsored award (grant). (e.g. 282625)")
     )
