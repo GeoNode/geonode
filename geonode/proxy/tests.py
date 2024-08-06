@@ -107,7 +107,6 @@ class ProxyTest(GeoNodeBaseTestSupport):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
         for Remote Services hosts."""
         from geonode.base.models import Link
-        from geonode.base.enumerations import LINK_TYPES
 
         dataset = Dataset.objects.all().first()
         dataset.sourcetype = "REMOTE"
