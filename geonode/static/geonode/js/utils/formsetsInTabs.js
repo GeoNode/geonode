@@ -9,7 +9,7 @@ for (let name of formsetsInTabs) {
     console.log("acima")
 
     reOrder(form)
-    hideDeleteCheckbox(form)
+    // hideDeleteCheckbox(form)
 }
 
 
@@ -107,19 +107,20 @@ function removeTab(element) {
     tabToRemove = element.parent('a').parent('li')
 
     tabToRemove.remove()
-    contentToRemove = $('#' + prefix + '-' + number)
+    contentToRemove = form.find('#' + prefix + '-' + number)
+    console.log(contentToRemove[0])
+    console.log("para remover")
     contentToRemove.find('#DELETE input').prop("checked", true)
+    console.log(contentToRemove.find('#DELETE input').prop("checked"))
     contentToRemove.removeAttr('role')
-    toDjango = contentToRemove.children('div')
-    toDjango.hide().insertAfter(templateContent)
-    contentToRemove.remove()
+    toDjango = contentToRemove
+    toDjango.hide().detach().insertAfter(form.find('.templateContent'))
+    // contentToRemove.remove()
     form.find('.allContent').find('.tab-pane').first().addClass('active')
     form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
     reOrder(form)
     actualForms--
-    console.log(actualForms)
-    console.log(prefix)
-    $('#id_' + prefix + '-TOTAL_FORMS').attr("value", actualForms)
+    form.find('#id_' + prefix + '-TOTAL_FORMS').attr("value", actualForms)
 
 
 };
@@ -129,7 +130,7 @@ function reOrder(form) {
     prefix = form.attr("id")
     console.log(prefix)
     counter = 0
-    form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
+
 
     form.find('.allTabs').find('li a').each(
         function () {
@@ -157,6 +158,10 @@ function reOrder(form) {
     )
 
 }
+form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
+#TODO
+form.find('tab-content').find('.tab-pane').removeClassClass('active')
+form.find('tab-content').find('.tab-pane:first').addClass('active')
 
 function removeActive(form) {
     form.find('.allTabs').find('li').each(

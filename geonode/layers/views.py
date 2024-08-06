@@ -600,6 +600,8 @@ def dataset_metadata(
         layer.set_contact_roles_from_metadata_edit(dataset_form)
         funder_form.save()
         instance = funder_form.save(commit=False)
+
+        print(funder_form.deleted_forms)
         layer.funders.add(*instance)
 
         related_identifier_form.save()

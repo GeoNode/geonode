@@ -685,15 +685,19 @@ class FundingReference(models.Model):
     """Funding Reference Identifiers"""
 
     funder_name = models.CharField(
-        max_length=255, help_text=_("Name of the funding provider. (e.g. European Commission)")
+        blank=True, null=True, max_length=255, help_text=_("Name of the funding provider. (e.g. European Commission)")
     )
     funder_identifier = models.CharField(
+        blank=True,
+        null=True,
         max_length=255,
         help_text=_(
             "Uniquely identifies a funding entity, according to various types. (e.g. http://doi.org/10.13039/501100000780)"
         ),
     )
-    funder_identifier_type = models.CharField(max_length=255, help_text=_("The type of the Identifier. (e.g. BMBF)"))
+    funder_identifier_type = models.CharField(
+        blank=True, null=True, max_length=255, help_text=_("The type of the Identifier. (e.g. BMBF)")
+    )
 
     def __str__(self):
         return f"{self.funder_name}"
@@ -702,15 +706,22 @@ class FundingReference(models.Model):
 class Funder(models.Model):
     funding_reference = models.ForeignKey(FundingReference, null=True, blank=True, on_delete=models.CASCADE)
     award_number = models.CharField(
-        max_length=255, help_text=_("The code assigned by the funder to a sponsored award (grant). (e.g. 282625)")
+        blank=True,
+        null=True,
+        max_length=255,
+        help_text=_("The code assigned by the funder to a sponsored award (grant). (e.g. 282625)"),
     )
     award_uri = models.CharField(
+        blank=True,
+        null=True,
         max_length=255,
         help_text=_(
             "The URI leading to a page provided by the funder for more information about the award (grant). (e.g. http://cordis.europa.eu/project/rcn/100180_en.html)"
         ),
     )
     award_title = models.CharField(
+        blank=True,
+        null=True,
         max_length=255,
         help_text=_(
             "The human readable title of the award (grant). (e.g. MOTivational strength of ecosystem services)"
