@@ -56,6 +56,7 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     ThesaurusLabel,
     TopicCategory,
+    RelatedProject,
 )
 from geonode.base.widgets import TaggitSelect2Custom, TaggitProfileSelect2Custom
 from geonode.base.fields import MultiThesauriField
@@ -634,6 +635,10 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
                 {"metadata_key": "metadata_value"} \
             ]'
         ),
+    )
+
+    related_projects = forms.ModelMultipleChoiceField(
+        label=_("Related Project"), queryset=RelatedProject.objects.all(), required=False
     )
 
     def __init__(self, *args, **kwargs):

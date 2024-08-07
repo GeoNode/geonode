@@ -741,6 +741,9 @@ class RelatedProject(models.Model):
         max_length=255, help_text=_("Name of the hierarchy levels for which the metadata is provided. (e.g. signal)")
     )
 
+    def __str__(self):
+        return f"{self.display_name}"
+
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
