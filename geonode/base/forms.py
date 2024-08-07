@@ -740,6 +740,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             "was_approved",
             "was_published",
             "funders",
+            "related_identifier",
         )
 
 

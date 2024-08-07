@@ -1,38 +1,66 @@
 
+for (let name of formsetsInTabs) {
 
-let totalForms = $('#id_' + prefix + '-TOTAL_FORMS').val();
-let initialForms = $('#id_' + prefix + '-INITIAL_FORMS').val();
-let maxForms = $('#id_' + prefix + '-MAX_NUM_FORMS').val();
-let minForms = $('#id_' + prefix + '-MIN_NUM_FORMS').val();
-let deleteInput = $("#id_FORM-xx-DELETE")
-let hiddenInput = $("#id_FORM-xx-id")
+    form = $('#' + name)
+    reOrder(form)
+    hideDeleteCheckbox(form)
+}
 
-let allDelete = $('#DELETE')
 
-let actualForms = totalForms
+function dataForm(form) {
+    instance = form.attr('id')
+    totalForms = $('#id_' + instance + '-TOTAL_FORMS').val();
+    initialForms = $('#id_' + instance + '-INITIAL_FORMS').val();
+    maxForms = $('#id_' + instance + '-MAX_NUM_FORMS').val();
+    minForms = $('#id_' + instance + '-MIN_NUM_FORMS').val();
 
-let templateTab = $('.templateTab')
-let templateContent = $('.templateContent')
-let allTabs = $('.allTabs')
-let allforms = $('.allContent')
+    allDelete = form.find('#DELETE')
 
-reOrder()
-hideDeleteCheckbox()
+    actualForms = totalForms
 
-$("#nav-add").on("click", function () {
+    templateTab = form.find('.templateTab')
+    templateContent = form.find('.templateContent')
+    allTabs = form.find('.allTabs')
+    allForms = form.find('.allContent')
+
+
+
+    return {
+        totalForms,
+        initialForms,
+        maxForms,
+        minForms,
+        allDelete,
+        actualForms,
+        templateTab,
+        templateContent,
+        allTabs,
+        allForms,
+    }
+}
+
+
+
+function addNewTab(element) {
+    button = $("#" + element.id)
+    form = $(element).closest("div[id^='form']")
+    infosForm = dataForm(form)
+    prefix = form.attr("id")
+    actualForms = infosForm.actualForms
     label = Number(actualForms) + 1
-    removeActive()
-    newTab = templateTab.clone(true).removeClass('hidden')
+    removeActive(form)
+    newTab = infosForm.templateTab.clone(true).removeClass('hidden')
     newTab.removeClass('templateTab').removeClass('nav-empty')
     newTab.attr('id', '')
     newTab.find('a').attr('href', '#' + prefix + '-' + actualForms)
     newTab.attr('aria-controls', prefix + '-' + actualForms)
     newTab.find('.newTabTex').text(label)
     newTab.find('.newTabTex').addClass('tabTex').removeClass('newTabTex')
-    newTab.insertBefore($('.li-add'))
+
+    newTab.insertBefore(form.find('.li-add'))
     newTab.addClass('active')
 
-
+    templateContent = infosForm.templateContent
     newContent = templateContent.clone(true).removeClass('hidden')
     newContent.removeClass('templateContent').removeClass('nav-empty')
     newContent.attr('id', prefix + '-' + actualForms)
@@ -42,38 +70,50 @@ $("#nav-add").on("click", function () {
             $(this).attr('name', $(this).attr('name').replace("__prefix__", actualForms))
             $(this).attr('id', $(this).attr('id').replace("__prefix__", actualForms))
         })
-    newContent.insertBefore($('.templateContent'))
+    newContent.insertBefore(form.find('.templateContent'))
 
     actualForms++
     $('#id_' + prefix + '-TOTAL_FORMS').attr("value", actualForms)
-});
+};
 
 
-$(".nav-remove").on("click", function () {
-    removeActive()
-    number = $(this).parent('a').attr('href').split('-')[1]
-    tabToRemove = $(this).parent('a').parent('li')
+function removeTab(element) {
+    removeActive(form)
+    element = $(element)
+    form = element.closest("div[id^=form]")
+    infosForm = dataForm(form)
+    prefix = form.attr("id")
+    actualForms = infosForm.actualForms
+
+    number = element.parent('a').attr('href').split('-')[1]
+    tabToRemove = element.parent('a').parent('li')
 
     tabToRemove.remove()
-    contentToRemove = $('#' + prefix + '-' + number)
-    contentToRemove.find('#DELETE input').prop("checked", true)
+    contentToRemove = form.find('#' + prefix + '-' + number)
+    contentToRemove.find('#DELETE input')
     contentToRemove.removeAttr('role')
     toDjango = contentToRemove.children('div')
-    toDjango.hide().insertAfter(templateContent)
+    template = form.find('.templateContent')
+    toDjango.hide().insertAfter(template).find('#DELETE input').prop("checked", true)
     contentToRemove.remove()
-    $('.allContent').find('.tab-pane').first().addClass('active')
-    $('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
-    reOrder()
+
+    form.find('.allContent').find('.tab-pane').first().addClass('active')
+    form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
+    reOrder(form)
     actualForms--
+    return
 
 
-});
 
-function reOrder() {
+
+};
+
+function reOrder(form) {
+    prefix = form.attr("id")
     counter = 0
-    $('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
 
-    $('.allTabs').find('li a').each(
+
+    form.find('.allTabs').find('li a').each(
         function () {
             $(this).attr('href', '#' + prefix + '-' + counter)
             $(this).attr('aria-controls', prefix + '-' + counter)
@@ -84,7 +124,7 @@ function reOrder() {
     )
 
     counterCont = 0
-    $('.allContent').find('.tab-pane').each(
+    form.find('.allContent').find('.tab-pane').each(
         function () {
             if ($(this).attr('id') != 'templateContent') {
                 $(this).attr('id', prefix + '-' + counterCont)
@@ -99,14 +139,18 @@ function reOrder() {
     )
 
 }
+form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
 
-function removeActive() {
-    $('.allTabs').find('li').each(
+form.find('tab-content').find('.tab-pane').removeClass('active')
+form.find('tab-content').find('.tab-pane:first').addClass('active')
+
+function removeActive(form) {
+    form.find('.allTabs').find('li').each(
         function () {
             $(this).removeClass('active')
             $(this).find('a').attr('aria-expanded', false)
         })
-    $('.allContent').find('.tab-pane').each(
+    form.find('.allContent').find('.tab-pane').each(
         function () {
 
             $(this).removeClass('active')
@@ -114,7 +158,7 @@ function removeActive() {
 
 }
 
-function hideDeleteCheckbox() {
-    allforms.find('#DELETE').hide()
-    allforms.find('#DELETE').prev().hide()
+function hideDeleteCheckbox(form) {
+    form.find('.allContent').find('#DELETE').hide()
+    form.find('.allContent').find('#DELETE').prev().hide()
 }
