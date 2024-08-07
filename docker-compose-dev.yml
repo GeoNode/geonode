@@ -3,7 +3,10 @@ version: '3.9'
 # Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
-  image: 52north/geonode:local
+  image: geonode/geonode:local
+  build:
+      context: ./
+      dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
     - .env
@@ -23,9 +26,6 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     << : *default-common-django
-    build:
-      context: ./
-      dockerfile: Dockerfile
     container_name: django4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
