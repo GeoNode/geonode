@@ -671,9 +671,8 @@ class RelationType(models.Model):
 
 
 class RelatedIdentifier(models.Model):
-    related_identifier = models.CharField(
-        max_length=255, help_text=_("Identifiers of related resources. These must be globally unique identifiers.")
-    )
+    related_identifer_help_text = _("Identifiers of related resources. These must be globally unique identifiers.")
+    related_identifier = models.CharField(max_length=255, help_text=related_identifer_help_text)
     related_identifier_type = models.ForeignKey(RelatedIdentifierType, on_delete=models.CASCADE)
     relation_type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
 
@@ -704,12 +703,14 @@ class FundingReference(models.Model):
 
 
 class Funder(models.Model):
+    funders_help_text = _("List of funders, funded dataset creators")
+
     funding_reference = models.ForeignKey(FundingReference, null=True, blank=True, on_delete=models.CASCADE)
     award_number = models.CharField(
         blank=True,
         null=True,
         max_length=255,
-        help_text=_("The code assigned by the funder to a sponsored award (grant). (e.g. 282625)"),
+        help_text=funders_help_text,
     )
     award_uri = models.CharField(
         blank=True,
@@ -1148,7 +1149,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Funder, verbose_name=_("Funder names"), null=True, blank=True, help_text=funders_help_text
     )
     related_projects = models.ManyToManyField(
-        RelatedProject, verbose_name=_("related project"), null=True, blank=True, help_text=related_projects_help_text
+        RelatedProject, verbose_name=_("Related project"), null=True, blank=True, help_text=related_projects_help_text
     )
 
     use_contraints = models.TextField(

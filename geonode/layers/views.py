@@ -601,7 +601,6 @@ def dataset_metadata(
         funder_form.save()
         instance = funder_form.save(commit=False)
 
-        print(funder_form.deleted_forms)
         layer.funders.add(*instance)
 
         related_identifier_form.save()
