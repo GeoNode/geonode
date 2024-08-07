@@ -43,7 +43,9 @@ function dataForm(form) {
 
 function addNewTab(element) {
     button = $("#" + element.id)
-    form = button.closest("div[id^=form]")
+    console.log($(element))
+    form = $(element).closest("div[id^='form']")
+    console.log(form)
     infosForm = dataForm(form)
     prefix = form.attr("id")
     actualForms = infosForm.actualForms
@@ -141,7 +143,7 @@ function reOrder(form) {
 }
 form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
 
-form.find('tab-content').find('.tab-pane').removeClassClass('active')
+form.find('tab-content').find('.tab-pane').removeClass('active')
 form.find('tab-content').find('.tab-pane:first').addClass('active')
 
 function removeActive(form) {
