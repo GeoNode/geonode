@@ -1,21 +1,14 @@
 
-console.log('carregado')
-
-
 for (let name of formsetsInTabs) {
 
     form = $('#' + name)
-    console.log(form)
-    console.log("acima")
-
     reOrder(form)
-    // hideDeleteCheckbox(form)
+    hideDeleteCheckbox(form)
 }
 
 
 function dataForm(form) {
     instance = form.attr('id')
-    console.log(instance)
     totalForms = $('#id_' + instance + '-TOTAL_FORMS').val();
     initialForms = $('#id_' + instance + '-INITIAL_FORMS').val();
     maxForms = $('#id_' + instance + '-MAX_NUM_FORMS').val();
@@ -48,14 +41,6 @@ function dataForm(form) {
 
 
 
-// let totalForms = activeForm.totalForms
-// let initialForms = activeForm.initialForms
-// let maxForms = activeForm.maxForms
-// let minForms = activeForm.minForms
-
-
-
-
 function addNewTab(element) {
     button = $("#" + element.id)
     form = button.closest("div[id^=form]")
@@ -65,7 +50,6 @@ function addNewTab(element) {
     label = Number(actualForms) + 1
     removeActive(form)
     newTab = infosForm.templateTab.clone(true).removeClass('hidden')
-    console.log(newTab)
     newTab.removeClass('templateTab').removeClass('nav-empty')
     newTab.attr('id', '')
     newTab.find('a').attr('href', '#' + prefix + '-' + actualForms)
@@ -94,41 +78,38 @@ function addNewTab(element) {
 
 
 function removeTab(element) {
-
+    removeActive(form)
     element = $(element)
     form = element.closest("div[id^=form]")
-    console.log(form.attr("id"))
     infosForm = dataForm(form)
     prefix = form.attr("id")
     actualForms = infosForm.actualForms
-    removeActive(form)
-    console.log(element[0])
+
     number = element.parent('a').attr('href').split('-')[1]
     tabToRemove = element.parent('a').parent('li')
 
     tabToRemove.remove()
     contentToRemove = form.find('#' + prefix + '-' + number)
-    console.log(contentToRemove[0])
-    console.log("para remover")
-    contentToRemove.find('#DELETE input').prop("checked", true)
-    console.log(contentToRemove.find('#DELETE input').prop("checked"))
+    contentToRemove.find('#DELETE input')
     contentToRemove.removeAttr('role')
-    toDjango = contentToRemove
-    toDjango.hide().detach().insertAfter(form.find('.templateContent'))
-    // contentToRemove.remove()
+    toDjango = contentToRemove.children('div')
+    template = form.find('.templateContent')
+    toDjango.hide().insertAfter(template).find('#DELETE input').prop("checked", true)
+    contentToRemove.remove()
+
     form.find('.allContent').find('.tab-pane').first().addClass('active')
     form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
     reOrder(form)
     actualForms--
-    form.find('#id_' + prefix + '-TOTAL_FORMS').attr("value", actualForms)
+    return
+
+
 
 
 };
 
 function reOrder(form) {
-    console.log(form[0])
     prefix = form.attr("id")
-    console.log(prefix)
     counter = 0
 
 
@@ -159,7 +140,7 @@ function reOrder(form) {
 
 }
 form.find('.allTabs').find('li:first').addClass('active').find('a').attr('aria-expanded', true)
-#TODO
+
 form.find('tab-content').find('.tab-pane').removeClassClass('active')
 form.find('tab-content').find('.tab-pane:first').addClass('active')
 

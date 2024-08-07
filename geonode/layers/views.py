@@ -435,7 +435,7 @@ def dataset_metadata(
 
         related_identifier_form = RelatedIdentifierFormset(
             request.POST,
-            prefix="related_identifier_form",
+            prefix="form_related_identifier",
         )
         category_form = CategoryForm(
             request.POST,
@@ -500,7 +500,7 @@ def dataset_metadata(
 
         related_identifier_intial_values = RelatedIdentifier.objects.all().filter(resourcebase=layer)
         related_identifier_form = RelatedIdentifierFormset(
-            prefix="related_identifier_form", queryset=related_identifier_intial_values
+            prefix="form_related_identifier", queryset=related_identifier_intial_values
         )
 
         category_form = CategoryForm(
@@ -574,7 +574,7 @@ def dataset_metadata(
         and dataset_form.is_valid()
         and attribute_form.is_valid()
         and funder_form.is_valid()
-        # and related_identifier_form.is_valid()
+        and related_identifier_form.is_valid()
         and category_form.is_valid()
         and tkeywords_form.is_valid()
         and timeseries_form.is_valid()
@@ -721,7 +721,7 @@ def dataset_metadata(
             "attribute_form": attribute_form,
             "timeseries_form": timeseries_form,
             "funder_form": funder_form,
-            "form_related_identifier": related_identifier_form,
+            "related_identifier_form": related_identifier_form,
             "category_form": category_form,
             "tkeywords_form": tkeywords_form,
             "preview": getattr(settings, "GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY", "mapstore"),
