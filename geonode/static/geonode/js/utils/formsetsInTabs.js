@@ -43,9 +43,7 @@ function dataForm(form) {
 
 function addNewTab(element) {
     button = $("#" + element.id)
-    console.log($(element))
     form = $(element).closest("div[id^='form']")
-    console.log(form)
     infosForm = dataForm(form)
     prefix = form.attr("id")
     actualForms = infosForm.actualForms
