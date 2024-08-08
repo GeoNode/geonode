@@ -18,6 +18,8 @@
 #########################################################################
 from django.apps import AppConfig
 from django.urls import include, re_path
+from django.conf import settings
+from django.utils.module_loading import import_string
 
 
 class GeoNodeResourceConfig(AppConfig):
@@ -28,3 +30,6 @@ class GeoNodeResourceConfig(AppConfig):
         from geonode.urls import urlpatterns
 
         urlpatterns += [re_path(r"^api/v2/", include("geonode.resource.api.urls"))]
+
+        for el in settings.RESOURCE_HANDLERS:
+            import_string(el).register()

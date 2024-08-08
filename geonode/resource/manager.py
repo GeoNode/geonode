@@ -978,5 +978,10 @@ class ResourceManager(ResourceManagerInterface):
                 logger.exception(e)
         return False
 
+    def get_manager(self, instance):
+        from geonode.resource.handler import resource_hander
+
+        return resource_hander.get_handler_by_instance(instance=instance)
+
 
 resource_manager = ResourceManager()
