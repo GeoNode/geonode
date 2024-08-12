@@ -43,8 +43,8 @@ class CampaignAdmin(admin.ModelAdmin):
     list_display = (
         'campaign_id', 'campaign_name', 'campaign_url_name', 'campaing_title', 
         'campaing_short_description', 'campaing_detailed_description', 
-        'start_date', 'end_date', 'category_type', 'geoserver_workspace', 
-        'allow_drawings', 'rate_enabled'
+        'start_date', 'end_date','rate_enabled', 'category_type', 'geoserver_workspace', 
+        'form_enabled','allow_drawings'
     )
     search_fields = ('campaign_name', 'campaign_url_name', 'category_type__name')
     list_filter = ('category_type', 'start_date', 'end_date')
