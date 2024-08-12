@@ -238,6 +238,16 @@ class CategoryForm(forms.Form):
         return cleaned_data
 
 
+class RelatedProjectForm(forms.ModelForm):
+    prefix = "related_project_form"
+
+    class Meta:
+        model = RelatedProject
+        fields = ["display_name"]
+
+    display_name = forms.ModelMultipleChoiceField(queryset=RelatedProject.objects.all(), required=False)
+
+
 class TKeywordForm(forms.ModelForm):
     prefix = "tkeywords"
 
@@ -637,10 +647,6 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
         ),
     )
 
-    related_projects = forms.ModelMultipleChoiceField(
-        label=_("Related Project"), queryset=RelatedProject.objects.all(), required=False
-    )
-
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
@@ -746,6 +752,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             "was_published",
             "funders",
             "related_identifier",
+            "related_projects",
         )
 
 

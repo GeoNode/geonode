@@ -1152,7 +1152,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Funder, verbose_name=_("Funder names"), null=True, blank=True, help_text=funders_help_text
     )
     related_projects = models.ManyToManyField(
-        RelatedProject, verbose_name=_("Related project"), null=True, blank=True, help_text=related_projects_help_text
+        RelatedProject,
+        null=True,
+        blank=True,
+        help_text=related_projects_help_text,
+        related_name="related_projects",
+        verbose_name=_("Related Project"),
     )
 
     use_contraints = models.TextField(

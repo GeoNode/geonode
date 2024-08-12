@@ -126,6 +126,12 @@
           {% endif %}
           {% endblock thesauri %}
         </div>
+        {% block related_project_form %}
+        <label > Project List</label>
+        {{related_project_form.as_p }}
+
+
+        {% endblock related_project_form %}
 
         {% block funder_form %}
           <label > Fundings</label>
