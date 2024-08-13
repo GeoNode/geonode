@@ -14,7 +14,7 @@ selectProj.filterMultiSelect({
     allowEnablingAndDisabling: true,
 });
 
-selectProj.find("option:selected").css("color", primaryColor)
+// selectProj.find("option:selected").css("color", primaryColor)
 
 
 // console.log(selectProj.text())
