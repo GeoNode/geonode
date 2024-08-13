@@ -245,7 +245,15 @@ class RelatedProjectForm(forms.ModelForm):
         model = RelatedProject
         fields = ["display_name"]
 
-    display_name = forms.ModelMultipleChoiceField(queryset=RelatedProject.objects.all(), required=False)
+    display_name = forms.ModelMultipleChoiceField(
+        RelatedProject.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(RelatedProjectForm, self).__init__(*args, **kwargs)
+        # self.initial["display_name"] = list(RelatedProject.objects.filter(related_projects=None))
 
 
 class TKeywordForm(forms.ModelForm):

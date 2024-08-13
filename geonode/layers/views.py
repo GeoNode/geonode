@@ -428,7 +428,10 @@ def dataset_metadata(
             }
             return HttpResponse(json.dumps(out), content_type="application/json", status=400)
 
-        related_project_form = RelatedProjectForm(request.POST, prefix="related_project_form", instance=layer)
+        related_project_form = RelatedProjectForm(
+            request.POST,
+            instance=layer,
+        )
         if not related_project_form.is_valid():
             logger.error(f"Dataset Related Project Fields are not valid: {related_project_form.errors}")
             out = {
@@ -503,15 +506,22 @@ def dataset_metadata(
         attribute_form = dataset_attribute_set(
             instance=layer, prefix="dataset_attribute_set", queryset=Attribute.objects.order_by("display_order")
         )
-        # project_list = RelatedProject.objects.all().filter()
-        project_list = list(layer.related_projects.values_list("label", "display_name"))
-        # project_list = ["BonaRes - CATCHY", "BonaRes - DiControl", "BonaRes - InnoSoilPhos"]
-        print(project_list)
-        print("aqui__Carrega__________")
+        # projes = {display_name for display_name in layer.related_projects.values_list("display_name", flat=True)}
+        # print(projes)
 
-        related_project_form = RelatedProjectForm(prefix="related_project_form", initial=project_list)
+        projects_initial_values = (
+            RelatedProject.objects.all().filter(related_projects=layer).values_list("id", "display_name")
+        )
+        print(list(projects_initial_values))
+        # projects_initial = list(layer.related_projects.values_list("display_name"))
+        # print(projects_initial)
+        related_project_form = RelatedProjectForm(
+            prefix="related_project_form",
+            instance=layer,
+            initial=list(RelatedProject.objects.filter(related_projects=None)),
+        )
+
         funders_intial_values = Funder.objects.all().filter(resourcebase=layer)
-        print(funders_intial_values)
         funder_form = FunderFormset(prefix="form_funder", queryset=funders_intial_values)
 
         related_identifier_intial_values = RelatedIdentifier.objects.all().filter(resourcebase=layer)
