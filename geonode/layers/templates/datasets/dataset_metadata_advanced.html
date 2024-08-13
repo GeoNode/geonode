@@ -5,7 +5,6 @@
 {% load bootstrap_tags %}
 {% load guardian_tags %}
 {% load client_lib_tags %}
-{% load crispy_forms_tags %}
 
 {% block title %}{{ dataset.title }} — {{ block.super }}{% endblock %}
 
@@ -16,6 +15,8 @@
 {{ block.super }}
 
 <!-- Required to make select2 fields work for autocomplete -->
+ 
+ <link href="{% static "geonode/css/filter_multi_select.css" %}" type="text/css" media="screen" rel="stylesheet" />
 <link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
 <link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
 <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
@@ -129,8 +130,9 @@
         </div>
         {% block related_project_form %}
         <label > Project List</label>
-        {{related_project_form.as_p }}
-
+        <div id="related_project">
+        {{related_project_form|as_bootstrap }}
+        </div>
 
         {% endblock related_project_form %}
 
@@ -497,4 +499,7 @@
 
     {% comment %} <script type="text/javascript" src="{% static "geonode/js/utils/fundings_.js" %}"></script> {% endcomment %}
     <script type="text/javascript" src="{% static "geonode/js/utils/formsetsInTabs.js" %}"></script>
+    <script type="text/javascript" src="{% static "geonode/js/utils/filter-multi-select-bundle.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "geonode/js/utils/focus.js" %}"></script>
+    
 {% endblock %}
