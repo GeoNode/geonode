@@ -117,7 +117,7 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
     def perform_create(self, serializer):
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
-        map_layers = serializer.validated_data.pop("maplayers", [])
+        map_layers = serializer.validated_data.get("maplayers", [])
         tabular_collection = all(("tabular" in layer.dataset.subtype) for layer in map_layers)
 
         instance = serializer.save(
@@ -151,8 +151,8 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
             "thumbnail": serializer.validated_data.pop("thumbnail_url", ""),
             "dataset_names_before_changes": [lyr.alternate for lyr in instance.datasets],
         }
-        
-        map_layers = serializer.validated_data.pop("maplayers", [])
+
+        map_layers = serializer.validated_data.get("maplayers", [])
         tabular_collection = all(("tabular" in layer.dataset.subtype) for layer in map_layers)
 
         instance = serializer.save(
