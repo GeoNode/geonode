@@ -509,16 +509,17 @@ def dataset_metadata(
         # projes = {display_name for display_name in layer.related_projects.values_list("display_name", flat=True)}
         # print(projes)
 
-        projects_initial_values = (
-            RelatedProject.objects.all().filter(related_projects=layer).values_list("id", "display_name")
-        )
+        projects_initial_values1 = list(layer.related_projects.all())
+        print(list(projects_initial_values1))
+        # projects_initial_values = list(layer.related_projects.values_list("display_name"))
+        projects_initial_values = list(RelatedProject.objects.filter(related_projects=layer))
         print(list(projects_initial_values))
         # projects_initial = list(layer.related_projects.values_list("display_name"))
         # print(projects_initial)
         related_project_form = RelatedProjectForm(
             prefix="related_project_form",
             instance=layer,
-            initial=list(RelatedProject.objects.filter(related_projects=None)),
+            initial={"display_name": projects_initial_values},
         )
 
         funders_intial_values = Funder.objects.all().filter(resourcebase=layer)

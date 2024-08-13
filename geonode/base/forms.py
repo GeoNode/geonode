@@ -247,7 +247,7 @@ class RelatedProjectForm(forms.ModelForm):
 
     display_name = forms.ModelMultipleChoiceField(
         RelatedProject.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+        # widget=forms.CheckboxSelectMultiple,
         required=False,
     )
 
