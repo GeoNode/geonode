@@ -251,10 +251,6 @@ class RelatedProjectForm(forms.ModelForm):
         required=False,
     )
 
-    def __init__(self, *args, **kwargs):
-        super(RelatedProjectForm, self).__init__(*args, **kwargs)
-        # self.initial["display_name"] = list(RelatedProject.objects.filter(related_projects=None))
-
 
 class TKeywordForm(forms.ModelForm):
     prefix = "tkeywords"
