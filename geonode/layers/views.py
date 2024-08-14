@@ -51,9 +51,9 @@ from geonode.geoserver.helpers import set_dataset_style
 from geonode.resource.utils import update_resource
 
 from geonode.base.auth import get_or_create_token
-from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
+from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm, RelatedProjectForm
 from geonode.base.views import batch_modify
-from geonode.base.models import Thesaurus, TopicCategory, Funder, RelatedIdentifier
+from geonode.base.models import Thesaurus, TopicCategory, Funder, RelatedIdentifier, RelatedProject
 from geonode.base.enumerations import CHARSETS
 from geonode.decorators import check_keyword_write_perms
 from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, LayerAttributeForm, NewLayerUploadForm
@@ -428,6 +428,18 @@ def dataset_metadata(
             }
             return HttpResponse(json.dumps(out), content_type="application/json", status=400)
 
+        related_project_form = RelatedProjectForm(
+            request.POST,
+            instance=layer,
+        )
+        if not related_project_form.is_valid():
+            logger.error(f"Dataset Related Project Fields are not valid: {related_project_form.errors}")
+            out = {
+                "success": False,
+                "errors": [re.sub(re.compile("<.*?>"), "", str(err)) for err in related_project_form.errors],
+            }
+            return HttpResponse(json.dumps(out), content_type="application/json", status=400)
+
         funder_form = FunderFormset(
             request.POST,
             prefix="form_funder",
@@ -493,6 +505,15 @@ def dataset_metadata(
         dataset_form.disable_keywords_widget_for_non_superuser(request.user)
         attribute_form = dataset_attribute_set(
             instance=layer, prefix="dataset_attribute_set", queryset=Attribute.objects.order_by("display_order")
+        )
+
+        # projects_initial_values = list(layer.related_projects.all())
+        projects_initial_values = list(RelatedProject.objects.filter(related_projects=layer))
+
+        related_project_form = RelatedProjectForm(
+            prefix="related_project_form",
+            instance=layer,
+            initial={"display_name": projects_initial_values},
         )
 
         funders_intial_values = Funder.objects.all().filter(resourcebase=layer)
@@ -573,6 +594,7 @@ def dataset_metadata(
         request.method == "POST"
         and dataset_form.is_valid()
         and attribute_form.is_valid()
+        and related_project_form.is_valid()
         and funder_form.is_valid()
         and related_identifier_form.is_valid()
         and category_form.is_valid()
@@ -595,6 +617,13 @@ def dataset_metadata(
             la.display_order = form["display_order"]
             la.featureinfo_type = form["featureinfo_type"]
             la.save()
+
+        project = related_project_form.cleaned_data
+        instance = project["display_name"]
+        print(instance)
+        print("aqui__ SALVA_________")
+
+        layer.related_projects.add(*instance)
 
         # update contact roles
         layer.set_contact_roles_from_metadata_edit(dataset_form)
@@ -719,6 +748,7 @@ def dataset_metadata(
             "dataset_form": dataset_form,
             "attribute_form": attribute_form,
             "timeseries_form": timeseries_form,
+            "related_project_form": related_project_form,
             "funder_form": funder_form,
             "related_identifier_form": related_identifier_form,
             "category_form": category_form,

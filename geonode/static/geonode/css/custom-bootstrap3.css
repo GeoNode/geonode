@@ -1,0 +1,37 @@
+/* _custom-forms.scss:98 */
+.custom-checkbox {
+    .custom-control-label::before {
+        @include border-radius($custom-checkbox-indicator-border-radius);
+    }
+
+    .custom-control-input:checked~.custom-control-label {
+        &::before {
+            @include gradient-bg($custom-control-indicator-checked-bg);
+        }
+
+        &::after {
+            background-image: $custom-checkbox-indicator-icon-checked;
+        }
+    }
+
+    .custom-control-input:indeterminate~.custom-control-label {
+        &::before {
+            @include gradient-bg($custom-checkbox-indicator-indeterminate-bg);
+            @include box-shadow($custom-checkbox-indicator-indeterminate-box-shadow);
+        }
+
+        &::after {
+            background-image: $custom-checkbox-indicator-icon-indeterminate;
+        }
+    }
+
+    .custom-control-input:disabled {
+        &:checked~.custom-control-label::before {
+            background-color: $custom-control-indicator-checked-disabled-bg;
+        }
+
+        &:indeterminate~.custom-control-label::before {
+            background-color: $custom-control-indicator-checked-disabled-bg;
+        }
+    }
+}

@@ -741,6 +741,9 @@ class RelatedProject(models.Model):
         max_length=255, help_text=_("Name of the hierarchy levels for which the metadata is provided. (e.g. signal)")
     )
 
+    def __str__(self):
+        return f"{self.display_name}"
+
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
@@ -1149,7 +1152,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         Funder, verbose_name=_("Funder names"), null=True, blank=True, help_text=funders_help_text
     )
     related_projects = models.ManyToManyField(
-        RelatedProject, verbose_name=_("Related project"), null=True, blank=True, help_text=related_projects_help_text
+        RelatedProject,
+        null=True,
+        blank=True,
+        help_text=related_projects_help_text,
+        related_name="related_projects",
+        verbose_name=_("Related Project"),
     )
 
     use_contraints = models.TextField(

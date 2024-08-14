@@ -56,6 +56,7 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
     ThesaurusLabel,
     TopicCategory,
+    RelatedProject,
 )
 from geonode.base.widgets import TaggitSelect2Custom, TaggitProfileSelect2Custom
 from geonode.base.fields import MultiThesauriField
@@ -235,6 +236,20 @@ class CategoryForm(forms.Form):
 
         # Always return the full collection of cleaned data.
         return cleaned_data
+
+
+class RelatedProjectForm(forms.ModelForm):
+    prefix = "related_project_form"
+
+    class Meta:
+        model = RelatedProject
+        fields = ["display_name"]
+
+    display_name = forms.ModelMultipleChoiceField(
+        RelatedProject.objects.all(),
+        # widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
 
 
 class TKeywordForm(forms.ModelForm):
@@ -741,6 +756,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             "was_published",
             "funders",
             "related_identifier",
+            "related_projects",
         )
 
 
