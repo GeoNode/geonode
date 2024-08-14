@@ -6,13 +6,13 @@ console.log(selectProj.text())
 
 
 selectProj.filterMultiSelect();
-checkbox = $('.filter-multi-select .dropdown-item .custom-control input')
+checkbox = $('.filter-multi-select .dropdown-item .custom-control input[type=checkbox]')
 // checkboxIndeter = $('.filter-multi-select .dropdown-item -checkbox')
 selected = $('.filter-multi-select .selected-items')
-checkbox.before().css("background-color", 'blue')
+checkbox.css('background', 'red');
 // checkboxIndeter.css("background-color", 'blue')
 
-selected.addClass('btn-primary')
+// selected.css('background', 'red');
 
 // selectProj.filterMultiSelect({
 //     placeholderText: "nothing selected",

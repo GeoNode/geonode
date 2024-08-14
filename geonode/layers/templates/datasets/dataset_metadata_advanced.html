@@ -129,30 +129,26 @@
           {% endblock thesauri %}
         </div>
         {% block related_project_form %}
-        <label > Project List</label>
-            <div id="related_project">
-            {{related_project_form }}
-              {% comment %} <select name="test" multiple>
-                  <option value="js">JavaScript</option>
-                  <option value="html">HTML</option>
-                  <option value="css">CSS</option>
-                  <option value="1js">JavaScript</option>
-                  <option value="qhtml">HTML</option>
-                  <option value="1css">CSS</option>
-                  <option value="4js">JavaScript</option>
-                  <option value="6html">HTML</option>
-                  <option value="7css">CSS</option>
-                </select> {% endcomment %}
+        <div class="row">
+          <div class="col-md-12">
+            <label class="control-label required-field" > Project List</label>
+                <div id="related_project">
+                {% for field in related_project_form %}
+                  {{field}}
+                {% endfor %}
 
+                </div>
             </div>
-
+          </div>
         {% endblock related_project_form %}
 
         {% block funder_form %}
 
-        
-          <label > Fundings</label>
-          <div id="form_funder">
+        <div class="row">
+          <div class="col-md-12" id="form_funder">
+            
+              <label class="control-label required-field ">Fundings</label>
+            
             {{funder_form.management_form }}
             <div id="DELETE" class="form-group">
             </div>
@@ -256,117 +252,122 @@
               </div>
             </div> 
           
-        </div> 
+          </div> 
+        </div>
         {% endblock funder_form %}
 
         {% block related_identifier_form %}
-          <label > Related Identifiers</label>
-          <div id="form_related_identifier">
-            {{related_identifier_form.management_form }}
-            <div id="DELETE" class="form-group">
-            </div>
-            <div class="panel ">
-              <!-- Tab panes -->
-              <div class="panel-heading panel-heading-nav">
-                  <ul class="nav nav-tabs allTabs">
+        <div class="row">
+          <div class="col-md-12">
+
+            <label class="control-label required-field"> Related Identifiers</label>
+            <div id="form_related_identifier">
+              {{related_identifier_form.management_form }}
+              <div id="DELETE" class="form-group">
+              </div>
+              <div class="panel ">
+                <!-- Tab panes -->
+                <div class="panel-heading panel-heading-nav">
+                    <ul class="nav nav-tabs allTabs">
+                        {% for form in related_identifier_form %}
+                          {% if forloop.counter == 1 %}
+                          <li role="presentation" class="active">
+                            <a  href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
+                                    <span class="tabTex">{{ forloop.counter }}   </span> 
+                                <button type="button" class="nav-remove" onclick="removeTab(this)"><icon class="fa fa-minus-circle"></icon>
+                                </button></a>
+                            </li>
+                            {% else %}
+                            <li role="presentation" class="">
+                                <a  href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
+                                    <span class="tabTex">{{ forloop.counter }}   </span>
+                                <button type="button"  class="nav-remove"  onclick="removeTab(this)"><icon class="fa fa-minus-circle"></icon>
+                                </button></a>
+                            </li>
+                          {% endif %}
+                      {%endfor%}
+                      <li role="presentation"  class="nav-item enpt tab li-add" >
+                        <a ><button id="nav-add"  class="btn-primary nav-add " onclick="addNewTab(this)" type="button"><icon class="fa fa-plus-circle"> new </button></a>
+                      </li>
+                      <li role="presentation"  class="nav-item enpt tab nav-empty templateTab hidden" >
+                        <a  href="" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
+                                    <span class="newTabTex"></span>
+                                <button type="button" class="nav-remove" onclick="removeTab(this)" ><icon class="fa fa-minus-circle"></icon>
+                                </button></a>
+                      </li>
+                    
+                    </ul>
+                </div>
+                <!-- Tab panes -->
+                <div class="tab-content allContent">
                       {% for form in related_identifier_form %}
-                        {% if forloop.counter == 1 %}
-                        <li role="presentation" class="active">
-                          <a  href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
-                                  <span class="tabTex">{{ forloop.counter }}   </span> 
-                              <button type="button" class="nav-remove" onclick="removeTab(this)"><icon class="fa fa-minus-circle"></icon>
-                              </button></a>
-                          </li>
+                          {% if forloop.counter == 1 %}
+                            <div class="tab-pane active" id="{{ form.prefix }}" role="tabpanel" >
+                                  <div>
+                                    {% if forloop.first %}
+                                      
+                                          {% for field in form.visible_fields %}
+                                              
+                                                  <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
+                                                  <div id="{{ field.name }}" class="form-group">
+                                                      {{ field }}
+                                                      {{ field.errors.as_ul }}
+                                                  </div>
+                                              
+                                          {% endfor %}
+                                    {% endif %}
+                                      {% for hidden in form.hidden_fields %}
+                                              <div>
+                                                {{ hidden }}
+                                              </div> 
+                                          {% endfor %}
+                                  </div>
+                            </div>
                           {% else %}
-                          <li role="presentation" class="">
-                              <a  href="#{{ form.prefix }}" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
-                                  <span class="tabTex">{{ forloop.counter }}   </span>
-                              <button type="button"  class="nav-remove"  onclick="removeTab(this)"><icon class="fa fa-minus-circle"></icon>
-                              </button></a>
-                          </li>
-                        {% endif %}
-                    {%endfor%}
-                    <li role="presentation"  class="nav-item enpt tab li-add" >
-                      <a ><button id="nav-add"  class="btn-primary nav-add " onclick="addNewTab(this)" type="button"><icon class="fa fa-plus-circle"> new </button></a>
-                    </li>
-                    <li role="presentation"  class="nav-item enpt tab nav-empty templateTab hidden" >
-                      <a  href="" aria-controls="{{ form.prefix }}" role="tab" data-toggle="tab">
-                                  <span class="newTabTex"></span>
-                              <button type="button" class="nav-remove" onclick="removeTab(this)" ><icon class="fa fa-minus-circle"></icon>
-                              </button></a>
-                    </li>
-                  
-                  </ul>
-              </div>
-              <!-- Tab panes -->
-              <div class="tab-content allContent">
-                    {% for form in related_identifier_form %}
-                        {% if forloop.counter == 1 %}
-                          <div class="tab-pane active" id="{{ form.prefix }}" role="tabpanel" >
-                                <div>
-                                  {% if forloop.first %}
-                                    
-                                        {% for field in form.visible_fields %}
-                                            
-                                                <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
-                                                <div id="{{ field.name }}" class="form-group">
-                                                    {{ field }}
-                                                    {{ field.errors.as_ul }}
-                                                </div>
-                                            
-                                        {% endfor %}
-                                  {% endif %}
-                                    {% for hidden in form.hidden_fields %}
-                                            <div>
-                                              {{ hidden }}
-                                            </div> 
-                                        {% endfor %}
-                                </div>
-                          </div>
-                        {% else %}
-                          <div class="tab-pane " id="{{ form.prefix }}" role="tabpanel" >
-                            <div>
-                                
-                                    {% for field in form.visible_fields %}
-                                        <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
-                                        <div id="{{ field.name }}" class="form-group">
-                                            {{ field }}
-                                            {{ field.errors.as_ul }}
-                                        </div>
-                                    {% endfor %}
-                                    {% for hidden in form.hidden_fields %}
-                                        <div>
-                                          {{ hidden }}
-                                        </div> 
-                                    {% endfor %}
+                            <div class="tab-pane " id="{{ form.prefix }}" role="tabpanel" >
+                              <div>
+                                  
+                                      {% for field in form.visible_fields %}
+                                          <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
+                                          <div id="{{ field.name }}" class="form-group">
+                                              {{ field }}
+                                              {{ field.errors.as_ul }}
+                                          </div>
+                                      {% endfor %}
+                                      {% for hidden in form.hidden_fields %}
+                                          <div>
+                                            {{ hidden }}
+                                          </div> 
+                                      {% endfor %}
+                              </div>
                             </div>
-                          </div>
-                        {% endif %}
-                    {% endfor %}
-                    
-                  <div class="tab-pane hidden templateContent" id="templateContent" role="tabpanel" >
-                            <div>
-                                
-                                    {% for field in related_identifier_form.empty_form.visible_fields %}
-                                        <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
-                                        <div id="{{ field.name }}" class="form-group">
-                                            {{ field }}
-                                            {{ field.errors.as_ul }}
-                                        </div>
-                                    {% endfor %}
-                                    {% for hidden in related_identifier_form.empty_form.hidden_fields %}
-                                        <div>
-                                          {{ hidden }}
-                                        </div> 
-                                    {% endfor %}
-                            </div>
-                  </div>
-                    
-              </div>
+                          {% endif %}
+                      {% endfor %}
+                      
+                    <div class="tab-pane hidden templateContent" id="templateContent" role="tabpanel" >
+                              <div>
+                                  
+                                      {% for field in related_identifier_form.empty_form.visible_fields %}
+                                          <label for="{{ field.name }}">{{ field.label|capfirst }}</label>
+                                          <div id="{{ field.name }}" class="form-group">
+                                              {{ field }}
+                                              {{ field.errors.as_ul }}
+                                          </div>
+                                      {% endfor %}
+                                      {% for hidden in related_identifier_form.empty_form.hidden_fields %}
+                                          <div>
+                                            {{ hidden }}
+                                          </div> 
+                                      {% endfor %}
+                              </div>
+                    </div>
+                      
+                </div>
+              </div> 
+            
             </div> 
-          
-        </div> 
-         
+          </div>
+         </div>
         {% endblock related_identifier_form %} 
 
 
@@ -513,8 +514,6 @@
 
     
     <script type="text/javascript" src="{% static "geonode/js/utils/filter-multi-select-bundle.min.js" %}"></script>
-    {% comment %} <script type="text/javascript" src="{% static "geonode/js/utils/FilterMultiSelect.js" %}"></script> {% endcomment %}
-    {% comment %} <script type="text/javascript" src="{% static "geonode/js/utils/filter-multi-select.js" %}"></script> {% endcomment %}
     <script type="text/javascript" src="{% static "geonode/js/utils/formsetsInTabs.js" %}"></script>
     <script type="text/javascript" src="{% static "geonode/js/utils/focus.js" %}"></script>
     
