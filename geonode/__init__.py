@@ -19,10 +19,7 @@
 
 import os
 
-__version__ = (4, 2, 5, "final", 0)
-
-
-default_app_config = "geonode.apps.AppConfig"
+__version__ = (4, 3, 1, "final", 0)
 
 
 def get_version():

@@ -26,9 +26,8 @@ import zipfile
 from collections import namedtuple
 
 from django import forms
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
-from ..geoserver.helpers import ogc_server_settings
 from . import files
 from .utils import get_kml_doc
 
@@ -39,64 +38,6 @@ ShapefileAux = namedtuple("ShapefileAux", ["extension", "mandatory"])
 
 def _supported_type(ext, supported_types):
     return any([type_.matches(ext) for type_ in supported_types])
-
-
-def validate_uploaded_files(cleaned, uploaded_files, field_spatial_types, base_file_path):
-    logger.debug(f"uploaded_files: {uploaded_files}")
-    requires_datastore = () if ogc_server_settings.DATASTORE else ("csv", "kml")
-    types = [t for t in files.types if t.code not in requires_datastore]
-    base_file_name = os.path.basename(base_file_path)
-    base_ext = os.path.splitext(base_file_name)[-1].lower()[1:]
-    if not _supported_type(base_ext, types) and base_ext.lower() != "zip":
-        raise forms.ValidationError(
-            "%(supported)s files are supported. You uploaded a " "%(uploaded)s file",
-            params={"supported": " , ".join(t.name for t in types), "uploaded": base_ext},
-        )
-    elif base_ext.lower() == "zip":
-        if not zipfile.is_zipfile(base_file_path):
-            raise forms.ValidationError(_("Invalid zip file detected"))
-
-        # Let's check if the zip file contains a valid ESRI Shapefile
-        valid_extensions = validate_shapefile(base_file_path)
-        if not valid_extensions:
-            # Let's check if the zip file contains a valid KMZ
-            valid_extensions = validate_kmz(base_file_path)
-        if not valid_extensions:
-            # Let's check if the zip file contains a valid KML
-            valid_extensions = validate_kml_zip(base_file_path)
-        if not valid_extensions:
-            # Let's check if the zip file contains any valid Raster Image
-            valid_extensions = validate_raster_zip(base_file_path)
-        if not valid_extensions:
-            # No suitable data have been found on the ZIP file; raise a ValidationError
-            raise forms.ValidationError(_("Could not find any valid spatial file inside the uploaded zip"))
-    elif base_ext.lower() == "kmz":
-        if not zipfile.is_zipfile(base_file_path):
-            raise forms.ValidationError(_("Invalid kmz file detected"))
-        valid_extensions = validate_kmz(base_file_path)
-        if not valid_extensions:
-            raise forms.ValidationError(_("Could not find any kml files inside the uploaded kmz"))
-    elif base_ext.lower() == "shp":
-        file_paths = list(uploaded_files.values())
-        if base_file_path not in file_paths:
-            file_paths += [base_file_path]
-        valid_extensions = _validate_shapefile_components(file_paths)
-    elif base_ext.lower() == "kml":
-        valid_extensions = validate_kml(uploaded_files)
-    elif base_ext.lower() in files._tif_extensions:
-        valid_extensions = validate_raster(uploaded_files)
-    else:  # default behavior just assumes files are valid
-        valid_extensions = []
-        for field_name in field_spatial_types:
-            django_file = cleaned.get(field_name)
-            try:
-                extension = os.path.splitext(django_file.name)[1][1:]
-                valid_extensions.append(extension)
-            except AttributeError:
-                pass
-    if not valid_extensions:
-        valid_extensions = [f"{base_ext.lower()}"]
-    return valid_extensions
 
 
 def _validate_shapefile_components(possible_filenames):

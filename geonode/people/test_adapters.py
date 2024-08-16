@@ -226,6 +226,38 @@ class RespondInactiveUserTestCase(TestCase):
         mock_http_response_redirect_class.assert_called_with(phony_reverse)
 
 
+class RespondInvalidEmailUserTestCase(TestCase):
+    @mock.patch("geonode.people.adapters.reverse", autospec=True)
+    @mock.patch("geonode.people.adapters.HttpResponseRedirect", autospec=True)
+    def test_respond_invalid_email_user(self, mock_http_response_redirect_class, mock_reverse):
+        phony_reverse = "phony"
+        fake_email = "fake_email"
+        phony_user_class = mock.MagicMock(spec="geonode.people.models.Profile")
+        phony_user = phony_user_class.return_value
+        phony_user.email = fake_email
+        mock_reverse.return_value = phony_reverse
+        adapters.handle_user_invalid_email(phony_user)
+        mock_reverse.assert_called_with("moderator_needed")
+        mock_http_response_redirect_class.assert_called_with(phony_reverse)
+
+    @mock.patch("geonode.people.adapters.reverse", autospec=True)
+    @mock.patch("geonode.people.adapters.HttpResponseRedirect", autospec=True)
+    def test_respond_valid_email_user(self, mock_http_response_redirect_class, mock_reverse):
+        phony_reverse = "phony"
+        fake_id = "fake_id"
+        fake_email = "valid_email@mail.com"
+        fake_username = "fake_username"
+        phony_user_class = mock.MagicMock(spec="geonode.people.models.Profile")
+        phony_user = phony_user_class.return_value
+        phony_user.id = fake_id
+        phony_user.email = fake_email
+        phony_user.username = fake_username
+        mock_reverse.return_value = phony_reverse
+        adapters.handle_user_invalid_email(phony_user)
+        mock_reverse.assert_not_called()
+        mock_http_response_redirect_class.assert_not_called()
+
+
 class LocalAccountAdapterTestCase(TestCase):
     def setUp(self):
         self.extractor = adapters.LocalAccountAdapter()
@@ -251,7 +283,6 @@ class LocalAccountAdapterTestCase(TestCase):
         self.assertEqual(result, dummy_reverse)
 
     @mock.patch.object(adapters.DefaultAccountAdapter, "save_user")
-    @mock.patch("geonode.people.adapters.settings", autospec=True)
     def test_save_user_no_approval_required(self, mock_settings, mock_base_save_user):
         mock_user_class = mock.MagicMock(spec="geonde.people.models.Profile")
         mock_user = mock_user_class.return_value

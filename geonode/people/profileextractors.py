@@ -208,6 +208,6 @@ class OpenIDGroupRoleMapper:
         group_name, role_name = _group_role_name.rsplit(".", 1)
         return (group_name, role_name)
 
-    def is_manager(role_name):
+    def is_manager(self, role_name):
         _role_name = role_name or ""
         return "manager" in _role_name.lower()

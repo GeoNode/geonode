@@ -371,7 +371,7 @@ WHITENOISE_MANIFEST_STRICT = ast.literal_eval(os.getenv("WHITENOISE_MANIFEST_STR
 COMPRESS_STATIC_FILES = ast.literal_eval(os.getenv("COMPRESS_STATIC_FILES", "False"))
 
 MEMCACHED_ENABLED = ast.literal_eval(os.getenv("MEMCACHED_ENABLED", "False"))
-MEMCACHED_BACKEND = os.getenv("MEMCACHED_BACKEND", "django.core.cache.backends.memcached.PyMemcacheCache")
+MEMCACHED_BACKEND = os.getenv("MEMCACHED_BACKEND", "django.core.cache.backends.memcached.PyLibMCCache")
 MEMCACHED_LOCATION = os.getenv("MEMCACHED_LOCATION", "127.0.0.1:11211")
 MEMCACHED_LOCK_EXPIRE = int(os.getenv("MEMCACHED_LOCK_EXPIRE", 3600))
 MEMCACHED_LOCK_TIMEOUT = int(os.getenv("MEMCACHED_LOCK_TIMEOUT", 10))
@@ -487,7 +487,6 @@ INSTALLED_APPS = (
     "django_forms_bootstrap",
     # Social
     "avatar",
-    "pinax.ratings",
     "announcements",
     "actstream",
     "user_messages",
@@ -549,6 +548,11 @@ REST_FRAMEWORK_EXTENSIONS = {
 REST_API_DEFAULT_PAGE = os.getenv("REST_API_DEFAULT_PAGE", 1)
 REST_API_DEFAULT_PAGE_SIZE = os.getenv("REST_API_DEFAULT_PAGE_SIZE", 10)
 REST_API_DEFAULT_PAGE_QUERY_PARAM = os.getenv("REST_API_DEFAULT_PAGE_QUERY_PARAM", "page_size")
+
+REST_API_PRESETS = {
+    "bare": {"exclude[]": ["*"], "include[]": ["pk", "title"]},
+    "basic": {"exclude[]": ["*"], "include[]": ["pk", "title", "abstract", "resource_type"]},
+}
 
 DYNAMIC_REST = {
     # DEBUG: enable/disable internal debugging
@@ -805,6 +809,7 @@ OPTIONS = {
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
@@ -843,6 +848,7 @@ SECURE_BROWSER_XSS_FILTER = ast.literal_eval(os.environ.get("SECURE_BROWSER_XSS_
 SECURE_SSL_REDIRECT = ast.literal_eval(os.environ.get("SECURE_SSL_REDIRECT", "False"))
 SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "3600"))
 SECURE_HSTS_INCLUDE_SUBDOMAINS = ast.literal_eval(os.environ.get("SECURE_HSTS_INCLUDE_SUBDOMAINS", "True"))
+SECURE_REFERRER_POLICY = os.environ.get("SECURE_REFERRER_POLICY", "strict-origin-when-cross-origin")
 
 # Replacement of the default authentication backend in order to support
 # permissions per object.
@@ -1284,33 +1290,16 @@ except ValueError:
         else re.split(r" *[,|:;] *", os.getenv("PROXY_ALLOWED_HOSTS"))
     )
 
+# Tuple with valid strings to be matched inside the request querystring to let it pass through the proxy
+PROXY_ALLOWED_PARAMS_NEEDLES = ast.literal_eval(os.getenv("PROXY_ALLOWED_PARAMS_NEEDLES", "()"))
+# Tuple with valid strings to be matched inside the request path to let it pass through the proxy
+PROXY_ALLOWED_PATH_NEEDLES = ast.literal_eval(os.getenv("PROXY_ALLOWED_PATH_NEEDLES", "()"))
+
 # The proxy to use when making cross origin requests.
 PROXY_URL = os.environ.get("PROXY_URL", "/proxy/?url=")
 
-# Haystack Search Backend Configuration. To enable,
-# first install the following:
-# - pip install django-haystack
-# - pip install pyelasticsearch
-# Set HAYSTACK_SEARCH to True
-# Run "python manage.py rebuild_index"
-HAYSTACK_SEARCH = ast.literal_eval(os.getenv("HAYSTACK_SEARCH", "False"))
 # Avoid permissions prefiltering
 SKIP_PERMS_FILTER = ast.literal_eval(os.getenv("SKIP_PERMS_FILTER", "False"))
-# Update facet counts from Haystack
-HAYSTACK_FACET_COUNTS = ast.literal_eval(os.getenv("HAYSTACK_FACET_COUNTS", "True"))
-if HAYSTACK_SEARCH:
-    if "haystack" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("haystack",)
-    HAYSTACK_CONNECTIONS = {
-        "default": {
-            "ENGINE": "haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine",
-            "URL": os.getenv("HAYSTACK_ENGINE_URL", "http://127.0.0.1:9200/"),
-            "INDEX_NAME": os.getenv("HAYSTACK_ENGINE_INDEX_NAME", "haystack"),
-        },
-    }
-    HAYSTACK_SIGNAL_PROCESSOR = "haystack.signals.RealtimeSignalProcessor"
-    HAYSTACK_SEARCH_RESULTS_PER_PAGE = int(os.getenv("HAYSTACK_SEARCH_RESULTS_PER_PAGE", "200"))
-
 # Available download formats
 DOWNLOAD_FORMATS_METADATA = [
     "Atom",
@@ -1405,8 +1394,8 @@ if CREATE_LAYER:
 RECAPTCHA_ENABLED = ast.literal_eval(os.environ.get("RECAPTCHA_ENABLED", "False"))
 
 if RECAPTCHA_ENABLED:
-    if "captcha" not in INSTALLED_APPS:
-        INSTALLED_APPS += ("captcha",)
+    if "django_recaptcha" not in INSTALLED_APPS:
+        INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
         "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
     )
@@ -1436,6 +1425,9 @@ DEFAULT_MAP_CENTER = (
     ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_X", "0")),
     ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "0")),
 )
+
+DEFAULT_MAP_CENTER_X = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_X", "0"))
+DEFAULT_MAP_CENTER_Y = ast.literal_eval(os.environ.get("DEFAULT_MAP_CENTER_Y", "0"))
 
 # How tightly zoomed should newly created maps be?
 # 0 = entire world;
@@ -1476,16 +1468,6 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
         return None
 
     GEONODE_CATALOGUE_SERVICE = get_geonode_catalogue_service()
-
-    MAPSTORE_CATALOGUE_SERVICES = {}
-
-    MAPSTORE_CATALOGUE_SELECTED_SERVICE = ""
-
-    if GEONODE_CATALOGUE_SERVICE:
-        MAPSTORE_CATALOGUE_SERVICES[list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]] = GEONODE_CATALOGUE_SERVICE[
-            list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
-        ]  # noqa
-        MAPSTORE_CATALOGUE_SELECTED_SERVICE = list(list(GEONODE_CATALOGUE_SERVICE.keys()))[0]
 
     DEFAULT_MS2_BACKGROUNDS = [
         {
@@ -1962,7 +1944,7 @@ ACCOUNT_EMAIL_VERIFICATION = os.environ.get("ACCOUNT_EMAIL_VERIFICATION", "none"
 
 # Since django-allauth 0.43.0.
 ACCOUNT_SIGNUP_REDIRECT_URL = os.environ.get("ACCOUNT_SIGNUP_REDIRECT_URL", os.getenv("SITEURL", _default_siteurl))
-ACCOUNT_LOGIN_ATTEMPTS_LIMIT = int(os.getenv("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", "3"))
+ACCOUNT_RATE_LIMITS = {"login_failed": os.getenv("ACCOUNT_LOGIN_ATTEMPTS_LIMIT", "10/m/ip,5/5m/key")}
 ACCOUNT_MAX_EMAIL_ADDRESSES = int(os.getenv("ACCOUNT_MAX_EMAIL_ADDRESSES", "2"))
 
 SOCIALACCOUNT_AUTO_SIGNUP = ast.literal_eval(os.environ.get("SOCIALACCOUNT_AUTO_SIGNUP", "True"))
@@ -2007,7 +1989,7 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
     "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
     "UID_FIELD": "unique_name",
     "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
-    "ACCOUNT_CLASS": "allauth.socialaccount.providers.azure.provider.AzureAccount",
+    "ACCOUNT_CLASS": "allauth.socialaccount.providers.microsoft.provider.MicrosoftGraphAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
     "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
     "PROFILE_URL": "https://graph.microsoft.com/v1.0/me",
@@ -2241,6 +2223,15 @@ METADATA_STORERS = [
 
 
 """
+List of modules that implement the deletion rules for a user
+"""
+USER_DELETION_RULES = [
+    "geonode.people.utils.user_has_resources"
+    # ,"geonode.people.utils.user_is_manager"
+]
+
+
+"""
 Define the URLs patterns used by the SizeRestrictedFileUploadHandler
 to evaluate if the file is greater than the limit size defined
 """
@@ -2365,6 +2356,7 @@ FACET_PROVIDERS = [
     {"class": "geonode.facets.providers.keyword.KeywordFacetProvider", "config": {"order": 6, "type": "select"}},
     {"class": "geonode.facets.providers.region.RegionFacetProvider", "config": {"order": 7, "type": "select"}},
     {"class": "geonode.facets.providers.users.OwnerFacetProvider", "config": {"order": 8, "type": "select"}},
+    {"class": "geonode.facets.providers.group.GroupFacetProvider", "config": {"order": 9, "type": "select"}},
     {"class": "geonode.facets.providers.thesaurus.ThesaurusFacetProvider", "config": {"type": "select"}},
 ]
 

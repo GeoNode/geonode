@@ -17,7 +17,6 @@
 #
 #########################################################################
 from geonode.base.enumerations import LAYER_TYPES
-import re
 import logging
 
 from django.db.models import Q
@@ -29,13 +28,7 @@ from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 from tastypie import fields
-from tastypie.utils import trailing_slash
 
-from guardian.shortcuts import get_objects_for_user
-
-from django.conf.urls import url
-from django.core.paginator import Paginator, InvalidPage
-from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 
@@ -66,9 +59,6 @@ from .api import (
 )
 from .paginator import CrossSiteXHRPaginator
 from django.utils.translation import gettext as _
-
-if settings.HAYSTACK_SEARCH:
-    from haystack.query import SearchQuerySet  # noqa
 
 logger = logging.getLogger(__name__)
 
@@ -246,242 +236,6 @@ class CommonModelApi(ModelResource):
             filtered = queryset
         return filtered
 
-    def build_haystack_filters(self, parameters):
-        from haystack.inputs import Raw
-        from haystack.query import SearchQuerySet, SQ  # noqa
-
-        sqs = None
-
-        # Retrieve Query Params
-
-        # Text search
-        query = parameters.get("q", None)
-
-        # Types and subtypes to filter (map, layer, vector, etc)
-        type_facets = parameters.getlist("type__in", [])
-
-        # If coming from explore page, add type filter from resource_name
-        resource_filter = self._meta.resource_name.rstrip("s")
-        if resource_filter != "base" and resource_filter not in type_facets:
-            type_facets.append(resource_filter)
-
-        # Publication date range (start,end)
-        date_end = parameters.get("date__lte", None)
-        date_start = parameters.get("date__gte", None)
-
-        # Topic category filter
-        category = parameters.getlist("category__identifier__in")
-
-        # Keyword filter
-        keywords = parameters.getlist("keywords__slug__in")
-
-        # Region filter
-        regions = parameters.getlist("regions__name__in")
-
-        # Owner filters
-        owner = parameters.getlist("owner__username__in")
-
-        # Sort order
-        sort = parameters.get("order_by", "relevance")
-
-        # Geospatial Elements
-        bbox = parameters.get("extent", None)
-
-        # Filter by Type and subtype
-        if type_facets is not None:
-            types = []
-            subtypes = []
-
-            for type in type_facets:
-                if type in {"map", "layer", "document", "user"}:
-                    # Type is one of our Major Types (not a sub type)
-                    types.append(type)
-                elif type in LAYER_TYPES:
-                    subtypes.append(type)
-
-            if "vector" in subtypes and "vector_time" not in subtypes:
-                subtypes.append("vector_time")
-
-            if len(subtypes) > 0:
-                types.append("layer")
-                sqs = SearchQuerySet().narrow(f"subtype:{','.join(map(str, subtypes))}")
-
-            if len(types) > 0:
-                sqs = (SearchQuerySet() if sqs is None else sqs).narrow(f"type:{','.join(map(str, types))}")
-
-        # Filter by Query Params
-        # haystack bug? if boosted fields aren't included in the
-        # query, then the score won't be affected by the boost
-        if query:
-            if query.startswith('"') or query.startswith("'"):
-                # Match exact phrase
-                phrase = query.replace('"', "")
-                sqs = (SearchQuerySet() if sqs is None else sqs).filter(
-                    SQ(title__exact=phrase) | SQ(description__exact=phrase) | SQ(content__exact=phrase)
-                )
-            else:
-                words = [w for w in re.split(r"\W", query, flags=re.UNICODE) if w]
-                for i, search_word in enumerate(words):
-                    if i == 0:
-                        sqs = (SearchQuerySet() if sqs is None else sqs).filter(
-                            SQ(title=Raw(search_word)) | SQ(description=Raw(search_word)) | SQ(content=Raw(search_word))
-                        )
-                    elif search_word in {"AND", "OR"}:
-                        pass
-                    elif words[i - 1] == "OR":  # previous word OR this word
-                        sqs = sqs.filter_or(
-                            SQ(title=Raw(search_word)) | SQ(description=Raw(search_word)) | SQ(content=Raw(search_word))
-                        )
-                    else:  # previous word AND this word
-                        sqs = sqs.filter(
-                            SQ(title=Raw(search_word)) | SQ(description=Raw(search_word)) | SQ(content=Raw(search_word))
-                        )
-
-        # filter by category
-        if category:
-            sqs = (SearchQuerySet() if sqs is None else sqs).narrow(f"category:{','.join(map(str, category))}")
-
-        # filter by keyword: use filter_or with keywords_exact
-        # not using exact leads to fuzzy matching and too many results
-        # using narrow with exact leads to zero results if multiple keywords
-        # selected
-        if keywords:
-            for keyword in keywords:
-                sqs = (SearchQuerySet() if sqs is None else sqs).filter_or(keywords_exact=keyword)
-
-        # filter by regions: use filter_or with regions_exact
-        # not using exact leads to fuzzy matching and too many results
-        # using narrow with exact leads to zero results if multiple keywords
-        # selected
-        if regions:
-            for region in regions:
-                sqs = (SearchQuerySet() if sqs is None else sqs).filter_or(regions_exact__exact=region)
-
-        # filter by owner
-        if owner:
-            sqs = (SearchQuerySet() if sqs is None else sqs).narrow(f"owner__username:{','.join(map(str, owner))}")
-
-        # filter by date
-        if date_start:
-            sqs = (SearchQuerySet() if sqs is None else sqs).filter(SQ(date__gte=date_start))
-
-        if date_end:
-            sqs = (SearchQuerySet() if sqs is None else sqs).filter(SQ(date__lte=date_end))
-
-        # Filter by geographic bounding box
-        if bbox:
-            left, bottom, right, top = bbox.split(",")
-            sqs = (SearchQuerySet() if sqs is None else sqs).exclude(
-                SQ(bbox_top__lte=bottom)
-                | SQ(bbox_bottom__gte=top)
-                | SQ(bbox_left__gte=right)
-                | SQ(bbox_right__lte=left)
-            )
-
-        # Apply sort
-        if sort.lower() == "-date":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-date")
-        elif sort.lower() == "date":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("date")
-        elif sort.lower() == "title":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("title_sortable")
-        elif sort.lower() == "-title":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-title_sortable")
-        elif sort.lower() == "-popular_count":
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-popular_count")
-        else:
-            sqs = (SearchQuerySet() if sqs is None else sqs).order_by("-date")
-
-        return sqs
-
-    def get_search(self, request, **kwargs):
-        self.method_check(request, allowed=["get"])
-        self.is_authenticated(request)
-        self.throttle_check(request)
-
-        # Get the list of objects that matches the filter
-        sqs = self.build_haystack_filters(request.GET)
-
-        if not settings.SKIP_PERMS_FILTER:
-            filter_set = get_objects_for_user(request.user, "base.view_resourcebase")
-
-            filter_set = get_visible_resources(
-                filter_set,
-                request.user if request else None,
-                admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-                unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-                private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-            )
-
-            filter_set_ids = filter_set.values_list("id")
-            # Do the query using the filterset and the query term. Facet the
-            # results
-            if len(filter_set) > 0:
-                sqs = (
-                    sqs.filter(id__in=filter_set_ids)
-                    .facet("type")
-                    .facet("subtype")
-                    .facet("owner")
-                    .facet("keywords")
-                    .facet("regions")
-                    .facet("category")
-                )
-            else:
-                sqs = None
-        else:
-            sqs = sqs.facet("type").facet("subtype").facet("owner").facet("keywords").facet("regions").facet("category")
-
-        if sqs:
-            # Build the Facet dict
-            facets = {}
-            for facet in sqs.facet_counts()["fields"]:
-                facets[facet] = {}
-                for item in sqs.facet_counts()["fields"][facet]:
-                    facets[facet][item[0]] = item[1]
-
-            # Paginate the results
-            paginator = Paginator(sqs, request.GET.get("limit"))
-
-            try:
-                page = paginator.page(int(request.GET.get("offset") or 0) / int(request.GET.get("limit") or 0 + 1))
-            except InvalidPage:
-                raise Http404("Sorry, no results on that page.")
-
-            if page.has_previous():
-                previous_page = page.previous_page_number()
-            else:
-                previous_page = 1
-            if page.has_next():
-                next_page = page.next_page_number()
-            else:
-                next_page = 1
-            total_count = sqs.count()
-            objects = page.object_list
-        else:
-            next_page = 0
-            previous_page = 0
-            total_count = 0
-            facets = {}
-            objects = []
-
-        object_list = {
-            "meta": {
-                "limit": settings.CLIENT_RESULTS_LIMIT,
-                "next": next_page,
-                "offset": int(getattr(request.GET, "offset", 0)),
-                "previous": previous_page,
-                "total_count": total_count,
-                "facets": facets,
-            },
-            "objects": [self.get_haystack_api_fields(x) for x in objects],
-        }
-
-        self.log_throttled_access(request)
-        return self.create_response(request, object_list)
-
-    def get_haystack_api_fields(self, haystack_object):
-        return {k: v for k, v in haystack_object.get_stored_fields().items() if not re.search("_exact$|_sortable$", k)}
-
     def get_list(self, request, **kwargs):
         """
         Returns a serialized list of resources.
@@ -533,6 +287,8 @@ class CommonModelApi(ModelResource):
             if formatted_obj.get("metadata", None):
                 formatted_obj["metadata"] = [model_to_dict(_m) for _m in formatted_obj["metadata"]]
 
+            formatted_obj["detail_url"] = obj.detail_url
+
             formatted_objects.append(formatted_obj)
 
         return formatted_objects
@@ -574,16 +330,7 @@ class CommonModelApi(ModelResource):
         return response_class(content=serialized, content_type=build_content_type(desired_format), **response_kwargs)
 
     def prepend_urls(self):
-        if settings.HAYSTACK_SEARCH:
-            return [
-                url(
-                    r"^(?P<resource_name>{})/search{}$".format(self._meta.resource_name, trailing_slash()),
-                    self.wrap_view("get_search"),
-                    name="api_get_search",
-                ),
-            ]
-        else:
-            return []
+        return []
 
     def hydrate_title(self, bundle):
         title = bundle.data.get("title", None)

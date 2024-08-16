@@ -18,6 +18,7 @@
 #########################################################################
 
 from unittest.mock import MagicMock
+from uuid import uuid4
 import mock
 import logging
 
@@ -38,6 +39,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from owslib.map.wms111 import ContentMetadata
 
+from geonode.harvesting.models import Harvester
 from geonode.layers.models import Dataset
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
@@ -770,21 +772,47 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             self.assertEqual(s.title, "Foo Title")
             self.assertEqual(s.description, "Foo Description")
             self.assertEqual(s.abstract, "Foo Abstract")
-            self.assertEqual(["Foo", "OWS", "Service"], list(s.keywords.values_list("name", flat=True)))
+            self.assertSetEqual({"Foo", "OWS", "Service"}, set(list(s.keywords.values_list("name", flat=True))))
             response = self.client.post(reverse("remove_service", args=(s.id,)))
             self.assertEqual(len(Service.objects.all()), 0)
+
+    def test_removing_the_service_delete_also_the_harvester(self):
+        """
+        If the user delete the service, the corrisponding harvester object should be deleted too
+        """
+        owner = get_user_model().objects.get(username="admin")
+        # creating the service
+        dummy_service = Service.objects.create(
+            uuid=str(uuid4()), owner=owner, title="test service removing", is_approved=True
+        )
+        # creating the harvester
+        harvester = Harvester.objects.create(
+            remote_url="http://fake1.com",
+            name="harvester1",
+            default_owner=owner,
+            harvester_type="geonode.harvesting.harvesters.geonodeharvester.GeonodeUnifiedHarvesterWorker",
+        )
+        dummy_service.harvester = harvester
+        dummy_service.save()
+
+        self.client.login(username="admin", password="admin")
+
+        response = self.client.post(reverse("remove_service", args=(dummy_service.id,)))
+        self.assertEqual(302, response.status_code)
+        self.assertFalse(Service.objects.filter(id=dummy_service.id).exists())
+        self.assertFalse(Harvester.objects.filter(id=harvester.id).exists())
 
     @flaky(max_runs=3)
     def test_add_duplicate_remote_service_url(self):
         form_data = {
-            "url": "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities",
+            "url": "https://gs-stable.geo-solutions.it/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities",
             "type": enumerations.WMS,
         }
 
         self.client.login(username="serviceowner", password="somepassword")
 
         # Add the first resource
-        url = "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+        url = "https://gs-stable.geo-solutions.it/geoserver/wms?service=wms&version=1.3.0&request=GetCapabilities"
         # url = "http://fake"
         service_type = enumerations.WMS
         form_data = {"url": url, "type": service_type}
@@ -833,7 +861,7 @@ class WmsServiceHarvestingTestCase(StaticLiveServerTestCase):
             reg_url = reverse("register_service")
             cls.client.get(reg_url)
 
-            url = "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+            url = "https://gs-stable.geo-solutions.it/geoserver/wms"
             service_type = enumerations.WMS
             form_data = {"url": url, "type": service_type}
             forms.CreateServiceForm(form_data)

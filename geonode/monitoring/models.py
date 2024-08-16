@@ -34,7 +34,7 @@ from django.http import Http404
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.db.models.fields.json import JSONField
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import gettext_noop as _
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2 as GeoIP
@@ -862,7 +862,7 @@ class ExceptionEvent(models.Model):
         )
 
     @property
-    def url(self):
+    def re_path(self):
         return reverse("monitoring:api_exception", args=(self.id,))
 
     @property
@@ -1172,7 +1172,7 @@ class NotificationCheck(models.Model):
         self.save()
 
     @property
-    def url(self):
+    def re_path(self):
         return reverse("monitoring:api_user_notification_config", args=(self.id,))
 
     def get_users(self):

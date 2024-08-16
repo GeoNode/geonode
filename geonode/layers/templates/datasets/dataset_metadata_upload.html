@@ -1,7 +1,6 @@
 {% extends "upload/dataset_upload_metadata_base.html" %}
 {% load i18n %}
 {% load static %}
-{% load pinax_ratings_tags %}
 {% load bootstrap_tags %}
 {% load pagination_tags %}
 {% load base_tags %}
@@ -63,7 +62,6 @@
     </section>
 
     <section>
-      <div class="btn-danger"><strong>{% trans "WARNING" %}: </strong>{% trans "This will most probably overwrite the current metadata!" %}</div>
       <a href="{% url "dataset_metadata_upload" resource.alternate %}" id="clear-button" class="btn btn-default">{% trans "Clear" %}</a>
       <a href="#" id="upload-button" class="btn btn-primary">{% trans "Upload files" %}</a>
     </section>

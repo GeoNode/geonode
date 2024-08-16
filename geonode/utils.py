@@ -23,7 +23,6 @@ import re
 import json
 import time
 import base64
-import ntpath
 import select
 import shutil
 import string
@@ -52,12 +51,11 @@ from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
-from pathvalidate import ValidationError, validate_filepath, validate_filename
 from geonode.upload.api.exceptions import GeneralUploadException
 
 from django.conf import settings
 from django.db.models import signals
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.apps import apps as django_apps
 from django.middleware.csrf import get_token
 from django.http import HttpResponse
@@ -68,7 +66,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ImproperlyConfigured
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models, connection, transaction
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode import geoserver, GeoNodeException  # noqa
 from geonode.compat import ensure_string
@@ -385,7 +383,9 @@ def get_headers(request, url, raw_url, allowed_hosts=[]):
     for _header_key, _header_value in dict(request.headers.copy()).items():
         if _header_key.lower() in FORWARDED_HEADERS:
             headers[_header_key] = _header_value
-    if settings.SESSION_COOKIE_NAME in request.COOKIES and is_safe_url(url=raw_url, allowed_hosts=url.hostname):
+    if settings.SESSION_COOKIE_NAME in request.COOKIES and url_has_allowed_host_and_scheme(
+        url=raw_url, allowed_hosts=url.hostname
+    ):
         cookies = request.META["HTTP_COOKIE"]
 
     for cook in request.COOKIES:
@@ -1416,7 +1416,7 @@ def get_legend_url(
 
 def set_resource_default_links(instance, layer, prune=False, **kwargs):
     from geonode.base.models import Link
-    from django.utils.translation import ugettext
+    from django.utils.translation import gettext_lazy
 
     # Prune old links
     if prune:
@@ -1492,7 +1492,7 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
             try:
                 Link.objects.update_or_create(
                     resource=instance.resourcebase_ptr,
-                    name=ugettext(name),
+                    name=gettext_lazy(name),
                     defaults=dict(
                         extension=ext,
                         url=wms_url,
@@ -1502,9 +1502,9 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
                 )
             except Link.MultipleObjectsReturned:
                 _d = dict(extension=ext, url=wms_url, mime=mime, link_type="image")
-                Link.objects.filter(resource=instance.resourcebase_ptr, name=ugettext(name), link_type="image").update(
-                    **_d
-                )
+                Link.objects.filter(
+                    resource=instance.resourcebase_ptr, name=gettext_lazy(name), link_type="image"
+                ).update(**_d)
 
         if instance.subtype == "vector":
             links = wfs_links(
@@ -1919,12 +1919,13 @@ def remove_credentials_from_url(url):
     return cleaned_url
 
 
+ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
+domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
+
+
 def extract_ip_or_domain(url):
     # Decode the URL to handle percent-encoded characters
     _url = remove_credentials_from_url(unquote(url))
-
-    ip_regex = re.compile("^(?:http://|https://)(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})")
-    domain_regex = re.compile("^(?:http://|https://)([a-zA-Z0-9.-]+)")
 
     match = ip_regex.findall(_url)
     if len(match):
@@ -1998,23 +1999,3 @@ def get_supported_datasets_file_types():
 
 def get_allowed_extensions():
     return list(itertools.chain.from_iterable([_type["ext"] for _type in get_supported_datasets_file_types()]))
-
-
-def safe_path_leaf(path):
-    """A view that is not vulnerable to malicious file access."""
-    base_path = settings.MEDIA_ROOT
-    try:
-        validate_filepath(path, platform="auto")
-        head, tail = ntpath.split(path)
-        filename = tail or ntpath.basename(head)
-        validate_filename(filename, platform="auto")
-    except ValidationError as e:
-        logger.error(f"{e}")
-        raise e
-    # GOOD -- Verify with normalised version of path
-    fullpath = os.path.normpath(os.path.join(head, filename))
-    if not fullpath.startswith(base_path) or path != fullpath:
-        raise GeoNodeException(
-            f"The provided path '{path}' is not safe. The file is outside the MEDIA_ROOT '{base_path}' base path!"
-        )
-    return fullpath

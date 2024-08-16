@@ -23,7 +23,6 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.contenttypes.models import ContentType
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
@@ -38,7 +37,6 @@ from geonode.resource import settings as rm_settings
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.populate_test_data import create_single_doc, create_single_map, create_single_dataset
 
-from pinax.ratings.models import OverallRating
 from gisdata import GOOD_DATA
 
 
@@ -93,9 +91,6 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         # Add dataset to a map
         MapLayer.objects.create(map=map, name=dt.alternate).save()
         # Create the rating for dataset
-        OverallRating.objects.create(
-            category=2, object_id=dt.id, content_type=ContentType.objects.get(model="dataset"), rating=3
-        )
         create_dataset_data(dt.resourcebase_ptr_id)
         res = self.rm.delete(doc.uuid, instance=doc)
         self.assertTrue(res)
@@ -103,7 +98,6 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(res)
         # After dataset delete
         self.assertEqual(MapLayer.objects.filter(name="geonode:test_delete_dataset").count(), 0)
-        self.assertEqual(OverallRating.objects.filter(object_id=dt.id).count(), 0)
 
     def test_create(self):
         dt = Dataset.objects.filter(uuid__isnull=False).exclude(uuid="").first()

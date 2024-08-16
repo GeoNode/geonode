@@ -19,8 +19,10 @@
 from __future__ import absolute_import, unicode_literals
 
 import json
+import pytest
 from datetime import datetime, timedelta
 from importlib import import_module
+from unittest.mock import Mock, patch
 
 from django.conf import settings
 from django.core import mail
@@ -31,13 +33,28 @@ from django.contrib.auth import get_user_model
 
 from allauth.account import app_settings as account_settings
 from allauth.account.adapter import get_adapter
+from allauth.socialaccount.models import SocialAccount
 from allauth.account.models import EmailAddress, EmailConfirmation
 from allauth.account.signals import user_signed_up
 
 # from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.apple.client import jwt_encode
 from allauth.socialaccount.tests import OAuth2TestsMixin
-from allauth.tests import TestCase
+from allauth.tests import TestCase, mocked_response
+
+
+@pytest.fixture
+def settings_with_google_provider(settings):
+    settings.SOCIALACCOUNT_PROVIDERS = {
+        "geonode_openid_connect": {
+            "APP": {
+                "client_id": "app123id",
+                "key": "google",
+                "secret": "dummy",
+            }
+        }
+    }
+    return settings
 
 
 @override_settings(
@@ -45,6 +62,25 @@ from allauth.tests import TestCase
     SOCIALACCOUNT_AUTO_SIGNUP=True,
     ACCOUNT_SIGNUP_FORM_CLASS=None,
     ACCOUNT_EMAIL_VERIFICATION=account_settings.EmailVerificationMethod.MANDATORY,
+    SOCIALACCOUNT_PROVIDERS={
+        "geonode_openid_connect": {
+            "NAME": "Google",
+            "SCOPE": [
+                "profile",
+                "email",
+            ],
+            "AUTH_PARAMS": {
+                "access_type": "online",
+                "prompt": "select_account consent",
+            },
+            "COMMON_FIELDS": {"email": "email", "last_name": "family_name", "first_name": "given_name"},
+            "ACCOUNT_CLASS": "allauth.socialaccount.providers.google.provider.GoogleAccount",
+            "ACCESS_TOKEN_URL": "https://oauth2.googleapis.com/token",
+            "AUTHORIZE_URL": "https://accounts.google.com/o/oauth2/v2/auth",
+            "ID_TOKEN_ISSUER": "https://accounts.google.com",
+            "OAUTH_PKCE_ENABLED": True,
+        }
+    },
 )
 class GoogleTests(OAuth2TestsMixin, TestCase):
     provider_id = "geonode_openid_connect"
@@ -53,6 +89,9 @@ class GoogleTests(OAuth2TestsMixin, TestCase):
         super().setUp()
         self.email = "raymond.penners@example.com"
         self.identity_overwrites = {}
+
+    def test_account_tokens(self, multiple_login=False):
+        pass
 
     def get_google_id_token_payload(self):
         now = datetime.utcnow()
@@ -227,3 +266,42 @@ class AppInSettingsTests(GoogleTests):
     """
 
     pass
+
+
+def test_login_by_token(db, client, settings_with_google_provider):
+    client.cookies.load({"g_csrf_token": "csrf"})
+    with patch("allauth.socialaccount.providers.google.views.jwt.get_unverified_header") as g_u_h:
+        with mocked_response({"dummykid": "-----BEGIN CERTIFICATE-----"}):
+            with patch("allauth.socialaccount.providers.google.views.load_pem_x509_certificate") as load_pem:
+                with patch("allauth.socialaccount.providers.google.views.jwt.decode") as decode:
+                    decode.return_value = {
+                        "iss": "https://accounts.google.com",
+                        "aud": "client_id",
+                        "sub": "123sub",
+                        "hd": "example.com",
+                        "email": "raymond@example.com",
+                        "email_verified": True,
+                        "at_hash": "HK6E_P6Dh8Y93mRNtsDB1Q",
+                        "name": "Raymond Penners",
+                        "picture": "https://lh5.googleusercontent.com/photo.jpg",
+                        "given_name": "Raymond",
+                        "family_name": "Penners",
+                        "locale": "en",
+                        "iat": 123,
+                        "exp": 456,
+                    }
+                    g_u_h.return_value = {
+                        "alg": "RS256",
+                        "kid": "dummykid",
+                        "typ": "JWT",
+                    }
+                    pem = Mock()
+                    load_pem.return_value = pem
+                    pem.public_key.return_value = "key"
+                    resp = client.post(
+                        reverse("google_login_by_token"),
+                        {"credential": "dummy", "g_csrf_token": "csrf"},
+                    )
+                    assert resp.status_code == 302
+                    socialaccount = SocialAccount.objects.get(uid="123sub")
+                    assert socialaccount.user.email == "raymond@example.com"

@@ -21,16 +21,12 @@ import functools
 import json
 import re
 
-from decimal import Decimal
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
 
 from django.apps import apps
-from django.contrib.contenttypes.models import ContentType
 from django.core.validators import URLValidator
-from django.db import models
-from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
@@ -44,15 +40,12 @@ from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
-from pinax.ratings.categories import category_value
-from pinax.ratings.models import OverallRating, Rating
-from pinax.ratings.views import NUM_OF_RATINGS
-
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -61,7 +54,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata
+from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
@@ -74,8 +67,7 @@ from geonode.base.api.filters import (
     FavoriteFilter,
     TKeywordsFilter,
 )
-from geonode.groups.models import GroupProfile, GroupMember
-from geonode.people.utils import get_available_users
+from geonode.groups.models import GroupProfile
 from geonode.security.permissions import get_compact_perms_list, PermSpec, PermSpecCompact
 from geonode.security.utils import (
     get_visible_resources,
@@ -87,18 +79,17 @@ from geonode.resource.models import ExecutionRequest
 from geonode.resource.api.tasks import resouce_service_dispatcher
 from geonode.resource.manager import resource_manager
 
-from guardian.shortcuts import get_objects_for_user
 
+from geonode.base.api.mixins import AdvertisedListMixin
 from .permissions import (
-    IsSelfOrAdminOrReadOnly,
     IsOwnerOrAdmin,
     IsManagerEditOrAdmin,
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
+
 from .serializers import (
     FavoriteSerializer,
-    UserSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
     ResourceBaseSerializer,
@@ -111,77 +102,13 @@ from .serializers import (
     ExtraMetadataSerializer,
     LinkedResourceSerializer,
 )
+from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
 from geonode.base.utils import validate_extra_metadata
 
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-class UserViewSet(DynamicModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [
-        IsAuthenticated,
-        IsSelfOrAdminOrReadOnly,
-    ]
-    filter_backends = [DynamicFilterBackend, DynamicSortingFilter, DynamicSearchFilter]
-    serializer_class = UserSerializer
-    pagination_class = GeoNodeApiPagination
-
-    def get_queryset(self):
-        """
-        Filters and sorts users.
-        """
-        if self.request and self.request.user:
-            queryset = get_available_users(self.request.user)
-        else:
-            queryset = get_user_model().objects.all()
-
-        # Set up eager loading to avoid N+1 selects
-        queryset = self.get_serializer_class().setup_eager_loading(queryset)
-        return queryset.order_by("username")
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: ResourceBaseSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Resources visible to the user.",
-    )
-    @action(detail=True, methods=["get"])
-    def resources(self, request, pk=None):
-        user = self.get_object()
-        permitted = get_objects_for_user(user, "base.view_resourcebase")
-        qs = ResourceBase.objects.all().filter(id__in=permitted).order_by("title")
-
-        resources = get_visible_resources(
-            qs,
-            user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        )
-
-        paginator = GeoNodeApiPagination()
-        paginator.page_size = request.GET.get("page_size", 10)
-        result_page = paginator.paginate_queryset(resources, request)
-        serializer = ResourceBaseSerializer(result_page, embed=True, many=True, context={"request": request})
-        return paginator.get_paginated_response({"resources": serializer.data})
-
-    @extend_schema(
-        methods=["get"],
-        responses={200: GroupProfileSerializer(many=True)},
-        description="API endpoint allowing to retrieve the Groups the user is member of.",
-    )
-    @action(detail=True, methods=["get"])
-    def groups(self, request, pk=None):
-        user = self.get_object()
-        qs_ids = GroupMember.objects.filter(user=user).values_list("group", flat=True)
-        groups = GroupProfile.objects.filter(id__in=qs_ids)
-        return Response(GroupProfileSerializer(embed=True, many=True).to_representation(groups))
 
 
 class GroupViewSet(DynamicModelViewSet):
@@ -344,7 +271,33 @@ class OwnerViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, 
         return queryset.order_by("username")
 
 
-class ResourceBaseViewSet(DynamicModelViewSet):
+class ApiPresetsInitializer(APIView):
+    """
+    Replaces the `api_preset` query params with the configured params
+    """
+
+    def initialize_request(self, request, *args, **kwargs):
+        self.replace_presets(request)
+        return super().initialize_request(request, *args, **kwargs)
+
+    def replace_presets(self, request):
+        # we must make the GET mutable since in the filters, some queryparams are popped
+        request.GET._mutable = True
+        try:
+            for preset_name in request.GET.pop("api_preset", []):
+                presets = settings.REST_API_PRESETS.get(preset_name, None)
+                if not presets:
+                    logger.info(f'Preset "{preset_name}" is not defined')  # maybe return 404?
+                    return
+                for param_name in presets.keys():
+                    for param_value in presets.get(param_name):
+                        if param_value not in request.GET.get(param_name, []):
+                            request.GET.appendlist(param_name, param_value)
+        finally:
+            request.GET._mutable = False
+
+
+class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin):
     """
     API endpoint that allows base resources to be viewed or edited.
     """
@@ -693,7 +646,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                         "created": request_params.get("created", False),
                     },
                 )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -854,7 +807,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -954,7 +907,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get("defaults", f'{{"owner":"{request.user.username}"}}'),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1038,7 +991,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                 geonode_resource=resource,
                 input_params={"uuid": resource.uuid},
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1159,7 +1112,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "notify": request_params.get("notify", True),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1270,7 +1223,7 @@ class ResourceBaseViewSet(DynamicModelViewSet):
                     "defaults": request_params.get("defaults", "{}"),
                 },
             )
-            resouce_service_dispatcher.apply_async(args=(_exec_request.exec_id,), expiration=30)
+            resouce_service_dispatcher.apply_async(args=(str(_exec_request.exec_id),), expiration=30)
             return Response(
                 {
                     "status": _exec_request.status,
@@ -1284,47 +1237,6 @@ class ResourceBaseViewSet(DynamicModelViewSet):
         except Exception as e:
             logger.exception(e)
             return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
-
-    @extend_schema(
-        methods=["post", "get"],
-        responses={200},
-        description="API endpoint allowing to rate and get overall rating of the Resource.",
-    )
-    @action(
-        detail=True,
-        url_path="ratings",
-        url_name="ratings",
-        methods=["post", "get"],
-        permission_classes=[
-            IsAuthenticatedOrReadOnly,
-            UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}}),
-        ],
-    )
-    def ratings(self, request, pk, *args, **kwargs):
-        resource = get_object_or_404(ResourceBase, pk=pk)
-        resource = resource.get_real_instance()
-        ct = ContentType.objects.get_for_model(resource)
-        if request.method == "POST":
-            rating_input = int(request.data.get("rating"))
-            category = resource._meta.object_name.lower()
-            # check if category is configured in settings.PINAX_RATINGS_CATEGORY_CHOICES
-            cat_choice = category_value(resource, category)
-
-            # Check for errors and bail early
-            if category and cat_choice is None:
-                return HttpResponseForbidden("Invalid category. It must match a preconfigured setting")
-            if rating_input not in range(NUM_OF_RATINGS + 1):
-                return HttpResponseForbidden(f"Invalid rating. It must be a value between 0 and {NUM_OF_RATINGS}")
-            Rating.update(rating_object=resource, user=request.user, category=cat_choice, rating=rating_input)
-        user_rating = None
-        if request.user.is_authenticated:
-            user_rating = Rating.objects.filter(object_id=resource.pk, content_type=ct, user=request.user).first()
-        overall_rating = OverallRating.objects.filter(object_id=resource.pk, content_type=ct).aggregate(
-            r=models.Avg("rating")
-        )["r"]
-        overall_rating = Decimal(str(overall_rating or "0"))
-
-        return Response({"rating": user_rating.rating if user_rating else 0, "overall_rating": overall_rating})
 
     @extend_schema(
         methods=["put"], responses={200}, description="API endpoint allowing to set thumbnail of the Resource."
@@ -1480,85 +1392,136 @@ class ResourceBaseViewSet(DynamicModelViewSet):
             logger.debug(e)
             return request.data
 
-    @extend_schema(methods=["get"], description="Get Linked Resources")
+    @extend_schema(methods=["get", "post", "delete"], description="Get Linked Resources")
     @action(
         detail=True,
-        methods=["get"],
+        methods=["get", "post", "delete"],
         permission_classes=[UserHasPerms(perms_dict={"default": {"GET": ["base.view_resourcebase"]}})],
         url_path=r"linked_resources",  # noqa
         url_name="linked_resources",
     )
     def linked_resources(self, request, pk, *args, **kwargs):
+        resource = self.get_object()
+        if request.method in ("POST", "DELETE"):
+            success_var = []
+            error_var = []
+            payload = {"success": success_var, "error": error_var, "message": "Resources updated successfully"}
+
+            target_ids = request.data.get("target")
+            if not isinstance(target_ids, list):
+                raise ValidationError("Payload is not valid")
+
+            # remove duplicates and self ref
+            target_ids = set(target_ids)
+            if resource.id in target_ids:
+                error_var.append(resource.id)
+
+            valid_ids = target_ids - {resource.id}
+
+            for t_id in valid_ids:
+                try:
+                    target = get_object_or_404(ResourceBase, pk=t_id)
+
+                    if request.method == "POST":
+                        _, created = LinkedResource.objects.get_or_create(source=resource, target=target)
+                        if created:
+                            success_var.append(t_id)
+                            continue
+                        error_var.append(t_id)
+                    if request.method == "DELETE":
+                        link = LinkedResource.objects.filter(source=resource.id, target=t_id).first()
+                        if not link:
+                            logger.error(f"Resource selected with id {t_id} does not exist")
+                            error_var.append(t_id)
+                            continue
+                        link.delete()
+                        success_var.append(t_id)
+                except Exception:
+                    error_var.append(t_id)
+                    logger.error(f"Resource with id {t_id} not found")
+
+            if len(error_var):
+                payload["message"] = "Some error has occurred during the saving"
+                return Response(payload, status=400)
+
+            return Response(payload, status=200)
+
         return base_linked_resources(self.get_object().get_real_instance(), request.user, request.GET)
 
 
 def base_linked_resources(instance, user, params):
     try:
-        resource_type = params.get("resource_type")
-        link_type = params.get("link_type")
-        type_list = resource_type.split(",") if resource_type else []
-
-        warnings = {}
-
-        if "page_size" in params or "page" in params:
-            warnings["PAGINATION"] = "Pagination is not supported on this call"
-
-        ret = {"WARNINGS": warnings}
-
-        get_visible_resources_p = functools.partial(
-            get_visible_resources,
-            user=user,
-            admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
-            unpublished_not_visible=settings.RESOURCE_PUBLISHING,
-            private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
-        )
-
-        if not link_type or link_type == "linked_to":
-            # list of linked resources, probably extended by ResourceBase's child class - may be loopable only once
-            linked_to_over = instance.get_linked_resources()
-
-            # resolve the ids of linked resources - using either e QuerySet (preferred) or a list
-            if isinstance(linked_to_over, QuerySet):
-                linked_to_over_loopable = linked_to_over
-                linked_to_id_values = linked_to_over.values("target_id")
-            else:
-                linked_to_over_loopable = [lr for lr in linked_to_over]
-                linked_to_id_values = [lr.target_id for lr in linked_to_over_loopable]
-
-            # filter resources by visibility / permissions
-            linked_to_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_to_id_values)).order_by(
-                "-pk"
-            )
-            # optionally filter by resource type
-            linked_to_visib = linked_to_visib.filter(resource_type__in=type_list) if type_list else linked_to_visib
-            linked_to_visib_ids = linked_to_visib.values_list("id", flat=True)
-            linked_to = [lres for lres in linked_to_over_loopable if lres.target.id in linked_to_visib_ids]
-
-            ret["linked_to"] = LinkedResourceSerializer(linked_to, embed=True, many=True).data
-
-        if not link_type or link_type == "linked_by":
-            linked_by_over = instance.get_linked_resources(as_target=True)
-            if isinstance(linked_by_over, QuerySet):
-                linked_by_over_loopable = linked_by_over
-                linked_by_id_values = linked_by_over.values("source_id")
-            else:
-                linked_by_over_loopable = [lr for lr in linked_by_over]
-                linked_by_id_values = [lr.source_id for lr in linked_by_over_loopable]
-
-            linked_by_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_by_id_values)).order_by(
-                "-pk"
-            )
-
-            linked_by_visib = linked_by_visib.filter(resource_type__in=type_list) if type_list else linked_by_visib
-            linked_by_visib_ids = linked_by_visib.values_list("id", flat=True)
-            linked_by = [lres for lres in linked_by_over_loopable if lres.source.id in linked_by_visib_ids]
-
-            ret["linked_by"] = LinkedResourceSerializer(
-                instance=linked_by, serialize_source=True, embed=True, many=True
-            ).data
-
-        return Response(ret)
-
+        return Response(base_linked_resources_payload(instance, user, params))
     except Exception as e:
         logger.exception(e)
         return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
+
+
+def base_linked_resources_payload(instance, user, params={}):
+    resource_type = params.get("resource_type", None)
+    link_type = params.get("link_type", None)
+    type_list = resource_type.split(",") if resource_type else []
+
+    warnings = {}
+
+    if "page_size" in params or "page" in params:
+        warnings["PAGINATION"] = "Pagination is not supported on this call"
+
+    ret = {"WARNINGS": warnings}
+
+    get_visible_resources_p = functools.partial(
+        get_visible_resources,
+        user=user,
+        admin_approval_required=settings.ADMIN_MODERATE_UPLOADS,
+        unpublished_not_visible=settings.RESOURCE_PUBLISHING,
+        private_groups_not_visibile=settings.GROUP_PRIVATE_RESOURCES,
+    )
+
+    if not link_type or link_type == "linked_to":
+        # list of linked resources, probably extended by ResourceBase's child class - may be loopable only once
+        linked_to_over = instance.get_linked_resources()
+
+        # resolve the ids of linked resources - using either e QuerySet (preferred) or a list
+        if isinstance(linked_to_over, QuerySet):
+            linked_to_over_loopable = linked_to_over
+            linked_to_id_values = linked_to_over.values("target_id")
+        else:
+            linked_to_over_loopable = [lr for lr in linked_to_over]
+            linked_to_id_values = [lr.target_id for lr in linked_to_over_loopable]
+
+        # filter resources by visibility / permissions
+        linked_to_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_to_id_values)).order_by(
+            "-pk"
+        )
+        # optionally filter by resource type
+        linked_to_visib = linked_to_visib.filter(resource_type__in=type_list) if type_list else linked_to_visib
+        linked_to_visib_ids = linked_to_visib.values_list("id", flat=True)
+        linked_to = [lres for lres in linked_to_over_loopable if lres.target.id in linked_to_visib_ids]
+
+        ret["linked_to"] = LinkedResourceSerializer(linked_to, embed=True, many=True).data
+
+    if not link_type or link_type == "linked_by":
+        linked_by_over = instance.get_linked_resources(as_target=True)
+        if isinstance(linked_by_over, QuerySet):
+            linked_by_over_loopable = linked_by_over
+            linked_by_id_values = linked_by_over.values("source_id")
+        else:
+            linked_by_over_loopable = [lr for lr in linked_by_over]
+            linked_by_id_values = [lr.source_id for lr in linked_by_over_loopable]
+
+        linked_by_visib = get_visible_resources_p(ResourceBase.objects.filter(id__in=linked_by_id_values)).order_by(
+            "-pk"
+        )
+
+        linked_by_visib = linked_by_visib.filter(resource_type__in=type_list) if type_list else linked_by_visib
+        linked_by_visib_ids = linked_by_visib.values_list("id", flat=True)
+        linked_by = [lres for lres in linked_by_over_loopable if lres.source.id in linked_by_visib_ids]
+
+        ret["linked_by"] = LinkedResourceSerializer(
+            instance=linked_by, serialize_source=True, embed=True, many=True
+        ).data
+
+    if not ret["WARNINGS"]:
+        ret.pop("WARNINGS")
+
+    return ret

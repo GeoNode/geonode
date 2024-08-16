@@ -187,9 +187,9 @@
   <div class="col-md-12">
     {% include "people/_profile_filters.html" %}
   </div>
-  <!-- <div class="col-md-12">
+  <div class="col-md-12">
     {% include "search/_sort_filters.html" %}
-  </div> -->
+  </div>
   <div class=" col-xs-12 col-md-12">
     {% include 'base/_resourcebase_snippet.html' %}
   </div>
@@ -203,11 +203,7 @@
 {% block extra_script %}
 {{ block.super }}
   <script type="text/javascript">
-      {% if HAYSTACK_SEARCH %}
-          SEARCH_URL = '{% url 'api_get_search' api_name='api' resource_name='base' %}?owner__username={{profile.username}}'
-      {% else %}
-          SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}?owner__username={{profile.username}}';
-      {% endif %}
+      SEARCH_URL = '{% url 'api_dispatch_list' api_name='api' resource_name='base' %}?owner__username={{profile.username}}';
   </script>
   {% include 'search/search_scripts.html' %}
 {% endblock %}

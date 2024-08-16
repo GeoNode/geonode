@@ -59,7 +59,7 @@ class WmsServiceHarvestingTestCase(GeoNodeLiveTestSupport):
             reg_url = reverse("register_service")
             cls.client.get(reg_url)
 
-            url = "https://demo.geosolutionsgroup.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+            url = "https://gs-stable.geo-solutions.it/geoserver/wms"
             service_type = enumerations.WMS
             form_data = {"url": url, "type": service_type}
             forms.CreateServiceForm(form_data)

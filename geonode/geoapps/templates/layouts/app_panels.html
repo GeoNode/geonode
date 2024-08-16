@@ -7,13 +7,10 @@
 <link href="{% static "vendor/select2/dist/css/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
 <link href="{% static "autocomplete_light/select2.css" %}" type="text/css" media="screen" rel="stylesheet" />
 <script type="text/javascript" src="{% static "admin/js/vendor/jquery/jquery.js" %}"></script>
-<script type="text/javascript" src="{% static "autocomplete_light/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "autocomplete_light/autocomplete_light.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/select2/dist/js/select2.full.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/select2/dist/js/i18n/en.js" %}"></script>
-<script type="text/javascript" src="{% static "autocomplete_light/autocomplete.init.js" %}"></script>
-<script type="text/javascript" src="{% static "autocomplete_light/forward.js" %}"></script>
 <script type="text/javascript" src="{% static "autocomplete_light/select2.js" %}"></script>
-<script type="text/javascript" src="{% static "autocomplete_light/jquery.post-setup.js" %}"></script>
 
 <script src="{% static "geonode/js/crop_widget/crop_widget_es5.js" %}"></script>
 <link rel="stylesheet" href="{% static "geonode/css/crop_widget.css" %}">
@@ -55,6 +52,7 @@ form #mdeditor_form label{
 #mdeditor_form #id_resource-metadata_uploaded_preserve,
 #mdeditor_form #id_resource-is_approved,
 #mdeditor_form #id_resource-is_published,
+#mdeditor_form #id_resource-advertised,
 #mdeditor_form #id_resource-featured  {
   float: right;
 }
@@ -328,7 +326,7 @@ span.grippy::after {
                                             <option {% if not category_form.initial %} selected="selected" {% endif %} value="">---</option>
                                           {% for choice in category_form.category_choice_field.field.choices %}
                                               <option
-                                              {% ifequal category_form.initial choice.0 %} selected="selected" {% endifequal %}
+                                              {% if category_form.initial == choice.0 %} selected="selected" {% endif %}
                                               value="{{ choice.0 }}"
                                               data-content="<span class='has-popover' data-container='body' data-toggle='popover' data-placement='top'  data-content=' {{ choice.2.description }}' rigger='hover'><i class='fa {{choice.2.fa_class}}'></i> {{ choice.2.gn_description }}<span>"
                                               >{{ choice.2.gn_description }}</option>
@@ -350,7 +348,7 @@ span.grippy::after {
                                             {% for group in metadata_author_groups %}
                                             <option
                                                 value="{{ group.group.id }}"
-                                                {% ifequal resource.group group.group %} selected="selected" {% endifequal %}
+                                                {% if resource.group == group.group %} selected="selected" {% endif %}
                                                 >
                                                 {{ group.title }}
                                             </option>
@@ -577,6 +575,10 @@ span.grippy::after {
                         {{ geoapp_form.featured }}
                     </div>
                     {% endif %}
+                    <div>
+                        <span><label for="{{ geoapp_form.advertised|id }}">{{ geoapp_form.advertised.label }}</label></span>
+                        {{ geoapp_form.advertised }}
+                    </div>
                   </div>
                 </div>
               </div>

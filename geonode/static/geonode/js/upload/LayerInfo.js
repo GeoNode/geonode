@@ -466,15 +466,7 @@ define(function (require, exports) {
         } catch (err) {
             // pass
         }
-        var info_message = ''
-        var level = 'alert-success'
-        if (resp.warning){
-            info_message = resp.warning
-            level = 'alert-warning'
-        }
-        else{
-            info_message = gettext('Your ' + resourceType +' was successfully created.');
-        }
+        var info_message = gettext('Your ' + resourceType +' was successfully created.');
         var a = '<a href="' + resp.url + '" class="btn btn-success">' + gettext(resourceType.capitalize() + ' Info') + '</a>&nbsp;&nbsp;&nbsp;';
         if(resourceType == 'dataset') {
             // Only Layers have Metadata and SLD Upload features for the moment
@@ -490,7 +482,7 @@ define(function (require, exports) {
         }
         self.logStatus({
             msg: '<p>' + info_message + '<br/>' + msg_col + '<br/>' + a + '</p>',
-            level: level,
+            level: 'alert-success',
             empty: 'true'
         });
     };

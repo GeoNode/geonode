@@ -18,75 +18,71 @@
 #########################################################################
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from . import views
 
 urlpatterns = [  # 'geonode.geoserver.views',
     # REST Endpoints
-    url(r"^rest/stores/(?P<store_type>\w+)/$", views.stores, name="gs_stores"),
-    url(
+    re_path(r"^rest/stores/(?P<store_type>\w+)/$", views.stores, name="gs_stores"),
+    re_path(
         r"^rest/styles",
         views.geoserver_proxy,
         dict(proxy_path="/gs/rest/styles", downstream_path="rest/styles"),
         name="gs_styles",
     ),
-    url(
+    re_path(
         r"^rest/workspaces/(?P<workspace>\w+)",
         views.geoserver_proxy,
         dict(proxy_path="/gs/rest/workspaces", downstream_path="rest/workspaces"),
         name="gs_workspaces",
     ),
-    url(
+    re_path(
         r"^rest/layers",
         views.geoserver_proxy,
         dict(proxy_path="/gs/rest/layers", downstream_path="rest/layers"),
         name="gs_layers",
     ),
-    url(
+    re_path(
         r"^rest/imports",
         views.geoserver_proxy,
         dict(proxy_path="/gs/rest/imports", downstream_path="rest/imports"),
         name="gs_imports",
     ),
-    url(
+    re_path(
         r"^rest/sldservice",
         views.geoserver_proxy,
         dict(proxy_path="/gs/rest/sldservice", downstream_path="rest/sldservice"),
         name="gs_sldservice",
     ),
     # OWS Endpoints
-    url(r"^ows", views.geoserver_proxy, dict(proxy_path="/gs/ows", downstream_path="ows"), name="ows_endpoint"),
-    url(r"^gwc", views.geoserver_proxy, dict(proxy_path="/gs/gwc", downstream_path="gwc"), name="gwc_endpoint"),
-    url(r"^wms", views.geoserver_proxy, dict(proxy_path="/gs/wms", downstream_path="wms"), name="wms_endpoint"),
-    url(r"^wfs", views.geoserver_proxy, dict(proxy_path="/gs/wfs", downstream_path="wfs"), name="wfs_endpoint"),
-    url(r"^wcs", views.geoserver_proxy, dict(proxy_path="/gs/wcs", downstream_path="wcs"), name="wcs_endpoint"),
-    url(r"^wps", views.geoserver_proxy, dict(proxy_path="/gs/wps", downstream_path="wps"), name="wps_endpoint"),
-    url(r"^pdf", views.geoserver_proxy, dict(proxy_path="/gs/pdf", downstream_path="pdf"), name="pdf_endpoint"),
-    url(
+    re_path(r"^ows", views.geoserver_proxy, dict(proxy_path="/gs/ows", downstream_path="ows"), name="ows_endpoint"),
+    re_path(r"^gwc", views.geoserver_proxy, dict(proxy_path="/gs/gwc", downstream_path="gwc"), name="gwc_endpoint"),
+    re_path(r"^wms", views.geoserver_proxy, dict(proxy_path="/gs/wms", downstream_path="wms"), name="wms_endpoint"),
+    re_path(r"^wfs", views.geoserver_proxy, dict(proxy_path="/gs/wfs", downstream_path="wfs"), name="wfs_endpoint"),
+    re_path(r"^wcs", views.geoserver_proxy, dict(proxy_path="/gs/wcs", downstream_path="wcs"), name="wcs_endpoint"),
+    re_path(r"^wps", views.geoserver_proxy, dict(proxy_path="/gs/wps", downstream_path="wps"), name="wps_endpoint"),
+    re_path(r"^pdf", views.geoserver_proxy, dict(proxy_path="/gs/pdf", downstream_path="pdf"), name="pdf_endpoint"),
+    re_path(
         r"^(?P<workspace>[^/]*)/(?P<layername>[^/]*)/ows",
         views.geoserver_proxy,
         dict(proxy_path=f"/gs/{settings.DEFAULT_WORKSPACE}", downstream_path="ows"),
     ),
-    url(
+    re_path(
         r"^(?P<workspace>[^/]*)/(?P<layername>[^/]*)/wms",
         views.geoserver_proxy,
         dict(proxy_path=f"/gs/{settings.DEFAULT_WORKSPACE}", downstream_path="wms"),
     ),
-    url(
+    re_path(
         r"^(?P<workspace>[^/]*)/(?P<layername>[^/]*)/wfs",
         views.geoserver_proxy,
         dict(proxy_path=f"/gs/{settings.DEFAULT_WORKSPACE}", downstream_path="wfs"),
     ),
-    url(
+    re_path(
         r"^(?P<workspace>[^/]*)/(?P<layername>[^/]*)/wcs",
         views.geoserver_proxy,
         dict(proxy_path=f"/gs/{settings.DEFAULT_WORKSPACE}", downstream_path="wcs"),
     ),
-    url(r"^updatelayers/$", views.updatelayers, name="updatelayers"),
-    url(r"^(?P<layername>[^/]*)/style$", views.dataset_style, name="dataset_style"),
-    url(r"^(?P<layername>[^/]*)/style/upload$", views.dataset_style_upload, name="dataset_style_upload"),
-    url(r"^(?P<layername>[^/]*)/style/manage$", views.dataset_style_manage, name="dataset_style_manage"),
-    url(r"^acls/?$", views.dataset_acls, name="dataset_acls"),
-    url(r"^resolve_user/?$", views.resolve_user, name="dataset_resolve_user"),
-    url(r"^online/?$", views.server_online, name="server_online"),
+    re_path(r"^updatelayers/$", views.updatelayers, name="updatelayers"),
+    re_path(r"^acls/?$", views.dataset_acls, name="dataset_acls"),
+    re_path(r"^online/?$", views.server_online, name="server_online"),
 ]

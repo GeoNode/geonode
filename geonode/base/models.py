@@ -46,7 +46,7 @@ from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
@@ -55,7 +55,6 @@ from PIL import Image, ImageOps
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
-from pinax.ratings.models import OverallRating
 
 from taggit.models import TagBase, ItemBase
 from taggit.managers import TaggableManager, _TaggableManager
@@ -850,7 +849,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     is_approved = models.BooleanField(
         _("Approved"), default=True, help_text=_("Is this resource validated from a publisher or editor?")
     )
-
+    advertised = models.BooleanField(
+        _("Advertised"),
+        default=True,
+        help_text=_("If False, will hide the resource from search results and catalog listings"),
+    )
     # fields necessary for the apis
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
     thumbnail_path = models.TextField(_("Thumbnail path"), null=True, blank=True)
@@ -2122,16 +2125,6 @@ class GroupGeoLimit(models.Model):
     group = models.ForeignKey(GroupProfile, null=False, blank=False, on_delete=models.CASCADE)
     resource = models.ForeignKey(ResourceBase, null=False, blank=False, on_delete=models.CASCADE)
     wkt = models.TextField(db_column="wkt", blank=True)
-
-
-def rating_post_save(instance, *args, **kwargs):
-    """
-    Used to fill the average rating field on OverallRating change.
-    """
-    ResourceBase.objects.filter(id=instance.object_id).update(rating=instance.rating)
-
-
-signals.post_save.connect(rating_post_save, sender=OverallRating)
 
 
 class ExtraMetadata(models.Model):

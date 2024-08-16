@@ -76,6 +76,39 @@ class GeoAppsApiTests(APITestCase):
             json.loads(response.data["geoapps"][0]["data"]), {"test_data": {"test": ["test_1", "test_2", "test_3"]}}
         )
 
+    def test_geoapp_listing_advertised(self):
+        app = GeoApp.objects.first()
+        app.advertised = False
+        app.save()
+
+        url = reverse("geoapps-list")
+
+        payload = self.client.get(url)
+
+        prev_count = payload.json().get("total")
+        # the user can see only the advertised resources
+        self.assertEqual(GeoApp.objects.filter(advertised=True).count(), prev_count)
+
+        payload = self.client.get(f"{url}?advertised=True")
+        # so if advertised is True, we dont see the advertised=False resource
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count)
+
+        payload = self.client.get(f"{url}?advertised=False")
+        # so if advertised is False, we see only the resource with advertised==False
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, 1)
+
+        # if all is requested, we will see all the resources
+        payload = self.client.get(f"{url}?advertised=all")
+        new_count = payload.json().get("total")
+        # recheck the count
+        self.assertEqual(new_count, prev_count + 1)
+
+        GeoApp.objects.update(advertised=True)
+
     def test_extra_metadata_included_with_param(self):
         _app = GeoApp.objects.first()
         url = urljoin(f"{reverse('geoapps-list')}/", f"{_app.pk}")

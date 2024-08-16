@@ -36,7 +36,6 @@ from itertools import cycle
 from collections import defaultdict
 from os.path import basename, splitext, isfile
 from urllib.parse import urlparse, urlencode, urlsplit, urljoin
-from pinax.ratings.models import OverallRating
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 
@@ -45,10 +44,9 @@ from django.utils import timezone
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.utils.module_loading import import_string
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from geoserver.catalog import Catalog, FailedRequestError
 from geoserver.resource import FeatureType, Coverage
@@ -869,8 +867,6 @@ def gs_slurp(
             )
             try:
                 # delete ratings, and taggit tags:
-                ct = ContentType.objects.get_for_model(layer)
-                OverallRating.objects.filter(content_type=ct, object_id=layer.id).delete()
                 layer.keywords.clear()
 
                 layer.delete()
@@ -1127,10 +1123,12 @@ def get_dataset(layer, gs_catalog: Catalog):
 def clean_styles(layer, gs_catalog: Catalog):
     try:
         # Cleanup Styles without a Workspace
+        style = None
         gs_catalog.reset()
         gs_dataset = get_dataset(layer, gs_catalog)
-        logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
-        style = gs_catalog.get_style(name=gs_dataset.default_style.name, workspace=None, recursive=True)
+        if gs_dataset is not None:
+            logger.debug(f'clean_styles: Retrieving style "{gs_dataset.default_style.name}" for cleanup')
+            style = gs_catalog.get_style(name=gs_dataset.default_style.name, workspace=None, recursive=True)
         if style:
             gs_catalog.delete(style, purge=True, recurse=False)
             logger.debug(f"clean_styles: Style removed: {gs_dataset.default_style.name}")
@@ -2207,17 +2205,6 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
 
 def get_dataset_storetype(element):
     return LAYER_SUBTYPES.get(element, element)
-
-
-def write_uploaded_files_to_disk(target_dir, files):
-    result = []
-    for django_file in files:
-        path = os.path.join(target_dir, django_file.name)
-        with open(path, "wb") as fh:
-            for chunk in django_file.chunks():
-                fh.write(chunk)
-        result = path
-    return result
 
 
 def select_relevant_files(allowed_extensions, files):

@@ -150,39 +150,6 @@ class FeatureInfoTemplateField(DynamicComputedField):
 
 
 class DatasetSerializer(ResourceBaseSerializer):
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model = Dataset
-        name = "dataset"
-        view_name = "datasets-list"
-        fields = (
-            "pk",
-            "uuid",
-            "name",
-            "metadata",
-            "attribute_set",
-            "charset",
-            "is_mosaic",
-            "has_time",
-            "has_elevation",
-            "time_regex",
-            "elevation_regex",
-            "featureinfo_custom_template",
-            "ows_url",
-            "capabilities_url",
-            "dataset_ows_url",
-            "workspace",
-            "default_style",
-            "styles",
-            "store",
-            "subtype",
-            "ptype",
-            "executions",
-        )
-
     name = serializers.CharField(read_only=True)
     workspace = serializers.CharField(read_only=True)
     store = serializers.CharField(read_only=True)
@@ -192,8 +159,70 @@ class DatasetSerializer(ResourceBaseSerializer):
     styles = DynamicRelationField(StyleSerializer, embed=True, many=True, read_only=True)
 
     attribute_set = DynamicRelationField(AttributeSerializer, embed=True, many=True, read_only=True)
-
     featureinfo_custom_template = FeatureInfoTemplateField()
+
+    class Meta:
+        model = Dataset
+        name = "dataset"
+        view_name = "datasets-list"
+        fields = list(
+            set(
+                ResourceBaseSerializer.Meta.fields
+                + (
+                    "uuid",
+                    "name",
+                    "metadata",
+                    "attribute_set",
+                    "charset",
+                    "is_mosaic",
+                    "has_time",
+                    "has_elevation",
+                    "time_regex",
+                    "elevation_regex",
+                    "featureinfo_custom_template",
+                    "ows_url",
+                    "capabilities_url",
+                    "dataset_ows_url",
+                    "workspace",
+                    "default_style",
+                    "styles",
+                    "store",
+                    "subtype",
+                    "ptype",
+                )
+            )
+        )
+
+    def update(self, instance, validated_data):
+        super().update(instance, validated_data)
+
+        # Handle updates to attribute_set
+        allowed_fields = ["pk", "description", "attribute_label", "visible", "display_order"]
+        if "blob" in validated_data and "attribute_set" in validated_data["blob"]:
+            attributes = validated_data["blob"]["attribute_set"]
+
+            for attribute in attributes:
+                for field, _ in attribute.items():
+                    if field not in allowed_fields:
+                        raise ValidationError(
+                            f"{field} is not one of the fields that could be edited directly. \
+                                            Only {str(allowed_fields)} are allowed"
+                        )
+
+            for attribute in attributes:
+                try:
+                    if "pk" in attribute:
+                        attribute_instance = Attribute.objects.get(pk=attribute["pk"], dataset=instance)
+                        for field, value in attribute.items():
+                            setattr(attribute_instance, field, value)
+                        attribute_instance.save()
+                    else:
+                        raise Exception("Primary key of the attribute to be patched not specified")
+                except Exception as e:
+                    logger.error(e)
+                    raise ParseError(str(e))
+
+        return instance
 
     def update(self, instance, validated_data):
         super().update(instance, validated_data)
@@ -229,39 +258,11 @@ class DatasetSerializer(ResourceBaseSerializer):
 
 class DatasetListSerializer(DatasetSerializer):
     class Meta(DatasetSerializer.Meta):
-        fields = (
-            "pk",
-            "uuid",
-            "name",
-            "workspace",
-            "store",
-            "subtype",
-            "charset",
-            "is_mosaic",
-            "has_time",
-            "has_elevation",
-            "time_regex",
-            "elevation_regex",
-            "featureinfo_custom_template",
-            "ptype",
-            "default_style",
-            "styles",
-        )
-
-    featureinfo_custom_template = FeatureInfoTemplateField()
-
-
-class DatasetReplaceAppendSerializer(serializers.Serializer):
-    class Meta:
-        fields = ("base_file", "dbf_file", "shx_file", "prj_file", "xml_file", "sld_file", "store_spatial_files")
-
-    base_file = serializers.CharField()
-    dbf_file = serializers.CharField(required=False)
-    shx_file = serializers.CharField(required=False)
-    prj_file = serializers.CharField(required=False)
-    xml_file = serializers.CharField(required=False)
-    sld_file = serializers.CharField(required=False)
-    store_spatial_files = serializers.BooleanField(required=False, default=True)
+        fields = [
+            f
+            for f in DatasetSerializer.Meta.fields
+            if f not in ("attribute_set", "capabilities_url", "dataset_ows_url", "ows_url")
+        ]
 
 
 class MetadataFileField(DynamicComputedField):

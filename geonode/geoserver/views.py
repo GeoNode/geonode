@@ -22,24 +22,20 @@ import re
 import json
 import logging
 import warnings
-import traceback
 from lxml import etree
 from owslib.etree import etree as dlxml
-from os.path import isfile
 
 from urllib.parse import urlsplit, urljoin, unquote, parse_qsl
 
 from django.contrib.auth import authenticate
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST
-from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.template.loader import get_template
-from django.utils.datastructures import MultiValueDictKeyError
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from guardian.shortcuts import get_objects_for_user
 
@@ -48,29 +44,21 @@ from geonode.client.hooks import hookset
 from geonode.compat import ensure_string
 from geonode.base.auth import get_auth_user, get_or_create_token
 from geonode.decorators import logged_in_or_basicauth
-from geonode.layers.forms import LayerStyleUploadForm
 from geonode.layers.models import Dataset, Style
 from geonode.layers.views import _resolve_dataset, _PERMISSION_MSG_MODIFY
 from geonode.maps.models import Map
 from geonode.proxy.views import proxy, fetch_response_headers
 from .tasks import geoserver_update_datasets
 from geonode.utils import (
-    json_response,
     _get_basic_auth_info,
     http_client,
-    safe_path_leaf,
     get_headers,
-    get_dataset_workspace,
 )
-from geoserver.catalog import FailedRequestError
-from geonode.geoserver.signals import gs_catalog, geoserver_post_save_local
+from geonode.geoserver.signals import geoserver_post_save_local
 from .helpers import (
     get_stores,
     ogc_server_settings,
-    extract_name_from_sld,
-    set_styles,
     style_update,
-    set_dataset_style,
     ows_endpoint_in_path,
     temp_style_name_regex,
     get_dataset_capabilities_url,
@@ -142,165 +130,6 @@ def dataset_style(request, layername):
         pass
 
     return HttpResponse(f"Default style for {layer.name} changed to {style_name}", status=200)
-
-
-@login_required
-def dataset_style_upload(request, layername):
-    def respond(*args, **kw):
-        kw["content_type"] = "text/html"
-        return json_response(*args, **kw)
-
-    form = LayerStyleUploadForm(request.POST, request.FILES)
-    if not form.is_valid():
-        return respond(errors="Please provide an SLD file.")
-
-    data = form.cleaned_data
-    layer = _resolve_dataset(request, layername, "base.change_resourcebase", _PERMISSION_MSG_MODIFY)
-
-    sld = request.FILES["sld"].read()
-    sld_name = None
-    try:
-        # Check SLD is valid
-        try:
-            _allowed_sld_extensions = [".sld", ".xml", ".css", ".txt", ".yml"]
-            if sld and os.path.splitext(safe_path_leaf(sld))[1].lower() in _allowed_sld_extensions:
-                if isfile(sld):
-                    with open(sld) as sld_file:
-                        sld = sld_file.read()
-                etree.XML(sld, parser=etree.XMLParser(resolve_entities=False))
-        except Exception:
-            logger.exception("The uploaded SLD file is not valid XML")
-            raise Exception("The uploaded SLD file is not valid XML")
-
-        sld_name = extract_name_from_sld(gs_catalog, sld, sld_file=request.FILES["sld"])
-    except Exception as e:
-        respond(errors=f"The uploaded SLD file is not valid XML: {e}")
-
-    name = data.get("name") or sld_name
-
-    set_dataset_style(layer, data.get("title") or name, sld)
-
-    return respond(body={"success": True, "style": data.get("title") or name, "updated": data["update"]})
-
-
-@login_required
-def dataset_style_manage(request, layername):
-    layer = _resolve_dataset(request, layername, "layers.change_dataset_style", _PERMISSION_MSG_MODIFY)
-
-    if request.method == "GET":
-        try:
-            cat = gs_catalog
-
-            # First update the layer style info from GS to GeoNode's DB
-            try:
-                set_styles(layer, cat)
-            except AttributeError:
-                logger.warn("Unable to set the default style.  Ensure Geoserver is running and that this layer exists.")
-
-            gs_styles = []
-            # Temporary Hack to remove GeoServer temp styles from the list
-            Style.objects.filter(name__iregex=r"\w{8}-\w{4}-\w{4}-\w{4}-\w{12}_(ms)_\d{13}").delete()
-            for style in Style.objects.values("name", "sld_title"):
-                gs_styles.append((style["name"], style["sld_title"]))
-            current_dataset_styles = layer.styles.all()
-            dataset_styles = []
-            for style in current_dataset_styles:
-                sld_title = style.name
-                try:
-                    if style.sld_title:
-                        sld_title = style.sld_title
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.debug(tb)
-                dataset_styles.append((style.name, sld_title))
-
-            # Render the form
-            def_sld_name = None  # noqa
-            def_sld_title = None  # noqa
-            default_style = None
-            if layer.default_style:
-                def_sld_name = layer.default_style.name  # noqa
-                def_sld_title = layer.default_style.name  # noqa
-                try:
-                    if layer.default_style.sld_title:
-                        def_sld_title = layer.default_style.sld_title
-                except Exception:
-                    tb = traceback.format_exc()
-                    logger.debug(tb)
-                default_style = (def_sld_name, def_sld_title)
-
-            return render(
-                request,
-                "datasets/dataset_style_manage.html",
-                context={
-                    "layer": layer,
-                    "gs_styles": gs_styles,
-                    "dataset_styles": dataset_styles,
-                    "dataset_style_names": [s[0] for s in dataset_styles],
-                    "default_style": default_style,
-                },
-            )
-        except (FailedRequestError, OSError):
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            msg = (
-                f'Could not connect to geoserver at "{ogc_server_settings.LOCATION}"'
-                f'to manage style information for layer "{layer.name}"'
-            )
-            logger.debug(msg)
-            # If geoserver is not online, return an error
-            return render(request, "datasets/dataset_style_manage.html", context={"layer": layer, "error": msg})
-    elif request.method in ("POST", "PUT", "DELETE"):
-        try:
-            workspace = get_dataset_workspace(layer) or settings.DEFAULT_WORKSPACE
-            selected_styles = request.POST.getlist("style-select")
-            default_style = request.POST["default_style"]
-
-            # Save to GeoServer
-            cat = gs_catalog
-            try:
-                gs_dataset = cat.get_layer(layer.name)
-            except Exception:
-                gs_dataset = None
-
-            if not gs_dataset:
-                gs_dataset = cat.get_layer(layer.alternate)
-
-            if gs_dataset:
-                _default_style = cat.get_style(default_style) or cat.get_style(default_style, workspace=workspace)
-                if _default_style:
-                    gs_dataset.default_style = _default_style
-                elif cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE):
-                    gs_dataset.default_style = cat.get_style(default_style, workspace=settings.DEFAULT_WORKSPACE)
-                styles = []
-                for style in selected_styles:
-                    _gs_sld = cat.get_style(style) or cat.get_style(style, workspace=workspace)
-                    if _gs_sld:
-                        styles.append(_gs_sld)
-                    elif cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE):
-                        styles.append(cat.get_style(style, workspace=settings.DEFAULT_WORKSPACE))
-                    else:
-                        Style.objects.filter(name=style).delete()
-                gs_dataset.styles = styles
-                cat.save(gs_dataset)
-
-            # Save to Django
-            set_styles(layer, cat)
-
-            # Invalidate GeoWebCache for the updated resource
-            try:
-                _stylefilterparams_geowebcache_dataset(layer.alternate)
-                _invalidate_geowebcache_dataset(layer.alternate)
-            except Exception:
-                pass
-
-            return HttpResponseRedirect(layer.get_absolute_url())
-        except (FailedRequestError, OSError, MultiValueDictKeyError):
-            tb = traceback.format_exc()
-            logger.debug(tb)
-            msg = f'Error Saving Styles for Dataset "{layer.name}"'
-            logger.warn(msg)
-            return render(request, "datasets/dataset_style_manage.html", context={"layer": layer, "error": msg})
 
 
 def style_change_check(request, path, style_name=None, access_token=None):

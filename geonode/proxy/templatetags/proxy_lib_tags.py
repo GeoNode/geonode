@@ -23,7 +23,7 @@ import traceback
 from django import template
 from django.conf import settings
 from django.urls import reverse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from geonode.storage.manager import storage_manager
 
 from urllib.parse import urlsplit, urljoin

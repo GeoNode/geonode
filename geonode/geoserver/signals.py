@@ -39,9 +39,9 @@ from .tasks import geoserver_cascading_delete, geoserver_post_save_datasets
 
 logger = logging.getLogger("geonode.geoserver.signals")
 
-geoserver_automatic_default_style_set = Signal(providing_args=["instance"])
+geoserver_automatic_default_style_set = Signal()
 
-geofence_rule_assign = Signal(providing_args=["instance"])
+geofence_rule_assign = Signal()
 
 
 def geoserver_delete(typename):

@@ -34,7 +34,7 @@ from urllib.parse import (
 from django.conf import settings
 from django.db import transaction
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from geonode import GeoNodeException
 from geonode.base.bbox_utils import BBOXHelper

@@ -17,19 +17,20 @@
 #
 #
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
 from .views import ProfileAutocomplete, SetUserLayerPermission
 from . import views
 
+
 urlpatterns = [  # 'geonode.people.views',
-    url(r"^$", TemplateView.as_view(template_name="people/profile_list.html"), name="profile_browse"),
-    url(r"^edit/$", views.profile_edit, name="profile_edit"),
-    url(r"^edit/(?P<username>[^/]*)$", views.profile_edit, name="profile_edit"),
-    url(r"^profile/(?P<username>[^/]*)/$", views.profile_detail, name="profile_detail"),
-    url(r"^forgotname", views.forgot_username, name="forgot_username"),
-    url(r"^autocomplete/$", login_required(ProfileAutocomplete.as_view()), name="autocomplete_profile"),
-    url(r"^dataset/permission/$", SetUserLayerPermission.as_view(), name="set_user_dataset_permissions"),
+    re_path(r"^$", TemplateView.as_view(template_name="people/profile_list.html"), name="profile_browse"),
+    re_path(r"^edit/$", views.profile_edit, name="profile_edit"),
+    re_path(r"^edit/(?P<username>[^/]*)$", views.profile_edit, name="profile_edit"),
+    re_path(r"^profile/(?P<username>[^/]*)/$", views.profile_detail, name="profile_detail"),
+    re_path(r"^forgotname", views.forgot_username, name="forgot_username"),
+    re_path(r"^autocomplete/$", login_required(ProfileAutocomplete.as_view()), name="autocomplete_profile"),
+    re_path(r"^dataset/permission/$", SetUserLayerPermission.as_view(), name="set_user_dataset_permissions"),
 ]

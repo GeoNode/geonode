@@ -30,15 +30,16 @@ from urllib.parse import urlparse, urlsplit, urljoin
 from django.conf import settings
 from django.template import loader
 from django.http import HttpResponse, StreamingHttpResponse
+from django.db.models import signals
 from django.views.generic import View
-from distutils.version import StrictVersion
 from django.http.request import validate_host
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.layers.models import Dataset
 from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
+from geonode.services.models import Service
 from geonode.storage.manager import storage_manager
 from geonode.utils import (
     resolve_object,
@@ -53,17 +54,17 @@ from geonode.base.enumerations import LINK_TYPES as _LT
 from geonode import geoserver  # noqa
 from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
+from geonode.geoserver.helpers import ogc_server_settings
 
-BUFFER_CHUNK_SIZE = 64 * 1024
-
-TIMEOUT = 30
-
-LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
+from .utils import proxy_urls_registry
 
 logger = logging.getLogger(__name__)
 
+BUFFER_CHUNK_SIZE = 64 * 1024
+TIMEOUT = 30
+LINK_TYPES = [L for L in _LT if L.startswith("OGC:")]
 
-ows_regexp = re.compile(r"^(?i)(version)=(\d\.\d\.\d)(?i)&(?i)request=(?i)(GetCapabilities)&(?i)service=(?i)(\w\w\w)$")
+site_url = urlsplit(settings.SITEURL)
 
 
 @requires_csrf_token
@@ -72,23 +73,19 @@ def proxy(
     url=None,
     response_callback=None,
     sec_chk_hosts=True,
-    sec_chk_rules=True,
     timeout=None,
     allowed_hosts=[],
     headers=None,
     access_token=None,
     **kwargs,
 ):
-    # Request default timeout
-    from geonode.geoserver.helpers import ogc_server_settings
 
     if not timeout:
         timeout = getattr(ogc_server_settings, "TIMEOUT", TIMEOUT)
 
-    # Security rules and settings
-    PROXY_ALLOWED_HOSTS = getattr(settings, "PROXY_ALLOWED_HOSTS", ())
+    PROXY_ALLOWED_PARAMS_NEEDLES = getattr(settings, "PROXY_ALLOWED_PARAMS_NEEDLES", ())
+    PROXY_ALLOWED_PATH_NEEDLES = getattr(settings, "PROXY_ALLOWED_PATH_NEEDLES", ())
 
-    # Sanity url checks
     if "url" not in request.GET and not url:
         return HttpResponse(
             "The proxy service requires a URL-encoded URL as a parameter.", status=400, content_type="text/plain"
@@ -104,51 +101,19 @@ def proxy(
     if url.fragment != "":
         locator += f"#{url.fragment}"
 
-    # White-Black Listing Hosts
-    site_url = urlsplit(settings.SITEURL)
-    if sec_chk_hosts and not settings.DEBUG:
-        # Attach current SITEURL
-        if site_url.hostname not in PROXY_ALLOWED_HOSTS:
-            PROXY_ALLOWED_HOSTS += (site_url.hostname,)
+    proxy_allowed_hosts = list(proxy_urls_registry.get_proxy_allowed_hosts())
+    if sec_chk_hosts:
+        if any(needle.lower() in url.query.lower() for needle in PROXY_ALLOWED_PARAMS_NEEDLES) or any(
+            needle.lower() in url.path.lower() for needle in PROXY_ALLOWED_PATH_NEEDLES
+        ):
+            proxy_allowed_hosts.append(url.hostname)
 
-        # Attach current hostname
-        hostname = (ogc_server_settings.hostname,) if ogc_server_settings else ()
-        if hostname not in PROXY_ALLOWED_HOSTS:
-            PROXY_ALLOWED_HOSTS += hostname
-
-        # Check OWS regexp
-        if url.query and ows_regexp.match(url.query):
-            ows_tokens = ows_regexp.match(url.query).groups()
-            if (
-                len(ows_tokens) == 4
-                and "version" == ows_tokens[0]
-                and StrictVersion(ows_tokens[1]) >= StrictVersion("1.0.0")
-                and StrictVersion(ows_tokens[1]) <= StrictVersion("3.0.0")
-                and ows_tokens[2].lower() in ("getcapabilities")
-                and ows_tokens[3].upper() in ("OWS", "WCS", "WFS", "WMS", "WPS", "CSW")
-            ):
-                if url.hostname not in PROXY_ALLOWED_HOSTS:
-                    PROXY_ALLOWED_HOSTS += (url.hostname,)
-
-        # Check Remote Services base_urls
-        from geonode.services.models import Service
-
-        for _s in Service.objects.all():
-            _remote_host = urlsplit(_s.base_url).hostname
-            PROXY_ALLOWED_HOSTS += (_remote_host,)
-
-        if not validate_host(extract_ip_or_domain(raw_url), PROXY_ALLOWED_HOSTS):
+        if not validate_host(extract_ip_or_domain(raw_url), proxy_allowed_hosts):
             return HttpResponse(
-                "DEBUG is set to False but the host of the path provided to the proxy service"
-                " is not in the PROXY_ALLOWED_HOSTS setting.",
+                "The url provided to the proxy service is not a valid hostname.",
                 status=403,
                 content_type="text/plain",
             )
-
-    # Security checks based on rules; allow only specific requests
-    if sec_chk_rules:
-        # TODO: Not yet implemented
-        pass
 
     # Collecting headers and cookies
     if not headers:
@@ -186,7 +151,6 @@ def proxy(
 
     # Avoid translating local geoserver calls into external ones
     if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-        from geonode.geoserver.helpers import ogc_server_settings
 
         _url = _url.replace(f"{settings.SITEURL}geoserver", ogc_server_settings.LOCATION.rstrip("/"))
         _data = _data.replace(f"{settings.SITEURL}geoserver", ogc_server_settings.LOCATION.rstrip("/"))
@@ -439,3 +403,17 @@ def fetch_response_headers(response, response_headers):
                 ]:
                     response._headers[_header] = (_header, response_headers.get(_header))
     return response
+
+
+def service_post_save(instance, sender, **kwargs):
+    service_hostname = urlsplit(instance.base_url).hostname
+    proxy_urls_registry.register_host(service_hostname)
+
+
+def service_post_delete(instance, sender, **kwargs):
+    # We reinitialize the registry otherwise we might delete a host requested by another service with the same hostanme
+    proxy_urls_registry.initialize()
+
+
+signals.post_save.connect(service_post_save, sender=Service)
+signals.post_delete.connect(service_post_delete, sender=Service)

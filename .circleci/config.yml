@@ -128,7 +128,7 @@ workflows:
           codecov_name: api
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests geonode.upload.api.tests
+          test_suite: ./test.sh geonode.api.tests geonode.base.api.tests geonode.layers.api.tests geonode.maps.api.tests geonode.documents.api.tests geonode.geoapps.api.tests geonode.upload.api.tests
       - build:
           name: geonode_test_csw
           codecov_name: csw

@@ -55,6 +55,40 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 logger = logging.getLogger(__name__)
 
 
+class UserAndTokenInfoApiTests(GeoNodeBaseTestSupport):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_models(type=cls.get_type, integration=cls.get_integration)
+        all_public()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        remove_models(cls.get_obj_ids, type=cls.get_type, integration=cls.get_integration)
+
+    def test_userinfo_response(self):
+        userinfo_url = reverse("userinfo")
+        _user = get_user_model().objects.get(username="bobby")
+        self.client.login(username="bobby", password="bob")
+        response = self.client.get(userinfo_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["sub"], str(_user.pk))
+        self.client.logout()
+        response = self.client.get(userinfo_url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_tokeninfo_response(self):
+        tokeninfo_url = reverse("tokeninfo")
+        _user = get_user_model().objects.get(username="bobby")
+        token = get_or_create_token(_user)
+        response = self.client.post(tokeninfo_url, data={"token": token})
+        self.assertEqual(response.status_code, 200)
+        response_json = response.json()
+        self.assertEqual(response_json["access_token"], token.token)
+        self.assertEqual(response_json["user_id"], _user.pk)
+
+
 class PermissionsApiTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
