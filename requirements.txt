@@ -81,7 +81,7 @@ drf-extensions==0.7.1
 drf-writable-nested==0.7.0
 drf-spectacular==0.27.2
 dynamic-rest==2.3.0
-Markdown==3.6
+Markdown==3.7
 
 geonode-pinax-notifications==6.0.0.2
 
