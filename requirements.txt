@@ -156,7 +156,7 @@ pip==24.1.2
 setuptools>=70.2.0,<70.3.0
 Twisted==24.3.0
 pixelmatch==0.3.0
-factory-boy==3.3.0
+factory-boy==3.3.1
 flaky==3.8.1
 selenium>=4.15.1,<5.0.0
 selenium-requests==2.0.4
