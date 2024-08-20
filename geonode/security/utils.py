@@ -780,11 +780,9 @@ def can_publish(user, resource):
     is_owner = user == resource.owner
     is_manager = user in ResourceGroupsAndMembersSet.managers
 
-    can_publish = user.has_perm("publish_resourcebase", resource.get_self_resource())
-
     if is_superuser:
         return True
     elif AdvancedSecurityWorkflowManager.is_manager_publish_mode():
         return is_manager and can_publish
     else:
-        return is_owner or is_manager or can_publish
+        return is_owner or is_manager
