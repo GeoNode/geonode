@@ -51,6 +51,7 @@ from geonode.base.models import (
     LinkedResource,
     Region,
     ResourceBase,
+    RestrictionCodeType,
     Thesaurus,
     ThesaurusKeyword,
     ThesaurusKeywordLabel,
@@ -517,7 +518,13 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     )
 
     purpose = forms.CharField(label=_("Purpose"), required=False, widget=TinyMCE())
-
+    use_constraint_restrictions = forms.ModelMultipleChoiceField(
+        RestrictionCodeType.objects.all(),
+        # widget=forms.SelectMultiple,
+        widget=forms.SelectMultiple(attrs={"class": "bg-primary"}),
+        required=False,
+    )
+    use_constrains = forms.CharField(label=_("Use Constraints"), required=False, widget=TinyMCE())
     constraints_other = forms.CharField(label=_("Other constraints"), required=False, widget=TinyMCE())
 
     supplemental_information = forms.CharField(label=_("Supplemental information"), required=False, widget=TinyMCE())

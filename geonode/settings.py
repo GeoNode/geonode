@@ -2167,7 +2167,6 @@ UI_DEFAULT_MANDATORY_FIELDS = [
     "id_resource-attribution",
     "id_resource-constraints_other",
     "id_resource-data_quality_statement",
-    "id_resource-restriction_code_type",
 ]
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv("UI_REQUIRED_FIELDS ", "[]"))
 

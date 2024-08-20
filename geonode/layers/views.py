@@ -620,8 +620,6 @@ def dataset_metadata(
 
         project = related_project_form.cleaned_data
         instance = project["display_name"]
-        print(instance)
-        print("aqui__ SALVA_________")
 
         layer.related_projects.add(*instance)
 

@@ -1775,7 +1775,7 @@ def add_url_params(url, params):
 json_serializer_k_map = {
     "user": settings.AUTH_USER_MODEL,
     "owner": settings.AUTH_USER_MODEL,
-    "restriction_code_type": "base.RestrictionCodeType",
+    "restriction_other": "base.RestrictionCodeType",
     "license": "base.License",
     "category": "base.TopicCategory",
     "spatial_representation_type": "base.SpatialRepresentationType",

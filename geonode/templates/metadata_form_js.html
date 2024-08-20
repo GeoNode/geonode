@@ -294,8 +294,8 @@
         var otherRestrictionsSelected  = function(e){
           var otherRestrictions = false
           try {
-            idx = $('#id_resource-restriction_code_type')[0].selectedIndex;
-            value = $('#id_resource-restriction_code_type')[0].options[idx].text;
+            idx = $('#id_resource-restriction_other')[0].selectedIndex;
+            value = $('#id_resource-restriction_other')[0].options[idx].text;
             if(value === "otherRestrictions") {
                 otherRestrictions = true;
             }

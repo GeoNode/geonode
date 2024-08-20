@@ -222,7 +222,7 @@ class RestrictionCodeType(models.Model):
     is_choice = models.BooleanField(default=True)
 
     def __str__(self):
-        return str(self.gn_description)
+        return str(self.identifier)
 
     class Meta:
         ordering = ("identifier",)
@@ -791,7 +791,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     use_constrains_help_text = _(
         "This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)"
     )
-    restriction_code_type_help_text = _("limitation(s) placed upon the access or use of the data.")
+    restriction_other_help_text = _("limitation(s) placed upon the access or use of the data.")
     constraints_other_help_text = _(
         "other restrictions and legal prerequisites for accessing and using the resource or" " metadata"
     )
@@ -953,22 +953,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     regions = models.ManyToManyField(
         Region, verbose_name=_("keywords region"), null=True, blank=True, help_text=regions_help_text
     )
-    use_constrains = models.ManyToManyField(
+
+    use_constraint_restrictions = models.ManyToManyField(
         RestrictionCodeType,
-        verbose_name=_("use_constrains"),
-        help_text=use_constrains_help_text,
+        verbose_name=_("Use Constrain Restrictions"),
         null=True,
         blank=True,
-        related_name="use_constrains",
-        limit_choices_to=Q(is_choice=True),
     )
-    restriction_code_type = models.ManyToManyField(
+
+    use_constrains = models.TextField(_("Use Constraints"), null=True, blank=True)
+    restriction_other = models.ManyToManyField(
         RestrictionCodeType,
         verbose_name=_("restrictions"),
-        help_text=restriction_code_type_help_text,
+        help_text=restriction_other_help_text,
         null=True,
         blank=True,
-        related_name="restriction_code_type",
+        related_name="restriction_other",
         limit_choices_to=Q(is_choice=True),
     )
     constraints_other = models.TextField(
@@ -1158,15 +1158,6 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=related_projects_help_text,
         related_name="related_projects",
         verbose_name=_("Related Project"),
-    )
-
-    use_contraints = models.TextField(
-        _("use_constraints"),
-        max_length=2000,
-        blank=True,
-        help_text=_(
-            "This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)"
-        ),
     )
 
     objects = ResourceBaseManager()
@@ -1377,7 +1368,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def restriction_code(self):
-        return self.restriction_code_type.gn_description if self.restriction_code_type else None
+        return self.restriction_other.gn_description if self.restriction_other else None
 
     @property
     def topiccategory(self):
@@ -1512,7 +1503,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             "regions",
             "title",
         ]
-        if self.restriction_code_type == "otherRestrictions":
+        if self.restriction_other == "otherRestrictions":
             required_fields.append("constraints_other")
         filled_fields = []
         for required_field in required_fields:

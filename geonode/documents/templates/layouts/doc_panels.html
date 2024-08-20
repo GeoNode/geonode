@@ -450,13 +450,13 @@ span.grippy::after {
                                     {% endblock doc_data_quality_statement %}
                                 </div>
                                 <div class="col-lg-4">
-                                    {% block doc_restriction_code_type %}
+                                    {% block doc_restriction_other %}
                                     <div>
-                                        <span><label for="{{ document_form.restriction_code_type|id }}">{{ document_form.restriction_code_type.label }}</label></span>
+                                        <span><label for="{{ document_form.restriction_other|id }}">{{ document_form.restriction_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
-                                        {{ document_form.restriction_code_type }}
+                                        {{ document_form.restriction_other }}
                                     </div>
-                                    {% endblock doc_restriction_code_type %}
+                                    {% endblock doc_restriction_other %}
                                     {% block doc_constraints_other %}
                                     <div>
                                         <span><label for="{{ document_form.constraints_other|id }}">{{ document_form.constraints_other.label }}</label></span>

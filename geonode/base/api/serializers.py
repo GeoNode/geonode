@@ -710,12 +710,15 @@ class ResourceBaseSerializer(
         self.fields["tkeywords"] = ComplexDynamicRelationField(SimpleThesaurusKeywordSerializer, embed=False, many=True)
         self.fields["regions"] = DynamicRelationField(SimpleRegionSerializer, embed=True, many=True, read_only=True)
         self.fields["category"] = ComplexDynamicRelationField(SimpleTopicCategorySerializer, embed=True, many=False)
-        self.fields["restriction_code_type"] = ComplexDynamicRelationField(
+
+        self.fields["use_constraint_restrictions"] = ComplexDynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=True
         )
-        self.fields["use_constrains"] = ComplexDynamicRelationField(
+        self.fields["use_constrains"] = serializers.CharField(read_only=True)
+        self.fields["restriction_other"] = ComplexDynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=True
         )
+        self.fields["constraints_other"] = serializers.CharField(read_only=True)
         self.fields["license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
         self.fields["metadata_license"] = ComplexDynamicRelationField(LicenseSerializer, embed=True, many=False)
         self.fields["spatial_representation_type"] = ComplexDynamicRelationField(
@@ -791,9 +794,10 @@ class ResourceBaseSerializer(
             "edition",
             "purpose",
             "maintenance_frequency",
-            "restriction_code_type",
+            "use_constraint_restrictions",
             "use_constrains",
             "constraints_other",
+            "restriction_other",
             "license",
             "language",
             "spatial_representation_type",

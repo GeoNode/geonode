@@ -1,954 +1,1247 @@
-{% extends "geonode_base.html" %}
+{% extends 'geonode_base.html' %}
 {% load i18n %}
 {% load bootstrap_tags %}
 {% load thesaurus %}
 {% load client_lib_tags %}
 
-{% block title %}{{ resource.title }} — {{ block.super }}{% endblock %}
+{% block title %}
+  {{ resource.title }} — {{ block.super }}
+{% endblock %}
 
-{% block body_class %}data{% endblock %}
+{% block body_class %}
+  data
+{% endblock %}
 
 {% block body_outer %}
-
-
-<style>
-
+  <style>
     .subtitle {
-        font-size:16px;
-        color: #428bca;
+      font-size: 16px;
+      color: #428bca;
     }
-
+    
     .sep_title hr {
-        margin-top: 2px;
+      margin-top: 2px;
     }
+  </style>
 
-</style>
+  <div class="page-header">
+    <h2 class="page-title">{% trans 'Metadata' %}: {{ resource.title }}</h2>
+  </div>
 
-
-<div class="page-header">
-    <h2 class="page-title">{% trans "Metadata" %} : {{ resource.title }}</h2>
-</div>
-
-
-<article class="description tab-pane active" id="info">
-
-    <span class="subtitle">{% trans "Identification" %}</span>
-    <div class="sep_title"><hr></div>
+  <article class="description tab-pane active" id="info">
+    <span class="subtitle">{% trans 'Identification' %}</span>
+    <div class="sep_title">
+      <hr />
+    </div>
     <dl class="dl-horizontal">
-        {% block resource_title %}
+      {% block resource_title %}
         {% if resource.title %}
-        <dt>{% trans "Title" %}</dt>
-        <dd>{{ resource.title|truncatechars:80 }}</dd>
+          <dt>
+            {% trans 'Title' %}
+          </dt>
+          <dd>{{ resource.title|truncatechars:80 }}</dd>
         {% endif %}
-        {% endblock resource_title %}
+      {% endblock %}
 
-        {% block abstract %}
+      {% block abstract %}
         {% if resource.abstract %}
-        <dt>{% trans "Abstract" %}</dt>
-        <dd>{{ resource.abstract|safe }}</dd>
+          <dt>
+            {% trans 'Abstract' %}
+          </dt>
+          <dd>{{ resource.abstract|safe }}</dd>
         {% endif %}
-        {% endblock abstract %}
-
+      {% endblock %}
     </dl>
 
     <dl class="dl-horizontal">
-
-        {% block license %}
+      {% block license %}
         {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
-        <dt>{% trans "License" %}</dt>
-        <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
+          <dt>
+            {% trans 'License' %}
+          </dt>
+          <dd>{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
         {% endif %}
         <dd class="license-more-above collapse">
-            {% for bullet in resource.license.description_bullets %}
-            {{ bullet }}<br/><br/>
-            {% endfor %}
-            {% if resource.license.url %}
-            + {% trans "For more info see" %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
-            {% endif %}
+          {% for bullet in resource.license.description_bullets %}
+            {{ bullet }}<br /><br />
+          {% endfor %}
+          {% if resource.license.url %}
+            +{% trans 'For more info see' %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+          {% endif %}
         </dd>
+      {% endblock %}
 
-        {% endblock license %}
-
-        {% block date %}
+      {% block date %}
         {% if resource.date %}
-        <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
-        <dd>{{ resource.date }}</dd>
+          <dt>
+            {% trans resource.date_type|title %} {% trans 'Date' %}
+          </dt>
+          <dd>{{ resource.date }}</dd>
         {% endif %}
-        {% endblock date %}
+      {% endblock %}
 
-        {% block display_type %}
+      {% block display_type %}
         {% if resource.display_type %}
-        <dt>{% trans "Type" %}</dt>
-        <dd>{{ resource.display_type }}</dd>
+          <dt>
+            {% trans 'Type' %}
+          </dt>
+          <dd>{{ resource.display_type }}</dd>
         {% endif %}
-        {% endblock display_type %}
+      {% endblock %}
 
-        {% block keyword_list %}
-          {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
-            <dt>{% trans "Keywords" %}</dt>
-            <dd itemprop="keywords">
-                <ul>
-                    {% for keyword in resource.keywords.all %}
-                    <li>
-                        <span itemscope itemtype="http://schema.org/Text">
-                        {{ keyword.name| safe }}
-                        </span>
-                    </li>
-                    {% endfor %}
-                    {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
-                    <li>{{ tid|get_thesaurus_translation_by_id }}
-                        {% for tkeywords in resource.tkeywords.all %}
-                        <ul>
-                        {% if tid == tkeywords.thesaurus.id %}
-                            <li><span itemscope itemtype="http://schema.org/Text">{{tkeywords|get_thesaurus_localized_label}}</span></li>
-                        {% endif %}
-                        </ul>
-                        {% endfor %}
-                    </li>
-                    {% endfor %}
-                </ul>
-            </dd>
-            {% endif %}
-        {% endblock keyword_list %}
+      {% block keyword_list %}
+        {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
+          <dt>
+            {% trans 'Keywords' %}
+          </dt>
+          <dd itemprop="keywords">
+            <ul>
+              {% for keyword in resource.keywords.all %}
+                <li>
+                  <span itemscope itemtype="http://schema.org/Text">{{ keyword.name|safe }}</span>
+                </li>
+              {% endfor %}
+              {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
+                <li>
+                  {{ tid|get_thesaurus_translation_by_id }}
+                  {% for tkeywords in resource.tkeywords.all %}
+                    <ul>
+                      {% if tid == tkeywords.thesaurus.id %}
+                        <li>
+                          <span itemscope itemtype="http://schema.org/Text">{{ tkeywords|get_thesaurus_localized_label }}</span>
+                        </li>
+                      {% endif %}
+                    </ul>
+                  {% endfor %}
+                </li>
+              {% endfor %}
+            </ul>
+          </dd>
+        {% endif %}
+      {% endblock %}
 
-        {% block category %}
+      {% block category %}
         {% if resource.category %}
-        <dt>{% trans "Category" %}</dt>
-        <dd><span>{{ resource.category }}</span> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
-        {% if resource.category.description %}
-        <dd class="category-more collapse">
-            {{ resource.category.description }}
-        </dd>
+          <dt>
+            {% trans 'Category' %}
+          </dt>
+          <dd>
+            <span>{{ resource.category }}</span> {% if resource.category.description %}
+              <a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>
+            {% endif %}
+          </dd>
+          {% if resource.category.description %}
+            <dd class="category-more collapse">{{ resource.category.description }}</dd>
+          {% endif %}
         {% endif %}
-        {% endif %}
-        {% endblock category %}
+      {% endblock %}
 
-        {% block regions %}
+      {% block regions %}
         {% if resource.regions.all %}
-        <dt>{% trans "Regions" %}</dt>
-        <dd>{{ resource.regions.all|join:", " }}</dd>
+          <dt>
+            {% trans 'Regions' %}
+          </dt>
+          <dd>{{ resource.regions.all|join:', ' }}</dd>
         {% endif %}
-        {% endblock regions %}
+      {% endblock %}
 
-        {% block is_approved %}
-        <dt>{% trans "Approved" %}</dt>
-        <dd>{% if resource.is_approved %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
-        {% endblock is_approved %}
-
-        {% block is_published %}
-        <dt>{% trans "Published" %}</dt>
-        <dd>{% if resource.is_published %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
-        {% endblock is_published %}
-
-        {% block featured %}
-        <dt>{% trans "Featured" %}</dt>
-        <dd>{% if resource.featured %} {% trans "Yes" %} {% else %} {% trans "No" %} {% endif %}</dd>
-        {% endblock featured %}
-
-        {% block group %}
-        {% if resource.group %}
-        <dt>{% trans "Group" %}</dt>
-        <dd><a href="{% url 'group_activity' resource.group.name %}">{{ group }}</a> </dd>
-        {% endif %}
-        {% endblock group %}
-
-        {% block doi %}
-        <dt>{% trans "DOI" %}</dt>
-        <dd>{{ resource.doi }}</dd>
-        {% endblock doi %}
-
-        {% block attribution %}
-        <dt>{% trans "Attribution" %}</dt>
-        <dd>{{ resource.attribution }}</dd>
-        {% endblock attribution %}
-
-        {% block extra_tag %}{% endblock extra_tag %}
-    </dl>
-
-
-    <span class="subtitle">{% trans "Responsible" %}</span>
-    <div class="sep_title"><hr></div>
-
-    <dl class="dl-horizontal">
-
-        {% if resource.owner %}
-        {% with resource.owner as poc %}
-
-        {% block name_long %}
-        <dt>{% trans "Name" %}</dt>
-        <dd>{{ poc.name_long }}</dd>
-        {% endblock name_long %}
-
-        {% block email %}
-        <dt>{% trans "email" %}</dt>
-        <dd>{{ poc.email }}</dd>
-        {% endblock email %}
-
-        {% block position %}
-        <dt>{% trans "Position" %}</dt>
-        <dd>{{ poc.position }}</dd>
-        {% endblock position %}
-
-        {% block organization %}
-        <dt>{% trans "Organization" %}</dt>
-        <dd>{{ poc.organization }}</dd>
-        {% endblock organization %}
-
-        {% block location %}
-        <dt>{% trans "Location" %}</dt>
-        <dd>{{ poc.location }}</dd>
-        {% endblock location %}
-
-        {% block voice %}
-        <dt>{% trans "Voice" %}</dt>
-        <dd>{{ poc.voice }}</dd>
-        {% endblock voice %}
-
-        {% block fax %}
-        <dt>{% trans "Fax" %}</dt>
-        <dd>{{ poc.fax }}</dd>
-        {% endblock fax %}
-
-        {% block poc_keyword_list %}
-        {% if poc.keyword_list %}
-        <dt>{% trans "Keywords" %}</dt>
-        <dd>{% for keyword in poc.keyword_list %}
-            {{ keyword }}
-            {% endfor %}</dd>
-        {% endif %}
-        {% endblock poc_keyword_list %}
-
-        {% endwith %}
-        {% endif %}
-
-    </dl>
-
-    <span class="subtitle">{% trans "Information" %}</span>
-    <div class="sep_title"><hr></div>
-
-    <dl class="dl-horizontal">
-
-        <dt>{% trans "Identification Image" %}</dt>
+      {% block is_approved %}
+        <dt>
+          {% trans 'Approved' %}
+        </dt>
         <dd>
-            <a href="{{ resource.get_thumbnail_url }}"><img ng-src="{{ resource.get_thumbnail_url }}" src="{{ resource.get_thumbnail_url }}"></a>
+          {% if resource.is_approved %}
+            {% trans 'Yes' %}
+          {% else %}
+            {% trans 'No' %}
+          {% endif %}
         </dd>
+      {% endblock %}
 
+      {% block is_published %}
+        <dt>
+          {% trans 'Published' %}
+        </dt>
+        <dd>
+          {% if resource.is_published %}
+            {% trans 'Yes' %}
+          {% else %}
+            {% trans 'No' %}
+          {% endif %}
+        </dd>
+      {% endblock %}
+
+      {% block featured %}
+        <dt>
+          {% trans 'Featured' %}
+        </dt>
+        <dd>
+          {% if resource.featured %}
+            {% trans 'Yes' %}
+          {% else %}
+            {% trans 'No' %}
+          {% endif %}
+        </dd>
+      {% endblock %}
+
+      {% block group %}
+        {% if resource.group %}
+          <dt>
+            {% trans 'Group' %}
+          </dt>
+          <dd><a href="{% url 'group_activity' resource.group.name %}">{{ group }}</a></dd>
+        {% endif %}
+      {% endblock %}
+
+      {% block doi %}
+        <dt>
+          {% trans 'DOI' %}
+        </dt>
+        <dd>{{ resource.doi }}</dd>
+      {% endblock %}
+
+      {% block attribution %}
+        <dt>
+          {% trans 'Attribution' %}
+        </dt>
+        <dd>{{ resource.attribution }}</dd>
+      {% endblock %}
+
+      {% block extra_tag %}
+      {% endblock %}
+    </dl>
+
+    <span class="subtitle">{% trans 'Responsible' %}</span>
+    <div class="sep_title">
+      <hr />
+    </div>
+
+    <dl class="dl-horizontal">
+      {% if resource.owner %}
+        {% with poc=resource.owner %}
+          {% block name_long %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ poc.name_long }}</dd>
+          {% endblock %}
+
+          {% block email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ poc.email }}</dd>
+          {% endblock %}
+
+          {% block position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ poc.position }}</dd>
+          {% endblock %}
+
+          {% block organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ poc.organization }}</dd>
+          {% endblock %}
+
+          {% block location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ poc.location }}</dd>
+          {% endblock %}
+
+          {% block voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ poc.voice }}</dd>
+          {% endblock %}
+
+          {% block fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ poc.fax }}</dd>
+          {% endblock %}
+
+          {% block poc_keyword_list %}
+            {% if poc.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in poc.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        {% endwith %}
+      {% endif %}
+    </dl>
+
+    <span class="subtitle">{% trans 'Information' %}</span>
+    <div class="sep_title">
+      <hr />
+    </div>
+
+    <dl class="dl-horizontal">
+      <dt>
+        {% trans 'Identification Image' %}
+      </dt>
+      <dd><a href="{{ resource.get_thumbnail_url }}"><img ng-src="{{ resource.get_thumbnail_url }}" src="{{ resource.get_thumbnail_url }}" /></a></dd>
     </dl>
 
     <dl class="dl-horizontal">
+      {% block scale %}
+        <dt>
+          {% trans 'Spatial Extent' %}
+        </dt>
+        <dd>
+          {% if resource.scale %}
+            {{ resource.scale }}
+          {% else %}
+            ---
+          {% endif %}
+        </dd>
+      {% endblock %}
 
-        {% block scale %}
-        <dt>{% trans "Spatial Extent" %}</dt>
-        <dd>{% if resource.scale %} {{ resource.scale }} {% else %} --- {% endif %}</dd>
-        {% endblock scale %}
-
-        {% block srid %}
-        <dt>{% trans "Projection System" %}</dt>
+      {% block srid %}
+        <dt>
+          {% trans 'Projection System' %}
+        </dt>
         <dd>{{ resource.srid }}</dd>
-        {% endblock srid %}
+      {% endblock %}
 
-                <dt>{% trans "Extension x0" %}</dt>
+      <dt>
+        {% trans 'Extension x0' %}
+      </dt>
 
-        {% block bbox_x0 %}
-        <dd>{{resource.bbox_x0}}</dd>
-        {% endblock bbox_x0 %}
+      {% block bbox_x0 %}
+        <dd>{{ resource.bbox_x0 }}</dd>
+      {% endblock %}
 
-        <dt>{% trans "Extension x1" %}</dt>
-        {% block bbox_x1 %}
-        <dd>{{resource.bbox_x1}}</dd>
-        {% endblock bbox_x1 %}
+      <dt>
+        {% trans 'Extension x1' %}
+      </dt>
+      {% block bbox_x1 %}
+        <dd>{{ resource.bbox_x1 }}</dd>
+      {% endblock %}
 
-        <dt>{% trans "Extension y0" %}</dt>
-        {% block bbox_y0 %}
-        <dd>{{resource.bbox_y0}}</dd>
-        {% endblock bbox_y0 %}
+      <dt>
+        {% trans 'Extension y0' %}
+      </dt>
+      {% block bbox_y0 %}
+        <dd>{{ resource.bbox_y0 }}</dd>
+      {% endblock %}
 
-        <dt>{% trans "Extension y1" %}</dt>
-        {% block bbox_y1 %}
-        <dd>{{resource.bbox_y1}}</dd>
-        {% endblock bbox_y1 %}
+      <dt>
+        {% trans 'Extension y1' %}
+      </dt>
+      {% block bbox_y1 %}
+        <dd>{{ resource.bbox_y1 }}</dd>
+      {% endblock %}
     </dl>
 
-    <span class="subtitle">{% trans "Features" %}</span>
-    <div class="sep_title"><hr></div>
+    <span class="subtitle">{% trans 'Features' %}</span>
+    <div class="sep_title">
+      <hr />
+    </div>
 
     <dl class="dl-horizontal">
-
-        {% block license2 %}
+      {% block license2 %}
         {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
-        <dt>{% trans "License" %}</dt>
-        <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
-        <dd class="license-more-below collapse">
+          <dt>
+            {% trans 'License' %}
+          </dt>
+          <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
+          <dd class="license-more-below collapse">
             {% for bullet in resource.license.description_bullets %}
-            {{ bullet }}<br/><br/>
+              {{ bullet }}<br /><br />
             {% endfor %}
             {% if resource.license.url %}
-            + {% trans "For more info see" %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+              +{% trans 'For more info see' %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
             {% endif %}
-        </dd>
+          </dd>
         {% endif %}
-        {% endblock license2 %}
-        {% block maintenance_frequency %}
+      {% endblock %}
+      {% block maintenance_frequency %}
         {% if resource.maintenance_frequency %}
-        <dt>{% trans "Maintenance Frequency" %}</dt>
-        <dd>{{ resource.maintenance_frequency_title }}</dd>
+          <dt>
+            {% trans 'Maintenance Frequency' %}
+          </dt>
+          <dd>{{ resource.maintenance_frequency_title }}</dd>
         {% endif %}
-        {% endblock maintenance_frequency %}
+      {% endblock %}
 
-        {% block restriction_code_type %}
-        {% if resource.restriction_code_type or resource.constraints_other %}
-        <dt>{% trans "Restrictions" %}</dt>
-        <dd>{% if resource.constraints_other %}
-            {{ resource.constraints_other|safe }}
+      {% block restriction_other %}
+        {% if resource.restriction_other or resource.constraints_other %}
+          <dt>
+            {% trans 'Restrictions' %}
+          </dt>
+          <dd>
+            {% if resource.constraints_other %}
+              {{ resource.constraints_other|safe }}
             {% else %}
-            {{ resource.restriction_code_type }}
-            {% endif %}</dd>
+              {{ resource.restriction_other }}
+            {% endif %}
+          </dd>
         {% endif %}
-        {% endblock restriction_code_type %}
+      {% endblock %}
 
-        {% block edition %}
+      {% block edition %}
         {% if resource.edition %}
-        <dt>{% trans "Edition" %}</dt>
-        <dd>{{ resource.edition}}</dd>
+          <dt>
+            {% trans 'Edition' %}
+          </dt>
+          <dd>{{ resource.edition }}</dd>
         {% endif %}
-        {% endblock edition %}
+      {% endblock %}
 
-        {% block purpose %}
+      {% block purpose %}
         {% if resource.purpose %}
-        <dt>{% trans "Purpose" %}</dt>
-        <dd>{{ resource.purpose|safe }}</dd>
+          <dt>
+            {% trans 'Purpose' %}
+          </dt>
+          <dd>{{ resource.purpose|safe }}</dd>
         {% endif %}
-        {% endblock purpose %}
+      {% endblock %}
 
-        {% block language %}
+      {% block language %}
         {% if resource.language %}
-        <dt>{% trans "Language" %}</dt>
-        <dd>{{ resource.language_title }}</dd>
+          <dt>
+            {% trans 'Language' %}
+          </dt>
+          <dd>{{ resource.language_title }}</dd>
         {% endif %}
-        {% endblock language %}
+      {% endblock %}
 
-        {% block temporal_extent_start %}
+      {% block temporal_extent_start %}
         {% if resource.temporal_extent_start and resource.temporal_extent_end %}
-        <dt>{% trans "Temporal Extent" %}</dt>
-        <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
+          <dt>
+            {% trans 'Temporal Extent' %}
+          </dt>
+          <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
         {% endif %}
-        {% endblock temporal_extent_start %}
+      {% endblock %}
 
-        {% block data_quality_statement %}
+      {% block data_quality_statement %}
         {% if resource.data_quality_statement %}
-        <dt>{% trans "Data Quality" %}</dt>
-        <dd>{{ resource.data_quality_statement|safe }}</dd>
+          <dt>
+            {% trans 'Data Quality' %}
+          </dt>
+          <dd>{{ resource.data_quality_statement|safe }}</dd>
         {% endif %}
-        {% endblock data_quality_statement %}
+      {% endblock %}
 
-        {% block supplemental_information %}
+      {% block supplemental_information %}
         {% if resource.supplemental_information %}
-        <dt>{% trans "Supplemental Information" %}</dt>
-        <dd>{{ resource.supplemental_information|safe }}</dd>
+          <dt>
+            {% trans 'Supplemental Information' %}
+          </dt>
+          <dd>{{ resource.supplemental_information|safe }}</dd>
         {% endif %}
-        {% endblock supplemental_information %}
+      {% endblock %}
 
-        {% block extra_metadata %}
-        {% endblock extra_metadata %}
+      {% block extra_metadata %}
 
-        {% block spatial_representation_type %}
+      {% endblock %}
+
+      {% block spatial_representation_type %}
         {% if resource.spatial_representation_type %}
-        <dt>{% trans "Spatial Representation Type" %}</dt>
-        <dd>{{ resource.spatial_representation_type }}</dd>
+          <dt>
+            {% trans 'Spatial Representation Type' %}
+          </dt>
+          <dd>{{ resource.spatial_representation_type }}</dd>
         {% endif %}
-        {% endblock spatial_representation_type %}
-
+      {% endblock %}
     </dl>
 
     {% if resource.poc %}
-    <span class="subtitle">{% trans "Contact Points" %}</span>
-    <div class="sep_title"><hr></div>
-    {% for poc in resource.poc%}
-    <dl class="dl-horizontal">
-        {% block poc_name_long %}
-        <dt>{% trans "Name" %}</dt>
-        <dd>{{ poc.name_long }}</dd>
-        {% endblock poc_name_long %}
+      <span class="subtitle">{% trans 'Contact Points' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
+      {% for poc in resource.poc %}
+        <dl class="dl-horizontal">
+          {% block poc_name_long %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ poc.name_long }}</dd>
+          {% endblock %}
 
-        {% block poc_email %}
-        <dt>{% trans "email" %}</dt>
-        <dd>{{ poc.email }}</dd>
-        {% endblock poc_email %}
+          {% block poc_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ poc.email }}</dd>
+          {% endblock %}
 
-        {% block poc_position %}
-        <dt>{% trans "Position" %}</dt>
-        <dd>{{ poc.position }}</dd>
-        {% endblock poc_position %}
+          {% block poc_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ poc.position }}</dd>
+          {% endblock %}
 
-        {% block poc_organization %}
-        <dt>{% trans "Organization" %}</dt>
-        <dd>{{ poc.organization }}</dd>
-        {% endblock poc_organization %}
+          {% block poc_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ poc.organization }}</dd>
+          {% endblock %}
 
-        {% block poc_location %}
-        <dt>{% trans "Location" %}</dt>
-        <dd>{{ poc.location }}</dd>
-        {% endblock poc_location %}
+          {% block poc_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ poc.location }}</dd>
+          {% endblock %}
 
-        {% block poc_voice %}
-        <dt>{% trans "Voice" %}</dt>
-        <dd>{{ poc.voice }}</dd>
-        {% endblock poc_voice %}
+          {% block poc_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ poc.voice }}</dd>
+          {% endblock %}
 
-        {% block poc_fax %}
-        <dt>{% trans "Fax" %}</dt>
-        <dd>{{ poc.fax }}</dd>
-        {% endblock poc_fax %}
+          {% block poc_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ poc.fax }}</dd>
+          {% endblock %}
 
-        {% block poc_keyword %}
-        {% if poc.keyword_list %}
-        <dt>{% trans "Keywords" %}</dt>
-        <dd>{% for keyword in poc.keyword_list %}
-            {{ keyword }}
-            {% endfor %}</dd>
-        {% endif %}
-        {% endblock poc_keyword %}
-        <hr>
-    </dl>
-    {% endfor %}
+          {% block poc_keyword %}
+            {% if poc.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in poc.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+          <hr />
+        </dl>
+      {% endfor %}
     {% endif %}
 
-    <span class="subtitle">{% trans "References" %}</span>
-    <div class="sep_title"><hr></div>
+    <span class="subtitle">{% trans 'References' %}</span>
+    <div class="sep_title">
+      <hr />
+    </div>
 
     <dl class="dl-horizontal">
-
-        {% block get_absolute_url %}
-        <dt>{% trans "Link Online" %}</dt>
+      {% block get_absolute_url %}
+        <dt>
+          {% trans 'Link Online' %}
+        </dt>
         <dd><a href="{{ resource.get_absolute_url }}">{{ resource.get_absolute_url }}</a></dd>
-        {% endblock get_absolute_url %}
+      {% endblock %}
 
-        {% block metaget_absolute_url %}
-        <dt>{% trans "Metadata Page" %}</dt>
+      {% block metaget_absolute_url %}
+        <dt>
+          {% trans 'Metadata Page' %}
+        </dt>
         <dd><a href="{{ resource.get_absolute_url }}/metadata_detail">{{ resource.get_absolute_url }}/metadata_detail</a></dd>
-        {% endblock metaget_absolute_url %}
+      {% endblock %}
 
-        {% block doc_file %}
+      {% block doc_file %}
         {% if resource.doc_file %}
-        <dt>{% trans "Online Link" %}</dt>
-        <dd><a href="{{ resource.get_absolute_url }}/download">{{ resource.get_absolute_url }}/download</a></dd>
+          <dt>
+            {% trans 'Online Link' %}
+          </dt>
+          <dd><a href="{{ resource.get_absolute_url }}/download">{{ resource.get_absolute_url }}/download</a></dd>
         {% endif %}
-        {% endblock doc_file %}
-        <hr>
+      {% endblock %}
+      <hr />
 
-        {% if "download_resourcebase" in perms_list %}
-            {% for link in resource.link_set.download %}
-            <dt>{{link.name}}</dt>
-            <dd><a href="{{link.url}}">{{resource.title}}.{{link.extension}}</a></dd>
-            {% endfor %}
-            <hr>
-        {% endif %}
-
-        {% for link in resource.link_set.ows %}
-        <dt>{{link.name}}</dt>
-        <dd><a href="{{link.url}}">Geoservice {{link.link_type}}</a></dd>
+      {% if 'download_resourcebase' in perms_list %}
+        {% for link in resource.link_set.download %}
+          <dt>{{ link.name }}</dt>
+          <dd><a href="{{ link.url }}">{{ resource.title }}.{{ link.extension }}</a></dd>
         {% endfor %}
+        <hr />
+      {% endif %}
 
+      {% for link in resource.link_set.ows %}
+        <dt>{{ link.name }}</dt>
+        <dd><a href="{{ link.url }}">Geoservice {{ link.link_type }}</a></dd>
+      {% endfor %}
     </dl>
 
-    {% comment %} Contact Role: Metadata Author {% endcomment %}
+    {% comment %}Contact Role: Metadata Author{% endcomment %}
     {% if resource.metadata_author %}
+      <span class="subtitle">{% trans 'Metadata Author' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-    <span class="subtitle">{% trans "Metadata Author" %}</span>
-    <div class="sep_title"><hr></div>
-
-    {% for metadata_author in resource.metadata_author %}
-    <dl class="dl-horizontal">
+      {% for metadata_author in resource.metadata_author %}
+        <dl class="dl-horizontal">
           {% block metadata_author_doc_file %}
-          <dt>{% trans "Name" %}</dt>
-          <dd>{{ metadata_author.name_long }}</dd>
-          {% endblock metadata_author_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ metadata_author.name_long }}</dd>
+          {% endblock %}
 
           {% block metadata_author_email %}
-          <dt>{% trans "email" %}</dt>
-          <dd>{{ metadata_author.email }}</dd>
-          {% endblock metadata_author_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ metadata_author.email }}</dd>
+          {% endblock %}
 
           {% block metadata_author_position %}
-          <dt>{% trans "Position" %}</dt>
-          <dd>{{ metadata_author.position }}</dd>
-          {% endblock metadata_author_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ metadata_author.position }}</dd>
+          {% endblock %}
 
           {% block metadata_author_organization %}
-          <dt>{% trans "Organization" %}</dt>
-          <dd>{{ metadata_author.organization }}</dd>
-          {% endblock metadata_author_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ metadata_author.organization }}</dd>
+          {% endblock %}
 
           {% block metadata_author_location %}
-          <dt>{% trans "Location" %}</dt>
-          <dd>{{ metadata_author.location }}</dd>
-          {% endblock metadata_author_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ metadata_author.location }}</dd>
+          {% endblock %}
 
           {% block metadata_author_voice %}
-          <dt>{% trans "Voice" %}</dt>
-          <dd>{{ metadata_author.voice }}</dd>
-          {% endblock metadata_author_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ metadata_author.voice }}</dd>
+          {% endblock %}
 
           {% block metadata_author_fax %}
-          <dt>{% trans "Fax" %}</dt>
-          <dd>{{ metadata_author.fax }}</dd>
-          {% endblock metadata_author_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ metadata_author.fax }}</dd>
+          {% endblock %}
 
           {% block metadata_author_keyword_list %}
-          {% if metadata_author.keyword_list %}
-          <dt>{% trans "Keywords" %}</dt>
-          <dd>{% for keyword in metadata_author.keyword_list %}
-              {{ keyword }}
-              {% endfor %}</dd>
-          {% endif %}
-          {% endblock metadata_author_keyword_list %}
-    </dl>
-    {% endfor%}
+            {% if metadata_author.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in metadata_author.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
     {% endif %}
 
-
-    {% comment %} Contact Role: Processor {% endcomment %}
+    {% comment %}Contact Role: Processor{% endcomment %}
     {% if resource.processor %}
+      <span class="subtitle">{% trans 'Processor' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-    <span class="subtitle">{% trans "Processor" %}</span>
-    <div class="sep_title"><hr></div>
-
-    {% for processor in resource.processor %}
-    <dl class="dl-horizontal">
+      {% for processor in resource.processor %}
+        <dl class="dl-horizontal">
           {% block processor_doc_file %}
-          <dt>{% trans "Name" %}</dt>
-          <dd>{{ processor.name_long }}</dd>
-          {% endblock processor_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ processor.name_long }}</dd>
+          {% endblock %}
 
           {% block processor_email %}
-          <dt>{% trans "email" %}</dt>
-          <dd>{{ processor.email }}</dd>
-          {% endblock processor_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ processor.email }}</dd>
+          {% endblock %}
 
           {% block processor_position %}
-          <dt>{% trans "Position" %}</dt>
-          <dd>{{ processor.position }}</dd>
-          {% endblock processor_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ processor.position }}</dd>
+          {% endblock %}
 
           {% block processor_organization %}
-          <dt>{% trans "Organization" %}</dt>
-          <dd>{{ processor.organization }}</dd>
-          {% endblock processor_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ processor.organization }}</dd>
+          {% endblock %}
 
           {% block processor_location %}
-          <dt>{% trans "Location" %}</dt>
-          <dd>{{ processor.location }}</dd>
-          {% endblock processor_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ processor.location }}</dd>
+          {% endblock %}
 
           {% block processor_voice %}
-          <dt>{% trans "Voice" %}</dt>
-          <dd>{{ processor.voice }}</dd>
-          {% endblock processor_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ processor.voice }}</dd>
+          {% endblock %}
 
           {% block processor_fax %}
-          <dt>{% trans "Fax" %}</dt>
-          <dd>{{ processor.fax }}</dd>
-          {% endblock processor_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ processor.fax }}</dd>
+          {% endblock %}
 
           {% block processor_keyword_list %}
-          {% if processor.keyword_list %}
-          <dt>{% trans "Keywords" %}</dt>
-          <dd>{% for keyword in processor.keyword_list %}
-              {{ keyword }}
-              {% endfor %}</dd>
-          {% endif %}
-          {% endblock processor_keyword_list %}
-    </dl>
-    {% endfor%}
+            {% if processor.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in processor.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
     {% endif %}
 
-    {% comment %} Contact Role: Publisher {% endcomment %}
+    {% comment %}Contact Role: Publisher{% endcomment %}
     {% if resource.publisher %}
+      <span class="subtitle">{% trans 'Publisher' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-    <span class="subtitle">{% trans "Publisher" %}</span>
-    <div class="sep_title"><hr></div>
-
-    {% for publisher in resource.publisher %}
-    <dl class="dl-horizontal">
+      {% for publisher in resource.publisher %}
+        <dl class="dl-horizontal">
           {% block publisher_doc_file %}
-          <dt>{% trans "Name" %}</dt>
-          <dd>{{ publisher.name_long }}</dd>
-          {% endblock publisher_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ publisher.name_long }}</dd>
+          {% endblock %}
 
           {% block publisher_email %}
-          <dt>{% trans "email" %}</dt>
-          <dd>{{ publisher.email }}</dd>
-          {% endblock publisher_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ publisher.email }}</dd>
+          {% endblock %}
 
           {% block publisher_position %}
-          <dt>{% trans "Position" %}</dt>
-          <dd>{{ publisher.position }}</dd>
-          {% endblock publisher_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ publisher.position }}</dd>
+          {% endblock %}
 
           {% block publisher_organization %}
-          <dt>{% trans "Organization" %}</dt>
-          <dd>{{ publisher.organization }}</dd>
-          {% endblock publisher_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ publisher.organization }}</dd>
+          {% endblock %}
 
           {% block publisher_location %}
-          <dt>{% trans "Location" %}</dt>
-          <dd>{{ publisher.location }}</dd>
-          {% endblock publisher_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ publisher.location }}</dd>
+          {% endblock %}
 
           {% block publisher_voice %}
-          <dt>{% trans "Voice" %}</dt>
-          <dd>{{ publisher.voice }}</dd>
-          {% endblock publisher_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ publisher.voice }}</dd>
+          {% endblock %}
 
           {% block publisher_fax %}
-          <dt>{% trans "Fax" %}</dt>
-          <dd>{{ publisher.fax }}</dd>
-          {% endblock publisher_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ publisher.fax }}</dd>
+          {% endblock %}
 
           {% block publisher_keyword_list %}
-          {% if publisher.keyword_list %}
-          <dt>{% trans "Keywords" %}</dt>
-          <dd>{% for keyword in publisher.keyword_list %}
-              {{ keyword }}
-              {% endfor %}</dd>
-          {% endif %}
-          {% endblock publisher_keyword_list %}
-    </dl>
-    {% endfor%}
+            {% if publisher.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in publisher.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
     {% endif %}
 
-   {% comment %} Contact Role: Custodian {% endcomment %}
-   {% if resource.custodian %}
+    {% comment %}Contact Role: Custodian{% endcomment %}
+    {% if resource.custodian %}
+      <span class="subtitle">{% trans 'Custodian' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-   <span class="subtitle">{% trans "Custodian" %}</span>
-   <div class="sep_title"><hr></div>
+      {% for custodian in resource.custodian %}
+        <dl class="dl-horizontal">
+          {% block custodian_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ custodian.name_long }}</dd>
+          {% endblock %}
 
-   {% for custodian in resource.custodian %}
-   <dl class="dl-horizontal">
-         {% block custodian_doc_file %}
-         <dt>{% trans "Name" %}</dt>
-         <dd>{{ custodian.name_long }}</dd>
-         {% endblock custodian_doc_file %}
+          {% block custodian_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ custodian.email }}</dd>
+          {% endblock %}
 
-         {% block custodian_email %}
-         <dt>{% trans "email" %}</dt>
-         <dd>{{ custodian.email }}</dd>
-         {% endblock custodian_email %}
+          {% block custodian_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ custodian.position }}</dd>
+          {% endblock %}
 
-         {% block custodian_position %}
-         <dt>{% trans "Position" %}</dt>
-         <dd>{{ custodian.position }}</dd>
-         {% endblock custodian_position %}
+          {% block custodian_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ custodian.organization }}</dd>
+          {% endblock %}
 
-         {% block custodian_organization %}
-         <dt>{% trans "Organization" %}</dt>
-         <dd>{{ custodian.organization }}</dd>
-         {% endblock custodian_organization %}
+          {% block custodian_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ custodian.location }}</dd>
+          {% endblock %}
 
-         {% block custodian_location %}
-         <dt>{% trans "Location" %}</dt>
-         <dd>{{ custodian.location }}</dd>
-         {% endblock custodian_location %}
+          {% block custodian_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ custodian.voice }}</dd>
+          {% endblock %}
 
-         {% block custodian_voice %}
-         <dt>{% trans "Voice" %}</dt>
-         <dd>{{ custodian.voice }}</dd>
-         {% endblock custodian_voice %}
+          {% block custodian_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ custodian.fax }}</dd>
+          {% endblock %}
 
-         {% block custodian_fax %}
-         <dt>{% trans "Fax" %}</dt>
-         <dd>{{ custodian.fax }}</dd>
-         {% endblock custodian_fax %}
+          {% block custodian_keyword_list %}
+            {% if custodian.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in custodian.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
+    {% endif %}
 
-         {% block custodian_keyword_list %}
-         {% if custodian.keyword_list %}
-         <dt>{% trans "Keywords" %}</dt>
-         <dd>{% for keyword in custodian.keyword_list %}
-             {{ keyword }}
-             {% endfor %}</dd>
-         {% endif %}
-         {% endblock custodian_keyword_list %}
-   </dl>
-   {% endfor%}
-   {% endif %}
+    {% comment %}Contact Role: Distributor{% endcomment %}
+    {% if resource.distributor %}
+      <span class="subtitle">{% trans 'Distributor' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-   {% comment %} Contact Role: Distributor {% endcomment %}
-   {% if resource.distributor %}
+      {% for distributor in resource.distributor %}
+        <dl class="dl-horizontal">
+          {% block distributor_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ distributor.name_long }}</dd>
+          {% endblock %}
 
-   <span class="subtitle">{% trans "Distributor" %}</span>
-   <div class="sep_title"><hr></div>
+          {% block distributor_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ distributor.email }}</dd>
+          {% endblock %}
 
-   {% for distributor in resource.distributor %}
-   <dl class="dl-horizontal">
-         {% block distributor_doc_file %}
-         <dt>{% trans "Name" %}</dt>
-         <dd>{{ distributor.name_long }}</dd>
-         {% endblock distributor_doc_file %}
+          {% block distributor_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ distributor.position }}</dd>
+          {% endblock %}
 
-         {% block distributor_email %}
-         <dt>{% trans "email" %}</dt>
-         <dd>{{ distributor.email }}</dd>
-         {% endblock distributor_email %}
+          {% block distributor_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ distributor.organization }}</dd>
+          {% endblock %}
 
-         {% block distributor_position %}
-         <dt>{% trans "Position" %}</dt>
-         <dd>{{ distributor.position }}</dd>
-         {% endblock distributor_position %}
+          {% block distributor_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ distributor.location }}</dd>
+          {% endblock %}
 
-         {% block distributor_organization %}
-         <dt>{% trans "Organization" %}</dt>
-         <dd>{{ distributor.organization }}</dd>
-         {% endblock distributor_organization %}
+          {% block distributor_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ distributor.voice }}</dd>
+          {% endblock %}
 
-         {% block distributor_location %}
-         <dt>{% trans "Location" %}</dt>
-         <dd>{{ distributor.location }}</dd>
-         {% endblock distributor_location %}
+          {% block distributor_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ distributor.fax }}</dd>
+          {% endblock %}
 
-         {% block distributor_voice %}
-         <dt>{% trans "Voice" %}</dt>
-         <dd>{{ distributor.voice }}</dd>
-         {% endblock distributor_voice %}
+          {% block distributor_keyword_list %}
+            {% if distributor.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in distributor.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
+    {% endif %}
 
-         {% block distributor_fax %}
-         <dt>{% trans "Fax" %}</dt>
-         <dd>{{ distributor.fax }}</dd>
-         {% endblock distributor_fax %}
+    {% comment %}Contact Role: User{% endcomment %}
+    {% if resource.resource_user %}
+      <span class="subtitle">{% trans 'User' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-         {% block distributor_keyword_list %}
-         {% if distributor.keyword_list %}
-         <dt>{% trans "Keywords" %}</dt>
-         <dd>{% for keyword in distributor.keyword_list %}
-             {{ keyword }}
-             {% endfor %}</dd>
-         {% endif %}
-         {% endblock distributor_keyword_list %}
-   </dl>
-   {% endfor%}
-   {% endif %}
+      {% for resource_user in resource.resource_user %}
+        <dl class="dl-horizontal">
+          {% block resource_user_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ resource_user.name_long }}</dd>
+          {% endblock %}
 
+          {% block resource_user_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ resource_user.email }}</dd>
+          {% endblock %}
 
-   {% comment %} Contact Role: User {% endcomment %}
-   {% if resource.resource_user %}
+          {% block resource_user_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ resource_user.position }}</dd>
+          {% endblock %}
 
-   <span class="subtitle">{% trans "User" %}</span>
-   <div class="sep_title"><hr></div>
+          {% block resource_user_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ resource_user.organization }}</dd>
+          {% endblock %}
 
-   {% for resource_user in resource.resource_user %}
-   <dl class="dl-horizontal">
-         {% block resource_user_doc_file %}
-         <dt>{% trans "Name" %}</dt>
-         <dd>{{ resource_user.name_long }}</dd>
-         {% endblock resource_user_doc_file %}
+          {% block resource_user_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ resource_user.location }}</dd>
+          {% endblock %}
 
-         {% block resource_user_email %}
-         <dt>{% trans "email" %}</dt>
-         <dd>{{ resource_user.email }}</dd>
-         {% endblock resource_user_email %}
+          {% block resource_user_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ resource_user.voice }}</dd>
+          {% endblock %}
 
-         {% block resource_user_position %}
-         <dt>{% trans "Position" %}</dt>
-         <dd>{{ resource_user.position }}</dd>
-         {% endblock resource_user_position %}
+          {% block resource_user_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ resource_user.fax }}</dd>
+          {% endblock %}
 
-         {% block resource_user_organization %}
-         <dt>{% trans "Organization" %}</dt>
-         <dd>{{ resource_user.organization }}</dd>
-         {% endblock resource_user_organization %}
+          {% block resource_user_keyword_list %}
+            {% if resource_user.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in resource_user.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
+    {% endif %}
 
-         {% block resource_user_location %}
-         <dt>{% trans "Location" %}</dt>
-         <dd>{{ resource_user.location }}</dd>
-         {% endblock resource_user_location %}
+    {% comment %}Contact Role: Resource Provider{% endcomment %}
+    {% if resource.resource_provider %}
+      <span class="subtitle">{% trans 'Resource Provider' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-         {% block resource_user_voice %}
-         <dt>{% trans "Voice" %}</dt>
-         <dd>{{ resource_user.voice }}</dd>
-         {% endblock resource_user_voice %}
+      {% for resource_provider in resource.resource_provider %}
+        <dl class="dl-horizontal">
+          {% block resource_provider_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ resource_provider.name_long }}</dd>
+          {% endblock %}
 
-         {% block resource_user_fax %}
-         <dt>{% trans "Fax" %}</dt>
-         <dd>{{ resource_user.fax }}</dd>
-         {% endblock resource_user_fax %}
+          {% block resource_provider_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ resource_provider.email }}</dd>
+          {% endblock %}
 
-         {% block resource_user_keyword_list %}
-         {% if resource_user.keyword_list %}
-         <dt>{% trans "Keywords" %}</dt>
-         <dd>{% for keyword in resource_user.keyword_list %}
-             {{ keyword }}
-             {% endfor %}</dd>
-         {% endif %}
-         {% endblock resource_user_keyword_list %}
-   </dl>
-   {% endfor%}
-   {% endif %}
+          {% block resource_provider_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ resource_provider.position }}</dd>
+          {% endblock %}
 
-   {% comment %} Contact Role: Resource Provider {% endcomment %}
-   {% if resource.resource_provider %}
+          {% block resource_provider_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ resource_provider.organization }}</dd>
+          {% endblock %}
 
-   <span class="subtitle">{% trans "Resource Provider" %}</span>
-   <div class="sep_title"><hr></div>
+          {% block resource_provider_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ resource_provider.location }}</dd>
+          {% endblock %}
 
-   {% for resource_provider in resource.resource_provider %}
-   <dl class="dl-horizontal">
-         {% block resource_provider_doc_file %}
-         <dt>{% trans "Name" %}</dt>
-         <dd>{{ resource_provider.name_long }}</dd>
-         {% endblock resource_provider_doc_file %}
+          {% block resource_provider_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ resource_provider.voice }}</dd>
+          {% endblock %}
 
-         {% block resource_provider_email %}
-         <dt>{% trans "email" %}</dt>
-         <dd>{{ resource_provider.email }}</dd>
-         {% endblock resource_provider_email %}
+          {% block resource_provider_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ resource_provider.fax }}</dd>
+          {% endblock %}
 
-         {% block resource_provider_position %}
-         <dt>{% trans "Position" %}</dt>
-         <dd>{{ resource_provider.position }}</dd>
-         {% endblock resource_provider_position %}
+          {% block resource_provider_keyword_list %}
+            {% if resource_provider.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in resource_provider.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
+    {% endif %}
 
-         {% block resource_provider_organization %}
-         <dt>{% trans "Organization" %}</dt>
-         <dd>{{ resource_provider.organization }}</dd>
-         {% endblock resource_provider_organization %}
+    {% comment %}Contact Role: Originator{% endcomment %}
+    {% if resource.originator %}
+      <span class="subtitle">{% trans 'Resource Provider' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-         {% block resource_provider_location %}
-         <dt>{% trans "Location" %}</dt>
-         <dd>{{ resource_provider.location }}</dd>
-         {% endblock resource_provider_location %}
+      {% for originator in resource.originator %}
+        <dl class="dl-horizontal">
+          {% block originator_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ originator.name_long }}</dd>
+          {% endblock %}
 
-         {% block resource_provider_voice %}
-         <dt>{% trans "Voice" %}</dt>
-         <dd>{{ resource_provider.voice }}</dd>
-         {% endblock resource_provider_voice %}
+          {% block originator_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ originator.email }}</dd>
+          {% endblock %}
 
-         {% block resource_provider_fax %}
-         <dt>{% trans "Fax" %}</dt>
-         <dd>{{ resource_provider.fax }}</dd>
-         {% endblock resource_provider_fax %}
+          {% block originator_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ originator.position }}</dd>
+          {% endblock %}
 
-         {% block resource_provider_keyword_list %}
-         {% if resource_provider.keyword_list %}
-         <dt>{% trans "Keywords" %}</dt>
-         <dd>{% for keyword in resource_provider.keyword_list %}
-             {{ keyword }}
-             {% endfor %}</dd>
-         {% endif %}
-         {% endblock resource_provider_keyword_list %}
-   </dl>
-   {% endfor%}
-   {% endif %}
+          {% block originator_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ originator.organization }}</dd>
+          {% endblock %}
 
+          {% block originator_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ originator.location }}</dd>
+          {% endblock %}
 
-   {% comment %} Contact Role: Originator {% endcomment %}
-   {% if resource.originator %}
+          {% block originator_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ originator.voice }}</dd>
+          {% endblock %}
 
-   <span class="subtitle">{% trans "Resource Provider" %}</span>
-   <div class="sep_title"><hr></div>
+          {% block originator_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ originator.fax }}</dd>
+          {% endblock %}
 
-   {% for originator in resource.originator %}
-   <dl class="dl-horizontal">
-         {% block originator_doc_file %}
-         <dt>{% trans "Name" %}</dt>
-         <dd>{{ originator.name_long }}</dd>
-         {% endblock originator_doc_file %}
+          {% block originator_keyword_list %}
+            {% if originator.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in originator.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
+    {% endif %}
 
-         {% block originator_email %}
-         <dt>{% trans "email" %}</dt>
-         <dd>{{ originator.email }}</dd>
-         {% endblock originator_email %}
+    {% comment %}Contact Role: Resource Provider{% endcomment %}
+    {% if resource.principal_investigator %}
+      <span class="subtitle">{% trans 'Principal Investigator' %}</span>
+      <div class="sep_title">
+        <hr />
+      </div>
 
-         {% block originator_position %}
-         <dt>{% trans "Position" %}</dt>
-         <dd>{{ originator.position }}</dd>
-         {% endblock originator_position %}
+      {% for principal_investigator in resource.principal_investigator %}
+        <dl class="dl-horizontal">
+          {% block principal_investigator_doc_file %}
+            <dt>
+              {% trans 'Name' %}
+            </dt>
+            <dd>{{ principal_investigator.name_long }}</dd>
+          {% endblock %}
 
-         {% block originator_organization %}
-         <dt>{% trans "Organization" %}</dt>
-         <dd>{{ originator.organization }}</dd>
-         {% endblock originator_organization %}
+          {% block principal_investigator_email %}
+            <dt>
+              {% trans 'email' %}
+            </dt>
+            <dd>{{ principal_investigator.email }}</dd>
+          {% endblock %}
 
-         {% block originator_location %}
-         <dt>{% trans "Location" %}</dt>
-         <dd>{{ originator.location }}</dd>
-         {% endblock originator_location %}
+          {% block principal_investigator_position %}
+            <dt>
+              {% trans 'Position' %}
+            </dt>
+            <dd>{{ principal_investigator.position }}</dd>
+          {% endblock %}
 
-         {% block originator_voice %}
-         <dt>{% trans "Voice" %}</dt>
-         <dd>{{ originator.voice }}</dd>
-         {% endblock originator_voice %}
+          {% block principal_investigator_organization %}
+            <dt>
+              {% trans 'Organization' %}
+            </dt>
+            <dd>{{ principal_investigator.organization }}</dd>
+          {% endblock %}
 
-         {% block originator_fax %}
-         <dt>{% trans "Fax" %}</dt>
-         <dd>{{ originator.fax }}</dd>
-         {% endblock originator_fax %}
+          {% block principal_investigator_location %}
+            <dt>
+              {% trans 'Location' %}
+            </dt>
+            <dd>{{ principal_investigator.location }}</dd>
+          {% endblock %}
 
-         {% block originator_keyword_list %}
-         {% if originator.keyword_list %}
-         <dt>{% trans "Keywords" %}</dt>
-         <dd>{% for keyword in originator.keyword_list %}
-             {{ keyword }}
-             {% endfor %}</dd>
-         {% endif %}
-         {% endblock originator_keyword_list %}
-   </dl>
-   {% endfor%}
-   {% endif %}
+          {% block principal_investigator_voice %}
+            <dt>
+              {% trans 'Voice' %}
+            </dt>
+            <dd>{{ principal_investigator.voice }}</dd>
+          {% endblock %}
 
+          {% block principal_investigator_fax %}
+            <dt>
+              {% trans 'Fax' %}
+            </dt>
+            <dd>{{ principal_investigator.fax }}</dd>
+          {% endblock %}
 
-   {% comment %} Contact Role: Resource Provider {% endcomment %}
-   {% if resource.principal_investigator %}
-
-   <span class="subtitle">{% trans "Principal Investigator" %}</span>
-   <div class="sep_title"><hr></div>
-
-   {% for principal_investigator in resource.principal_investigator %}
-   <dl class="dl-horizontal">
-         {% block principal_investigator_doc_file %}
-         <dt>{% trans "Name" %}</dt>
-         <dd>{{ principal_investigator.name_long }}</dd>
-         {% endblock principal_investigator_doc_file %}
-
-         {% block principal_investigator_email %}
-         <dt>{% trans "email" %}</dt>
-         <dd>{{ principal_investigator.email }}</dd>
-         {% endblock principal_investigator_email %}
-
-         {% block principal_investigator_position %}
-         <dt>{% trans "Position" %}</dt>
-         <dd>{{ principal_investigator.position }}</dd>
-         {% endblock principal_investigator_position %}
-
-         {% block principal_investigator_organization %}
-         <dt>{% trans "Organization" %}</dt>
-         <dd>{{ principal_investigator.organization }}</dd>
-         {% endblock principal_investigator_organization %}
-
-         {% block principal_investigator_location %}
-         <dt>{% trans "Location" %}</dt>
-         <dd>{{ principal_investigator.location }}</dd>
-         {% endblock principal_investigator_location %}
-
-         {% block principal_investigator_voice %}
-         <dt>{% trans "Voice" %}</dt>
-         <dd>{{ principal_investigator.voice }}</dd>
-         {% endblock principal_investigator_voice %}
-
-         {% block principal_investigator_fax %}
-         <dt>{% trans "Fax" %}</dt>
-         <dd>{{ principal_investigator.fax }}</dd>
-         {% endblock principal_investigator_fax %}
-
-         {% block principal_investigator_keyword_list %}
-         {% if principal_investigator.keyword_list %}
-         <dt>{% trans "Keywords" %}</dt>
-         <dd>{% for keyword in principal_investigator.keyword_list %}
-             {{ keyword }}
-             {% endfor %}</dd>
-         {% endif %}
-         {% endblock principal_investigator_keyword_list %}
-   </dl>
-   {% endfor%}
-   {% endif %}
-
-</article>
+          {% block principal_investigator_keyword_list %}
+            {% if principal_investigator.keyword_list %}
+              <dt>
+                {% trans 'Keywords' %}
+              </dt>
+              <dd>
+                {% for keyword in principal_investigator.keyword_list %}
+                  {{ keyword }}
+                {% endfor %}
+              </dd>
+            {% endif %}
+          {% endblock %}
+        </dl>
+      {% endfor %}
+    {% endif %}
+  </article>
 {% endblock %}
