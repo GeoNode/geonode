@@ -647,6 +647,14 @@ def dataset_metadata(
             layer.regions.add(*new_regions)
         layer.category = new_category
 
+        use_constraint_restrictions = [x for x in dataset_form.cleaned_data["use_constraint_restrictions"]]
+        if use_constraint_restrictions:
+            layer.use_constraint_restrictions.add(*use_constraint_restrictions)
+
+        restriction_other = [x for x in dataset_form.cleaned_data["restriction_other"]]
+        if restriction_other:
+            layer.restriction_other.add(*restriction_other)
+
         from geonode.upload.models import Upload
 
         up_sessions = Upload.objects.filter(resource_id=layer.resourcebase_ptr_id)

@@ -675,7 +675,7 @@ class ResourceBaseSerializer(
         self.fields["edition"] = serializers.CharField(required=False)
         self.fields["purpose"] = serializers.CharField(required=False)
         self.fields["maintenance_frequency"] = serializers.CharField(required=False)
-        self.fields["constraints_other"] = serializers.CharField(required=False)
+
         self.fields["language"] = serializers.CharField(required=False)
         self.fields["supplemental_information"] = serializers.CharField(required=False)
         self.fields["data_quality_statement"] = serializers.CharField(required=False)
