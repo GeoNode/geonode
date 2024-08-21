@@ -672,9 +672,9 @@ class RelationType(models.Model):
 
 class RelatedIdentifier(models.Model):
     related_identifer_help_text = _("Identifiers of related resources. These must be globally unique identifiers.")
-    related_identifier = models.CharField(max_length=255, help_text=related_identifer_help_text)
-    related_identifier_type = models.ForeignKey(RelatedIdentifierType, on_delete=models.CASCADE)
-    relation_type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
+    related_identifier = models.CharField(max_length=255, help_text=related_identifer_help_text, blank=True)
+    related_identifier_type = models.ForeignKey(RelatedIdentifierType, null=True, blank=True, on_delete=models.CASCADE)
+    relation_type = models.ForeignKey(RelationType, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Related Identifier: {self.related_identifier}({self.relation_type}: {self.related_identifier_type})"
@@ -788,7 +788,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "(space or comma-separated)"
     )
     regions_help_text = _("keyword identifies a location")
-    use_constrains_help_text = _(
+    use_constraints_help_text = _(
         "This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)"
     )
     restriction_other_help_text = _("limitation(s) placed upon the access or use of the data.")
@@ -961,7 +961,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=True,
     )
 
-    use_constrains = models.TextField(_("Use Constraints"), null=True, blank=True)
+    use_constraints = models.TextField(_("Use Constraints"), null=True, blank=True)
     restriction_other = models.ManyToManyField(
         RestrictionCodeType,
         verbose_name=_("restrictions"),
@@ -1143,10 +1143,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Bonares
     related_identifier = models.ManyToManyField(
         RelatedIdentifier,
-        verbose_name=_("Related Identifier"),
         null=True,
         blank=True,
         help_text=related_identifer_help_text,
+        # related_name="related_identifier",
+        verbose_name=_("Related Identifier"),
     )
     funders = models.ManyToManyField(
         Funder, verbose_name=_("Funder names"), null=True, blank=True, help_text=funders_help_text

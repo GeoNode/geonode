@@ -114,7 +114,7 @@ class CommonModelApi(ModelResource):
         "purpose",
         "maintenance_frequency",
         "use_constraint_restrictions",
-        "use_constrains",
+        "use_constraints",
         "restriction_other",
         "constraints_other",
         "license",

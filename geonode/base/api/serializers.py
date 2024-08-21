@@ -714,7 +714,7 @@ class ResourceBaseSerializer(
         self.fields["use_constraint_restrictions"] = ComplexDynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=True
         )
-        self.fields["use_constrains"] = serializers.CharField(read_only=True)
+        self.fields["use_constraints"] = serializers.CharField(read_only=True)
         self.fields["restriction_other"] = ComplexDynamicRelationField(
             RestrictionCodeTypeSerializer, embed=True, many=True
         )
@@ -795,7 +795,7 @@ class ResourceBaseSerializer(
             "purpose",
             "maintenance_frequency",
             "use_constraint_restrictions",
-            "use_constrains",
+            "use_constraints",
             "constraints_other",
             "restriction_other",
             "license",
