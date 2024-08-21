@@ -450,8 +450,7 @@ class PermissionLevelMixin:
         """
         Checks if a has a given permission to the resource.
         """
-        resource = self.get_self_resource()
-        user_perms = resource.get_user_perms(user)
+        user_perms = self.get_user_perms(user)
 
         if permission not in user_perms:
             # TODO cater for permissions with syntax base.permission_codename
