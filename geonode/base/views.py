@@ -536,11 +536,7 @@ def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(resourcebase_obj)
 
-    perms_list = list(
-        resourcebase_obj.get_self_resource()
-        .get_user_perms(request.user)
-        .union(resourcebase_obj.get_user_perms(request.user))
-    )
+    perms_list = resourcebase_obj.get_user_perms(request.user)
 
     group = None
     if resourcebase_obj.group:
