@@ -434,6 +434,9 @@ class PermissionLevelMixin:
             # anonymous cannot feature/approve or pusblish, we can return here the perms
             return perms_as_list
 
+        if not perms_as_list:
+            return perms_as_list
+
         if user.can_feature(self):
             perms_as_list.append("feature_resourcebase")
         if user.can_approve(self):
