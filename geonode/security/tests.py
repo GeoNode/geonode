@@ -1890,6 +1890,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                         "view_resourcebase",
                         "download_resourcebase",
                         "change_resourcebase_metadata",
+                        "approve_resourcebase"
                     ],
                     self.anonymous_user: ["view_resourcebase"],
                 },
@@ -2148,6 +2149,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "view_resourcebase",
                 "publish_resourcebase",
                 "change_resourcebase_permissions",
+                "approve_resourcebase"
             ],
         }
         try:
@@ -2268,7 +2270,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 "view_resourcebase",
                 "publish_resourcebase",
                 "change_resourcebase_permissions",
-                "approve_resourcebase",  # TODO check if he can approve
+                "approve_resourcebase",
             ],
         }
         for authorized_subject, expected_perms in expected.items():
