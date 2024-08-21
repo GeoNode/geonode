@@ -106,9 +106,7 @@ def geoapp_edit(request, geoappid, template="apps/app_edit.html"):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(geoapp_obj)
 
-    perms_list = list(
-        geoapp_obj.get_self_resource().get_user_perms(request.user).union(geoapp_obj.get_user_perms(request.user))
-    )
+    perms_list = geoapp_obj.get_user_perms(request.user)
 
     group = None
     if geoapp_obj.group:

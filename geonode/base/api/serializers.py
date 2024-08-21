@@ -523,15 +523,7 @@ class PermsSerializer(DynamicModelSerializer):
     def to_representation(self, instance):
         request = self.context.get("request", None)
         resource = ResourceBase.objects.get(pk=instance)
-        return (
-            (
-                resource.get_user_perms(request.user)
-                .union(resource.get_self_resource().get_user_perms(request.user))
-                .union(resource.get_real_instance().get_user_perms(request.user))
-            )
-            if request and request.user and resource
-            else []
-        )
+        return resource.get_user_perms(request.user) if request and request.user and resource else []
 
 
 class LinksSerializer(DynamicModelSerializer):

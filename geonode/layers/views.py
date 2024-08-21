@@ -671,7 +671,7 @@ def dataset_metadata_detail(request, layername, template="datasets/dataset_metad
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
 
     register_event(request, "view_metadata", layer)
-    perms_list = list(layer.get_self_resource().get_user_perms(request.user).union(layer.get_user_perms(request.user)))
+    perms_list = layer.get_user_perms(request.user)
 
     return render(
         request,
