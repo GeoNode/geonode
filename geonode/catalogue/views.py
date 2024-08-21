@@ -250,7 +250,7 @@ def csw_render_extra_format_txt(request, layeruuid, resname):
     except ObjectDoesNotExist:
         content += f"ObjectDoesNotExist{sc}"
 
-    content += f"restriction code type{s}{fst(resource.restriction_code_type)}{sc}"
+    content += f"restriction other{s}{fst(resource.restriction_other)}{sc}"
     content += f"constraints other {s}{fst(resource.constraints_other)}{sc}"
     content += f"license{s}{fst(resource.license)}{sc}"
     content += f"language{s}{fst(resource.language)}{sc}"

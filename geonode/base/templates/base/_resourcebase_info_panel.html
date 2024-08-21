@@ -1,214 +1,270 @@
 {% load i18n %}
 {% block content %}
-{% load thesaurus %}
+  {% load thesaurus %}
 
-<dl class="dl-horizontal">
+  <dl class="dl-horizontal">
     {% if resource.title %}
-    <dt>{% trans "Title" %}</dt>
-    <dd itemprop="name">{{ resource.title|truncatechars:80 }}</dd>
+      <dt>
+        {% trans 'Title' %}
+      </dt>
+      <dd itemprop="name">{{ resource.title|truncatechars:80 }}</dd>
     {% endif %}
 
     {% if resource.srid and SRID_DETAIL == 'above' %}
-    <dt>{% trans "SRID" %}</dt>
-    <dd>{{ resource.srid }}</dd>
+      <dt>
+        {% trans 'SRID' %}
+      </dt>
+      <dd>{{ resource.srid }}</dd>
     {% endif %}
 
     {% if LICENSES_ENABLED and LICENSES_DETAIL == 'above' and resource.license %}
-    <dt>{% trans "License" %}</dt>
-    <dd itemprop="license">{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
+      <dt>
+        {% trans 'License' %}
+      </dt>
+      <dd itemprop="license">{{ resource.license.name_long }} <a href="#license-more-above" data-toggle="collapse" data-target=".license-more-above"><i class="fa fa-info-circle"></i></a></dd>
     {% endif %}
     <dd class="license-more-above collapse">
       {% for bullet in resource.license.description_bullets %}
-        {{ bullet }}<br/><br/>
+        {{ bullet }}<br /><br />
       {% endfor %}
       {% if resource.license.url %}
-        + {% trans "For more info see" %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+        +{% trans 'For more info see' %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
       {% endif %}
     </dd>
 
     {% if resource.abstract %}
-    <dt>{% trans "Abstract" %}</dt>
-    <dd itemprop="description">{{ resource.abstract|safe }}</dd>
+      <dt>
+        {% trans 'Abstract' %}
+      </dt>
+      <dd itemprop="description">{{ resource.abstract|safe }}</dd>
     {% endif %}
 
     {% if resource.date %}
-    {% if resource.date_type == 'creation' %}
-    <dt>{% trans "Creation Date" %}</dt>
-    {% elif resource.date_type == 'publication' %}
-    <dt>{% trans "Publication Date" %}</dt>
-    {% elif resource.date_type == 'revision' %}
-    <dt>{% trans "Revision Date" %}</dt>
-    {% else %}
-    <dt>{% trans resource.date_type|title %} {% trans "Date" %}</dt>
-    {% endif %}
       {% if resource.date_type == 'creation' %}
-        <dd itemprop="dateCreated" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
+        <dt>
+          {% trans 'Creation Date' %}
+        </dt>
       {% elif resource.date_type == 'publication' %}
-        <dd itemprop="datePublished" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
+        <dt>
+          {% trans 'Publication Date' %}
+        </dt>
+      {% elif resource.date_type == 'revision' %}
+        <dt>
+          {% trans 'Revision Date' %}
+        </dt>
       {% else %}
-        <dd itemprop="dateModified" datetime="{{ resource.date|date:"c"}}">{{ resource.date }}</dd>
+        <dt>
+          {% trans resource.date_type|title %} {% trans 'Date' %}
+        </dt>
+      {% endif %}
+      {% if resource.date_type == 'creation' %}
+        <dd itemprop="dateCreated" datetime="{{ resource.date|date:'c' }}">{{ resource.date }}</dd>
+      {% elif resource.date_type == 'publication' %}
+        <dd itemprop="datePublished" datetime="{{ resource.date|date:'c' }}">{{ resource.date }}</dd>
+      {% else %}
+        <dd itemprop="dateModified" datetime="{{ resource.date|date:'c' }}">{{ resource.date }}</dd>
       {% endif %}
     {% endif %}
 
     {% if resource.display_type %}
-    <dt>{% trans "Type" %}</dt>
-    <dd>{{ resource.display_type }}</dd>
+      <dt>
+        {% trans 'Type' %}
+      </dt>
+      <dd>{{ resource.display_type }}</dd>
     {% endif %}
 
-  {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
-    <dt>{% trans "Keywords" %}</dt>
+    {% if resource.keywords.count > 0 or resource.tkeywords.count > 0 %}
+      <dt>
+        {% trans 'Keywords' %}
+      </dt>
       <dd itemprop="keywords">
         <ul>
-            {% for keyword in resource.keywords.all %}
-              <li>
-                <span itemscope itemtype="http://schema.org/Text">
-                  {{ keyword.name| safe}}
-                </span>
-              </li>
-            {% endfor %}
-            {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
-              <li>{{ tid|get_thesaurus_translation_by_id }}
-                {% for tkeywords in resource.tkeywords.all %}
+          {% for keyword in resource.keywords.all %}
+            <li>
+              <span itemscope itemtype="http://schema.org/Text">{{ keyword.name|safe }}</span>
+            </li>
+          {% endfor %}
+          {% for tid in resource.tkeywords.all|get_unique_thesaurus_set %}
+            <li>
+              {{ tid|get_thesaurus_translation_by_id }}
+              {% for tkeywords in resource.tkeywords.all %}
                 <ul>
                   {% if tid == tkeywords.thesaurus.id %}
-                      <li><span itemscope itemtype="http://schema.org/Text">{{tkeywords|get_thesaurus_localized_label}}</span></li>
+                    <li>
+                      <span itemscope itemtype="http://schema.org/Text">{{ tkeywords|get_thesaurus_localized_label }}</span>
+                    </li>
                   {% endif %}
                 </ul>
-                {% endfor %}
-              </li>
-            {% endfor %}
+              {% endfor %}
+            </li>
+          {% endfor %}
         </ul>
       </dd>
     {% endif %}
 
     {% if resource.category %}
-    <dt>{% trans "Category" %}</dt>
-    <dd><span>{% trans resource.category.gn_description %}</span> {% if resource.category.description %}<a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>{% endif %}</dd>
-      {% if resource.category.description %}
-      <dd class="category-more collapse">
-        {% trans resource.category.description %}
+      <dt>
+        {% trans 'Category' %}
+      </dt>
+      <dd>
+        <span>{% trans resource.category.gn_description %}</span> {% if resource.category.description %}
+          <a href="#category-more" data-toggle="collapse" data-target=".category-more"><i class="fa fa-info-circle"></i></a>
+        {% endif %}
       </dd>
+      {% if resource.category.description %}
+        <dd class="category-more collapse">{% trans resource.category.description %}</dd>
       {% endif %}
     {% endif %}
 
     {% if resource.regions.all %}
-    <dt>{% trans "Regions" %}</dt>
-    <dd itemprop="keywords">
-      {% for region in resource.regions.all %}
-        <span itemscope itemtype="http://schema.org/Text">
-          {{ region.name }}
-        </span>
-        {% if not forloop.last %},{% endif %}
-      {% endfor %}
-    </dd>
+      <dt>
+        {% trans 'Regions' %}
+      </dt>
+      <dd itemprop="keywords">
+        {% for region in resource.regions.all %}
+          <span itemscope itemtype="http://schema.org/Text">{{ region.name }}</span>
+          {% if not forloop.last %},{% endif %}
+        {% endfor %}
+      </dd>
     {% endif %}
 
     {% if resource.owner %}
-    <dt>{% trans "Responsible" %}</dt>
-    <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
+      <dt>
+        {% trans 'Responsible' %}
+      </dt>
+      <dd><a itemprop="author" href="{{ resource.owner.get_absolute_url }}">{{ resource.owner.username }}</a></dd>
     {% endif %}
 
     {% if resource.poc %}
-    <dt>{% trans "Point of Contact" %}</dt>
-    {% for user in resource.poc  %}
-    <dd><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></dd>
-    {% endfor%}
+      <dt>
+        {% trans 'Point of Contact' %}
+      </dt>
+      {% for user in resource.poc %}
+        <dd><a href="{{ user.get_absolute_url }}">{{ user.username }}</a></dd>
+      {% endfor %}
     {% endif %}
 
     {% if resource.group %}
-    <dt>{% trans "Group" %}</dt>
-    <dd><a href="{% url 'group_activity' resource.group.name %}">{{ group }}</a> </dd>
+      <dt>
+        {% trans 'Group' %}
+      </dt>
+      <dd><a href="{% url 'group_activity' resource.group.name %}">{{ group }}</a></dd>
     {% endif %}
 
     {% if resource.doi %}
-    <dt>{% trans "DOI" %}</dt>
-    <dd>{{ resource.doi }}</dd>
+      <dt>
+        {% trans 'DOI' %}
+      </dt>
+      <dd>{{ resource.doi }}</dd>
     {% endif %}
 
     {% if resource.attribution %}
-    <dt>{% trans "Attribution" %}</dt>
-    <dd>{{ resource.attribution }}</dd>
+      <dt>
+        {% trans 'Attribution' %}
+      </dt>
+      <dd>{{ resource.attribution }}</dd>
     {% endif %}
-
   </dl>
 
   <dl class="dl-horizontal">
-    <dt><a href="#more" data-toggle="collapse" data-target=".more">{% trans "More info" %}</a></dt>
+    <dt>
+      <a href="#more" data-toggle="collapse" data-target=".more">{% trans 'More info' %}</a>
+    </dt>
     <dd>-</dd>
   </dl>
 
   <dl class="dl-horizontal">
     <div class="more collapse">
+      {% if resource.srid and SRID_DETAIL == 'below' %}
+        <dt>
+          {% trans 'SRID' %}
+        </dt>
+        <dd>{{ resource.srid }}</dd>
+      {% endif %}
 
-    {% if resource.srid and SRID_DETAIL == 'below' %}
-    <dt>{% trans "SRID" %}</dt>
-    <dd>{{ resource.srid }}</dd>
-    {% endif %}
+      {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
+        <dt>
+          {% trans 'License' %}
+        </dt>
+        <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
+        <dd class="license-more-below collapse">
+          {% for bullet in resource.license.description_bullets %}
+            {{ bullet }}<br /><br />
+          {% endfor %}
+          {% if resource.license.url %}
+            +{% trans 'For more info see' %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
+          {% endif %}
+        </dd>
+      {% endif %}
 
-    {% if LICENSES_ENABLED and LICENSES_DETAIL == 'below' and resource.license %}
-    <dt>{% trans "License" %}</dt>
-    <dd>{{ resource.license.name_long }} <a href="#license-more-below" data-toggle="collapse" data-target=".license-more-below"><i class="fa fa-info-circle"></i></a></dd>
-      <dd class="license-more-below collapse">
-        {% for bullet in resource.license.description_bullets %}
-          {{ bullet }}<br/><br/>
-        {% endfor %}
-        {% if resource.license.url %}
-          + {% trans "For more info see" %} <a href="{{ resource.license.url }}">{{ resource.license.url }}</a>.
-        {% endif %}
-      </dd>
-    {% endif %}
+      {% if resource.maintenance_frequency %}
+        <dt>
+          {% trans 'Maintenance Frequency' %}
+        </dt>
+        <dd>{{ resource.maintenance_frequency_title|safe }}</dd>
+      {% endif %}
 
-    {% if resource.maintenance_frequency %}
-    <dt>{% trans "Maintenance Frequency" %}</dt>
-    <dd>{{ resource.maintenance_frequency_title|safe }}</dd>
-    {% endif %}
-
-    {% if resource.restriction_code_type or resource.constraints_other %}
-    <dt>{% trans "Restrictions" %}</dt>
-    <dd>{% if resource.constraints_other %}
+      {% if resource.restriction_other or resource.constraints_other %}
+        <dt>
+          {% trans 'Restrictions' %}
+        </dt>
+        <dd>
+          {% if resource.constraints_other %}
             {{ resource.constraints_other|safe }}
-        {% else %}
-            {{ resource.restriction_code_type|safe }}
-        {% endif %}</dd>
-    {% endif %}
+          {% else %}
+            {{ resource.restriction_other|safe }}
+          {% endif %}
+        </dd>
+      {% endif %}
 
-    {% if resource.edition %}
-    <dt>{% trans "Edition" %}</dt>
-    <dd>{{ resource.edition }}</dd>
-    {% endif %}
+      {% if resource.edition %}
+        <dt>
+          {% trans 'Edition' %}
+        </dt>
+        <dd>{{ resource.edition }}</dd>
+      {% endif %}
 
-    {% if resource.purpose %}
-    <dt>{% trans "Purpose" %}</dt>
-    <dd>{{ resource.purpose|safe }}</dd>
-    {% endif %}
+      {% if resource.purpose %}
+        <dt>
+          {% trans 'Purpose' %}
+        </dt>
+        <dd>{{ resource.purpose|safe }}</dd>
+      {% endif %}
 
-    {% if resource.language %}
-    <dt>{% trans "Language" %}</dt>
-    <dd>{{ resource.language_title|safe }}</dd>
-    {% endif %}
+      {% if resource.language %}
+        <dt>
+          {% trans 'Language' %}
+        </dt>
+        <dd>{{ resource.language_title|safe }}</dd>
+      {% endif %}
 
-    {% if resource.temporal_extent_start and resource.temporal_extent_end %}
-    <dt>{% trans "Temporal Extent" %}</dt>
-    <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
-    {% endif %}
+      {% if resource.temporal_extent_start and resource.temporal_extent_end %}
+        <dt>
+          {% trans 'Temporal Extent' %}
+        </dt>
+        <dd>{{ resource.temporal_extent_start }} - {{ resource.temporal_extent_end }}</dd>
+      {% endif %}
 
-    {% if resource.data_quality_statement %}
-    <dt>{% trans "Data Quality" %}</dt>
-    <dd>{{ resource.data_quality_statement|safe }}</dd>
-    {% endif %}
+      {% if resource.data_quality_statement %}
+        <dt>
+          {% trans 'Data Quality' %}
+        </dt>
+        <dd>{{ resource.data_quality_statement|safe }}</dd>
+      {% endif %}
 
-    {% if resource.supplemental_information %}
-    <dt>{% trans "Supplemental Information" %}</dt>
-    <dd>{{ resource.supplemental_information|safe }}</dd>
-    {% endif %}
+      {% if resource.supplemental_information %}
+        <dt>
+          {% trans 'Supplemental Information' %}
+        </dt>
+        <dd>{{ resource.supplemental_information|safe }}</dd>
+      {% endif %}
 
-    {% if resource.spatial_representation_type %}
-    <dt>{% trans "Spatial Representation Type" %}</dt>
-    <dd>{{ resource.spatial_representation_type|safe }}</dd>
-    {% endif %}
-
-  </div>
-
+      {% if resource.spatial_representation_type %}
+        <dt>
+          {% trans 'Spatial Representation Type' %}
+        </dt>
+        <dd>{{ resource.spatial_representation_type|safe }}</dd>
+      {% endif %}
+    </div>
   </dl>
-
-  {% endblock %}
+{% endblock %}

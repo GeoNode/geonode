@@ -450,13 +450,13 @@ span.grippy::after {
                                     {% endblock map_data_quality_statement %}
                                 </div>
                                 <div class="col-lg-4">
-                                    {% block map_restriction_code_type %}
+                                    {% block map_restriction_other %}
                                     <div>
-                                        <span><label for="{{ map_form.restriction_code_type|id }}">{{ map_form.restriction_code_type.label }}</label></span>
+                                        <span><label for="{{ map_form.restriction_other|id }}">{{ map_form.restriction_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
-                                        {{ map_form.restriction_code_type }}
+                                        {{ map_form.restriction_other }}
                                     </div>
-                                    {% endblock map_restriction_code_type %}
+                                    {% endblock map_restriction_other %}
                                     {% block map_constraints_other %}
                                     <div>
                                         <span><label for="{{ map_form.constraints_other|id }}">{{ map_form.constraints_other.label }}</label></span>

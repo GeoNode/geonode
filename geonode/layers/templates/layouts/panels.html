@@ -463,9 +463,9 @@ span.grippy::after {
                                 {% block dataset_constraints %}
                                 <div class="col-lg-4">
                                     <div>
-                                        <span><label for="{{ dataset_form.restriction_code_type|id }}">{{ dataset_form.restriction_code_type.label }}</label></span>
+                                        <span><label for="{{ dataset_form.restriction_other|id }}">{{ dataset_form.restriction_other.label }}</label></span>
                                         <!--<p class="xxs-font-size">(Limitation/s placed upon the access or use of data)</p>-->
-                                        {{ dataset_form.restriction_code_type }}
+                                        {{ dataset_form.restriction_other }}
                                     </div>
                                     <div>
                                         <span><label for="{{ dataset_form.constraints_other|id }}">{{ dataset_form.constraints_other.label }}</label></span>

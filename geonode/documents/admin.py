@@ -43,7 +43,7 @@ class DocumentAdmin(TabbedTranslationAdmin):
     list_filter = (
         "date",
         "date_type",
-        "restriction_code_type",
+        "restriction_other",
         "category",
         "group",
         "is_approved",

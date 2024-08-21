@@ -76,7 +76,7 @@ class DatasetAdmin(TabbedTranslationAdmin):
         "owner",
         "category",
         "group",
-        "restriction_code_type__identifier",
+        "restriction_other__identifier",
         "date",
         "date_type",
         "is_approved",
