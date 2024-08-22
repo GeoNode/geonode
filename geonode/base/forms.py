@@ -524,7 +524,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
         widget=forms.SelectMultiple(attrs={"class": "bg-primary"}),
         required=False,
     )
-    use_constraints = forms.CharField(label=_("Use Constraints"), required=False, widget=TinyMCE())
+    use_constrains = forms.CharField(label=_("Use Constraints"), required=False, widget=TinyMCE())
     constraints_other = forms.CharField(label=_("Other constraints"), required=False, widget=TinyMCE())
 
     supplemental_information = forms.CharField(label=_("Supplemental information"), required=False, widget=TinyMCE())
