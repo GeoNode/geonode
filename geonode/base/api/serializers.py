@@ -795,7 +795,7 @@ class ResourceBaseSerializer(
             "purpose",
             "maintenance_frequency",
             "use_constraint_restrictions",
-            "use_constrains,
+            "use_constrains",
             "constraints_other",
             "restriction_other",
             "license",
