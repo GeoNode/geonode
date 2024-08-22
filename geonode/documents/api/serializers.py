@@ -37,11 +37,7 @@ class DocumentFieldField(DynamicComputedField):
 
 
 class DocumentSerializer(ResourceBaseSerializer):
-    def __init__(self, *args, **kwargs):
-        # Instantiate the superclass normally
-        super().__init__(*args, **kwargs)
-        self.fields["title"] = serializers.CharField(required=False)
-
+    title = serializers.CharField(required=False)
     file_path = GeonodeFilePathField(required=False, write_only=True)
     doc_file = DocumentFieldField(required=False, write_only=True)
 
