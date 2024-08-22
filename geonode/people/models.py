@@ -56,21 +56,15 @@ class ProfileUserManager(UserManager):
         return self.get(username=username)
 
 
-# ORGANIZATION_LIST = FundingReference.objects.values()
-# print(ORGANIZATION_LIST)
-
-
 class Profile(AbstractUser):
     """Fully featured Geonode user"""
 
-    # ORGANIZATION_LIST = FundingReference.objects.values_list("funder_name", "funder_name")
     organization = models.CharField(
         _("Organization Name"),
         max_length=255,
         blank=True,
         null=True,
         help_text=_("name of the responsible organization"),
-        # choices=ORGANIZATION_LIST,
     )
     profile = models.TextField(_("Profile"), null=True, blank=True, help_text=_("introduce yourself"))
     position = models.CharField(
