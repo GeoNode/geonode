@@ -20,6 +20,7 @@
 import taggit
 
 from django import forms
+from geonode.base.models import FundingReference
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import ugettext as _
@@ -55,6 +56,9 @@ class ForgotUsernameForm(forms.Form):
 
 
 class ProfileForm(forms.ModelForm):
+    organization = forms.ModelChoiceField(
+        queryset=FundingReference.objects.values_list("funder_name", flat=True), to_field_name="funder_name"
+    )
     keywords = taggit.forms.TagField(
         label=_("Keywords"), required=False, help_text=_("A space or comma-separated list of keywords")
     )
