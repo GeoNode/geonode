@@ -28,7 +28,6 @@ from geonode.security.permissions import (
     BASIC_MANAGE_PERMISSIONS,
     DOWNLOAD_PERMISSIONS,
     EDIT_PERMISSIONS,
-    USER_CAN_PERMISSIONS,
     VIEW_PERMISSIONS,
 )
 from distutils.util import strtobool
@@ -220,9 +219,9 @@ class ResourceBasePermissionsFilter(BaseFilterBackend):
 class UserHasPerms(DjangoModelPermissions):
     perms_map = {
         "GET": [f"base.{x}" for x in VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS],
-        "POST": ["base.add_resourcebase"] + [f"base.{x}" for x in EDIT_PERMISSIONS + USER_CAN_PERMISSIONS],
-        "PUT": [f"base.{x}" for x in EDIT_PERMISSIONS + USER_CAN_PERMISSIONS],
-        "PATCH": [f"base.{x}" for x in EDIT_PERMISSIONS + USER_CAN_PERMISSIONS],
+        "POST": ["base.add_resourcebase"] + [f"base.{x}" for x in EDIT_PERMISSIONS],
+        "PUT": [f"base.{x}" for x in EDIT_PERMISSIONS],
+        "PATCH": [f"base.{x}" for x in EDIT_PERMISSIONS],
         "DELETE": [f"base.{x}" for x in BASIC_MANAGE_PERMISSIONS],
     }
 

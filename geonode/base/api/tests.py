@@ -716,7 +716,7 @@ class BaseApiTests(APITestCase):
 
     def test_write_resources(self):
         """
-        Ensure we can perform write oprtation afainst the Resource Bases.
+        Ensure we can perform write operation against the Resource Bases.
         """
         url = reverse("base-resources-list")
         # Check user permissions
@@ -732,7 +732,7 @@ class BaseApiTests(APITestCase):
                 "abstract": "Foo Abstract",
                 "attribution": "Foo Attribution",
                 "doi": "321-12345-987654321",
-                "is_published": False,  # this is a read-only field so should not updated
+                "is_published": False,
             }
             response = self.client.patch(f"{url}/{resource.id}/", data=data, format="json")
             self.assertEqual(response.status_code, 200, response.status_code)
@@ -745,7 +745,9 @@ class BaseApiTests(APITestCase):
                 "Foo Attribution", response.data["resource"]["attribution"], response.data["resource"]["attribution"]
             )
             self.assertEqual("321-12345-987654321", response.data["resource"]["doi"], response.data["resource"]["doi"])
-            self.assertEqual(True, response.data["resource"]["is_published"], response.data["resource"]["is_published"])
+            self.assertEqual(
+                False, response.data["resource"]["is_published"], response.data["resource"]["is_published"]
+            )
 
     def test_resource_serializer_validation(self):
         """

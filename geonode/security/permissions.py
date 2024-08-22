@@ -90,12 +90,6 @@ EDIT_PERMISSIONS = [
     "change_resourcebase_metadata",
 ]
 
-USER_CAN_PERMISSIONS = [
-    "publish_resourcebase",
-    "approve_resourcebase",
-    "feature_resourcebase",
-]
-
 BASIC_MANAGE_PERMISSIONS = [
     "delete_resourcebase",
     "change_resourcebase_permissions",
