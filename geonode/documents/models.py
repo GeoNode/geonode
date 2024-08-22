@@ -85,8 +85,7 @@ class Document(ResourceBase):
     @property
     def name(self):
         if not self.title:
-            if len(self.files) > 0:
-                return self.files[0].split("/")[-1]
+            return str(self.id)
         else:
             return self.title
 
