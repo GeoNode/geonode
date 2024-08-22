@@ -799,6 +799,19 @@ class BaseApiTests(APITestCase):
         se = ResourceBaseSerializer(data=data, context={"request": rq})
         self.assertTrue(se.is_valid())
 
+    def test_resource_base_serializer_with_settingsfield(self):
+        doc = create_single_doc("my_custom_doc")
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = doc.owner
+        serialized = ResourceBaseSerializer(doc, context={"request": rq})
+        json = JSONRenderer().render(serialized.data)
+        stream = BytesIO(json)
+        data = JSONParser().parse(stream)
+        self.assertTrue(data.get("is_approved"))
+        self.assertTrue(data.get("is_published"))
+        self.assertFalse(data.get("featured"))
+
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username="delet-owner")
         Dataset(
