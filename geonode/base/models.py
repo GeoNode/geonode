@@ -788,11 +788,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "(space or comma-separated)"
     )
     regions_help_text = _("keyword identifies a location")
-    use_constraints_help_text = _(
+    use_constrains_help_text = _(
         "This metadata element shall provide information on the Use constraints applied to assure the protection of privacy or intellectual property (e.g. Trademark)"
     )
     use_constraint_restrictions_help_text = _("limitation(s) placed upon the access or use of the data by Admin.")
-    use_constraints_help_text = _("limitation(s) placed upon the access or use of the data by Admin.")
+    use_constrains_help_text = _("limitation(s) placed upon the access or use of the data by Admin.")
     restriction_other_help_text = _("limitation(s) placed upon the access or use of the data by User.")
     constraints_other_help_text = _(
         "other restrictions and legal prerequisites for accessing and using the resource or metadata by User"
@@ -965,7 +965,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         help_text=use_constraint_restrictions_help_text,
     )
 
-    use_constraints = models.TextField(
+    use_constrains = models.TextField(
         _("Use Constraints"), null=True, blank=True, help_text=constraints_other_help_text
     )
     restriction_other = models.ManyToManyField(
