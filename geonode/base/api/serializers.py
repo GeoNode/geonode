@@ -559,11 +559,12 @@ class MetadataBooleanField(serializers.BooleanField):
         new_val = super().to_internal_value(data)
         user = self.context["request"].user
         user_action = self.MAPPING.get(self.field_name)
-        if getattr(user, user_action)(self.root.instance):
+        instance = self.root.instance or ResourceBase.objects.get(pk=self.root.initial_data["pk"])
+        if getattr(user, user_action)(instance):
             return new_val
         else:
             logger.warning(f"The user does not have the perms to update the value of {self.field_name}")
-            return getattr(self.root.instance, self.field_name)
+            return getattr(instance, self.field_name)
 
 
 class ResourceBaseSerializer(DynamicModelSerializer):
