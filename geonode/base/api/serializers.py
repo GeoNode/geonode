@@ -552,6 +552,20 @@ class LinksSerializer(DynamicModelSerializer):
         return ret
 
 
+class MetadataBooleanField(serializers.BooleanField):
+    MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
+
+    def to_internal_value(self, data):
+        new_val = super().to_internal_value(data)
+        user = self.context["request"].user
+        user_action = self.MAPPING.get(self.field_name)
+        if getattr(user, user_action)(self.root.instance):
+            return new_val
+        else:
+            logger.warning(f"The user does not have the perms to update the value of {self.field_name}")
+            return getattr(self.root.instance, self.field_name)
+
+
 class ResourceBaseSerializer(DynamicModelSerializer):
     pk = serializers.CharField(read_only=True)
     uuid = serializers.CharField(read_only=True)
@@ -592,10 +606,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     popular_count = serializers.CharField(required=False)
     share_count = serializers.CharField(required=False)
     rating = serializers.CharField(required=False)
-    featured = serializers.BooleanField(required=False)
+    featured = MetadataBooleanField(required=False, read_only=False)
     advertised = serializers.BooleanField(required=False)
-    is_published = serializers.BooleanField(required=False, read_only=True)
-    is_approved = serializers.BooleanField(required=False, read_only=True)
+    is_published = MetadataBooleanField(required=False, read_only=False)
+    is_approved = MetadataBooleanField(required=False, read_only=False)
     detail_url = DetailUrlField(read_only=True)
     created = serializers.DateTimeField(read_only=True)
     last_updated = serializers.DateTimeField(read_only=True)
