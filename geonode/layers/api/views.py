@@ -38,6 +38,7 @@ from geonode.layers.metadata import parse_metadata
 from geonode.layers.models import Dataset
 from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSerializer
 from geonode.resource.utils import update_resource
+from geonode.resource.manager import resource_manager
 from rest_framework.exceptions import NotFound
 
 from geonode.storage.manager import StorageManager
@@ -80,6 +81,14 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         if self.action == "list":
             return DatasetListSerializer
         return DatasetSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+        result = super().partial_update(request, *args, **kwargs)
+
+        dataset = self.get_object()
+        resource_manager.update(dataset.uuid, instance=dataset, notify=True),
+
+        return result
 
     @extend_schema(
         request=DatasetMetadataSerializer,

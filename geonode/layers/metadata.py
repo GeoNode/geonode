@@ -92,8 +92,8 @@ def iso2dict(exml):
         if mdata.identification[0].supplementalinformation is not None:
             vals["supplemental_information"] = mdata.identification[0].supplementalinformation
 
-        vals["temporal_extent_start"] = mdata.identification[0].temporalextent_start
-        vals["temporal_extent_end"] = mdata.identification[0].temporalextent_end
+        vals["temporal_extent_start"] = getattr(mdata.identification[0], "temporalextent_start", None)
+        vals["temporal_extent_end"] = getattr(mdata.identification[0], "temporalextent_end", None)
 
         if len(mdata.identification[0].topiccategory) > 0:
             vals["topic_category"] = mdata.identification[0].topiccategory[0]

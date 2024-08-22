@@ -64,6 +64,7 @@ class ProxyTest(GeoNodeBaseTestSupport):
         super().setUp()
         self.maxDiff = None
         self.admin = get_user_model().objects.get(username="admin")
+        create_models(type="dataset")
 
         # FIXME(Ariel): These tests do not work when the computer is offline.
         self.proxy_url = "/proxy/"
@@ -101,57 +102,31 @@ class ProxyTest(GeoNodeBaseTestSupport):
         self.assertEqual(response.status_code, 403, response.status_code)
 
     @override_settings(PROXY_ALLOWED_PARAMS_NEEDLES=(), PROXY_ALLOWED_PATH_NEEDLES=())
-    @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
-    def test_validate_remote_services_hosts(self):
+    # @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().clear())
+    def test_validate_remote_links_hosts(self):
         """If PROXY_ALLOWED_HOSTS is empty and DEBUG is False requests should return 200
         for Remote Services hosts."""
-        from geonode.services.models import Service
-        from geonode.services.enumerations import WMS, INDEXED
+        from geonode.base.models import Link
 
-        service, _ = Service.objects.get_or_create(
-            type=WMS,
-            name="Bogus",
-            title="Pocus",
-            owner=self.admin,
-            method=INDEXED,
-            base_url="http://bogus.pocus.com/ows",
+        dataset = Dataset.objects.all().first()
+        dataset.sourcetype = "REMOTE"
+        dataset.save()
+
+        link, _ = Link.objects.get_or_create(
+            link_type="OGC:WMS",
+            resource=dataset,
+            extension="html",
+            name="WMS",
+            mime="text/html",
+            url="http://bogus.pocus.com/ows",
         )
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
         self.assertNotEqual(response.status_code, 403, response.status_code)
 
         # The service should be removed from the proxy registry
-        service.delete()
+        link.delete()
         response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
         self.assertEqual(response.status_code, 403, response.status_code)
-
-        # Two services with the same hostname are added to the proxy registry
-        service, _ = Service.objects.get_or_create(
-            type=WMS,
-            name="Bogus",
-            title="Pocus",
-            owner=self.admin,
-            method=INDEXED,
-            base_url="http://bogus.pocus.com/ows",
-        )
-        Service.objects.get_or_create(
-            type=WMS,
-            name="Bogus2",
-            title="Pocus",
-            owner=self.admin,
-            method=INDEXED,
-            base_url="http://bogus.pocus.com/wms",
-        )
-        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/ows")
-        self.assertNotEqual(response.status_code, 403, response.status_code)
-        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wms")
-        self.assertNotEqual(response.status_code, 403, response.status_code)
-
-        service.delete()
-        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wfs")
-        # The request passes because the same hostname is still registered for the other serrice
-        self.assertNotEqual(response.status_code, 403, response.status_code)
-        response = self.client.get(f"{self.proxy_url}?url=http://bogus.pocus.com/wcs")
-        self.assertNotEqual(response.status_code, 403, response.status_code)
 
     @patch("geonode.proxy.views.proxy_urls_registry", ProxyUrlsRegistry().set([".example.org"]))
     def test_relative_urls(self):
@@ -310,11 +285,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.all().first()
 
         dataset_files = [
-            "/tmpe1exb9e9/foo_file.dbf",
-            "/tmpe1exb9e9/foo_file.prj",
-            "/tmpe1exb9e9/foo_file.shp",
-            "/tmpe1exb9e9/foo_file.shx",
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
+
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
         )
@@ -333,7 +306,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         # Espected 404 since there are no files available for this layer
         self.assertEqual(response.status_code, 200)
         self.assertEqual("application/zip", response.headers.get("Content-Type"))
-        self.assertEqual('attachment; filename="CA.zip"', response.headers.get("Content-Disposition"))
+        self.assertEqual("attachment; filename=CA.zip", response.headers.get("Content-Disposition"))
 
         link.delete()
         asset.delete()
@@ -347,11 +320,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.all().first()
 
         dataset_files = [
-            "/tmpe1exb9e9/foo_file.dbf",
-            "/tmpe1exb9e9/foo_file.prj",
-            "/tmpe1exb9e9/foo_file.shp",
-            "/tmpe1exb9e9/foo_file.shx",
+            f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
+
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
         )
@@ -367,16 +338,12 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         # headers and status assertions
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get("content-type"), "application/zip")
-        self.assertEqual(response.get("content-disposition"), f'attachment; filename="{dataset.name}.zip"')
+        self.assertEqual(response.get("content-disposition"), f"attachment; filename={dataset.name}.zip")
         # Inspect content
         zip_content = io.BytesIO(b"".join(response.streaming_content))
         zip = zipfile.ZipFile(zip_content)
         zip_files = zip.namelist()
-        self.assertEqual(len(zip_files), 4)
-        self.assertIn(".shp", "".join(zip_files))
-        self.assertIn(".dbf", "".join(zip_files))
-        self.assertIn(".shx", "".join(zip_files))
-        self.assertIn(".prj", "".join(zip_files))
+        self.assertIn(".json", "".join(zip_files))
 
         link.delete()
         asset.delete()

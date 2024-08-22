@@ -139,9 +139,7 @@ def harvest_resources_handle_get(request, service, handler):
         {"id": "type-filter", "data_key": "type"},
     ]
 
-    perms_list = list(
-        service.get_self_resource().get_user_perms(request.user).union(service.get_user_perms(request.user))
-    )
+    perms_list = service.get_user_perms(request.user)
 
     result = render(
         request,
@@ -251,9 +249,7 @@ def service_detail(request, service_id):
 
     permissions_json = _perms_info_json(service)
 
-    perms_list = list(
-        service.get_self_resource().get_user_perms(request.user).union(service.get_user_perms(request.user))
-    )
+    perms_list = service.get_user_perms(request.user)
 
     harvested_resources_ids = []
     if service.harvester:

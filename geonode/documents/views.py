@@ -48,7 +48,7 @@ from geonode.monitoring.models import EventType
 from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
-from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
+from geonode.security.utils import get_user_visible_groups
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
 from geonode.base.models import Thesaurus, TopicCategory
 from geonode.base import enumerations
@@ -485,9 +485,9 @@ def document_metadata(
         contact_role_forms_context[f"{role}_form"] = role_form
 
     metadata_author_groups = get_user_visible_groups(request.user)
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, document):
+    if not request.user.can_publish(document):
         document_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, document):
+    if not request.user.can_approve(document):
         document_form.fields["is_approved"].widget.attrs.update({"disabled": "true"})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, document)
