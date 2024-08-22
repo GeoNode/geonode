@@ -36,7 +36,7 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from taggit.managers import TaggableManager
 
 from geonode.base.enumerations import COUNTRIES
-from geonode.base.models import Configuration, ResourceBase
+from geonode.base.models import Configuration, ResourceBase, FundingReference
 from geonode.groups.models import GroupProfile
 from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISSIONS
 
@@ -59,12 +59,14 @@ class ProfileUserManager(UserManager):
 class Profile(AbstractUser):
     """Fully featured Geonode user"""
 
+    ORAGANIZATION_LIST = FundingReference.objects.values_list("funder_name", "funder_name")
     organization = models.CharField(
         _("Organization Name"),
         max_length=255,
         blank=True,
         null=True,
         help_text=_("name of the responsible organization"),
+        choices=ORAGANIZATION_LIST,
     )
     profile = models.TextField(_("Profile"), null=True, blank=True, help_text=_("introduce yourself"))
     position = models.CharField(
