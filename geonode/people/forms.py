@@ -57,7 +57,7 @@ class ForgotUsernameForm(forms.Form):
 
 class ProfileForm(forms.ModelForm):
     organization = forms.ModelChoiceField(
-        queryset=FundingReference.objects.values_list("funder_name", flat=True), to_field_name="funder_name"
+        queryset=FundingReference.objects.values_list("funder_name", flat=True), required=False,to_field_name="funder_name"
     )
     keywords = taggit.forms.TagField(
         label=_("Keywords"), required=False, help_text=_("A space or comma-separated list of keywords")
