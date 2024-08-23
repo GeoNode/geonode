@@ -69,6 +69,8 @@ from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
+from django.utils.functional import cached_property
+from rest_framework import serializers
 
 logger = logging.getLogger(__name__)
 
@@ -859,3 +861,18 @@ class LinkedResourceSerializer(DynamicModelSerializer):
             }
         )
         return data
+
+
+class DynamicResourceSerializer(serializers.Serializer):
+    
+    def get_fields(self):
+        '''
+        Dynamically retrieve fields
+        '''
+        return {
+            "pk": serializers.IntegerField(),
+            "title": serializers.CharField(),
+            "alternate": serializers.CharField(required=False),
+            "date": serializers.DateTimeField(required=False)
+
+        }
