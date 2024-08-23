@@ -532,7 +532,7 @@ class GeoServerResourceManager(ResourceManagerInterface):
                                     create_geofence_rules(_resource, DOWNLOAD_PERMISSIONS, None, None, batch)
                                     exist_geolimits = exist_geolimits or has_geolimits(_resource, None, None)
 
-                            if exist_geolimits is not None:
+                            if exist_geolimits is not None and _resource.subtype != "tabular":
                                 filters, formats = _get_gwc_filters_and_formats(exist_geolimits)
                                 try:
                                     _dataset_workspace = get_dataset_workspace(_resource)

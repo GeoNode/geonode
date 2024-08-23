@@ -79,30 +79,23 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-f',
-            '--force',
+            "-f",
+            "--force",
             dest="force",
-            action='store_true',
-            help="Force tile layer re-creation also if it already exists in GWC")
+            action="store_true",
+            help="Force tile layer re-creation also if it already exists in GWC",
+        )
+
+        parser.add_argument("-l", "--layer", dest="layers", action="append", help="Only process specified layers ")
 
         parser.add_argument(
-            '-l',
-            '--layer',
-            dest="layers",
-            action='append',
-            help="Only process specified layers ")
-
-        parser.add_argument(
-            '-d',
-            '--dry-run',
-            dest="dry-run",
-            action='store_true',
-            help="Do not actually perform any change on GWC")
+            "-d", "--dry-run", dest="dry-run", action="store_true", help="Do not actually perform any change on GWC"
+        )
 
     def handle(self, **options):
-        force = options.get('force')
-        requested_layers = options.get('layers')
-        dry_run = options.get('dry-run')
+        force = options.get("force")
+        requested_layers = options.get("layers")
+        dry_run = options.get("dry-run")
 
         logger.debug(f"FORCE is {force}")
         logger.debug(f"DRY-RUN is {dry_run}")
@@ -116,7 +109,7 @@ class Command(BaseCommand):
             curl -v -u admin:geoserver -XGET \
                 "http://<host>:<port>/geoserver/gwc/rest/layers/geonode:tasmania_roads.xml"
             """
-            layers = Dataset.objects.all()
+            layers = Dataset.objects.filter(subtype__not="tabular")
             tot = len(layers)
             logger.info(f"Total layers in GeoNode: {tot}")
             i = 0
