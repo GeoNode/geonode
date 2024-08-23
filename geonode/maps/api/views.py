@@ -118,7 +118,7 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         # Thumbnail will be handled later
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
         map_layers = serializer.validated_data.get("maplayers", [])
-        tabular_collection = all(("tabular" in layer.dataset.subtype) for layer in map_layers)
+        tabular_collection = all(layer.dataset and ("tabular" in layer.dataset.subtype) for layer in map_layers)
 
         instance = serializer.save(
             owner=self.request.user,
