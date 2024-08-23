@@ -812,6 +812,34 @@ class BaseApiTests(APITestCase):
         self.assertTrue(data.get("is_published"))
         self.assertFalse(data.get("featured"))
 
+    def test_resource_settings_field(self):
+        """
+        Admin is able to change the is_published value
+        """
+        doc = create_single_doc("my_custom_doc")
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = doc.owner
+        serializer = ResourceBaseSerializer(doc, context={"request": rq})
+        field = serializer.fields["is_published"]
+        self.assertIsNotNone(field)
+        self.assertTrue(field.to_internal_value(True))
+
+    def test_resource_settings_field_non_admin(self):
+        """
+        Non-Admin is not able to change the is_published value
+        if he is not the owner of the resource
+        """
+        doc = create_single_doc("my_custom_doc")
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = get_user_model().objects.get(username="bobby")
+        serializer = ResourceBaseSerializer(doc, context={"request": rq})
+        field = serializer.fields["is_published"]
+        self.assertIsNotNone(field)
+        # the original value was true, so it should not return false
+        self.assertTrue(field.to_internal_value(False))
+
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username="delet-owner")
         Dataset(
