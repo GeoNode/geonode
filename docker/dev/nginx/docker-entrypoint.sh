@@ -54,7 +54,14 @@ defined_envs=$(printf '${%s} ' $(env | cut -d= -f1))
 echo "Replacing environment variables"
 envsubst "$defined_envs" < /etc/nginx/nginx.conf.envsubst > /etc/nginx/nginx.conf
 envsubst "$defined_envs" < /etc/nginx/nginx.https.available.conf.envsubst > /etc/nginx/nginx.https.available.conf
-envsubst "$defined_envs" < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
+# envsubst "$defined_envs" < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
+# HTTP_PORT değişkeni set edildiyse ve 80'den farklıysa, geonode_diff_port.envsubst kullan
+if [ -n "$HTTP_PORT" ] && [ "$HTTP_PORT" -ne 80 ]; then
+    echo "HTTP port is $HTTP_PORT, using geonode_diff_port.envsubst for configuration."
+    envsubst "$defined_envs" < /etc/nginx/sites-enabled/geonode_diff_port.envsubst > /etc/nginx/sites-enabled/geonode.conf
+else
+    envsubst "$defined_envs" < /etc/nginx/sites-enabled/geonode.conf.envsubst > /etc/nginx/sites-enabled/geonode.conf
+fi
 
 echo "Enabling or not https configuration"
 if [ -z "${HTTPS_HOST}" ]; then

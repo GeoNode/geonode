@@ -1229,6 +1229,9 @@ class HttpClient:
         session.mount(f"{scheme}://", adapter)
         session.verify = False
         action = getattr(session, method.lower(), None)
+        print("------------------------------------------------------------------------------------------------------------------------------------------")
+        print(f"URL: {url} - METHOD: {method} - HEADERS: {headers}")
+        print("------------------------------------------------------------------------------------------------------------------------------------------")
         if action:
             _req_tout = timeout or self.timeout
             try:

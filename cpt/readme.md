@@ -1,8 +1,16 @@
-for cpt
+# README
 
-- define endpoint for number of comment for target campaign > don't count twice if campaign type is TYPE-3
-- We should show table of comment and if type is 2 or 3 we should show location of comment and it is better if we can create download link.
+## DELETE MIGRATION BEFORE COMMIT
+We don't delete DB data just delete development migrations.
 
-Questions
-
-- campaign type-1-2-3 kismini ben kayit altina almali miyim? 
+source :https://simpleisbetterthancomplex.com/tutorial/2016/07/26/how-to-reset-migrations.html
+```
+cd cpt/
+find . -path "*/migrations/*.py" 
+ind . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+python manage.py makemigrations
+cd ..
+python manage.py makemigrations
+python manage.py migrate --fake-initial
+```

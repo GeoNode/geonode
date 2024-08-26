@@ -50,6 +50,7 @@ django-sequences==3.0
 oauthlib==3.2.2
 pyopenssl==24.1.0
 pyjwt==2.8.0
+django-jsonform==2.22.0
 
 # geopython dependencies
 pyproj<3.7.0

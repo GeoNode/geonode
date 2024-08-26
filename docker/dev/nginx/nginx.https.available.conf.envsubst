@@ -20,6 +20,7 @@ server {
 }
 
 # if we try to connect from http, we redirect to https
+#akif
 server {
     listen 80;
     server_name $HTTPS_HOST $HTTP_HOST; # TODO : once geoserver supports relative urls, we should allow access though both HTTP and HTTPS at the same time and hence remove HTTP_HOST from this line

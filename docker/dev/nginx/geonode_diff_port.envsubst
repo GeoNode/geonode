@@ -43,10 +43,10 @@ gzip_types
 location /geoserver {
   # Using a variable is a trick to let Nginx start even if upstream host is not up yet
   # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
-  set $upstream $GEOSERVER_LB_HOST_IP:$GEOSERVER_LB_PORT;
+  set $upstream geoserver:8080;
 
-  proxy_set_header X-Forwarded-Host $host;
-  proxy_set_header X-Forwarded-Server $host;
+  proxy_set_header X-Forwarded-Host $http_host;
+  proxy_set_header X-Forwarded-Server $http_host;
   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   proxy_set_header X-Real-IP $remote_addr;
   proxy_set_header X-Forwarded-Proto http;
@@ -55,6 +55,7 @@ location /geoserver {
   proxy_hide_header X-Frame-Options;
   
 
+  #add_header Access-Control-Allow-Origin "http://192.168.5.111:5173" ;
   add_header Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE";
   add_header Access-Control-Allow-Headers "Authorization, Content-Type, Accept, Origin, User-Agent, X-Requested-With";
   add_header Access-Control-Allow-Credentials true;
@@ -72,7 +73,7 @@ location /geoserver {
 
   proxy_pass http://$upstream;
   proxy_http_version 1.1;
-  proxy_redirect http://$upstream $HTTP_SCHEME://$HTTP_HOST;
+  proxy_redirect http://$upstream http://192.168.5.111;
   proxy_request_buffering  off;
   client_max_body_size 0;
 }
@@ -105,7 +106,7 @@ location /uploaded/ {
 location / {
   # Using a variable is a trick to let Nginx start even if upstream host is not up yet
   # (see https://sandro-keil.de/blog/2017/07/24/let-nginx-start-if-upstream-host-is-unavailable-or-down/)
-  set $upstream $GEONODE_LB_HOST_IP:$GEONODE_LB_PORT;
+  set $upstream django:8000;
 
   if ($request_method = OPTIONS) {
       add_header Access-Control-Allow-Origin "$http_origin";
@@ -123,8 +124,8 @@ location / {
   add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, OPTIONS";
   
   proxy_redirect              off;
-  proxy_set_header            Host $host;
-  proxy_set_header            Origin http://$host;
+  proxy_set_header            Host $http_host;
+  proxy_set_header            Origin http://$http_host;
   proxy_set_header            X-Real-IP $remote_addr;
   proxy_set_header            X-Forwarded-Host $server_name;
   proxy_set_header            X-Forwarded-For $proxy_add_x_forwarded_for;

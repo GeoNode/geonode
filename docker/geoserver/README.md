@@ -8,9 +8,9 @@ For example, download the plugins `mbstyle-plugin` and `vectortiles` for GeoServ
 
 ```sh
 chmod +x download_plugins.sh
-./download_plugins.sh "2.24.3" "mbstyle-plugin vectortiles"
+./download_plugins.sh "2.24.4" "mbstyle-plugin vectortiles"
 ```
-
+docker build . -t  tosca-geonode-geoserver:2.24.4
 > :warning: **Warning**
 >
 > Make sure you do store irretrievable data in that directory!

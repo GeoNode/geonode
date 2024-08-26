@@ -133,7 +133,7 @@ urlpatterns += [
     ### cpt
     path('api/v2/', include('cpt.urls')),
 ]
-
+print(base_urlpatterns, oidc_urlpatterns, oauth2_app_name)
 # tinymce WYSIWYG HTML Editor
 if "tinymce" in settings.INSTALLED_APPS:
     urlpatterns += [

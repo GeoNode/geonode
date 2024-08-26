@@ -19,6 +19,12 @@ from cpt.serializers import CampaignSerializer,CampaignsListSerializer,FormSeria
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
+    """
+    # nice to have : campaign liste nokta verisi ekleyebilirsek campaign list yaparken ekranda toplam nokta sayısını gösterebiliriz.
+
+    CampaignCountViewSet buraya alacaz
+    
+    """
     queryset = Campaign.objects.all()
     http_method_names = ['get', 'head', 'options']
 
@@ -148,9 +154,9 @@ class CTPFeedbackViewSet(viewsets.ViewSet):
             "POST3": post3_structure
         }, status=status.HTTP_200_OK)
     
-
+"""
 class CampaignCountViewSet(viewsets.ViewSet):
-
+    # We will check and delete this viewset later
     def retrieve(self, request, pk=None):
         campaign = get_object_or_404(Campaign, campaign_id=pk)
         unique_form_ids = Form.objects.filter(campaign=campaign).values_list('id', flat=True)
@@ -173,5 +179,5 @@ class CampaignCountViewSet(viewsets.ViewSet):
             })
 
         return Response(campaigns_data, status=status.HTTP_200_OK)
-
+"""
 # end of cpt/views.py

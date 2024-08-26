@@ -213,6 +213,7 @@ done
 # if enabled, this will add the filter definitions
 # to the end of the web.xml
 # (this will only happen if our filter has not yet been added before)
+echo "Starting entrypoint script to configure CORS..."
 if [ "${GEOSERVER_CORS_ENABLED}" = "true" ] || [ "${GEOSERVER_CORS_ENABLED}" = "True" ]; then
   if ! grep -q DockerGeoServerCorsFilter "$CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml"; then
     echo "Enable CORS for $CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml"
@@ -239,7 +240,7 @@ if [ "${GEOSERVER_CORS_ENABLED}" = "true" ] || [ "${GEOSERVER_CORS_ENABLED}" = "
     </filter-mapping>" "$CATALINA_HOME/webapps/geoserver/WEB-INF/web.xml";
   fi
 fi
-
+echo "CORS configuration completed."
 if [ ${FORCE_REINIT} = "true" ]  || [ ${FORCE_REINIT} = "True" ] || [ ! -e "${GEOSERVER_DATA_DIR}/geoserver_init.lock" ]; then
     # Run async configuration, it needs Geoserver to be up and running
     nohup sh -c "invoke configure-geoserver" &

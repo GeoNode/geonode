@@ -53,7 +53,8 @@ services:
 
   # Nginx is serving django static and media files and proxies to django and geonode
   geonode:
-    image: geonode/nginx:1.25.3-latest
+    # image: geonode/nginx:1.25.3-latest
+    image: tosca-geonode-nginx:dev
     # build: ./docker/dev/nginx
     container_name: nginx4${COMPOSE_PROJECT_NAME}
     env_file:
@@ -80,9 +81,11 @@ services:
     restart: unless-stopped
 
   # Geoserver backend
+  # bunun icin docker-compose.yml dosyasina mutlaka bakalim
+  #     environment: NGINX_BASE_URL=http://localhost
   geoserver:
     # image: geonode/geoserver:2.24.3-v1
-    image: tosca-geonode-geoserver:2.24.3
+    image: tosca-geonode-geoserver:2.24.4
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -96,26 +99,27 @@ services:
       - "8080:8080"
     volumes:
       - statics:/mnt/volumes/statics
-      - geoserver-data-dir:/geoserver_data/data
+      - /home/akif/Desktop/HCU/TOSCA-2/backend/geonode/data:/geoserver_data/data
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
+      - /home/akif/Desktop/HCU/LIG/LIG_RAW_DATA:/mnt/data
     restart: unless-stopped
-    depends_on:
-      data-dir-conf:
-        condition: service_healthy
+    # depends_on:
+    #   data-dir-conf:
+    #     condition: service_healthy
       # django:
       #   condition: service_healthy
 
-  data-dir-conf:
-    image: geonode/geoserver_data:2.24.3-v1
-    container_name: gsconf4${COMPOSE_PROJECT_NAME}
-    entrypoint: sleep infinity
-    volumes:
-      - geoserver-data-dir:/geoserver_data/data
-    restart: unless-stopped
-    healthcheck:
-      test: "ls -A '/geoserver_data/data' | wc -l"
+  # data-dir-conf:
+  #   image: geonode/geoserver_data:2.24.3-v1
+  #   container_name: gsconf4${COMPOSE_PROJECT_NAME}
+  #   entrypoint: sleep infinity
+  #   volumes:
+  #     - geoserver-data-dir:/geoserver_data/data
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: "ls -A '/geoserver_data/data' | wc -l"
 
   # PostGIS database.
   db:
@@ -145,22 +149,22 @@ services:
 
 volumes:
   statics:
-    name: ${COMPOSE_PROJECT_NAME}-statics
+    name: ${COMPOSE_PROJECT_NAME}-statics2
   nginx-confd:
-    name: ${COMPOSE_PROJECT_NAME}-nginxconfd
+    name: ${COMPOSE_PROJECT_NAME}-nginxconfd2
   nginx-certificates:
-    name: ${COMPOSE_PROJECT_NAME}-nginxcerts
+    name: ${COMPOSE_PROJECT_NAME}-nginxcerts2
   geoserver-data-dir:
-    name: ${COMPOSE_PROJECT_NAME}-gsdatadir
+    name: ${COMPOSE_PROJECT_NAME}-gsdatadir2
   dbdata:
-    name: ${COMPOSE_PROJECT_NAME}-dbdata
+    name: ${COMPOSE_PROJECT_NAME}-dbdata2
   dbbackups:
-    name: ${COMPOSE_PROJECT_NAME}-dbbackups
+    name: ${COMPOSE_PROJECT_NAME}-dbbackups2
   backup-restore:
-    name: ${COMPOSE_PROJECT_NAME}-backup-restore
+    name: ${COMPOSE_PROJECT_NAME}-backup-restore2
   data:
-    name: ${COMPOSE_PROJECT_NAME}-data
+    name: ${COMPOSE_PROJECT_NAME}-data2
   tmp:
-    name: ${COMPOSE_PROJECT_NAME}-tmp
+    name: ${COMPOSE_PROJECT_NAME}-tmp2
   rabbitmq:
-    name: ${COMPOSE_PROJECT_NAME}-rabbitmq
+    name: ${COMPOSE_PROJECT_NAME}-rabbitmq2

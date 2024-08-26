@@ -1,6 +1,6 @@
 # NOTE : $VARIABLES are env variables replaced by entrypoint.sh using envsubst
 # not to be mistaken for nginx variables (also starting with $, but usually lowercase)
-
+#akif
 worker_processes auto;
 
 events {
@@ -23,7 +23,7 @@ http {
     # TODO : do not use unencrypted connection even on LAN, but is it possible to have browser not complaining about unknown authority ?
     server {
         listen              80;
-        server_name         $HTTP_HOST 127.0.0.1 192.168.5.111;
+        server_name         $HTTP_HOST 127.0.0.1;
 
         include sites-enabled/*.conf;
     }

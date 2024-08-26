@@ -9,6 +9,7 @@ RUN mkdir -p /etc/nginx/html &&\
 
 ADD nginx.conf.envsubst nginx.https.available.conf.envsubst ./
 ADD geonode.conf.envsubst ./sites-enabled/
+ADD geonode_diff_port.envsubst ./sites-enabled/
 
 ADD docker-autoreload.sh docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
