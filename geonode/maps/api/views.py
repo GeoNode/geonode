@@ -119,11 +119,12 @@ class MapViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListMixin
         post_creation_data = {"thumbnail": serializer.validated_data.pop("thumbnail_url", "")}
         map_layers = serializer.validated_data.get("maplayers", [])
         tabular_collection = all(layer.dataset and ("tabular" in layer.dataset.subtype) for layer in map_layers)
+        subtype = "tabular-collection" if len(map_layers) > 0 and tabular_collection else None
 
         instance = serializer.save(
             owner=self.request.user,
             resource_type="map",
-            subtype="tabular-collection" if tabular_collection else None,
+            subtype=subtype,
             uuid=str(uuid4()),
         )
 
