@@ -92,6 +92,7 @@ from geonode.base.populate_test_data import (
     create_single_geoapp,
 )
 from geonode.resource.api.tasks import resouce_service_dispatcher
+from guardian.shortcuts import assign_perm
 
 logger = logging.getLogger(__name__)
 
@@ -2724,6 +2725,32 @@ class BaseApiTests(APITestCase):
         self.assertEqual(new_count, prev_count + 1)
 
         Dataset.objects.update(advertised=True)
+
+    def test_metadata_uploaded_preserve_can_be_updated(self):
+        doc = Document.objects.first()
+        user = get_user_model().objects.get(username="bobby")
+        url = reverse("base-resources-detail", kwargs={"pk": doc.pk})
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+
+        payload = json.dumps({"metadata_uploaded_preserve": True})
+        # should return 403 since bobby doesn't have the perms to update the metadata
+        # on this resource
+        response = self.client.patch(url, data=payload, content_type="application/json")
+        self.assertEqual(403, response.status_code)
+        doc.refresh_from_db()
+        # the original value should be kept
+        self.assertFalse(doc.metadata_uploaded_preserve)
+
+        # let's give to bobby the perms for update the metadata
+        assign_perm("base.change_resourcebase_metadata", user, doc.get_self_resource())
+
+        # let's call the API again
+        response = self.client.patch(url, data=payload, content_type="application/json")
+        self.assertEqual(200, response.status_code)
+        doc.refresh_from_db()
+        # the original value should be kept
+        self.assertTrue(doc.metadata_uploaded_preserve)
+        self.assertTrue(response.json()["resource"]["metadata_uploaded_preserve"])
 
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):
