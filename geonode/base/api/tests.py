@@ -2748,7 +2748,7 @@ class BaseApiTests(APITestCase):
         response = self.client.patch(url, data=payload, content_type="application/json")
         self.assertEqual(200, response.status_code)
         doc.refresh_from_db()
-        # the original value should be kept
+        # the value should be updated
         self.assertTrue(doc.metadata_uploaded_preserve)
         self.assertTrue(response.json()["resource"]["metadata_uploaded_preserve"])
 
