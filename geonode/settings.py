@@ -2364,3 +2364,4 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+GEONODE_APPS += ("geonode.metadata",)

@@ -877,20 +877,3 @@ class LinkedResourceSerializer(DynamicModelSerializer):
             }
         )
         return data
-
-
-class DynamicResourceSerializer(serializers.Serializer):
-    
-    def get_fields(self):
-        '''
-        Dynamically retrieve fields
-        '''
-        return {
-            "pk": serializers.IntegerField(),
-            "title": serializers.CharField(),
-            "alternate": serializers.CharField(required=False),
-            "date": serializers.DateTimeField(required=False),
-            "featured": ResourceSettingsField(required=False, read_only=False),
-            "is_published": ResourceSettingsField(required=False, read_only=False),
-            "is_approved": ResourceSettingsField(required=False, read_only=False),
-        }

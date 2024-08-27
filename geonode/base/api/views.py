@@ -35,7 +35,6 @@ from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 
-from drf_jsonschema_serializer import to_jsonschema
 from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -91,7 +90,6 @@ from .permissions import (
 )
 
 from .serializers import (
-    DynamicResourceSerializer,
     FavoriteSerializer,
     PermSpecSerialiazer,
     GroupProfileSerializer,
@@ -189,21 +187,6 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin,
     serializer_class = RegionSerializer
     pagination_class = GeoNodeApiPagination
 
-
-class DynamicResourceViewSet(GenericViewSet):
-    """
-    A simple ViewSet for listing or retrieving users.
-    """
-    serializer_class = DynamicResourceSerializer
-    queryset = ResourceBase.objects.all()  # TODO to be replaced with metadata model
-
-    def list(self, request):
-        serializer = self.serializer_class(self.queryset, many=True)
-        return JsonResponse(to_jsonschema(self.serializer_class()))
-
-    def retrieve(self, request, pk=None):
-        serializer = self.serializer_class(self.queryset.first())
-        return Response(serializer.data)
 
 
 class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
