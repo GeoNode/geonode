@@ -244,7 +244,7 @@ class FundingReferenceSerializer(DynamicModelSerializer):
     class Meta:
         model = FundingReference
         name = "FundingReference"
-        fields = ("funder_name", "funder_identifier", "funder_identifier_type")
+        fields = ("name_of_the_institution", "ror", "abbreviation")
 
 
 class SimpleFunderSerializer(DynamicModelSerializer):

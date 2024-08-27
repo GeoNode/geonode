@@ -683,10 +683,13 @@ class RelatedIdentifier(models.Model):
 class FundingReference(models.Model):
     """Funding Reference Identifiers"""
 
-    funder_name = models.CharField(
-        blank=True, null=True, max_length=255, help_text=_("Name of the funding provider. (e.g. European Commission)")
+    name_of_the_institution = models.CharField(
+        blank=True,
+        null=True,
+        max_length=255,
+        help_text=_("Name of the institution provider. (e.g. European Commission)"),
     )
-    funder_identifier = models.CharField(
+    ror = models.CharField(
         blank=True,
         null=True,
         max_length=255,
@@ -694,12 +697,18 @@ class FundingReference(models.Model):
             "Uniquely identifies a funding entity, according to various types. (e.g. http://doi.org/10.13039/501100000780)"
         ),
     )
-    funder_identifier_type = models.CharField(
-        blank=True, null=True, max_length=255, help_text=_("The type of the Identifier. (e.g. BMBF)")
+    abbreviation = models.CharField(
+        blank=True, null=True, max_length=255, help_text=_("abbreviation of the Institutions names. (e.g. BMBF)")
+    )
+    address_information = models.CharField(
+        blank=True, null=True, max_length=255, help_text=_("Address of the Institutions")
+    )
+    contact_information = models.CharField(
+        blank=True, null=True, max_length=255, help_text=_("Contact Information of the Institutions")
     )
 
     def __str__(self):
-        return f"{self.funder_name}"
+        return f"{self.name_of_the_institution}"
 
 
 class Funder(models.Model):
