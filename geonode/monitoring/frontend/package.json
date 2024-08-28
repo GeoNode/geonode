@@ -31,7 +31,7 @@
     "style-loader": "1.0.0",
     "to-string-loader": "1.1.5",
     "url-loader": "2.1.0",
-    "webpack": "4.39.1",
+    "webpack": "5.94.0",
     "webpack-cli": "3.3.6",
     "webpack-dev-server": "3.7.2",
     "webpack-parallel-uglify-plugin": "1.1.1"
