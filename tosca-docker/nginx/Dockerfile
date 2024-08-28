@@ -1,0 +1,20 @@
+FROM nginx:1.25.3-alpine
+
+RUN apk add --no-cache openssl inotify-tools vim
+
+WORKDIR /etc/nginx/
+
+RUN mkdir -p /etc/nginx/html &&\
+    touch /etc/nginx/html/index.html
+
+ADD nginx.conf.envsubst nginx.https.available.conf.envsubst ./
+ADD geonode.conf.envsubst ./sites-enabled/
+ADD geonode_diff_port.envsubst ./sites-enabled/
+
+ADD docker-autoreload.sh docker-entrypoint.sh /
+ENTRYPOINT ["/docker-entrypoint.sh"]
+RUN chmod +x /docker-autoreload.sh
+RUN chmod +x /docker-entrypoint.sh
+COPY dist /usr/share/nginx/html/tosca
+
+CMD ["nginx", "-g", "daemon off;"]

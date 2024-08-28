@@ -34,8 +34,8 @@ services:
     environment:
       - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    # command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
+    # command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - "8000:8000"
 
@@ -81,8 +81,6 @@ services:
     restart: unless-stopped
 
   # Geoserver backend
-  # bunun icin docker-compose.yml dosyasina mutlaka bakalim
-  #     environment: NGINX_BASE_URL=http://localhost
   geoserver:
     # image: geonode/geoserver:2.24.3-v1
     image: tosca-geonode-geoserver:2.24.4
@@ -98,8 +96,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
+    # geoserver volume dan kaynaklaniyor galiba bu hata. yarin bunun testini yapalim. .data altina kaydettiigiz icin dikkat etmek gerkiyor
       - statics:/mnt/volumes/statics
-      - /home/akif/Desktop/HCU/TOSCA-2/backend/geonode/data:/geoserver_data/data
+      - /home/akif/Desktop/HCU/TOSCA-2/backend/geonode/data-localhost:/geoserver_data/data
+      # - geoserver-data-dir:/geoserver_data/data
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
@@ -111,15 +111,15 @@ services:
       # django:
       #   condition: service_healthy
 
-  # data-dir-conf:
-  #   image: geonode/geoserver_data:2.24.3-v1
-  #   container_name: gsconf4${COMPOSE_PROJECT_NAME}
-  #   entrypoint: sleep infinity
-  #   volumes:
-  #     - geoserver-data-dir:/geoserver_data/data
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: "ls -A '/geoserver_data/data' | wc -l"
+  data-dir-conf:
+    image: geonode/geoserver_data:2.24.3-v1
+    container_name: gsconf4${COMPOSE_PROJECT_NAME}
+    entrypoint: sleep infinity
+    volumes:
+      - geoserver-data-dir:/geoserver_data/data
+    restart: unless-stopped
+    healthcheck:
+      test: "ls -A '/geoserver_data/data' | wc -l"
 
   # PostGIS database.
   db:

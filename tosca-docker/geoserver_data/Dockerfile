@@ -11,9 +11,12 @@ WORKDIR ${TEMP_DOWNLOADED}
 
 ENV GEOSERVER_VERSION=2.24.4
 
-ADD download.sh ${TEMP_DOWNLOADED}
-RUN chmod +x ${TEMP_DOWNLOADED}/download.sh
-RUN ${TEMP_DOWNLOADED}/download.sh $GEOSERVER_VERSION $TEMP_DOWNLOADED
+# ADD download.sh ${TEMP_DOWNLOADED}
+# RUN chmod +x ${TEMP_DOWNLOADED}/download.sh
+# RUN ${TEMP_DOWNLOADED}/download.sh $GEOSERVER_VERSION $TEMP_DOWNLOADED
+COPY geoserver-loacalhost-data.zip .
+RUN unzip -x -d ./data ./geoserver-loacalhost-data.zip
+
 
 # for debugging
 RUN ls -lart

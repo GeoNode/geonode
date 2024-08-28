@@ -1257,7 +1257,6 @@ except ValueError:
 # If you need to limit 'api' REST calls to only some specific IPs
 # fill the list like below:
 #
-# AUTH_IP_WHITELIST = ['192.168.1.158', '192.168.1.159']
 AUTH_IP_WHITELIST = (
     [HOSTNAME, "localhost", "django", "geonode"]
     if os.getenv("AUTH_IP_WHITELIST") is None
@@ -2385,11 +2384,3 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
-
-ALLOWED_HOSTS = ["localhost",
-                 "django",
-                 "192.168.5.111",
-                 "geonode",
-                 "geoserver"
-                 ]
-
