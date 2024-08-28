@@ -2364,4 +2364,11 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+
+
 GEONODE_APPS += ("geonode.metadata",)
+
+REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    'DEFAULT_SCHEMA_CLASS': 'geonode.metadata.openapi.CustomOpenApiSchema',
+}
