@@ -226,9 +226,9 @@ class RelatedIdentifierTypeAdmin(admin.ModelAdmin):
 
 class FundingReferenceAdmin(admin.ModelAdmin):
     model = FundingReference
-    list_display = ("funder_name", "funder_identifier", "funder_identifier_type")
+    list_display = ("name_of_the_institution", "ror", "abbreviation", "address_information", "contact_information")
     list_display_links = []
-    list_filter = ("funder_name", "funder_identifier", "funder_identifier_type")
+    list_filter = ("name_of_the_institution", "ror", "abbreviation")
 
     form = forms.modelform_factory(FundingReference, fields="__all__")
 
