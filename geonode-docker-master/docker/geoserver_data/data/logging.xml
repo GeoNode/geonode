@@ -1,5 +1,0 @@
-<logging>
-  <level>PRODUCTION_LOGGING.properties</level>
-  <location>logs/geoserver.log</location>
-  <stdOutLogging>false</stdOutLogging>
-</logging>

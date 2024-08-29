@@ -1,2 +1,0 @@
--e git+https://github.com/GeoNodeUserGroup-DE/importer-datapackage.git@main#egg=importer_datapackage
-django-auth-ldap==4.6.0

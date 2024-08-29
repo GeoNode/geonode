@@ -1,1 +1,0 @@
-docker build . -t tosca-geonode-base:2.24.4

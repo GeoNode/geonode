@@ -98,11 +98,13 @@ services:
     volumes:
     # geoserver volume dan kaynaklaniyor galiba bu hata. yarin bunun testini yapalim. .data altina kaydettiigiz icin dikkat etmek gerkiyor
       - statics:/mnt/volumes/statics
-      - /home/akif/Desktop/HCU/TOSCA-2/backend/geonode/data-localhost:/geoserver_data/data
-      # - geoserver-data-dir:/geoserver_data/data
+      # - /home/akif/Desktop/HCU/TOSCA-2/backend/geonode/data-localhost:/geoserver_data/data
+      - geoserver-data-dir:/geoserver_data/data
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
+      # /root diye bir klasor var. data lari buraya map edebiliriz
+      # - your_data_dir/vector_data:/root/vector_data
       - /home/akif/Desktop/HCU/LIG/LIG_RAW_DATA:/mnt/data
     restart: unless-stopped
     # depends_on:
@@ -112,7 +114,8 @@ services:
       #   condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.24.3-v1
+    # image: geonode/geoserver_data:2.24.4-latest
+    image: geoserver-2.24.4-tosca-data:latest
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
