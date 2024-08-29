@@ -27,7 +27,6 @@ from PIL import Image
 
 from django.apps import apps
 from django.core.validators import URLValidator
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
@@ -186,7 +185,6 @@ class RegionViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin,
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
     pagination_class = GeoNodeApiPagination
-
 
 
 class HierarchicalKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):

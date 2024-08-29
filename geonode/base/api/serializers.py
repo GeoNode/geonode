@@ -69,8 +69,6 @@ from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
-from django.utils.functional import cached_property
-from rest_framework import serializers
 
 logger = logging.getLogger(__name__)
 

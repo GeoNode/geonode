@@ -1,12 +1,12 @@
 import json
-from django.shortcuts import render
 
 from geonode.base.models import ResourceBase
 from geonode.metadata.serializer import MetadataModelSerializer
-from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
-from rest_framework.mixins import ListModelMixin
-from rest_framework import generics, status
+from rest_framework import generics
+from geonode.metadata import metadata_path
+
 
 class DynamicResourceViewSet(ReadOnlyModelViewSet):
     """
@@ -29,7 +29,8 @@ class UiSchemaViewset(generics.RetrieveAPIView):
     """
     Return the UI schema
     """
-    def get(self, request, **kwargs):        
-        with open("/opt/core/geonode/geonode/metadata/ui_schema.json", "r") as f:
+
+    def get(self, request, **kwargs):
+        with open(f"{metadata_path}/ui_schema.json", "r") as f:
             ui_schema = json.load(f)
         return Response(ui_schema)
