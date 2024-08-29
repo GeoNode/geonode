@@ -54,7 +54,8 @@ CONFIGURATION = {
         "domaincounts": "true",
     },
     "profiles": {
-        "apiso" ,"ebrim"
+        "apiso",
+        "ebrim"
     },
     "repository": {
         "source": "geonode.catalogue.backends.pycsw_plugin.GeoNodeRepository",
