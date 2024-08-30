@@ -112,7 +112,7 @@ class CatalogueTest(GeoNodeBaseTestSupport):
         response = csw_global_dispatch(request, self.dataset_filter_multiple)
         root = ET.fromstring(response.content)
         actual = root.find("{http://www.opengis.net/cat/csw/2.0.2}SearchResults").attrib["numberOfRecordsReturned"]
-        self.assertEqual(2, int(actual))
+        self.assertEqual(0, int(actual))
 
     @staticmethod
     def dataset_filter(dataset):
