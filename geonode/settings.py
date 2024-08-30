@@ -1152,7 +1152,7 @@ PYCSW = {
             "contact_name": "Organization Name",
             "contact_email": "Email Address",
             "temp_extent": {
-                "begin": "YYYY-MM-DD", 
+                "begin": "YYYY-MM-DD",
                 "end": "YYYY-MM-DD",
                 },
             },
