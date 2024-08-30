@@ -204,7 +204,7 @@ def dataset_feature_catalogue(request, layername, template="../../catalogue/temp
     context_dict = {
         "dataset": layer,
         "attributes": attributes,
-        "metadata": settings.PYCSW["CONFIGURATION"]["metadata:main"],
+        "metadata": settings.PYCSW["CONFIGURATION"]["metadata"],
     }
     register_event(request, "view", layer)
     return render(request, template, context=context_dict, content_type="application/xml")

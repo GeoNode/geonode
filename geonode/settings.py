@@ -1143,17 +1143,17 @@ PYCSW = {
         },
         "metadata": {
             "inspire": {
-            "enabled": True,
-            "languages_supported": "eng,gre",
-            "default_language": "eng",
-            "date": "YYYY-MM-DD",
-            "gemet_keywords": "Utility and governmental services",
-            "conformity_service": "notEvaluated",
-            "contact_name": "Organization Name",
-            "contact_email": "Email Address",
-            "temp_extent": {
-                "begin": "YYYY-MM-DD",
-                "end": "YYYY-MM-DD",
+                "enabled": True,
+                "languages_supported": "eng,gre",
+                "default_language": "eng",
+                "date": "YYYY-MM-DD",
+                "gemet_keywords": "Utility and governmental services",
+                "conformity_service": "notEvaluated",
+                "contact_name": "Organization Name",
+                "contact_email": "Email Address",
+                "temp_extent": {
+                    "begin": "YYYY-MM-DD",
+                    "end": "YYYY-MM-DD",
                 },
             },
             "identification": {
@@ -1169,7 +1169,7 @@ PYCSW = {
             "provider": {
                 "name": "Organization Name",
                 "url": SITEURL,
-                },
+            },
             "contact": {
                 "name": "Lastname, Firstname",
                 "position": "Position Title",
@@ -1185,8 +1185,8 @@ PYCSW = {
                 "hours": "Hours of Service",
                 "instructions": "During hours of service. Off on " "weekends.",
                 "role": "pointOfContact",
-            }
-        }
+            },
+        },
     }
 }
 
@@ -1472,7 +1472,7 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
                     f"{pycsw_config['metadata']['identification']}": {
                         "url": CATALOGUE["default"]["URL"],
                         "type": "csw",
-                        "title": pycsw_config["metadata"]["identification"],
+                        "title": pycsw_config["metadata"]["identification"]["title"],
                         "autoload": True,
                         "layerOptions": {"tileSize": DEFAULT_TILE_SIZE},
                     }
