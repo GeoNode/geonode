@@ -552,7 +552,7 @@ class LinksSerializer(DynamicModelSerializer):
         return ret
 
 
-class ResourceSettingsField(serializers.BooleanField):
+class ResourceManagementField(serializers.BooleanField):
     MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
 
     def to_internal_value(self, data):
@@ -608,10 +608,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     popular_count = serializers.CharField(required=False)
     share_count = serializers.CharField(required=False)
     rating = serializers.CharField(required=False)
-    featured = ResourceSettingsField(required=False, read_only=False)
+    featured = ResourceManagementField(required=False)
     advertised = serializers.BooleanField(required=False)
-    is_published = ResourceSettingsField(required=False, read_only=False)
-    is_approved = ResourceSettingsField(required=False, read_only=False)
+    is_published = ResourceManagementField(required=False)
+    is_approved = ResourceManagementField(required=False)
     detail_url = DetailUrlField(read_only=True)
     created = serializers.DateTimeField(read_only=True)
     last_updated = serializers.DateTimeField(read_only=True)
@@ -734,6 +734,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             "thumbnail_url",
             "links",
             "link",
+            "metadata_uploaded_preserve",
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,
