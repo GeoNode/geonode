@@ -369,6 +369,11 @@ CACHES = {
         "TIMEOUT": 600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
+    "uischema_cache": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 3600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
 }
 
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
@@ -2366,7 +2371,7 @@ INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
 
 
-GEONODE_APPS += ("geonode.metadata",)
+INSTALLED_APPS += ("geonode.metadata",)
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS
