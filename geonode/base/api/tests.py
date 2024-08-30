@@ -92,6 +92,7 @@ from geonode.base.populate_test_data import (
     create_single_geoapp,
 )
 from geonode.resource.api.tasks import resouce_service_dispatcher
+from guardian.shortcuts import assign_perm
 
 logger = logging.getLogger(__name__)
 
@@ -716,7 +717,7 @@ class BaseApiTests(APITestCase):
 
     def test_write_resources(self):
         """
-        Ensure we can perform write oprtation afainst the Resource Bases.
+        Ensure we can perform write operation against the Resource Bases.
         """
         url = reverse("base-resources-list")
         # Check user permissions
@@ -732,7 +733,7 @@ class BaseApiTests(APITestCase):
                 "abstract": "Foo Abstract",
                 "attribution": "Foo Attribution",
                 "doi": "321-12345-987654321",
-                "is_published": False,  # this is a read-only field so should not updated
+                "is_published": False,
             }
             response = self.client.patch(f"{url}/{resource.id}/", data=data, format="json")
             self.assertEqual(response.status_code, 200, response.status_code)
@@ -745,7 +746,9 @@ class BaseApiTests(APITestCase):
                 "Foo Attribution", response.data["resource"]["attribution"], response.data["resource"]["attribution"]
             )
             self.assertEqual("321-12345-987654321", response.data["resource"]["doi"], response.data["resource"]["doi"])
-            self.assertEqual(True, response.data["resource"]["is_published"], response.data["resource"]["is_published"])
+            self.assertEqual(
+                False, response.data["resource"]["is_published"], response.data["resource"]["is_published"]
+            )
 
     def test_resource_serializer_validation(self):
         """
@@ -796,6 +799,47 @@ class BaseApiTests(APITestCase):
         self.assertIsInstance(data, dict)
         se = ResourceBaseSerializer(data=data, context={"request": rq})
         self.assertTrue(se.is_valid())
+
+    def test_resource_base_serializer_with_settingsfield(self):
+        doc = create_single_doc("my_custom_doc")
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = doc.owner
+        serialized = ResourceBaseSerializer(doc, context={"request": rq})
+        json = JSONRenderer().render(serialized.data)
+        stream = BytesIO(json)
+        data = JSONParser().parse(stream)
+        self.assertTrue(data.get("is_approved"))
+        self.assertTrue(data.get("is_published"))
+        self.assertFalse(data.get("featured"))
+
+    def test_resource_settings_field(self):
+        """
+        Admin is able to change the is_published value
+        """
+        doc = create_single_doc("my_custom_doc")
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = doc.owner
+        serializer = ResourceBaseSerializer(doc, context={"request": rq})
+        field = serializer.fields["is_published"]
+        self.assertIsNotNone(field)
+        self.assertTrue(field.to_internal_value(True))
+
+    def test_resource_settings_field_non_admin(self):
+        """
+        Non-Admin is not able to change the is_published value
+        if he is not the owner of the resource
+        """
+        doc = create_single_doc("my_custom_doc")
+        factory = RequestFactory()
+        rq = factory.get("test")
+        rq.user = get_user_model().objects.get(username="bobby")
+        serializer = ResourceBaseSerializer(doc, context={"request": rq})
+        field = serializer.fields["is_published"]
+        self.assertIsNotNone(field)
+        # the original value was true, so it should not return false
+        self.assertTrue(field.to_internal_value(False))
 
     def test_delete_user_with_resource(self):
         owner, created = get_user_model().objects.get_or_create(username="delet-owner")
@@ -2681,6 +2725,32 @@ class BaseApiTests(APITestCase):
         self.assertEqual(new_count, prev_count + 1)
 
         Dataset.objects.update(advertised=True)
+
+    def test_metadata_uploaded_preserve_can_be_updated(self):
+        doc = Document.objects.first()
+        user = get_user_model().objects.get(username="bobby")
+        url = reverse("base-resources-detail", kwargs={"pk": doc.pk})
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+
+        payload = json.dumps({"metadata_uploaded_preserve": True})
+        # should return 403 since bobby doesn't have the perms to update the metadata
+        # on this resource
+        response = self.client.patch(url, data=payload, content_type="application/json")
+        self.assertEqual(403, response.status_code)
+        doc.refresh_from_db()
+        # the original value should be kept
+        self.assertFalse(doc.metadata_uploaded_preserve)
+
+        # let's give to bobby the perms for update the metadata
+        assign_perm("base.change_resourcebase_metadata", user, doc.get_self_resource())
+
+        # let's call the API again
+        response = self.client.patch(url, data=payload, content_type="application/json")
+        self.assertEqual(200, response.status_code)
+        doc.refresh_from_db()
+        # the value should be updated
+        self.assertTrue(doc.metadata_uploaded_preserve)
+        self.assertTrue(response.json()["resource"]["metadata_uploaded_preserve"])
 
 
 class TestExtraMetadataBaseApi(GeoNodeBaseTestSupport):

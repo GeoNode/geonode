@@ -115,6 +115,9 @@ class KeywordHandler:
     @staticmethod
     def is_thesaurus_available(thesaurus, keyword):
         is_available = ThesaurusKeyword.objects.filter(alt_label=keyword).filter(thesaurus__title=thesaurus["title"])
+        is_available = is_available or ThesaurusKeyword.objects.filter(keyword__label=keyword).filter(
+            thesaurus__title=thesaurus["title"]
+        )
         return is_available
 
     def _set_free_keyword(self, keywords):
