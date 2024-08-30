@@ -16,13 +16,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 from django.db import models
 
 from django.dispatch import receiver
 from django.db.models import signals
 from django.core.cache import caches
-from geonode.metadata import metadata_path
 
 
 class UISchemaModel(models.Model):

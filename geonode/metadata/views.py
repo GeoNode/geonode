@@ -16,8 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
-
 from geonode.base.models import ResourceBase
 from geonode.metadata.models import UISchemaModel
 from geonode.metadata.serializer import MetadataModelSerializer
