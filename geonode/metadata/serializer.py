@@ -22,7 +22,7 @@ from rest_framework import serializers
 from geonode.base.api.fields import ComplexDynamicRelationField
 from geonode.base.api.serializers import (
     LicenseSerializer,
-    ResourceSettingsField,
+    ResourceManagementField,
     SimpleHierarchicalKeywordSerializer,
     SimpleRegionSerializer,
     SimpleTopicCategorySerializer,
@@ -74,19 +74,19 @@ class MetadataModelSerializer(DynamicModelSerializer):
             "regions": DynamicRelationField(
                 SimpleRegionSerializer, embed=True, many=True, read_only=True, required=False
             ),
-            "featured": ResourceSettingsField(
+            "featured": ResourceManagementField(
                 required=False,
                 read_only=False,
                 default=False,
                 help_text="Should this resource be advertised in home page?",
             ),
-            "is_published": ResourceSettingsField(
+            "is_published": ResourceManagementField(
                 required=False,
                 read_only=False,
                 default=True,
                 help_text="Should this resource be published and searchable?",
             ),
-            "is_approved": ResourceSettingsField(
+            "is_approved": ResourceManagementField(
                 required=False,
                 read_only=False,
                 default=True,

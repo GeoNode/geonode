@@ -374,6 +374,11 @@ CACHES = {
         "TIMEOUT": 3600,
         "OPTIONS": {"MAX_ENTRIES": 10000},
     },
+    "openapi": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 3600,
+        "OPTIONS": {"MAX_ENTRIES": 10000},
+    },
 }
 
 # Whitenoise Settings - ref.: http://whitenoise.evans.io/en/stable/django.html
@@ -2375,5 +2380,6 @@ INSTALLED_APPS += ("geonode.metadata",)
 
 REST_FRAMEWORK = {
     # YOUR SETTINGS
+    "DEFAULT_GENERATOR_CLASS": "geonode.metadata.openapi.CustomSchemaGenerator",
     "DEFAULT_SCHEMA_CLASS": "geonode.metadata.openapi.CustomOpenApiSchema",
 }

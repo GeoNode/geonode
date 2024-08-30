@@ -27,7 +27,7 @@ from django.core.cache import caches
 
 class DynamicResourceViewSet(ReadOnlyModelViewSet):
     """
-    A simple ViewSet for listing or retrieving users.
+    Simple viewset that return the metadata value
     """
 
     serializer_class = MetadataModelSerializer

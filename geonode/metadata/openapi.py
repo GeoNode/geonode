@@ -20,10 +20,12 @@
 import enum
 import logging
 from drf_spectacular.openapi import AutoSchema
+from drf_spectacular.generators import SchemaGenerator
 from drf_spectacular.types import OpenApiTypes, OPENAPI_TYPE_MAPPING
 from drf_spectacular.plumbing import append_meta
 from geonode.base.api.fields import DynamicRelationField
 from geonode.base.api.serializers import SimpleHierarchicalKeywordSerializer
+from django.core.cache import caches
 
 logger = logging.getLogger(__file__)
 
@@ -64,3 +66,15 @@ class CustomOpenApiSchema(AutoSchema):
 
         val = super()._map_serializer_field(field, direction, bypass_extensions=bypass_extensions)
         return val
+
+
+class CustomSchemaGenerator(SchemaGenerator):
+    def get_schema(self, request=None, public=False):
+        # TODO a signal or something should be implemented to clear the cache
+        # if the metadata model is changed
+        schema_cache = caches["openapi"]
+        openapi_schema = schema_cache.get("openapi_schema")
+        if openapi_schema is None:
+            openapi_schema = super().get_schema(request, public)
+            schema_cache.set("openapi_schema", openapi_schema, 3600)
+        return openapi_schema
