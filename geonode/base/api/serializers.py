@@ -505,7 +505,11 @@ class LinkedResourceEmbeddedSerializer(DynamicModelSerializer):
         request = self.context.get("request", None)
         _resource = ResourceBase.objects.get(pk=instance)
 
-        return base_linked_resources_payload(_resource, request.user) if request and request.user and _resource else {}
+        return (
+            base_linked_resources_payload(_resource.get_real_instance(), request.user)
+            if request and request.user and _resource
+            else {}
+        )
 
 
 api_bbox_settable_resource_models = [Document, GeoApp]
@@ -519,15 +523,7 @@ class PermsSerializer(DynamicModelSerializer):
     def to_representation(self, instance):
         request = self.context.get("request", None)
         resource = ResourceBase.objects.get(pk=instance)
-        return (
-            (
-                resource.get_user_perms(request.user)
-                .union(resource.get_self_resource().get_user_perms(request.user))
-                .union(resource.get_real_instance().get_user_perms(request.user))
-            )
-            if request and request.user and resource
-            else []
-        )
+        return resource.get_user_perms(request.user) if request and request.user and resource else []
 
 
 class LinksSerializer(DynamicModelSerializer):
@@ -543,6 +539,16 @@ class LinksSerializer(DynamicModelSerializer):
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
+            if lnk.asset:
+                extras = {
+                    "type": "asset",
+                    "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
+                }
+                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
+                    lnk.asset
+                )
+                formatted_link["extras"] = extras
+
         return ret
 
 

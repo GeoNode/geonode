@@ -22,7 +22,6 @@ import re
 import gzip
 import logging
 import traceback
-import zipstream
 
 from hyperlink import URL
 from urllib.parse import urlparse, urlsplit, urljoin
@@ -56,7 +55,7 @@ from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.assets.utils import get_default_asset
-
+from zipstream import ZipStream
 from .utils import proxy_urls_registry
 
 logger = logging.getLogger(__name__)
@@ -244,7 +243,6 @@ def download(request, resourceid, sender=Dataset):
 
     if isinstance(instance, ResourceBase):
         dataset_files = []
-        file_list = []  # Store file info to be returned
         try:
             asset_obj = get_default_asset(instance)
             # Copy all Dataset related files into a temporary folder
@@ -252,13 +250,6 @@ def download(request, resourceid, sender=Dataset):
             for file_path in files:
                 if storage_manager.exists(file_path):
                     dataset_files.append(file_path)
-                    filename = os.path.basename(file_path)
-                    file_list.append(
-                        {
-                            "name": filename,
-                            "data_iter": storage_manager.open(file_path),
-                        }
-                    )
                 else:
                     return HttpResponse(
                         loader.render_to_string(
@@ -282,27 +273,19 @@ def download(request, resourceid, sender=Dataset):
 
             # ZIP everything and return
             target_file_name = "".join([instance.name, ".zip"])
-
-            target_zip = zipstream.ZipFile(mode="w", compression=zipstream.ZIP_DEFLATED, allowZip64=True)
-
-            # Iterable: Needed when the file_info has it's data as a stream
-            def _iterable(source_iter):
-                while True:
-                    buf = source_iter.read(BUFFER_CHUNK_SIZE)
-                    if not buf:
-                        break
-                    yield buf
-
-            # Add files to zip
-            for file_info in file_list:
-                target_zip.write_iter(arcname=file_info["name"], iterable=_iterable(file_info["data_iter"]))
-
             register_event(request, "download", instance)
+            folder = os.path.dirname(dataset_files[0])
 
-            # Streaming content response
-            response = StreamingHttpResponse(target_zip, content_type="application/zip")
-            response["Content-Disposition"] = f'attachment; filename="{target_file_name}"'
-            return response
+            zs = ZipStream.from_path(folder)
+            return StreamingHttpResponse(
+                zs,
+                content_type="application/zip",
+                headers={
+                    "Content-Disposition": f"attachment; filename={target_file_name}",
+                    "Content-Length": len(zs),
+                    "Last-Modified": zs.last_modified,
+                },
+            )
         except (NotImplementedError, Upload.DoesNotExist):
             traceback.print_exc()
             tb = traceback.format_exc()
