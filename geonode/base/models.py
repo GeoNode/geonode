@@ -646,25 +646,36 @@ class ResourceBaseManager(PolymorphicManager):
 
 
 class RelatedIdentifierType(models.Model):
+    label_help_text = _("related identifier, available identifier types")
+    description_text = _("label description")
+
     label = models.CharField(
-        max_length=255, help_text=_("related identifier, available identifier types"), unique=True, primary_key=True
+        _("label"),
+        max_length=255,
+        help_text=label_help_text,
+        unique=True,
+        primary_key=True,
     )
-    description = models.CharField(max_length=255, help_text=_("label description"))
+    description = models.CharField(_("description"), max_length=255, help_text=description_text)
 
     def __str__(self):
         return f"{self.label}"
 
 
 class RelationType(models.Model):
+    label_help_text = _("related identifier, available identifier types")
+    description_help_text = _(
+        "Description of the relationship of the resource being registered (A) and the related resource (B). If Related identifier is used Relation type is mandatory"
+    )
+
     label = models.CharField(
+        _("label"),
         max_length=255,
-        help_text=_(
-            "Description of the relationship of the resource being registered (A) and the related resource (B). If Related identifier is used Relation type is mandatory"
-        ),
+        help_text=description_help_text,
         unique=True,
         primary_key=True,
     )
-    description = models.CharField(max_length=255, help_text=_("label description"))
+    description = models.CharField(_("description"), max_length=255, help_text=description_help_text)
 
     def __str__(self):
         return f"{self.label}"
@@ -672,7 +683,11 @@ class RelationType(models.Model):
 
 class RelatedIdentifier(models.Model):
     related_identifer_help_text = _("Identifiers of related resources. These must be globally unique identifiers.")
-    related_identifier = models.CharField(max_length=255, help_text=related_identifer_help_text, blank=True)
+    related_identifer_type_help_text = _(" ")
+    relation_type_help_text = _(" ")
+    related_identifier = models.CharField(
+        _("related identifier"), max_length=255, help_text=related_identifer_help_text, blank=True
+    )
     related_identifier_type = models.ForeignKey(RelatedIdentifierType, null=True, blank=True, on_delete=models.CASCADE)
     relation_type = models.ForeignKey(RelationType, null=True, blank=True, on_delete=models.CASCADE)
 
@@ -683,28 +698,40 @@ class RelatedIdentifier(models.Model):
 class FundingReference(models.Model):
     """Funding Reference Identifiers"""
 
+    name_of_the_institution_help_text = _("Name of the institution provider. (e.g. European Commission)")
+    ror_help_text = _(
+        "Uniquely identifies a funding entity, according to various types. (e.g. http://doi.org/10.13039/501100000780)"
+    )
+    abbreviation_help_text = _("abbreviation of the Institutions names. (e.g. BMBF)")
+    address_information_help_text = _("Address of the Institutions")
+    contact_information_help_text = _("Contact Information of the Institutions")
+
     name_of_the_institution = models.CharField(
+        _("name of the institution"),
         blank=True,
         null=True,
         max_length=255,
-        help_text=_("Name of the institution provider. (e.g. European Commission)"),
+        help_text=name_of_the_institution_help_text,
     )
     ror = models.CharField(
+        _("ror"),
         blank=True,
         null=True,
         max_length=255,
-        help_text=_(
-            "Uniquely identifies a funding entity, according to various types. (e.g. http://doi.org/10.13039/501100000780)"
-        ),
+        help_text=ror_help_text,
     )
     abbreviation = models.CharField(
-        blank=True, null=True, max_length=255, help_text=_("abbreviation of the Institutions names. (e.g. BMBF)")
+        _("abbreviation"),
+        blank=True,
+        null=True,
+        max_length=255,
+        help_text=abbreviation_help_text,
     )
     address_information = models.CharField(
-        blank=True, null=True, max_length=255, help_text=_("Address of the Institutions")
+        _("address information"), blank=True, null=True, max_length=255, help_text=address_information_help_text
     )
     contact_information = models.CharField(
-        blank=True, null=True, max_length=255, help_text=_("Contact Information of the Institutions")
+        blank=True, null=True, max_length=255, help_text=contact_information_help_text
     )
 
     def __str__(self):
@@ -713,6 +740,13 @@ class FundingReference(models.Model):
 
 class Funder(models.Model):
     funders_help_text = _("List of funders, funded dataset creators")
+    award_number_help_text = _(" ")
+    award_uri_help_text = _(
+        "The URI leading to a page provided by the funder for more information about the award (grant). (e.g. http://cordis.europa.eu/project/rcn/100180_en.html)"
+    )
+    award_title_help_text = _(
+        "The human readable title of the award (grant). (e.g. MOTivational strength of ecosystem services)"
+    )
 
     funding_reference = models.ForeignKey(FundingReference, null=True, blank=True, on_delete=models.CASCADE)
     award_number = models.CharField(
@@ -725,30 +759,27 @@ class Funder(models.Model):
         blank=True,
         null=True,
         max_length=255,
-        help_text=_(
-            "The URI leading to a page provided by the funder for more information about the award (grant). (e.g. http://cordis.europa.eu/project/rcn/100180_en.html)"
-        ),
+        help_text=award_uri_help_text,
     )
     award_title = models.CharField(
         blank=True,
         null=True,
         max_length=255,
-        help_text=_(
-            "The human readable title of the award (grant). (e.g. MOTivational strength of ecosystem services)"
-        ),
+        help_text=award_title_help_text,
     )
 
 
 class RelatedProject(models.Model):
+    label_help_text = _("label of the hierarchy levels for which the metadata is provided. (e.g. SIGNAL)")
+    display_name_help_text = _("Name of the hierarchy levels for which the metadata is provided. (e.g. signal)")
+
     label = models.CharField(
         max_length=255,
-        help_text=_("label of the hierarchy levels for which the metadata is provided. (e.g. SIGNAL)"),
+        help_text=label_help_text,
         unique=True,
     )
 
-    display_name = models.CharField(
-        max_length=255, help_text=_("Name of the hierarchy levels for which the metadata is provided. (e.g. signal)")
-    )
+    display_name = models.CharField(max_length=255, help_text=display_name_help_text)
 
     def __str__(self):
         return f"{self.display_name}"
@@ -869,6 +900,17 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         "The date of the last update (last revision) to the dataset, when the dataset is being added to."
     )
     date_valid_help_text = _("The date or date range during which the dataset or resource is accurate.")
+    dirty_state_help_text = _("Security Rules Are Not Synched with GeoServer!")
+    featured_help_text = _("Should this resource be advertised in home page?")
+    is_approved_help_text = _("Is this resource validated from a publisher or editor?")
+    is_published_help_text = _("Should this resource be published and searchable?")
+    metadata_only_help_text = _("If true, will be excluded from search")
+    remote_typename_help_text = _("Name of the Remote Service if any.")
+    sourcetype_help_text = _('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".')
+    state_help_text = _("Hold the resource processing state.")
+
+    was_approved_help_text = _("Previous Approved state.")
+    was_published_help_text = _("Previous Published state.")
 
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
@@ -891,13 +933,13 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("series_information"), max_length=2000, blank=True, help_text=series_information_help_text
     )
     table_of_content = models.TextField(
-        _("table_of_content"), max_length=2000, blank=True, help_text=table_of_content_help_text
+        _("table of content"), max_length=2000, blank=True, help_text=table_of_content_help_text
     )
     technical_info = models.TextField(
-        _("technical_info"), max_length=2000, blank=True, help_text=technical_info_help_text
+        _("technical info"), max_length=2000, blank=True, help_text=technical_info_help_text
     )
     other_description = models.TextField(
-        _("other_description"), max_length=2000, blank=True, help_text=other_description_help_text
+        _("other description"), max_length=2000, blank=True, help_text=other_description_help_text
     )
 
     conformity_results = models.CharField(
@@ -975,11 +1017,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
 
     use_constrains = models.TextField(
-        _("Use Constraints"), null=True, blank=True, help_text=constraints_other_help_text
+        _("use constraints"), null=True, blank=True, help_text=constraints_other_help_text
     )
     restriction_other = models.ManyToManyField(
         RestrictionCodeType,
-        verbose_name=_("restrictions"),
+        verbose_name=_("restrictions other"),
         help_text=restriction_other_help_text,
         null=True,
         blank=True,
@@ -987,7 +1029,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         limit_choices_to=Q(is_choice=True),
     )
     constraints_other = models.TextField(
-        _("restrictions other"), blank=True, null=True, help_text=constraints_other_help_text
+        _("other constraints"), blank=True, null=True, help_text=constraints_other_help_text
     )
     license = models.ForeignKey(
         License,
@@ -1012,6 +1054,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
     category = models.ForeignKey(
         TopicCategory,
+        verbose_name=_("category"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -1020,11 +1063,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
     spatial_representation_type = models.ForeignKey(
         SpatialRepresentationType,
+        verbose_name=_("spatial representation type"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         limit_choices_to=Q(is_choice=True),
-        verbose_name=_("spatial representation type"),
         help_text=spatial_representation_type_help_text,
     )
 
@@ -1036,7 +1079,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("temporal extent end"), blank=True, null=True, help_text=temporal_extent_end_help_text
     )
     supplemental_information = models.TextField(
-        _("supplemental information"),
+        _("Supplemental Information"),
         max_length=2000,
         default=enumerations.DEFAULT_SUPPLEMENTAL_INFORMATION,
         help_text=_("any other descriptive information about the dataset"),
@@ -1044,7 +1087,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # Section 8
     data_quality_statement = models.TextField(
-        _("data quality statement"), max_length=2000, blank=True, null=True, help_text=data_quality_statement_help_text
+        _("Data Quality Statement"), max_length=2000, blank=True, null=True, help_text=data_quality_statement_help_text
     )
 
     group = models.ForeignKey(Group, null=True, blank=True, on_delete=models.SET_NULL)
@@ -1058,7 +1101,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     bbox_polygon = PolygonField(null=True, blank=True)
     ll_bbox_polygon = PolygonField(null=True, blank=True)
 
-    srid = models.CharField(max_length=30, blank=False, null=False, default="EPSG:4326")
+    srid = models.CharField(_("srid"), max_length=30, blank=False, null=False, default="EPSG:4326")
 
     # CSW specific fields
     csw_typename = models.CharField(_("CSW typename"), max_length=32, default="gmd:MD_Metadata", null=False)
@@ -1083,17 +1126,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
     popular_count = models.IntegerField(default=0)
     share_count = models.IntegerField(default=0)
-    featured = models.BooleanField(
-        _("Featured"), default=False, help_text=_("Should this resource be advertised in home page?")
-    )
-    was_published = models.BooleanField(_("Was Published"), default=True, help_text=_("Previous Published state."))
-    is_published = models.BooleanField(
-        _("Is Published"), default=True, help_text=_("Should this resource be published and searchable?")
-    )
-    was_approved = models.BooleanField(_("Was Approved"), default=True, help_text=_("Previous Approved state."))
-    is_approved = models.BooleanField(
-        _("Approved"), default=True, help_text=_("Is this resource validated from a publisher or editor?")
-    )
+    featured = models.BooleanField(_("Featured"), default=False, help_text=featured_help_text)
+    was_published = models.BooleanField(_("Was Published"), default=True, help_text=was_published_help_text)
+    is_published = models.BooleanField(_("Is Published"), default=True, help_text=is_published_help_text)
+    was_approved = models.BooleanField(_("Was Approved"), default=True, help_text=was_approved_help_text)
+    is_approved = models.BooleanField(_("Approved"), default=True, help_text=is_approved_help_text)
 
     # fields necessary for the apis
     thumbnail_url = models.TextField(_("Thumbnail url"), null=True, blank=True)
@@ -1109,7 +1146,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=False,
         default=enumerations.STATE_READY,
         choices=enumerations.PROCESSING_STATES,
-        help_text=_("Hold the resource processing state."),
+        help_text=state_help_text,
     )
 
     sourcetype = models.CharField(
@@ -1119,7 +1156,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         blank=False,
         default=enumerations.SOURCE_TYPE_LOCAL,
         choices=enumerations.SOURCE_TYPES,
-        help_text=_('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".'),
+        help_text=sourcetype_help_text,
     )
 
     remote_typename = models.CharField(
@@ -1127,23 +1164,27 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         null=True,
         blank=True,
         max_length=512,
-        help_text=_("Name of the Remote Service if any."),
+        help_text=remote_typename_help_text,
     )
 
     # fields controlling security state
     dirty_state = models.BooleanField(
-        _("Dirty State"), default=False, help_text=_("Security Rules Are Not Synched with GeoServer!")
+        _("Dirty State"),
+        default=False,
+        help_text=dirty_state_help_text,
     )
 
-    users_geolimits = models.ManyToManyField("UserGeoLimit", related_name="users_geolimits", null=True, blank=True)
+    users_geolimits = models.ManyToManyField(
+        "UserGeoLimit", verbose_name=_("Use Geo Limit"), related_name="users_geolimits", null=True, blank=True
+    )
 
-    groups_geolimits = models.ManyToManyField("GroupGeoLimit", related_name="groups_geolimits", null=True, blank=True)
+    groups_geolimits = models.ManyToManyField(
+        "GroupGeoLimit", verbose_name=_("Group Geo Limit"), related_name="groups_geolimits", null=True, blank=True
+    )
 
     resource_type = models.CharField(_("Resource Type"), max_length=1024, blank=True, null=True)
 
-    metadata_only = models.BooleanField(
-        _("Metadata"), default=False, help_text=_("If true, will be excluded from search")
-    )
+    metadata_only = models.BooleanField(_("Metadata"), default=False, help_text=metadata_only_help_text)
 
     files = JSONField(null=True, default=list, blank=True)
 
@@ -1158,22 +1199,22 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     # Bonares
     related_identifier = models.ManyToManyField(
         RelatedIdentifier,
+        verbose_name=_("Related Identifier"),
         null=True,
         blank=True,
         help_text=related_identifer_help_text,
         # related_name="related_identifier",
-        verbose_name=_("Related Identifier"),
     )
     funders = models.ManyToManyField(
         Funder, verbose_name=_("Funder names"), null=True, blank=True, help_text=funders_help_text
     )
     related_projects = models.ManyToManyField(
         RelatedProject,
+        verbose_name=_("Related Project"),
         null=True,
         blank=True,
         help_text=related_projects_help_text,
         related_name="related_projects",
-        verbose_name=_("Related Project"),
     )
 
     objects = ResourceBaseManager()
