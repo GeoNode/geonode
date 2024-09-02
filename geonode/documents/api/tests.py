@@ -187,7 +187,7 @@ class DocumentsApiTests(APITransactionTestCase):
         self.assertEqual(201, actual.status_code)
         extension = actual.json().get("document", {}).get("extension", "")
         self.assertEqual("sld", extension)
-        self.assertTrue(Document.objects.filter(title="None").exists())
+        self.assertTrue(Document.objects.filter(title="test_sld.sld").exists())
 
     def test_patch_point_of_contact(self):
         document = Document.objects.first()
