@@ -422,6 +422,10 @@ msgstr "Ist diese Ressource durch einen Autor geprüft worden?"
 msgid "Thumbnail url"
 msgstr "Thumbnail url"
 
+
+msgid "Thumbnail path"
+msgstr "Thumbnail path"
+
 #, fuzzy
 #| msgid "Dirty State"
 msgid "State"
@@ -439,8 +443,14 @@ msgstr "Sicherheits-Regeln sind nicht mit GeoServer synchronisier!"
 msgid "Resource Type"
 msgstr "Ressourcentyp"
 
+msgid "Source Type"
+msgstr "Quellentyp"
+
 msgid "Metadata"
 msgstr "Metadaten"
+
+msgid "Extra Metadata"
+msgstr "Zusätzliche Metadaten"
 
 msgid "If true, will be excluded from search"
 msgstr "Wenn wahr, dann von der Suche ausgeschlossen"
@@ -6853,3 +6863,167 @@ msgstr "Zugriff verweigert"
 
 #~ msgid "Thesaurus"
 #~ msgstr "Thesaurus"
+
+#~ msgid "Related Identifier"
+#~ msgstr "Zugehörige Kennung"
+
+#~ msgid "Related Identifier Type"
+#~ msgstr "Zugehöriger Kennungstyp"
+
+#~ msgid "Relation Type"
+#~ msgstr "Beziehungstyp"
+
+#~ msgid "Name of the Institution"
+#~ msgstr "Name der Institution"
+
+#~ msgid "RoR"
+#~ msgstr "RoR"
+
+#~ msgid "Abbreviation"
+#~ msgstr "Abkürzung"
+
+#~ msgid "Address Information"
+#~ msgstr "Adressinformationen"
+
+#~ msgid "Address Information"
+#~ msgstr "Kontaktinformationen"
+
+#~ msgid "Award Number"
+#~ msgstr "Auszeichnungsnummer"
+
+#~ msgid "Award URI"
+#~ msgstr "Auszeichnungs-URI"
+
+#~ msgid "Award Title"
+#~ msgstr "Auszeichnungstitel"
+
+#~ msgid "Display Name"
+#~ msgstr "Anzeigename"
+
+#~ msgid "Abstract Translated"
+#~ msgstr "Übersetzter Titel"
+
+#~ msgid "Display Name"
+#~ msgstr "Zusammenfassung übersetzt"
+
+#~ msgid "Subtitle"
+#~ msgstr "Untertitel"
+
+#~ msgid "Method Description"
+#~ msgstr "Methodenbeschreibung"
+
+#~ msgid "Series Information"
+#~ msgstr "Serien-Informationen"
+
+#~ msgid "Table of Content"
+#~ msgstr "Inhaltsverzeichnis"
+
+#~ msgid "Technical Info"
+#~ msgstr "Technische Informationen"
+
+#~ msgid "Other Description"
+#~ msgstr "Sonstige Beschreibung"
+
+#~ msgid "Conformity Result"
+#~ msgstr "Konformitätsergebnis"
+
+#~ msgid "Conformity Explanation"
+#~ msgstr "Konformitätserklärung"
+
+#~ msgid "Other Description"
+#~ msgstr "Sonstige Beschreibung"
+
+#~ msgid "Parent Identifier"
+#~ msgstr "Übergeordnete Kennung"
+
+#~ msgid "Date Available"
+#~ msgstr "Verfügbares Datum"
+
+#~ msgid "Date Created"
+#~ msgstr "Erstellungsdatum"
+
+#~ msgid "Date Issued"
+#~ msgstr "Ausstellungsdatum"
+
+#~ msgid "Date Updated"
+#~ msgstr "Aktualisierungsdatum"
+
+#~ msgid "Date Accepted"
+#~ msgstr "Datum der Annahme"
+
+#~ msgid "Date Collected"
+#~ msgstr "Erfassungsdatum"
+
+#~ msgid "Date Copyrighted"
+#~ msgstr "Datum des Copyrights"
+
+#~ msgid "Date Submitted"
+#~ msgstr "Date Submitted"
+
+#~ msgid "Date Valid"
+#~ msgstr "Gültigkeitsdatum"
+
+#~ msgid "Date Issued"
+#~ msgstr "Ausstellungsdatum"
+
+#~ msgid "Contacts"
+#~ msgstr "Kontakte"
+
+#~ msgid "Alternate"
+#~ msgstr "_Wechseln"
+
+#~ msgid "Date"
+#~ msgstr "Datum"
+
+#~ msgid "Date Type"
+#~ msgstr "Datumstyp"
+
+#~ msgid "Edition"
+#~ msgstr "Ausgabe"
+
+#~ msgid "Attribution"
+#~ msgstr "Namensnennung"
+
+#~ msgid "Maintenance Frequency"
+#~ msgstr "Wartungshäufigkeit"
+
+#~ msgid "Use Constraint Restrictions"
+#~ msgstr "Nutzungsbeschränkungen"
+
+#~ msgid "Nutzungsbeschränkungen"
+#~ msgstr "Use Constraints"
+
+#~ msgid "Other Restrictions"
+#~ msgstr "Weitere Einschränkungen"
+
+#~ msgid "License"
+#~ msgstr "Lizenz"
+
+#~ msgid "Metadata License"
+#~ msgstr "Metadatenlizenz"
+
+#~ msgid "Was Published"
+#~ msgstr "Wurde veröffentlicht"
+
+#~ msgid "Is Published"
+#~ msgstr "Wird veröffentlicht"
+
+#~ msgid "Was Approved"
+#~ msgstr "Wurde genehmigt"
+
+#~ msgid "Remote Service Typename"
+#~ msgstr "Remote-Diensttypname"
+
+#~ msgid "User Geo Limit"
+#~ msgstr "Benutzer-Geolimit"
+
+#~ msgid "User Geo Limit"
+#~ msgstr "Gruppen-Geolimit"
+
+#~ msgid "Funder names"
+#~ msgstr "Geldgeber"
+
+#~ msgid "Related Project"
+#~ msgstr "Zugehöriges Projekt"
+
+
