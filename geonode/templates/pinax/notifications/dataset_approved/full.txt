@@ -1,4 +1,4 @@
 {% load i18n %}
-{% trans "The following dataset was published" %}:<br/>
+{% trans "The following dataset was approved" %} by a Manager or Staff member:<br/>
 <strong>{{ resource.title }}</strong>, {% trans "owned by" %} <i><a href="{{ default_http_protocol }}://{{ current_site }}/people/profile/{{ resource.owner.username }}">{{ resource.owner.username }}</a></i><br/>
-{% trans "You can visit the dataset's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}
+{% trans "You can visit the dataset's detail page here" %}: {{ default_http_protocol }}://{{ current_site }}{{ resource.get_absolute_url }}

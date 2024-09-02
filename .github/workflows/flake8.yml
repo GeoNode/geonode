@@ -37,4 +37,4 @@ jobs:
         flake8 geonode --count --statistics
 
     - name: "Check: black"
-      run: black -t py310 --check geonode
+      run: black --check geonode
