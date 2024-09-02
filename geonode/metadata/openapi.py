@@ -59,7 +59,7 @@ class CustomOpenApiSchema(AutoSchema):
                     # otherwise we can assume that is a string
                     return append_meta(dict(OPENAPI_TYPE_MAPPING[OpenApiTypes.STR]), meta)
             except Exception as e:
-                logger.exception(e)
+                # logger.exception(e)
                 # if the serializer is not set, we can rollback to the default behaviour
                 logger.info("Cannot identify type from serializer, rollback to default behaviour")
                 pass

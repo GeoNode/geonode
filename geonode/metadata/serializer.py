@@ -33,7 +33,7 @@ from django.conf import settings
 from dynamic_rest.serializers import DynamicModelSerializer
 
 
-class MetadataModelSerializer(DynamicModelSerializer):
+class MetadataModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = RB  # TODO replace with the metadata model
         name = "metadata"
