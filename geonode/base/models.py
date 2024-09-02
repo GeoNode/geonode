@@ -650,7 +650,7 @@ class RelatedIdentifierType(models.Model):
     description_text = _("label description")
 
     label = models.CharField(
-        _("label"),
+        _("Label"),
         max_length=255,
         help_text=label_help_text,
         unique=True,
@@ -669,13 +669,13 @@ class RelationType(models.Model):
     )
 
     label = models.CharField(
-        _("label"),
+        _("Label"),
         max_length=255,
         help_text=description_help_text,
         unique=True,
         primary_key=True,
     )
-    description = models.CharField(_("description"), max_length=255, help_text=description_help_text)
+    description = models.CharField(_("Description"), max_length=255, help_text=description_help_text)
 
     def __str__(self):
         return f"{self.label}"
@@ -685,8 +685,9 @@ class RelatedIdentifier(models.Model):
     related_identifer_help_text = _("Identifiers of related resources. These must be globally unique identifiers.")
     related_identifer_type_help_text = _(" ")
     relation_type_help_text = _(" ")
+
     related_identifier = models.CharField(
-        _("related identifier"), max_length=255, help_text=related_identifer_help_text, blank=True
+        _("Related Identifier"), max_length=255, help_text=related_identifer_help_text, blank=True
     )
     related_identifier_type = models.ForeignKey(RelatedIdentifierType, null=True, blank=True, on_delete=models.CASCADE)
     relation_type = models.ForeignKey(RelationType, null=True, blank=True, on_delete=models.CASCADE)
@@ -707,31 +708,31 @@ class FundingReference(models.Model):
     contact_information_help_text = _("Contact Information of the Institutions")
 
     name_of_the_institution = models.CharField(
-        _("name of the institution"),
+        _("Name of the Institution"),
         blank=True,
         null=True,
         max_length=255,
         help_text=name_of_the_institution_help_text,
     )
     ror = models.CharField(
-        _("ror"),
+        _("RoR"),
         blank=True,
         null=True,
         max_length=255,
         help_text=ror_help_text,
     )
     abbreviation = models.CharField(
-        _("abbreviation"),
+        _("Abbreviation"),
         blank=True,
         null=True,
         max_length=255,
         help_text=abbreviation_help_text,
     )
     address_information = models.CharField(
-        _("address information"), blank=True, null=True, max_length=255, help_text=address_information_help_text
+        _("Address Information"), blank=True, null=True, max_length=255, help_text=address_information_help_text
     )
     contact_information = models.CharField(
-        blank=True, null=True, max_length=255, help_text=contact_information_help_text
+        _("Contact Information"), blank=True, null=True, max_length=255, help_text=contact_information_help_text
     )
 
     def __str__(self):
@@ -750,18 +751,21 @@ class Funder(models.Model):
 
     funding_reference = models.ForeignKey(FundingReference, null=True, blank=True, on_delete=models.CASCADE)
     award_number = models.CharField(
+        _("Award Number"),
         blank=True,
         null=True,
         max_length=255,
         help_text=funders_help_text,
     )
     award_uri = models.CharField(
+        _("Award URI"),
         blank=True,
         null=True,
         max_length=255,
         help_text=award_uri_help_text,
     )
     award_title = models.CharField(
+        _("Award Title"),
         blank=True,
         null=True,
         max_length=255,
@@ -774,12 +778,13 @@ class RelatedProject(models.Model):
     display_name_help_text = _("Name of the hierarchy levels for which the metadata is provided. (e.g. signal)")
 
     label = models.CharField(
+        _("Label"),
         max_length=255,
         help_text=label_help_text,
         unique=True,
     )
 
-    display_name = models.CharField(max_length=255, help_text=display_name_help_text)
+    display_name = models.CharField(_("Display Name"), max_length=255, help_text=display_name_help_text)
 
     def __str__(self):
         return f"{self.display_name}"
@@ -908,86 +913,92 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     remote_typename_help_text = _("Name of the Remote Service if any.")
     sourcetype_help_text = _('The resource source type, which can be one of "LOCAL", "REMOTE" or "COPYREMOTE".')
     state_help_text = _("Hold the resource processing state.")
-
+    title_help_text = _("name by which the cited resource is known")
+    supplemental_information_help_text = _("any other descriptive information about the dataset")
     was_approved_help_text = _("Previous Approved state.")
     was_published_help_text = _("Previous Published state.")
 
     # internal fields
     uuid = models.CharField(max_length=36, unique=True, default=uuid.uuid4)
-    title = models.CharField(_("title"), max_length=255, help_text=_("name by which the cited resource is known"))
+    title = models.CharField(_("Title"), max_length=255, help_text=title_help_text)
     title_translated = models.CharField(
-        _("title_translated"), max_length=255, blank=True, help_text=title_translated_help_text
+        _("Title Translated"), max_length=255, blank=True, help_text=title_translated_help_text
     )
 
-    abstract = models.TextField(_("abstract"), max_length=2000, help_text=abstract_help_text)
+    abstract = models.TextField(_("Abstract"), max_length=2000, help_text=abstract_help_text)
     abstract_translated = models.TextField(
-        _("abstract_translated"), max_length=2000, help_text=abstract_translated_help_text
+        _("Abstract Translated"), max_length=2000, help_text=abstract_translated_help_text
     )
 
     # description type elements
-    subtitle = models.TextField(_("subtitle"), max_length=400, blank=True, help_text=subtitle_help_text)
+    subtitle = models.TextField(_("Subtitle"), max_length=400, blank=True, help_text=subtitle_help_text)
     method_description = models.TextField(
-        _("method_description"), max_length=2000, blank=True, help_text=method_description_help_text
+        _("Method Description"), max_length=2000, blank=True, help_text=method_description_help_text
     )
     series_information = models.TextField(
-        _("series_information"), max_length=2000, blank=True, help_text=series_information_help_text
+        _("Series Information"), max_length=2000, blank=True, help_text=series_information_help_text
     )
     table_of_content = models.TextField(
-        _("table of content"), max_length=2000, blank=True, help_text=table_of_content_help_text
+        _("Table of Content"), max_length=2000, blank=True, help_text=table_of_content_help_text
     )
     technical_info = models.TextField(
-        _("technical info"), max_length=2000, blank=True, help_text=technical_info_help_text
+        _("Technical Info"), max_length=2000, blank=True, help_text=technical_info_help_text
     )
     other_description = models.TextField(
-        _("other description"), max_length=2000, blank=True, help_text=other_description_help_text
+        _("Other Description"), max_length=2000, blank=True, help_text=other_description_help_text
     )
 
     conformity_results = models.CharField(
-        _("conformity result"),
+        _("Conformity Result"),
         max_length=40,
         choices=VALID_CONFORMITY_RESULTS,
         default="Unknown",
         help_text=conformity_results_help_text,
     )
     conformity_explanation = models.CharField(
-        _("conformity explanation"), max_length=2000, blank=True, help_text=conformity_explanation_help_text
+        _("Conformity Explanation"), max_length=2000, blank=True, help_text=conformity_explanation_help_text
     )
     parent_identifier = models.ForeignKey(
-        "self", null=True, blank=True, help_text=parent_identifier_help_text, on_delete=models.SET_NULL
+        "self",
+        verbose_name=_("Parent Identifier"),
+        null=True,
+        blank=True,
+        help_text=parent_identifier_help_text,
+        on_delete=models.SET_NULL,
     )
     date_available = models.DateField(
-        _("date available"), default=datetime.date.today, help_text=date_available_help_text
+        _("Date Available"), default=datetime.date.today, help_text=date_available_help_text
     )
-    date_created = models.DateField(_("date created"), default=datetime.date.today, help_text=date_created_help_text)
-    date_issued = models.DateField(_("date issued"), default=datetime.date.today, help_text=date_issued_help_text)
-    date_updated = models.DateField(_("date updated"), default=datetime.date.today, help_text=date_updated_help_text)
+    date_created = models.DateField(_("Date Created"), default=datetime.date.today, help_text=date_created_help_text)
+    date_issued = models.DateField(_("Date Issued"), default=datetime.date.today, help_text=date_issued_help_text)
+    date_updated = models.DateField(_("Date Updated"), default=datetime.date.today, help_text=date_updated_help_text)
 
-    date_accepted = models.DateField(_("date accepted"), blank=True, null=True, help_text=date_accepted_help_text)
-    date_collected = models.DateField(_("date collected"), blank=True, null=True, help_text=date_collected_help_text)
+    date_accepted = models.DateField(_("Date Accepted"), blank=True, null=True, help_text=date_accepted_help_text)
+    date_collected = models.DateField(_("Date Collected"), blank=True, null=True, help_text=date_collected_help_text)
     date_copyrighted = models.DateField(
-        _("date copyrighted"), blank=True, null=True, help_text=date_copyrighted_help_text
+        _("Date Copyrighted"), blank=True, null=True, help_text=date_copyrighted_help_text
     )
-    date_submitted = models.DateField(_("date submitted"), blank=True, null=True, help_text=date_submitted_help_text)
-    date_valid = models.DateField(_("date valid"), blank=True, null=True, help_text=date_valid_help_text)
-    date_issued = models.DateField(_("date issued"), blank=True, null=True, help_text=date_issued_help_text)
+    date_submitted = models.DateField(_("Date Submitted"), blank=True, null=True, help_text=date_submitted_help_text)
+    date_valid = models.DateField(_("Date Valid"), blank=True, null=True, help_text=date_valid_help_text)
+    date_issued = models.DateField(_("Date Issued"), blank=True, null=True, help_text=date_issued_help_text)
 
-    purpose = models.TextField(_("purpose"), max_length=500, null=True, blank=True, help_text=purpose_help_text)
+    purpose = models.TextField(_("Purpose"), max_length=500, null=True, blank=True, help_text=purpose_help_text)
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="owned_resource", verbose_name=_("Owner"), on_delete=models.PROTECT
     )
-    contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through="ContactRole")
-    alternate = models.CharField(_("alternate"), max_length=255, null=True, blank=True)
-    date = models.DateTimeField(_("date"), default=now, help_text=date_help_text)
+    contacts = models.ManyToManyField(settings.AUTH_USER_MODEL, through="ContactRole", verbose_name=_("Contacts"))
+    alternate = models.CharField(_("Alternate"), max_length=255, null=True, blank=True)
+    date = models.DateTimeField(_("Date"), default=now, help_text=date_help_text)
     date_type = models.CharField(
-        _("date type"), max_length=255, choices=VALID_DATE_TYPES, default="publication", help_text=date_type_help_text
+        _("Date Type"), max_length=255, choices=VALID_DATE_TYPES, default="publication", help_text=date_type_help_text
     )
-    edition = models.CharField(_("edition"), max_length=255, blank=True, null=True, help_text=edition_help_text)
+    edition = models.CharField(_("Edition"), max_length=255, blank=True, null=True, help_text=edition_help_text)
     attribution = models.CharField(
         _("Attribution"), max_length=2048, blank=True, null=True, help_text=attribution_help_text
     )
     doi = models.CharField(_("DOI"), max_length=255, blank=True, null=True, help_text=doi_help_text)
     maintenance_frequency = models.CharField(
-        _("maintenance frequency"),
+        _("Maintenance Frequency"),
         max_length=255,
         choices=enumerations.UPDATE_FREQUENCIES,
         blank=True,
@@ -1002,26 +1013,26 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         manager=_HierarchicalTagManager,
     )
     tkeywords = models.ManyToManyField(
-        ThesaurusKeyword, verbose_name=_("keywords"), null=True, blank=True, help_text=tkeywords_help_text
+        ThesaurusKeyword, verbose_name=_("Thesaurus Keywords"), null=True, blank=True, help_text=tkeywords_help_text
     )
     regions = models.ManyToManyField(
-        Region, verbose_name=_("keywords region"), null=True, blank=True, help_text=regions_help_text
+        Region, verbose_name=_("Keywords Region"), null=True, blank=True, help_text=regions_help_text
     )
 
     use_constraint_restrictions = models.ManyToManyField(
         RestrictionCodeType,
-        verbose_name=_("Use Constrain Restrictions"),
+        verbose_name=_("Use Constraint Restrictions"),
         null=True,
         blank=True,
         help_text=use_constraint_restrictions_help_text,
     )
 
     use_constrains = models.TextField(
-        _("use constraints"), null=True, blank=True, help_text=constraints_other_help_text
+        _("Use Constraints"), null=True, blank=True, help_text=constraints_other_help_text
     )
     restriction_other = models.ManyToManyField(
         RestrictionCodeType,
-        verbose_name=_("restrictions other"),
+        verbose_name=_("Other Restrictions "),
         help_text=restriction_other_help_text,
         null=True,
         blank=True,
@@ -1029,7 +1040,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         limit_choices_to=Q(is_choice=True),
     )
     constraints_other = models.TextField(
-        _("other constraints"), blank=True, null=True, help_text=constraints_other_help_text
+        _("Other Constraints"), blank=True, null=True, help_text=constraints_other_help_text
     )
     license = models.ForeignKey(
         License,
@@ -1050,11 +1061,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         on_delete=models.SET_NULL,
     )
     language = models.CharField(
-        _("language"), max_length=3, choices=enumerations.ALL_LANGUAGES, default="eng", help_text=language_help_text
+        _("Language"), max_length=3, choices=enumerations.ALL_LANGUAGES, default="eng", help_text=language_help_text
     )
     category = models.ForeignKey(
         TopicCategory,
-        verbose_name=_("category"),
+        verbose_name=_("Category"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -1063,7 +1074,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
     spatial_representation_type = models.ForeignKey(
         SpatialRepresentationType,
-        verbose_name=_("spatial representation type"),
+        verbose_name=_("Spatial Representation Type"),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -1073,16 +1084,16 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # Section 5
     temporal_extent_start = models.DateTimeField(
-        _("temporal extent start"), blank=True, null=True, help_text=temporal_extent_start_help_text
+        _("Temporal Extent Start"), blank=True, null=True, help_text=temporal_extent_start_help_text
     )
     temporal_extent_end = models.DateTimeField(
-        _("temporal extent end"), blank=True, null=True, help_text=temporal_extent_end_help_text
+        _("Temporal Extent End"), blank=True, null=True, help_text=temporal_extent_end_help_text
     )
     supplemental_information = models.TextField(
         _("Supplemental Information"),
         max_length=2000,
         default=enumerations.DEFAULT_SUPPLEMENTAL_INFORMATION,
-        help_text=_("any other descriptive information about the dataset"),
+        help_text=supplemental_information_help_text,
     )
 
     # Section 8
@@ -1175,7 +1186,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
 
     users_geolimits = models.ManyToManyField(
-        "UserGeoLimit", verbose_name=_("Use Geo Limit"), related_name="users_geolimits", null=True, blank=True
+        "UserGeoLimit", verbose_name=_("User Geo Limit"), related_name="users_geolimits", null=True, blank=True
     )
 
     groups_geolimits = models.ManyToManyField(
