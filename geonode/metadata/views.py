@@ -16,29 +16,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.base.models import ResourceBase
 from geonode.metadata.models import UISchemaModel
 from geonode.metadata.serializer import MetadataModelSerializer
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import generics
 from django.core.cache import caches
 
 
-class DynamicResourceViewSet(ReadOnlyModelViewSet):
+class DynamicResourceViewSet(ViewSet):
     """
     Simple viewset that return the metadata value
     """
 
     serializer_class = MetadataModelSerializer
-    queryset = ResourceBase.objects.all()  # TODO to be replaced with metadata model
 
     def list(self, request):
-        serializer = self.serializer_class(self.queryset, many=True)
+        serializer = self.serializer_class(many=True)
+        # usage of GeonodeApiPaginaton?
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        serializer = self.serializer_class(self.queryset.first())
+        serializer = self.serializer_class(many=True)
         return Response(serializer.data)
 
 
