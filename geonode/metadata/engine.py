@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 from rest_framework import serializers
 
 
@@ -56,6 +56,15 @@ class MetadataEngine:
         Return the list of the metadata to be used in the
         serializer listing functionality
         """
+        return [{"title": "abc"}]
+
+    @abstractmethod
+    def get_data_by_pk(self, pk) -> List[dict]:
+        """
+        Return the list of the metadata to be used in the
+        serializer listing functionality
+        """
+        return {"pk": pk}
 
 
 class FieldsConverter:
@@ -68,10 +77,28 @@ class FieldsConverter:
 
     MAPPING = {"int": serializers.IntegerField, "str": serializers.CharField, "choice": serializers.ChoiceField}
 
-    def convert_fields(self, input_fields=list) -> List[dict]:
+    def convert_fields(self, input_fields=list, bind: bool = True) -> List[dict]:
         """
         Convert the input coming from the metadata engine into a serializerLike object
         """
+        from geonode.metadata.serializer import MetadataSerializer
+
+        val = {
+            "title": serializers.CharField(
+                source="field_name", max_length=255, help_text="name by which the cited resource is known"
+            )
+        }
+        if bind:
+            val = self.bind_fileld(val, MetadataSerializer)
+
+        return val
+
+    def bind_fileld(self, fields: list, serializer) -> Optional[None]:
+        # since the fields are dynamic, we need to bind the field
+        # to the serializer
+        for x, y in fields.items():
+            y.bind(x, serializer)
+        return fields
 
     def validate(self, converted_fields=list) -> list[dict]:
         """

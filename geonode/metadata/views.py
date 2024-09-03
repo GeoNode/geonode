@@ -16,8 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from geonode.metadata.engine import MetadataEngine
 from geonode.metadata.models import UISchemaModel
-from geonode.metadata.serializer import MetadataModelSerializer
+from geonode.metadata.serializer import MetadataSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import generics
@@ -29,15 +30,16 @@ class DynamicResourceViewSet(ViewSet):
     Simple viewset that return the metadata value
     """
 
-    serializer_class = MetadataModelSerializer
+    serializer_class = MetadataSerializer
 
     def list(self, request):
         serializer = self.serializer_class(many=True)
-        # usage of GeonodeApiPaginaton?
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        serializer = self.serializer_class(many=True)
+        engine = MetadataEngine()
+        serializer = self.serializer_class(data=engine.get_data_by_pk(pk))
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 
