@@ -47,11 +47,6 @@ class MetadataSerializer(serializers.Serializer):
         view_name = "metadata_view"
         list_serializer_class = MetadataListSerializer
 
-    def __init__(self, instance=None, data=empty, **kwargs):
-        self.parent = self
-        super().__init__(instance, data, **kwargs)
-        self.bind(field_name="", parent=self)
-
     def __new__(cls, *args, **kwargs):
         """
         When a field is instantiated, we store the arguments that were used,

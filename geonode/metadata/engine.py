@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import List, Optional
 from rest_framework import serializers
 
@@ -56,7 +56,7 @@ class MetadataEngine:
         Return the list of the metadata to be used in the
         serializer listing functionality
         """
-        return [{"title": "abc"}]
+        #return [{"title": "abc"}]
 
     @abstractmethod
     def get_data_by_pk(self, pk) -> List[dict]:
@@ -64,7 +64,7 @@ class MetadataEngine:
         Return the list of the metadata to be used in the
         serializer listing functionality
         """
-        return {"pk": pk}
+        #return {"title": pk, "name": "this is my name"}
 
 
 class FieldsConverter:
@@ -80,24 +80,28 @@ class FieldsConverter:
     def convert_fields(self, input_fields=list, bind: bool = True) -> List[dict]:
         """
         Convert the input coming from the metadata engine into a serializerLike object
+        input_fields = {
+            "title": serializers.CharField(
+                max_length=255, help_text="name by which the cited resource is known"
+            ),
+            "name": serializers.CharField(
+                max_length=255, help_text="name by which the cited resource is known", required=False
+            )
+        }
         """
         from geonode.metadata.serializer import MetadataSerializer
 
-        val = {
-            "title": serializers.CharField(
-                source="field_name", max_length=255, help_text="name by which the cited resource is known"
-            )
-        }
-        if bind:
-            val = self.bind_fileld(val, MetadataSerializer)
+        self.validate(input_fields)
+        if bind and input_fields:
+            input_fields = self.bind_fileld(input_fields, MetadataSerializer)
 
-        return val
+        return input_fields
 
     def bind_fileld(self, fields: list, serializer) -> Optional[None]:
         # since the fields are dynamic, we need to bind the field
         # to the serializer
         for x, y in fields.items():
-            y.bind(x, serializer)
+            y.bind(x, None)
         return fields
 
     def validate(self, converted_fields=list) -> list[dict]:
