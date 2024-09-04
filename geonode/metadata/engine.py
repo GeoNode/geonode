@@ -56,7 +56,7 @@ class MetadataEngine:
         Return the list of the metadata to be used in the
         serializer listing functionality
         """
-        #return [{"title": "abc"}]
+        # return [{"title": "abc"}]
 
     @abstractmethod
     def get_data_by_pk(self, pk) -> List[dict]:
@@ -64,7 +64,20 @@ class MetadataEngine:
         Return the list of the metadata to be used in the
         serializer listing functionality
         """
-        #return {"title": pk, "name": "this is my name"}
+        # return {"title": pk, "name": "this is my name"}
+
+    @abstractmethod
+    def save_metadata(self, payload):
+        """
+        create the metadata
+        """
+
+    @abstractmethod
+    def set_metadata(self, payload, pk):
+        """
+        Create the metadata for a specific resource
+        """
+        # return pk
 
 
 class FieldsConverter:

@@ -19,8 +19,6 @@
 
 from rest_framework import serializers
 from geonode.metadata.engine import FieldsConverter, MetadataEngine
-from rest_framework.utils.serializer_helpers import ReturnList
-from rest_framework.fields import empty
 
 metadata_engine = MetadataEngine()
 

@@ -23,6 +23,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import generics
 from django.core.cache import caches
+from rest_framework.exceptions import PermissionDenied
 
 
 class DynamicResourceViewSet(ViewSet):
@@ -30,6 +31,7 @@ class DynamicResourceViewSet(ViewSet):
     Simple viewset that return the metadata value
     """
 
+    http_method_names = ["get", "post", "patch"]
     serializer_class = MetadataSerializer
 
     def list(self, request):
@@ -41,6 +43,26 @@ class DynamicResourceViewSet(ViewSet):
         serializer = self.serializer_class(data=engine.get_data_by_pk(pk))
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
+
+    def post(self, request):
+        post_data = request.data
+        # do something with `post_data`
+        engine = MetadataEngine()
+        serializer = self.serializer_class(data=post_data)
+        serializer.is_valid(raise_exception=True)
+        pk = engine.save_metadata(payload=serializer.data)
+        return Response(data=engine.get_data_by_pk(pk))
+
+    def patch(self, request, pk=None):
+        if pk is None:
+            raise PermissionDenied()
+        post_data = request.data
+        # do something with `post_data`
+        engine = MetadataEngine()
+        serializer = self.serializer_class(data=post_data)
+        serializer.is_valid(raise_exception=True)
+        pk = engine.set_metadata(payload=serializer.data, pk=pk)
+        return Response(data=engine.get_data_by_pk(pk))
 
 
 class UiSchemaViewset(generics.RetrieveAPIView):
