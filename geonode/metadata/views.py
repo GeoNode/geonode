@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.metadata.engine import MetadataEngine
+from geonode.metadata.engine import engine
 from geonode.metadata.models import UISchemaModel
 from geonode.metadata.serializer import MetadataSerializer
 from rest_framework.viewsets import ViewSet
@@ -24,13 +24,21 @@ from rest_framework.response import Response
 from rest_framework import generics
 from django.core.cache import caches
 from rest_framework.exceptions import PermissionDenied
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
-class DynamicResourceViewSet(ViewSet):
+class MetadataViewSet(ViewSet):
     """
     Simple viewset that return the metadata value
     """
 
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [
+        IsAuthenticated,
+    ]
     http_method_names = ["get", "post", "patch"]
     serializer_class = MetadataSerializer
 
@@ -39,30 +47,27 @@ class DynamicResourceViewSet(ViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
-        engine = MetadataEngine()
-        serializer = self.serializer_class(data=engine.get_data_by_pk(pk))
-        serializer.is_valid(raise_exception=True)
+        serializer = self._get_and_validate_serializer(data=engine.get_data_by_pk(pk))
         return Response(serializer.data)
 
     def post(self, request):
-        post_data = request.data
         # do something with `post_data`
-        engine = MetadataEngine()
-        serializer = self.serializer_class(data=post_data)
-        serializer.is_valid(raise_exception=True)
+        serializer = self._get_and_validate_serializer(data=request.data)
         pk = engine.save_metadata(payload=serializer.data)
         return Response(data=engine.get_data_by_pk(pk))
 
     def patch(self, request, pk=None):
         if pk is None:
             raise PermissionDenied()
-        post_data = request.data
         # do something with `post_data`
-        engine = MetadataEngine()
-        serializer = self.serializer_class(data=post_data)
-        serializer.is_valid(raise_exception=True)
+        serializer = self._get_and_validate_serializer(data=request.data)
         pk = engine.set_metadata(payload=serializer.data, pk=pk)
         return Response(data=engine.get_data_by_pk(pk))
+
+    def _get_and_validate_serializer(self, data):
+        serializer = self.serializer_class(data=data)
+        serializer.is_valid(raise_exception=True)
+        return serializer
 
 
 class UiSchemaViewset(generics.RetrieveAPIView):

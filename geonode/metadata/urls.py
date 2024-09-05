@@ -21,11 +21,11 @@ from django.urls import path
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from drf_spectacular.renderers import OpenApiJsonRenderer
-from geonode.metadata.views import DynamicResourceViewSet, UiSchemaViewset
+from geonode.metadata.views import MetadataViewSet, UiSchemaViewset
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r"", DynamicResourceViewSet, basename="tasks")
+router.register(r"", MetadataViewSet, basename="metadata")
 
 urlpatterns = [
     path(

@@ -61,8 +61,8 @@ class MetadataEngine:
     @abstractmethod
     def get_data_by_pk(self, pk) -> List[dict]:
         """
-        Return the list of the metadata to be used in the
-        serializer listing functionality
+        Return the dict of the metadata to be used in the
+        serializer listing functionality for a specific resource
         """
         # return {"title": pk, "name": "this is my name"}
 
@@ -102,15 +102,19 @@ class FieldsConverter:
             )
         }
         """
-        from geonode.metadata.serializer import MetadataSerializer
 
-        self.validate(input_fields)
-        if bind and input_fields:
-            input_fields = self.bind_fileld(input_fields, MetadataSerializer)
+        output_fileds = {}
+        for field in input_fields:
+            # getting field object
+            output_fileds[field.name] = self.MAPPING.get(field.type)(**field.kwargs)
 
-        return input_fields
+        self.validate(output_fileds)
+        if bind and output_fileds:
+            output_fileds = self.bind_fileld(output_fileds)
 
-    def bind_fileld(self, fields: list, serializer) -> Optional[None]:
+        return output_fileds
+
+    def bind_fileld(self, fields: list) -> Optional[None]:
         # since the fields are dynamic, we need to bind the field
         # to the serializer
         for x, y in fields.items():
@@ -123,3 +127,6 @@ class FieldsConverter:
         - some attributes are mandatory so we have to enforce it, otherwise we can add a default
         - if one of the kwargs is not in the field attribute, we just discard it
         """
+
+
+engine = MetadataEngine()
