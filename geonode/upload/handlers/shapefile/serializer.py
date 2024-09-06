@@ -1,13 +1,12 @@
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
-
-from geonode.upload.models import UploadSizeLimit
+from geonode.upload.models import Upload
 
 
 class ShapeFileSerializer(DynamicModelSerializer):
     class Meta:
         ref_name = "ShapeFileSerializer"
-        model = UploadSizeLimit
+        model = Upload
         view_name = "importer_upload"
         fields = (
             "base_file",

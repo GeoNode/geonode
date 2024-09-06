@@ -1,7 +1,7 @@
 from celery import Celery
 
 """
-Basic Celery app defined for the importer.
+Basic Celery app defined for the geonode.upload.
 It read all the other settings from the django configuration file
 so is always aligned to the geonode settings
 """

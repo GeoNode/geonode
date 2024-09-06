@@ -1,13 +1,12 @@
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
-
-from geonode.upload.models import UploadSizeLimit
+from geonode.upload.models import Upload
 
 
 class MetadataFileSerializer(DynamicModelSerializer):
     class Meta:
-        model = UploadSizeLimit
         ref_name = "MetadataFileSerializer"
+        model = Upload
         view_name = "importer_upload"
         fields = ("dataset_title", "base_file", "source")
 

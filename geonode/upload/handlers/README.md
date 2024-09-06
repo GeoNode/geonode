@@ -223,7 +223,7 @@ Not all handlers must redefine the above structure. If the resource type is a `v
 import logging
 
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.upload.api.exception import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.upload.utils import UploadLimitValidator
 from geopackage_validator.validate import validate
 from geonode.upload.handlers.gpkg.exceptions import InvalidGeopackageException
@@ -243,16 +243,16 @@ class NewVectorFileHandler(BaseVectorFileHandler):
     ACTIONS = {
         exa.IMPORT.value: (
             "start_import",
-            "importer.import_resource",
-            "importer.publish_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
         ),
         exa.COPY.value: (
             "start_copy",
-            "importer.copy_dynamic_model",
-            "importer.copy_geonode_data_table",
-            "importer.publish_resource",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_dynamic_model",
+            "geonode.upload.copy_geonode_data_table",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
         ),
     }
 

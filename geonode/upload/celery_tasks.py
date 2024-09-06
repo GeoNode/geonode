@@ -58,8 +58,8 @@ class ErrorBaseTaskClass(Task):
 @importer_app.task(
     bind=True,
     base=ErrorBaseTaskClass,
-    name="importer.import_orchestrator",
-    queue="importer.import_orchestrator",
+    name="geonode.upload.import_orchestrator",
+    queue="geonode.upload.import_orchestrator",
     max_retries=1,
     rate_limit=IMPORTER_GLOBAL_RATE_LIMIT,
     task_track_started=True,
@@ -108,8 +108,8 @@ def import_orchestrator(
 @importer_app.task(
     bind=True,
     # base=ErrorBaseTaskClass,
-    name="importer.import_resource",
-    queue="importer.import_resource",
+    name="geonode.upload.import_resource",
+    queue="geonode.upload.import_resource",
     max_retries=1,
     rate_limit=IMPORTER_GLOBAL_RATE_LIMIT,
     ignore_result=False,
@@ -133,7 +133,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
             execution_id=execution_id,
             last_updated=timezone.now(),
             func_name="import_resource",
-            step=gettext_lazy("importer.import_resource"),
+            step=gettext_lazy("geonode.upload.import_resource"),
             celery_task_request=self.request,
         )
         _exec = orchestrator.get_execution_object(execution_id)
@@ -173,8 +173,8 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
 @importer_app.task(
     bind=True,
     base=ErrorBaseTaskClass,
-    name="importer.publish_resource",
-    queue="importer.publish_resource",
+    name="geonode.upload.publish_resource",
+    queue="geonode.upload.publish_resource",
     max_retries=3,
     rate_limit=IMPORTER_PUBLISHING_RATE_LIMIT,
     ignore_result=False,
@@ -198,7 +198,7 @@ def publish_resource(
 
             Parameters:
                     execution_id (UUID): unique ID used to keep track of the execution request
-                    step_name (str): step name example: importer.publish_resource
+                    step_name (str): step name example: geonode.upload.publish_resource
                     layer_name (UUID): name of the resource example: layer
                     alternate (UUID): alternate of the resource example: layer_alternate
             Returns:
@@ -212,7 +212,7 @@ def publish_resource(
             execution_id=execution_id,
             last_updated=timezone.now(),
             func_name="publish_resource",
-            step=gettext_lazy("importer.publish_resource"),
+            step=gettext_lazy("geonode.upload.publish_resource"),
             celery_task_request=self.request,
         )
         _exec = orchestrator.get_execution_object(execution_id)
@@ -276,8 +276,8 @@ def publish_resource(
 @importer_app.task(
     bind=True,
     base=ErrorBaseTaskClass,
-    name="importer.create_geonode_resource",
-    queue="importer.create_geonode_resource",
+    name="geonode.upload.create_geonode_resource",
+    queue="geonode.upload.create_geonode_resource",
     max_retries=1,
     rate_limit=IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
     ignore_result=False,
@@ -291,7 +291,7 @@ def create_geonode_resource(
     layer_name: Optional[str] = None,
     alternate: Optional[str] = None,
     handler_module_path: str = None,
-    action: str = None,
+    action: str = exa.IMPORT.value,
     **kwargs,
 ):
     """
@@ -302,7 +302,7 @@ def create_geonode_resource(
                     execution_id (UUID): unique ID used to keep track of the execution request
                     resource_type (str): extension of the resource type that we want to import
                         The resource type is needed to retrieve the right handler for the resource
-                    step_name (str): step name example: importer.publish_resource
+                    step_name (str): step name example: geonode.upload.publish_resource
                     layer_name (UUID): name of the resource example: layer
                     alternate (UUID): alternate of the resource example: layer_alternate
             Returns:
@@ -314,18 +314,23 @@ def create_geonode_resource(
             execution_id=execution_id,
             last_updated=timezone.now(),
             func_name="create_geonode_resource",
-            step=gettext_lazy("importer.create_geonode_resource"),
+            step=gettext_lazy("geonode.upload.create_geonode_resource"),
             celery_task_request=self.request,
         )
         _exec = orchestrator.get_execution_object(execution_id)
 
         _files = _exec.input_params.get("files")
 
-        _asset = (
-            import_string(_exec.input_params.get("asset_module_path"))
-            .objects.filter(id=_exec.input_params.get("asset_id"))
-            .first()
-        )
+        if not _files:
+            _asset = None
+        else:
+            _asset = (
+                import_string(_exec.input_params.get("asset_module_path"))
+                .objects.filter(id=_exec.input_params.get("asset_id"))
+                .first()
+            )
+
+        handler_module_path = handler_module_path or _exec.input_params.get("handler_module_path")
 
         handler = import_string(handler_module_path)()
         _overwrite = _exec.input_params.get("overwrite_existing_layer")
@@ -379,8 +384,8 @@ def create_geonode_resource(
 
 @importer_app.task(
     base=ErrorBaseTaskClass,
-    name="importer.copy_geonode_resource",
-    queue="importer.copy_geonode_resource",
+    name="geonode.upload.copy_geonode_resource",
+    queue="geonode.upload.copy_geonode_resource",
     max_retries=1,
     rate_limit=IMPORTER_RESOURCE_CREATION_RATE_LIMIT,
     ignore_result=False,
@@ -395,7 +400,7 @@ def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_m
         execution_id=exec_id,
         last_updated=timezone.now(),
         func_name="copy_geonode_resource",
-        step=gettext_lazy("importer.copy_geonode_resource"),
+        step=gettext_lazy("geonode.upload.copy_geonode_resource"),
     )
     original_dataset_alternate = kwargs.get("kwargs").get("original_dataset_alternate")
     new_alternate = kwargs.get("kwargs").get("new_dataset_alternate")
@@ -475,8 +480,8 @@ def copy_geonode_resource(exec_id, actual_step, layer_name, alternate, handler_m
 
 @importer_app.task(
     base=SingleMessageErrorHandler,
-    name="importer.create_dynamic_structure",
-    queue="importer.create_dynamic_structure",
+    name="geonode.upload.create_dynamic_structure",
+    queue="geonode.upload.create_dynamic_structure",
     max_retries=1,
     acks_late=False,
     ignore_result=False,
@@ -551,8 +556,8 @@ def create_dynamic_structure(
 
 @importer_app.task(
     base=ErrorBaseTaskClass,
-    name="importer.copy_dynamic_model",
-    queue="importer.copy_dynamic_model",
+    name="geonode.upload.copy_dynamic_model",
+    queue="geonode.upload.copy_dynamic_model",
     task_track_started=True,
 )
 def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_module_path, action, **kwargs):
@@ -567,7 +572,7 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
             execution_id=exec_id,
             last_updated=timezone.now(),
             func_name="copy_dynamic_model",
-            step=gettext_lazy("importer.copy_dynamic_model"),
+            step=gettext_lazy("geonode.upload.copy_dynamic_model"),
         )
         additional_kwargs = {}
 
@@ -634,8 +639,8 @@ def copy_dynamic_model(exec_id, actual_step, layer_name, alternate, handler_modu
 
 @importer_app.task(
     base=ErrorBaseTaskClass,
-    name="importer.copy_geonode_data_table",
-    queue="importer.copy_geonode_data_table",
+    name="geonode.upload.copy_geonode_data_table",
+    queue="geonode.upload.copy_geonode_data_table",
     task_track_started=True,
 )
 def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handlers_module_path, action, **kwargs):
@@ -647,7 +652,7 @@ def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handler
             execution_id=exec_id,
             last_updated=timezone.now(),
             func_name="copy_geonode_data_table",
-            step=gettext_lazy("importer.copy_geonode_data_table"),
+            step=gettext_lazy("geonode.upload.copy_geonode_data_table"),
         )
 
         original_dataset_alternate = kwargs.get("kwargs").get("original_dataset_alternate").split(":")[1]
@@ -697,8 +702,8 @@ def copy_geonode_data_table(exec_id, actual_step, layer_name, alternate, handler
 @importer_app.task(
     bind=True,
     base=ErrorBaseTaskClass,
-    queue="importer.rollback",
-    name="importer.rollback",
+    queue="geonode.upload.rollback",
+    name="geonode.upload.rollback",
     task_track_started=True,
 )
 def rollback(self, *args, **kwargs):
@@ -721,7 +726,7 @@ def rollback(self, *args, **kwargs):
         execution_id=exec_id,
         last_updated=timezone.now(),
         func_name="rollback",
-        step=gettext_lazy("importer.rollback"),
+        step=gettext_lazy("geonode.upload.rollback"),
         celery_task_request=self.request,
     )
 

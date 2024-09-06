@@ -7,7 +7,7 @@ from django.test import TestCase
 from mock import MagicMock, patch
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler, import_with_ogr2ogr
 from django.contrib.auth import get_user_model
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.handlers.gpkg.handler import GPKGFileHandler
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
@@ -73,7 +73,7 @@ class TestBaseVectorFileHandler(TestCase):
             self.assertIsNotNone(dynamic_model)
             self.assertIsInstance(celery_group, group)
             self.assertEqual(1, len(celery_group.tasks))
-            self.assertEqual("importer.create_dynamic_structure", celery_group.tasks[0].name)
+            self.assertEqual("geonode.upload.create_dynamic_structure", celery_group.tasks[0].name)
         finally:
             if schema:
                 schema.delete()
@@ -130,7 +130,7 @@ class TestBaseVectorFileHandler(TestCase):
 
             self.assertIsInstance(celery_group, group)
             self.assertEqual(1, len(celery_group.tasks))
-            self.assertEqual("importer.create_dynamic_structure", celery_group.tasks[0].name)
+            self.assertEqual("geonode.upload.create_dynamic_structure", celery_group.tasks[0].name)
         finally:
             if exec_id:
                 ExecutionRequest.objects.filter(exec_id=exec_id).delete()
@@ -197,7 +197,7 @@ class TestBaseVectorFileHandler(TestCase):
             alternate="abc",
         )
         self.assertIsInstance(actual, (Signature,))
-        self.assertEqual("importer.import_with_ogr2ogr", actual.task)
+        self.assertEqual("geonode.upload.import_with_ogr2ogr", actual.task)
 
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):

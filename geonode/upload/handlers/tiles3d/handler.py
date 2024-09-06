@@ -6,7 +6,7 @@ import math
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.handlers.tiles3d.utils import box_to_wgs84
+from geonode.upload.handlers.tiles3d.utils import box_to_wgs84, sphere_to_wgs84
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
@@ -27,16 +27,16 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     ACTIONS = {
         exa.IMPORT.value: (
             "start_import",
-            "importer.import_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.create_geonode_resource",
         ),
         exa.COPY.value: (
             "start_copy",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_geonode_resource",
         ),
         ira.ROLLBACK.value: (
             "start_rollback",
-            "importer.rollback",
+            "geonode.upload.rollback",
         ),
     }
 
@@ -99,22 +99,26 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                     "The provided 3DTiles is not valid, some of the mandatory keys are missing. Mandatory keys are: 'asset', 'geometricError', 'root'"
                 )
 
-            # if the keys are there, let's check if the mandatory child are there too
-            asset = _file.get("asset", {}).get("version", None)
-            if not asset:
-                raise Invalid3DTilesException("The mandatory 'version' for the key 'asset' is missing")
-            volume = _file.get("root", {}).get("boundingVolume", None)
-            if not volume:
-                raise Invalid3DTilesException("The mandatory 'boundingVolume' for the key 'root' is missing")
-
-            error = _file.get("root", {}).get("geometricError", None)
-            if error is None:
-                raise Invalid3DTilesException("The mandatory 'geometricError' for the key 'root' is missing")
+            Tiles3DFileHandler.validate_3dtile_payload(payload=_file)
 
         except Exception as e:
             raise Invalid3DTilesException(e)
 
         return True
+
+    @staticmethod
+    def validate_3dtile_payload(payload):
+        # if the keys are there, let's check if the mandatory child are there too
+        asset = payload.get("asset", {}).get("version", None)
+        if not asset:
+            raise Invalid3DTilesException("The mandatory 'version' for the key 'asset' is missing")
+        volume = payload.get("root", {}).get("boundingVolume", None)
+        if not volume:
+            raise Invalid3DTilesException("The mandatory 'boundingVolume' for the key 'root' is missing")
+
+        error = payload.get("root", {}).get("geometricError", None)
+        if error is None:
+            raise Invalid3DTilesException("The mandatory 'geometricError' for the key 'root' is missing")
 
     @staticmethod
     def extract_params_from_data(_data, action=None):
@@ -128,10 +132,10 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", "False"),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "source": _data.pop("source", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
+            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
@@ -173,7 +177,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 files,
                 execution_id,
                 str(self),
-                "importer.import_resource",
+                "geonode.upload.import_resource",
                 layer_name,
                 alternate,
                 exa.IMPORT.value,
@@ -205,6 +209,8 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
 
         if self._has_region(js_file):
             resource = self.set_bbox_from_region(js_file, resource=resource)
+        elif self._has_sphere(js_file):
+            resource = self.set_bbox_from_boundingVolume_sphere(js_file, resource=resource)
         else:
             resource = self.set_bbox_from_boundingVolume(js_file, resource=resource)
 
@@ -246,10 +252,35 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     def set_bbox_from_boundingVolume(self, js_file, resource):
         transform_raw = js_file.get("root", {}).get("transform", [])
         box_raw = js_file.get("root", {}).get("boundingVolume", {}).get("box", None)
+
         if not box_raw or (not transform_raw and not box_raw):
             # skipping if values are missing from the json file
             return resource
+
         result = box_to_wgs84(box_raw, transform_raw)
+        # [xmin, ymin, xmax, ymax]
+        resource.set_bbox_polygon(
+            bbox=[
+                result["minx"],
+                result["miny"],
+                result["maxx"],
+                result["maxy"],
+            ],
+            srid="EPSG:4326",
+        )
+
+        return resource
+
+    def set_bbox_from_boundingVolume_sphere(self, js_file, resource):
+        transform_raw = js_file.get("root", {}).get("transform", [])
+        sphere_raw = js_file.get("root", {}).get("boundingVolume", {}).get("sphere", None)
+
+        if not sphere_raw or (not transform_raw and not sphere_raw):
+            # skipping if values are missing from the json file
+            return resource
+        if not transform_raw and (sphere_raw[0], sphere_raw[1], sphere_raw[2]) == (0, 0, 0):
+            return resource
+        result = sphere_to_wgs84(sphere_raw, transform_raw)
         # [xmin, ymin, xmax, ymax]
         resource.set_bbox_polygon(
             bbox=[
@@ -265,3 +296,6 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
 
     def _has_region(self, js_file):
         return js_file.get("root", {}).get("boundingVolume", {}).get("region", None)
+
+    def _has_sphere(self, js_file):
+        return js_file.get("root", {}).get("boundingVolume", {}).get("sphere", None)

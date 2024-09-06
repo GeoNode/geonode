@@ -28,7 +28,7 @@ from geonode.assets.handlers import asset_handler_registry
 from dynamic_models.models import ModelSchema, FieldSchema
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from geonode.upload.models import ResourceHandlerInfo
-from geonode.upload import project_dir
+from importer import project_dir
 
 from geonode.upload.tests.utils import (
     ImporterBaseTestSupport,
@@ -167,7 +167,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
             # Evaluation
             req = ExecutionRequest.objects.get(exec_id=str(self.exec_id))
             self.assertEqual(publish_resources.call_count, 1)
-            self.assertEqual("importer.publish_resource", req.step)
+            self.assertEqual("geonode.upload.publish_resource", req.step)
             importer.assert_called_once()
         finally:
             # cleanup
@@ -212,7 +212,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
             # Evaluation
             req = ExecutionRequest.objects.get(exec_id=str(exec_id))
-            self.assertEqual("importer.publish_resource", req.step)
+            self.assertEqual("geonode.upload.publish_resource", req.step)
             publish_resources.assert_called_once()
             importer.assert_called_once()
 
@@ -264,7 +264,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
                 # Evaluation
                 req = ExecutionRequest.objects.get(exec_id=str(exec_id))
-                self.assertEqual("importer.publish_resource", req.step)
+                self.assertEqual("geonode.upload.publish_resource", req.step)
                 publish_resources.assert_not_called()
                 importer.assert_called_once()
 
@@ -291,7 +291,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
             # Evaluation
             req = ExecutionRequest.objects.get(exec_id=str(self.exec_id))
-            self.assertEqual("importer.create_geonode_resource", req.step)
+            self.assertEqual("geonode.upload.create_geonode_resource", req.step)
 
             self.assertTrue(Dataset.objects.filter(alternate=alternate).exists())
 
@@ -307,7 +307,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         with self.assertRaises(Exception):
             copy_geonode_resource(
                 str(self.exec_id),
-                "importer.copy_geonode_resource",
+                "geonode.upload.copy_geonode_resource",
                 "cloning",
                 "invalid_alternate",
                 "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
@@ -328,7 +328,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
             exec_id, new_alternate = copy_geonode_resource(
                 str(self.exec_id),
-                "importer.copy_geonode_resource",
+                "geonode.upload.copy_geonode_resource",
                 "cloning",
                 rasource.alternate,
                 "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
@@ -363,13 +363,13 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         rollback should remove the resource based on the step it has reached
         """
         test_config = [
-            ("importer.import_resource", [_import_resource_rollback]),
+            ("geonode.upload.import_resource", [_import_resource_rollback]),
             (
-                "importer.publish_resource",
+                "geonode.upload.publish_resource",
                 [_import_resource_rollback, _publish_resource_rollback],
             ),
             (
-                "importer.create_geonode_resource",
+                "geonode.upload.create_geonode_resource",
                 [
                     _import_resource_rollback,
                     _publish_resource_rollback,
@@ -395,7 +395,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
                 # Evaluation
                 req = ExecutionRequest.objects.get(exec_id=str(exec_id))
-                self.assertEqual("importer.rollback", req.step)
+                self.assertEqual("geonode.upload.rollback", req.step)
                 self.assertTrue(req.status == "failed")
                 for expected_function in conf[1]:
                     expected_function.assert_called_once()
@@ -419,13 +419,13 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         rollback should remove the resource based on the step it has reached
         """
         test_config = [
-            ("importer.import_resource", [_import_resource_rollback]),
+            ("geonode.upload.import_resource", [_import_resource_rollback]),
             (
-                "importer.publish_resource",
+                "geonode.upload.publish_resource",
                 [_import_resource_rollback, _publish_resource_rollback],
             ),
             (
-                "importer.create_geonode_resource",
+                "geonode.upload.create_geonode_resource",
                 [
                     _import_resource_rollback,
                     _publish_resource_rollback,
@@ -451,7 +451,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
 
                 # Evaluation
                 req = ExecutionRequest.objects.get(exec_id=str(exec_id))
-                self.assertEqual("importer.rollback", req.step)
+                self.assertEqual("geonode.upload.rollback", req.step)
                 self.assertTrue(req.status == "failed")
                 for expected_function in conf[1]:
                     expected_function.assert_called_once()

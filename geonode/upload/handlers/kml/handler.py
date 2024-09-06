@@ -2,7 +2,7 @@ import logging
 import os
 
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.upload.api.exception import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.upload.utils import UploadLimitValidator
 from osgeo import ogr
 
@@ -22,20 +22,20 @@ class KMLFileHandler(BaseVectorFileHandler):
     ACTIONS = {
         exa.IMPORT.value: (
             "start_import",
-            "importer.import_resource",
-            "importer.publish_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
         ),
         exa.COPY.value: (
             "start_copy",
-            "importer.copy_dynamic_model",
-            "importer.copy_geonode_data_table",
-            "importer.publish_resource",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_dynamic_model",
+            "geonode.upload.copy_geonode_data_table",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
         ),
         ira.ROLLBACK.value: (
             "start_rollback",
-            "importer.rollback",
+            "geonode.upload.rollback",
         ),
     }
 

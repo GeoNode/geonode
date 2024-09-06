@@ -1,7 +1,7 @@
 import os
 from django.test import TestCase
 from mock import patch
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.publisher import DataPublisher
 from unittest.mock import MagicMock
 
@@ -18,15 +18,15 @@ class TestDataPublisher(TestCase):
         cls.gpkg_path = f"{project_dir}/tests/fixture/valid.gpkg"
 
     def setUp(self):
-        self._cleanup()
+        layer = self.publisher.cat.get_resources("stazioni_metropolitana", workspaces="geonode")
+        print("delete layer")
+        if layer:
+            res = self.publisher.cat.delete(layer.resource, purge="all", recurse=True)
+            print(res.status_code)
+            print(res.json)
 
     def tearDown(self):
-        self._cleanup()
-
-    def _cleanup(self):
         layer = self.publisher.cat.get_resources("stazioni_metropolitana", workspaces="geonode")
-        print("delete layer teardown")
-        store = self.publisher.cat.get_store(name="not_existsing_db", workspace="geonode")
         print("delete layer teardown")
         if layer:
             self.publisher.cat.delete(layer)
@@ -34,8 +34,6 @@ class TestDataPublisher(TestCase):
             res = self.publisher.cat.delete(layer.resource, purge="all", recurse=True)
             print(res.status_code)
             print(res.json)
-        if store:
-            self.publisher.cat.delete(store)
 
     def test_extract_resource_name_and_crs(self):
         """

@@ -1,15 +1,12 @@
 from rest_framework import serializers
-
-from geonode.base.api.serializers import BaseDynamicModelSerializer
-from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from dynamic_rest.serializers import DynamicModelSerializer
+from geonode.upload.models import Upload
 
 
-# class ImporterSerializer(DynamicModelSerializer):
 class ImporterSerializer(DynamicModelSerializer):
     class Meta:
         ref_name = "ImporterSerializer"
-        model = UploadParallelismLimit
+        model = Upload
         view_name = "importer_upload"
         fields = (
             "base_file",
@@ -28,29 +25,3 @@ class ImporterSerializer(DynamicModelSerializer):
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     source = serializers.CharField(required=False, default="upload")
-
-
-class UploadSizeLimitSerializer(BaseDynamicModelSerializer):
-    class Meta:
-        model = UploadSizeLimit
-        name = "upload-size-limit"
-        view_name = "upload-size-limits-list"
-        fields = (
-            "slug",
-            "description",
-            "max_size",
-            "max_size_label",
-        )
-
-
-class UploadParallelismLimitSerializer(BaseDynamicModelSerializer):
-    class Meta:
-        model = UploadParallelismLimit
-        name = "upload-parallelism-limit"
-        view_name = "upload-parallelism-limits-list"
-        fields = (
-            "slug",
-            "description",
-            "max_number",
-        )
-        read_only_fields = ("slug",)

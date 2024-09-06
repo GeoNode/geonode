@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("upload", "0003_resourcehandlerinfo_execution_id"),
+        ("importer", "0003_resourcehandlerinfo_execution_id"),
     ]
 
     operations = [

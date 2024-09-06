@@ -1,7 +1,7 @@
 import ast
 from django.db import connections
 from geonode.upload.publisher import DataPublisher
-from geonode.upload.utils import call_rollback_function, find_key_recursively
+from geonode.upload.utils import call_rollback_function
 import json
 import logging
 import os
@@ -35,6 +35,7 @@ from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
 import pyproj
+from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +61,7 @@ class BaseVectorFileHandler(BaseHandler):
         and a boolean to know if the store should be created.
         For vector, the store must be created
         """
-        return settings.DATABASES.get("datastore", {}).get("NAME", "geonode_data"), True
+        return os.environ.get("GEONODE_GEODATABASE", "geonode_data"), True
 
     @staticmethod
     def is_valid(files, user):
@@ -217,7 +218,7 @@ class BaseVectorFileHandler(BaseHandler):
         if _exec and not _exec.input_params.get("store_spatial_file", False):
             resources = ResourceHandlerInfo.objects.filter(execution_request=_exec)
             # getting all assets list
-            assets = [get_default_asset(x.resource) for x in resources]
+            assets = filter(None, [get_default_asset(x.resource) for x in resources])
             # we need to loop and cancel one by one to activate the signal
             # that delete the file from the filesystem
             for asset in assets:
@@ -351,7 +352,7 @@ class BaseVectorFileHandler(BaseHandler):
                         import_next_step.s(
                             execution_id,
                             str(self),  # passing the handler module path
-                            "importer.import_resource",
+                            "geonode.upload.import_resource",
                             layer_name,
                             alternate,
                             **kwargs,
@@ -584,15 +585,18 @@ class BaseVectorFileHandler(BaseHandler):
         resource_type: Dataset = Dataset,
         asset=None,
     ):
-        dataset = resource_type.objects.filter(alternate__icontains=alternate)
-
         _exec = self._get_execution_request_object(execution_id)
+
+        dataset = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
 
         _overwrite = _exec.input_params.get("overwrite_existing_layer", False)
         # if the layer exists, we just update the information of the dataset by
         # let it recreate the catalogue
         if dataset.exists() and _overwrite:
             dataset = dataset.first()
+
+            delete_dataset_cache(dataset.alternate)
+            set_geowebcache_invalidate_cache(dataset.typename)
 
             dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
 
@@ -721,35 +725,6 @@ class BaseVectorFileHandler(BaseHandler):
         """
         return STANDARD_TYPE_MAPPING.get(ogr.FieldDefn.GetTypeName(_type))
 
-    def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
-        steps = self.ACTIONS.get(action_to_rollback)
-        if rollback_from_step not in steps:
-            logger.info(f"Step not found {rollback_from_step}, skipping")
-            return
-        step_index = steps.index(rollback_from_step)
-        # the start_import, start_copy etc.. dont do anything as step, is just the start
-        # so there is nothing to rollback
-        steps_to_rollback = steps[1 : step_index + 1]  # noqa
-        if not steps_to_rollback:
-            return
-        # reversing the tuple to going backwards with the rollback
-        reversed_steps = steps_to_rollback[::-1]
-        instance_name = None
-        try:
-            instance_name = find_key_recursively(kwargs, "new_dataset_alternate") or args[3]
-        except Exception:
-            pass
-
-        logger.warning(f"Starting rollback for execid: {exec_id} resource published was: {instance_name}")
-
-        for step in reversed_steps:
-            normalized_step_name = step.split(".")[-1]
-            if getattr(self, f"_{normalized_step_name}_rollback", None):
-                function = getattr(self, f"_{normalized_step_name}_rollback")
-                function(exec_id, instance_name, *args, **kwargs)
-
-        logger.warning(f"Rollback for execid: {exec_id} resource published was: {instance_name} completed")
-
     def _import_resource_rollback(self, exec_id, instance_name=None, *args, **kwargs):
         """
         We use the schema editor directly, because the model itself is not managed
@@ -790,26 +765,11 @@ class BaseVectorFileHandler(BaseHandler):
         publisher = DataPublisher(handler_module_path=handler_module_path)
         publisher.delete_resource(instance_name)
 
-    def _create_geonode_resource_rollback(self, exec_id, instance_name=None, *args, **kwargs):
-        """
-        The handler will remove the resource from geonode
-        """
-        logger.info(f"Rollback geonode step in progress for execid: {exec_id} resource created was: {instance_name}")
-        resource = ResourceBase.objects.filter(alternate__icontains=instance_name)
-        if resource.exists():
-            resource.delete()
-
-    def _copy_dynamic_model_rollback(self, exec_id, instance_name=None, *args, **kwargs):
-        self._import_resource_rollback(exec_id, instance_name=instance_name)
-
-    def _copy_geonode_resource_rollback(self, exec_id, instance_name=None, *args, **kwargs):
-        self._create_geonode_resource_rollback(exec_id, instance_name=instance_name)
-
 
 @importer_app.task(
     base=ErrorBaseTaskClass,
-    name="importer.import_next_step",
-    queue="importer.import_next_step",
+    name="geonode.upload.import_next_step",
+    queue="geonode.upload.import_next_step",
     task_track_started=True,
 )
 def import_next_step(
@@ -860,8 +820,8 @@ def import_next_step(
 
 @importer_app.task(
     base=SingleMessageErrorHandler,
-    name="importer.import_with_ogr2ogr",
-    queue="importer.import_with_ogr2ogr",
+    name="geonode.upload.import_with_ogr2ogr",
+    queue="geonode.upload.import_with_ogr2ogr",
     max_retries=1,
     acks_late=False,
     ignore_result=False,

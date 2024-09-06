@@ -19,19 +19,19 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
     ACTIONS = {
         exa.IMPORT.value: (
             "start_import",
-            "importer.import_resource",
-            "importer.publish_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
         ),
         exa.COPY.value: (
             "start_copy",
-            "importer.copy_raster_file",
-            "importer.publish_resource",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_raster_file",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
         ),
         ira.ROLLBACK.value: (
             "start_rollback",
-            "importer.rollback",
+            "geonode.upload.rollback",
         ),
     }
 

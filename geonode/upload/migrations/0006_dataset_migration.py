@@ -6,13 +6,12 @@ from geonode.layers.models import Dataset
 
 
 def dataset_migration(apps, _):
-    NewResources = apps.get_model("upload", "ResourceHandlerInfo")
+    NewResources = apps.get_model("importer", "ResourceHandlerInfo")
     for old_resource in Dataset.objects.exclude(
         pk__in=NewResources.objects.values_list("resource_id", flat=True)
     ).exclude(subtype__in=["remote", None]):
         # generating orchestrator expected data file
-        converted_files = []
-        if not hasattr(old_resource, "files") or not old_resource.files:
+        if not old_resource.files:
             if old_resource.is_vector():
                 converted_files = [{"base_file": "placeholder.shp"}]
             else:
@@ -37,7 +36,7 @@ def dataset_migration(apps, _):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("upload", "0005_fixup_dynamic_shema_table_names"),
+        ("importer", "0005_fixup_dynamic_shema_table_names"),
     ]
 
     operations = [

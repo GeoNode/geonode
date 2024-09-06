@@ -117,7 +117,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
             handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
         mock_celery.assert_called_once()
-        mock_celery.assert_called_with("importer.import_resource")
+        mock_celery.assert_called_with("geonode.upload.import_resource")
 
     @override_settings(MEDIA_ROOT="/tmp/")
     @patch("geonode.upload.orchestrator.importer_app.tasks.get")
@@ -127,7 +127,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name=next(iter(handler.get_task_list(action="import"))),
-            step="importer.create_geonode_resource",  # adding the first step for the GPKG file
+            step="geonode.upload.create_geonode_resource",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
@@ -137,7 +137,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         self.orchestrator.perform_next_step(
             _id,
             "import",
-            step="importer.create_geonode_resource",
+            step="geonode.upload.create_geonode_resource",
             handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
         mock_celery.assert_not_called()
@@ -194,7 +194,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         _uuid = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name="name",
-            step="importer.create_geonode_resource",  # adding the first step for the GPKG file
+            step="geonode.upload.create_geonode_resource",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": fake_path},
                 "store_spatial_files": True,
@@ -209,6 +209,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         req = ExecutionRequest.objects.get(exec_id=_uuid)
         self.assertTrue(req.status, ExecutionRequest.STATUS_FAILED)
         self.assertTrue(req.log, "automatic test")
+        self.assertFalse(os.path.exists(fake_path))
         # cleanup
         req.delete()
 
@@ -217,7 +218,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         _uuid = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name="name",
-            step="importer.create_geonode_resource",  # adding the first step for the GPKG file
+            step="geonode.upload.create_geonode_resource",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
@@ -238,7 +239,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         _uuid = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
             func_name="name",
-            step="importer.create_geonode_resource",  # adding the first step for the GPKG file
+            step="geonode.upload.create_geonode_resource",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
@@ -259,6 +260,36 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
 
         # cleanup
         req.delete()
+
+    def test_evaluate_execution_progress_should_continue_if_some_task_is_not_finished(
+        self,
+    ):
+        # create the celery task result entry
+        try:
+            exec_id = str(
+                self.orchestrator.create_execution_request(
+                    user=get_user_model().objects.first(),
+                    func_name="test",
+                    step="test",
+                )
+            )
+
+            started_entry = TaskResult.objects.create(task_id="task_id_started", status="STARTED", task_args=exec_id)
+            success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
+            with self.assertLogs(level="INFO") as _log:
+                result = self.orchestrator.evaluate_execution_progress(exec_id)
+
+            self.assertIsNone(result)
+            self.assertEqual(
+                f"INFO:geonode.upload.orchestrator:Execution with ID {exec_id} is completed. All tasks are done",
+                _log.output[0],
+            )
+
+        finally:
+            if started_entry:
+                started_entry.delete()
+            if success_entry:
+                success_entry.delete()
 
     def test_evaluate_execution_progress_should_fail_if_one_task_is_failed(self):
         """

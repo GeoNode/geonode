@@ -25,4 +25,4 @@ __version__ = ".".join([str(i) for i in VERSION])
 __author__ = "geosolutions-it"
 __email__ = "info@geosolutionsgroup.com"
 __url__ = "https://github.com/GeoNode/geonode-importer"
-default_app_config = "upload.apps.ImporterConfig"
+default_app_config = "importer.apps.ImporterConfig"

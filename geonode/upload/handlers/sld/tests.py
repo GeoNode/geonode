@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from geonode.base.populate_test_data import create_single_dataset
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.handlers.sld.exceptions import InvalidSldException
@@ -38,7 +38,7 @@ class TestSLDFileHandler(TestCase):
     def test_task_list_is_the_expected_one(self):
         expected = (
             "start_import",
-            "importer.import_resource",
+            "geonode.upload.import_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["import"]), 2)
         self.assertTupleEqual(expected, self.handler.ACTIONS["import"])

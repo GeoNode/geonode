@@ -1,6 +1,8 @@
 from django.utils.module_loading import import_string
 from django.contrib.auth import get_user_model
 
+from geonode.upload.orchestrator import orchestrator
+
 
 class DataStoreManager:
     """
@@ -24,7 +26,12 @@ class DataStoreManager:
         """
         Perform basic validation steps
         """
-        return self.handler.is_valid(self.files, self.user)
+        if self.files:
+            return self.handler.is_valid(self.files, self.user)
+        url = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("url")
+        if url:
+            return self.handler.is_valid_url(url)
+        return False
 
     def prepare_import(self, **kwargs):
         """

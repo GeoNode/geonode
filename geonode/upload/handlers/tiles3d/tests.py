@@ -5,10 +5,10 @@ from django.test import TestCase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.upload.handlers.tiles3d.handler import Tiles3DFileHandler
 from django.contrib.auth import get_user_model
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.models import UploadParallelismLimit
-from geonode.upload.api.exception import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
 from osgeo import ogr
 from geonode.assets.handlers import asset_handler_registry
@@ -37,8 +37,8 @@ class TestTiles3DFileHandler(TestCase):
     def test_task_list_is_the_expected_one(self):
         expected = (
             "start_import",
-            "importer.import_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.create_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["import"]), 3)
         self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
@@ -46,7 +46,7 @@ class TestTiles3DFileHandler(TestCase):
     def test_task_list_is_the_expected_one_copy(self):
         expected = (
             "start_copy",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["copy"]), 2)
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
@@ -322,6 +322,109 @@ class TestTiles3DFileHandler(TestCase):
         self.assertEqual(resource.bbox_x1, 0.0004463052796897286)
         self.assertEqual(resource.bbox_y0, 86.81078622278615)
         self.assertEqual(resource.bbox_y1, 86.81124587650872)
+
+        os.remove("/tmp/tileset.json")
+
+    def test_set_bbox_from_bounding_volume_sphere_with_transform(self):
+        # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L102-L146
+        tilesetjson_file = {
+            "asset": {"version": "1.1"},
+            "geometricError": 1.0,
+            "root": {
+                "transform": [
+                    0.968635634376879,
+                    0.24848542777253735,
+                    0,
+                    0,
+                    -0.15986460794399626,
+                    0.6231776137472074,
+                    0.7655670897127491,
+                    0,
+                    0.190232265775849,
+                    -0.7415555636019701,
+                    0.6433560687121489,
+                    0,
+                    1215012.8828876738,
+                    -4736313.051199594,
+                    4081605.22126042,
+                    1,
+                ],
+                "boundingVolume": {"sphere": [0, 0, 0, 5]},
+            },
+        }
+
+        with open("/tmp/tileset.json", "w+") as js_file:
+            js_file.write(json.dumps(tilesetjson_file))
+
+        exec_id, asset = self._generate_execid_asset()
+
+        resource = self.handler.create_geonode_resource(
+            "layername",
+            "layeralternate",
+            execution_id=exec_id,
+            resource_type="ResourceBase",
+            asset=asset,
+        )
+        self.assertFalse(resource.bbox == self.default_bbox)
+
+        self.assertEqual(resource.bbox_x0, -75.61213927392595)
+        self.assertEqual(resource.bbox_x1, -75.61204934172301)
+        self.assertEqual(resource.bbox_y0, 40.042485645323616)
+        self.assertEqual(resource.bbox_y1, 40.042575577526556)
+
+        os.remove("/tmp/tileset.json")
+
+    def test_set_bbox_from_bounding_volume_sphere_without_transform(self):
+        # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L53C4-L79C8
+        tilesetjson_file = {
+            "asset": {"version": "1.1"},
+            "geometricError": 1.0,
+            "root": {"boundingVolume": {"sphere": [0.2524109, 9.536743e-7, 4.5, 5]}},
+        }
+
+        with open("/tmp/tileset.json", "w+") as js_file:
+            js_file.write(json.dumps(tilesetjson_file))
+
+        exec_id, asset = self._generate_execid_asset()
+
+        resource = self.handler.create_geonode_resource(
+            "layername",
+            "layeralternate",
+            execution_id=exec_id,
+            resource_type="ResourceBase",
+            asset=asset,
+        )
+        self.assertFalse(resource.bbox == self.default_bbox)
+
+        self.assertEqual(resource.bbox_x0, 0.00017151231693387494)
+        self.assertEqual(resource.bbox_x1, 0.00026144451987335574)
+        self.assertEqual(resource.bbox_y0, 86.81097108354597)
+        self.assertEqual(resource.bbox_y1, 86.8110610157489)
+
+        os.remove("/tmp/tileset.json")
+
+    def test_set_bbox_from_bounding_volume_sphere_with_center_zero_without_transform(self):
+        # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/api/__tests__/ThreeDTiles-test.js#L53C4-L79C8
+        # This test should not extract bbox from boundingVolume sphere with center 0, 0, 0
+        tilesetjson_file = {
+            "asset": {"version": "1.1"},
+            "geometricError": 1.0,
+            "root": {"boundingVolume": {"sphere": [0, 0, 0, 5]}},
+        }
+
+        with open("/tmp/tileset.json", "w+") as js_file:
+            js_file.write(json.dumps(tilesetjson_file))
+
+        exec_id, asset = self._generate_execid_asset()
+
+        resource = self.handler.create_geonode_resource(
+            "layername",
+            "layeralternate",
+            execution_id=exec_id,
+            resource_type="ResourceBase",
+            asset=asset,
+        )
+        self.assertTrue(resource.bbox == self.default_bbox)
 
         os.remove("/tmp/tileset.json")
 

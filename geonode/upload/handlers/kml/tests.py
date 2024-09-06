@@ -2,9 +2,9 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.kml.exceptions import InvalidKmlException
 from geonode.upload.handlers.kml.handler import KMLFileHandler
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.models import UploadParallelismLimit
-from geonode.upload.api.exception import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
 from osgeo import ogr
 
@@ -27,9 +27,9 @@ class TestKMLHandler(TestCase):
     def test_task_list_is_the_expected_one(self):
         expected = (
             "start_import",
-            "importer.import_resource",
-            "importer.publish_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
         self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
@@ -37,10 +37,10 @@ class TestKMLHandler(TestCase):
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
             "start_copy",
-            "importer.copy_dynamic_model",
-            "importer.copy_geonode_data_table",
-            "importer.publish_resource",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_dynamic_model",
+            "geonode.upload.copy_geonode_data_table",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])

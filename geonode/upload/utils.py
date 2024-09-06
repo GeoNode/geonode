@@ -3,12 +3,6 @@ from geonode.resource.manager import ResourceManager
 from geonode.geoserver.manager import GeoServerResourceManager
 from geonode.base.models import ResourceBase
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-from geonode.resource.models import ExecutionRequest
-from geonode.upload.api.exception import FileUploadLimitException, UploadParallelismLimitException
-from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
-from django.core.exceptions import ObjectDoesNotExist
-from django.template.defaultfilters import filesizeformat
 
 
 class ImporterRequestAction(enum.Enum):
@@ -73,86 +67,3 @@ def find_key_recursively(obj, key):
     for _unsed, v in obj.items():
         if isinstance(v, dict):
             return find_key_recursively(v, key)
-
-
-class UploadLimitValidator:
-    def __init__(self, user) -> None:
-        self.user = user
-
-    def validate_parallelism_limit_per_user(self):
-        max_parallel_uploads = self._get_max_parallel_uploads()
-        parallel_uploads_count = self._get_parallel_uploads_count()
-        if parallel_uploads_count >= max_parallel_uploads:
-            raise UploadParallelismLimitException(
-                _(
-                    f"The number of active parallel uploads exceeds {max_parallel_uploads}. Wait for the pending ones to finish."
-                )
-            )
-
-    def validate_files_sum_of_sizes(self, file_dict):
-        max_size = self._get_uploads_max_size()
-        total_size = self._get_uploaded_files_total_size(file_dict)
-        if total_size > max_size:
-            raise FileUploadLimitException(
-                _(f"Total upload size exceeds {filesizeformat(max_size)}. Please try again with smaller files.")
-            )
-
-    def _get_uploads_max_size(self):
-        try:
-            max_size_db_obj = UploadSizeLimit.objects.get(slug="dataset_upload_size")
-        except UploadSizeLimit.DoesNotExist:
-            max_size_db_obj = UploadSizeLimit.objects.create_default_limit()
-        return max_size_db_obj.max_size
-
-    def _get_uploaded_files(self):
-        """Return a list with all of the uploaded files"""
-        return [django_file for field_name, django_file in self.files.items() if field_name != "base_file"]
-
-    def _get_uploaded_files_total_size(self, file_dict):
-        """Return a list with all of the uploaded files"""
-        excluded_files = (
-            "zip_file",
-            "shp_file",
-        )
-        _iterate_files = file_dict.data_items if hasattr(file_dict, "data_items") else file_dict
-        uploaded_files_sizes = [
-            file_obj.size for field_name, file_obj in _iterate_files.items() if field_name not in excluded_files
-        ]
-        total_size = sum(uploaded_files_sizes)
-        return total_size
-
-    def _get_max_parallel_uploads(self):
-        try:
-            parallelism_limit = UploadParallelismLimit.objects.get(slug="default_max_parallel_uploads")
-        except UploadParallelismLimit.DoesNotExist:
-            parallelism_limit = UploadParallelismLimit.objects.create_default_limit()
-        return parallelism_limit.max_number
-
-    def _get_parallel_uploads_count(self):
-        """
-        Count the total layers that are part of the running import
-        """
-        return sum(
-            filter(
-                None,
-                ExecutionRequest.objects.filter(
-                    user=self.user, status__in=[ExecutionRequest.STATUS_RUNNING, ExecutionRequest.STATUS_READY]
-                ).values_list("input_params__total_layers", flat=True),
-            )
-        )
-
-
-def get_max_upload_size(slug):
-    try:
-        max_size = UploadSizeLimit.objects.get(slug=slug).max_size
-    except ObjectDoesNotExist:
-        max_size = getattr(settings, "DEFAULT_MAX_UPLOAD_SIZE", 104857600)
-    return max_size
-
-
-def get_max_upload_parallelism_limit(slug):
-    try:
-        max_number = UploadParallelismLimit.objects.get(slug=slug).max_number
-    except ObjectDoesNotExist:
-        max_number = getattr(settings, "DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER", 5)
-    return max_number

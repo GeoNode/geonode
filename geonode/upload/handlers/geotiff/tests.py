@@ -1,9 +1,9 @@
 from django.test import TestCase
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from django.contrib.auth import get_user_model
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.models import UploadParallelismLimit
-from geonode.upload.api.exception import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.base.populate_test_data import create_single_dataset
 
 from geonode.upload.handlers.geotiff.handler import GeoTiffFileHandler
@@ -26,9 +26,9 @@ class TestGeoTiffFileHandler(TestCase):
     def test_task_list_is_the_expected_one(self):
         expected = (
             "start_import",
-            "importer.import_resource",
-            "importer.publish_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
         self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
@@ -36,9 +36,9 @@ class TestGeoTiffFileHandler(TestCase):
     def test_task_list_is_the_expected_one_copy(self):
         expected = (
             "start_copy",
-            "importer.copy_raster_file",
-            "importer.publish_resource",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_raster_file",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["copy"]), 4)
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])

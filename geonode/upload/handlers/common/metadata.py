@@ -18,7 +18,7 @@ class MetadataFileHandler(BaseHandler):
     """
 
     ACTIONS = {
-        exa.IMPORT.value: ("start_import", "importer.import_resource"),
+        exa.IMPORT.value: ("start_import", "geonode.upload.import_resource"),
         ira.ROLLBACK.value: (),
     }
 
@@ -34,10 +34,6 @@ class MetadataFileHandler(BaseHandler):
         ):
             return MetadataFileSerializer
         return False
-
-    @property
-    def supported_file_extension_config(self):
-        return None
 
     @staticmethod
     def extract_params_from_data(_data, action=None):

@@ -122,6 +122,26 @@ def fromCartesian(cartesian):
     return {"longitude": longitude, "latitude": latitude, "height": height}
 
 
+def getScale(matrix):
+    """
+    Cesium.Matrix4.getScale()
+    Extracts the non-uniform scale assuming the matrix is an affine transformation
+    # https://github.com/CesiumGS/cesium/blob/1.118/packages/engine/Source/Core/Matrix4.js#L1596-L1612
+    """
+
+    # check the type of the matrix
+    if not isinstance(matrix, np.ndarray):
+        print("Please define a NumPy array object")
+
+    x = np.linalg.norm([matrix[0][0], matrix[0][1], matrix[0][2]])
+    y = np.linalg.norm([matrix[1][0], matrix[1][1], matrix[1][2]])
+    z = np.linalg.norm([matrix[2][0], matrix[2][1], matrix[2][2]])
+
+    result = np.array([x, y, z])
+
+    return result
+
+
 def box_to_wgs84(box_raw, transform_raw):
     box = box_raw
     transform_raw = transform_raw or [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
@@ -152,13 +172,52 @@ def box_to_wgs84(box_raw, transform_raw):
 
     sphere = fromOrientedBoundingBox(center, halfAxes)
     cartographic = fromCartesian(sphere["center"])
-    # print(cartographic)
 
     lng = math.degrees(cartographic["longitude"])
     lat = math.degrees(cartographic["latitude"])
 
     # https://github.com/geosolutions-it/MapStore2/blob/master/web/client/utils/MapUtils.js#L51C16-L51C34
     radiusDegrees = sphere["radius"] / 111194.87428468118
+
+    return {
+        "minx": lng - radiusDegrees,
+        "miny": lat - radiusDegrees,
+        "maxx": lng + radiusDegrees,
+        "maxy": lat + radiusDegrees,
+    }
+
+
+def sphere_to_wgs84(sphere_raw, transform_raw):
+
+    transform_raw = transform_raw or [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+
+    transform = np.array(
+        [
+            transform_raw[0:4],
+            transform_raw[4:8],
+            transform_raw[8:12],
+            transform_raw[12:16],
+        ]
+    )
+
+    centerPoint = np.array([sphere_raw[0], sphere_raw[1], sphere_raw[2], 1])
+
+    radius = sphere_raw[3]
+
+    # Sphere center after the transformation
+    center = centerPoint.dot(transform)  # Cesium.Matrix4.multiplyByPoint
+
+    scale = getScale(transform)
+    uniformScale = np.max(scale)
+    radiusDegrees = (radius * uniformScale) / 111194.87428468118  # degrees of one meter
+
+    cartographic = fromCartesian(center)
+
+    if not cartographic:
+        return None
+
+    lng = math.degrees(cartographic["longitude"])
+    lat = math.degrees(cartographic["latitude"])
 
     return {
         "minx": lng - radiusDegrees,

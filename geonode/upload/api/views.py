@@ -19,10 +19,8 @@
 import logging
 from urllib.parse import urljoin
 from django.conf import settings
-from django.forms import ValidationError
 from django.urls import reverse
 from pathlib import Path
-from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.resource.enumerator import ExecutionRequestAction
 from django.utils.translation import gettext_lazy as _
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -30,7 +28,6 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import (
-    IsSelfOrAdminOrReadOnly,
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
@@ -38,16 +35,15 @@ from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import StorageManager
-from rest_framework import status
+from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.api.serializer import UploadParallelismLimitSerializer, UploadSizeLimitSerializer
 from geonode.upload.api.exception import HandlerException, ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
-from rest_framework.parsers import FileUploadParser, MultiPartParser
+from rest_framework.parsers import FileUploadParser, MultiPartParser, JSONParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from geonode.assets.handlers import asset_handler_registry
@@ -61,7 +57,7 @@ class ImporterViewSet(DynamicModelViewSet):
     API endpoint that allows uploads to be viewed or edited.
     """
 
-    parser_class = [FileUploadParser, MultiPartParser]
+    parser_class = [JSONParser, FileUploadParser, MultiPartParser]
 
     authentication_classes = [
         BasicAuthentication,
@@ -76,6 +72,7 @@ class ImporterViewSet(DynamicModelViewSet):
         DynamicFilterBackend,
         DynamicSortingFilter,
         DynamicSearchFilter,
+        UploadPermissionsFilter,
     ]
     queryset = ResourceBase.objects.all().order_by("-last_updated")
     serializer_class = ImporterSerializer
@@ -125,39 +122,42 @@ class ImporterViewSet(DynamicModelViewSet):
 
         handler = orchestrator.get_handler(_data)
 
-        if _file and handler:
+        # not file but handler means that is a remote resource
+        if handler:
             asset = None
+            files = []
             try:
                 # cloning data into a local folder
                 extracted_params, _data = handler.extract_params_from_data(_data)
-                if storage_manager is None:
-                    # means that the storage manager is not initialized yet, so
-                    # the file is not a zip
-                    storage_manager = StorageManager(remote_files=_data)
-                    storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
-                # get filepath
-                asset, files = self.generate_asset_and_retrieve_paths(request, storage_manager, handler)
+                if _file:
+                    storage_manager, asset, files = self._handle_asset(
+                        request, asset_dir, storage_manager, _data, handler
+                    )
 
-                upload_validator = UploadLimitValidator(request.user)
-                upload_validator.validate_parallelism_limit_per_user()
-                upload_validator.validate_files_sum_of_sizes(storage_manager.data_retriever)
+                    self.validate_upload(request, storage_manager)
 
                 action = ExecutionRequestAction.IMPORT.value
+
+                input_params = {
+                    **{"files": files, "handler_module_path": str(handler)},
+                    **extracted_params,
+                }
+
+                if asset:
+                    input_params.update(
+                        {
+                            "asset_id": asset.id,
+                            "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
+                        }
+                    )
 
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
                     func_name=next(iter(handler.get_task_list(action=action))),
                     step=_(next(iter(handler.get_task_list(action=action)))),
-                    input_params={
-                        **{"files": files, "handler_module_path": str(handler)},
-                        **extracted_params,
-                        **{
-                            "asset_id": asset.id,
-                            "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
-                        },
-                    },
+                    input_params=input_params,
                     action=action,
-                    name=_file.name,
+                    name=_file.name if _file else extracted_params.get("title", None),
                     source=extracted_params.get("source"),
                 )
 
@@ -180,6 +180,21 @@ class ImporterViewSet(DynamicModelViewSet):
                 raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
 
         raise ImportException(detail="No handlers found for this dataset type")
+
+    def _handle_asset(self, request, asset_dir, storage_manager, _data, handler):
+        if storage_manager is None:
+            # means that the storage manager is not initialized yet, so
+            # the file is not a zip
+            storage_manager = StorageManager(remote_files=_data)
+            storage_manager.clone_remote_files(cloning_directory=asset_dir, create_tempdir=False)
+            # get filepath
+        asset, files = self.generate_asset_and_retrieve_paths(request, storage_manager, handler)
+        return storage_manager, asset, files
+
+    def validate_upload(self, request, storage_manager):
+        upload_validator = UploadLimitValidator(request.user)
+        upload_validator.validate_parallelism_limit_per_user()
+        upload_validator.validate_files_sum_of_sizes(storage_manager.data_retriever)
 
     def generate_asset_and_retrieve_paths(self, request, storage_manager, handler):
         asset_handler = asset_handler_registry.get_default_handler()
@@ -287,48 +302,3 @@ class ResourceImporter(DynamicModelViewSet):
         return ResourceBaseViewSet(request=request, format_kwarg=None, args=args, kwargs=kwargs).resource_service_copy(
             request, pk=kwargs.get("pk")
         )
-
-
-class UploadSizeLimitViewSet(DynamicModelViewSet):
-    http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsSelfOrAdminOrReadOnly]
-    queryset = UploadSizeLimit.objects.all()
-    serializer_class = UploadSizeLimitSerializer
-    pagination_class = GeoNodeApiPagination
-
-    def destroy(self, request, *args, **kwargs):
-        protected_objects = [
-            "dataset_upload_size",
-            "document_upload_size",
-            "file_upload_handler",
-        ]
-        instance = self.get_object()
-        if instance.slug in protected_objects:
-            detail = _(f"The limit `{instance.slug}` should not be deleted.")
-            raise ValidationError(detail)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class UploadParallelismLimitViewSet(DynamicModelViewSet):
-    http_method_names = ["get", "post"]
-    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
-    permission_classes = [IsSelfOrAdminOrReadOnly]
-    queryset = UploadParallelismLimit.objects.all()
-    serializer_class = UploadParallelismLimitSerializer
-    pagination_class = GeoNodeApiPagination
-
-    def get_serializer(self, *args, **kwargs):
-        serializer = super(UploadParallelismLimitViewSet, self).get_serializer(*args, **kwargs)
-        if self.action == "create":
-            serializer.fields["slug"].read_only = False
-        return serializer
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.slug == "default_max_parallel_uploads":
-            detail = _("The limit `default_max_parallel_uploads` should not be deleted.")
-            raise ValidationError(detail)
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)

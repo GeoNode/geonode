@@ -4,10 +4,10 @@ import uuid
 import gisdata
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from geonode.upload.api.exception import UploadParallelismLimitException
+from geonode.upload.api.exceptions import UploadParallelismLimitException
 from geonode.upload.models import UploadParallelismLimit
 from mock import MagicMock, patch, mock_open
-from geonode.upload import project_dir
+from importer import project_dir
 from geonode.upload.handlers.common.vector import import_with_ogr2ogr
 from geonode.upload.handlers.shapefile.handler import ShapeFileHandler
 from osgeo import ogr
@@ -38,9 +38,9 @@ class TestShapeFileFileHandler(TestCase):
     def test_task_list_is_the_expected_one(self):
         expected = (
             "start_import",
-            "importer.import_resource",
-            "importer.publish_resource",
-            "importer.create_geonode_resource",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
         self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
@@ -48,10 +48,10 @@ class TestShapeFileFileHandler(TestCase):
     def test_copy_task_list_is_the_expected_one(self):
         expected = (
             "start_copy",
-            "importer.copy_dynamic_model",
-            "importer.copy_geonode_data_table",
-            "importer.publish_resource",
-            "importer.copy_geonode_resource",
+            "geonode.upload.copy_dynamic_model",
+            "geonode.upload.copy_geonode_data_table",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
         )
         self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
         self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
