@@ -4,7 +4,7 @@ from typing import List
 
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.layers.models import Dataset
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from geonode.upload.utils import ImporterRequestAction as ira, find_key_recursively
 from django_celery_results.models import TaskResult
 from django.db.models import Q

@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.test import override_settings
 from geonode.tests.base import GeoNodeBaseTestSupport
 from unittest.mock import patch
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer

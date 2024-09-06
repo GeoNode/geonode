@@ -8,7 +8,7 @@ from geoserver.catalog import Catalog
 from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
 
-from geonode.upload.api.exception import PublishResourceException
+from geonode.upload.api.exceptions import PublishResourceException
 
 
 logger = logging.getLogger(__name__)

@@ -57,7 +57,7 @@ from geonode.documents.enumerations import DOCUMENT_TYPE_MAP
 from geonode.documents.models import Document
 
 from geonode.base.populate_test_data import all_public, create_models, create_single_doc, remove_models
-from geonode.upload.api.exception import FileUploadLimitException
+from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
 

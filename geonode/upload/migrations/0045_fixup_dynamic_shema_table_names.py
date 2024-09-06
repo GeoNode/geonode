@@ -27,7 +27,7 @@ def fixup_table_name(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("importer", "0004_rename_execution_id_resourcehandlerinfo_execution_request"),
+        ("upload", "0044_rename_execution_id_resourcehandlerinfo_execution_request"),
         ("dynamic_models", "0005_auto_20220621_0718"),
     ]
 

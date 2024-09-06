@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from dynamic_rest.serializers import DynamicModelSerializer
-from geonode.upload.models import Upload
+from geonode.upload.models import UploadParallelismLimit
 
 
 class ImporterSerializer(DynamicModelSerializer):
     class Meta:
         ref_name = "ImporterSerializer"
-        model = Upload
+        model = UploadParallelismLimit
         view_name = "importer_upload"
         fields = (
             "base_file",

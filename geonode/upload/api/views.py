@@ -37,7 +37,7 @@ from geonode.base.models import ResourceBase
 from geonode.storage.manager import StorageManager
 from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.utils import UploadLimitValidator
-from geonode.upload.api.exception import HandlerException, ImportException
+from geonode.upload.api.exceptions import HandlerException, ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator

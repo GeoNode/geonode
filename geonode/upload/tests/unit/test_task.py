@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 from unittest.mock import patch
-from geonode.upload.api.exception import InvalidInputFileException
+from geonode.upload.api.exceptions import InvalidInputFileException
 
 from geonode.upload.celery_tasks import (
     copy_dynamic_model,

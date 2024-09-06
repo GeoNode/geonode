@@ -1,14 +1,19 @@
 from django.apps import AppConfig
+from django.conf import settings
 
 
-class ImporterConfig(AppConfig):
+class UploadAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "importer"
+    name = "geonode.upload"
 
     def ready(self):
         """Finalize setup"""
         run_setup_hooks()
-        super(ImporterConfig, self).ready()
+        super(UploadAppConfig, self).ready()
+        settings.CELERY_BEAT_SCHEDULE["clean-up-old-task-result"] = {
+            "task": "geonode.upload.tasks.cleanup_celery_task_entries",
+            "schedule": 86400.0,
+        }
 
 
 def run_setup_hooks(*args, **kwargs):

@@ -5,7 +5,7 @@ import os
 import requests
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.models import ResourceHandlerInfo

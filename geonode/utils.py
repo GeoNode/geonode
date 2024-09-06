@@ -51,7 +51,7 @@ from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
 from math import atan, exp, log, pi, sin, tan, floor
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
-from geonode.upload.api.exception import GeneralUploadException
+from geonode.upload.api.exceptions import GeneralUploadException
 
 from django.conf import settings
 from django.db.models import signals

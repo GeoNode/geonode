@@ -1,7 +1,7 @@
 from collections import namedtuple
 from django.test import TestCase
 from mock import MagicMock, patch
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.remote.serializers.wms import RemoteWMSSerializer
 from geonode.upload.handlers.remote.wms import RemoteWMSResourceHandler

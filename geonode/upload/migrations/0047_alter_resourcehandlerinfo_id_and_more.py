@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("upload", "0006_dataset_migration"),
+        ("upload", "0046_dataset_migration"),
     ]
 
     operations = [

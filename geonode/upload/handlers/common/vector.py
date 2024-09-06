@@ -26,7 +26,7 @@ from geonode.upload.handlers.utils import (
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 from osgeo import ogr
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_app import importer_app
 from geonode.assets.utils import copy_assets_and_links, get_default_asset
 

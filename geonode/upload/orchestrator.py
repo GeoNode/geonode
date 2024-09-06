@@ -11,7 +11,7 @@ from django_celery_results.models import TaskResult
 from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from geonode.upload.api.serializer import ImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler

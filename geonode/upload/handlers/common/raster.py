@@ -13,7 +13,7 @@ from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import ErrorBaseTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException

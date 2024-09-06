@@ -1,6 +1,6 @@
 from django.test import TestCase
 from mock import MagicMock, patch
-from geonode.upload.api.exception import ImportException
+from geonode.upload.api.exceptions import ImportException
 from django.contrib.auth import get_user_model
 from geonode.upload.handlers.common.serializer import RemoteResourceSerializer
 from geonode.upload.handlers.remote.tiles3d import RemoteTiles3DResourceHandler

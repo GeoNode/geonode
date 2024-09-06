@@ -9,6 +9,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("base", "0081_alter_resourcebase_alternate"),
+        ('upload', '0039_auto_20220506_0833'),
+
     ]
 
     operations = [

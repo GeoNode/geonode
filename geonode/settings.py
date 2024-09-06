@@ -1078,7 +1078,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
     DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
 """
 UPLOADER = {
-    "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.importer"),
+    "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.upload"),
     "OPTIONS": {
         "TIME_ENABLED": ast.literal_eval(os.getenv("TIME_ENABLED", "False")),
         "MOSAIC_ENABLED": ast.literal_eval(os.getenv("MOSAIC_ENABLED", "False")),

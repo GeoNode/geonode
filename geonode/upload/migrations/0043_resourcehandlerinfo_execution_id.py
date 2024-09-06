@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
     dependencies = [
         ("resource", "0007_alter_executionrequest_action"),
-        ("importer", "0002_resourcehandlerinfo_kwargs"),
+        ("upload", "0042_resourcehandlerinfo_kwargs"),
     ]
 
     operations = [

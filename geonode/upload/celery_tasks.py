@@ -11,7 +11,7 @@ from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from dynamic_models.models import FieldSchema, ModelSchema
 from geonode.base.models import ResourceBase
 from geonode.resource.enumerator import ExecutionRequestAction as exa
-from geonode.upload.api.exception import (
+from geonode.upload.api.exceptions import (
     CopyResourceException,
     InvalidInputFileException,
     PublishResourceException,
