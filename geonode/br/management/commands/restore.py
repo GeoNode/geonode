@@ -304,7 +304,6 @@ class Command(BaseCommand):
                         self.restore_geoserver_vector_data(config, settings, target_folder, soft_reset)
                         self.restore_geoserver_externals(config, settings, target_folder)
                         logger.info("*** Recreate GWC tile layers")
-                        call_command("create_tile_layers")
                     except Exception as e:
                         logger.warning(f"*** GeoServer Restore failed: {e}", exc_info=e)
                         if recovery_file:

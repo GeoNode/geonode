@@ -43,6 +43,7 @@ from django.core.exceptions import ValidationError, FieldDoesNotExist
 
 from geonode.base.models import ResourceBase, LinkedResource
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
+from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
 from geonode.security.utils import perms_as_set, get_user_groups, skip_registered_members_common_group
@@ -393,6 +394,61 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.clear_dirty_state()
         return _resource
 
+<<<<<<< HEAD
+=======
+    def ingest(
+        self,
+        files: typing.List[str],
+        /,
+        uuid: str = None,
+        resource_type: typing.Optional[object] = None,
+        defaults: dict = {},
+        **kwargs,
+    ) -> ResourceBase:
+        instance = None
+        to_update = defaults.copy()
+        to_update_with_files = {**to_update, **{"files": files}}
+        try:
+            with transaction.atomic():
+                if resource_type == Document:
+                    if "name" in to_update:
+                        to_update.pop("name")
+                    instance = self.create(uuid, resource_type=Document, defaults=to_update_with_files)
+                elif resource_type == Dataset:
+                    if files:
+                        instance = self.create(uuid, resource_type=Dataset, defaults=to_update_with_files)
+                    else:
+                        logger.warning(f"Will not create a Dataset without any file. Values: {defaults}")
+
+                if instance:
+                    instance = self._concrete_resource_manager.ingest(
+                        storage_manager.copy_files_list(files),
+                        uuid=instance.uuid,
+                        resource_type=resource_type,
+                        defaults=to_update,
+                        **kwargs,
+                    )
+                    instance.set_processing_state(enumerations.STATE_PROCESSED)
+                    instance.save(notify=False)
+        except Exception as e:
+            logger.exception(e)
+            if instance:
+                instance.set_processing_state(enumerations.STATE_INVALID)
+        if instance:
+            try:
+                resourcebase_post_save(instance.get_real_instance())
+                # Finalize Upload
+                if "user" in to_update:
+                    to_update.pop("user")
+                instance = self.update(instance.uuid, instance=instance, vals=to_update)
+                self.set_thumbnail(instance.uuid, instance=instance)
+            except Exception as e:
+                logger.exception(e)
+            finally:
+                instance.clear_dirty_state()
+        return instance
+
+>>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
     def copy(
         self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
     ) -> ResourceBase:
@@ -435,6 +491,18 @@ class ResourceManager(ResourceManagerInterface):
                             _maplayer.pk = _maplayer.id = None
                             _maplayer.map = _resource.get_real_instance()
                             _maplayer.save()
+<<<<<<< HEAD
+=======
+
+                    assets_and_links = copy_assets_and_links(instance, target=_resource)
+                    # we're just merging all the files together: it won't work once we have multiple assets per resource
+                    # TODO: get the files from the proper Asset, or make the _concrete_resource_manager.copy use assets
+                    to_update = {}
+
+                    files = list(itertools.chain.from_iterable([asset.location for asset, _ in assets_and_links]))
+                    if files:
+                        to_update = {"files": files}
+>>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
 
                     assets_and_links = copy_assets_and_links(instance, target=_resource)
                     # we're just merging all the files together: it won't work once we have multiple assets per resource
@@ -821,6 +889,7 @@ class ResourceManager(ResourceManagerInterface):
         overwrite: bool = True,
         check_bbox: bool = True,
         thumbnail=None,
+        thumbnail_algorithm=ThumbnailAlgorithms.fit,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
@@ -828,7 +897,7 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     if thumbnail:
                         file_name = _generate_thumbnail_name(_resource.get_real_instance())
-                        _resource.save_thumbnail(file_name, thumbnail)
+                        _resource.save_thumbnail(file_name, thumbnail, thumbnail_algorithm=thumbnail_algorithm)
                     else:
                         if instance and isinstance(instance.get_real_instance(), Document):
                             if overwrite or not instance.thumbnail_url:

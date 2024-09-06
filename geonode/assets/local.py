@@ -4,9 +4,16 @@ import os
 import shutil
 
 from django.conf import settings
+<<<<<<< HEAD
 from django.http import HttpResponse
 from django.urls import reverse
 from django_downloadview import DownloadResponse
+=======
+from django.http import HttpResponse, StreamingHttpResponse
+from django.urls import reverse
+from django_downloadview import DownloadResponse
+from zipstream import ZipStream, walk
+>>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
 
 from geonode.assets.handlers import asset_handler_registry, AssetHandlerInterface, AssetDownloadHandlerInterface
 from geonode.assets.models import LocalAsset
@@ -32,7 +39,11 @@ class IndexLocalLinkUrlHandler:
 
 class LocalAssetHandler(AssetHandlerInterface):
 
+<<<<<<< HEAD
     link_url_handlers = {"gpkg": IndexLocalLinkUrlHandler()}
+=======
+    link_url_handlers = {"3dtiles": IndexLocalLinkUrlHandler()}
+>>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
 
     @staticmethod
     def handled_asset_class():
@@ -241,6 +252,7 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
             filename = os.path.basename(localfile)
             orig_base, ext = os.path.splitext(filename)
             outname = f"{basename or orig_base or 'file'}{ext}"
+<<<<<<< HEAD
 
             logger.info(f"Returning file '{localfile}' with name '{outname}'")
 
@@ -249,6 +261,29 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
                 basename=f"{outname}",
                 attachment=attachment,
             )
+=======
+            match attachment:
+                case True:
+                    logger.info(f"Zipping file '{localfile}' with name '{orig_base}'")
+                    zs = ZipStream(sized=True)
+                    for filepath in walk(LocalAssetHandler._get_managed_dir(asset)):
+                        zs.add_path(filepath, os.path.basename(filepath))
+                    # closing zip for all contents to be written
+                    return StreamingHttpResponse(
+                        zs,
+                        content_type="application/zip",
+                        headers={
+                            "Content-Disposition": f"attachment; filename={orig_base}.zip",
+                            "Content-Length": len(zs),
+                            "Last-Modified": zs.last_modified,
+                        },
+                    )
+                case False:
+                    logger.info(f"Returning file '{localfile}' with name '{outname}'")
+                    return DownloadResponse(
+                        _asset_storage_manager.open(localfile).file, basename=f"{outname}", attachment=False
+                    )
+>>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
         else:
             logger.warning(f"Internal file {localfile} not found for asset {asset.id}")
             return HttpResponse(f"Internal file not found for asset {asset.id}", status=404 if path else 500)

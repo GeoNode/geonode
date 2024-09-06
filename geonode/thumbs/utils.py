@@ -21,6 +21,7 @@ import re
 import time
 import base64
 import logging
+from PIL import Image, ImageOps
 
 from pyproj import CRS
 from typing import List, Tuple, Callable, Union
@@ -587,3 +588,34 @@ def _decode_base64(data):
     if missing_padding != 0:
         data += b"=" * (4 - missing_padding)
     return (base64.b64decode(data), _thumbnail_format)
+
+
+class ThumbnailAlgorithms:
+    @staticmethod
+    def fit(image: Image.Image, **kwargs):
+        _default_thumb_size = settings.THUMBNAIL_SIZE
+        centering = kwargs.get("centering", (0.5, 0.5))
+        cover = ImageOps.fit(
+            image, (_default_thumb_size["width"], _default_thumb_size["height"]), centering=centering
+        ).convert("RGB")
+        return cover
+
+    @staticmethod
+    def scale(img: Image.Image, **kwargs):
+        trg_w = settings.THUMBNAIL_SIZE["width"]
+        trg_h = settings.THUMBNAIL_SIZE["height"]
+
+        src_w, src_w = img.size
+
+        ratio = min(trg_w / src_w, trg_h / src_w)
+        new_size = (int(src_w * ratio), int(src_w * ratio))
+        scaled_img = img.resize(new_size, Image.Resampling.BILINEAR)
+
+        # Create a new image with the desired size and a white background
+        resized_img = Image.new("RGB", (trg_w, trg_h), (255, 255, 255))
+
+        # Paste the scaled image onto a properly sized new image
+        paste_position = ((trg_w - new_size[0]) // 2, (trg_h - new_size[1]) // 2)
+        resized_img.paste(scaled_img, paste_position)
+
+        return resized_img

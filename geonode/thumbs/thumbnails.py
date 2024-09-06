@@ -26,6 +26,7 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
+from geonode.base.models import ResourceBase
 from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
 from geonode.maps.models import Map, MapLayer
@@ -207,7 +208,7 @@ def create_thumbnail(
     return instance.thumbnail_url
 
 
-def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp]) -> Optional[str]:
+def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp, ResourceBase]) -> Optional[str]:
     """
     Method returning file name for the thumbnail.
     If provided instance is a Map, and doesn't have any defined datasets, None is returned.
@@ -233,6 +234,9 @@ def _generate_thumbnail_name(instance: Union[Dataset, Map, Document, GeoApp]) ->
 
     elif isinstance(instance, GeoApp):
         file_name = f"geoapp-{instance.uuid}-thumb.png"
+
+    elif isinstance(instance, ResourceBase):
+        file_name = f"resourcebase-{instance.uuid}-thumb.png"
     else:
         raise ThumbnailError("Thumbnail generation didn't recognize the provided instance.")
 

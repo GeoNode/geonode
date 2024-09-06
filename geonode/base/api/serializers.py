@@ -505,7 +505,11 @@ class LinkedResourceEmbeddedSerializer(DynamicModelSerializer):
         request = self.context.get("request", None)
         _resource = ResourceBase.objects.get(pk=instance)
 
-        return base_linked_resources_payload(_resource, request.user) if request and request.user and _resource else {}
+        return (
+            base_linked_resources_payload(_resource.get_real_instance(), request.user)
+            if request and request.user and _resource
+            else {}
+        )
 
 
 api_bbox_settable_resource_models = [Document, GeoApp]
@@ -519,15 +523,7 @@ class PermsSerializer(DynamicModelSerializer):
     def to_representation(self, instance):
         request = self.context.get("request", None)
         resource = ResourceBase.objects.get(pk=instance)
-        return (
-            (
-                resource.get_user_perms(request.user)
-                .union(resource.get_self_resource().get_user_perms(request.user))
-                .union(resource.get_real_instance().get_user_perms(request.user))
-            )
-            if request and request.user and resource
-            else []
-        )
+        return resource.get_user_perms(request.user) if request and request.user and resource else []
 
 
 class LinksSerializer(DynamicModelSerializer):
@@ -543,7 +539,33 @@ class LinksSerializer(DynamicModelSerializer):
         for lnk in links:
             formatted_link = model_to_dict(lnk, fields=link_fields)
             ret.append(formatted_link)
+            if lnk.asset:
+                extras = {
+                    "type": "asset",
+                    "content": model_to_dict(lnk.asset, ["title", "description", "type", "created"]),
+                }
+                extras["content"]["download_url"] = asset_handler_registry.get_handler(lnk.asset).create_download_url(
+                    lnk.asset
+                )
+                formatted_link["extras"] = extras
+
         return ret
+
+
+class ResourceManagementField(serializers.BooleanField):
+    MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
+
+    def to_internal_value(self, data):
+        new_val = super().to_internal_value(data)
+        user = self.context["request"].user
+        user_action = self.MAPPING.get(self.field_name)
+        instance = self.root.instance or ResourceBase.objects.get(pk=self.root.initial_data["pk"])
+        if getattr(user, user_action)(instance):
+            logger.debug("User can perform the action, the new value is returned")
+            return new_val
+        else:
+            logger.warning(f"The user does not have the perms to update the value of {self.field_name}")
+            return getattr(instance, self.field_name)
 
 
 class ResourceBaseSerializer(DynamicModelSerializer):
@@ -586,10 +608,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     popular_count = serializers.CharField(required=False)
     share_count = serializers.CharField(required=False)
     rating = serializers.CharField(required=False)
-    featured = serializers.BooleanField(required=False)
+    featured = ResourceManagementField(required=False)
     advertised = serializers.BooleanField(required=False)
-    is_published = serializers.BooleanField(required=False, read_only=True)
-    is_approved = serializers.BooleanField(required=False, read_only=True)
+    is_published = ResourceManagementField(required=False)
+    is_approved = ResourceManagementField(required=False)
     detail_url = DetailUrlField(read_only=True)
     created = serializers.DateTimeField(read_only=True)
     last_updated = serializers.DateTimeField(read_only=True)
@@ -712,6 +734,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             "thumbnail_url",
             "links",
             "link",
+            "metadata_uploaded_preserve",
             # TODO
             # csw_typename, csw_schema, csw_mdsource, csw_insert_date, csw_type, csw_anytext, csw_wkt_geometry,
             # metadata_uploaded, metadata_uploaded_preserve, metadata_xml,

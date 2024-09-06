@@ -26,10 +26,10 @@ import logging
 import traceback
 from typing import List, Optional, Union, Tuple
 from sequences.models import Sequence
-
 from sequences import get_next_value
-from django.db import transaction
+from PIL import Image
 
+from django.db import transaction
 from django.db import models
 from django.db.models import Max
 from django.conf import settings
@@ -49,9 +49,8 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import strip_tags
+from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
-
-from PIL import Image, ImageOps
 
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
@@ -75,7 +74,7 @@ from geonode.utils import (
     get_allowed_extensions,
     is_monochromatic_image,
 )
-from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path
+from geonode.thumbs.utils import thumb_size, remove_thumbs, get_unique_upload_path, ThumbnailAlgorithms
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_visible_resources, get_geoapp_subtypes
 from geonode.security.models import PermissionLevelMixin
@@ -1321,8 +1320,14 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
             return ""
 
     def get_absolute_url(self):
+        from geonode.client.hooks import hookset
+
         try:
-            return self.get_real_instance().get_absolute_url() if self != self.get_real_instance() else None
+            return (
+                self.get_real_instance().get_absolute_url()
+                if self != self.get_real_instance()
+                else hookset.get_absolute_url(self)
+            )
         except Exception as e:
             logger.exception(e)
             return None
@@ -1443,7 +1448,11 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     @property
     def embed_url(self):
-        return self.get_real_instance().embed_url if self != self.get_real_instance() else None
+        return (
+            self.get_real_instance().embed_url
+            if self != self.get_real_instance()
+            else reverse("resourcebase_embed", kwargs={"resourcebaseid": self.pk})
+        )
 
     def get_tiles_url(self):
         """Return URL for Z/Y/X mapping clients or None if it does not exist."""
@@ -1518,9 +1527,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
 
     # Note - you should probably broadcast layer#post_save() events to ensure
     # that indexing (or other listeners) are notified
-    def save_thumbnail(self, filename, image, **kwargs):
+    def save_thumbnail(self, filename, image, thumbnail_algorithm=ThumbnailAlgorithms.fit, **kwargs):
         upload_path = get_unique_upload_path(filename)
-        # force convertion to JPEG output file
+        # force conversion to JPEG output file
         upload_path = f"{os.path.splitext(upload_path)[0]}.jpg"
         try:
             # Check that the image is valid
@@ -1531,7 +1540,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                     # Skip Image creation
                     image = None
 
-            if upload_path and image:
+            if image:
                 actual_name = storage_manager.save(upload_path, ContentFile(image))
                 actual_file_name = os.path.basename(actual_name)
 
@@ -1540,16 +1549,12 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
                 url = storage_manager.url(upload_path)
                 try:
                     # Optimize the Thumbnail size and resolution
-                    _default_thumb_size = settings.THUMBNAIL_SIZE
                     im = Image.open(storage_manager.open(actual_name))
-                    centering = kwargs.get("centering", (0.5, 0.5))
-                    cover = ImageOps.fit(
-                        im, (_default_thumb_size["width"], _default_thumb_size["height"]), centering=centering
-                    ).convert("RGB")
+                    im = thumbnail_algorithm(im, **kwargs)
 
                     # Saving the thumb into a temporary directory on file system
                     tmp_location = os.path.abspath(f"{settings.MEDIA_ROOT}/{upload_path}")
-                    cover.save(tmp_location, quality="high")
+                    im.save(tmp_location, quality="high")
 
                     with open(tmp_location, "rb+") as img:
                         # Saving the img via storage manager

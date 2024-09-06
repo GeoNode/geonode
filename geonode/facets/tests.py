@@ -669,3 +669,28 @@ class TestFacets(GeoNodeBaseTestSupport):
 
         self.assertDictEqual(expected_response_filtered, response_dict_filtered)
         self.assertDictEqual(expected_response_base, response_dict_base)
+
+    def test_group_facets_are_filtered_by_words(self):
+        # there are some groups and the facets return them
+        url = f"{reverse('get_facet',args=['group'])}"
+
+        response = self.client.get(url)
+        self.assertEqual(200, response.status_code, response.json())
+
+        self.assertTrue(response.json().get("topics", {}).get("total", 0) > 0)
+
+        # topic_contains with real name should return 1
+        url = f"{reverse('get_facet',args=['group'])}?topic_contains=UserAdmin"
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code, response.json())
+
+        self.assertEqual(1, response.json().get("topics", {}).get("total", 0))
+
+        # topic_contains with a random string to be searched for should be 0
+        url = f"{reverse('get_facet',args=['group'])}?topic_contains=abc123scfuqbrwefbasascgiu"
+        response = self.client.get(url)
+
+        self.assertEqual(200, response.status_code, response.json())
+
+        self.assertEqual(0, response.json().get("topics", {}).get("total", 0))

@@ -70,6 +70,7 @@ urlpatterns = [
 urlpatterns += [
     # ResourceBase views
     re_path(r"^base/", include("geonode.base.urls")),
+    re_path(r"^resources/", include("geonode.base.base_urls")),
     # Dataset views
     re_path(r"^datasets/", include("geonode.layers.urls")),
     # Remote Services views

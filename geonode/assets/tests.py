@@ -25,6 +25,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.http import StreamingHttpResponse
 from django.urls import reverse
 
 from rest_framework.test import APITestCase
@@ -258,3 +259,40 @@ class AssetsDownloadTests(APITestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn(key, rjson, f"Key '{key}' not found in path '{path}': {rjson} URL {url}")
             logger.info(f"Test for path '{path}' OK")
+
+    def test_download_with_attachment(self):
+        u, _ = get_user_model().objects.get_or_create(username="admin")
+        self.assertTrue(self.client.login(username="admin", password="admin"), "Login failed")
+
+        for key, el in (("one", ONE_JSON), ("two", TWO_JSON), ("three", THREE_JSON)):
+            asset = self._setup_test(u, _file=el)
+
+            url = reverse("assets-download", kwargs={"pk": asset.pk})
+            logger.info(f"REVERSE url is {url}")
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(isinstance(response, StreamingHttpResponse))
+            self.assertEqual(response.get("Content-Disposition"), f"attachment; filename={key}.zip")
+
+    def _setup_test(self, u, _file=ONE_JSON):
+        asset_handler = asset_handler_registry.get_default_handler()
+        asset = asset_handler.create(
+            title="Test Asset",
+            description="Description of test asset",
+            type="NeverMind",
+            owner=u,
+            files=[_file],
+            clone_files=True,
+        )
+        asset.save()
+        self.assertIsInstance(asset, LocalAsset)
+
+        reloaded = Asset.objects.get(pk=asset.pk)
+
+        # put two more files in the asset dir
+        asset_dir = os.path.dirname(reloaded.location[0])
+        sub_dir = os.path.join(asset_dir, "subdir")
+        os.mkdir(sub_dir)
+        shutil.copy(TWO_JSON, asset_dir)
+        shutil.copy(THREE_JSON, sub_dir)
+        return asset

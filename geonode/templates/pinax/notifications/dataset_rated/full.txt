@@ -3,4 +3,4 @@
 {% trans "rated" %} {{ rating }}<br/>
 {% trans "the following dataset" %}:<br/>
 {{ resource.title }}, {% trans "owned by" %} {{ resource.owner.username }}<br/>
-{% trans "You can visit the dataset's detail page here" %}: http://{{ current_site }}{% url "layer_detail" resource.service_typename %}
+{% trans "You can visit the dataset's detail page here" %}: {{ default_http_protocol }}://{{ current_site }}{{ resource.get_absolute_url }}

@@ -43,6 +43,8 @@ from geonode.security.permissions import PERMISSIONS, READ_ONLY_AFFECTED_PERMISS
 from allauth.account.signals import user_signed_up
 from allauth.socialaccount.signals import social_account_added
 
+from geonode.security.utils import can_approve, can_feature, can_publish
+
 from .utils import format_address
 from .signals import do_login, do_logout, profile_post_save, update_user_email_addresses, notify_admins_new_signup
 from .languages import LANGUAGES
@@ -258,6 +260,15 @@ class Profile(AbstractUser):
     def send_mail(self, template_prefix, context):
         if self.email:
             get_adapter().send_mail(template_prefix, self.email, context)
+
+    def can_approve(self, resource):
+        return can_approve(self, resource)
+
+    def can_publish(self, resource):
+        return can_publish(self, resource)
+
+    def can_feature(self, resource):
+        return can_feature(self, resource)
 
 
 def get_anonymous_user_instance(user_model):
