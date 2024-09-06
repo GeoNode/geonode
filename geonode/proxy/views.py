@@ -54,11 +54,7 @@ from geonode.base import register_event
 from geonode.base.auth import get_auth_user, get_token_from_auth_header
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.assets.utils import get_default_asset
-<<<<<<< HEAD
-
-=======
 from zipstream import ZipStream
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
 from .utils import proxy_urls_registry
 
 logger = logging.getLogger(__name__)
@@ -279,13 +275,6 @@ def download(request, resourceid, sender=Dataset):
             register_event(request, "download", instance)
             folder = os.path.dirname(dataset_files[0])
 
-<<<<<<< HEAD
-            # Streaming content response
-            response = StreamingHttpResponse(target_zip, content_type="application/zip")
-            response["Content-Disposition"] = f'attachment; filename="{target_file_name}"'
-            return response
-        except NotImplementedError:
-=======
             zs = ZipStream.from_path(folder)
             return StreamingHttpResponse(
                 zs,
@@ -296,8 +285,7 @@ def download(request, resourceid, sender=Dataset):
                     "Last-Modified": zs.last_modified,
                 },
             )
-        except (NotImplementedError, Upload.DoesNotExist):
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
+        except NotImplementedError:
             traceback.print_exc()
             tb = traceback.format_exc()
             logger.debug(tb)

@@ -155,13 +155,8 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         dt_files = [os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")]
 
         # copy with documents
-<<<<<<< HEAD
         res = self.rm.create(
             None,
-=======
-        res = self.rm.ingest(
-            dt_files,
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
             resource_type=Document,
             defaults={
                 "title": "relief_san_andres",
@@ -169,10 +164,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
                 "extension": "tif",
                 "data_title": "relief_san_andres",
                 "data_type": "tif",
-<<<<<<< HEAD
                 "files": dt_files,
-=======
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
             },
         )
 
@@ -189,10 +181,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
                 "title": "Testing Dataset",
                 "data_title": "relief_san_andres",
                 "data_type": "tif",
-<<<<<<< HEAD
                 "files": dt_files,
-=======
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
             },
         )
         self.assertTrue(isinstance(res, Dataset))

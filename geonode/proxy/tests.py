@@ -283,14 +283,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.all().first()
 
         dataset_files = [
-<<<<<<< HEAD
-            "/tmpe1exb9e9/foo_file.dbf",
-            "/tmpe1exb9e9/foo_file.prj",
-            "/tmpe1exb9e9/foo_file.shp",
-            "/tmpe1exb9e9/foo_file.shx",
-=======
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
         ]
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
@@ -327,14 +320,7 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset = Dataset.objects.all().first()
 
         dataset_files = [
-<<<<<<< HEAD
-            "/tmpe1exb9e9/foo_file.dbf",
-            "/tmpe1exb9e9/foo_file.prj",
-            "/tmpe1exb9e9/foo_file.shp",
-            "/tmpe1exb9e9/foo_file.shx",
-=======
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
         ]
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
@@ -413,11 +399,6 @@ class TestProxyTags(GeoNodeBaseTestSupport):
     @patch("geonode.storage.manager.storage_manager.exists", return_value=True)
     def test_should_return_true_if_files_are_available(self, fexists):
 
-<<<<<<< HEAD
-=======
-        assert upload
-
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
         dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
             "/tmpe1exb9e9/foo_file.prj",

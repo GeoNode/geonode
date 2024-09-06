@@ -2029,10 +2029,6 @@ def sync_instance_with_geoserver(instance_id, *args, **kwargs):
         if not _is_remote_instance:
             values = {"title": instance.title, "abstract": instance.raw_abstract}
             _tries = 0
-<<<<<<< HEAD
-=======
-            _max_tries = getattr(ogc_server_settings, "MAX_RETRIES", 3)
->>>>>>> 34f95891f2941177fbd632e126bb8a8107c538bd
 
             values, gs_resource = fetch_gs_resource(instance, values, _tries)
 
