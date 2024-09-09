@@ -17,7 +17,7 @@ from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.utils import error_handler
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
 
 
 class ImportOrchestrator:

@@ -4,7 +4,8 @@ from django.conf import settings
 from django.utils.module_loading import import_string
 from geonode.upload.settings import SYSTEM_HANDLERS
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class HandlersConfig(AppConfig):

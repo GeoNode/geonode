@@ -9,7 +9,8 @@ from geonode.upload.utils import ImporterRequestAction as ira
 
 from geonode.upload.handlers.geojson.exceptions import InvalidGeoJsonException
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class GeoJsonFileHandler(BaseVectorFileHandler):

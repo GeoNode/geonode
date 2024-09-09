@@ -36,7 +36,8 @@ from geonode.upload.settings import (
 )
 from geonode.upload.utils import call_rollback_function, error_handler, find_key_recursively
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class ErrorBaseTaskClass(Task):

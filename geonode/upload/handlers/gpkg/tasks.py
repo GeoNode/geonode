@@ -4,7 +4,8 @@ from celery import Task
 
 from geonode.upload.handlers.utils import evaluate_error
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class SingleMessageErrorHandler(Task):

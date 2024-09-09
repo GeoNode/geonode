@@ -58,7 +58,8 @@ from geonode.upload.api.serializer import (
     UploadSizeLimitSerializer,
 )
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):

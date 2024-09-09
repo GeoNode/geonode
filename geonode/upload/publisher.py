@@ -11,7 +11,8 @@ from django.utils.module_loading import import_string
 from geonode.upload.api.exceptions import PublishResourceException
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class DataPublisher:

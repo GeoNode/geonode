@@ -11,7 +11,8 @@ from geonode.harvesting.harvesters.wms import WebMapService
 from geonode.services.serviceprocessors.wms import WmsServiceHandler
 from geonode.resource.manager import resource_manager
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class RemoteWMSResourceHandler(BaseRemoteResourceHandler):

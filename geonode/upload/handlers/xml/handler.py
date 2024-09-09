@@ -5,7 +5,8 @@ from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.xml.exceptions import InvalidXmlException
 from owslib.etree import etree as dlxml
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class XMLFileHandler(MetadataFileHandler):

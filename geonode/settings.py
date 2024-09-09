@@ -711,6 +711,9 @@ LOGGING = {
         "geonode": {
             "level": "WARN",
         },
+        "importer": {
+            "level": "INFO",
+        },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
             "level": "ERROR",

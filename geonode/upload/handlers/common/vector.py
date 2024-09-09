@@ -37,7 +37,8 @@ from django.db.models import Q
 import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class BaseVectorFileHandler(BaseHandler):

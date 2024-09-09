@@ -12,7 +12,8 @@ from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileExcepti
 from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer
 from geonode.upload.utils import ImporterRequestAction as ira
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class ShapeFileHandler(BaseVectorFileHandler):

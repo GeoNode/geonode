@@ -18,7 +18,6 @@ from geonode.resource.models import ExecutionRequest
 
 # Create your tests here.
 
-
 class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
     @classmethod
     def setUpClass(cls):
@@ -173,7 +172,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         # creating the temporary file that will be deleted
         os.makedirs(settings.ASSETS_ROOT, exist_ok=True)
 
-        fake_path = f"{settings.ASSETS_ROOT}file.txt"
+        fake_path = f"{settings.ASSETS_ROOT}to_be_deleted_file.txt"
         with open(fake_path, "w"):
             pass
 
@@ -281,7 +280,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
 
             self.assertIsNone(result)
             self.assertEqual(
-                f"INFO:geonode.upload.orchestrator:Execution with ID {exec_id} is completed. All tasks are done",
+                f"INFO:importer:Execution with ID {exec_id} is completed. All tasks are done",
                 _log.output[0],
             )
 

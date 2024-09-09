@@ -22,7 +22,8 @@ from geonode.layers.models import Dataset
 from geonode.upload.handlers.base import BaseHandler
 from geonode.resource.models import ExecutionRequest
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class BaseVectorFileHandler(BaseHandler):
@@ -231,7 +232,8 @@ from osgeo import ogr
 
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class NewVectorFileHandler(BaseVectorFileHandler):

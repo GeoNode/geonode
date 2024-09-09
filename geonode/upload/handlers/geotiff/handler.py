@@ -7,7 +7,8 @@ from geonode.upload.handlers.common.raster import BaseRasterFileHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
 from geonode.upload.utils import ImporterRequestAction as ira
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class GeoTiffFileHandler(BaseRasterFileHandler):

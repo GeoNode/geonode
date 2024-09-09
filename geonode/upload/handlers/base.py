@@ -12,7 +12,8 @@ from geonode.resource.models import ExecutionRequest
 from geonode.base.models import ResourceBase
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class BaseHandler(ABC):

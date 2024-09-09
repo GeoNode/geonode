@@ -24,7 +24,8 @@ from django.utils.timezone import timedelta
 
 from geonode.celery_app import app
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, "UPLOAD_SESSION_EXPIRY_HOURS", 24)
 

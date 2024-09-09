@@ -15,7 +15,8 @@ from geonode.upload.utils import ImporterRequestAction as ira
 from geonode.base.models import ResourceBase
 from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class Tiles3DFileHandler(BaseVectorFileHandler):

@@ -19,7 +19,8 @@ from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.resource.manager import resource_manager
 from geonode.resource.models import ExecutionRequest
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class BaseRemoteResourceHandler(BaseHandler):

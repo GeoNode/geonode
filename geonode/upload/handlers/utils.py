@@ -10,7 +10,8 @@ from uuid import UUID
 
 from geonode.upload.publisher import DataPublisher
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 STANDARD_TYPE_MAPPING = {

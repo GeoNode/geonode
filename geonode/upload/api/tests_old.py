@@ -57,7 +57,8 @@ GEOSERVER_USER, GEOSERVER_PASSWD = ogc_server_settings.credentials
 
 CURRENT_LOCATION = os.path.abspath(os.path.dirname(__file__))
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 @override_settings(

@@ -10,7 +10,8 @@ from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
 from geonode.base.models import ResourceBase
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler):

@@ -75,7 +75,8 @@ DATASTORE_URL = f"postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME
 postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger("south").setLevel(logging.WARNING)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 # create test user if needed, delete all layers and set password
 u, created = get_user_model().objects.get_or_create(username=GEONODE_USER)

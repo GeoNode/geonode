@@ -8,7 +8,8 @@ from geonode.upload.orchestrator import orchestrator
 from django.shortcuts import get_object_or_404
 from geonode.layers.models import Dataset
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class MetadataFileHandler(BaseHandler):

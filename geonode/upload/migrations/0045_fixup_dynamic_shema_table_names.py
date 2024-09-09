@@ -3,7 +3,8 @@ import logging
 from django.db import ProgrammingError
 from django.db import connections
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 def fixup_table_name(apps, schema_editor):

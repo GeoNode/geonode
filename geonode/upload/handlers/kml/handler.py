@@ -10,7 +10,8 @@ from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.kml.exceptions import InvalidKmlException
 from geonode.upload.utils import ImporterRequestAction as ira
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class KMLFileHandler(BaseVectorFileHandler):

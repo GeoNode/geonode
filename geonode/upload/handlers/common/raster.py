@@ -24,7 +24,8 @@ from osgeo import gdal
 from geonode.upload.celery_app import importer_app
 from geonode.storage.manager import storage_manager
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 gdal.UseExceptions()
 

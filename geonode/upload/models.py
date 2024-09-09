@@ -12,7 +12,8 @@ from django.conf import settings
 from django.template.defaultfilters import filesizeformat
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 
 class UploadSizeLimitManager(models.Manager):

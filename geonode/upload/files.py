@@ -37,7 +37,8 @@ from django.core.exceptions import SuspiciousFileOperation
 from geonode.utils import fixup_shp_columnnames
 from geonode.storage.manager import storage_manager
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 vector = FeatureType.resource_type
 raster = Coverage.resource_type
 

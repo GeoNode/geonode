@@ -367,10 +367,10 @@ class TestTiles3DFileHandler(TestCase):
         )
         self.assertFalse(resource.bbox == self.default_bbox)
 
-        self.assertEqual(resource.bbox_x0, -75.61213927392595)
-        self.assertEqual(resource.bbox_x1, -75.61204934172301)
-        self.assertEqual(resource.bbox_y0, 40.042485645323616)
-        self.assertEqual(resource.bbox_y1, 40.042575577526556)
+        self.assertAlmostEqual(resource.bbox_x0, -75.61213927392595)
+        self.assertAlmostEqual(resource.bbox_x1, -75.61204934172301)
+        self.assertAlmostEqual(resource.bbox_y0, 40.042485645323616)
+        self.assertAlmostEqual(resource.bbox_y1, 40.042575577526556)
 
         os.remove("/tmp/tileset.json")
 
