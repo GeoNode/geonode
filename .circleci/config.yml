@@ -110,7 +110,7 @@ workflows:
           codecov_name: main_tests
           load_docker_cache: false
           save_docker_cache: false
-          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a]))") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests
+          test_suite: ./test.sh $(python -c "import sys;from geonode import settings;sys.stdout.write('\'' '\''.join([a+'\''.tests'\'' for a in settings.GEONODE_APPS if '\''security'\'' not in a and '\''geoserver'\'' not in a and '\''upload'\'' not in a]))") geonode.thumbs.tests geonode.people.tests geonode.people.socialaccount.providers.geonode_openid_connect.tests
       - build:
           name: geonode_test_security
           codecov_name: security_tests
@@ -135,6 +135,12 @@ workflows:
           load_docker_cache: false
           save_docker_cache: false
           test_suite: ./test.sh geonode.tests.csw geonode.catalogue.backends.tests
+      - build:
+          name: geonode_upload
+          codecov_name: importer
+          load_docker_cache: false
+          save_docker_cache: false
+          test_suite: ./test.sh geonode.upload          
       # TODO
       # - build:
       #     name: geonode_test_integration_upload
