@@ -34,5 +34,5 @@ urlpatterns = [
         views.csw_render_extra_format_html,
         name="csw_render_extra_format_html",
     ),
-    path(r"uuid/<uuid:uuid>", views.resolve_uuid, name="resolve_uuid"),
+    path(r"uuid/<uuid>", views.resolve_uuid, name="resolve_uuid"),
 ]
