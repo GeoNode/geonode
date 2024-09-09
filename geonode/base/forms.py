@@ -37,7 +37,7 @@ from django.forms.utils import flatatt
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 from modeltranslation.forms import TranslationModelForm
 from taggit.forms import TagField
 from tinymce.widgets import TinyMCE
@@ -432,25 +432,41 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
 
     abstract = forms.CharField(label=_("Abstract"), required=False, widget=TinyMCE())
     abstract_translated = forms.CharField(
-        label=_("translated abstract"),
+        label=_("Abstract Translated"),
         help_text=ResourceBase.abstract_translated_help_text,
         required=False,
         widget=TinyMCE(),
     )
 
-    subtitle = forms.CharField(required=False, help_text=ResourceBase.subtitle_help_text, widget=TinyMCE())
+    subtitle = forms.CharField(
+        label=_("Subtitle"), required=False, help_text=ResourceBase.subtitle_help_text, widget=TinyMCE()
+    )
     method_description = forms.CharField(
-        required=False, help_text=ResourceBase.method_description_help_text, widget=TinyMCE()
+        label=_("Method Description"),
+        required=False,
+        help_text=ResourceBase.method_description_help_text,
+        widget=TinyMCE(),
     )
     series_information = forms.CharField(
-        required=False, help_text=ResourceBase.series_information_help_text, widget=TinyMCE()
+        label=_("Series Information"),
+        required=False,
+        help_text=ResourceBase.series_information_help_text,
+        widget=TinyMCE(),
     )
     table_of_content = forms.CharField(
-        required=False, help_text=ResourceBase.table_of_content_help_text, widget=TinyMCE()
+        label=_("Table of Content"),
+        required=False,
+        help_text=ResourceBase.table_of_content_help_text,
+        widget=TinyMCE(),
     )
-    technical_info = forms.CharField(required=False, help_text=ResourceBase.technical_info_help_text, widget=TinyMCE())
+    technical_info = forms.CharField(
+        label=_("Technical Info"), required=False, help_text=ResourceBase.technical_info_help_text, widget=TinyMCE()
+    )
     other_description = forms.CharField(
-        required=False, help_text=ResourceBase.other_description_help_text, widget=TinyMCE()
+        label=_("Other Description"),
+        required=False,
+        help_text=ResourceBase.other_description_help_text,
+        widget=TinyMCE(),
     )
 
     date_available = forms.DateTimeField(
@@ -467,7 +483,7 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     )
     date_issued = forms.DateTimeField(
         required=False,
-        label=_("Date Issued*"),
+        label=_("Date Issued"),
         localize=True,
         input_formats=["%Y-%m-%d"],
         widget=ResourceBaseDateTimePicker(options={"format": "YYYY-MM-DD"}),
@@ -520,12 +536,21 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
     purpose = forms.CharField(label=_("Purpose"), required=False, widget=TinyMCE())
     use_constraint_restrictions = forms.ModelMultipleChoiceField(
         RestrictionCodeType.objects.all(),
+        label=_("Use Constraint Restrictions"),
         # widget=forms.SelectMultiple,
         widget=forms.SelectMultiple(attrs={"class": "bg-primary"}),
         required=False,
     )
     use_constrains = forms.CharField(label=_("Use Constraints"), required=False, widget=TinyMCE())
-    constraints_other = forms.CharField(label=_("Other constraints"), required=False, widget=TinyMCE())
+    constraints_other = forms.CharField(label=_("Other Constraints"), required=False, widget=TinyMCE())
+
+    restriction_other = forms.ModelMultipleChoiceField(
+        RestrictionCodeType.objects.all(),
+        label=_("Other Restrictions"),
+        # widget=forms.SelectMultiple,
+        widget=forms.SelectMultiple(attrs={"class": "bg-primary"}),
+        required=False,
+    )
 
     supplemental_information = forms.CharField(label=_("Supplemental information"), required=False, widget=TinyMCE())
 

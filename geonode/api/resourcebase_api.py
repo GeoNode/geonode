@@ -65,7 +65,7 @@ from .api import (
     FILTER_TYPES,
 )
 from .paginator import CrossSiteXHRPaginator
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 if settings.HAYSTACK_SEARCH:
     from haystack.query import SearchQuerySet  # noqa

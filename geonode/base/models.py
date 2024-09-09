@@ -48,7 +48,7 @@ from django.utils.functional import cached_property, classproperty
 from django.contrib.gis.geos import GEOSGeometry, Polygon, Point
 from django.contrib.gis.db.models import PolygonField
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.utils.html import strip_tags
 from mptt.models import MPTTModel, TreeForeignKey
@@ -216,7 +216,10 @@ class RestrictionCodeType(models.Model):
     <CodeListDictionary gml:id="MD_RestrictionCode">
     """
 
-    identifier = models.CharField(max_length=255, editable=False)
+    identifier = models.CharField(
+        max_length=255,
+        editable=False,
+    )
     description = models.TextField(max_length=255, editable=False)
     gn_description = models.TextField("GeoNode description", max_length=255)
     is_choice = models.BooleanField(default=True)
@@ -925,7 +928,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
         _("Title Translated"), max_length=255, blank=True, help_text=title_translated_help_text
     )
 
-    abstract = models.TextField(_("Abstract"), max_length=2000, help_text=abstract_help_text)
+    abstract = models.CharField(_("Abstract"), max_length=2000, help_text=abstract_help_text)
     abstract_translated = models.TextField(
         _("Abstract Translated"), max_length=2000, help_text=abstract_translated_help_text
     )
@@ -1032,7 +1035,7 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     )
     restriction_other = models.ManyToManyField(
         RestrictionCodeType,
-        verbose_name=_("Other Restrictions "),
+        verbose_name=_("Other Restrictions"),
         help_text=restriction_other_help_text,
         null=True,
         blank=True,
