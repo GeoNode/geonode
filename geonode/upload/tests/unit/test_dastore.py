@@ -1,5 +1,5 @@
 from django.test import TestCase
-from importer import project_dir
+from geonode.upload import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.upload.datastore import DataStoreManager
 from django.contrib.auth import get_user_model

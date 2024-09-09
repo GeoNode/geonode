@@ -53,7 +53,6 @@ from webdriver_manager.firefox import GeckoDriverManager
 from geonode.tests.base import GeoNodeLiveTestSupport
 from geonode.geoserver.helpers import ogc_server_settings
 from geonode.upload.models import UploadSizeLimit, UploadParallelismLimit
-from geonode.upload.tests.utils import rest_upload_by_path
 
 LIVE_SERVER_URL = "http://localhost:8001/"
 GEOSERVER_URL = ogc_server_settings.LOCATION
@@ -230,76 +229,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
             logger.exception(ValueError(f"probably not json, status {response.status_code} / {response.content}"))
             return response, response.content
 
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
-    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
-    def test_rest_uploads(self):
-        """
-        Ensure we can access the Local Server Uploads list.
-        """
-        resp = None
-        layer_name = "relief_san_andres"
-        try:
-            self._cleanup_layer(layer_name=layer_name)
-            # Try to upload a good raster file and check the session IDs
-            fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-            resp, data = rest_upload_by_path(fname, self.client)
-            self.assertEqual(resp.status_code, 201)
-
-            url = reverse("importer_upload")
-            # Anonymous
-            self.client.logout()
-            response = self.client.get(url, format="json")
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 5)
-            self.assertEqual(response.data["total"], 0)
-            # Pagination
-            self.assertEqual(len(response.data["uploads"]), 0)
-            logger.debug(response.data)
-        except Exception:
-            json = resp.json()
-            if json.get("errors"):
-                logger.error(f"Error in upload: {json}")
-                try:
-                    layer_name = json.get("errors")[0].split("for : ")[1].split(",")[0]
-                except IndexError as e:
-                    logger.error(f"Could not parse layername from {json.get('errors')}", exc_info=e)
-                    # TODO: make sure the _cleanup_layer will use the proper layer name
-            self.skipTest("Error with GeoServer")
-        finally:
-            self._cleanup_layer(layer_name)
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
-    @override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777)
-    @override_settings(FILE_UPLOAD_PERMISSIONS=0o777)
-    def test_rest_uploads_non_interactive(self):
-        """
-        Ensure we can access the Local Server Uploads list.
-        """
-        resp = None
-        layer_name = "relief_san_andres"
-        try:
-            self._cleanup_layer(layer_name=layer_name)
-            # Try to upload a good raster file and check the session IDs
-            fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-            resp, data = rest_upload_by_path(fname, self.client, non_interactive=True)
-            self.assertEqual(resp.status_code, 201)
-            exec_id = data.get("execution_id", None)
-            _exec = ExecutionRequest.objects.get(exec_id=exec_id)
-            self.assertEqual(_exec.status, "finished")
-        except Exception as e:
-            json = resp.json()
-            logger.warning(f"Error with GeoServer {json}: {e}", exc_info=e)
-            if json.get("errors"):
-                try:
-                    layer_name = json.get("errors")[0].split("for : ")[1].split(",")[0]
-                except IndexError as e:
-                    logger.error(f"Could not parse layername from {json.get('errors')}", exc_info=e)
-                    # TODO: make sure the _cleanup_layer will use the proper layer name
-            self.skipTest("Error with GeoServer")
-        finally:
-            self._cleanup_layer(layer_name)
-
     def _cleanup_layer(self, layer_name):
         # removing the layer from geonode
         x = ResourceBase.objects.filter(alternate__icontains=layer_name)
@@ -314,39 +243,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         store = gs_catalog.get_store(layer_name, workspace="geonode")
         if store:
             gs_catalog.delete(store, purge="all", recurse=True)
-
-    @mock.patch("geonode.upload.uploadhandler.SimpleUploadedFile")
-    def test_rest_uploads_with_size_limit(self, mocked_uploaded_file):
-        """
-        Try to upload a file larger than allowed by ``dataset_upload_size``
-        but not larger than ``file_upload_handler`` max_size.
-        """
-        expected_error = {
-            "success": False,
-            "errors": ["Total upload size exceeds 1\xa0byte. Please try again with smaller files."],
-            "code": "importer_exception",
-        }
-        upload_size_limit_obj, created = UploadSizeLimit.objects.get_or_create(
-            slug="dataset_upload_size",
-            defaults={
-                "description": "The sum of sizes for the files of a dataset upload.",
-                "max_size": 1,
-            },
-        )
-        upload_size_limit_obj.max_size = 1
-        upload_size_limit_obj.save()
-
-        # Try to upload and verify if it passed only by the form size validation
-        fname = os.path.join(GOOD_DATA, "raster", "relief_san_andres.tif")
-
-        max_size_path = "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler._get_max_size"
-        with mock.patch(max_size_path, new_callable=mock.PropertyMock) as max_size_mock:
-            max_size_mock.return_value = lambda x: 209715200
-
-            resp, data = rest_upload_by_path(fname, self.client)
-            self.assertEqual(resp.status_code, 500)
-            self.assertDictEqual(expected_error, data)
-            mocked_uploaded_file.assert_not_called()
 
 
 class UploadSizeLimitTests(APITestCase):

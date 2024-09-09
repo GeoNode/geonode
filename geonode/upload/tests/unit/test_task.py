@@ -28,7 +28,7 @@ from geonode.assets.handlers import asset_handler_registry
 from dynamic_models.models import ModelSchema, FieldSchema
 from dynamic_models.exceptions import DynamicModelError, InvalidFieldNameError
 from geonode.upload.models import ResourceHandlerInfo
-from importer import project_dir
+from geonode.upload import project_dir
 
 from geonode.upload.tests.utils import (
     ImporterBaseTestSupport,

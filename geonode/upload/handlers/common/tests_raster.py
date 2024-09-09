@@ -2,7 +2,7 @@ from django.test import TestCase
 from mock import patch
 from geonode.upload.handlers.common.raster import BaseRasterFileHandler
 from django.contrib.auth import get_user_model
-from importer import project_dir
+from geonode.upload import project_dir
 from geonode.upload.orchestrator import orchestrator
 from geonode.base.populate_test_data import create_single_dataset
 from geonode.resource.models import ExecutionRequest
