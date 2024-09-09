@@ -4,6 +4,7 @@ set -a
 . ./.env_test
 set +a
 
+export PGPASSWORD=postgres
 echo "creating"
 psql -d geonode --host db --username postgres -c 'DROP DATABASE test_geonode'
 psql -d geonode --host db --username postgres -c 'CREATE DATABASE test_geonode'
