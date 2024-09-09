@@ -25,4 +25,5 @@ psql -d test_geonode_data --host db --username postgres -c 'GRANT ALL ON spatial
 psql -d test_geonode_data --host db --username postgres -c 'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO geonode_data;'
 echo "Done"
 
+
 coverage run --branch --source=geonode manage.py test --noinput -v 3  $@
