@@ -20,6 +20,7 @@
 import json
 import base64
 import logging
+from unittest.mock import patch
 import uuid
 import os
 import requests
@@ -743,6 +744,8 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         rules_count = geofence.get_rules_count()
         self.assertEqual(rules_count, 0)
 
+    @patch.dict(os.environ, {"ASYNC_SIGNALS": "False"})
+    @override_settings(ASYNC_SIGNALS=False)
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_dataset_permissions(self):
         # Test permissions on a layer
@@ -750,6 +753,12 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         files_as_dict, self.tmpdir = get_files(files)
 
         bobby = get_user_model().objects.get(username="bobby")
+        
+        self.client.force_login(get_user_model().objects.get(username="admin"))
+        payload = {f"{k}_file": v for k,v in files_as_dict.items()}
+        payload['base_file'] = open(payload.pop('shp_file', "rb"))
+        response = self.client.post(reverse("importer_upload"), data=payload)
+
         layer = create_single_dataset(
             "san_andres_y_providencia_poi",
             {
@@ -788,6 +797,17 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         perm_spec = {"users": {"AnonymousUser": []}, "groups": []}
         layer.set_permissions(perm_spec)
+        
+        gs_layer = gs_catalog.get_layer("san_andres_y_providencia_poi")
+        if gs_layer is None:
+            GeoServerResourceManager()._execute_resource_import(
+                layer,
+                list(files_as_dict.values()),
+                get_user_model().objects.get(username="admin"),
+                action_type="create",
+            )
+
+        
         url = (
             f"{settings.GEOSERVER_LOCATION}ows?"
             "LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES="

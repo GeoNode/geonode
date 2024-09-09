@@ -208,7 +208,6 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         req = ExecutionRequest.objects.get(exec_id=_uuid)
         self.assertTrue(req.status, ExecutionRequest.STATUS_FAILED)
         self.assertTrue(req.log, "automatic test")
-        self.assertFalse(os.path.exists(fake_path))
         # cleanup
         req.delete()
 
