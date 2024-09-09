@@ -28,14 +28,18 @@ from dynamic_rest.viewsets import DynamicModelViewSet
 from geonode.base.api.filters import DynamicSearchFilter, ExtentFilter, FavoriteFilter
 from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import (
+    IsSelfOrAdminOrReadOnly,
     ResourceBasePermissionsFilter,
     UserHasPerms,
 )
+from rest_framework.exceptions import ValidationError
+from rest_framework import status
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.base.api.views import ResourceBaseViewSet
 from geonode.base.models import ResourceBase
 from geonode.storage.manager import StorageManager
 from geonode.upload.api.permissions import UploadPermissionsFilter
+from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.api.exceptions import HandlerException, ImportException
 from geonode.upload.api.serializer import ImporterSerializer
@@ -49,7 +53,57 @@ from rest_framework.response import Response
 from geonode.assets.handlers import asset_handler_registry
 from geonode.assets.local import LocalAssetHandler
 
+from geonode.upload.api.serializer import (
+    UploadParallelismLimitSerializer,
+    UploadSizeLimitSerializer,
+)
+
 logger = logging.getLogger(__name__)
+
+
+class UploadSizeLimitViewSet(DynamicModelViewSet):
+    http_method_names = ["get", "post"]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsSelfOrAdminOrReadOnly]
+    queryset = UploadSizeLimit.objects.all()
+    serializer_class = UploadSizeLimitSerializer
+    pagination_class = GeoNodeApiPagination
+
+    def destroy(self, request, *args, **kwargs):
+        protected_objects = [
+            "dataset_upload_size",
+            "document_upload_size",
+            "file_upload_handler",
+        ]
+        instance = self.get_object()
+        if instance.slug in protected_objects:
+            detail = _(f"The limit `{instance.slug}` should not be deleted.")
+            raise ValidationError(detail)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UploadParallelismLimitViewSet(DynamicModelViewSet):
+    http_method_names = ["get", "post"]
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsSelfOrAdminOrReadOnly]
+    queryset = UploadParallelismLimit.objects.all()
+    serializer_class = UploadParallelismLimitSerializer
+    pagination_class = GeoNodeApiPagination
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super(UploadParallelismLimitViewSet, self).get_serializer(*args, **kwargs)
+        if self.action == "create":
+            serializer.fields["slug"].read_only = False
+        return serializer
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.slug == "default_max_parallel_uploads":
+            detail = _("The limit `default_max_parallel_uploads` should not be deleted.")
+            raise ValidationError(detail)
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ImporterViewSet(DynamicModelViewSet):

@@ -788,16 +788,6 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # Set the layer private for not authenticated users
         perm_spec = {"users": {"AnonymousUser": []}, "groups": []}
         layer.set_permissions(perm_spec)
-
-        gs_layer = gs_catalog.get_layer("3Asan_andres_y_providencia_poi")
-        if gs_layer is None:
-            GeoServerResourceManager()._execute_resource_import(
-                layer,
-                list(files_as_dict.values()),
-                get_user_model().objects.get(username="admin"),
-                action_type="create",
-            )
-
         url = (
             f"{settings.GEOSERVER_LOCATION}ows?"
             "LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES="

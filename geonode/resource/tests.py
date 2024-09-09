@@ -212,6 +212,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertTrue(isinstance(res, Map))
         _copy_assert_resource(res, "A Test Map 2")
 
+    @patch.object(ResourceManager, "_validate_resource")
     def test_append(self, mock_validator):
         mock_validator.return_value = True
         dt = create_single_dataset("test_append_dataset")
@@ -225,6 +226,7 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.rm.append(dt, vals={"name": "new_name2"})
         self.assertEqual(dt.name, "new_name_test_append_dataset")
 
+    @patch.object(ResourceManager, "_validate_resource")
     def test_replace(self, mock_validator):
         dt = create_single_dataset("test_replace_dataset")
         mock_validator.return_value = True

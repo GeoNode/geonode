@@ -308,9 +308,6 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         link.delete()
         asset.delete()
 
-        link.delete()
-        asset.delete()
-
     @patch("geonode.storage.manager.storage_manager.exists")
     @patch("geonode.storage.manager.storage_manager.open")
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
@@ -345,9 +342,6 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         zip = zipfile.ZipFile(zip_content)
         zip_files = zip.namelist()
         self.assertIn(".json", "".join(zip_files))
-
-        link.delete()
-        asset.delete()
 
         link.delete()
         asset.delete()

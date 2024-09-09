@@ -135,12 +135,6 @@ workflows:
           load_docker_cache: false
           save_docker_cache: false
           test_suite: ./test.sh geonode.tests.csw geonode.catalogue.backends.tests
-      - build:
-          name: geonode_upload
-          codecov_name: importer
-          load_docker_cache: false
-          save_docker_cache: false
-          test_suite: ./test.sh geonode.upload
       # TODO
       # - build:
       #     name: geonode_test_integration_upload

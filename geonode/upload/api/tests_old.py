@@ -18,15 +18,12 @@
 #########################################################################
 
 from geonode.base.models import ResourceBase
-from geonode.resource.models import ExecutionRequest
 from geonode.geoserver.helpers import gs_catalog
 import os
 import shutil
 import logging
 import tempfile
 from io import IOBase
-from unittest import mock
-from gisdata import GOOD_DATA
 from urllib.request import urljoin
 
 from django.conf import settings

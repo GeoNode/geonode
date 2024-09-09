@@ -25,6 +25,7 @@ logger = logging.getLogger()
 geourl = settings.GEODATABASE_URL
 
 
+@override_settings(FILE_UPLOAD_DIRECTORY_PERMISSIONS=0o777, FILE_UPLOAD_PERMISSIONS=0o7777)
 class BaseImporterEndToEndTest(ImporterBaseTestSupport):
     @classmethod
     def setUpClass(cls) -> None:
