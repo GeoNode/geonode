@@ -15,7 +15,7 @@ class TestBaseRasterFileHandler(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.handler = BaseRasterFileHandler()
-        cls.valid_raster = f"{project_dir}/tests/fixture/test_grid.tif"
+        cls.valid_raster = f"{project_dir}/tests/fixture/test_raster.tif"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.valid_files = {"base_file": cls.valid_raster}
         cls.owner = get_user_model().objects.first()

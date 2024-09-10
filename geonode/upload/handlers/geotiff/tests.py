@@ -16,7 +16,7 @@ class TestGeoTiffFileHandler(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.handler = GeoTiffFileHandler()
-        cls.valid_tiff = f"{project_dir}/tests/fixture/test_grid.tif"
+        cls.valid_tiff = f"{project_dir}/tests/fixture/test_raster.tif"
         cls.valid_files = {"base_file": cls.valid_tiff}
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_tiff = {"base_file": "invalid.file.foo"}
