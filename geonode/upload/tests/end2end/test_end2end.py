@@ -72,6 +72,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                     self.cat.delete(el)
                 except:  # noqa
                     pass
+        ResourceBase.objects.filter(alternate__icontains=name).delete()
 
     def _assertimport(
         self,
@@ -122,8 +123,8 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
             if not skip_geoserver:
                 resources = self.cat.get_resources()
-                # check if the resource is in geoserver
-                self.assertTrue(resource.first().title in [y.name for y in resources])
+                # check if the resource is in geoserver                
+                self.assertTrue(resource.first().title in res for res in [y.name for y in resources])
             if overwrite:
                 self.assertTrue(resource.first().last_updated > last_update)
 
@@ -357,7 +358,7 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         payload = {
             "base_file": open(self.valid_tif, "rb"),
         }
-        initial_name = "test_grid"
+        initial_name = "test_raster"
         payload["overwrite_existing_layer"] = True
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="test_raster")
