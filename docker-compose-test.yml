@@ -11,7 +11,7 @@ x-common-django:
   env_file:
     - .env_test
   volumes:
-    #- '.:/usr/src/geonode'
+    # - '.:/usr/src/geonode'
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
