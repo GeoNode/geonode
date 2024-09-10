@@ -39,7 +39,6 @@ from geonode.upload.utils import call_rollback_function, error_handler, find_key
 logger = logging.getLogger("importer")
 
 
-
 class ErrorBaseTaskClass(Task):
     """
     Basic Error task class. Is common to all the base tasks of the import pahse

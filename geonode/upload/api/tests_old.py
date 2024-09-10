@@ -60,7 +60,6 @@ CURRENT_LOCATION = os.path.abspath(os.path.dirname(__file__))
 logger = logging.getLogger("importer")
 
 
-
 @override_settings(
     DEBUG=True,
     ALLOWED_HOSTS=["*"],

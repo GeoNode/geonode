@@ -19,6 +19,7 @@
 import logging
 from urllib.parse import urljoin
 from django.conf import settings
+from django.http import Http404, HttpResponse
 from django.urls import reverse
 from pathlib import Path
 from geonode.resource.enumerator import ExecutionRequestAction
@@ -59,7 +60,6 @@ from geonode.upload.api.serializer import (
 )
 
 logger = logging.getLogger("importer")
-
 
 
 class UploadSizeLimitViewSet(DynamicModelViewSet):
@@ -301,59 +301,62 @@ class ResourceImporter(DynamicModelViewSet):
     pagination_class = GeoNodeApiPagination
 
     def copy(self, request, *args, **kwargs):
-        resource = self.get_object()
-        if resource.resourcehandlerinfo_set.exists():
-            handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
+        try:
+            resource = self.get_object()
+            if resource.resourcehandlerinfo_set.exists():
+                handler_module_path = resource.resourcehandlerinfo_set.first().handler_module_path
 
-            action = ExecutionRequestAction.COPY.value
+                action = ExecutionRequestAction.COPY.value
 
-            handler = orchestrator.load_handler(handler_module_path)
+                handler = orchestrator.load_handler(handler_module_path)
 
-            if not handler.can_do(action):
-                raise HandlerException(
-                    detail=f"The handler {handler_module_path} cannot manage the action required: {action}"
+                if not handler.can_do(action):
+                    raise HandlerException(
+                        detail=f"The handler {handler_module_path} cannot manage the action required: {action}"
+                    )
+
+                step = next(iter(handler.get_task_list(action=action)))
+
+                extracted_params, _data = handler.extract_params_from_data(request.data, action=action)
+
+                execution_id = orchestrator.create_execution_request(
+                    user=request.user,
+                    func_name=step,
+                    step=step,
+                    action=action,
+                    input_params={
+                        **{"handler_module_path": handler_module_path},
+                        **extracted_params,
+                    },
+                    source="importer_copy",
                 )
 
-            step = next(iter(handler.get_task_list(action=action)))
+                sig = import_orchestrator.s(
+                    {},
+                    str(execution_id),
+                    step=step,
+                    handler=str(handler_module_path),
+                    action=action,
+                    layer_name=resource.title,
+                    alternate=resource.alternate,
+                )
+                sig.apply_async()
 
-            extracted_params, _data = handler.extract_params_from_data(request.data, action=action)
-
-            execution_id = orchestrator.create_execution_request(
-                user=request.user,
-                func_name=step,
-                step=step,
-                action=action,
-                input_params={
-                    **{"handler_module_path": handler_module_path},
-                    **extracted_params,
-                },
-                source="importer_copy",
-            )
-
-            sig = import_orchestrator.s(
-                {},
-                str(execution_id),
-                step=step,
-                handler=str(handler_module_path),
-                action=action,
-                layer_name=resource.title,
-                alternate=resource.alternate,
-            )
-            sig.apply_async()
-
-            # to reduce the work on the FE, the old payload is mantained
-            return Response(
-                data={
-                    "status": "ready",
-                    "execution_id": execution_id,
-                    "status_url": urljoin(
-                        settings.SITEURL,
-                        reverse("rs-execution-status", kwargs={"execution_id": execution_id}),
-                    ),
-                },
-                status=200,
-            )
-
+                # to reduce the work on the FE, the old payload is mantained
+                return Response(
+                    data={
+                        "status": "ready",
+                        "execution_id": execution_id,
+                        "status_url": urljoin(
+                            settings.SITEURL,
+                            reverse("rs-execution-status", kwargs={"execution_id": execution_id}),
+                        ),
+                    },
+                    status=200,
+                )
+        except (Exception, Http404) as e:
+            logger.error(e)
+            return HttpResponse(status=404, content=e)
         return ResourceBaseViewSet(request=request, format_kwarg=None, args=args, kwargs=kwargs).resource_service_copy(
             request, pk=kwargs.get("pk")
         )

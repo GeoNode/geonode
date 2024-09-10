@@ -7,7 +7,6 @@ from geonode.upload.settings import SYSTEM_HANDLERS
 logger = logging.getLogger("importer")
 
 
-
 class HandlersConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "geonode.upload.handlers"

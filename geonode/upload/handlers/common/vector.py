@@ -40,7 +40,6 @@ from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_inv
 logger = logging.getLogger("importer")
 
 
-
 class BaseVectorFileHandler(BaseHandler):
     """
     Handler to import Vector files into GeoNode data db

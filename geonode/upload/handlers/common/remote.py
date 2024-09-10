@@ -22,7 +22,6 @@ from geonode.resource.models import ExecutionRequest
 logger = logging.getLogger("importer")
 
 
-
 class BaseRemoteResourceHandler(BaseHandler):
     """
     Handler to import remote resources into GeoNode data db

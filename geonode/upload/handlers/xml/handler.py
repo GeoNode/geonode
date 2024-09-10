@@ -8,7 +8,6 @@ from owslib.etree import etree as dlxml
 logger = logging.getLogger("importer")
 
 
-
 class XMLFileHandler(MetadataFileHandler):
     """
     Handler to import XML files into GeoNode data db

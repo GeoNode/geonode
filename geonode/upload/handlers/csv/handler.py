@@ -16,7 +16,6 @@ from geonode.upload.utils import ImporterRequestAction as ira
 logger = logging.getLogger("importer")
 
 
-
 class CSVFileHandler(BaseVectorFileHandler):
     """
     Handler to import CSV files into GeoNode data db

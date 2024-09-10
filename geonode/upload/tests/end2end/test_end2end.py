@@ -70,7 +70,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
             for el in layer:
                 try:
                     self.cat.delete(el)
-                except:
+                except:  # noqa
                     pass
 
     def _assertimport(
@@ -100,10 +100,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                     time.sleep(10)
                     tentative += 1
             exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get("execution_id"))
-            if (
-                exc_obj.status
-                != ExecutionRequest.STATUS_FINISHED
-            ):
+            if exc_obj.status != ExecutionRequest.STATUS_FINISHED:
                 raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
 
             # check if the dynamic model is created
@@ -174,7 +171,6 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         payload["overwrite_existing_layer"] = True
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="stazioni_metropolitana")
-
 
 
 class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
@@ -272,7 +268,6 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
         self._assertimport(payload, initial_name)
         self._cleanup_layers(name="valid")
 
-
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_csv_overwrite(self):
@@ -340,7 +335,6 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         self._cleanup_layers(name="san_andres_y_providencia_highway")
 
 
-
 class ImporterRasterImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
@@ -359,7 +353,6 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
     def test_import_raster_overwrite(self):
         prev_dataset = create_single_dataset(name="test_raster")
 
-
         self._cleanup_layers(name="test_raster")
         payload = {
             "base_file": open(self.valid_tif, "rb"),
@@ -367,7 +360,6 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         initial_name = "test_grid"
         payload["overwrite_existing_layer"] = True
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
-        layer = self.cat.get_layer("test_raster")
         self._cleanup_layers(name="test_raster")
 
 

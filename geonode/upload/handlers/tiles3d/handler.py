@@ -18,7 +18,6 @@ from geonode.upload.handlers.tiles3d.exceptions import Invalid3DTilesException
 logger = logging.getLogger("importer")
 
 
-
 class Tiles3DFileHandler(BaseVectorFileHandler):
     """
     Handler to import 3Dtiles files into GeoNode data db

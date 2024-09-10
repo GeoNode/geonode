@@ -15,7 +15,6 @@ from geonode.base.models import ResourceBase
 logger = logging.getLogger("importer")
 
 
-
 class BaseHandler(ABC):
     """
     Base abstract handler object

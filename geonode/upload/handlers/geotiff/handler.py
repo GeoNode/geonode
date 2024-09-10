@@ -10,7 +10,6 @@ from geonode.upload.utils import ImporterRequestAction as ira
 logger = logging.getLogger("importer")
 
 
-
 class GeoTiffFileHandler(BaseRasterFileHandler):
     """
     Handler to import GeoTiff files into GeoNode data db

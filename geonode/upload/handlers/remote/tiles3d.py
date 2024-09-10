@@ -13,7 +13,6 @@ from geonode.base.models import ResourceBase
 logger = logging.getLogger("importer")
 
 
-
 class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler):
 
     @staticmethod

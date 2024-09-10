@@ -13,7 +13,6 @@ from geonode.upload.utils import ImporterRequestAction as ira
 logger = logging.getLogger("importer")
 
 
-
 class GPKGFileHandler(BaseVectorFileHandler):
     """
     Handler to import GPK files into GeoNode data db

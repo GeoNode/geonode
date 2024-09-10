@@ -14,7 +14,6 @@ from geonode.upload.api.exceptions import PublishResourceException
 logger = logging.getLogger("importer")
 
 
-
 class DataPublisher:
     """
     Given a list of resources, will publish them on GeoServer

@@ -14,7 +14,6 @@ from geonode.resource.manager import resource_manager
 logger = logging.getLogger("importer")
 
 
-
 class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
 
     @staticmethod

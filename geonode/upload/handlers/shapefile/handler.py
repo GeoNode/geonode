@@ -15,7 +15,6 @@ from geonode.upload.utils import ImporterRequestAction as ira
 logger = logging.getLogger("importer")
 
 
-
 class ShapeFileHandler(BaseVectorFileHandler):
     """
     Handler to import Shapefile files into GeoNode data db

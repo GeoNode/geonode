@@ -5,7 +5,6 @@ import numpy as np
 logger = logging.getLogger("importer")
 
 
-
 wgs84OneOverRadii = np.array([1.0 / 6378137.0, 1.0 / 6378137.0, 1.0 / 6356752.3142451793])
 wgs84OneOverRadiiSquared = np.array(
     [

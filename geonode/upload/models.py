@@ -15,7 +15,6 @@ from django.template.defaultfilters import filesizeformat
 logger = logging.getLogger("importer")
 
 
-
 class UploadSizeLimitManager(models.Manager):
     def create_default_limit(self):
         max_size_db_obj = self.create(

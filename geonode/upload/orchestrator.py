@@ -95,6 +95,8 @@ class ImportOrchestrator:
             # retrieve the task list for the resource_type
             tasks = self.load_handler(handler_module_path).get_task_list(action=action)
             # getting the index
+            if not tasks:
+                raise StopIteration("Task lists is completed")
             _index = tasks.index(step) + 1
             if _index == 1:
                 """

@@ -13,7 +13,6 @@ from geonode.upload.publisher import DataPublisher
 logger = logging.getLogger("importer")
 
 
-
 STANDARD_TYPE_MAPPING = {
     "Integer64": "django.db.models.IntegerField",
     "Integer": "django.db.models.IntegerField",

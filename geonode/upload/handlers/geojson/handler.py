@@ -12,7 +12,6 @@ from geonode.upload.handlers.geojson.exceptions import InvalidGeoJsonException
 logger = logging.getLogger("importer")
 
 
-
 class GeoJsonFileHandler(BaseVectorFileHandler):
     """
     Handler to import GeoJson files into GeoNode data db

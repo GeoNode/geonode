@@ -7,7 +7,6 @@ from geonode.upload.handlers.utils import evaluate_error
 logger = logging.getLogger("importer")
 
 
-
 class SingleMessageErrorHandler(Task):
     max_retries = 1
     track_started = True

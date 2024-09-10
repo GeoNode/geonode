@@ -13,7 +13,6 @@ from geonode.upload.utils import ImporterRequestAction as ira
 logger = logging.getLogger("importer")
 
 
-
 class KMLFileHandler(BaseVectorFileHandler):
     """
     Handler to import KML files into GeoNode data db

@@ -11,7 +11,6 @@ from geonode.layers.models import Dataset
 logger = logging.getLogger("importer")
 
 
-
 class MetadataFileHandler(BaseHandler):
     """
     Handler to import metadata files into GeoNode data db
