@@ -78,7 +78,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                     pass
         try:
             ResourceBase.objects.filter(alternate__icontains=name).delete()
-        except: # noqa
+        except:  # noqa
             pass
 
     def _assertimport(
@@ -130,7 +130,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
             if not skip_geoserver:
                 resources = self.cat.get_resources()
-                # check if the resource is in geoserver                
+                # check if the resource is in geoserver
                 self.assertTrue(resource.first().title in res for res in [y.name for y in resources])
             if overwrite:
                 self.assertTrue(resource.first().last_updated > last_update)
@@ -340,7 +340,9 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         payload["overwrite_existing_layer"] = True
-        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True)
+        self._assertimport(
+            payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
+        )
         self._cleanup_layers(name="air_Runways")
 
 
