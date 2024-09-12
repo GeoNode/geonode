@@ -326,9 +326,9 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_shapefile_overwrite(self):
 
+        self._cleanup_layers(name="san_andres_y_providencia_highway")
         prev_dataset = create_single_dataset(name="san_andres_y_providencia_highway")
 
-        self._cleanup_layers(name="san_andres_y_providencia_highway")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         initial_name = "san_andres_y_providencia_highway"
         payload["overwrite_existing_layer"] = True
