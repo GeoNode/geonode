@@ -1,9 +1,0 @@
-{% extends "upload/dataset_upload_base.html" %}
-{% load i18n %}
-{% load client_lib_tags %}
-{% block body_class %}data data-list upload{% endblock %}
-
-{% block body %}
-<p>{% trans "Your upload is either complete or you haven't resumed an earlier one." %}</p>
-<p>{% trans "Return to" %} <a href="{% dataset_upload_url %}">{% trans "Upload Form" %}</a>.</p>
-{% endblock %}
