@@ -13,7 +13,7 @@ from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
 from geonode.upload import project_dir
-from geonode.upload.tests.utils import ImporterBaseTestSupport
+from geonode.upload.tests.utils import ImporterBaseTestSupport, TransactionImporterBaseTestSupport
 import gisdata
 from geonode.base.populate_test_data import create_single_dataset
 from django.db.models import Q
@@ -35,13 +35,13 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         cls.valid_gkpg = f"{project_dir}/tests/fixture/valid.gpkg"
         cls.valid_geojson = f"{project_dir}/tests/fixture/valid.geojson"
         cls.no_crs_gpkg = f"{project_dir}/tests/fixture/noCrsTable.gpkg"
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
+        file_path = gisdata.PROJECT_ROOT
+        filename = os.path.join(file_path, "both/good/sangis.org/Airport/Air_Runways.shp")
         cls.valid_shp = {
             "base_file": filename,
-            "dbf_file": f"{file_path}/san_andres_y_providencia_highway.dbf",
-            "prj_file": f"{file_path}/san_andres_y_providencia_highway.prj",
-            "shx_file": f"{file_path}/san_andres_y_providencia_highway.shx",
+            "dbf_file": f"{file_path}/both/good/sangis.org/Airport/Air_Runways.dbf",
+            "prj_file": f"{file_path}/both/good/sangis.org/Airport/Air_Runways.prj",
+            "shx_file": f"{file_path}/both/good/sangis.org/Airport/Air_Runways.shx",
         }
         cls.valid_kml = f"{project_dir}/tests/fixture/valid.kml"
         cls.valid_tif = f"{project_dir}/tests/fixture/test_raster.tif"
@@ -55,7 +55,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
         cls.cat = Catalog(service_url=ogc_server_settings.rest, username=_user, password=_password)
 
     def setUp(self) -> None:
-        self.admin = get_user_model().objects.get(username="admin")
+        self.admin, _ = get_user_model().objects.get_or_create(username="admin")
+        self.admin.is_superuser = True
+        self.admin.is_staff = True
+        self.admin.save()
         for el in Dataset.objects.all():
             el.delete()
 
@@ -72,7 +75,10 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
                     self.cat.delete(el)
                 except:  # noqa
                     pass
-        ResourceBase.objects.filter(alternate__icontains=name).delete()
+        try:
+            ResourceBase.objects.filter(alternate__icontains=name).delete()
+        except: # noqa
+            pass
 
     def _assertimport(
         self,
@@ -316,24 +322,24 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_shapefile(self):
-        self._cleanup_layers(name="san_andres_y_providencia_highway")
+        self._cleanup_layers(name="air_Runways")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
-        initial_name = "san_andres_y_providencia_highway"
+        initial_name = "air_Runways"
         self._assertimport(payload, initial_name)
-        self._cleanup_layers(name="san_andres_y_providencia_highway")
+        self._cleanup_layers(name="air_Runways")
 
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_shapefile_overwrite(self):
 
-        self._cleanup_layers(name="san_andres_y_providencia_highway")
-        prev_dataset = create_single_dataset(name="san_andres_y_providencia_highway")
-
+        self._cleanup_layers(name="air_Runways")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
-        initial_name = "san_andres_y_providencia_highway"
+        initial_name = "air_Runways"
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         payload["overwrite_existing_layer"] = True
-        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
-        self._cleanup_layers(name="san_andres_y_providencia_highway")
+        self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True)
+        self._cleanup_layers(name="air_Runways")
 
 
 class ImporterRasterImportTest(BaseImporterEndToEndTest):
