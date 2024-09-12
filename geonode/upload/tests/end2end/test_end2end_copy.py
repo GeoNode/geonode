@@ -16,6 +16,7 @@ from geoserver.catalog import Catalog
 from geonode.upload import project_dir
 from geonode.upload.tests.utils import TransactionImporterBaseTestSupport
 from django.db import transaction
+from django.forms.models import model_to_dict
 
 geourl = settings.GEODATABASE_URL
 
@@ -26,13 +27,13 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
         super().setUpClass()
         cls.valid_gkpg = f"{project_dir}/tests/fixture/valid.gpkg"
         cls.valid_geojson = f"{project_dir}/tests/fixture/valid.geojson"
-        file_path = gisdata.VECTOR_DATA
-        filename = os.path.join(file_path, "san_andres_y_providencia_highway.shp")
+        file_path = gisdata.PROJECT_ROOT
+        filename = os.path.join(file_path, "both/good/sangis.org/Airport/Air_Runways.shp")
         cls.valid_shp = {
             "base_file": filename,
-            "dbf_file": f"{file_path}/san_andres_y_providencia_highway.dbf",
-            "prj_file": f"{file_path}/san_andres_y_providencia_highway.prj",
-            "shx_file": f"{file_path}/san_andres_y_providencia_highway.shx",
+            "dbf_file": f"{file_path}/both/good/sangis.org/Airport/Air_Runways.dbf",
+            "prj_file": f"{file_path}/both/good/sangis.org/Airport/Air_Runways.prj",
+            "shx_file": f"{file_path}/both/good/sangis.org/Airport/Air_Runways.shx",
         }
         cls.url_create = reverse("importer_upload")
         ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
@@ -112,9 +113,10 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
             ):
                 time.sleep(10)
                 tentative += 1
-        if ExecutionRequest.objects.get(exec_id=response.json().get(_id)).status != ExecutionRequest.STATUS_FINISHED:
+        exc_obj = ExecutionRequest.objects.get(exec_id=response.json().get(_id))
+        if exc_obj.status != ExecutionRequest.STATUS_FINISHED:
             print(ExecutionRequest.objects.get(exec_id=response.json().get(_id)))
-            raise Exception("Async still in progress after 1 min of waiting")
+            raise Exception(f"Async still in progress after 1 min of waiting: {model_to_dict(exc_obj)}")
 
 
 class ImporterCopyEnd2EndGpkgTest(BaseClassEnd2End):
@@ -169,7 +171,7 @@ class ImporterCopyEnd2EndShapeFileTest(BaseClassEnd2End):
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_shapefile(self):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
-        initial_name = "san_andres_y_providencia_highway"
+        initial_name = "air_runways"
         # first we need to import a resource
         with transaction.atomic():
             self._import_resource(payload, initial_name)

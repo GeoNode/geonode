@@ -13,7 +13,7 @@ from geonode.resource.models import ExecutionRequest
 from geonode.utils import OGC_Servers_Handler
 from geoserver.catalog import Catalog
 from geonode.upload import project_dir
-from geonode.upload.tests.utils import ImporterBaseTestSupport, TransactionImporterBaseTestSupport
+from geonode.upload.tests.utils import ImporterBaseTestSupport
 import gisdata
 from geonode.base.populate_test_data import create_single_dataset
 from django.db.models import Q
