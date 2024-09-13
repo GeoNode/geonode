@@ -24,7 +24,7 @@ services:
   # Our custom django application. It includes Geonode.
   django:
     <<: *default-common-django
-    container_name: django4${COMPOSE_PROJECT_NAME}
+    container_name: django4${COMPOSE_PROJECT_NAME}2
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://django:8000/"
       start_period: 60s
@@ -34,15 +34,15 @@ services:
     environment:
       - IS_CELERY=False
     entrypoint: ["/usr/src/geonode/entrypoint.sh"]
-    command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
-    # command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    # command: "uwsgi --ini /usr/src/geonode/uwsgi.ini"
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
-      - "8000:8000"
+      - "8005:8000"
 
   # Celery worker that executes celery tasks created by Django.
   celery:
     <<: *default-common-django
-    container_name: celery4${COMPOSE_PROJECT_NAME}
+    container_name: celery4${COMPOSE_PROJECT_NAME}2
     depends_on:
       django:
         condition: service_healthy
@@ -56,7 +56,7 @@ services:
     # image: geonode/nginx:1.25.3-latest
     image: tosca-geonode-nginx:dev
     # build: ./docker/dev/nginx
-    container_name: nginx4${COMPOSE_PROJECT_NAME}
+    container_name: nginx4${COMPOSE_PROJECT_NAME}2
     env_file:
       - .env
     environment:
@@ -73,7 +73,7 @@ services:
   # Gets and installs letsencrypt certificates
   letsencrypt:
     image: geonode/letsencrypt:2.6.0-latest
-    container_name: letsencrypt4${COMPOSE_PROJECT_NAME}
+    container_name: letsencrypt4${COMPOSE_PROJECT_NAME}2
     env_file:
       - .env
     volumes:
@@ -84,7 +84,7 @@ services:
   geoserver:
     # image: geonode/geoserver:2.24.3-v1
     image: tosca-geonode-geoserver:2.24.4
-    container_name: geoserver4${COMPOSE_PROJECT_NAME}
+    container_name: geoserver4${COMPOSE_PROJECT_NAME}2
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
       start_period: 60s
@@ -94,7 +94,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
     # geoserver volume dan kaynaklaniyor galiba bu hata. yarin bunun testini yapalim. .data altina kaydettiigiz icin dikkat etmek gerkiyor
       - statics:/mnt/volumes/statics
@@ -116,7 +116,7 @@ services:
   data-dir-conf:
     # image: geonode/geoserver_data:2.24.4-latest
     image: geoserver-2.24.4-tosca-data:latest
-    container_name: gsconf4${COMPOSE_PROJECT_NAME}
+    container_name: gsconf4${COMPOSE_PROJECT_NAME}2
     entrypoint: sleep infinity
     volumes:
       - geoserver-data-dir:/geoserver_data/data
@@ -129,7 +129,7 @@ services:
     # use geonode official postgis 15 image
     image: geonode/postgis:15.3-latest
     command: postgres -c "max_connections=${POSTGRESQL_MAX_CONNECTIONS}"
-    container_name: db4${COMPOSE_PROJECT_NAME}
+    container_name: db4${COMPOSE_PROJECT_NAME}2
     env_file:
       - .env
     volumes:
@@ -140,12 +140,12 @@ services:
       test: "pg_isready -d postgres -U postgres"
     # uncomment to enable remote connections to postgres
     ports:
-      - "5432:5432"
+      - "5436:5432"
 
   # Vanilla RabbitMQ service. This is needed by celery
   rabbitmq:
     image: rabbitmq:3-alpine
-    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}
+    container_name: rabbitmq4${COMPOSE_PROJECT_NAME}2
     volumes:
       - rabbitmq:/var/lib/rabbitmq
     restart: unless-stopped
