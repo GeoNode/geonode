@@ -5,5 +5,5 @@ geonode/static/node_modules
 docs
 .coverage
 .celerybeat-*
-
+.env
 scripts/spcgeonode/_volume_*
