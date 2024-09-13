@@ -20,9 +20,7 @@
 import typing
 import logging
 import tempfile
-import dataclasses
 
-from gsimporter.api import Session
 
 from django.conf import settings
 from django.db.models.query import QuerySet
@@ -46,7 +44,6 @@ from geonode.geoserver.signals import geofence_rule_assign
 from .geofence import AutoPriorityBatch
 from .tasks import geoserver_set_style, geoserver_delete_map, geoserver_create_style, geoserver_cascading_delete
 from .helpers import (
-    SpatialFilesLayerType,
     gs_catalog,
     set_time_info,
     ogc_server_settings,
