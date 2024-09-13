@@ -66,16 +66,6 @@ from .security import (
 logger = logging.getLogger(__name__)
 
 
-@dataclasses.dataclass()
-class GeoServerImporterSessionInfo:
-    # upload_session: Upload
-    import_session: Session
-    spatial_files_type: SpatialFilesLayerType
-    dataset_name: typing.AnyStr
-    workspace: typing.AnyStr
-    target_store: typing.AnyStr
-
-
 class GeoServerResourceManager(ResourceManagerInterface):
     def search(self, filter: dict, /, resource_type: typing.Optional[object]) -> QuerySet:
         return resource_type.objects.none()

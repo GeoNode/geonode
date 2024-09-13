@@ -70,13 +70,6 @@ CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
 
-DEFAULT_SEARCH_BATCH_SIZE = 10
-MAX_SEARCH_BATCH_SIZE = 25
-GENERIC_UPLOAD_ERROR = _(
-    "There was an error while attempting to upload your data. \
-Please try again, or contact and administrator if the problem continues."
-)
-
 METADATA_UPLOADED_PRESERVE_ERROR = _(
     "Note: this dataset's orginal metadata was \
 populated and preserved by importing a metadata XML file. This metadata cannot be edited."
