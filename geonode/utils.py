@@ -18,17 +18,14 @@
 #########################################################################
 
 import os
-import gc
 import re
 import json
 import time
 import base64
 import select
 import shutil
-import string
 import typing
 import logging
-import tarfile
 import datetime
 import requests
 import tempfile
@@ -94,14 +91,8 @@ from urllib.parse import (
 MAX_EXTENT = 20037508.34
 FULL_ROTATION_DEG = 360.0
 HALF_ROTATION_DEG = 180.0
-DEFAULT_TITLE = ""
-DEFAULT_ABSTRACT = ""
 
-INVALID_PERMISSION_MESSAGE = _("Invalid permission level.")
 
-ALPHABET = f"{string.ascii_uppercase + string.ascii_lowercase + string.digits}-_"
-ALPHABET_REVERSE = {c: i for (i, c) in enumerate(ALPHABET)}
-BASE = len(ALPHABET)
 SIGN_CHARACTER = "$"
 SQL_PARAMS_RE = re.compile(r"%\(([\w_\-]+)\)s")
 
@@ -112,20 +103,6 @@ XML_PARSER: typing.Final = etree.XMLParser(resolve_entities=False)
 
 requests.packages.urllib3.disable_warnings()
 
-signalnames = [
-    "class_prepared",
-    "m2m_changed",
-    "post_delete",
-    "post_init",
-    "post_save",
-    "post_syncdb",
-    "pre_delete",
-    "pre_init",
-    "pre_save",
-]
-signals_store = {}
-
-id_none = id(None)
 
 logger = logging.getLogger("geonode.utils")
 
@@ -316,23 +293,6 @@ def unzip_file(upload_file, extension=".shp", tempdir=None):
     return absolute_base_file
 
 
-def extract_tarfile(upload_file, extension=".shp", tempdir=None):
-    """
-    Extracts a tarfile into a temporary directory and returns the full path of the .shp file inside (if any)
-    """
-    absolute_base_file = None
-    if tempdir is None:
-        tempdir = mkdtemp()
-
-    the_tar = tarfile.open(upload_file)
-    the_tar.extractall(tempdir)
-    for item in the_tar.getnames():
-        if item.endswith(extension):
-            absolute_base_file = os.path.join(tempdir, item)
-
-    return absolute_base_file
-
-
 def get_dataset_name(dataset):
     """Get the workspace where the input layer belongs"""
     _name = dataset.name
@@ -460,36 +420,6 @@ def _get_basic_auth_info(request):
         raise ValueError
     username, password = base64.b64decode(auth.encode()).decode().split(":")
     return username, password
-
-
-def batch_delete(request):
-    # TODO
-    pass
-
-
-def _split_query(query):
-    """
-    split and strip keywords, preserve space
-    separated quoted blocks.
-    """
-
-    qq = query.split(" ")
-    keywords = []
-    accum = None
-    for kw in qq:
-        if accum is None:
-            if kw.startswith('"'):
-                accum = kw[1:]
-            elif kw:
-                keywords.append(kw)
-        else:
-            accum += f" {kw}"
-            if kw.endswith('"'):
-                keywords.append(accum[0:-1])
-                accum = None
-    if accum is not None:
-        keywords.append(accum)
-    return [kw.strip() for kw in keywords if kw.strip()]
 
 
 # Swaps coords order from xmin,ymin,xmax,ymax to xmin,xmax,ymin,ymax and viceversa
@@ -789,39 +719,6 @@ def json_response(body=None, errors=None, url=None, redirect_to=None, exception=
     return HttpResponse(body, content_type=content_type, status=status)
 
 
-def num_encode(n):
-    if n < 0:
-        return SIGN_CHARACTER + num_encode(-n)
-    s = []
-    while True:
-        n, r = divmod(n, BASE)
-        s.append(ALPHABET[r])
-        if n == 0:
-            break
-    return "".join(reversed(s))
-
-
-def num_decode(s):
-    if s[0] == SIGN_CHARACTER:
-        return -num_decode(s[1:])
-    n = 0
-    for c in s:
-        n = n * BASE + ALPHABET_REVERSE[c]
-    return n
-
-
-def format_urls(a, values):
-    b = []
-    for i in a:
-        j = i.copy()
-        try:
-            j["url"] = str(j["url"]).format(**values)
-        except KeyError:
-            j["url"] = None
-        b.append(j)
-    return b
-
-
 def build_abstract(resourcebase, url=None, includeURL=True):
     if resourcebase.abstract and url and includeURL:
         return f"{resourcebase.abstract} -- [{url}]({url})"
@@ -841,31 +738,6 @@ def build_caveats(resourcebase):
         return f"- {'%0A- '.join(caveats)}"
     else:
         return ""
-
-
-def build_social_links(request, resourcebase):
-    netschema = "https" if request.is_secure() else "http"
-    host = request.get_host()
-    path = request.get_full_path()
-    social_url = f"{netschema}://{host}{path}"
-    # Don't use datetime strftime() because it requires year >= 1900
-    # see
-    # https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
-    date = "{0.month:02d}/{0.day:02d}/{0.year:4d}".format(resourcebase.date) if resourcebase.date else None
-    abstract = build_abstract(resourcebase, url=social_url, includeURL=True)
-    caveats = build_caveats(resourcebase)
-    hashtags = ",".join(getattr(settings, "TWITTER_HASHTAGS", []))
-    return format_urls(
-        settings.SOCIAL_ORIGINS,
-        {
-            "name": resourcebase.title,
-            "date": date,
-            "abstract": abstract,
-            "caveats": caveats,
-            "hashtags": hashtags,
-            "url": social_url,
-        },
-    )
 
 
 def check_shp_columnnames(layer):
@@ -986,25 +858,6 @@ def fixup_shp_columnnames(inShapefile, charset, tempdir=None):
             logger.exception(e)
             raise GeoNodeException(f"Could not decode SHAPEFILE attributes by using the specified charset '{charset}'.")
     return True, None, list_col
-
-
-def id_to_obj(id_):
-    if id_ == id_none:
-        return None
-
-    for obj in gc.get_objects():
-        if id(obj) == id_:
-            return obj
-    raise Exception("Not found")
-
-
-def printsignals():
-    for signalname in signalnames:
-        logger.debug(f"SIGNALNAME: {signalname}")
-        signaltype = getattr(models.signals, signalname)
-        signals = signaltype.receivers[:]
-        for signal in signals:
-            logger.debug(signal)
 
 
 class DisableDjangoSignals:

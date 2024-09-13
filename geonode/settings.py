@@ -1082,12 +1082,6 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
 """
 UPLOADER = {
     "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.upload"),
-    "OPTIONS": {
-        "TIME_ENABLED": ast.literal_eval(os.getenv("TIME_ENABLED", "False")),
-        "MOSAIC_ENABLED": ast.literal_eval(os.getenv("MOSAIC_ENABLED", "False")),
-    },
-    "SUPPORTED_CRS": ["EPSG:4326", "EPSG:3785", "EPSG:3857", "EPSG:32647", "EPSG:32736"],
-    "SUPPORTED_EXT": [".shp", ".csv", ".kml", ".kmz", ".json", ".geojson", ".tif", ".tiff", ".geotiff", ".gml", ".xml"],
 }
 
 EPSG_CODE_MATCHES = {
@@ -2242,7 +2236,7 @@ to evaluate if the file is greater than the limit size defined
 """
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
-    "uploads-upload",
+    "importer_upload",
     "document_upload",
 )
 
@@ -2332,8 +2326,6 @@ CELERY_TASK_QUEUES += (
 )
 
 DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
-
-SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES += ("importer_upload",)
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
 

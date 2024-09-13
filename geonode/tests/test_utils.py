@@ -16,15 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import os
 import copy
-import shutil
 from unittest import TestCase
-import zipfile
-import tempfile
 from django.test import override_settings
 
-from osgeo import ogr
 from unittest.mock import patch
 from datetime import datetime, timedelta
 
@@ -37,7 +32,7 @@ from geonode.layers.models import Attribute
 from geonode.geoserver.helpers import set_attributes
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.br.management.commands.utils.utils import ignore_time
-from geonode.utils import copy_tree, fixup_shp_columnnames, get_supported_datasets_file_types, unzip_file, bbox_to_wkt
+from geonode.utils import copy_tree, get_supported_datasets_file_types, bbox_to_wkt
 from geonode import settings
 
 
@@ -111,50 +106,6 @@ class TestCopyTree(GeoNodeBaseTestSupport):
         """
         copy_tree("/src", "/dst", ignore=ignore_time(">=", datetime.now().isoformat()))
         self.assertTrue(patch_shutil_copytree.called)
-
-
-class TestFixupShp(GeoNodeBaseTestSupport):
-    def test_fixup_shp_columnnames(self):
-        project_root = os.path.abspath(os.path.dirname(__file__))
-        dataset_zip = os.path.join(project_root, "data", "ming_female_1.zip")
-
-        self.failUnless(zipfile.is_zipfile(dataset_zip))
-
-        dataset_shp = unzip_file(dataset_zip)
-
-        expected_fieldnames = [
-            "ID",
-            "_f",
-            "__1",
-            "__2",
-            "m",
-            "_",
-            "_M2",
-            "_M2_1",
-            "l",
-            "x",
-            "y",
-            "_WU",
-            "_1",
-        ]
-        _, _, fieldnames = fixup_shp_columnnames(dataset_shp, "windows-1258")
-
-        inDriver = ogr.GetDriverByName("ESRI Shapefile")
-        inDataSource = inDriver.Open(dataset_shp, 0)
-        inLayer = inDataSource.GetLayer()
-        inLayerDefn = inLayer.GetLayerDefn()
-
-        self.assertEqual(inLayerDefn.GetFieldCount(), len(expected_fieldnames))
-
-        for i, fn in enumerate(expected_fieldnames):
-            self.assertEqual(inLayerDefn.GetFieldDefn(i).GetName(), fn)
-
-        inDataSource.Destroy()
-
-        # Cleanup temp dir
-        shp_parent = os.path.dirname(dataset_shp)
-        if shp_parent.startswith(tempfile.gettempdir()):
-            shutil.rmtree(shp_parent, ignore_errors=True)
 
 
 class TestSetAttributes(GeoNodeBaseTestSupport):

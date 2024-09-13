@@ -19,7 +19,6 @@
 from datetime import datetime
 import logging
 
-from django.conf import settings
 from django.utils.timezone import timedelta
 
 from geonode.celery_app import app
