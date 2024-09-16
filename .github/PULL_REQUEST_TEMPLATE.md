@@ -15,6 +15,7 @@ The following are required only for core and extension modules (they are welcome
 - [ ] The issue connected to the PR must have Labels and Milestone assigned
 - [ ] PR for bug fixes and small new features are presented as a single commit
 - [ ] Commit message must be in the form "[Fixes #<issue_number>] Title of the Issue"
+- [ ] PR title must be in the form "[Fixes #<issue_number>] Title of the PR"
 - [ ] New unit tests have been added covering the changes, unless there is an explanation on why the tests are not necessary/implemented
 - [ ] This PR passes all existing unit tests (test results will be reported by travis-ci after opening this PR)
 - [ ] This PR passes the QA checks: black geonode && flake8 geonode
