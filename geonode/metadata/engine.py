@@ -49,6 +49,36 @@ class MetadataEngine:
         """
         Returns the list of the field
         """
+        return [
+            Field(
+                name="pk",  # mandatory
+                type="int",  # mandatory
+                kwargs={"required": True},  # optional
+            ),
+            Field(
+                name="title",  # mandatory
+                type="str",  # mandatory
+                kwargs={"max_length": 255, "help_text": "title by which the cited resource is known"},
+            ),
+            Field(
+                name="name",  # mandatory
+                type="str",  # mandatory
+                kwargs={
+                    "max_length": 255,
+                    "help_text": "name by which the cited resource is known",
+                    "required": False,
+                },  # optional
+            ),
+            Field(
+                name="region",
+                type="choice",
+                kwargs={
+                    "choices": [(x.lower(), x.upper()) for x in ["Europe", "World"]],
+                    "help_text": "region of the resource",
+                    "required": False,
+                },  # optional
+            ),
+        ]
 
     @abstractmethod
     def get_data(self) -> List[dict]:
@@ -56,7 +86,10 @@ class MetadataEngine:
         Return the list of the metadata to be used in the
         serializer listing functionality
         """
-        # return [{"title": "abc"}]
+        return [
+            {"pk": 1, "title": "Metadata Title", "name": "Metadata Name", "region": "Europe"},
+            {"pk": 2, "title": "Second Metadata Title", "name": "second Metadata Name", "region": "World"},
+        ]
 
     @abstractmethod
     def get_data_by_pk(self, pk) -> List[dict]:
@@ -64,7 +97,7 @@ class MetadataEngine:
         Return the dict of the metadata to be used in the
         serializer listing functionality for a specific resource
         """
-        # return {"title": pk, "name": "this is my name"}
+        return {"pk": pk, "title": "Metadata Title", "name": "Metadata Name", "region": "Europe"}
 
     @abstractmethod
     def save_metadata(self, payload):

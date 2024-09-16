@@ -2378,9 +2378,8 @@ GEONODE_APPS += ("geonode.assets",)
 
 INSTALLED_APPS += ("geonode.metadata",)
 #
-#REST_FRAMEWORK = {
-    ## YOUR SETTINGS
-    #"DEFAULT_GENERATOR_CLASS": "geonode.metadata.openapi.CustomSchemaGenerator",
-    #"DEFAULT_SCHEMA_CLASS": "geonode.metadata.openapi.CustomOpenApiSchema",
-#}
+# REST_FRAMEWORK = {
+# "DEFAULT_GENERATOR_CLASS": "geonode.metadata.openapi.CustomSchemaGenerator",
+# "DEFAULT_SCHEMA_CLASS": "geonode.metadata.openapi.CustomOpenApiSchema",
+# }
 #
