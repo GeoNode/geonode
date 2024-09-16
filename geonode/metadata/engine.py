@@ -87,8 +87,8 @@ class MetadataEngine:
         serializer listing functionality
         """
         return [
-            {"pk": 1, "title": "Metadata Title", "name": "Metadata Name", "regions": "Europe"},
-            {"pk": 2, "title": "Second Metadata Title", "name": "second Metadata Name", "regions": "World"},
+            {"pk": 1, "title": "Metadata Title", "name": "Metadata Name", "regions": "europe"},
+            {"pk": 2, "title": "Second Metadata Title", "name": "second Metadata Name", "regions": "world"},
         ]
 
     @abstractmethod
@@ -97,7 +97,7 @@ class MetadataEngine:
         Return the dict of the metadata to be used in the
         serializer listing functionality for a specific resource
         """
-        return {"pk": pk, "title": "Metadata Title", "name": "Metadata Name", "regions": "Europe"}
+        return {"pk": pk, "title": "Metadata Title", "name": "Metadata Name", "regions": "europe"}
 
     @abstractmethod
     def save_metadata(self, payload):
