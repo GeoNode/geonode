@@ -70,11 +70,11 @@ class MetadataEngine:
                 },  # optional
             ),
             Field(
-                name="region",
+                name="regions",
                 type="choice",
                 kwargs={
                     "choices": [(x.lower(), x.upper()) for x in ["Europe", "World"]],
-                    "help_text": "region of the resource",
+                    "help_text": "regions of the resource",
                     "required": False,
                 },  # optional
             ),
@@ -87,8 +87,8 @@ class MetadataEngine:
         serializer listing functionality
         """
         return [
-            {"pk": 1, "title": "Metadata Title", "name": "Metadata Name", "region": "Europe"},
-            {"pk": 2, "title": "Second Metadata Title", "name": "second Metadata Name", "region": "World"},
+            {"pk": 1, "title": "Metadata Title", "name": "Metadata Name", "regions": "Europe"},
+            {"pk": 2, "title": "Second Metadata Title", "name": "second Metadata Name", "regions": "World"},
         ]
 
     @abstractmethod
@@ -97,7 +97,7 @@ class MetadataEngine:
         Return the dict of the metadata to be used in the
         serializer listing functionality for a specific resource
         """
-        return {"pk": pk, "title": "Metadata Title", "name": "Metadata Name", "region": "Europe"}
+        return {"pk": pk, "title": "Metadata Title", "name": "Metadata Name", "regions": "Europe"}
 
     @abstractmethod
     def save_metadata(self, payload):
