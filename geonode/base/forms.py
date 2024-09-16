@@ -29,7 +29,6 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.core import validators
 from django.db.models import Prefetch, Q
 from django.forms import models
 from django.forms.fields import ChoiceField, MultipleChoiceField
@@ -657,22 +656,6 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             "was_approved",
             "was_published",
         )
-
-
-class ValuesListField(forms.Field):
-    def to_python(self, value):
-        if value in validators.EMPTY_VALUES:
-            return []
-
-        value = [item.strip() for item in value.split(",") if item.strip()]
-
-        return value
-
-    def clean(self, value):
-        value = self.to_python(value)
-        self.validate(value)
-        self.run_validators(value)
-        return value
 
 
 class BatchEditForm(forms.Form):

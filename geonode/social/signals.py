@@ -32,18 +32,13 @@ from geonode.geoapps.models import GeoApp
 from geonode.layers.models import Dataset
 from geonode.maps.models import Map
 from geonode.documents.models import Document
-from geonode.notifications_helper import (
-    send_notification,
-    queue_notification,
-    get_notification_recipients,
-)
+
 
 logger = logging.getLogger(__name__)
 
 activity = None
 if "actstream" in settings.INSTALLED_APPS:
     from actstream import action as activity
-    from actstream.actions import follow, unfollow
 
 
 def activity_post_modify_object(sender, instance, created=None, **kwargs):
@@ -143,18 +138,6 @@ def activity_post_modify_object(sender, instance, created=None, **kwargs):
             logger.warning("The activity received a non-actionable Model or None as the actor/action.")
 
 
-def relationship_post_save_actstream(instance, sender, created, **kwargs):
-    follow(instance.from_user, instance.to_user)
-
-
-def relationship_pre_delete_actstream(instance, sender, **kwargs):
-    unfollow(instance.from_user, instance.to_user)
-
-
-def relationship_post_save(instance, sender, created, **kwargs):
-    queue_notification([instance.to_user], "user_follow", {"from_user": instance.from_user})
-
-
 if activity:
     signals.post_save.connect(activity_post_modify_object, sender=Dataset)
     signals.post_delete.connect(activity_post_modify_object, sender=Dataset)
@@ -166,14 +149,3 @@ if activity:
     signals.post_delete.connect(activity_post_modify_object, sender=Document)
     signals.post_save.connect(activity_post_modify_object, sender=GeoApp)
     signals.post_delete.connect(activity_post_modify_object, sender=GeoApp)
-
-
-def rating_post_save(instance, sender, created, **kwargs):
-    """Send a notification when rating a layer, map or document"""
-    notice_type_label = f"{instance.content_object.class_name.lower()}_rated"
-    recipients = get_notification_recipients(notice_type_label, instance.user, resource=instance.content_object)
-    send_notification(
-        recipients,
-        notice_type_label,
-        {"resource": instance.content_object, "user": instance.user, "rating": instance.rating},
-    )

@@ -17,7 +17,6 @@
 #
 #########################################################################
 import re
-import os
 import json
 import decimal
 import logging
@@ -80,17 +79,6 @@ _PERMISSION_MSG_GENERIC = _("You do not have permissions for this dataset.")
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this dataset")
 _PERMISSION_MSG_METADATA = _("You are not permitted to modify this dataset's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this dataset")
-
-
-def log_snippet(log_file):
-    if not log_file or not os.path.isfile(log_file):
-        return f"No log file at {log_file}"
-
-    with open(log_file) as f:
-        f.seek(0, 2)  # Seek @ EOF
-        fsize = f.tell()  # Get Size
-        f.seek(max(fsize - 10024, 0), 0)  # Set pos @ last n chars
-        return f.read()
 
 
 def _resolve_dataset(request, alternate, permission="base.view_resourcebase", msg=_PERMISSION_MSG_GENERIC, **kwargs):

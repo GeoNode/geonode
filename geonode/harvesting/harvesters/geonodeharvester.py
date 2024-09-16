@@ -1170,30 +1170,6 @@ def _get_native_format(csw_identification: etree.Element, api_record: typing.Dic
     return result
 
 
-def get_spatial_extent_4326(identification_el: etree.Element) -> typing.Optional[geos.Polygon]:
-    try:
-        extent_el = identification_el.xpath(".//gmd:extent//gmd:geographicElement", namespaces=identification_el.nsmap)[
-            0
-        ]
-        left_x = get_xpath_value(extent_el, ".//gmd:westBoundLongitude")
-        right_x = get_xpath_value(extent_el, ".//gmd:eastBoundLongitude")
-        lower_y = get_xpath_value(extent_el, ".//gmd:southBoundLatitude")
-        upper_y = get_xpath_value(extent_el, ".//gmd:northBoundLatitude")
-        # GeoNode seems to have a bug whereby sometimes the reported extent uses a
-        # comma as the decimal separator, other times it uses a dot
-        result = geos.Polygon.from_bbox(
-            (
-                float(left_x.replace(",", ".")),
-                float(lower_y.replace(",", ".")),
-                float(right_x.replace(",", ".")),
-                float(upper_y.replace(",", ".")),
-            )
-        )
-    except IndexError:
-        result = None
-    return result
-
-
 def get_spatial_extent_native(api_record: typing.Dict):
     declared_ewkt = api_record.get("bbox_polygon")
     if declared_ewkt is not None:

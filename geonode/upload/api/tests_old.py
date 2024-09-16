@@ -160,14 +160,6 @@ class UploadApiTests(GeoNodeLiveTestSupport, APITestCase):
         step = urljoin(settings.SITEURL, reverse("data_upload", args=[step] if step else []))
         return step
 
-    def as_superuser(func):
-        def wrapper(self, *args, **kwargs):
-            self.do_login()
-            func(self, *args, **kwargs)
-            self.do_logout()
-
-        return wrapper
-
     def live_upload_file(self, _file):
         """function that uploads a file, or a collection of files, to
         the GeoNode"""

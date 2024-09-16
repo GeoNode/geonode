@@ -239,7 +239,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         """
         try:
             with self.assertRaises(Exception):
-                get_resource.return_falue = True
+                get_resource.return_value = True
                 publish_resources.return_value = True
                 extract_resource_to_publish.return_value = [{"crs": 4326, "name": "dataset3"}]
                 exec_id = orchestrator.create_execution_request(

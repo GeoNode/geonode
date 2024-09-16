@@ -75,15 +75,6 @@ def call_celery(func):
     return wrap
 
 
-def send_now_notification(*args, **kwargs):
-    """
-    Simple wrapper around notifications.model send().
-    This can be called safely if notifications are not installed.
-    """
-    if has_notifications:
-        return notifications.models.send_now(*args, **kwargs)
-
-
 @call_celery
 def send_notification(*args, **kwargs):
     """

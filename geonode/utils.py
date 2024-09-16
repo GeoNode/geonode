@@ -22,7 +22,6 @@ import re
 import json
 import time
 import base64
-import select
 import shutil
 import typing
 import logging
@@ -32,13 +31,12 @@ import tempfile
 import ipaddress
 import itertools
 import traceback
-import subprocess
 
 from lxml import etree
 from osgeo import ogr
 from PIL import Image
 from urllib3 import Retry
-from io import BytesIO, StringIO
+from io import BytesIO
 from decimal import Decimal
 from threading import local
 from slugify import slugify
@@ -46,7 +44,7 @@ from contextlib import closing
 from requests.exceptions import RetryError
 from collections import namedtuple, defaultdict
 from rest_framework.exceptions import APIException
-from math import atan, exp, log, pi, sin, tan, floor
+from math import atan, exp, log, pi, tan
 from zipfile import ZipFile, is_zipfile, ZIP_DEFLATED
 from geonode.upload.api.exceptions import GeneralUploadException
 
@@ -82,10 +80,7 @@ from urllib.parse import (
     unquote,
     urlparse,
     urlsplit,
-    urlencode,
     urlunparse,
-    parse_qsl,
-    ParseResult,
 )
 
 MAX_EXTENT = 20037508.34
@@ -543,48 +538,9 @@ def bbox_to_projection(native_bbox, target_srid=4326):
     return native_bbox
 
 
-def bounds_to_zoom_level(bounds, width, height):
-    WORLD_DIM = {"height": 256.0, "width": 256.0}
-    ZOOM_MAX = 21
-
-    def latRad(lat):
-        _sin = sin(lat * pi / HALF_ROTATION_DEG)
-        if abs(_sin) != 1.0:
-            radX2 = log((1.0 + _sin) / (1.0 - _sin)) / 2.0
-        else:
-            radX2 = log(1.0) / 2.0
-        return max(min(radX2, pi), -pi) / 2.0
-
-    def zoom(mapPx, worldPx, fraction):
-        try:
-            return floor(log(mapPx / worldPx / fraction) / log(2.0))
-        except Exception:
-            return 0
-
-    ne = [float(bounds[2]), float(bounds[3])]
-    sw = [float(bounds[0]), float(bounds[1])]
-    latFraction = (latRad(ne[1]) - latRad(sw[1])) / pi
-    lngDiff = ne[0] - sw[0]
-    lngFraction = ((lngDiff + FULL_ROTATION_DEG) if lngDiff < 0 else lngDiff) / FULL_ROTATION_DEG
-    latZoom = zoom(float(height), WORLD_DIM["height"], latFraction)
-    lngZoom = zoom(float(width), WORLD_DIM["width"], lngFraction)
-    # ratio = float(max(width, height)) / float(min(width, height))
-    # z_offset = 0 if ratio >= 2 else -1
-    z_offset = 0
-    zoom = int(max(latZoom, lngZoom) + z_offset)
-    zoom = 0 if zoom > ZOOM_MAX else zoom
-    return max(zoom, 0)
-
-
 def llbbox_to_mercator(llbbox):
     minlonlat = forward_mercator([llbbox[0], llbbox[2]])
     maxlonlat = forward_mercator([llbbox[1], llbbox[3]])
-    return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
-
-
-def mercator_to_llbbox(bbox):
-    minlonlat = inverse_mercator([bbox[0], bbox[2]])
-    maxlonlat = inverse_mercator([bbox[1], bbox[3]])
     return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
 
 
@@ -901,31 +857,6 @@ class DisableDjangoSignals:
     def reconnect(self, signal):
         signal.receivers = self.stashed_signals.get(signal, [])
         del self.stashed_signals[signal]
-
-
-def run_subprocess(*cmd, **kwargs):
-    p = subprocess.Popen(" ".join(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
-    stdout = StringIO()
-    stderr = StringIO()
-    buff_size = 1024
-    while p.poll() is None:
-        inr = [p.stdout.fileno(), p.stderr.fileno()]
-        inw = []
-        rlist, wlist, xlist = select.select(inr, inw, [])
-
-        for r in rlist:
-            if r == p.stdout.fileno():
-                readfrom = p.stdout
-                readto = stdout
-            else:
-                readfrom = p.stderr
-                readto = stderr
-            readto.write(readfrom.read(buff_size))
-
-        for w in wlist:
-            w.write("")
-
-    return p.returncode, stdout.getvalue(), stderr.getvalue()
 
 
 def parse_datetime(value):
@@ -1585,44 +1516,6 @@ def set_resource_default_links(instance, layer, prune=False, **kwargs):
         except Exception as e:
             logger.error(" -- Resource Links[OWS Links]...error!")
             logger.exception(e)
-
-
-def add_url_params(url, params):
-    """Add GET params to provided URL being aware of existing.
-
-    :param url: string of target URL
-    :param params: dict containing requested params to be added
-    :return: string with updated URL
-
-    >> url = 'http://stackoverflow.com/test?answers=true'
-    >> new_params = {'answers': False, 'data': ['some','values']}
-    >> add_url_params(url, new_params)
-    'http://stackoverflow.com/test?data=some&data=values&answers=false'
-    """
-    # Unquoting URL first so we don't loose existing args
-    url = unquote(url)
-    # Extracting url info
-    parsed_url = urlparse(url)
-    # Extracting URL arguments from parsed URL
-    get_args = parsed_url.query
-    # Converting URL arguments to dict
-    parsed_get_args = dict(parse_qsl(get_args))
-    # Merging URL arguments dict with new params
-    parsed_get_args.update(params)
-
-    # Bool and Dict values should be converted to json-friendly values
-    # you may throw this part away if you don't like it :)
-    parsed_get_args.update({k: json.dumps(v) for k, v in parsed_get_args.items() if isinstance(v, (bool, dict))})
-
-    # Converting URL argument to proper query string
-    encoded_get_args = urlencode(parsed_get_args, doseq=True)
-    # Creating new parsed result object based on provided with new
-    # URL arguments. Same thing happens inside of urlparse.
-    new_url = ParseResult(
-        parsed_url.scheme, parsed_url.netloc, parsed_url.path, parsed_url.params, encoded_get_args, parsed_url.fragment
-    ).geturl()
-
-    return new_url
 
 
 json_serializer_k_map = {
