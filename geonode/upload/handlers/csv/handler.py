@@ -67,7 +67,9 @@ class CSVFileHandler(BaseVectorFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return base.lower().endswith(".csv") if isinstance(base, str) else base.name.lower().endswith(".csv")
+        return (
+            base.lower().endswith(".csv") if isinstance(base, str) else base.name.lower().endswith(".csv")
+        ) and BaseVectorFileHandler.can_handle(_data)
 
     @staticmethod
     def is_valid(files, user):

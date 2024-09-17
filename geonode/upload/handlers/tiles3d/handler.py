@@ -61,7 +61,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             return False
         ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
         input_filename = os.path.basename(base if isinstance(base, str) else base.name)
-        if ext in ["json"] and "tileset.json" in input_filename:
+        if ext in ["json"] and "tileset.json" in input_filename and BaseVectorFileHandler.can_handle(_data):
             return True
         return False
 

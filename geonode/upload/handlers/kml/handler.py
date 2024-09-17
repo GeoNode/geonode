@@ -63,6 +63,7 @@ class KMLFileHandler(BaseVectorFileHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
+        BaseVectorFileHandler.can_handle(_data)
         base = _data.get("base_file")
         if not base:
             return False

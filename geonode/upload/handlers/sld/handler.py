@@ -44,7 +44,9 @@ class SLDFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")
+        return (
+            base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")
+        ) and MetadataFileHandler.can_handle(_data)
 
     @staticmethod
     def is_valid(files, user):

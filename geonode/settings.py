@@ -2297,32 +2297,52 @@ INSTALLED_APPS += (
 )
 
 CELERY_TASK_QUEUES += (
-    Queue("importer.import_orchestrator", GEONODE_EXCHANGE, routing_key="importer.import_orchestrator"),
-    Queue("importer.import_resource", GEONODE_EXCHANGE, routing_key="importer.import_resource", max_priority=8),
-    Queue("importer.publish_resource", GEONODE_EXCHANGE, routing_key="importer.publish_resource", max_priority=8),
+    Queue("geonode.upload.import_orchestrator", GEONODE_EXCHANGE, routing_key="geonode.upload.import_orchestrator"),
     Queue(
-        "importer.create_geonode_resource",
+        "geonode.upload.import_resource", GEONODE_EXCHANGE, routing_key="geonode.upload.import_resource", max_priority=8
+    ),
+    Queue(
+        "geonode.upload.publish_resource",
         GEONODE_EXCHANGE,
-        routing_key="importer.create_geonode_resource",
+        routing_key="geonode.upload.publish_resource",
         max_priority=8,
     ),
     Queue(
-        "importer.import_with_ogr2ogr", GEONODE_EXCHANGE, routing_key="importer.import_with_ogr2ogr", max_priority=10
-    ),
-    Queue("importer.import_next_step", GEONODE_EXCHANGE, routing_key="importer.import_next_step", max_priority=3),
-    Queue(
-        "importer.create_dynamic_structure",
+        "geonode.upload.create_geonode_resource",
         GEONODE_EXCHANGE,
-        routing_key="importer.create_dynamic_structure",
+        routing_key="geonode.upload.create_geonode_resource",
+        max_priority=8,
+    ),
+    Queue(
+        "geonode.upload.import_with_ogr2ogr",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.import_with_ogr2ogr",
         max_priority=10,
     ),
     Queue(
-        "importer.copy_geonode_resource", GEONODE_EXCHANGE, routing_key="importer.copy_geonode_resource", max_priority=0
+        "geonode.upload.import_next_step",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.import_next_step",
+        max_priority=3,
     ),
-    Queue("importer.copy_dynamic_model", GEONODE_EXCHANGE, routing_key="importer.copy_dynamic_model"),
-    Queue("importer.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="importer.copy_geonode_data_table"),
-    Queue("importer.copy_raster_file", GEONODE_EXCHANGE, routing_key="importer.copy_raster_file"),
-    Queue("importer.rollback", GEONODE_EXCHANGE, routing_key="importer.rollback"),
+    Queue(
+        "geonode.upload.create_dynamic_structure",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.create_dynamic_structure",
+        max_priority=10,
+    ),
+    Queue(
+        "geonode.upload.copy_geonode_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.copy_geonode_resource",
+        max_priority=0,
+    ),
+    Queue("geonode.upload.copy_dynamic_model", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_dynamic_model"),
+    Queue(
+        "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
+    ),
+    Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
+    Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
 )
 
 DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]

@@ -44,7 +44,9 @@ class XMLFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")
+        return (
+            base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")
+        ) and MetadataFileHandler.can_handle(_data)
 
     @staticmethod
     def is_valid(files, user=None):

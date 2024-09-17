@@ -56,7 +56,7 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
         if not base:
             return False
         ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-        return ext in ["tiff", "geotiff", "tif", "geotif"]
+        return ext in ["tiff", "geotiff", "tif", "geotif"] and BaseRasterFileHandler.can_handle(_data)
 
     @staticmethod
     def is_valid(files, user):

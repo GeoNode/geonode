@@ -66,7 +66,9 @@ class GPKGFileHandler(BaseVectorFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return base.endswith(".gpkg") if isinstance(base, str) else base.name.endswith(".gpkg")
+        return (
+            base.endswith(".gpkg") if isinstance(base, str) else base.name.endswith(".gpkg")
+        ) and BaseVectorFileHandler.can_handle(_data)
 
     @staticmethod
     def is_valid(files, user):

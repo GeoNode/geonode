@@ -17,7 +17,7 @@ from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import ErrorBaseTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
-from geonode.upload.handlers.utils import create_alternate, should_be_imported
+from geonode.upload.handlers.utils import UploadSourcesEnum, create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from osgeo import gdal
@@ -71,7 +71,9 @@ class BaseRasterFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return False
+        if _data.get("source", None) != UploadSourcesEnum.upload.value:
+            return False
+        return True
 
     @staticmethod
     def has_serializer(_data) -> bool:

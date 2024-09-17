@@ -1,6 +1,7 @@
 import logging
 from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.handlers.base import BaseHandler
+from geonode.upload.handlers.utils import UploadSourcesEnum
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.handlers.xml.serializer import MetadataFileSerializer
 from geonode.upload.utils import ImporterRequestAction as ira
@@ -21,6 +22,16 @@ class MetadataFileHandler(BaseHandler):
         exa.IMPORT.value: ("start_import", "geonode.upload.import_resource"),
         ira.ROLLBACK.value: (),
     }
+
+    @staticmethod
+    def can_handle(_data) -> bool:
+        """
+        This endpoint will return True or False if with the info provided
+        the handler is able to handle the file or not
+        """
+        if _data.get("source", None) == UploadSourcesEnum.resource_file_upload.value:
+            return True
+        return False
 
     @staticmethod
     def has_serializer(data) -> bool:

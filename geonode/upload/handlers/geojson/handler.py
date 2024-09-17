@@ -58,7 +58,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
         if not base:
             return False
         ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-        if ext in ["json", "geojson"]:
+        if ext in ["json", "geojson"] and BaseVectorFileHandler.can_handle(_data):
             """
             Check if is a real geojson based on specification
             https://datatracker.ietf.org/doc/html/rfc7946#section-1.4

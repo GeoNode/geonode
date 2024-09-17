@@ -21,6 +21,7 @@ from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
+    UploadSourcesEnum,
     drop_dynamic_model_schema,
 )
 from geonode.resource.manager import resource_manager
@@ -80,7 +81,9 @@ class BaseVectorFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return False
+        if _data.get("source", None) != UploadSourcesEnum.upload.value:
+            return False
+        return True
 
     @staticmethod
     def has_serializer(_data) -> bool:
