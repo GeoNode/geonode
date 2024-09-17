@@ -26,7 +26,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         cls.orchestrator = ImportOrchestrator()
 
     def test_get_handler(self):
-        _data = {"base_file": "file.gpkg"}
+        _data = {"base_file": "file.gpkg", "source": "upload"}
         actual = self.orchestrator.get_handler(_data)
         self.assertIsNotNone(actual)
         self.assertEqual("geonode.upload.handlers.gpkg.handler.GPKGFileHandler", str(actual))

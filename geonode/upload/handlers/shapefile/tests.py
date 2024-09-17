@@ -29,6 +29,7 @@ class TestShapeFileFileHandler(TestCase):
             "dbf_file": f"{file_path}/san_andres_y_providencia_highway.dbf",
             "prj_file": f"{file_path}/san_andres_y_providencia_highway.prj",
             "shx_file": f"{file_path}/san_andres_y_providencia_highway.shx",
+            "source": "upload"
         }
         cls.invalid_shp = f"{project_dir}/tests/fixture/invalid.geojson"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")

@@ -27,6 +27,7 @@ class TestSLDFileHandler(TestCase):
         cls.valid_files = {
             "base_file": "/tmp/test_sld.sld",
             "sld_file": "/tmp/test_sld.sld",
+            "source": "resource_file_upload"
         }
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="sld_dataset", owner=cls.owner)

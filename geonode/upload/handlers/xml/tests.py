@@ -25,7 +25,7 @@ class TestXMLFileHandler(TestCase):
         cls.invalid_files = {"base_file": cls.invalid_xml, "xml_file": cls.invalid_xml}
         cls.valid_files = {
             "base_file": "/tmp/test_xml.xml",
-            "xml_file": "/tmp/test_xml.xml",
+            "xml_file": "/tmp/test_xml.xml", "source": "resource_file_upload"
         }
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="extruded_polygon", owner=cls.owner)

@@ -27,7 +27,7 @@ class TestCSVHandler(TestCase):
         cls.missing_geom = f"{project_dir}/tests/fixture/missing_geom.csv"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_csv}
-        cls.valid_files = {"base_file": cls.valid_csv}
+        cls.valid_files = {"base_file": cls.valid_csv, "source": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="test", owner=cls.owner)
 
@@ -116,7 +116,7 @@ class TestCSVHandler(TestCase):
         actual = self.handler.get_ogr2ogr_driver()
         self.assertEqual(type(expected), type(actual))
 
-    def test_can_handle_should_return_true_for_geopackage(self):
+    def test_can_handle_should_return_true_for_csv(self):
         actual = self.handler.can_handle(self.valid_files)
         self.assertTrue(actual)
 

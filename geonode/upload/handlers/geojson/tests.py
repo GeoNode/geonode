@@ -24,7 +24,7 @@ class TestGeoJsonFileHandler(TestCase):
         cls.invalid_geojson = f"{project_dir}/tests/fixture/invalid.geojson"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_geojson}
-        cls.valid_files = {"base_file": cls.valid_geojson}
+        cls.valid_files = {"base_file": cls.valid_geojson, "source": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="stazioni_metropolitana", owner=cls.owner)
 
