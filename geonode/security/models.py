@@ -367,64 +367,90 @@ class PermissionLevelMixin:
         """
         Returns a list of permissions a user has on a given resource.
         """
-        # To avoid circular import
-        from geonode.base.models import Configuration
 
-        config = Configuration.load()
-        ctype = ContentType.objects.get_for_model(self)
-        ctype_resource_base = ContentType.objects.get_for_model(self.get_self_resource())
+        def calculate_perms(instance, user):
+            # To avoid circular import
+            from geonode.base.models import Configuration
 
-        PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
-        # include explicit permissions appliable to "subtype == 'vector'"
-        if self.subtype in ["vector", "vector_time"]:
-            PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
-        elif self.subtype == "raster":
-            PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
+            config = Configuration.load()
+            ctype = ContentType.objects.get_for_model(instance)
+            ctype_resource_base = ContentType.objects.get_for_model(instance.get_self_resource())
 
-        resource_perms = Permission.objects.filter(
-            codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
-        ).values_list("codename", flat=True)
+            PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
+            # include explicit permissions appliable to "subtype == 'vector'"
+            if instance.subtype in ["vector", "vector_time"]:
+                PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
+            elif instance.subtype == "raster":
+                PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
 
-        # Don't filter for admin users
-        if not user.is_superuser:
-            user_model = get_user_obj_perms_model(self)
-            user_resource_perms = user_model.objects.filter(
-                object_pk=self.pk,
-                content_type_id__in=[ctype.id, ctype_resource_base.id],
-                user__username=str(user),
-                permission__codename__in=resource_perms,
-            )
-            # get user's implicit perms for anyone flag
-            implicit_perms = get_perms(user, self)
-            # filter out implicit permissions unappliable to "subtype != 'vector'"
-            if self.subtype == "raster":
-                implicit_perms = list(set(implicit_perms) - set(DATASET_EDIT_DATA_PERMISSIONS))
-            elif self.subtype != "vector":
-                implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
+            resource_perms = Permission.objects.filter(
+                codename__in=PERMISSIONS_TO_FETCH, content_type_id__in=[ctype.id, ctype_resource_base.id]
+            ).values_list("codename", flat=True)
 
-            resource_perms = user_resource_perms.union(
-                user_model.objects.filter(permission__codename__in=implicit_perms)
-            ).values_list("permission__codename", flat=True)
+            # Don't filter for admin users
+            if not user.is_superuser:
+                user_model = get_user_obj_perms_model(instance)
+                user_resource_perms = user_model.objects.filter(
+                    object_pk=instance.pk,
+                    content_type_id__in=[ctype.id, ctype_resource_base.id],
+                    user__username=str(user),
+                    permission__codename__in=resource_perms,
+                )
+                # get user's implicit perms for anyone flag
+                implicit_perms = get_perms(user, instance)
+                # filter out implicit permissions unappliable to "subtype != 'vector'"
+                if instance.subtype == "raster":
+                    implicit_perms = list(set(implicit_perms) - set(DATASET_EDIT_DATA_PERMISSIONS))
+                elif instance.subtype != "vector":
+                    implicit_perms = list(set(implicit_perms) - set(DATASET_ADMIN_PERMISSIONS))
 
-        # filter out permissions for edit, change or publish if readonly mode is active
-        perm_prefixes = ["change", "delete", "publish"]
-        if config.read_only:
-            clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
-            query = reduce(operator.or_, clauses)
-            if user.is_superuser:
-                resource_perms = resource_perms.exclude(query)
-            else:
-                perm_objects = Permission.objects.filter(codename__in=resource_perms)
-                resource_perms = perm_objects.exclude(query).values_list("codename", flat=True)
+                resource_perms = user_resource_perms.union(
+                    user_model.objects.filter(permission__codename__in=implicit_perms)
+                ).values_list("permission__codename", flat=True)
 
-        return resource_perms
+            # filter out permissions for edit, change or publish if readonly mode is active
+            perm_prefixes = ["change", "delete", "publish"]
+            if config.read_only:
+                clauses = (Q(codename__contains=prefix) for prefix in perm_prefixes)
+                query = reduce(operator.or_, clauses)
+                if user.is_superuser:
+                    resource_perms = resource_perms.exclude(query)
+                else:
+                    perm_objects = Permission.objects.filter(codename__in=resource_perms)
+                    resource_perms = perm_objects.exclude(query).values_list("codename", flat=True)
+            return resource_perms
+
+        perms = calculate_perms(self, user)
+
+        if getattr(self, "get_real_instance", None):
+            perms = perms.union(calculate_perms(self.get_real_instance(), user))
+
+        if getattr(self, "get_self_resource", None):
+            perms = perms.union(calculate_perms(self.get_self_resource(), user))
+
+        perms_as_list = list(set(perms))
+
+        if user.is_anonymous:
+            # anonymous cannot feature/approve or pusblish, we can return here the perms
+            return perms_as_list
+
+        if not perms_as_list:
+            return perms_as_list
+
+        if user.can_feature(self):
+            perms_as_list.append("feature_resourcebase")
+        if user.can_approve(self):
+            perms_as_list.append("approve_resourcebase")
+        if user.can_publish(self):
+            perms_as_list.append("publish_resourcebase")
+
+        return perms_as_list
 
     def user_can(self, user, permission):
         """
         Checks if a has a given permission to the resource.
         """
-        resource = self.get_self_resource()
-        user_perms = self.get_user_perms(user).union(resource.get_user_perms(user))
+        user_perms = self.get_user_perms(user)
 
         if permission not in user_perms:
             # TODO cater for permissions with syntax base.permission_codename

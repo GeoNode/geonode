@@ -370,42 +370,6 @@ class AdvancedSecurityWorkflowManager:
         return not settings.RESOURCE_PUBLISHING and settings.ADMIN_MODERATE_UPLOADS
 
     @staticmethod
-    def is_allowed_to_approve(user, resource):
-        ResourceGroupsAndMembersSet = AdvancedSecurityWorkflowManager.compute_resource_groups_and_members_set(
-            resource.uuid, instance=resource, group=resource.group
-        )
-        is_superuser = user.is_superuser
-        is_owner = user == resource.owner
-        is_manager = user in ResourceGroupsAndMembersSet.managers
-
-        can_change_metadata = user.has_perm("change_resourcebase_metadata", resource.get_self_resource())
-
-        if is_superuser:
-            return True
-        elif AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
-            return is_manager and can_change_metadata
-        else:
-            return is_owner or is_manager or can_change_metadata
-
-    @staticmethod
-    def is_allowed_to_publish(user, resource):
-        ResourceGroupsAndMembersSet = AdvancedSecurityWorkflowManager.compute_resource_groups_and_members_set(
-            resource.uuid, instance=resource, group=resource.group
-        )
-        is_superuser = user.is_superuser
-        is_owner = user == resource.owner
-        is_manager = user in ResourceGroupsAndMembersSet.managers
-
-        can_publish = user.has_perm("publish_resourcebase", resource.get_self_resource())
-
-        if is_superuser:
-            return True
-        elif AdvancedSecurityWorkflowManager.is_manager_publish_mode():
-            return is_manager and can_publish
-        else:
-            return is_owner or is_manager or can_publish
-
-    @staticmethod
     def assignable_perm_condition(perm, resource_type):
         _assignable_perm_policy_condition = (
             (perm in DOWNLOAD_PERMISSIONS and resource_type in DOWNLOADABLE_RESOURCES)
@@ -773,3 +737,52 @@ class AdvancedSecurityWorkflowManager:
 
                 # Let's the ResourceManager finally decide which are the correct security settings to apply
                 _r.set_permissions(perm_spec)
+
+
+def can_feature(user, resource):
+    """
+    Utility method to check if the user can set a resource as "featured" in the metadata
+    By default only superuser/admins can do
+    """
+    return user.is_superuser
+
+
+def can_approve(user, resource):
+    """
+    Utility method to check if the user can set a resource as "approved" in the metadata
+    """
+    ResourceGroupsAndMembersSet = AdvancedSecurityWorkflowManager.compute_resource_groups_and_members_set(
+        resource.uuid, instance=resource, group=resource.group
+    )
+    is_superuser = user.is_superuser
+    is_owner = user == resource.owner
+
+    is_manager = user in ResourceGroupsAndMembersSet.managers
+
+    can_change_metadata = user.has_perm("change_resourcebase_metadata", resource.get_self_resource())
+
+    if is_superuser:
+        return True
+    elif AdvancedSecurityWorkflowManager.is_admin_moderate_mode():
+        return is_manager and can_change_metadata
+    else:
+        return is_owner or is_manager or can_change_metadata
+
+
+def can_publish(user, resource):
+    """
+    Utility method to check if the user can set a resource as "published" in the metadata
+    """
+    ResourceGroupsAndMembersSet = AdvancedSecurityWorkflowManager.compute_resource_groups_and_members_set(
+        resource.uuid, instance=resource, group=resource.group
+    )
+    is_superuser = user.is_superuser
+    is_owner = user == resource.owner
+    is_manager = user in ResourceGroupsAndMembersSet.managers
+
+    if is_superuser:
+        return True
+    elif AdvancedSecurityWorkflowManager.is_manager_publish_mode():
+        return is_manager and can_publish
+    else:
+        return is_owner or is_manager

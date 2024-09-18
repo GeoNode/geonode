@@ -67,7 +67,7 @@ from geonode.people.forms import ProfileForm
 from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
+from geonode.security.utils import get_user_visible_groups
 from geonode.decorators import check_keyword_write_perms
 
 from geonode.base.forms import CategoryForm, TKeywordForm, ThesaurusAvailableForm
@@ -536,11 +536,7 @@ def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(resourcebase_obj)
 
-    perms_list = list(
-        resourcebase_obj.get_self_resource()
-        .get_user_perms(request.user)
-        .union(resourcebase_obj.get_user_perms(request.user))
-    )
+    perms_list = resourcebase_obj.get_user_perms(request.user)
 
     group = None
     if resourcebase_obj.group:
@@ -810,9 +806,9 @@ def resourcebase_metadata(
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, resourcebase_obj):
+    if not request.user.can_publish(resourcebase_obj):
         resourcebase_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, resourcebase_obj):
+    if not request.user.can_approve(resourcebase_obj):
         resourcebase_form.fields["is_approved"].widget.attrs.update({"disabled": "true"})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, resourcebase_obj)

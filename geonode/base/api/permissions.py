@@ -251,9 +251,7 @@ class UserHasPerms(DjangoModelPermissions):
             )
 
             # getting the user permission for that resource
-            resource_perms = list(res.get_user_perms(request.user))
-            if getattr(res, "get_real_instance", None):
-                resource_perms.extend(list(res.get_real_instance().get_user_perms(request.user)))
+            resource_perms = res.get_user_perms(request.user)
 
             groups = get_groups_with_perms(res, attach_perms=True)
             # we are making this because the request.user.groups sometimes returns empty si is not fully reliable

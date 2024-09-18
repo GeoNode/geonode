@@ -38,7 +38,7 @@ from geonode.groups.models import GroupProfile
 from geonode.monitoring.models import EventType
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
-from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
+from geonode.security.utils import get_user_visible_groups
 from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
 from geonode.decorators import check_keyword_write_perms
@@ -106,9 +106,7 @@ def geoapp_edit(request, geoappid, template="apps/app_edit.html"):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(geoapp_obj)
 
-    perms_list = list(
-        geoapp_obj.get_self_resource().get_user_perms(request.user).union(geoapp_obj.get_user_perms(request.user))
-    )
+    perms_list = geoapp_obj.get_user_perms(request.user)
 
     group = None
     if geoapp_obj.group:
@@ -366,9 +364,9 @@ def geoapp_metadata(
 
     metadata_author_groups = get_user_visible_groups(request.user)
 
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, geoapp_obj):
+    if not request.user.can_publish(geoapp_obj):
         geoapp_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, geoapp_obj):
+    if not request.user.can_approve(geoapp_obj):
         geoapp_form.fields["is_approved"].widget.attrs.update({"disabled": "true"})
 
     register_event(request, EventType.EVENT_VIEW_METADATA, geoapp_obj)
