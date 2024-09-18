@@ -45,7 +45,7 @@ from ..base.models import (
     HierarchicalKeyword,
     SpatialRepresentationType,
 )
-
+from geonode.maps.models import Map
 from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
@@ -407,6 +407,12 @@ def metadata_post_save(instance, *args, **kwargs):
         if _uuid != instance.uuid:
             instance.uuid = _uuid
             Dataset.objects.filter(id=instance.id).update(uuid=_uuid)
+
+    if isinstance(instance, Map):
+        """
+        For maps, we can calculate the bbox based on the maplayers
+        """
+        instance.compute_bbox()
 
     # Set a default user for accountstream to work correctly.
     if instance.owner is None:
