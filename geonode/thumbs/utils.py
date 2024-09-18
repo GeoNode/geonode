@@ -17,13 +17,11 @@
 #
 #########################################################################
 import os
-import re
 import time
 import base64
 import logging
 from PIL import Image, ImageOps
 
-from pyproj import CRS
 from typing import List, Tuple, Callable, Union
 from uuid import uuid4
 from urllib.parse import urlencode
@@ -31,7 +29,6 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
-from geonode.utils import bbox_to_projection
 from geonode.base.auth import get_or_create_token
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.storage.manager import storage_manager
@@ -70,16 +67,6 @@ def make_bbox_to_pixels_transf(src_bbox: Union[List, Tuple], dest_bbox: Union[Li
         (x - src_bbox[0]) * (dest_bbox[2] - dest_bbox[0]) / (src_bbox[2] - src_bbox[0]) + dest_bbox[0],
         dest_bbox[3] - dest_bbox[1] - (y - src_bbox[1]) * (dest_bbox[3] - dest_bbox[1]) / (src_bbox[3] - src_bbox[1]),
     )
-
-
-def transform_bbox(bbox: List, target_crs: str = "EPSG:3857"):
-    """
-    Function transforming BBOX in dataset compliant format (xmin, xmax, ymin, ymax, 'EPSG:xxxx') to another CRS,
-    preserving overflow values.
-    """
-    match = re.match(r"^(EPSG:)?(?P<srid>\d{4,6})$", str(target_crs))
-    target_srid = int(match.group("srid")) if match else 4326
-    return list(bbox_to_projection(bbox, target_srid=target_srid))[:-1] + [target_crs]
 
 
 def expand_bbox_to_ratio(
@@ -436,82 +423,6 @@ def getmap(
             err_message = se_xml
         raise ServiceException(err_message)
     return u
-
-
-def epsg_3857_area_of_use():
-    """
-    Shortcut function, returning area of use of EPSG:3857 (in EPSG:4326) in a dataset compliant BBOX
-    """
-    epsg3857 = CRS.from_user_input("EPSG:3857")
-    return [
-        getattr(epsg3857.area_of_use, "west"),
-        getattr(epsg3857.area_of_use, "east"),
-        getattr(epsg3857.area_of_use, "south"),
-        getattr(epsg3857.area_of_use, "north"),
-        "EPSG:4326",
-    ]
-
-
-def crop_to_3857_area_of_use(bbox: List) -> List:
-    # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
-    bbox4326 = transform_bbox(bbox, target_crs="EPSG:4326")
-
-    # get area of use of EPSG:3857 in EPSG:4326
-    epsg3857_bounds_bbox = epsg_3857_area_of_use()
-
-    bbox = []
-    for coord, bound_coord in zip(bbox4326[:-1], epsg3857_bounds_bbox[:-1]):
-        if abs(coord) > abs(bound_coord):
-            logger.debug("Thumbnail generation: cropping BBOX's coord to EPSG:3857 area of use.")
-            bbox.append(bound_coord)
-        else:
-            bbox.append(coord)
-
-    bbox.append("EPSG:4326")
-
-    return bbox
-
-
-def exceeds_epsg3857_area_of_use(bbox: List) -> bool:
-    """
-    Function checking if a provided BBOX extends the are of use of EPSG:3857. Comparison is performed after casting
-    the BBOX to EPSG:4326 (pivot for EPSG:3857).
-
-    :param bbox: a dataset compliant BBOX in a certain CRS, in (xmin, xmax, ymin, ymax, 'EPSG:xxxx') order
-    :returns: List of indicators whether BBOX's coord exceeds the area of use of EPSG:3857
-    """
-
-    # perform the comparison in EPSG:4326 (the pivot for EPSG:3857)
-    bbox4326 = transform_bbox(bbox, target_crs="EPSG:4326")
-
-    # get area of use of EPSG:3857 in EPSG:4326
-    epsg3857_bounds_bbox = epsg_3857_area_of_use()
-
-    exceeds = False
-    for coord, bound_coord in zip(bbox4326[:-1], epsg3857_bounds_bbox[:-1]):
-        if abs(coord) > abs(bound_coord):
-            exceeds = True
-
-    return exceeds
-
-
-def clean_bbox(bbox, target_crs):
-    # make sure BBOX is provided with the CRS in a correct format
-    source_crs = bbox[-1]
-
-    srid_regex = re.match(r"EPSG:\d+", source_crs)
-    if not srid_regex:
-        logger.error(f"Thumbnail bbox is in a wrong format: {bbox}")
-        raise ThumbnailError("Wrong BBOX format")
-
-    # for the EPSG:3857 (default thumb's CRS) - make sure received BBOX can be transformed to the target CRS;
-    # if it can't be (original coords are outside of the area of use of EPSG:3857), thumbnail generation with
-    # the provided bbox is impossible.
-    if target_crs == "EPSG:3857" and bbox[-1].upper() != "EPSG:3857":
-        bbox = crop_to_3857_area_of_use(bbox)
-
-    bbox = transform_bbox(bbox, target_crs=target_crs)
-    return bbox
 
 
 def thumb_path(filename):
