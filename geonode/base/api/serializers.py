@@ -556,16 +556,7 @@ class ResourceManagementField(serializers.BooleanField):
     MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
 
     def to_internal_value(self, data):
-        new_val = super().to_internal_value(data)
-        user = self.context["request"].user
-        user_action = self.MAPPING.get(self.field_name)
-        instance = self.root.instance or ResourceBase.objects.get(pk=self.root.initial_data["pk"])
-        if getattr(user, user_action)(instance):
-            logger.debug("User can perform the action, the new value is returned")
-            return new_val
-        else:
-            logger.warning(f"The user does not have the perms to update the value of {self.field_name}")
-            return getattr(instance, self.field_name)
+        return getattr(ResourceBase, self.field_name).field.default
 
 
 class ResourceBaseSerializer(DynamicModelSerializer):
@@ -767,6 +758,17 @@ class ResourceBaseSerializer(DynamicModelSerializer):
                 logger.exception(e)
                 raise InvalidResourceException("The standard bbox provided is invalid")
             instance.set_bbox_polygon(coords, srid)
+        
+        # fixing up the publishing option based on user permissions
+        MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
+
+        user = self.context["request"].user
+        for field, user_action in MAPPING.items():
+            if getattr(user, user_action)(instance):
+                logger.debug("User can perform the action, the new value is returned")
+                setattr(user, field, self.data.serializer.initial_data.get(field))
+            else:
+                logger.warning(f"The user does not have the perms to update the value of {field}")
         return instance
 
 
