@@ -552,13 +552,6 @@ class LinksSerializer(DynamicModelSerializer):
         return ret
 
 
-class ResourceManagementField(serializers.BooleanField):
-    MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
-
-    def to_internal_value(self, data):
-        return getattr(ResourceBase, self.field_name).field.default
-
-
 class ResourceBaseSerializer(DynamicModelSerializer):
     pk = serializers.CharField(read_only=True)
     uuid = serializers.CharField(read_only=True)
@@ -599,10 +592,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     popular_count = serializers.CharField(required=False)
     share_count = serializers.CharField(required=False)
     rating = serializers.CharField(required=False)
-    featured = ResourceManagementField(required=False)
+    featured = serializers.BooleanField(required=False)
     advertised = serializers.BooleanField(required=False)
-    is_published = ResourceManagementField(required=False)
-    is_approved = ResourceManagementField(required=False)
+    is_published = serializers.BooleanField(required=False)
+    is_approved = serializers.BooleanField(required=False)
     detail_url = DetailUrlField(read_only=True)
     created = serializers.DateTimeField(read_only=True)
     last_updated = serializers.DateTimeField(read_only=True)
@@ -764,11 +757,9 @@ class ResourceBaseSerializer(DynamicModelSerializer):
 
         user = self.context["request"].user
         for field, user_action in MAPPING.items():
-            if getattr(user, user_action)(instance):
+            if not getattr(user, user_action)(instance):
                 logger.debug("User can perform the action, the new value is returned")
-                setattr(user, field, self.data.serializer.initial_data.get(field))
-            else:
-                logger.warning(f"The user does not have the perms to update the value of {field}")
+                setattr(user, field, getattr(ResourceBase, field).field.default)
         return instance
 
 
