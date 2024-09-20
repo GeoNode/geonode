@@ -58,7 +58,7 @@ from geonode.services.models import Service
 from geonode.base import register_event
 from geonode.monitoring.models import EventType
 from geonode.groups.models import GroupProfile
-from geonode.security.utils import get_user_visible_groups, AdvancedSecurityWorkflowManager
+from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
 from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
 from geonode.geoserver.helpers import ogc_server_settings
@@ -521,9 +521,9 @@ def dataset_metadata(
 
         return HttpResponse(json.dumps({"message": message}))
 
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_publish(request.user, layer):
+    if not request.user.can_publish(layer):
         dataset_form.fields["is_published"].widget.attrs.update({"disabled": "true"})
-    if not AdvancedSecurityWorkflowManager.is_allowed_to_approve(request.user, layer):
+    if not request.user.can_approve(layer):
         dataset_form.fields["is_approved"].widget.attrs.update({"disabled": "true"})
 
     # define contact role forms
@@ -671,7 +671,7 @@ def dataset_metadata_detail(request, layername, template="datasets/dataset_metad
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
 
     register_event(request, "view_metadata", layer)
-    perms_list = list(layer.get_self_resource().get_user_perms(request.user).union(layer.get_user_perms(request.user)))
+    perms_list = layer.get_user_perms(request.user)
 
     return render(
         request,

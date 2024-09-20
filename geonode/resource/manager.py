@@ -42,6 +42,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError, FieldDoe
 
 from geonode.base.models import ResourceBase, LinkedResource
 from geonode.thumbs.thumbnails import _generate_thumbnail_name
+from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
 from geonode.security.utils import perms_as_set, get_user_groups, skip_registered_members_common_group
@@ -956,6 +957,7 @@ class ResourceManager(ResourceManagerInterface):
         overwrite: bool = True,
         check_bbox: bool = True,
         thumbnail=None,
+        thumbnail_algorithm=ThumbnailAlgorithms.fit,
     ) -> bool:
         _resource = instance or ResourceManager._get_instance(uuid)
         if _resource:
@@ -963,7 +965,7 @@ class ResourceManager(ResourceManagerInterface):
                 with transaction.atomic():
                     if thumbnail:
                         file_name = _generate_thumbnail_name(_resource.get_real_instance())
-                        _resource.save_thumbnail(file_name, thumbnail)
+                        _resource.save_thumbnail(file_name, thumbnail, thumbnail_algorithm=thumbnail_algorithm)
                     else:
                         if instance and isinstance(instance.get_real_instance(), Document):
                             if overwrite or not instance.thumbnail_url:
