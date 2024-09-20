@@ -111,7 +111,7 @@ def get_notification_recipients(notice_type_label, exclude_user=None, resource=N
     """Get notification recipients"""
     if not has_notifications:
         return []
-    recipients_ids = notifications.models.NoticeSetting.objects.filter(notice_type__label=notice_type_label).values(
+    recipients_ids = notifications.models.NoticeSetting.objects.filter(notice_type__label=notice_type_label, send=True).values(
         "user"
     )
 
