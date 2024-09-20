@@ -1,7 +1,26 @@
 from abc import ABC
 import logging
 
+from django.conf import settings
+from django.utils.module_loading import import_string
+
 logger = logging.getLogger(__file__)
+
+
+class ResourceHandlerRegistry:
+
+    REGISTRY = []
+
+    def init_registry(self):
+        self.register()
+
+    def register(self):
+        for module_path in settings.RESOURCE_HANDLERS:
+            self.REGISTRY.append(import_string(module_path))
+
+    @classmethod
+    def get_registry(cls):
+        return ResourceHandlerRegistry.REGISTRY
 
 
 class BaseResourceHandler(ABC):
@@ -11,9 +30,6 @@ class BaseResourceHandler(ABC):
     As first implementation it will take care of the download url
     and the download response for a resource
     """
-
-    REGISTRY = []
-
     def __init__(self, instance=None) -> None:
         self.instance = instance
 
@@ -23,19 +39,11 @@ class BaseResourceHandler(ABC):
     def __repr__(self):
         return self.__str__()
 
-    @classmethod
-    def register(cls):
-        BaseResourceHandler.REGISTRY.append(cls)
-
-    @classmethod
-    def get_registry(cls):
-        return BaseResourceHandler.REGISTRY
-
-    def get_handler_by_instance(self, instance):
+    def get_handler(self, instance):
         """
         Given a resource, should return it's handler
         """
-        for handler in self.get_registry():
+        for handler in resource_registry.get_registry():
             if handler.can_handle(instance):
                 return handler(instance)
         logger.error("No handlers found for the given resource")
@@ -56,4 +64,5 @@ class BaseResourceHandler(ABC):
         """
 
 
+resource_registry = ResourceHandlerRegistry()
 resource_hander = BaseResourceHandler()

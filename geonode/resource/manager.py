@@ -981,7 +981,7 @@ class ResourceManager(ResourceManagerInterface):
     def get_manager(self, instance):
         from geonode.resource.handler import resource_hander
 
-        return resource_hander.get_handler_by_instance(instance=instance)
+        return resource_hander.get_handler(instance=instance)
 
 
 resource_manager = ResourceManager()
