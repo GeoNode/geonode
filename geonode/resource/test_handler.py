@@ -48,32 +48,32 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         cls.tiles3d.save()
 
     def test_correct_resource_manager_is_called_for_dataset(self):
-        handler = resource_manager.get_manager(self.dataset)
+        handler = resource_manager.get_handler(self.dataset)
         self.assertIsNotNone(handler)
         self.assertTrue(isinstance(handler, DatasetHandler))
 
     def test_correct_resource_manager_is_called_for_doc(self):
-        handler = resource_manager.get_manager(self.document)
+        handler = resource_manager.get_handler(self.document)
         self.assertIsNotNone(handler)
         self.assertTrue(isinstance(handler, DocumentHandler))
 
     def test_correct_resource_manager_is_called_for_map(self):
-        handler = resource_manager.get_manager(self.map)
+        handler = resource_manager.get_handler(self.map)
         self.assertIsNotNone(handler)
         self.assertTrue(isinstance(handler, MapHandler))
 
     def test_correct_resource_manager_is_called_for_geoapp(self):
-        handler = resource_manager.get_manager(self.geoapp)
+        handler = resource_manager.get_handler(self.geoapp)
         self.assertIsNotNone(handler)
         self.assertTrue(isinstance(handler, GeoAppHandler))
 
     def test_correct_resource_manager_is_called_for_3dtiles(self):
-        handler = resource_manager.get_manager(self.tiles3d)
+        handler = resource_manager.get_handler(self.tiles3d)
         self.assertIsNotNone(handler)
         self.assertTrue(isinstance(handler, Tiles3DHandler))
 
     def test_correct_download_url_for_dataset(self):
-        handler = resource_manager.get_manager(self.dataset)
+        handler = resource_manager.get_handler(self.dataset)
         self.assertIsNotNone(handler)
 
         expected_payload = [{"url": self.dataset.download_url, "ajax_safe": True, "default": True}]
@@ -81,26 +81,26 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         self.assertListEqual(handler.download_urls(), expected_payload)
 
     def test_correct_download_url_for_doc(self):
-        handler = resource_manager.get_manager(self.document)
+        handler = resource_manager.get_handler(self.document)
         self.assertIsNotNone(handler)
         expected_payload = [{"url": self.document.download_url, "ajax_safe": True}]
 
         self.assertListEqual(handler.download_urls(), expected_payload)
 
     def test_correct_download_url_for_map(self):
-        handler = resource_manager.get_manager(self.map)
+        handler = resource_manager.get_handler(self.map)
         expected_payload = []
 
         self.assertListEqual(handler.download_urls(), expected_payload)
 
     def test_correct_download_url_for_geoapp(self):
-        handler = resource_manager.get_manager(self.geoapp)
+        handler = resource_manager.get_handler(self.geoapp)
         self.assertIsNotNone(handler)
         expected_payload = []
         self.assertListEqual(handler.download_urls(), expected_payload)
 
     def test_correct_download_url_for_3dtiles(self):
-        handler = resource_manager.get_manager(self.tiles3d)
+        handler = resource_manager.get_handler(self.tiles3d)
         asset = get_default_asset(self.tiles3d)
         self.assertIsNotNone(handler)
         expected_payload = [

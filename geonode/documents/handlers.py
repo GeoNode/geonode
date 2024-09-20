@@ -15,10 +15,9 @@ class DocumentHandler(BaseResourceHandler):
         """
         Specific method that return the download URL of the document
         """
-        super().download_urls()
         return [
             {
                 "url": self.instance.download_url if not self.instance.doc_url else self.instance.doc_url,
                 "ajax_safe": self.instance.download_is_ajax_safe,
             },
-        ]
+        ] or super().download_urls()

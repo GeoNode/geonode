@@ -299,7 +299,7 @@ class DownloadArrayLinkField(DynamicComputedField):
             logger.exception(e)
             raise e
 
-        return resource_manager.get_manager(_instance).download_urls(**self.context)
+        return resource_manager.get_handler(_instance).download_urls(**self.context)
 
 
 class FavoriteField(DynamicComputedField):

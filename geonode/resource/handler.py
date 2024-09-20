@@ -22,6 +22,16 @@ class ResourceHandlerRegistry:
     def get_registry(cls):
         return ResourceHandlerRegistry.REGISTRY
 
+    def get_handler(self, instance):
+        """
+        Given a resource, should return it's handler
+        """
+        for handler in self.get_registry():
+            if handler.can_handle(instance):
+                return handler(instance)
+        logger.error("No handlers found for the given resource")
+        return None
+
 
 class BaseResourceHandler(ABC):
     """
@@ -30,6 +40,7 @@ class BaseResourceHandler(ABC):
     As first implementation it will take care of the download url
     and the download response for a resource
     """
+
     def __init__(self, instance=None) -> None:
         self.instance = instance
 
@@ -38,16 +49,6 @@ class BaseResourceHandler(ABC):
 
     def __repr__(self):
         return self.__str__()
-
-    def get_handler(self, instance):
-        """
-        Given a resource, should return it's handler
-        """
-        for handler in resource_registry.get_registry():
-            if handler.can_handle(instance):
-                return handler(instance)
-        logger.error("No handlers found for the given resource")
-        return self
 
     def download_urls(self, **kwargs):
         """
@@ -62,6 +63,7 @@ class BaseResourceHandler(ABC):
         """
         Return the download response for the resource
         """
+        raise NotImplementedError()
 
 
 resource_registry = ResourceHandlerRegistry()
