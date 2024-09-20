@@ -270,6 +270,31 @@ class MapsApiTests(APITestCase):
         self.assertIsNotNone(response_maplayer["dataset"])
         self.assertIsNotNone(response.data["map"]["thumbnail_url"])
 
+    def test_create_map_featured_status_admin(self):
+        """
+        Post to maps/
+        User with perms should be able to change the value in the post payload
+        """
+        # Get Layers List (backgrounds)
+        url = reverse("maps-list")
+
+        data = {
+            "title": "Map should be approved",
+            "featured": True,
+            "is_approved": False,
+            "is_published": False,
+            "data": DUMMY_MAPDATA,
+            "maplayers": DUMMY_MAPLAYERS_DATA,
+        }
+        # if has perms, the user should be able to change the field
+        # featured/approved/published
+        self.client.login(username="admin", password="admin")
+        response = self.client.post(f"{url}?include[]=data", data=data, format="json")
+        self.assertEqual(response.status_code, 201)
+        self.assertFalse(response.json()["map"]["is_published"])
+        self.assertFalse(response.json()["map"]["is_approved"])
+        self.assertTrue(response.json()["map"]["featured"])
+
     def test_create_map_with_extra_maplayer_info(self):
         """
         Post to maps/

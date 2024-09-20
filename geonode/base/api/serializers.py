@@ -751,14 +751,16 @@ class ResourceBaseSerializer(DynamicModelSerializer):
                 logger.exception(e)
                 raise InvalidResourceException("The standard bbox provided is invalid")
             instance.set_bbox_polygon(coords, srid)
-        
+
         # fixing up the publishing option based on user permissions
         MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
 
         user = self.context["request"].user
         for field, user_action in MAPPING.items():
             if not getattr(user, user_action)(instance):
-                logger.debug("User can perform the action, the new value is returned")
+                # in case the user does not have the perms to do the action
+                # we reset the default values
+                logger.debug("User can perform the action, the default value is set")
                 setattr(user, field, getattr(ResourceBase, field).field.default)
         return instance
 
