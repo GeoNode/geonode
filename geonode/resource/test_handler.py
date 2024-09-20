@@ -18,8 +18,6 @@
 #########################################################################
 
 
-from collections import namedtuple
-
 from django.urls import reverse
 from geonode.assets.utils import get_default_asset
 from geonode.base.populate_test_data import (
