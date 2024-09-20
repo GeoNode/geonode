@@ -56,7 +56,7 @@ def sync_geonode_maps(ignore_errors,
                 remove_duplicate_links(map)
             if updatebbox:
                 print("Regenerating BBOX...")
-                map.compute_bbox()           
+                map.compute_bbox()
         except (Exception, RuntimeError):
             map_errors.append(map.title)
             exception_type, error, traceback = sys.exc_info()
