@@ -30,7 +30,7 @@ class ResourceHandlerRegistry:
             if handler.can_handle(instance):
                 return handler(instance)
         logger.error("No handlers found for the given resource")
-        return None
+        return BaseResourceHandler()
 
 
 class BaseResourceHandler(ABC):
@@ -67,4 +67,3 @@ class BaseResourceHandler(ABC):
 
 
 resource_registry = ResourceHandlerRegistry()
-resource_hander = BaseResourceHandler()
