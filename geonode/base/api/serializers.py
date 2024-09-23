@@ -73,6 +73,10 @@ from django.contrib.gis.geos import Polygon
 logger = logging.getLogger(__name__)
 
 
+# fixing up the publishing option based on user permissions
+SETTINGS_MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
+
+
 def user_serializer():
     import geonode.people.api.serializers as ser
 
@@ -735,6 +739,15 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        for field, user_action in SETTINGS_MAPPING.items():
+            if not getattr(user, user_action)(instance) and field in validated_data:
+                # in case the user does not have the perms to do the action
+                # we reset the default values
+                validated_data.pop(field, None)
+        return super().update(instance, validated_data)
+
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)
         instance = super().save(**kwargs)
@@ -752,11 +765,8 @@ class ResourceBaseSerializer(DynamicModelSerializer):
                 raise InvalidResourceException("The standard bbox provided is invalid")
             instance.set_bbox_polygon(coords, srid)
 
-        # fixing up the publishing option based on user permissions
-        MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
-
         user = self.context["request"].user
-        for field, user_action in MAPPING.items():
+        for field, user_action in SETTINGS_MAPPING.items():
             if not getattr(user, user_action)(instance):
                 # in case the user does not have the perms to do the action
                 # we reset the default values
