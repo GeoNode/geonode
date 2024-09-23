@@ -151,6 +151,9 @@ class Profile(AbstractUser):
     objects = ProfileUserManager()
     USERNAME_FIELD = "username"
 
+    # fixing up the publishing option based on user permissions
+    APPROVAL_STATUS_FIELDS = ["is_approved", "is_published", "featured"]
+
     def group_list_public(self):
         return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
 
@@ -260,6 +263,15 @@ class Profile(AbstractUser):
     def send_mail(self, template_prefix, context):
         if self.email:
             get_adapter().send_mail(template_prefix, self.email, context)
+
+    def can_change_resource_field(self, resource, field):
+        match field:
+            case "is_approved":
+                return self.can_approve(resource)
+            case "is_published":
+                return self.can_publish(resource)
+            case "featured":
+                return self.can_feature(resource)
 
     def can_approve(self, resource):
         return can_approve(self, resource)
