@@ -32,7 +32,9 @@ def sync_geonode_maps(ignore_errors,
                       filter,
                       username,
                       removeduplicates,
-                      updatethumbnails):
+                      updatethumbnails,
+                      updatebbox,
+                     ):
     maps = Map.objects.all().order_by('title')
     if filter:
         maps = maps.filter(title__icontains=filter)
@@ -52,6 +54,9 @@ def sync_geonode_maps(ignore_errors,
                 # remove duplicates
                 print("Removing duplicate links...")
                 remove_duplicate_links(map)
+            if updatebbox:
+                print("Regenerating BBOX...")
+                map.compute_bbox()
         except (Exception, RuntimeError):
             map_errors.append(map.title)
             exception_type, error, traceback = sys.exc_info()
@@ -106,11 +111,15 @@ class Command(BaseCommand):
             dest="updatethumbnails",
             default=False,
             help="Update the map styles and thumbnails.")
+        parser.add_argument(
+            "--updatebbox", action="store_true", dest="updatebbox", default=False, help="Update the map BBOX."
+        )
 
     def handle(self, **options):
         ignore_errors = options.get('ignore_errors')
         removeduplicates = options.get('removeduplicates')
         updatethumbnails = options.get('updatethumbnails')
+        updatebbox = options.get("updatebbox")
         filter = options.get('filter')
         if not options.get('username'):
             username = None
@@ -121,4 +130,6 @@ class Command(BaseCommand):
             filter,
             username,
             removeduplicates,
-            updatethumbnails)
+            updatethumbnails,
+            updatebbox,
+        )
