@@ -738,7 +738,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     def update(self, instance, validated_data):
         user = self.context["request"].user
         for field in user.APPROVAL_STATUS_FIELDS:
-            if not user.can_change_resource_field(instance, field):
+            if not user.can_change_resource_field(instance, field) and field in user.APPROVAL_STATUS_FIELDS:
                 validated_data.pop(field)
         return super().update(instance, validated_data)
 
