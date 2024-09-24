@@ -19,6 +19,7 @@
 import logging
 
 from dynamic_rest.fields.fields import DynamicComputedField
+from rest_framework import serializers
 from geonode.base.api.serializers import ResourceBaseSerializer
 from geonode.documents.models import Document
 
@@ -36,6 +37,7 @@ class DocumentFieldField(DynamicComputedField):
 
 
 class DocumentSerializer(ResourceBaseSerializer):
+    title = serializers.CharField(required=False)
     file_path = GeonodeFilePathField(required=False, write_only=True)
     doc_file = DocumentFieldField(required=False, write_only=True)
 

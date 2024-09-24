@@ -361,7 +361,11 @@ def document_post_save(instance, *args, **kwargs):
         url = instance.doc_url
 
     Document.objects.filter(id=instance.id).update(
-        extension=instance.extension, subtype=instance.subtype, doc_url=instance.doc_url, csw_type=instance.csw_type
+        title=instance.title,
+        extension=instance.extension,
+        subtype=instance.subtype,
+        doc_url=instance.doc_url,
+        csw_type=instance.csw_type,
     )
 
     if name and url and ext:
