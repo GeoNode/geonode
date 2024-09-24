@@ -737,8 +737,8 @@ class ResourceBaseSerializer(DynamicModelSerializer):
 
     def update(self, instance, validated_data):
         user = self.context["request"].user
-        for field in user.APPROVAL_STATUS_FIELDS:
-            if not user.can_change_resource_field(instance, field) and field in user.APPROVAL_STATUS_FIELDS:
+        for field in instance.ROLE_BASED_MANAGED_FIELDS:
+            if not user.can_change_resource_field(instance, field) and field in validated_data:
                 validated_data.pop(field)
         return super().update(instance, validated_data)
 
@@ -760,7 +760,7 @@ class ResourceBaseSerializer(DynamicModelSerializer):
             instance.set_bbox_polygon(coords, srid)
 
         user = self.context["request"].user
-        for field in user.APPROVAL_STATUS_FIELDS:
+        for field in instance.ROLE_BASED_MANAGED_FIELDS:
             if not user.can_change_resource_field(instance, field):
                 logger.debug("User can perform the action, the default value is set")
                 setattr(user, field, getattr(ResourceBase, field).field.default)

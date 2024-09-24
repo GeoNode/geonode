@@ -151,9 +151,6 @@ class Profile(AbstractUser):
     objects = ProfileUserManager()
     USERNAME_FIELD = "username"
 
-    # fixing up the publishing option based on user permissions
-    APPROVAL_STATUS_FIELDS = ["is_approved", "is_published", "featured"]
-
     def group_list_public(self):
         return GroupProfile.objects.exclude(access="private").filter(groupmember__user=self)
 
