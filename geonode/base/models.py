@@ -632,6 +632,9 @@ class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     Base Resource Object loosely based on ISO 19115:2003
     """
 
+    # fixing up the publishing option based on user permissions
+    ROLE_BASED_MANAGED_FIELDS = ["is_approved", "is_published", "featured"]
+
     BASE_PERMISSIONS = {
         "read": ["view_resourcebase"],
         "write": ["change_resourcebase_metadata"],
