@@ -29,7 +29,7 @@ defusedxml==0.7.1
 zipstream-ng==1.7.1
 
 # Django Apps
-django-allauth==0.63.6
+django-allauth==65.0.2
 django-appconf==1.0.6
 django-celery-results==2.5.1
 django-filter==24.2
