@@ -136,7 +136,7 @@ django-ipware<7.1
 pycountry
 
 # production
-uWSGI==2.0.25.1
+uWSGI==2.0.27
 gunicorn==22.0.0
 ipython==8.24.0
 docker==7.0.0
