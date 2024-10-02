@@ -19,7 +19,12 @@
 from django.apps import AppConfig
 
 from geonode.notifications_helper import NotificationsAppConfigBase
+from geonode.metadata.registry import metadata_registry
 
 
 class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
     name = "geonode.metadata"
+
+    def ready(self):
+
+        metadata_registry.init_registry()
