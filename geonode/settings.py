@@ -2384,3 +2384,5 @@ INSTALLED_APPS += ("geonode.metadata",)
     #"DEFAULT_SCHEMA_CLASS": "geonode.metadata.openapi.CustomOpenApiSchema",
 #}
 #
+
+METADATA_HANDLERS = [] # to be defined as list of modules to import
