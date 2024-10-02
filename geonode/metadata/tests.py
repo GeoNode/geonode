@@ -18,7 +18,6 @@
 #########################################################################
 
 
-import json
 from unittest.mock import patch
 from django.test import SimpleTestCase
 from django.contrib.auth import get_user_model
@@ -74,7 +73,7 @@ class MetadataEngineTest(SimpleTestCase):
         Test to validate the .validate function for the field
         """
         input_list = [{"title": serializers.CharField(help_text="test")}]
-        output = self.converter.validate(input_list)
+        self.converter.validate(input_list)
 
     def test_metadata_save_metadata(self):  # TODO this test should be improved during the development
         """

@@ -21,7 +21,7 @@ from django.urls import path
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from drf_spectacular.renderers import OpenApiJsonRenderer
-from geonode.metadata.views import MetadataViewSet, UiSchemaViewset
+from geonode.metadata.views import MetadataViewSet
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -34,5 +34,4 @@ urlpatterns = [
         name="schema",
     ),
     path("schema/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path("ui-schema/", UiSchemaViewset.as_view(), name="ui_schema"),
 ] + router.urls

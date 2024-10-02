@@ -15,7 +15,7 @@ class MetadataHandlersRegistry:
 
     def register_new_app(self, module_path):
         self.REGISTRY.append(import_string(module_path))
-    
+
     @classmethod
     def get_registry(cls):
         return MetadataHandlersRegistry.REGISTRY

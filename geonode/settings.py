@@ -2378,11 +2378,11 @@ GEONODE_APPS += ("geonode.assets",)
 
 INSTALLED_APPS += ("geonode.metadata",)
 #
-#REST_FRAMEWORK = {
-    ## YOUR SETTINGS
-    #"DEFAULT_GENERATOR_CLASS": "geonode.metadata.openapi.CustomSchemaGenerator",
-    #"DEFAULT_SCHEMA_CLASS": "geonode.metadata.openapi.CustomOpenApiSchema",
-#}
+# REST_FRAMEWORK = {
+# YOUR SETTINGS
+# "DEFAULT_GENERATOR_CLASS": "geonode.metadata.openapi.CustomSchemaGenerator",
+# "DEFAULT_SCHEMA_CLASS": "geonode.metadata.openapi.CustomOpenApiSchema",
+# }
 #
 
-METADATA_HANDLERS = [] # to be defined as list of modules to import
+METADATA_HANDLERS = []  # to be defined as list of modules to import

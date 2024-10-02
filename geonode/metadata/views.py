@@ -17,12 +17,9 @@
 #
 #########################################################################
 from geonode.metadata.engine import engine
-from geonode.metadata.models import UISchemaModel
 from geonode.metadata.serializer import MetadataSerializer
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework import generics
-from django.core.cache import caches
 from rest_framework.exceptions import PermissionDenied
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 
@@ -68,17 +65,3 @@ class MetadataViewSet(ViewSet):
         serializer = self.serializer_class(data=data)
         serializer.is_valid(raise_exception=True)
         return serializer
-
-
-class UiSchemaViewset(generics.RetrieveAPIView):
-    """
-    Return the UI schema
-    """
-
-    def get(self, request, **kwargs):
-        uischema_cache = caches["uischema_cache"]
-        schema = uischema_cache.get("uischema")
-        if not schema:
-            schema = UISchemaModel.objects.first().ui_schema_json
-            uischema_cache.set("uischema", schema, 3600)
-        return Response(schema)
