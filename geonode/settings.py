@@ -2391,7 +2391,6 @@ METADATA_HANDLERS = []  # to be defined as list of modules to import
 
 INSTALLED_APPS += ("geonode_datacite",)
 DATACITE_API_URL = "https://api.test.datacite.org"
-DATACITE_API_USERNAME = "ZJTW.WYGJIS"
 DATACITE_EVENT = "draft"
 DATACITE_EVENT = "10.82863"
 DATACITE_CREATOR = "CNR"
