@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import List, Optional
 from rest_framework import serializers
+from geonode.metadata.registry import metadata_registry
 
 
 class Field(object):
@@ -49,6 +50,10 @@ class MetadataEngine:
         """
         Returns the list of the field
         """
+        fields = []
+        for handler in metadata_registry.get_registry():
+            fields.append(handler.get_fields())
+        return fields
 
     @abstractmethod
     def get_data(self) -> List[dict]:

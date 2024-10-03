@@ -123,13 +123,13 @@ urlpatterns += [
     re_path(r"^api/roles", roles, name="roles"),
     re_path(r"^api/adminRole", admin_role, name="adminRole"),
     re_path(r"^api/users", users, name="users"),
+    re_path(r"^api/v2/metadata/", include("geonode.metadata.urls")),    
     re_path(r"^api/v2/", include(router.urls)),
     re_path(r"^api/v2/", include("geonode.api.urls")),
     re_path(r"^api/v2/", include("geonode.management_commands_http.urls")),
     re_path(r"^api/v2/api-auth/", include("rest_framework.urls", namespace="geonode_rest_framework")),
     re_path(r"^api/v2/", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
-    re_path(r"^metadata/", include("geonode.metadata.urls")),
     re_path(r"", include(api.urls)),
 ]
 
