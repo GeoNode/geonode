@@ -28,6 +28,7 @@ class DefaultLocalLinkUrlHandler:
 
 class IndexLocalLinkUrlHandler:
     def get_link_url(self, asset: LocalAsset):
+        asset = asset.get_real_instance()
         return build_absolute_uri(reverse("assets-link", args=(asset.pk,))) + f"/{os.path.basename(asset.location[0])}"
 
 
@@ -76,6 +77,7 @@ class LocalAssetHandler(AssetHandlerInterface):
         Removes the files related to an Asset.
         Only files within the Assets directory are removed
         """
+        asset = self.__force_real_instance(asset)
         if self._are_files_managed(asset):
             logger.info(f"Removing files for asset {asset.pk}")
             base = self._get_managed_dir(asset)
@@ -85,6 +87,7 @@ class LocalAssetHandler(AssetHandlerInterface):
             logger.info(f"Not removing unmanaged files for asset {asset.pk}")
 
     def replace_data(self, asset: LocalAsset, files: list):
+        asset = self.__force_real_instance(asset)
         self.remove_data(asset)
         asset.location = files
         asset.save()
@@ -123,6 +126,7 @@ class LocalAssetHandler(AssetHandlerInterface):
 
     def clone(self, source: LocalAsset) -> LocalAsset:
         # get a new asset instance to be edited and stored back
+        source = self.__force_real_instance(source)
         asset = LocalAsset.objects.get(pk=source.pk)
 
         # only copy files if they are managed
@@ -204,12 +208,20 @@ class LocalAssetHandler(AssetHandlerInterface):
 
         return managed_dir
 
+    @classmethod
+    def __force_real_instance(cls, asset):
+        asset = asset.get_real_instance()
+        if not isinstance(asset, LocalAsset):
+            raise TypeError(f"Real instance of asset {asset} is not {cls.handled_asset_class()}")
+        return asset
+
 
 class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
 
     def create_response(
         self, asset: LocalAsset, attachment: bool = False, basename: str = None, path: str = None
     ) -> HttpResponse:
+        asset = asset.get_real_instance()
         if not asset.location:
             return HttpResponse("Asset does not contain any data", status=500)
 
