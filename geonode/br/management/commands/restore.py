@@ -31,6 +31,8 @@ import pathlib
 from typing import Union
 from datetime import datetime
 
+from geonode.assets.models import LocalAsset
+
 from .utils import utils
 
 from distutils import dir_util
@@ -399,6 +401,20 @@ class Command(BaseCommand):
                         self.restore_folder(config, media_root, media_folder)
                         logger.info("*** Restore assets root...")
                         self.restore_folder(config, assets_root, assets_folder)
+
+                        logger.info("*** Update Assets path...")
+                        for instance in LocalAsset.objects.iterator():
+                            should_be_updated = any(settings.ASSETS_ROOT not in loc for loc in instance.location)
+                            if should_be_updated:
+                                new_assets = []
+                                for loc in instance.location:
+                                    if settings.ASSETS_ROOT not in loc:
+                                        new_assets.append(loc.replace(os.path.dirname(os.path.dirname(loc)), settings.ASSETS_ROOT))
+                                    else:
+                                        new_assets.append(loc)
+                                instance.location = new_assets
+                                instance.save()
+                        logger.info("*** Assets path updated...")
 
                     # store backup info
                     restored_backup = RestoredBackup(
