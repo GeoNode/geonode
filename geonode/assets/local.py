@@ -29,6 +29,8 @@ class DefaultLocalLinkUrlHandler:
 class IndexLocalLinkUrlHandler:
     def get_link_url(self, asset: LocalAsset):
         asset = asset.get_real_instance()
+        if not isinstance(asset, LocalAsset):
+            raise TypeError("Only localasset are allowed")
         return build_absolute_uri(reverse("assets-link", args=(asset.pk,))) + f"/{os.path.basename(asset.location[0])}"
 
 
