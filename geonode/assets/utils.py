@@ -4,7 +4,7 @@ import os.path
 from django.http import HttpResponse
 
 from geonode.assets.handlers import asset_handler_registry
-from geonode.assets.models import Asset, LocalAsset
+from geonode.assets.models import Asset
 from geonode.base.models import ResourceBase, Link
 from geonode.security.utils import get_visible_resources
 
