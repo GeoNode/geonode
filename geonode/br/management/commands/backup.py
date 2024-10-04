@@ -181,7 +181,6 @@ class Command(BaseCommand):
                 logger.info("*** Dumping GeoNode assets folder...")
                 assets_folder = os.path.join(target_folder, utils.ASSETS_ROOT)
                 self.backup_folder(folder=assets_folder, root=settings.ASSETS_ROOT, config=config)
-                # TODO mettere log per segnalare gli asset non managed
                 for instance in LocalAsset.objects.iterator():
                     if not LocalAssetHandler._are_files_managed(instance):
                         logger.warning(f"The file for the asset with id {instance.pk} were not backup since is not managed by GeoNode")
