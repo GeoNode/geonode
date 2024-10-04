@@ -56,8 +56,6 @@ def find_type(ext):
 
 def create_link(resource, asset, link_type=None, extension=None, name=None, mime=None, asset_handler=None, **kwargs):
     asset = asset.get_real_instance()
-    if not isinstance(asset, LocalAsset):
-        raise TypeError("Only localasset are allowed")
     asset_handler = asset_handler or asset_handler_registry.get_handler(asset)
 
     if not link_type or not extension or not name:

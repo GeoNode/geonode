@@ -224,6 +224,8 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
         self, asset: LocalAsset, attachment: bool = False, basename: str = None, path: str = None
     ) -> HttpResponse:
         asset = asset.get_real_instance()
+        if not isinstance(asset, LocalAsset):
+            raise TypeError("Only localasset are allowed")
         if not asset.location:
             return HttpResponse("Asset does not contain any data", status=500)
 
