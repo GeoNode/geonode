@@ -1,6 +1,6 @@
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2022 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +16,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import os
 
+project_dir = os.path.dirname(os.path.abspath(__file__))
 
-class LayerNotReady(Exception):
-    pass
+VERSION = (1, 1, 0)
+__version__ = ".".join([str(i) for i in VERSION])
+__author__ = "geosolutions-it"
+__email__ = "info@geosolutionsgroup.com"
+__url__ = "https://github.com/GeoNode/geonode-importer"
+default_app_config = "importer.apps.ImporterConfig"

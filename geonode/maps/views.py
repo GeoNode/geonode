@@ -506,18 +506,6 @@ def mapdataset_attributes(request, layername):
     return HttpResponse(json.dumps(layer.attribute_config()), content_type="application/json")
 
 
-def get_suffix_if_custom(map):
-    if map.use_custom_template:
-        if map.featuredurl:
-            return map.featuredurl
-        elif map.urlsuffix:
-            return map.urlsuffix
-        else:
-            return None
-    else:
-        return None
-
-
 def ajax_url_lookup(request):
     if request.method != "POST":
         return HttpResponse(content="ajax user lookup requires HTTP POST", status=405, content_type="text/plain")

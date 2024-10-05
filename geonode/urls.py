@@ -32,6 +32,7 @@ from django.views.i18n import JavaScriptCatalog
 from django.contrib.sitemaps.views import sitemap
 
 import geonode.proxy.urls
+from geonode.upload.api.views import ImporterViewSet, ResourceImporter
 from . import views
 from . import version
 
@@ -123,6 +124,11 @@ urlpatterns += [
     re_path(r"^api/roles", roles, name="roles"),
     re_path(r"^api/adminRole", admin_role, name="adminRole"),
     re_path(r"^api/users", users, name="users"),
+    re_path(
+        r"api/v2/resources/(?P<pk>\w+)/copy",
+        ResourceImporter.as_view({"put": "copy"}),
+        name="importer_resource_copy",
+    ),
     re_path(r"^api/v2/", include(router.urls)),
     re_path(r"^api/v2/", include("geonode.api.urls")),
     re_path(r"^api/v2/", include("geonode.management_commands_http.urls")),
@@ -130,6 +136,11 @@ urlpatterns += [
     re_path(r"^api/v2/", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
     re_path(r"", include(api.urls)),
+    re_path(
+        r"uploads/upload",
+        ImporterViewSet.as_view({"post": "create"}),
+        name="importer_upload",
+    ),
 ]
 
 # tinymce WYSIWYG HTML Editor
@@ -195,10 +206,6 @@ urlpatterns += geonode.proxy.urls.urlpatterns
 # Serve static files
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.LOCAL_MEDIA_URL, document_root=settings.MEDIA_ROOT)
-handler401 = "geonode.views.err403"
-handler403 = "geonode.views.err403"
-handler404 = "geonode.views.handler404"
-handler500 = "geonode.views.handler500"
 
 
 if settings.MONITORING_ENABLED:

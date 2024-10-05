@@ -17,7 +17,6 @@
 #
 #########################################################################
 import re
-import os
 import json
 import decimal
 import logging
@@ -70,13 +69,6 @@ CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
 logger = logging.getLogger("geonode.layers.views")
 
-DEFAULT_SEARCH_BATCH_SIZE = 10
-MAX_SEARCH_BATCH_SIZE = 25
-GENERIC_UPLOAD_ERROR = _(
-    "There was an error while attempting to upload your data. \
-Please try again, or contact and administrator if the problem continues."
-)
-
 METADATA_UPLOADED_PRESERVE_ERROR = _(
     "Note: this dataset's orginal metadata was \
 populated and preserved by importing a metadata XML file. This metadata cannot be edited."
@@ -87,17 +79,6 @@ _PERMISSION_MSG_GENERIC = _("You do not have permissions for this dataset.")
 _PERMISSION_MSG_MODIFY = _("You are not permitted to modify this dataset")
 _PERMISSION_MSG_METADATA = _("You are not permitted to modify this dataset's metadata")
 _PERMISSION_MSG_VIEW = _("You are not permitted to view this dataset")
-
-
-def log_snippet(log_file):
-    if not log_file or not os.path.isfile(log_file):
-        return f"No log file at {log_file}"
-
-    with open(log_file) as f:
-        f.seek(0, 2)  # Seek @ EOF
-        fsize = f.tell()  # Get Size
-        f.seek(max(fsize - 10024, 0), 0)  # Set pos @ last n chars
-        return f.read()
 
 
 def _resolve_dataset(request, alternate, permission="base.view_resourcebase", msg=_PERMISSION_MSG_GENERIC, **kwargs):
@@ -448,12 +429,6 @@ def dataset_metadata(
         if new_regions:
             layer.regions.add(*new_regions)
         layer.category = new_category
-
-        from geonode.upload.models import Upload
-
-        up_sessions = Upload.objects.filter(resource_id=layer.resourcebase_ptr_id)
-        if up_sessions.exists() and up_sessions[0].user != layer.owner:
-            up_sessions.update(user=layer.owner)
 
         dataset_form.save_linked_resources()
 

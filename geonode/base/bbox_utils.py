@@ -62,13 +62,6 @@ class BBOXHelper:
         return DjangoPolygon.from_bbox((self.xmin, self.ymin, self.xmax, self.ymax))
 
 
-def normalize_x_value(value):
-    """
-    Normalise x-axis value/longtitude to fall within [-180, 180]
-    """
-    return ((value + 180) % 360) - 180
-
-
 def polygon_from_bbox(bbox, srid=4326):
     """
     Constructs a Polygon object with srid from a provided bbox.

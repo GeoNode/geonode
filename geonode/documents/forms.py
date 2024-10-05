@@ -110,12 +110,6 @@ class DocumentForm(ResourceBaseForm):
         )
 
 
-class DocumentDescriptionForm(forms.Form):
-    title = forms.CharField(max_length=300)
-    abstract = forms.CharField(max_length=2000, widget=forms.Textarea, required=False)
-    keywords = forms.CharField(max_length=500, required=False)
-
-
 class DocumentCreateForm(TranslationModelForm):
     """
     The document upload form.

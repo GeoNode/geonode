@@ -17,13 +17,10 @@
 #
 #########################################################################
 
-import os
 import typing
 import logging
 import tempfile
-import dataclasses
 
-from gsimporter.api import Session
 
 from django.conf import settings
 from django.db.models.query import QuerySet
@@ -31,9 +28,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from geonode.maps.models import Map
-from geonode.base import enumerations
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.utils import get_dataset_workspace
 from geonode.services.enumerations import CASCADED
@@ -49,17 +44,11 @@ from geonode.geoserver.signals import geofence_rule_assign
 from .geofence import AutoPriorityBatch
 from .tasks import geoserver_set_style, geoserver_delete_map, geoserver_create_style, geoserver_cascading_delete
 from .helpers import (
-    SpatialFilesLayerType,
     gs_catalog,
-    gs_uploader,
-    set_styles,
     set_time_info,
     ogc_server_settings,
-    get_spatial_files_dataset_type,
     sync_instance_with_geoserver,
-    set_attributes_from_geoserver,
     create_gs_thumbnail,
-    create_geoserver_db_featurestore,
     geofence,
     gf_utils,
 )
@@ -72,16 +61,6 @@ from .security import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@dataclasses.dataclass()
-class GeoServerImporterSessionInfo:
-    upload_session: Upload
-    import_session: Session
-    spatial_files_type: SpatialFilesLayerType
-    dataset_name: typing.AnyStr
-    workspace: typing.AnyStr
-    target_store: typing.AnyStr
 
 
 class GeoServerResourceManager(ResourceManagerInterface):
@@ -154,263 +133,6 @@ class GeoServerResourceManager(ResourceManagerInterface):
                 _synced_resource = sync_instance_with_geoserver(instance.id)
                 instance = _synced_resource or instance
         return instance
-
-    def ingest(
-        self,
-        files: typing.List[str],
-        /,
-        uuid: str = None,
-        resource_type: typing.Optional[object] = None,
-        defaults: dict = {},
-        **kwargs,
-    ) -> ResourceBase:
-        instance = ResourceManager._get_instance(uuid)
-        if instance and isinstance(instance.get_real_instance(), Dataset):
-            instance = self.import_dataset(
-                "import_dataset",
-                instance.uuid,
-                instance=instance,
-                files=files,
-                user=defaults.get("user", instance.owner),
-                defaults=defaults,
-                action_type="create",
-                **kwargs,
-            )
-        return instance
-
-    def copy(
-        self, instance: ResourceBase, /, uuid: str = None, owner: settings.AUTH_USER_MODEL = None, defaults: dict = {}
-    ) -> ResourceBase:
-        if uuid and instance:
-            _resource = ResourceManager._get_instance(uuid)
-            if _resource and isinstance(_resource.get_real_instance(), Dataset):
-                importer_session_opts = defaults.get("importer_session_opts", {})
-                if not importer_session_opts:
-                    _src_upload_session = Upload.objects.filter(resource=instance.get_real_instance().resourcebase_ptr)
-                    if _src_upload_session.exists():
-                        _src_upload_session = _src_upload_session.get()
-                        if _src_upload_session and _src_upload_session.get_session:
-                            try:
-                                _src_importer_session = _src_upload_session.get_session.import_session.reload()
-                                importer_session_opts.update({"transforms": _src_importer_session.tasks[0].transforms})
-                            except Exception as e:
-                                logger.exception(e)
-                return self.import_dataset(
-                    "import_dataset",
-                    uuid,
-                    instance=_resource,
-                    files=defaults.get("files", None),
-                    user=defaults.get("user", _resource.owner),
-                    defaults=defaults,
-                    action_type="create",
-                    importer_session_opts=importer_session_opts,
-                )
-        return _resource
-
-    def append(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs) -> ResourceBase:
-        if instance and isinstance(instance.get_real_instance(), Dataset):
-            return self.import_dataset(
-                "import_dataset",
-                instance.uuid,
-                instance=instance,
-                files=vals.get("files", None),
-                user=vals.get("user", instance.owner),
-                action_type="append",
-                importer_session_opts=vals.get("importer_session_opts", None),
-                **kwargs,
-            )
-        return instance
-
-    def replace(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs) -> ResourceBase:
-        if instance and isinstance(instance.get_real_instance(), Dataset):
-            return self.import_dataset(
-                "import_dataset",
-                instance.uuid,
-                instance=instance,
-                files=vals.get("files", None),
-                user=vals.get("user", instance.owner),
-                action_type="replace",
-                importer_session_opts=vals.get("importer_session_opts", None),
-                **kwargs,
-            )
-        return instance
-
-    def import_dataset(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
-        instance = instance or ResourceManager._get_instance(uuid)
-
-        if instance and isinstance(instance.get_real_instance(), Dataset):
-            try:
-                _gs_import_session_info = self._execute_resource_import(
-                    instance,
-                    kwargs.get("files", None),
-                    kwargs.get("user", instance.owner),
-                    action_type=kwargs.get("action_type", "create"),
-                    importer_session_opts=kwargs.get("importer_session_opts", None),
-                )
-                import_session = _gs_import_session_info.import_session
-                if import_session:
-                    if import_session.state == enumerations.STATE_PENDING:
-                        task = None
-                        native_crs = None
-                        target_crs = "EPSG:4326"
-                        for _task in import_session.tasks:
-                            # CRS missing/unknown
-                            if _task.state == "NO_CRS":
-                                task = _task
-                                native_crs = _task.layer.srs
-                                break
-                        if not native_crs:
-                            native_crs = "EPSG:4326"
-                        if task:
-                            task.set_srs(native_crs)
-
-                        transform = {
-                            "type": "ReprojectTransform",
-                            "source": native_crs,
-                            "target": target_crs,
-                        }
-                        task.remove_transforms([transform], by_field="type", save=False)
-                        task.add_transforms([transform], save=False)
-                        task.save_transforms()
-                        #  Starting import process
-                        import_session.commit()
-                        import_session = import_session.reload()
-                        _gs_import_session_info.import_session = import_session
-                        _gs_import_session_info.dataset_name = import_session.tasks[0].layer.name
-                    _name = (
-                        _gs_import_session_info.dataset_name
-                        if import_session.state == enumerations.STATE_COMPLETE
-                        else ""
-                    )
-                    _alternate = (
-                        f"{_gs_import_session_info.workspace}:{_gs_import_session_info.dataset_name}"
-                        if import_session.state == enumerations.STATE_COMPLETE
-                        else ""
-                    )
-                    _to_update = {
-                        "name": _name,
-                        "title": instance.title or _gs_import_session_info.dataset_name,
-                        "workspace": _gs_import_session_info.workspace,
-                        "alternate": _alternate,
-                        "typename": _alternate,
-                        "store": _gs_import_session_info.target_store or _gs_import_session_info.dataset_name,
-                        "subtype": _gs_import_session_info.spatial_files_type.dataset_type,
-                    }
-                    if "defaults" in kwargs:
-                        kwargs["defaults"].update(_to_update)
-                    Dataset.objects.filter(uuid=instance.uuid).update(**_to_update)
-                    instance.get_real_instance_class().objects.filter(uuid=instance.uuid).update(**_to_update)
-                    # Refresh from DB
-                    instance.refresh_from_db()
-                    if kwargs.get("action_type", "create") == "create":
-                        set_styles(instance.get_real_instance(), gs_catalog)
-                        set_attributes_from_geoserver(instance.get_real_instance(), overwrite=True)
-                elif kwargs.get("action_type", "create") == "create":
-                    logger.exception(Exception(f"Importer Session not valid - STATE: {import_session.state}"))
-                if import_session.state == enumerations.STATE_COMPLETE:
-                    instance.set_processing_state(enumerations.STATE_PROCESSED)
-                else:
-                    instance.set_processing_state(import_session.state)
-                    instance.set_dirty_state()
-                instance.save(notify=False)
-            except Exception as e:
-                logger.exception(e)
-                if kwargs.get("action_type", "create") == "create":
-                    instance.delete()
-                    instance = None
-        return instance
-
-    def _execute_resource_import(
-        self, instance, files: list, user, action_type: str, importer_session_opts: typing.Optional[typing.Dict] = None
-    ):
-        from geonode.utils import get_allowed_extensions
-
-        ALLOWED_EXTENSIONS = get_allowed_extensions()
-
-        session_opts = dict(importer_session_opts) if importer_session_opts is not None else {}
-
-        spatial_files_type = get_spatial_files_dataset_type(ALLOWED_EXTENSIONS, files)
-
-        if not spatial_files_type:
-            raise Exception(f"No suitable Spatial Files avaialable for 'ALLOWED_EXTENSIONS' = {ALLOWED_EXTENSIONS}.")
-
-        upload_session, _ = Upload.objects.get_or_create(
-            resource=instance.get_real_instance().resourcebase_ptr, user=user
-        )
-        upload_session.resource = instance.get_real_instance().resourcebase_ptr
-        upload_session.save()
-
-        _name = instance.get_real_instance().name
-        if not _name:
-            _name = (
-                session_opts.get("name", None) or os.path.splitext(os.path.basename(spatial_files_type.base_file))[0]
-            )
-        instance.get_real_instance().name = _name
-
-        gs_dataset = None
-        try:
-            gs_dataset = gs_catalog.get_layer(_name)
-        except Exception as e:
-            logger.debug(e)
-
-        _workspace = None
-        _target_store = None
-        if gs_dataset:
-            _target_store = gs_dataset.resource.store.name if instance.get_real_instance().subtype == "vector" else None
-            _workspace = gs_dataset.resource.workspace.name if gs_dataset.resource.workspace else None
-
-        if not _workspace:
-            _workspace = session_opts.get("workspace", instance.get_real_instance().workspace)
-            if not _workspace:
-                _workspace = instance.get_real_instance().workspace or settings.DEFAULT_WORKSPACE
-
-        if not _target_store:
-            if instance.get_real_instance().subtype == "vector" or spatial_files_type.dataset_type == "vector":
-                _dsname = ogc_server_settings.datastore_db["NAME"]
-                _ds = create_geoserver_db_featurestore(store_name=_dsname, workspace=_workspace)
-                if _ds:
-                    _target_store = session_opts.get("target_store", None) or _dsname
-
-        #  opening Import session for the selected layer
-        # Let's reset the connections first
-        gs_catalog._cache.clear()
-        gs_catalog.reset()
-        # Let's now try the new ingestion
-        import_session = gs_uploader.start_import(import_id=upload_session.id, name=_name, target_store=_target_store)
-
-        upload_session.set_processing_state(enumerations.STATE_PROCESSED)
-        upload_session.import_id = import_session.id
-        upload_session.name = _name
-        upload_session.complete = True
-        upload_session.processed = True
-        upload_session.save()
-
-        _gs_import_session_info = GeoServerImporterSessionInfo(
-            upload_session=upload_session,
-            import_session=import_session,
-            spatial_files_type=spatial_files_type,
-            dataset_name=None,
-            workspace=_workspace,
-            target_store=_target_store,
-        )
-
-        import_session.upload_task(files)
-        task = import_session.tasks[0]
-        #  Changing layer name, mode and target
-        task.layer.set_target_layer_name(_name)
-        task.set_update_mode(action_type.upper())
-        task.set_target(store_name=_target_store, workspace=_workspace)
-        transforms = session_opts.get("transforms", None)
-        if transforms:
-            task.set_transforms(transforms)
-        #  Starting import process
-        import_session.commit()
-        import_session = import_session.reload()
-
-        _gs_import_session_info.import_session = import_session
-        _gs_import_session_info.dataset_name = import_session.tasks[0].layer.name
-
-        return _gs_import_session_info
 
     def remove_permissions(self, uuid: str, /, instance: ResourceBase = None) -> bool:
         instance = instance or ResourceManager._get_instance(uuid)

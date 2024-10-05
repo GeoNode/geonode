@@ -38,10 +38,3 @@ class InvalidMetadataException(APIException):
     default_detail = "Input payload is not valid"
     default_code = "invalid_metadata_exception"
     category = "dataset_api"
-
-
-class MissingMetadataException(APIException):
-    status_code = 400
-    default_detail = "Metadata is missing"
-    default_code = "missing_metadata_exception"
-    category = "dataset_api"

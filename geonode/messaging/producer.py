@@ -23,7 +23,7 @@ import traceback
 from decorator import decorator
 from kombu import BrokerConnection
 from kombu.common import maybe_declare
-from .queues import queue_email_events, queue_geoserver_events, queue_notifications_events, queue_dataset_viewers
+from .queues import queue_email_events, queue_notifications_events, queue_dataset_viewers
 
 from geonode.messaging.apps import url, producers, connection, broker_socket_timeout, task_serializer
 from .consumer import Consumer
@@ -79,20 +79,6 @@ def send_email_producer(dataset_uuid, user_id):
         payload = {"dataset_uuid": dataset_uuid, "user_id": user_id}
         producer.publish(
             payload, exchange="geonode", serializer=task_serializer, routing_key="email", timeout=broker_socket_timeout
-        )
-        producer.release()
-
-
-@sync_if_local_memory
-def geoserver_upload_dataset(payload):
-    with producers[connection].acquire(block=True, timeout=broker_socket_timeout) as producer:
-        maybe_declare(queue_geoserver_events, producer.channel)
-        producer.publish(
-            payload,
-            exchange="geonode",
-            serializer=task_serializer,
-            routing_key="geonode.geoserver",
-            timeout=broker_socket_timeout,
         )
         producer.release()
 

@@ -244,7 +244,3 @@ exposes = {
         HostGeoNodeServiceExpose,
     )
 }
-
-
-def exposes_for_service(sname):
-    return exposes[sname]

@@ -23,21 +23,12 @@ import time
 import base64
 import pickle
 import requests
-from urllib.parse import urlencode, urlsplit
-from urllib.request import (
-    urljoin,
-    urlopen,
-    build_opener,
-    install_opener,
-    HTTPCookieProcessor,
-    HTTPPasswordMgrWithDefaultRealm,
-    HTTPBasicAuthHandler,
-)
-from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
+from urllib.request import urljoin
+from urllib.error import HTTPError
 from urllib3.exceptions import ProtocolError
 from requests.exceptions import ConnectionError
 import logging
-import contextlib
 
 from io import IOBase
 from bs4 import BeautifulSoup
@@ -239,60 +230,6 @@ class Client(DjangoTestClient):
         if not last:
             self.get("/")
         return self._session.cookies.get("csrftoken")
-
-
-def get_web_page(url, username=None, password=None, login_url=None):
-    """Get url page possible with username and password."""
-
-    if login_url:
-        # Login via a form
-        cookies = HTTPCookieProcessor()
-        opener = build_opener(cookies)
-        install_opener(opener)
-
-        opener.open(login_url)
-
-        try:
-            token = [x.value for x in cookies.cookiejar if x.name == "csrftoken"][0]
-        except IndexError:
-            return False, "no csrftoken"
-
-        params = dict(
-            username=username,
-            password=password,
-            this_is_the_login_form=True,
-            csrfmiddlewaretoken=token,
-        )
-        encoded_params = urlencode(params)
-
-        with contextlib.closing(opener.open(login_url, encoded_params)) as f:
-            f.read()
-    elif username is not None:
-        # Login using basic auth
-
-        # Create password manager
-        passman = HTTPPasswordMgrWithDefaultRealm()
-        passman.add_password(None, url, username, password)
-
-        # create the handler
-        authhandler = HTTPBasicAuthHandler(passman)
-        opener = build_opener(authhandler)
-        install_opener(opener)
-
-    try:
-        pagehandle = urlopen(url)
-    except HTTPError as e:
-        msg = f"The server couldn't fulfill the request. Error code: {e.status_code}"
-        e.args = (msg,)
-        raise
-    except URLError as e:
-        msg = f'Could not open URL "{url}": {e}'
-        e.args = (msg,)
-        raise
-    else:
-        page = pagehandle.read()
-
-    return page
 
 
 def check_dataset(uploaded):

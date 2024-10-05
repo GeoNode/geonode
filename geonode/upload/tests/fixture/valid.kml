@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:ns2="http://www.google.com/kml/ext/2.2" xmlns:ns3="http://www.w3.org/2005/Atom" xmlns:ns4="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <Document>
+        <Schema name="sample_point_dataset_1" id="sample_point_dataset_1">
+            <SimpleField type="int" name="ogc_fid"/>
+            <SimpleField type="string" name="id"/>
+            <SimpleField type="string" name="name"/>
+        </Schema>
+        <Folder>
+            <name>sample_point_dataset</name>
+            <Placemark id="sample_point_dataset.1">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#sample_point_dataset_1">
+                        <SimpleData name="ogc_fid">1</SimpleData>
+                        <SimpleData name="id">1</SimpleData>
+                        <SimpleData name="name">test</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>120.89945941369977,14.358088895403743</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark id="sample_point_dataset.2">
+                <ExtendedData>
+                    <SchemaData schemaUrl="#sample_point_dataset_1">
+                        <SimpleData name="ogc_fid">2</SimpleData>
+                        <SimpleData name="id">2</SimpleData>
+                        <SimpleData name="name">test 2</SimpleData>
+                    </SchemaData>
+                </ExtendedData>
+                <Point>
+                    <coordinates>120.94212582236852,14.23553050541452</coordinates>
+                </Point>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

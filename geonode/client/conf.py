@@ -38,14 +38,6 @@ def load_path_attr(path):
     return attr
 
 
-def is_installed(package):
-    try:
-        __import__(package)
-        return True
-    except ImportError:
-        return False
-
-
 class GeoNodeClientAppConf(AppConf):
     LAYER_PREVIEW_LIBRARY = "geonode"
     HOOKSET = "geonode.client.hooksets.BaseHookSet"

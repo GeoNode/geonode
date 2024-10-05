@@ -153,29 +153,6 @@ def view_or_apiauth(view, request, test_func, *args, **kwargs):
     return response
 
 
-def has_perm_or_basicauth(perm, realm=""):
-    """
-    This is similar to the above decorator 'logged_in_or_basicauth'
-    except that it requires the logged in user to have a specific
-    permission.
-
-    Use:
-
-    @logged_in_or_basicauth('asforums.view_forumcollection')
-    def your_view:
-        ...
-
-    """
-
-    def view_decorator(func):
-        def wrapper(request, *args, **kwargs):
-            return view_or_basicauth(func, request, lambda u: u.has_perm(perm), realm, *args, **kwargs)
-
-        return wrapper
-
-    return view_decorator
-
-
 def superuser_only(function):
     """
     Limit view to superusers only.
@@ -289,16 +266,6 @@ def logged_in_or_basicauth(realm=""):
     return view_decorator
 
 
-def logged_in_or_apiauth():
-    def view_decorator(func):
-        def wrapper(request, *args, **kwargs):
-            return view_or_apiauth(func, request, lambda u: u.is_authenticated, *args, **kwargs)
-
-        return wrapper
-
-    return view_decorator
-
-
 def superuser_or_apiauth():
     def view_decorator(func):
         def wrapper(request, *args, **kwargs):
@@ -307,11 +274,3 @@ def superuser_or_apiauth():
         return wrapper
 
     return view_decorator
-
-
-def dump_func_name(func):
-    def echo_func(*func_args, **func_kwargs):
-        logger.debug(f"Start func: {func.__name__}")
-        return func(*func_args, **func_kwargs)
-
-    return echo_func

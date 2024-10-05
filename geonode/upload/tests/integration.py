@@ -36,7 +36,7 @@ from django.contrib.auth import get_user_model
 
 from geonode.base.models import Link
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload, UploadSizeLimit
+from geonode.upload.models import UploadSizeLimit
 from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client
 from geonode.upload.utils import _ALLOW_TIME_STEP
@@ -75,7 +75,8 @@ DATASTORE_URL = f"postgis://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME
 postgis_db = dj_database_url.parse(DATASTORE_URL, conn_max_age=0)
 
 logging.getLogger("south").setLevel(logging.WARNING)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("importer")
+
 
 # create test user if needed, delete all layers and set password
 u, created = get_user_model().objects.get_or_create(username=GEONODE_USER)
@@ -262,20 +263,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
         except Exception:
             return current_step
 
-    def check_upload_model(self, original_name):
-        # we can only test this if we're using the same DB as the test instance
-        if not settings.OGC_SERVER["default"]["DATASTORE"]:
-            return
-        upload = None
-        try:
-            upload = Upload.objects.filter(name__icontains=str(original_name)).last()
-            # Making sure the Upload object is present on the DB and
-            # the import session is COMPLETE
-            if upload and not upload.complete:
-                logger.warning(f"Upload not complete for Dataset {original_name}")
-        except Upload.DoesNotExist:
-            self.fail(f"expected to find Upload object for {original_name}")
-
     def check_dataset_complete(self, dataset_page, original_name):
         """check everything to verify the dataset is complete"""
         self.check_dataset_geonode_page(dataset_page)
@@ -300,7 +287,6 @@ class UploaderBase(GeoNodeBaseTestSupport):
                 pass
         if not caps_found:
             logger.warning(f"Could not recognize Dataset {original_name} on GeoServer WMS Capa")
-        self.check_upload_model(dataset_name)
 
     def check_invalid_projection(self, dataset_name, resp, data):
         """Makes sure that we got the correct response from an dataset

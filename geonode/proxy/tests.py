@@ -36,8 +36,6 @@ from django.test.client import RequestFactory
 from django.core.files.uploadedfile import SimpleUploadedFile
 from unittest.mock import patch
 
-from geonode.upload.models import Upload
-
 try:
     from unittest.mock import MagicMock
 except ImportError:
@@ -287,6 +285,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset_files = [
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
+        asset, link = create_asset_and_link(
+            dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
@@ -295,10 +296,6 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset.save()
 
         dataset.refresh_from_db()
-
-        upload = Upload.objects.create(state="RUNNING", resource=dataset)
-
-        assert upload
 
         self.client.login(username="admin", password="admin")
         # ... all should be good
@@ -322,6 +319,9 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset_files = [
             f"{settings.PROJECT_ROOT}/assets/tests/data/one.json",
         ]
+        asset, link = create_asset_and_link(
+            dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
+        )
 
         asset, link = create_asset_and_link(
             dataset, get_user_model().objects.get(username="admin"), dataset_files, clone_files=False
@@ -330,8 +330,6 @@ class DownloadResourceTestCase(GeoNodeBaseTestSupport):
         dataset.save()
 
         dataset.refresh_from_db()
-
-        Upload.objects.create(state="COMPLETE", resource=dataset)
 
         self.client.login(username="admin", password="admin")
         response = self.client.get(reverse("download", args=(dataset.id,)))
@@ -389,16 +387,11 @@ class TestProxyTags(GeoNodeBaseTestSupport):
         self.assertTrue(actual)
 
     def test_should_return_false_if_no_files_are_available(self):
-        _ = Upload.objects.create(state="RUNNING", resource=self.resource)
-
         actual = original_link_available(self.context, self.resource.resourcebase_ptr_id, self.url)
         self.assertFalse(actual)
 
     @patch("geonode.storage.manager.storage_manager.exists", return_value=True)
     def test_should_return_true_if_files_are_available(self, fexists):
-        upload = Upload.objects.create(state="RUNNING", resource=self.resource)
-
-        assert upload
 
         dataset_files = [
             "/tmpe1exb9e9/foo_file.dbf",
