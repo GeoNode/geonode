@@ -71,7 +71,7 @@ class AssetsTests(APITestCase):
         asset.save()
         self.assertIsInstance(asset, LocalAsset)
 
-        reloaded = Asset.objects.get(pk=asset.pk)
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
         self.assertIsNotNone(reloaded)
         self.assertIsInstance(reloaded, LocalAsset)
         file = reloaded.location[0]
@@ -103,7 +103,7 @@ class AssetsTests(APITestCase):
         asset.save()
         self.assertIsInstance(asset, LocalAsset)
 
-        reloaded = Asset.objects.get(pk=asset.pk)
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
         self.assertIsNotNone(reloaded)
         self.assertIsInstance(reloaded, LocalAsset)
         file = reloaded.location[0]
@@ -128,7 +128,7 @@ class AssetsTests(APITestCase):
         asset.save()
         self.assertIsInstance(asset, LocalAsset)
 
-        reloaded = Asset.objects.get(pk=asset.pk)
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
         cloned = asset_handler.clone(reloaded)
         self.assertNotEqual(reloaded.pk, cloned.pk)
 
@@ -161,7 +161,7 @@ class AssetsTests(APITestCase):
         asset.save()
         self.assertIsInstance(asset, LocalAsset)
 
-        reloaded = Asset.objects.get(pk=asset.pk)
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
         cloned = asset_handler.clone(reloaded)
 
         self.assertEqual(reloaded.location[0], cloned.location[0])
@@ -268,7 +268,7 @@ class AssetsDownloadTests(APITestCase):
         asset.save()
         self.assertIsInstance(asset, LocalAsset)
 
-        reloaded = Asset.objects.get(pk=asset.pk)
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
 
         # put two more files in the asset dir
         asset_dir = os.path.dirname(reloaded.location[0])

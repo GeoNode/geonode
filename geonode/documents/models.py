@@ -26,7 +26,7 @@ from django.urls import reverse
 from django.utils.functional import classproperty
 from django.utils.translation import gettext_lazy as _
 
-from geonode.assets.models import Asset
+from geonode.assets.models import LocalAsset
 from geonode.client.hooks import hookset
 from geonode.base.models import ResourceBase
 from geonode.groups.conf import settings as groups_settings
@@ -79,7 +79,7 @@ class Document(ResourceBase):
 
     @property
     def files(self):
-        asset = Asset.objects.filter(link__resource=self).first()
+        asset = LocalAsset.objects.filter(link__resource=self).first()
         return asset.location if asset else []
 
     @property
