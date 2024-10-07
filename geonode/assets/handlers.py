@@ -78,6 +78,7 @@ class AssetHandlerRegistry:
         return self._default_handler
 
     def get_handler(self, asset):
+        asset = asset.get_real_instance() if isinstance(asset, Asset) else asset
         asset_cls = asset if isinstance(asset, type) else asset.__class__
         ret = self._registry.get(asset_cls, None)
         if not ret:
