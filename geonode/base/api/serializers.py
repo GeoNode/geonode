@@ -28,7 +28,6 @@ from django.contrib.auth.models import Group
 from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from django.db.models.query import QuerySet
-from geonode.assets.utils import get_default_asset
 from geonode.people import Roles
 from django.http import QueryDict
 from deprecated import deprecated
@@ -43,7 +42,7 @@ from dynamic_rest.fields.fields import DynamicRelationField, DynamicComputedFiel
 from avatar.templatetags.avatar_tags import avatar_url
 from geonode.utils import bbox_swap
 from geonode.base.api.exceptions import InvalidResourceException
-
+from geonode.assets.handlers import asset_handler_registry
 from geonode.favorite.models import Favorite
 from geonode.base.models import (
     Link,
@@ -63,10 +62,9 @@ from geonode.documents.models import Document
 from geonode.geoapps.models import GeoApp
 from geonode.groups.models import GroupCategory, GroupProfile
 from geonode.base.api.fields import ComplexDynamicRelationField
-from geonode.layers.utils import get_download_handlers, get_default_dataset_download_handler
-from geonode.assets.handlers import asset_handler_registry
+from geonode.resource.manager import resource_manager
 from geonode.utils import build_absolute_uri
-from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
+from geonode.security.utils import get_resources_with_perms
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
 
@@ -301,42 +299,7 @@ class DownloadArrayLinkField(DynamicComputedField):
             logger.exception(e)
             raise e
 
-        asset = get_default_asset(_instance)
-        if asset is not None:
-            asset_url = asset_handler_registry.get_handler(asset).create_download_url(asset)
-
-        if _instance.resource_type in ["map"] + get_geoapp_subtypes():
-            return []
-        elif _instance.resource_type in ["document"]:
-            payload = [
-                {
-                    "url": _instance.download_url,
-                    "ajax_safe": _instance.download_is_ajax_safe,
-                },
-            ]
-            if asset:
-                payload.append({"url": asset_url, "ajax_safe": False, "default": False})
-            return payload
-
-        elif _instance.resource_type in ["dataset"]:
-            download_urls = []
-            # lets get only the default one first to set it
-            default_handler = get_default_dataset_download_handler()
-            obj = default_handler(self.context.get("request"), _instance.alternate)
-            if obj.download_url:
-                download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": True})
-            # then let's prepare the payload with everything
-            for handler in get_download_handlers():
-                obj = handler(self.context.get("request"), _instance.alternate)
-                if obj.download_url:
-                    download_urls.append({"url": obj.download_url, "ajax_safe": obj.is_ajax_safe, "default": False})
-
-            if asset:
-                download_urls.append({"url": asset_url, "ajax_safe": True, "default": False if download_urls else True})
-
-            return download_urls
-        else:
-            return []
+        return resource_manager.get_handler(_instance).download_urls(**self.context)
 
 
 class FavoriteField(DynamicComputedField):

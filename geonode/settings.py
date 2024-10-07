@@ -2364,3 +2364,12 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+
+
+RESOURCE_HANDLERS = [
+    "geonode.layers.handlers.Tiles3DHandler",
+    "geonode.layers.handlers.DatasetHandler",
+    "geonode.maps.handlers.MapHandler",
+    "geonode.documents.handlers.DocumentHandler",
+    "geonode.geoapps.handlers.GeoAppHandler",
+]
