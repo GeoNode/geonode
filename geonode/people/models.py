@@ -197,16 +197,22 @@ class Profile(AbstractUser):
 
     @property
     def perms(self):
+        perms = set()
         if self.is_superuser or self.is_staff:
             # return all permissions for admins
-            perms = PERMISSIONS.values()
-        else:
-            user_groups = self.groups.values_list("name", flat=True)
-            group_perms = (
-                Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
-            )
-            # return constant names defined by GeoNode
-            perms = [PERMISSIONS[db_perm] for db_perm in group_perms]
+            perms.update(PERMISSIONS.values())
+
+        user_groups = self.groups.values_list("name", flat=True)
+        group_perms = (
+            Permission.objects.filter(group__name__in=user_groups).distinct().values_list("codename", flat=True)
+        )
+        for p in group_perms:
+            if p in PERMISSIONS:
+                # return constant names defined by GeoNode
+                perms.add(PERMISSIONS[p])
+            else:
+                # add custom permissions
+                perms.add(p)
 
         # check READ_ONLY mode
         config = Configuration.load()
