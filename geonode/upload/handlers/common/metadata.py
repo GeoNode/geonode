@@ -92,6 +92,9 @@ class MetadataFileHandler(BaseHandler):
         elif alternate:
             dataset = get_object_or_404(Dataset, alternate=alternate)
 
+        # assign the resource to the execution_obj
+        orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
+
         # retrieving the handler used for the dataset
         original_handler = orchestrator.load_handler(dataset.resourcehandlerinfo_set.first().handler_module_path)()
 
@@ -106,9 +109,7 @@ class MetadataFileHandler(BaseHandler):
 
         dataset.refresh_from_db()
 
-        # assign the resource to the execution_obj
-        orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
-
+        raise Exception("dajasdhjkhsadjkhasd")
         orchestrator.evaluate_execution_progress(execution_id, handler_module_path=str(self))
         return dataset
 
