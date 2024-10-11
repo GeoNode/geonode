@@ -130,6 +130,8 @@ urlpatterns += [
     re_path(r"^api/v2/", include("geonode.facets.urls")),
     re_path(r"^api/v2/", include("geonode.assets.urls")),
     re_path(r"", include(api.urls)),
+    # metadata views
+    re_path(r"", include("geonode.metadata.urls")),
 ]
 
 # tinymce WYSIWYG HTML Editor

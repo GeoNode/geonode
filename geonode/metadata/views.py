@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 #########################################################################
 #
-# Copyright (C) 2016 OSGeo
+# Copyright (C) 2024 OSGeo
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,12 +17,20 @@
 #
 #########################################################################
 
-import os
-import sys
+from geonode.metadata.manager import metadata_manager
+from django.views.decorators.csrf import csrf_exempt
+from pathlib import Path
+from django.http import HttpResponse, JsonResponse
 
-if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "geonode.local_settings")
+@csrf_exempt
+def get_schema(request):
 
-    from django.core.management import execute_from_command_line
+    schema = metadata_manager.get_schema()
+    if schema:
+        # response = HttpResponse(final_schema, content_type="application/json")
+        response = JsonResponse(schema, safe=False)
+        return response
 
-    execute_from_command_line(sys.argv)
+    #else:
+    #    return response
+
