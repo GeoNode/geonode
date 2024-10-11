@@ -106,6 +106,9 @@ class MetadataFileHandler(BaseHandler):
 
         dataset.refresh_from_db()
 
+        # assign the resource to the execution_obj
+        orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
+
         orchestrator.evaluate_execution_progress(execution_id, handler_module_path=str(self))
         return dataset
 

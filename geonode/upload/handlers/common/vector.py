@@ -763,15 +763,15 @@ class BaseVectorFileHandler(BaseHandler):
             ModelSchema.objects.filter(name=instance_name).delete()
         elif schema is None:
             try:
-                logger.info("Dynamic model does not exists, removing ogr2ogr table in progress")
+                logger.warning("Dynamic model does not exists, removing ogr2ogr table in progress")
                 if instance_name is None:
-                    logger.info("No table created, skipping...")
+                    logger.warning("No table created, skipping...")
                     return
                 db_name = os.getenv("DEFAULT_BACKEND_DATASTORE", "datastore")
                 with connections[db_name].cursor() as cursor:
                     cursor.execute(f"DROP TABLE {instance_name}")
             except Exception as e:
-                logger.info(e)
+                logger.warning(e)
                 pass
 
     def _publish_resource_rollback(self, exec_id, instance_name=None, *args, **kwargs):

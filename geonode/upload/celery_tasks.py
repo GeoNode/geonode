@@ -368,6 +368,9 @@ def create_geonode_resource(
                 asset=_asset,
             )
 
+        # assign geonode resource to ExectionRequest
+        orchestrator.update_execution_request_obj(_exec, {"geonode_resource": resource})
+
         if _overwrite:
             handler.overwrite_resourcehandlerinfo(handler_module_path, resource, _exec, **kwargs)
         else:
