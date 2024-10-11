@@ -783,6 +783,6 @@ def can_publish(user, resource):
     if is_superuser:
         return True
     elif AdvancedSecurityWorkflowManager.is_manager_publish_mode():
-        return is_manager and can_publish
+        return is_manager
     else:
         return is_owner or is_manager

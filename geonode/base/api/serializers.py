@@ -552,22 +552,6 @@ class LinksSerializer(DynamicModelSerializer):
         return ret
 
 
-class ResourceManagementField(serializers.BooleanField):
-    MAPPING = {"is_approved": "can_approve", "is_published": "can_publish", "featured": "can_feature"}
-
-    def to_internal_value(self, data):
-        new_val = super().to_internal_value(data)
-        user = self.context["request"].user
-        user_action = self.MAPPING.get(self.field_name)
-        instance = self.root.instance or ResourceBase.objects.get(pk=self.root.initial_data["pk"])
-        if getattr(user, user_action)(instance):
-            logger.debug("User can perform the action, the new value is returned")
-            return new_val
-        else:
-            logger.warning(f"The user does not have the perms to update the value of {self.field_name}")
-            return getattr(instance, self.field_name)
-
-
 class ResourceBaseSerializer(DynamicModelSerializer):
     pk = serializers.CharField(read_only=True)
     uuid = serializers.CharField(read_only=True)
@@ -608,10 +592,10 @@ class ResourceBaseSerializer(DynamicModelSerializer):
     popular_count = serializers.CharField(required=False)
     share_count = serializers.CharField(required=False)
     rating = serializers.CharField(required=False)
-    featured = ResourceManagementField(required=False)
+    featured = serializers.BooleanField(required=False)
     advertised = serializers.BooleanField(required=False)
-    is_published = ResourceManagementField(required=False)
-    is_approved = ResourceManagementField(required=False)
+    is_published = serializers.BooleanField(required=False)
+    is_approved = serializers.BooleanField(required=False)
     detail_url = DetailUrlField(read_only=True)
     created = serializers.DateTimeField(read_only=True)
     last_updated = serializers.DateTimeField(read_only=True)
@@ -751,6 +735,13 @@ class ResourceBaseSerializer(DynamicModelSerializer):
         data = super(ResourceBaseSerializer, self).to_internal_value(data)
         return data
 
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        for field in instance.ROLE_BASED_MANAGED_FIELDS:
+            if not user.can_change_resource_field(instance, field) and field in validated_data:
+                validated_data.pop(field)
+        return super().update(instance, validated_data)
+
     def save(self, **kwargs):
         extent = self.validated_data.pop("extent", None)
         instance = super().save(**kwargs)
@@ -767,6 +758,12 @@ class ResourceBaseSerializer(DynamicModelSerializer):
                 logger.exception(e)
                 raise InvalidResourceException("The standard bbox provided is invalid")
             instance.set_bbox_polygon(coords, srid)
+
+        user = self.context["request"].user
+        for field in instance.ROLE_BASED_MANAGED_FIELDS:
+            if not user.can_change_resource_field(instance, field):
+                logger.debug("User can perform the action, the default value is set")
+                setattr(user, field, getattr(ResourceBase, field).field.default)
         return instance
 
 

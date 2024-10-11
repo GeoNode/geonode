@@ -423,10 +423,10 @@ class PermissionLevelMixin:
         perms = calculate_perms(self, user)
 
         if getattr(self, "get_real_instance", None):
-            perms.union(calculate_perms(self.get_real_instance(), user))
+            perms = perms.union(calculate_perms(self.get_real_instance(), user))
 
         if getattr(self, "get_self_resource", None):
-            perms.union(calculate_perms(self.get_self_resource(), user))
+            perms = perms.union(calculate_perms(self.get_self_resource(), user))
 
         perms_as_list = list(set(perms))
 

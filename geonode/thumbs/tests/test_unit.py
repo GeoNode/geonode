@@ -248,7 +248,7 @@ class ThumbnailsUnitTest(GeoNodeBaseTestSupport):
         )
 
     def test_datasets_locations_simple_map_default_bbox(self):
-        expected_bbox = [-8238681.374829309, -8220320.783295829, 4969844.0930337105, 4984363.884452854, "EPSG:3857"]
+        expected_bbox = [-20037397.023298446, 20037397.023298446, -20048966.104014594, 20048966.104014594, "EPSG:3857"]
 
         dataset = Dataset.objects.get(title_en="theaters_nyc")
         map = Map.objects.get(title_en="theaters_nyc_map")
