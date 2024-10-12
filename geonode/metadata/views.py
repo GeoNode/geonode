@@ -19,18 +19,18 @@
 
 from geonode.metadata.manager import metadata_manager
 from django.views.decorators.csrf import csrf_exempt
-from pathlib import Path
 from django.http import HttpResponse, JsonResponse
+from django.core. exceptions import ObjectDoesNotExist
 
 @csrf_exempt
 def get_schema(request):
 
     schema = metadata_manager.get_schema()
+    
     if schema:
-        # response = HttpResponse(final_schema, content_type="application/json")
-        response = JsonResponse(schema, safe=False)
-        return response
+        return JsonResponse(schema)
 
-    #else:
-    #    return response
+    else:
+        response = {"Message": "Schema not found"}
+        return JsonResponse(response)
 

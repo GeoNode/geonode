@@ -20,7 +20,7 @@
 import logging
 from abc import ABCMeta, abstractmethod
 from geonode.metadata.handlers import CoreHandler
-from geonode.model_schema import MODEL_SCHEMA
+from geonode.metadata.settings import MODEL_SCHEMA
 
 logger = logging.getLogger(__name__)
 
@@ -48,19 +48,19 @@ class MetadataManager(MetadataManagerInterface):
     def build_schema(self):
         for handler in self.handlers:
             handler_instance = handler()
-            #TODO I have to propely add the new additions instead of replacing them
-            self.schema = handler_instance.update_schema(self.jsonschema)
+
+            if self.schema:
+                # Update the properties key of the schema with the properties of the new handler
+                self.schema["properties"].update(handler_instance.update_schema(self.jsonschema)["properties"])
+            else:
+                self.schema = handler_instance.update_schema(self.jsonschema)
+
         return self.schema    
 
     def get_schema(self):
-        self.schema = self.build_schema()
+        if not self.schema:
+           self.build_schema()
+            
         return self.schema
-    
-
-    #def load_context(self, jsonschema: dict = {}):
-
-    #    jsonschema = self.base_handler.update_schema(jsonschema)
-
-    #    return jsonschema
 
 metadata_manager = MetadataManager()

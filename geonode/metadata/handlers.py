@@ -21,7 +21,7 @@ import json
 import logging
 from abc import ABCMeta, abstractmethod
 from geonode.base.models import ResourceBase
-from geonode.model_schema import JSONSCHEMA_BASE
+from geonode.metadata.settings import JSONSCHEMA_BASE
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +97,3 @@ class CoreHandler(Handler):
     def load_context(resource: ResourceBase, context: dict):
         
         pass
-
-
-
