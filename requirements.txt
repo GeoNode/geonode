@@ -114,7 +114,7 @@ whitenoise==6.6.0
 Brotli==1.1.0
 
 # Contribs
-xmltodict<0.13.1
+xmltodict<0.14.2
 inflection>=0.4.0
 jdcal==1.4.1
 mock<6.0.0
