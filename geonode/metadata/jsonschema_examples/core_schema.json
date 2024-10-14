@@ -1,66 +1,72 @@
 {
-"uuid": {
-           "type": "string",
-           "description": "The UUID of the resource",
-           "maxLength": 36
-         },
-"title": {
-           "type": "string",
-           "description": "Νame by which the cited resource is known",
-           "maxLength": 255
-         },
-"abstract": {
-           "type": "string",
-           "description": "Brief narrative summary of the content of the resource(s)",
-           "maxLength": 2000
-         },
-"purpose": {
-           "type": "string",
-           "description": "Summary of the intentions with which the resource(s) was developed",
-           "maxLength": 500
-         },
-"alternate": {
-           "type": "string",
-           "description": "The alternate of the resource",
-           "maxLength": 255
-         },
-
-"edition": {
-           "type": "string",
-           "description": "The edition of the resource"
-         },
-"date type": {
-           "type": "string",
-           "maxLength": 255,
-           "enum": ["Creation", "Publication", "Revision"]
-           },
-"language": {
-           "type": "string",
-           "description": "Language used within the dataset",
-           "maxLength": 255,
-           "oneOf": [
-               {
-                "const": "abk",
-                "title": "Abkhazian"
-               },
-               {
-                "const": "aar",
-                "title": "Afar"
-               },
-               {
-                "const": "afr",
-                "title": "Africaans"
-               }
-           ],
-           "default": "eng"
-         },
-"srid": {
-           "type": "string",
-           "description": "The SRID of the resource",
-           "maxLength": 255,
-           "default": "EPSG:4326"
-         }
-
+  "uuid": {
+    "type": "string",
+    "description": "The UUID of the resource",
+    "maxLength": 36
+  },
+  "title": {
+    "type": "string",
+    "description": "Νame by which the cited resource is known",
+    "maxLength": 255
+  },
+  "abstract": {
+    "type": "string",
+    "description": "Brief narrative summary of the content of the resource(s)",
+    "maxLength": 2000
+  },
+  "purpose": {
+    "type": "string",
+    "description": "Summary of the intentions with which the resource(s) was developed",
+    "maxLength": 500
+  },
+  "alternate": {
+    "type": "string",
+    "description": "The alternate of the resource",
+    "maxLength": 255
+  },
+  "date type": {
+    "type": "string",
+    "maxLength": 255,
+    "enum": [
+      "Creation",
+      "Publication",
+      "Revision"
+    ]
+  },
+  "edition": {
+    "type": "string",
+    "description": "Version of the cited resource",
+    "maxLength": 255
+  },
+  "attribution": {
+    "type": "string",
+    "description": "Authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
+    "maxLength": 2048
+  },
+  "language": {
+    "type": "string",
+    "description": "Language used within the dataset",
+    "maxLength": 255,
+    "oneOf": [
+      {
+        "const": "abk",
+        "title": "Abkhazian"
+      },
+      {
+        "const": "aar",
+        "title": "Afar"
+      },
+      {
+        "const": "afr",
+        "title": "Africaans"
+      }
+    ],
+    "default": "eng"
+  },
+  "srid": {
+    "type": "string",
+    "description": "The SRID of the resource",
+    "maxLength": 255,
+    "default": "EPSG:4326"
+  }
 }
-           
- 
