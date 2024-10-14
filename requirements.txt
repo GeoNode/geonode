@@ -127,7 +127,7 @@ sherlock==0.4.1
 
 # required by monitoring
 psutil==5.9.8
-django-cors-headers==4.3.1
+django-cors-headers==4.5.0
 user-agents
 django-user-agents
 xmljson
