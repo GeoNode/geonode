@@ -38,7 +38,10 @@ class MetadataFileHandler(BaseHandler):
 
     ACTIONS = {
         exa.IMPORT.value: ("start_import", "geonode.upload.import_resource"),
-        ira.ROLLBACK.value: (),
+        ira.ROLLBACK.value: (
+            "start_rollback",
+            "geonode.upload.rollback",
+        ),
     }
 
     @staticmethod
@@ -109,7 +112,6 @@ class MetadataFileHandler(BaseHandler):
 
         dataset.refresh_from_db()
 
-        raise Exception("dajasdhjkhsadjkhasd")
         orchestrator.evaluate_execution_progress(execution_id, handler_module_path=str(self))
         return dataset
 

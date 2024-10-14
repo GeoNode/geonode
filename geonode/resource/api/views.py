@@ -88,6 +88,9 @@ class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     pagination_class = GeoNodeApiPagination
     http_method_names = ["get", "delete"]
 
+    class Meta:
+        ordering = ['created']
+
     def get_queryset(self, queryset=None):
         return ExecutionRequest.objects.filter(user=self.request.user).order_by("pk")
 

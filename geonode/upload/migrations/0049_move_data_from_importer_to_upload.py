@@ -31,6 +31,15 @@ def forwards_func(apps, schema_editor):
         if 'importer.handlers' in row.handler_module_path:
             row.handler_module_path = row.handler_module_path.replace("importer.handlers", "geonode.upload.handlers")
             row.save()
+            
+    # truncate old TABLE
+    SQL = """
+    DROP TABLE importer_resourcehandlerinfo
+    """
+    names = connection.introspection.table_names()
+    if 'importer_resourcehandlerinfo' in names:
+        with connection.cursor() as cursor:
+            cursor.execute(SQL)
 
 class Migration(migrations.Migration):
 
