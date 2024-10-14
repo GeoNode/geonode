@@ -1,52 +1,63 @@
 {
 "uuid": {
            "type": "string",
-           "title": "The UUID of the resource"
+           "description": "The UUID of the resource",
+           "maxLength": 36
          },
 "title": {
            "type": "string",
-           "title": "The title of the resource"
+           "description": "Νame by which the cited resource is known",
+           "maxLength": 255
          },
 "abstract": {
            "type": "string",
-           "title": "A description for the resource"
+           "description": "Brief narrative summary of the content of the resource(s)",
+           "maxLength": 2000
          },
 "purpose": {
            "type": "string",
-           "title": "The purpose of the resource"
+           "description": "Summary of the intentions with which the resource(s) was developed",
+           "maxLength": 500
          },
 "alternate": {
            "type": "string",
-           "title": "The alternate of the resource"
+           "description": "The alternate of the resource",
+           "maxLength": 255
          },
+
 "edition": {
            "type": "string",
-           "title": "The edition of the resource"
+           "description": "The edition of the resource"
          },
-"attribution": {
+"date type": {
            "type": "string",
-           "title": "An attribution for the resource"
-         },
-"doi": {
-           "type": "string",
-           "title": "The DOI of the resource"
-         },
-"constraints other": {
-           "type": "string",
-           "title": "Other constraints of the resource"
-         },
+           "maxLength": 255,
+           "enum": ["Creation", "Publication", "Revision"]
+           },
 "language": {
            "type": "string",
-           "description": "The language of the resource",
+           "description": "Language used within the dataset",
+           "maxLength": 255,
+           "oneOf": [
+               {
+                "const": "abk",
+                "title": "Abkhazian"
+               },
+               {
+                "const": "aar",
+                "title": "Afar"
+               },
+               {
+                "const": "afr",
+                "title": "Africaans"
+               }
+           ],
            "default": "eng"
          },
-"data quality statement": {
-           "type": "string",
-           "title": "Data quality statement of the resource"
-         },  
 "srid": {
            "type": "string",
-           "title": "The SRID of the resource",
+           "description": "The SRID of the resource",
+           "maxLength": 255,
            "default": "EPSG:4326"
          }
 

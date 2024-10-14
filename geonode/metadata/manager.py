@@ -43,17 +43,19 @@ class MetadataManager(MetadataManagerInterface):
         self.handlers = []
 
     def add_handler(self, handler):
-        self.handlers.append(handler)
+        
+        # Handlers initialization
+        handler_obj = handler()
+        self.handlers.append(handler_obj)
     
     def build_schema(self):
         for handler in self.handlers:
-            handler_instance = handler()
 
             if self.schema:
-                # Update the properties key of the schema with the properties of the new handler
-                self.schema["properties"].update(handler_instance.update_schema(self.jsonschema)["properties"])
+                # Update the properties key of the current schema with the properties of the new handler
+                self.schema["properties"].update(handler.update_schema(self.jsonschema)["properties"])
             else:
-                self.schema = handler_instance.update_schema(self.jsonschema)
+                self.schema = handler.update_schema(self.jsonschema)
 
         return self.schema    
 
