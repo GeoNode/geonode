@@ -89,7 +89,9 @@ class ShapeFileHandler(BaseVectorFileHandler):
         if not _base:
             return False
         if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
-            is_overwrite_flow = ast.literal_eval(data.get("overwrite_existing_layer", "False"))
+            is_overwrite_flow = data.get("overwrite_existing_layer", False)
+            if isinstance(is_overwrite_flow, str):
+                is_overwrite_flow = ast.literal_eval(is_overwrite_flow)
             return OverwriteShapeFileSerializer if is_overwrite_flow else ShapeFileSerializer
         return False
 

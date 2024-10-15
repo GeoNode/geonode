@@ -281,19 +281,25 @@ class BaseRasterFileHandler(BaseHandler):
                 overwrite_existing_layer=should_be_overwritten,
             ):
                 workspace = DataPublisher(None).workspace
-                user_datasets = Dataset.objects.filter(owner=_exec.user, alternate=f"{workspace.name}:{layer_name}")
-
-                dataset_exists = user_datasets.exists()
-
-                if dataset_exists and should_be_overwritten:
-                    layer_name, alternate = (
-                        layer_name,
-                        user_datasets.first().alternate.split(":")[-1],
-                    )
-                elif not dataset_exists:
-                    alternate = layer_name
+                if _exec.input_params.get("resource_pk"):
+                    dataset = Dataset.objects.filter(pk=_exec.input_params.get("resource_pk")).first()
+                    if not dataset:
+                        raise ImportException("The dataset selected for the ovewrite does not exists")
+                    alternate = dataset.alternate.split(":")[-1]
                 else:
-                    alternate = create_alternate(layer_name, execution_id)
+                    user_datasets = Dataset.objects.filter(owner=_exec.user, alternate=f"{workspace.name}:{layer_name}")
+
+                    dataset_exists = user_datasets.exists()
+
+                    if dataset_exists and should_be_overwritten:
+                        layer_name, alternate = (
+                            layer_name,
+                            user_datasets.first().alternate.split(":")[-1],
+                        )
+                    elif not dataset_exists:
+                        alternate = layer_name
+                    else:
+                        alternate = create_alternate(layer_name, execution_id)
 
                 import_orchestrator.apply_async(
                     (
