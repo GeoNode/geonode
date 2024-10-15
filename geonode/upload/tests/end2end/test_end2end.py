@@ -195,6 +195,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "stazioni_metropolitana"
         payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="stazioni_metropolitana")
 
@@ -277,6 +278,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "valid"
         payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
 
         self._cleanup_layers(name="valid")
@@ -306,6 +308,7 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "valid"
         payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="valid")
 
@@ -334,6 +337,7 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "sample_point_dataset"
         payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="sample_point_dataset")
 
@@ -358,6 +362,7 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
         self._assertimport(
             payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
         )
@@ -388,6 +393,7 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         }
         initial_name = "test_raster"
         payload["overwrite_existing_layer"] = True
+        payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
         self._cleanup_layers(name="test_raster")
 

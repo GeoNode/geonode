@@ -167,7 +167,7 @@ class TestCSVHandler(TestCase):
         _open.assert_called_with(
             "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
             + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='geonode_data' password='geonode_data' \" \""
+            + " port=5432 user='geonode_data' password='geonode' \" \""
             + self.valid_csv
             + '" -nln alternate "dataset" -oo KEEP_GEOM_COLUMNS=NO -lco GEOMETRY_NAME=geometry  -oo "GEOM_POSSIBLE_NAMES=geom*,the_geom*,wkt_geom" -oo "X_POSSIBLE_NAMES=x,long*" -oo "Y_POSSIBLE_NAMES=y,lat*"',  # noqa
             stdout=-1,

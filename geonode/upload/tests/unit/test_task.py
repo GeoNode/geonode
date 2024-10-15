@@ -404,7 +404,6 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     action="import",
                     input_params={
                         "files": {"base_file": self.existing_file},
-                        "overwrite_existing_layer": True,
                         "store_spatial_files": True,
                         "handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                     },
@@ -460,7 +459,6 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     action="import",
                     input_params={
                         "files": {"base_file": "/tmp/filepath"},
-                        "overwrite_existing_layer": True,
                         "store_spatial_files": True,
                         "handler_module_path": "geonode.upload.handlers.geotiff.handler.GeoTiffFileHandler",
                     },
