@@ -238,7 +238,7 @@ class AssetsDownloadTests(APITestCase):
         asset.save()
         self.assertIsInstance(asset, LocalAsset)
 
-        reloaded = Asset.objects.get(pk=asset.pk)
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
 
         # put two more files in the asset dir
         asset_dir = os.path.dirname(reloaded.location[0])

@@ -187,13 +187,16 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_gpkg_overwrite(self):
-        prev_dataset = create_single_dataset(name="stazioni_metropolitana")
         self._cleanup_layers(name="stazioni_metropolitana")
+        initial_name = "stazioni_metropolitana"
+        payload = {
+            "base_file": open(self.valid_gkpg, "rb"),
+        }
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
         payload = {
             "base_file": open(self.valid_gkpg, "rb"),
         }
-        initial_name = "stazioni_metropolitana"
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
@@ -270,13 +273,15 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geojson_overwrite(self):
-        prev_dataset = create_single_dataset(name="valid")
-
         self._cleanup_layers(name="valid")
         payload = {
             "base_file": open(self.valid_geojson, "rb"),
         }
         initial_name = "valid"
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
+        payload = {
+            "base_file": open(self.valid_geojson, "rb"),
+        }
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
@@ -300,9 +305,13 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_csv_overwrite(self):
-        prev_dataset = create_single_dataset(name="valid")
-
         self._cleanup_layers(name="valid")
+        payload = {
+            "base_file": open(self.valid_csv, "rb"),
+        }
+        initial_name = "valid"
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
+
         payload = {
             "base_file": open(self.valid_csv, "rb"),
         }
@@ -328,14 +337,17 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_kml_overwrite(self):
-        prev_dataset = create_single_dataset(name="sample_point_dataset")
+        initial_name = "sample_point_dataset"
 
         self._cleanup_layers(name="sample_point_dataset")
+        payload = {
+            "base_file": open(self.valid_kml, "rb"),
+        }
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
         payload = {
             "base_file": open(self.valid_kml, "rb"),
         }
-        initial_name = "sample_point_dataset"
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)

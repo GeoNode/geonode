@@ -19,6 +19,7 @@
 import os
 import uuid
 
+from django.conf import settings
 import gisdata
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -159,11 +160,16 @@ class TestShapeFileFileHandler(TestCase):
         self.assertEqual(alternate, "alternate")
         self.assertEqual(str(_uuid), execution_id)
 
+        _datastore = settings.DATABASES["datastore"]
         _open.assert_called_once()
         _open.assert_called_with(
             "/usr/bin/ogr2ogr --config PG_USE_COPY YES -f PostgreSQL PG:\" dbname='test_geonode_data' host="
             + os.getenv("DATABASE_HOST", "localhost")
-            + " port=5432 user='geonode_data' password='geonode' \" \""
+            + " port=5432 user='"
+            + _datastore["USER"]
+            + "' password='"
+            + _datastore["PASSWORD"]
+            + '\' " "'
             + self.valid_shp.get("base_file")
             + '" -nln alternate "dataset" -lco precision=no -lco GEOMETRY_NAME=geometry ',
             stdout=-1,
