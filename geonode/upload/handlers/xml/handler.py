@@ -67,7 +67,7 @@ class XMLFileHandler(MetadataFileHandler):
         ) and MetadataFileHandler.can_handle(_data)
 
     @staticmethod
-    def is_valid(files, user=None):
+    def is_valid(files, user=None, **kwargs):
         """
         Define basic validation steps
         """

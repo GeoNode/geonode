@@ -77,7 +77,7 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
         return ext in ["tiff", "geotiff", "tif", "geotif"] and BaseRasterFileHandler.can_handle(_data)
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps:
         """

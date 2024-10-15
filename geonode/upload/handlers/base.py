@@ -110,7 +110,7 @@ class BaseHandler(ABC):
         return True
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps
         """

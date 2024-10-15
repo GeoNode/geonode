@@ -45,11 +45,18 @@ class DataStoreManager:
         Perform basic validation steps
         """
         if self.files:
-            return self.handler.is_valid(self.files, self.user)
+            return self.handler.is_valid(self.files, self.user, execution_id=self.execution_id)
         url = orchestrator.get_execution_object(exec_id=self.execution_id).input_params.get("url")
         if url:
             return self.handler.is_valid_url(url)
         return False
+
+    def pre_validation(self, **kwargs):
+        """
+        Hook for let the handler prepare the data before the validation.
+        Maybe a file rename, assign the resource to the execution_id
+        """
+        return self.handler().pre_validation(self.files, self.execution_id, **kwargs)
 
     def prepare_import(self, **kwargs):
         """

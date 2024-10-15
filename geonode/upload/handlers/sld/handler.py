@@ -67,12 +67,11 @@ class SLDFileHandler(MetadataFileHandler):
         ) and MetadataFileHandler.can_handle(_data)
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps
         """
         # calling base validation checks
-
         try:
             with open(files.get("base_file")) as _xml:
                 dlxml.fromstring(_xml.read().encode())

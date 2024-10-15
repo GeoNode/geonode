@@ -96,7 +96,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
         return False
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps:
         """

@@ -50,7 +50,7 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
         return False
 
     @staticmethod
-    def is_valid_url(url):
+    def is_valid_url(url, **kwargs):
         BaseRemoteResourceHandler.is_valid_url(url)
         try:
             payload = requests.get(url, timeout=10).json()

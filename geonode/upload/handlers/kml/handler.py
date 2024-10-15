@@ -92,7 +92,7 @@ class KMLFileHandler(BaseVectorFileHandler):
         )
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps:
         Upload limit:

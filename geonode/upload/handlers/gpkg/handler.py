@@ -89,7 +89,7 @@ class GPKGFileHandler(BaseVectorFileHandler):
         ) and BaseVectorFileHandler.can_handle(_data)
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps:
         Upload limit:

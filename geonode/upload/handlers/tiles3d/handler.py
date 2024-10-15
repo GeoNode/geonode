@@ -84,7 +84,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return False
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Define basic validation steps:
         """

@@ -55,7 +55,7 @@ class BaseVectorFileHandler(BaseHandler):
 
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         """
         Used in the import_resource step. It defines if the processed resource
         can be considered valid or not. If not in the import_resource step
@@ -271,7 +271,7 @@ class NewVectorFileHandler(BaseVectorFileHandler):
         return
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         return True
 
     def get_ogr2ogr_driver(self):

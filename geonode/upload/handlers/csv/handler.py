@@ -90,7 +90,7 @@ class CSVFileHandler(BaseVectorFileHandler):
         ) and BaseVectorFileHandler.can_handle(_data)
 
     @staticmethod
-    def is_valid(files, user):
+    def is_valid(files, user, **kwargs):
         BaseVectorFileHandler.is_valid(files, user)
         # getting the upload limit validation
         upload_validator = UploadLimitValidator(user)

@@ -85,18 +85,20 @@ class MetadataFileHandler(BaseHandler):
     def perform_last_step(execution_id):
         BaseHandler.perform_last_step(execution_id=execution_id)
 
+    def pre_validation(self, files, execution_id, **kwargs):
+        """
+        Hook for let the handler prepare the data before the validation.
+        Maybe a file rename, assign the resource to the execution_id
+        """
+        _exec = orchestrator.get_execution_object(exec_id=execution_id)
+        dataset = MetadataFileHandler()._get_resource(_exec)
+        # assign the resource to the execution_obj
+        orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
+
     def import_resource(self, files: dict, execution_id: str, **kwargs):
         _exec = orchestrator.get_execution_object(execution_id)
         # getting the dataset
-        alternate = _exec.input_params.get("dataset_title")
-        resource_id = _exec.input_params.get("resource_id")
-        if resource_id:
-            dataset = get_object_or_404(Dataset, pk=resource_id)
-        elif alternate:
-            dataset = get_object_or_404(Dataset, alternate=alternate)
-
-        # assign the resource to the execution_obj
-        orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
+        dataset = self._get_resource(_exec)
 
         # retrieving the handler used for the dataset
         original_handler = orchestrator.load_handler(dataset.resourcehandlerinfo_set.first().handler_module_path)()
@@ -113,6 +115,15 @@ class MetadataFileHandler(BaseHandler):
         dataset.refresh_from_db()
 
         orchestrator.evaluate_execution_progress(execution_id, handler_module_path=str(self))
+        return dataset
+
+    def _get_resource(self, _exec):
+        alternate = _exec.input_params.get("dataset_title")
+        resource_id = _exec.input_params.get("resource_id")
+        if resource_id:
+            dataset = get_object_or_404(Dataset, pk=resource_id)
+        elif alternate:
+            dataset = get_object_or_404(Dataset, alternate=alternate)
         return dataset
 
     def handle_metadata_resource(self, _exec, dataset, original_handler):

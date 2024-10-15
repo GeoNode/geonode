@@ -80,7 +80,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         return False
 
     @staticmethod
-    def is_valid_url(url):
+    def is_valid_url(url, **kwargs):
         """
         We mark it as valid if the urls is reachable
         and if the url is valid
@@ -111,6 +111,12 @@ class BaseRemoteResourceHandler(BaseHandler):
             "type": _data.pop("type", None),
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
+
+    def pre_validation(self, files, execution_id, **kwargs):
+        """
+        Hook for let the handler prepare the data before the validation.
+        Maybe a file rename, assign the resource to the execution_id
+        """
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
         """
