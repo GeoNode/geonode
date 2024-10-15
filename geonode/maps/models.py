@@ -137,7 +137,7 @@ class Map(ResourceBase):
         epsg_bbox = bbox_utils.epsg_3857_area_of_use(target_crs="EPSG:3857")
 
         bbox = [math.inf, -math.inf, math.inf, -math.inf]
-        for layer in self.maplayers.filter(visibility=True).order_by("order"):
+        for layer in self.maplayers.filter(visibility=True).order_by("order").iterator():
             dataset = layer.dataset
             if dataset is not None:
                 if dataset.ll_bbox_polygon:
