@@ -473,20 +473,6 @@ class ResourceManager(ResourceManagerInterface):
                     _resource.set_processing_state(enumerations.STATE_PROCESSED)
         return _resource
 
-    @deprecated(
-        version="4.4.0",
-        reason="This function is deprecated and will not be used. Please read how to perform an append in the doc",
-    )
-    def append(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs):
-        return instance
-
-    @deprecated(
-        version="4.4.0",
-        reason="This function is deprecated and will not be used. Please read how to perform an append in the doc",
-    )
-    def replace(self, instance: ResourceBase, vals: dict = {}, *args, **kwargs):
-        return instance
-
     @transaction.atomic
     def exec(self, method: str, uuid: str, /, instance: ResourceBase = None, **kwargs) -> ResourceBase:
         _resource = instance or ResourceManager._get_instance(uuid)
