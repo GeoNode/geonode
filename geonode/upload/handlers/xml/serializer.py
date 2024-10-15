@@ -27,8 +27,9 @@ class MetadataFileSerializer(DynamicModelSerializer):
         ref_name = "MetadataFileSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields = ("dataset_title", "base_file", "source")
+        fields = ("overwrite_existing_layer", "resource_pk", "base_file", "source")
 
     base_file = serializers.FileField()
-    dataset_title = serializers.CharField(required=True)
+    overwrite_existing_layer = serializers.BooleanField(required=False, default=True)
+    resource_pk = serializers.CharField(required=True)
     source = serializers.CharField(required=False, default="resource_file_upload")
