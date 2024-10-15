@@ -219,7 +219,7 @@ class Profile(AbstractUser):
         if config.read_only:
             # exclude permissions affected by readonly
             perms = [perm for perm in perms if perm not in READ_ONLY_AFFECTED_PERMISSIONS]
-        return perms
+        return list(perms)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
