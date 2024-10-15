@@ -1,0 +1,953 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "{GEONODE_SITE}/resource.json",
+  "type": "object",
+  "title": "GeoNode resource",
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "description": "The UUID of the resource",
+      "maxLength": 36,
+      "ui:widget": "hidden"
+    },
+    "title": {
+      "type": "string",
+      "title": "title",
+      "description": "Νame by which the cited resource is known",
+      "maxLength": 255
+    },
+    "abstract": {
+      "type": "string",
+      "title": "abstract",
+      "description": "Brief narrative summary of the content of the resource(s)",
+      "maxLength": 2000,
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "purpose": {
+      "type": "string",
+      "title": "purpose",
+      "description": "Summary of the intentions with which the resource(s) was developed",
+      "maxLength": 500,
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "alternate": {
+      "type": "string",
+      "maxLength": 255,
+      "ui:widget": "hidden"
+    },
+    "date_type": {
+      "type": "string",
+      "title": "date type",
+      "maxLength": 255,
+      "enum": [
+        "Creation",
+        "Publication",
+        "Revision"
+      ],
+      "default": "Publication"
+    },
+    "edition": {
+      "type": "string",
+      "title": "edition",
+      "description": "Version of the cited resource",
+      "maxLength": 255
+    },
+    "attribution": {
+      "type": "string",
+      "title": "Attribution",
+      "description": "Authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
+      "maxLength": 2048
+    },
+    "doi": {
+      "type": "string",
+      "title": "DOI",
+      "description": "a DOI will be added by Admin before publication.",
+      "maxLength": 255
+    },
+    "maintenance_frequency": {
+      "type": "string",
+      "title": "maintenance frequency",
+      "description": "frequency with which modifications and deletions are made to the data after it is first produced",
+      "maxLength": 255,
+      "oneOf": [
+        {
+          "const": "unknown",
+          "title": "frequency of maintenance for the data is not known"
+        },
+        {
+          "const": "continual",
+          "title": "data is repeatedly and frequently updated"
+        },
+        {
+          "const": "notPlanned",
+          "title": "there are no plans to update the data"
+        },
+        {
+          "const": "daily",
+          "title": "data is updated each day"
+        },
+        {
+          "const": "annually",
+          "title": "data is updated every year"
+        },
+        {
+          "const": "asNeeded",
+          "title": "data is updated as deemed necessary"
+        },
+        {
+          "const": "monthly",
+          "title": "data is updated each month"
+        },
+        {
+          "const": "fortnightly",
+          "title": "data is updated every two weeks"
+        },
+        {
+          "const": "irregular",
+          "title": "data is updated in intervals that are uneven in duration"
+        },
+        {
+          "const": "weekly",
+          "title": "data is updated on a weekly basis"
+        },
+        {
+          "const": "biannually",
+          "title": "data is updated twice each year"
+        },
+        {
+          "const": "quarterly",
+          "title": "data is updated every three months"
+        }
+      ]
+    },
+    "other_constrains": {
+      "type": "string",
+      "title": "Other constrains",
+      "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "language": {
+      "type": "string",
+      "title": "language",
+      "description": "Language used within the dataset",
+      "maxLength": 255,
+      "oneOf": [
+        {
+          "const": "abk",
+          "title": "Abkhazian"
+        },
+        {
+          "const": "aar",
+          "title": "Afar"
+        },
+        {
+          "const": "afr",
+          "title": "Afrikaans"
+        },
+        {
+          "const": "amh",
+          "title": "Amharic"
+        },
+        {
+          "const": "ara",
+          "title": "Arabic"
+        },
+        {
+          "const": "asm",
+          "title": "Assamese"
+        },
+        {
+          "const": "aym",
+          "title": "Aymara"
+        },
+        {
+          "const": "aze",
+          "title": "Azerbaijani"
+        },
+        {
+          "const": "bak",
+          "title": "Bashkir"
+        },
+        {
+          "const": "ben",
+          "title": "Bengali"
+        },
+        {
+          "const": "bih",
+          "title": "Bihari"
+        },
+        {
+          "const": "bis",
+          "title": "Bislama"
+        },
+        {
+          "const": "bre",
+          "title": "Breton"
+        },
+        {
+          "const": "bul",
+          "title": "Bulgarian"
+        },
+        {
+          "const": "bel",
+          "title": "Byelorussian"
+        },
+        {
+          "const": "cat",
+          "title": "Catalan"
+        },
+        {
+          "const": "chi",
+          "title": "Chinese"
+        },
+        {
+          "const": "cos",
+          "title": "Corsican"
+        },
+        {
+          "const": "dan",
+          "title": "Danish"
+        },
+        {
+          "const": "dzo",
+          "title": "Dzongkha"
+        },
+        {
+          "const": "eng",
+          "title": "English"
+        },
+        {
+          "const": "fra",
+          "title": "French"
+        },
+        {
+          "const": "epo",
+          "title": "Esperanto"
+        },
+        {
+          "const": "est",
+          "title": "Estonian"
+        },
+        {
+          "const": "fao",
+          "title": "Faroese"
+        },
+        {
+          "const": "fij",
+          "title": "Fijian"
+        },
+        {
+          "const": "fin",
+          "title": "Finnish"
+        },
+        {
+          "const": "fry",
+          "title": "Frisian"
+        },
+        {
+          "const": "glg",
+          "title": "Gallegan"
+        },
+        {
+          "const": "ger",
+          "title": "German"
+        },
+        {
+          "const": "gre",
+          "title": "Greek"
+        },
+        {
+          "const": "kal",
+          "title": "Greenlandic"
+        },
+        {
+          "const": "grn",
+          "title": "Guarani"
+        },
+        {
+          "const": "guj",
+          "title": "Gujarati"
+        },
+        {
+          "const": "hau",
+          "title": "Hausa"
+        },
+        {
+          "const": "heb",
+          "title": "Hebrew"
+        },
+        {
+          "const": "hin",
+          "title": "Hindi"
+        },
+        {
+          "const": "hun",
+          "title": "Hungarian"
+        },
+        {
+          "const": "ind",
+          "title": "Indonesian"
+        },
+        {
+          "const": "ina",
+          "title": "Interlingua (International Auxiliary language Association)"
+        },
+        {
+          "const": "iku",
+          "title": "Inuktitut"
+        },
+        {
+          "const": "ipk",
+          "title": "Inupiak"
+        },
+        {
+          "const": "ita",
+          "title": "Italian"
+        },
+        {
+          "const": "jpn",
+          "title": "Japanese"
+        },
+        {
+          "const": "kan",
+          "title": "Kannada"
+        },
+        {
+          "const": "kas",
+          "title": "Kashmiri"
+        },
+        {
+          "const": "kaz",
+          "title": "Kazakh"
+        },
+        {
+          "const": "khm",
+          "title": "Khmer"
+        },
+        {
+          "const": "kin",
+          "title": "Kinyarwanda"
+        },
+        {
+          "const": "kir",
+          "title": "Kirghiz"
+        },
+        {
+          "const": "kor",
+          "title": "Korean"
+        },
+        {
+          "const": "kur",
+          "title": "Kurdish"
+        },
+        {
+          "const": "oci",
+          "title": "Langue d 'Oc (post 1500)"
+        },
+        {
+          "const": "lao",
+          "title": "Lao"
+        },
+        {
+          "const": "lat",
+          "title": "Latin"
+        },
+        {
+          "const": "lav",
+          "title": "Latvian"
+        },
+        {
+          "const": "lin",
+          "title": "Lingala"
+        },
+        {
+          "const": "lit",
+          "title": "Lithuanian"
+        },
+        {
+          "const": "mlg",
+          "title": "Malagasy"
+        },
+        {
+          "const": "mlt",
+          "title": "Maltese"
+        },
+        {
+          "const": "mar",
+          "title": "Marathi"
+        },
+        {
+          "const": "mol",
+          "title": "Moldavian"
+        },
+        {
+          "const": "mon",
+          "title": "Mongolian"
+        },
+        {
+          "const": "nau",
+          "title": "Nauru"
+        },
+        {
+          "const": "nep",
+          "title": "Nepali"
+        },
+        {
+          "const": "nor",
+          "title": "Norwegian"
+        },
+        {
+          "const": "ori",
+          "title": "Oriya"
+        },
+        {
+          "const": "orm",
+          "title": "Oromo"
+        },
+        {
+          "const": "pan",
+          "title": "Panjabi"
+        },
+        {
+          "const": "pol",
+          "title": "Polish"
+        },
+        {
+          "const": "por",
+          "title": "Portuguese"
+        },
+        {
+          "const": "pus",
+          "title": "Pushto"
+        },
+        {
+          "const": "que",
+          "title": "Quechua"
+        },
+        {
+          "const": "roh",
+          "title": "Rhaeto-Romance"
+        },
+        {
+          "const": "run",
+          "title": "Rundi"
+        },
+        {
+          "const": "rus",
+          "title": "Russian"
+        },
+        {
+          "const": "smo",
+          "title": "Samoan"
+        },
+        {
+          "const": "sag",
+          "title": "Sango"
+        },
+        {
+          "const": "san",
+          "title": "Sanskrit"
+        },
+        {
+          "const": "scr",
+          "title": "Serbo-Croatian"
+        },
+        {
+          "const": "sna",
+          "title": "Shona"
+        },
+        {
+          "const": "snd",
+          "title": "Sindhi"
+        },
+        {
+          "const": "sin",
+          "title": "Singhalese"
+        },
+        {
+          "const": "ssw",
+          "title": "Siswant"
+        },
+        {
+          "const": "slv",
+          "title": "Slovenian"
+        },
+        {
+          "const": "som",
+          "title": "Somali"
+        },
+        {
+          "const": "sot",
+          "title": "Sotho"
+        },
+        {
+          "const": "spa",
+          "title": "Spanish"
+        },
+        {
+          "const": "sun",
+          "title": "Sudanese"
+        },
+        {
+          "const": "swa",
+          "title": "Swahili"
+        },
+        {
+          "const": "tgl",
+          "title": "Tagalog"
+        },
+        {
+          "const": "tgk",
+          "title": "Tajik"
+        },
+        {
+          "const": "tam",
+          "title": "Tamil"
+        },
+        {
+          "const": "tat",
+          "title": "Tatar"
+        },
+        {
+          "const": "tel",
+          "title": "Telugu"
+        },
+        {
+          "const": "tha",
+          "title": "Thai"
+        },
+        {
+          "const": "tir",
+          "title": "Tigrinya"
+        },
+        {
+          "const": "tog",
+          "title": "Tonga (Nyasa)"
+        },
+        {
+          "const": "tso",
+          "title": "Tsonga"
+        },
+        {
+          "const": "tsn",
+          "title": "Tswana"
+        },
+        {
+          "const": "tur",
+          "title": "Turkish"
+        },
+        {
+          "const": "tuk",
+          "title": "Turkmen"
+        },
+        {
+          "const": "twi",
+          "title": "Twi"
+        },
+        {
+          "const": "uig",
+          "title": "Uighur"
+        },
+        {
+          "const": "ukr",
+          "title": "Ukrainian"
+        },
+        {
+          "const": "urd",
+          "title": "Urdu"
+        },
+        {
+          "const": "uzb",
+          "title": "Uzbek"
+        },
+        {
+          "const": "vie",
+          "title": "Vietnamese"
+        },
+        {
+          "const": "vol",
+          "title": "Volapük"
+        },
+        {
+          "const": "wol",
+          "title": "Wolof"
+        },
+        {
+          "const": "xho",
+          "title": "Xhosa"
+        },
+        {
+          "const": "yid",
+          "title": "Yiddish"
+        },
+        {
+          "const": "yor",
+          "title": "Yoruba"
+        },
+        {
+          "const": "zha",
+          "title": "Zhuang"
+        },
+        {
+          "const": "zul",
+          "title": "Zulu"
+        }
+      ],
+      "default": "eng"
+    },
+    "supplemental_information": {
+      "type": "string",
+      "title": "supplemental information",
+      "description": "any other descriptive information about the dataset",
+      "maxLength": 2000,
+      "defult": "No information provided",
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "data_quality_statement": {
+      "type": "string",
+      "title": "data quality statement",
+      "description": "general explanation of the data producer's knowledge about the lineage of a dataset",
+      "maxLength": 2000,
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "srid": {
+      "type": "string",
+      "description": "The SRID of the resource",
+      "maxLength": 30,
+      "default": "EPSG:4326",
+      "ui:widget": "hidden"
+    },
+    "csw_typename": {
+      "$comment": "CSW specific fields",
+      "type": "string",
+      "title": "CSW typename",
+      "maxLength": 32,
+      "default": "gmd:MD_Metadata",
+      "ui:widget": "hidden"
+    },
+    "csw_schema": {
+      "$comment": "CSW specific fields",
+      "type": "string",
+      "title": "CSW schema",
+      "maxLength": 64,
+      "default": "http://www.isotc211.org/2005/gmd",
+      "ui:widget": "hidden"
+    },
+    "csw_mdsource": {
+      "$comment": "CSW specific fields",
+      "type": "string",
+      "title": "CSW source",
+      "maxLength": 256,
+      "default": "local",
+      "ui:widget": "hidden"
+    },
+    "csw_type": {
+      "$comment": "CSW specific fields",
+      "type": "string",
+      "title": "CSW type",
+      "maxLength": 32,
+      "default": "dataset",
+      "oneOf": [
+        {
+          "const": "series",
+          "title": "series"
+        },
+        {
+          "const": "software",
+          "title": "computer program or routine"
+        },
+        {
+          "const": "featureType",
+          "title": "feature type"
+        },
+        {
+          "const": "model",
+          "title": "copy or imitation of an existing or hypothetical object"
+        },
+        {
+          "const": "collectionHardware",
+          "title": "collection hardware"
+        },
+        {
+          "const": "collectionSession",
+          "title": "collection session"
+        },
+        {
+          "const": "nonGeographicDataset",
+          "title": "non-geographic data"
+        },
+        {
+          "const": "propertyType",
+          "title": "property type"
+        },
+        {
+          "const": "fieldSession",
+          "title": "field session"
+        },
+        {
+          "const": "dataset",
+          "title": "dataset"
+        },
+        {
+          "const": "service",
+          "title": "service interfaces"
+        },
+        {
+          "const": "attribute",
+          "title": "attribute class"
+        },
+        {
+          "const": "attributeType",
+          "title": "characteristic of a feature"
+        },
+        {
+          "const": "tile",
+          "title": "tile or spatial subset of geographic data"
+        },
+        {
+          "const": "feature",
+          "title": "feature"
+        },
+        {
+          "const": "dimensionGroup",
+          "title": "dimension group"
+        }
+      ],
+      "ui:widget": "hidden"
+    },
+    "csw_anytext": {
+      "$comment": "CSW specific fields",
+      "type": "string",
+      "title": "CSW anytext",
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      },
+      "ui:widget": "hidden"
+    },
+    "csw_wkt_geometry": {
+      "$comment": "CSW specific fields",
+      "type": "string",
+      "title": "CSW WKT geometry",
+      "default": "POLYGON((-180 -90,-180 90,180 90,180 -90,-180 -90))",
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      },
+      "ui:widget": "hidden"
+    },
+    "metadata uploaded": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "default": false,
+      "ui:widget": "hidden"
+    },
+    "Metadata uploaded preserve": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "default": false
+    },
+    "metadata xml": {
+      "$comment": "metadata XML specific fields",
+      "type": "string",
+      "default": "'<gmd:MD_Metadata xmlns:gmd='http://www.isotc211.org/2005/gmd'/>",
+      "ui:widget": "hidden"
+    },
+    "popular_count": {
+      "$comment": "metadata XML specific fields",
+      "type": "integer",
+      "default": 0,
+      "ui:widget": "hidden"
+    },
+    "share_count": {
+      "$comment": "metadata XML specific fields",
+      "type": "integer",
+      "default": 0,
+      "ui:widget": "hidden"
+    },
+    "featured": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "title": "Featured",
+      "description": "Should this resource be advertised in home page?",
+      "default": false
+    },
+    "was_published": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "title": "Was published",
+      "description": "Previous Published state.",
+      "default": true
+    },
+    "is_published": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "title": "Is published",
+      "description": "Should this resource be published and searchable?",
+      "default": true
+    },
+    "was_approved": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "title": "Was Approved",
+      "description": "Previous Approved state.",
+      "default": true
+    },
+    "is_approved": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "title": "Approved",
+      "description": "Is this resource validated from a publisher or editor?",
+      "default": true
+    },
+    "advertised": {
+      "$comment": "metadata XML specific fields",
+      "type": "boolean",
+      "title": "Advertised",
+      "description": "If False, will hide the resource from search results and catalog listings",
+      "default": true
+    },
+    "thumbnail_url": {
+      "$comment": "fields necessary for the apis",
+      "type": "string",
+      "title": "Thumbnail url",
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "thumbnail_path": {
+      "$comment": "fields necessary for the apis",
+      "type": "string",
+      "title": "Thumbnail path",
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "rating": {
+      "$comment": "fields necessary for the apis",
+      "type": "integer",
+      "default": 0,
+      "ui:widget": "hidden"
+    },
+    "state": {
+      "$comment": "fields necessary for the apis",
+      "type": "string",
+      "title": "State",
+      "description": "Hold the resource processing state.",
+      "default": "READY",
+      "maxLength": 16,
+      "oneOf": [
+        {
+          "const": "READY",
+          "title": "READY"
+        },
+        {
+          "const": "RUNNING",
+          "title": "RUNNING"
+        },
+        {
+          "const": "PENDING",
+          "title": "PENDING"
+        },
+        {
+          "const": "WAITING",
+          "title": "WAITING"
+        },
+        {
+          "const": "INCOMPLETE",
+          "title": "INCOMPLETE"
+        },
+        {
+          "const": "COMPLETE",
+          "title": "COMPLETE"
+        },
+        {
+          "const": "INVALID",
+          "title": "INVALID"
+        },
+        {
+          "const": "PROCESSED",
+          "title": "PROCESSED"
+        }
+      ]
+    },
+    "sourcetype": {
+      "$comment": "fields necessary for the apis",
+      "type": "string",
+      "title": "Source Type",
+      "description": "The resource source type, which can be one of 'LOCAL', 'REMOTE' or 'COPYREMOTE'.",
+      "default": "LOCAL",
+      "maxLength": 16,
+      "oneOf": [
+        {
+          "const": "LOCAL",
+          "title": "LOCAL"
+        },
+        {
+          "const": "REMOTE",
+          "title": "REMOTE"
+        },
+        {
+          "const": "COPYREMOTE",
+          "title": "COPYREMOTE"
+        }
+      ]
+    },
+    "remote_typename": {
+      "$comment": "fields necessary for the apis",
+      "type": "string",
+      "title": "Remote Service Typenamee",
+      "description": "Name of the Remote Service if any.",
+      "maxLength": 512,
+      "ui:widget": "hidden"
+    },
+    "dirty_state": {
+      "$comment": "fields controlling security state",
+      "type": "boolean",
+      "title": "Dirty State",
+      "description": "Security Rules Are Not Synched with GeoServer!",
+      "default": false,
+      "ui:widget": "hidden"
+    },
+    "resource_type": {
+      "$comment": "fields controlling security state",
+      "type": "string",
+      "title": "Resource Type",
+      "maxLength": 1024,
+      "ui:widget": "hidden"
+    },
+    "metadata_only": {
+      "$comment": "fields controlling security state",
+      "type": "boolean",
+      "title": "Metadata",
+      "description": "If true, will be excluded from search",
+      "default": false
+    },
+    "subtype": {
+      "$comment": "fields controlling security state",
+      "type": "string",
+      "maxLength": 128,
+      "ui:widget": "hidden"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}
