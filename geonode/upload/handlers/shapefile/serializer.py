@@ -49,3 +49,16 @@ class ShapeFileSerializer(DynamicModelSerializer):
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     source = serializers.CharField(required=False, default="upload")
+
+
+class OverwriteShapeFileSerializer(ShapeFileSerializer):
+    class Meta:
+        ref_name = "ShapeFileSerializer"
+        model = ResourceBase
+        view_name = "importer_upload"
+        fields =  ShapeFileSerializer.Meta.fields + (
+                    "overwrite_existing_layer",
+                    "resource_pk",
+                )
+    overwrite_existing_layer = serializers.BooleanField(required=True)
+    resource_pk = serializers.IntegerField(required=True)

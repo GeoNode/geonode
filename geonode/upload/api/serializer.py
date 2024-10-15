@@ -33,7 +33,6 @@ class ImporterSerializer(DynamicModelSerializer):
             "xml_file",
             "sld_file",
             "store_spatial_files",
-            "overwrite_existing_layer",
             "skip_existing_layers",
             "source",
         )
@@ -42,9 +41,21 @@ class ImporterSerializer(DynamicModelSerializer):
     xml_file = serializers.FileField(required=False)
     sld_file = serializers.FileField(required=False)
     store_spatial_files = serializers.BooleanField(required=False, default=True)
-    overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     source = serializers.CharField(required=False, default="upload")
+
+
+class OverwriteImporterSerializer(ImporterSerializer):
+    class Meta:
+        ref_name = "OverwriteImporterSerializer"
+        model = ResourceBase
+        view_name = "importer_upload"
+        fields =  ImporterSerializer.Meta.fields + (
+                    "overwrite_existing_layer",
+                    "resource_pk",
+                )
+    overwrite_existing_layer = serializers.BooleanField(required=True)
+    resource_pk = serializers.IntegerField(required=True)
 
 
 class UploadSizeLimitSerializer(BaseDynamicModelSerializer):

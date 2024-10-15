@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
 import logging
 from typing import Optional
 from uuid import UUID
@@ -30,7 +31,7 @@ from geonode.resource.models import ExecutionRequest
 from rest_framework import serializers
 
 from geonode.upload.api.exceptions import ImportException
-from geonode.upload.api.serializer import ImporterSerializer
+from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer
 from geonode.upload.celery_app import importer_app
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.utils import error_handler
@@ -64,7 +65,8 @@ class ImportOrchestrator:
             if _serializer:
                 return _serializer
         logger.info("specific serializer not found, fallback on the default one")
-        return ImporterSerializer
+        is_overwrite_flow = ast.literal_eval(_data.get("overwrite_existing_layer", "False"))
+        return (OverwriteImporterSerializer if is_overwrite_flow else ImporterSerializer)
 
     def load_handler(self, module_path):
         try:

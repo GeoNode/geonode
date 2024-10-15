@@ -301,6 +301,7 @@ class BaseHandler(ABC):
 
     def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
         steps = self.ACTIONS.get(action_to_rollback)
+
         if rollback_from_step not in steps:
             logger.info(f"Step not found {rollback_from_step}, skipping")
             return

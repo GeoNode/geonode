@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
 import json
 import logging
 import codecs
@@ -27,7 +28,7 @@ from osgeo import ogr
 from pathlib import Path
 
 from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileException
-from geonode.upload.handlers.shapefile.serializer import ShapeFileSerializer
+from geonode.upload.handlers.shapefile.serializer import OverwriteShapeFileSerializer, ShapeFileSerializer
 from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
@@ -88,7 +89,8 @@ class ShapeFileHandler(BaseVectorFileHandler):
         if not _base:
             return False
         if _base.endswith("shp") if isinstance(_base, str) else _base.name.endswith("shp"):
-            return ShapeFileSerializer
+            is_overwrite_flow = ast.literal_eval(data.get("overwrite_existing_layer", "False"))
+            return OverwriteShapeFileSerializer if is_overwrite_flow else ShapeFileSerializer
         return False
 
     @staticmethod

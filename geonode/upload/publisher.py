@@ -85,6 +85,9 @@ class DataPublisher:
         self.sanity_checks(resources)
         return result
 
+    def recalculate_geoserver_featuretype(self, dataset):
+        self.cat.recalculate_featuretype(dataset)
+
     def overwrite_resources(self, resources: List[str]):
         """
         We dont need to do anything for now. The data is replaced via ogr2ogr

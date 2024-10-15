@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import ast
 import logging
 from urllib.parse import urljoin
 from django.conf import settings
@@ -43,7 +44,7 @@ from geonode.upload.api.permissions import UploadPermissionsFilter
 from geonode.upload.models import UploadParallelismLimit, UploadSizeLimit
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.api.exceptions import HandlerException, ImportException
-from geonode.upload.api.serializer import ImporterSerializer
+from geonode.upload.api.serializer import ImporterSerializer, OverwriteImporterSerializer
 from geonode.upload.celery_tasks import import_orchestrator
 from geonode.upload.orchestrator import orchestrator
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
