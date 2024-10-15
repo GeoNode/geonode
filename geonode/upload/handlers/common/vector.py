@@ -179,7 +179,22 @@ class BaseVectorFileHandler(BaseHandler):
         We dont need to do anything for now.
         The data is replaced via ogr2ogr
         """
-        pass
+        self._delete_resource(resource, catalog, workspace)
+        return self.publish_resources([resource], catalog, store, workspace)
+
+    def _delete_resource(self, resource, catalog, workspace):
+        res = None
+        possible_layer_name = [
+            resource.get("name"),
+            resource.get("name").split(":")[-1],
+            f"{workspace.name}:{resource.get('name')}",
+        ]
+        for el in possible_layer_name:
+            res = catalog.get_resource(el, workspace=workspace)
+            if res:
+                break
+        if res:
+            catalog.delete(res, purge="all", recurse=True)
 
     @staticmethod
     def create_ogr2ogr_command(files, original_name, ovverwrite_layer, alternate):
@@ -632,6 +647,7 @@ class BaseVectorFileHandler(BaseHandler):
 
             delete_dataset_cache(dataset.alternate)
             # recalculate featuretype info
+            DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
             set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
 
             dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)

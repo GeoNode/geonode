@@ -25,7 +25,8 @@ from geonode.geoserver.helpers import create_geoserver_db_featurestore
 from geoserver.catalog import Catalog
 from geonode.utils import OGC_Servers_Handler
 from django.utils.module_loading import import_string
-
+from geoserver.support import build_url
+from geoserver.catalog import FailedRequestError
 from geonode.upload.api.exceptions import PublishResourceException
 
 
@@ -84,9 +85,6 @@ class DataPublisher:
         )
         self.sanity_checks(resources)
         return result
-
-    def recalculate_geoserver_featuretype(self, dataset):
-        self.cat.recalculate_featuretype(dataset)
 
     def overwrite_resources(self, resources: List[str]):
         """
@@ -193,3 +191,24 @@ class DataPublisher:
             uri = f"http://www.geonode.org/{name}"
             workspace = self.cat.create_workspace(name, uri)
         return workspace
+
+    def recalculate_geoserver_featuretype(self, dataset):
+        resp = self.cat.http_request(
+            build_url(
+                self.cat.service_url,
+                [
+                    "workspaces",
+                    dataset.workspace,
+                    "datastores",
+                    os.environ.get("GEONODE_GEODATABASE", "geonode_data"),
+                    "featuretypes",
+                    dataset.alternate.split(":")[-1] + ".xml",
+                ],
+                {"recalculate": "nativebbox,latlonbbox"},
+            ),
+            data="<featureType><enabled>true</enabled></featureType>",
+            method="PUT",
+            headers={"Content-Type": "application/xml"}
+        )
+        if resp.status_code not in (200, 201, 202):
+            raise FailedRequestError(f"Failed to recalculate featuretype")

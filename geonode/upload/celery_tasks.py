@@ -757,6 +757,7 @@ def rollback(self, *args, **kwargs):
     else:
         handler.rollback(exec_id, rollback_from_step, action_to_rollback, *args, **kwargs)
     error = find_key_recursively(kwargs, "error") or "Some issue has occured, please check the logs"
+    logger.error(error)
     orchestrator.set_as_failed(exec_id, reason=error, delete_file=False)
     return exec_id, kwargs
 

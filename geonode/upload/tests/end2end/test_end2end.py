@@ -397,9 +397,14 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_raster_overwrite(self):
-        prev_dataset = create_single_dataset(name="test_raster")
+        initial_name = "test_raster"
 
         self._cleanup_layers(name="test_raster")
+        payload = {
+            "base_file": open(self.valid_tif, "rb"),
+        }
+        prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
+
         payload = {
             "base_file": open(self.valid_tif, "rb"),
         }
