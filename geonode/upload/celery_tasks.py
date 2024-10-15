@@ -170,7 +170,6 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         _datastore.start_import(execution_id, **kwargs)
 
         """
-        The orchestrator to proceed to the next step, should be called by the handler
         since the call to the orchestrator can changed based on the handler
         called. See the GPKG handler gpkg_next_step task
         """
@@ -753,7 +752,10 @@ def rollback(self, *args, **kwargs):
     )
 
     handler = import_string(handler_module_path)()
-    handler.rollback(exec_id, rollback_from_step, action_to_rollback, *args, **kwargs)
+    if exec_object.input_params.get("overwrite_existing_layer"):
+        logger.warning("Rollback is skipped for the overwrite")
+    else:
+        handler.rollback(exec_id, rollback_from_step, action_to_rollback, *args, **kwargs)
     error = find_key_recursively(kwargs, "error") or "Some issue has occured, please check the logs"
     orchestrator.set_as_failed(exec_id, reason=error, delete_file=False)
     return exec_id, kwargs

@@ -139,7 +139,8 @@ class BaseVectorFileHandler(BaseHandler):
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", "False"),
+            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
+            "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
             "source": _data.pop("source", "upload"),
         }, _data
@@ -411,6 +412,13 @@ class BaseVectorFileHandler(BaseHandler):
         return layers
 
     def find_alternate_by_dataset(self, _exec_obj, layer_name, should_be_overwritten):
+        if _exec_obj.input_params.get("resource_pk"):
+            dataset = Dataset.objects.filter(pk=_exec_obj.input_params.get("resource_pk")).first()
+            if not dataset:
+                raise ImportException("The dataset selected for the ovewrite does not exists")
+            alternate = dataset.alternate.split(":")
+            return alternate[-1]
+
         workspace = DataPublisher(None).workspace
         dataset_available = Dataset.objects.filter(alternate__iexact=f"{workspace.name}:{layer_name}")
 
@@ -624,7 +632,6 @@ class BaseVectorFileHandler(BaseHandler):
 
             delete_dataset_cache(dataset.alternate)
             # recalculate featuretype info
-            DataPublisher(str(self)).cat.recalculate_featuretype(dataset)
             set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
 
             dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)

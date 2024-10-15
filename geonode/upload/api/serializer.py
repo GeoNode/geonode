@@ -50,10 +50,11 @@ class OverwriteImporterSerializer(ImporterSerializer):
         ref_name = "OverwriteImporterSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields =  ImporterSerializer.Meta.fields + (
-                    "overwrite_existing_layer",
-                    "resource_pk",
-                )
+        fields = ImporterSerializer.Meta.fields + (
+            "overwrite_existing_layer",
+            "resource_pk",
+        )
+
     overwrite_existing_layer = serializers.BooleanField(required=True)
     resource_pk = serializers.IntegerField(required=True)
 

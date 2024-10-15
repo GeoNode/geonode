@@ -56,9 +56,10 @@ class OverwriteShapeFileSerializer(ShapeFileSerializer):
         ref_name = "ShapeFileSerializer"
         model = ResourceBase
         view_name = "importer_upload"
-        fields =  ShapeFileSerializer.Meta.fields + (
-                    "overwrite_existing_layer",
-                    "resource_pk",
-                )
+        fields = ShapeFileSerializer.Meta.fields + (
+            "overwrite_existing_layer",
+            "resource_pk",
+        )
+
     overwrite_existing_layer = serializers.BooleanField(required=True)
     resource_pk = serializers.IntegerField(required=True)
