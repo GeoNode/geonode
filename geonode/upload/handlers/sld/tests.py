@@ -89,7 +89,7 @@ class TestSLDFileHandler(TestCase):
             step="step",
             input_params={
                 "files": self.valid_files,
-                "dataset_title": self.layer.alternate,
+                "resource_pk": self.layer.pk,
                 "skip_existing_layer": True,
                 "handler_module_path": str(self.handler),
             },
