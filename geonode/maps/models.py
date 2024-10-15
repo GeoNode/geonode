@@ -135,7 +135,7 @@ class Map(ResourceBase):
         bbox of all the datasets
         """
         epsg_bbox = bbox_utils.epsg_3857_area_of_use(target_crs="EPSG:3857")
-        
+
         bbox = [math.inf, -math.inf, math.inf, -math.inf]
         for layer in self.maplayers.filter(visibility=True).order_by("order"):
             dataset = layer.dataset
@@ -155,7 +155,7 @@ class Map(ResourceBase):
                         min(bbox[2], dataset_bbox[2]),
                         max(bbox[3], dataset_bbox[3]),
                     ]
-                    
+
         # if the starting bbox is not mutated it means no bbox has been computed from layers
         if bbox[0] == math.inf:
             bbox = epsg_bbox
