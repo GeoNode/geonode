@@ -26,7 +26,6 @@ import itertools
 from uuid import uuid1, uuid4
 from abc import ABCMeta, abstractmethod
 
-from deprecated import deprecated
 from guardian.models import UserObjectPermission, GroupObjectPermission
 from guardian.shortcuts import assign_perm, get_anonymous_user
 
