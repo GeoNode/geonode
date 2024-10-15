@@ -286,6 +286,7 @@ class BaseRasterFileHandler(BaseHandler):
                     if not dataset:
                         raise ImportException("The dataset selected for the ovewrite does not exists")
                     alternate = dataset.alternate.split(":")[-1]
+                    orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
                 else:
                     user_datasets = Dataset.objects.filter(owner=_exec.user, alternate=f"{workspace.name}:{layer_name}")
 
