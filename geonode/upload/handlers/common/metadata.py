@@ -124,7 +124,7 @@ class MetadataFileHandler(BaseHandler):
         if resource_id:
             dataset = get_object_or_404(Dataset, pk=resource_id)
         elif pk:
-            dataset = get_object_or_404(Dataset, alternate=pk)
+            dataset = get_object_or_404(Dataset, pk=pk)
         return dataset
 
     def handle_metadata_resource(self, _exec, dataset, original_handler):
