@@ -36,7 +36,6 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import requires_csrf_token
 
 from geonode.layers.models import Dataset
-from geonode.upload.models import Upload
 from geonode.base.models import ResourceBase
 from geonode.services.models import Service
 from geonode.storage.manager import storage_manager
@@ -286,7 +285,7 @@ def download(request, resourceid, sender=Dataset):
                     "Last-Modified": zs.last_modified,
                 },
             )
-        except (NotImplementedError, Upload.DoesNotExist):
+        except NotImplementedError:
             traceback.print_exc()
             tb = traceback.format_exc()
             logger.debug(tb)

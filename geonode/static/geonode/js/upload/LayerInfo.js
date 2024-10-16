@@ -263,6 +263,7 @@ define(function (require, exports) {
         }
 
         form_data.append('charset', $('#charset').val());
+        form_data.append('source', "resource_file_upload");
         if ($('#id_metadata_upload_form').prop('checked')) {
              form_data.append('metadata_upload_form', true);
              form_data.append('dataset_title', $('#id_dataset_title').val());
@@ -274,6 +275,7 @@ define(function (require, exports) {
              form_data.append('style_upload_form', true);
              form_data.append('dataset_title', $('#id_dataset_title').val());
         }
+        console.log(form_data)
         return form_data;
     };
 
@@ -682,7 +684,9 @@ define(function (require, exports) {
      LayerInfo.prototype.uploadFiles = function (callback, array) {
         var form_data = this.prepareFormData(), self = this;
         var prog = "";
-
+        console.log("###########")
+        console.log(form_data)
+        console.log("###########")
         $.ajax({
             url: form_target,
             async: true,

@@ -19,14 +19,11 @@
 from datetime import datetime
 import logging
 
-from django.conf import settings
 from django.utils.timezone import timedelta
 
 from geonode.celery_app import app
 
-logger = logging.getLogger(__name__)
-
-UPLOAD_SESSION_EXPIRY_HOURS = getattr(settings, "UPLOAD_SESSION_EXPIRY_HOURS", 24)
+logger = logging.getLogger("importer")
 
 
 @app.task(bind=False, acks_late=False, queue="clery_cleanup", ignore_result=True)

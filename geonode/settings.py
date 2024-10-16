@@ -711,6 +711,9 @@ LOGGING = {
         "geonode": {
             "level": "WARN",
         },
+        "importer": {
+            "level": "INFO",
+        },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
             "level": "ERROR",
@@ -1078,13 +1081,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000
     DEFAULT_BACKEND_UPLOADER = {'geonode.importer'}
 """
 UPLOADER = {
-    "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.importer"),
-    "OPTIONS": {
-        "TIME_ENABLED": ast.literal_eval(os.getenv("TIME_ENABLED", "False")),
-        "MOSAIC_ENABLED": ast.literal_eval(os.getenv("MOSAIC_ENABLED", "False")),
-    },
-    "SUPPORTED_CRS": ["EPSG:4326", "EPSG:3785", "EPSG:3857", "EPSG:32647", "EPSG:32736"],
-    "SUPPORTED_EXT": [".shp", ".csv", ".kml", ".kmz", ".json", ".geojson", ".tif", ".tiff", ".geotiff", ".gml", ".xml"],
+    "BACKEND": os.getenv("DEFAULT_BACKEND_UPLOADER", "geonode.upload"),
 }
 
 EPSG_CODE_MATCHES = {
@@ -2157,8 +2154,6 @@ UI_DEFAULT_MANDATORY_FIELDS = [
 ]
 UI_REQUIRED_FIELDS = ast.literal_eval(os.getenv("UI_REQUIRED_FIELDS ", "[]"))
 
-UPLOAD_SESSION_EXPIRY_HOURS = os.getenv("UPLOAD_SESSION_EXPIRY_HOURS ", 24)
-
 # If a command name is listed here, the command will be available to admins over http
 # This list is used by the management_commands_http app
 MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set(
@@ -2241,7 +2236,7 @@ to evaluate if the file is greater than the limit size defined
 """
 SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES = (
     "data_upload",
-    "uploads-upload",
+    "importer_upload",
     "document_upload",
 )
 
@@ -2297,42 +2292,60 @@ SUPPORTED_DATASET_FILE_TYPES = [
 ]
 INSTALLED_APPS += (
     "dynamic_models",
-    "importer",
-    "importer.handlers",
+    # "importer",
+    "geonode.upload.handlers",
 )
 
 CELERY_TASK_QUEUES += (
-    Queue("importer.import_orchestrator", GEONODE_EXCHANGE, routing_key="importer.import_orchestrator"),
-    Queue("importer.import_resource", GEONODE_EXCHANGE, routing_key="importer.import_resource", max_priority=8),
-    Queue("importer.publish_resource", GEONODE_EXCHANGE, routing_key="importer.publish_resource", max_priority=8),
+    Queue("geonode.upload.import_orchestrator", GEONODE_EXCHANGE, routing_key="geonode.upload.import_orchestrator"),
     Queue(
-        "importer.create_geonode_resource",
+        "geonode.upload.import_resource", GEONODE_EXCHANGE, routing_key="geonode.upload.import_resource", max_priority=8
+    ),
+    Queue(
+        "geonode.upload.publish_resource",
         GEONODE_EXCHANGE,
-        routing_key="importer.create_geonode_resource",
+        routing_key="geonode.upload.publish_resource",
         max_priority=8,
     ),
     Queue(
-        "importer.import_with_ogr2ogr", GEONODE_EXCHANGE, routing_key="importer.import_with_ogr2ogr", max_priority=10
-    ),
-    Queue("importer.import_next_step", GEONODE_EXCHANGE, routing_key="importer.import_next_step", max_priority=3),
-    Queue(
-        "importer.create_dynamic_structure",
+        "geonode.upload.create_geonode_resource",
         GEONODE_EXCHANGE,
-        routing_key="importer.create_dynamic_structure",
+        routing_key="geonode.upload.create_geonode_resource",
+        max_priority=8,
+    ),
+    Queue(
+        "geonode.upload.import_with_ogr2ogr",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.import_with_ogr2ogr",
         max_priority=10,
     ),
     Queue(
-        "importer.copy_geonode_resource", GEONODE_EXCHANGE, routing_key="importer.copy_geonode_resource", max_priority=0
+        "geonode.upload.import_next_step",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.import_next_step",
+        max_priority=3,
     ),
-    Queue("importer.copy_dynamic_model", GEONODE_EXCHANGE, routing_key="importer.copy_dynamic_model"),
-    Queue("importer.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="importer.copy_geonode_data_table"),
-    Queue("importer.copy_raster_file", GEONODE_EXCHANGE, routing_key="importer.copy_raster_file"),
-    Queue("importer.rollback", GEONODE_EXCHANGE, routing_key="importer.rollback"),
+    Queue(
+        "geonode.upload.create_dynamic_structure",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.create_dynamic_structure",
+        max_priority=10,
+    ),
+    Queue(
+        "geonode.upload.copy_geonode_resource",
+        GEONODE_EXCHANGE,
+        routing_key="geonode.upload.copy_geonode_resource",
+        max_priority=0,
+    ),
+    Queue("geonode.upload.copy_dynamic_model", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_dynamic_model"),
+    Queue(
+        "geonode.upload.copy_geonode_data_table", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_geonode_data_table"
+    ),
+    Queue("geonode.upload.copy_raster_file", GEONODE_EXCHANGE, routing_key="geonode.upload.copy_raster_file"),
+    Queue("geonode.upload.rollback", GEONODE_EXCHANGE, routing_key="geonode.upload.rollback"),
 )
 
-DATABASE_ROUTERS = ["importer.db_router.DatastoreRouter"]
-
-SIZE_RESTRICTED_FILE_UPLOAD_ELEGIBLE_URL_NAMES += ("importer_upload",)
+DATABASE_ROUTERS = ["geonode.upload.db_router.DatastoreRouter"]
 
 IMPORTER_HANDLERS = ast.literal_eval(os.getenv("IMPORTER_HANDLERS", "[]"))
 

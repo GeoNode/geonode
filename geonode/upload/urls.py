@@ -16,11 +16,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.urls import include, re_path
+from geonode.api.urls import router
+from geonode.upload.api import views
 
-from . import views
+urlpatterns = []  # 'geonode.upload.views',
 
-urlpatterns = [  # 'geonode.upload.views',
-    re_path(r"^delete/(?P<id>\d+)?$", views.delete, name="data_upload_delete"),
-    re_path(r"^", include("geonode.upload.api.urls")),
-]
+router.register(r"upload-size-limits", views.UploadSizeLimitViewSet, "upload-size-limits")
+router.register(r"upload-parallelism-limits", views.UploadParallelismLimitViewSet, "upload-parallelism-limits")

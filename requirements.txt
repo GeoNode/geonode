@@ -88,7 +88,6 @@ geonode-pinax-notifications==6.0.0.2
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
 git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
-git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2.2
 geonode-user-messages==2.0.2.2
@@ -98,6 +97,14 @@ gn-arcrest==10.5.6
 geoserver-restconfig~=2.0.12
 gn-gsimporter==2.0.4
 gisdata==0.5.4
+
+# importer dependencies
+
+setuptools>=59
+gdal<=3.4.3
+pdok-geopackage-validator==0.8.5
+geonode-django-dynamic-model==0.4.0
+
 
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.3

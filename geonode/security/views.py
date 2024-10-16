@@ -382,32 +382,3 @@ def send_email_consumer(dataset_uuid, user_id):
     resource = get_object_or_404(ResourceBase, uuid=dataset_uuid)
     user = get_user_model().objects.get(id=user_id)
     send_notification([resource.owner], "request_download_resourcebase", {"resource": resource, "from_user": user})
-
-
-def send_email_owner_on_view(owner, viewer, dataset_id, geonode_email="email@geo.node"):
-    # get owner and viewer emails
-    owner_email = get_user_model().objects.get(username=owner).email
-    layer = Dataset.objects.get(id=dataset_id)
-    # check if those values are empty
-    if owner_email and geonode_email:
-        from django.core.mail import EmailMessage
-
-        # TODO: Copy edit message.
-        subject_email = "Your Dataset has been seen."
-        msg = f"Your layer called {layer.name} with uuid={layer.uuid}" f" was seen by {viewer}"
-        try:
-            email = EmailMessage(
-                subject=subject_email,
-                body=msg,
-                from_email=geonode_email,
-                to=[
-                    owner_email,
-                ],
-                reply_to=[
-                    geonode_email,
-                ],
-            )
-            email.content_subtype = "html"
-            email.send()
-        except Exception:
-            traceback.print_exc()

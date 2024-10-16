@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from geonode.upload.models import Upload
 from rest_framework.filters import BaseFilterBackend
 
 
@@ -34,7 +33,7 @@ class UploadPermissionsFilter(BaseFilterBackend):
         user = request.user
 
         if not user or user.is_anonymous or not user.is_authenticated:
-            return Upload.objects.none()
+            return None
         elif user.is_superuser:
             return queryset
         return queryset.filter(user=user)

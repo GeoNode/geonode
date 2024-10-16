@@ -75,11 +75,6 @@ class RecordDistribution:
 
 
 @dataclasses.dataclass()
-class MapDescriptorParameters:
-    last_modified: dt.datetime
-
-
-@dataclasses.dataclass()
 class RecordDescription:
     uuid: uuid.UUID
     identification: RecordIdentification

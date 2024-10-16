@@ -201,16 +201,6 @@ def fst(value):
     return result
 
 
-# from a resource object, build the corresponding metadata dict
-# the aim is to handle the output format (csv, html or pdf) the same structure
-def build_md_dict(resource):
-    md_dict = {
-        "r_uuid": {"label": "uuid", "value": resource.uuid},
-        "r_title": {"label": "titre", "value": resource.title},
-    }
-    return md_dict
-
-
 def get_keywords(resource):
     content = " "
     cursor = connection.cursor()

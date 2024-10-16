@@ -25,39 +25,6 @@ from django.conf import settings as django_settings
 logger = logging.getLogger(__name__)
 
 
-def flip_coordinates(c1, c2):
-    if c1 > c2:
-        logger.debug(f"Flipping coordinates {c1}, {c2}")
-        temp = c1
-        c1 = c2
-        c2 = temp
-    return c1, c2
-
-
-def format_float(value):
-    if value is None:
-        return None
-    try:
-        value = float(value)
-        if value > 999999999:
-            return None
-        return value
-    except ValueError:
-        return None
-
-
-def bbox2wktpolygon(bbox):
-    """
-    Return OGC WKT Polygon of a simple bbox list of strings
-    """
-
-    minx = float(bbox[0])
-    miny = float(bbox[1])
-    maxx = float(bbox[2])
-    maxy = float(bbox[3])
-    return f"POLYGON(({minx:.2f} {miny:.2f}, {minx:.2f} {maxy:.2f}, {maxx:.2f} {maxy:.2f}, {maxx:.2f} {miny:.2f}, {minx:.2f} {miny:.2f}))"
-
-
 def inverse_mercator(xy):
     """
     Given coordinates in spherical mercator, return a lon,lat tuple.
@@ -66,12 +33,6 @@ def inverse_mercator(xy):
     lat = (xy[1] / 20037508.34) * 180
     lat = 180 / math.pi * (2 * math.atan(math.exp(lat * math.pi / 180)) - math.pi / 2)
     return (lon, lat)
-
-
-def mercator_to_llbbox(bbox):
-    minlonlat = inverse_mercator([bbox[0], bbox[1]])
-    maxlonlat = inverse_mercator([bbox[2], bbox[3]])
-    return [minlonlat[0], minlonlat[1], maxlonlat[0], maxlonlat[1]]
 
 
 def get_esri_service_name(url):
