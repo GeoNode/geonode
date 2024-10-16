@@ -47,7 +47,7 @@ class BaseRemoteResourceHandler(BaseHandler):
     As first implementation only remote 3dtiles are supported
     """
 
-    ACTIONS = {
+    TASKS = {
         exa.IMPORT.value: (
             "start_import",
             "geonode.upload.import_resource",

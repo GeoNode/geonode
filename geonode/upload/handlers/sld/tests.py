@@ -59,8 +59,8 @@ class TestSLDFileHandler(TestCase):
             "start_import",
             "geonode.upload.import_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 2)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["import"]), 2)
+        self.assertTupleEqual(expected, self.handler.TASKS["import"])
 
     def test_is_valid_should_raise_exception_if_the_sld_is_invalid(self):
         with self.assertRaises(InvalidSldException) as _exc:

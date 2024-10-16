@@ -49,8 +49,8 @@ class TestKMLHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["import"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["import"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
@@ -60,8 +60,8 @@ class TestKMLHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 5)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_kml_is_invalid(self):
         with self.assertRaises(InvalidKmlException) as _exc:

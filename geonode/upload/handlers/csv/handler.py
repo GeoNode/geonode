@@ -40,7 +40,7 @@ class CSVFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
+    TASKS = {
         exa.IMPORT.value: (
             "start_import",
             "geonode.upload.import_resource",

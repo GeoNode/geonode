@@ -107,7 +107,7 @@ class BaseRasterFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return action in BaseHandler.ACTIONS
+        return action in BaseHandler.TASKS
 
     @staticmethod
     def create_error_log(exc, task_name, *args):

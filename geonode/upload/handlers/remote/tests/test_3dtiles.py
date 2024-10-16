@@ -83,16 +83,16 @@ class TestRemoteTiles3DFileHandler(TestCase):
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 3)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["import"]), 3)
+        self.assertTupleEqual(expected, self.handler.TASKS["import"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
             "start_copy",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 2)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 2)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_url_is_invalid(self):
         with self.assertRaises(ImportException) as _exc:

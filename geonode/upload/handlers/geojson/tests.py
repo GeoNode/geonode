@@ -54,8 +54,8 @@ class TestGeoJsonFileHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["import"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["import"])
 
     def test_task_list_is_the_expected_one_copy(self):
         expected = (
@@ -65,8 +65,8 @@ class TestGeoJsonFileHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 5)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")
