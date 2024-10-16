@@ -33,7 +33,6 @@ from geoserver.catalog import Catalog
 from geonode.upload import project_dir
 from geonode.upload.tests.utils import ImporterBaseTestSupport
 import gisdata
-from geonode.base.populate_test_data import create_single_dataset
 from django.db.models import Q
 from geonode.base.models import ResourceBase
 import logging

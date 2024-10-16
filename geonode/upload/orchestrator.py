@@ -67,7 +67,7 @@ class ImportOrchestrator:
         logger.info("specific serializer not found, fallback on the default one")
         is_overwrite_flow = _data.get("overwrite_existing_layer", False)
         if isinstance(is_overwrite_flow, str):
-            is_overwrite_flow = ast.literal_eval(is_overwrite_flow)
+            is_overwrite_flow = ast.literal_eval(is_overwrite_flow.title())
         return OverwriteImporterSerializer if is_overwrite_flow else ImporterSerializer
 
     def load_handler(self, module_path):

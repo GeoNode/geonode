@@ -208,7 +208,7 @@ class DataPublisher:
             ),
             data="<featureType><enabled>true</enabled></featureType>",
             method="PUT",
-            headers={"Content-Type": "application/xml"}
+            headers={"Content-Type": "application/xml"},
         )
         if resp.status_code not in (200, 201, 202):
-            raise FailedRequestError(f"Failed to recalculate featuretype")
+            raise FailedRequestError("Failed to recalculate featuretype")
