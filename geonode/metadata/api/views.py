@@ -32,7 +32,7 @@ class MetadataViewSet(ViewSet):
 
     # Get the JSON schema
     @action(detail=False, methods=['get'])
-    def get_schema(self, request):
+    def schema(self, request):
         ''' 
         The user is able to export her/his keys with
         resource scope.
