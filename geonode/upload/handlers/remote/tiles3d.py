@@ -33,6 +33,10 @@ logger = logging.getLogger("importer")
 
 class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler):
 
+    @property
+    def supported_file_extension_config(self):
+        return {}
+
     @staticmethod
     def has_serializer(data) -> bool:
         if "url" in data and "3dtiles" in data.get("type", "").lower():

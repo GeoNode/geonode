@@ -1727,7 +1727,7 @@ def get_supported_datasets_file_types():
                 "required_ext": ["zip"],
                 "optional_ext": ["xml", "sld"],
             },
-            "action": ["upload"],
+            "action": ["upload", "replace"],
             "type": "archive",
         }
     ]

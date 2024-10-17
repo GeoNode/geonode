@@ -22,6 +22,7 @@ from geonode.resource.manager import resource_manager
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.sld.exceptions import InvalidSldException
 from owslib.etree import etree as dlxml
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -31,6 +32,14 @@ class SLDFileHandler(MetadataFileHandler):
     Handler to import SLD files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
+
+    TASKS = {
+        ira.RESOURCE_SLD_UPLOAD.value: ("start_import", "geonode.upload.import_resource"),
+        ira.ROLLBACK.value: (
+            "start_rollback",
+            "geonode.upload.rollback",
+        ),
+    }
 
     @property
     def supported_file_extension_config(self):

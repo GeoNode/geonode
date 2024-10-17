@@ -51,6 +51,7 @@ def get_max_upload_parallelism_limit(slug):
 class ImporterRequestAction(enum.Enum):
     ROLLBACK = _("rollback")
     RESOURCE_METADATA_UPLOAD = _("resource_metadata_upload")
+    RESOURCE_SLD_UPLOAD = _("resource_sld_upload")
     REPLACE = _("replace")
 
 
