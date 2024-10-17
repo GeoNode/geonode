@@ -1,7 +1,4 @@
-from django.urls import re_path
-from geonode.metadata.views import get_schema
+from geonode.metadata.api.urls import router
+from django.urls import path, include
 
-
-urlpatterns = [
-    re_path(r"^metadata/schema/$", get_schema, name="get_schema"),
-]
+urlpatterns = [] + router.urls
