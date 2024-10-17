@@ -310,7 +310,7 @@ class BaseRasterFileHandler(BaseHandler):
                         "geonode.upload.import_resource",
                         layer_name,
                         alternate,
-                        exa.IMPORT.value,
+                        exa.UPLOAD.value,
                     )
                 )
                 return layer_name, alternate, execution_id

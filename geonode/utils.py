@@ -1706,13 +1706,33 @@ def get_geonode_app_types():
 
 def get_supported_datasets_file_types():
     from django.conf import settings as gn_settings
+    from geonode.upload.orchestrator import orchestrator
 
     """
     Return a list of all supported file type in geonode
     If one of the type provided in the custom type exists in the default
     is going to override it
     """
-    default_types = settings.SUPPORTED_DATASET_FILE_TYPES
+    _available_settings = [
+        module().supported_file_extension_config
+        for module in orchestrator.get_handler_registry()
+        if module().supported_file_extension_config
+    ]
+    # injecting the new config required for FE
+    default_types = [
+        {
+            "id": "zip",
+            "formats": {
+                "label": "Zip Archive",
+                "required_ext": ["zip"],
+                "optional_ext": ["xml", "sld"],
+            },
+            "action": ["upload"],
+            "type": "archive",
+        }
+    ]
+    default_types.extend(_available_settings)
+
     types_module = (
         gn_settings.ADDITIONAL_DATASET_FILE_TYPES if hasattr(gn_settings, "ADDITIONAL_DATASET_FILE_TYPES") else []
     )
@@ -1730,7 +1750,7 @@ def get_supported_datasets_file_types():
         (weight[1], resource_type)
         for resource_type in supported_types
         for weight in formats_order
-        if resource_type.get("format") in weight[0]
+        if resource_type.get("type") in weight[0]
     )
 
     # Flatten the list
@@ -1738,7 +1758,7 @@ def get_supported_datasets_file_types():
     other_resource_types = [
         resource_type
         for resource_type in supported_types
-        if resource_type.get("format") is None or resource_type.get("format") not in [f[0] for f in formats_order]
+        if resource_type.get("type") is None or resource_type.get("type") not in [f[0] for f in formats_order]
     ]
     return ordered_resource_types + other_resource_types
 

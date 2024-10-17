@@ -851,7 +851,7 @@ def import_next_step(
             actual_step,
             layer_name,
             alternate,
-            exa.IMPORT.value,
+            exa.UPLOAD.value,
         )
 
         import_orchestrator.apply_async(task_params, kwargs)
@@ -859,7 +859,7 @@ def import_next_step(
         call_rollback_function(
             execution_id,
             handlers_module_path=handlers_module_path,
-            prev_action=exa.IMPORT.value,
+            prev_action=exa.UPLOAD.value,
             layer=layer_name,
             alternate=alternate,
             error=e,
@@ -927,7 +927,7 @@ def import_with_ogr2ogr(
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,
-            prev_action=exa.IMPORT.value,
+            prev_action=exa.UPLOAD.value,
             layer=original_name,
             alternate=alternate,
             error=e,

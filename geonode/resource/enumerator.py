@@ -22,6 +22,7 @@ from django.utils.translation import gettext_lazy as _
 
 class ExecutionRequestAction(enum.Enum):
     IMPORT = _("import")
+    UPLOAD = _("upload")
     CREATE = _("create")
     COPY = _("copy")
     DELETE = _("delete")

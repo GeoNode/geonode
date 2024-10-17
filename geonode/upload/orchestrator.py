@@ -48,6 +48,9 @@ class ImportOrchestrator:
 
     """
 
+    def get_handler_registry(self):
+        return BaseHandler.get_registry()
+
     def get_handler(self, _data) -> Optional[BaseHandler]:
         """
         If is part of the supported format, return the handler which can handle the import

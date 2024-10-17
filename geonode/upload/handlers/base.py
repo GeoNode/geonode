@@ -47,7 +47,7 @@ class BaseHandler(ABC):
     REGISTRY = []
 
     TASKS = {
-        exa.IMPORT.value: (),
+        exa.UPLOAD.value: (),
         exa.COPY.value: (),
         exa.DELETE.value: (),
         exa.UPDATE.value: (),

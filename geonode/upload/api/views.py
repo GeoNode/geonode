@@ -191,7 +191,7 @@ class ImporterViewSet(DynamicModelViewSet):
 
                     self.validate_upload(request, storage_manager)
 
-                action = ExecutionRequestAction.IMPORT.value
+                action = ExecutionRequestAction.UPLOAD.value
 
                 input_params = {
                     **{"files": files, "handler_module_path": str(handler)},

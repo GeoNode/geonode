@@ -120,7 +120,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         with self.assertRaises(InvalidInputFileException) as _exc:
             import_resource(
                 str(exec_id),
-                action=ExecutionRequestAction.IMPORT.value,
+                action=ExecutionRequestAction.UPLOAD.value,
                 handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
         expected_msg = f"Invalid format type. Request: {str(exec_id)}"
@@ -151,7 +151,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
         import_resource(
             str(exec_id),
             resource_type="gpkg",
-            action=ExecutionRequestAction.IMPORT.value,
+            action=ExecutionRequestAction.UPLOAD.value,
             handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
 
@@ -178,7 +178,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 step_name="publish_resource",
                 layer_name="dataset3",
                 alternate="alternate_dataset3",
-                action=ExecutionRequestAction.IMPORT.value,
+                action=ExecutionRequestAction.UPLOAD.value,
                 handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
 
@@ -224,7 +224,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 step_name="publish_resource",
                 layer_name="dataset3",
                 alternate="alternate_dataset3",
-                action=ExecutionRequestAction.IMPORT.value,
+                action=ExecutionRequestAction.UPLOAD.value,
                 handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )
 
@@ -276,7 +276,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     step_name="publish_resource",
                     layer_name="dataset3",
                     alternate="alternate_dataset3",
-                    action=ExecutionRequestAction.IMPORT.value,
+                    action=ExecutionRequestAction.UPLOAD.value,
                     handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
                 )
 

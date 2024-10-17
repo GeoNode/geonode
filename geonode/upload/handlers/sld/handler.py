@@ -36,21 +36,14 @@ class SLDFileHandler(MetadataFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "sld",
-            "label": "Styled Layer Descriptor (SLD)",
-            "format": "metadata",
-            "ext": ["sld"],
-            "mimeType": ["application/json"],
-            "needsFiles": [
-                "shp",
-                "prj",
-                "dbf",
-                "shx",
-                "csv",
-                "tiff",
-                "zip",
-                "xml",
-                "geojson",
+            "formats": [
+                {
+                    "label": "Styled Layer Descriptor 1.0, 1.1 (SLD)",
+                    "required_ext": ["sld"],
+                }
             ],
+            "actions": list(self.TASKS.keys()),
+            "type": "metadata",
         }
 
     @staticmethod

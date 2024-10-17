@@ -41,7 +41,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: (
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.publish_resource",
@@ -64,11 +64,15 @@ class ShapeFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "shp",
-            "label": "ESRI Shapefile",
-            "format": "vector",
-            "ext": ["shp"],
-            "requires": ["shp", "prj", "dbf", "shx"],
-            "optional": ["xml", "sld", "cpg", "cst"],
+            "formats": [
+                {
+                    "label": "ESRI Shapefile",
+                    "required_ext": ["shp", "prj", "dbf", "shx"],
+                    "optional_ext": ["xml", "sld", "cpg", "cst"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @staticmethod

@@ -48,7 +48,7 @@ class BaseRemoteResourceHandler(BaseHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: (
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
@@ -163,7 +163,7 @@ class BaseRemoteResourceHandler(BaseHandler):
                     "geonode.upload.import_resource",
                     layer_name,
                     alternate,
-                    exa.IMPORT.value,
+                    exa.UPLOAD.value,
                 )
             )
             return layer_name, alternate, execution_id

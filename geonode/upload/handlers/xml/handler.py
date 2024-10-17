@@ -36,21 +36,14 @@ class XMLFileHandler(MetadataFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "xml",
-            "label": "XML Metadata File",
-            "format": "metadata",
-            "ext": ["xml"],
-            "mimeType": ["application/json"],
-            "needsFiles": [
-                "shp",
-                "prj",
-                "dbf",
-                "shx",
-                "csv",
-                "tiff",
-                "zip",
-                "sld",
-                "geojson",
+            "formats": [
+                {
+                    "label": "XML Metadata File (XML - ISO, FGDC, ebRIM, Dublin Core)",
+                    "required_ext": ["xml"],
+                }
             ],
+            "actions": list(self.TASKS.keys()),
+            "type": "metadata",
         }
 
     @staticmethod

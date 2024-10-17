@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.utils import UploadSourcesEnum
 from geonode.upload.models import ResourceHandlerInfo
@@ -37,7 +36,7 @@ class MetadataFileHandler(BaseHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: ("start_import", "geonode.upload.import_resource"),
+        ira.RESOURCE_METADATA_UPLOAD.value: ("start_import", "geonode.upload.import_resource"),
         ira.ROLLBACK.value: (
             "start_rollback",
             "geonode.upload.rollback",

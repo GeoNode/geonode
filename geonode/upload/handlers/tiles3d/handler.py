@@ -43,7 +43,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: (
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
@@ -62,10 +62,14 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "3dtiles",
-            "label": "3D Tiles",
-            "format": "vector",
-            "ext": ["json"],
-            "optional": ["xml", "sld"],
+            "formats": [
+                {
+                    "label": "3D Tiles",
+                    "required_ext": ["zip"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @staticmethod
@@ -198,7 +202,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 "geonode.upload.import_resource",
                 layer_name,
                 alternate,
-                exa.IMPORT.value,
+                exa.UPLOAD.value,
             )
         )
         return layer_name, alternate, execution_id

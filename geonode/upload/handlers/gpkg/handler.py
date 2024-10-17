@@ -38,7 +38,7 @@ class GPKGFileHandler(BaseVectorFileHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: (
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.publish_resource",
@@ -61,9 +61,14 @@ class GPKGFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "gpkg",
-            "label": "GeoPackage",
-            "format": "vector",
-            "ext": ["gpkg"],
+            "formats": [
+                {
+                    "label": "GeoPackage",
+                    "required_ext": ["gpkg"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @property

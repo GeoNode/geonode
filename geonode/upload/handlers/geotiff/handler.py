@@ -35,7 +35,7 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: (
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.publish_resource",
@@ -51,17 +51,42 @@ class GeoTiffFileHandler(BaseRasterFileHandler):
             "start_rollback",
             "geonode.upload.rollback",
         ),
+        ira.REPLACE.value: (
+            "start_import",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
+        ),
     }
 
     @property
     def supported_file_extension_config(self):
         return {
             "id": "tiff",
-            "label": "GeoTIFF",
-            "format": "raster",
-            "ext": ["tiff", "tif", "geotiff", "geotif"],
-            "mimeType": ["image/tiff"],
-            "optional": ["xml", "sld"],
+            "formats": [
+                {
+                    "label": "TIFF",
+                    "required_ext": ["tiff"],
+                    "optional_ext": ["xml", "sld"],
+                },
+                {
+                    "label": "TIF",
+                    "required_ext": ["tif"],
+                    "optional_ext": ["xml", "sld"],
+                },
+                {
+                    "label": "GeoTIFF",
+                    "required_ext": ["geotiff"],
+                    "optional_ext": ["xml", "sld"],
+                },
+                {
+                    "label": "GeoTIF",
+                    "required_ext": ["geotif"],
+                    "optional_ext": ["xml", "sld"],
+                },
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "raster",
         }
 
     @staticmethod

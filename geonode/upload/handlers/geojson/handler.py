@@ -37,7 +37,7 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
     """
 
     TASKS = {
-        exa.IMPORT.value: (
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.publish_resource",
@@ -54,16 +54,32 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
             "start_rollback",
             "geonode.upload.rollback",
         ),
+        ira.REPLACE.value: (
+            "start_import",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
+        ),
     }
 
     @property
     def supported_file_extension_config(self):
         return {
             "id": "geojson",
-            "label": "GeoJSON",
-            "format": "vector",
-            "ext": ["json", "geojson"],
-            "optional": ["xml", "sld"],
+            "formats": [
+                {
+                    "label": "GeoJSON",
+                    "required_ext": ["geojson"],
+                    "optional_ext": ["sld", "xml"],
+                },
+                {
+                    "label": "GeoJSON",
+                    "required_ext": ["json"],
+                    "optional_ext": ["sld", "xml"],
+                },
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @staticmethod
