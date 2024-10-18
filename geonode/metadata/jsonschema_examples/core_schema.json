@@ -121,7 +121,7 @@
       }
     ]
   },
-  "other_constrains": {
+  "constraints_other": {
     "type": "string",
     "title": "Other constrains",
     "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
@@ -604,7 +604,7 @@
     "title": "supplemental information",
     "description": "any other descriptive information about the dataset",
     "maxLength": 2000,
-    "defult": "No information provided",
+    "default": "No information provided",
     "ui:options": {
       "widget": "textarea",
       "rows": 5
@@ -746,18 +746,18 @@
     },
     "ui:widget": "hidden"
   },
-  "metadata uploaded": {
+  "metadata_uploaded": {
     "$comment": "metadata XML specific fields",
     "type": "boolean",
     "default": false,
     "ui:widget": "hidden"
   },
-  "Metadata uploaded preserve": {
+  "metadata_uploaded_preserve": {
     "$comment": "metadata XML specific fields",
     "type": "boolean",
     "default": false
   },
-  "metadata xml": {
+  "metadata_xml": {
     "$comment": "metadata XML specific fields",
     "type": "string",
     "default": "'<gmd:MD_Metadata xmlns:gmd='http://www.isotc211.org/2005/gmd'/>",

@@ -21,6 +21,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from geonode.metadata.handlers import CoreHandler
 from geonode.metadata.settings import MODEL_SCHEMA
+from geonode.metadata.api.serializers import MetadataSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ class MetadataManager(MetadataManagerInterface):
         self.jsonschema = MODEL_SCHEMA
         self.schema = None
         self.handlers = []
+        self.serializer_class = MetadataSerializer
 
     def add_handler(self, handler):
         
@@ -64,5 +66,32 @@ class MetadataManager(MetadataManagerInterface):
            self.build_schema()
             
         return self.schema
+    
+    def build_schema_instance(self, resource):
+
+        instance = {}
+        
+        # serialized_resource = self.get_resource_base(resource)
+        schema = self.get_schema()
+
+        for fieldname, field in schema["properties"].items():
+            handler_id = field["geonode:handler"]
+            # temp 
+            handler = self.handlers[0]
+            content = handler.get_jsonschema_instance(resource, fieldname)
+            instance[fieldname] = content
+        
+        return instance
+
+        
+    
+    def resource_base_serialization(self, resource):
+        """
+        Get a serialized dataset from the ResourceBase model
+        """
+        serializer = self.serializer_class
+        
+        serialized_data = serializer(resource, many=True).data
+        return serialized_data
 
 metadata_manager = MetadataManager()

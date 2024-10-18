@@ -86,14 +86,16 @@ class CoreHandler(Handler):
 
         return jsonschema
 
-    def get_jsonschema_instance(resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
+
+        field_value = resource.values().first()[field_name]
+        
+        return field_value
+
+    def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
         
         pass
 
-    def update_resource(resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
-        
-        pass
-
-    def load_context(resource: ResourceBase, context: dict):
+    def load_context(self, resource: ResourceBase, context: dict):
         
         pass
