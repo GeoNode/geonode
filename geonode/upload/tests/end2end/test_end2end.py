@@ -444,11 +444,13 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data", "ASYNC_SIGNALS": "False"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data", ASYNC_SIGNALS=False)
     def test_import_wms(self):
-        _, wms = WebMapService("http://geoserver:8080/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities")
+        _, wms = WebMapService(
+            "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
+        )
         resource_to_take = next(iter(wms.contents))
         res = wms[next(iter(wms.contents))]
         payload = {
-            "url": "http://geoserver:8080/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities",
+            "url": "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities",
             "title": "Remote Title",
             "type": "wms",
             "lookup": resource_to_take,
