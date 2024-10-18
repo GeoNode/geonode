@@ -37,7 +37,7 @@ class TestDataStoreManager(TestCase):
             user=self.user,
             func_name="create",
             step="create",
-            action="import",
+            action="upload",
             input_params={
                 **{"handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler"},
             },
@@ -51,7 +51,7 @@ class TestDataStoreManager(TestCase):
             user=self.user,
             func_name="create",
             step="create",
-            action="import",
+            action="upload",
             input_params={"url": "https://geosolutionsgroup.com"},
             source="importer_copy",
         )

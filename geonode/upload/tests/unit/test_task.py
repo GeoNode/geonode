@@ -304,7 +304,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                 layer_name="foo_dataset",
                 alternate="alternate_foo_dataset",
                 handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
-                action="import",
+                action="upload",
             )
 
             # Evaluation
@@ -401,7 +401,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     user=get_user_model().objects.get(username=self.user),
                     func_name="dummy_func",
                     step=conf[0],  # step name
-                    action="import",
+                    action="upload",
                     input_params={
                         "files": {"base_file": self.existing_file},
                         "store_spatial_files": True,
@@ -456,7 +456,7 @@ class TestCeleryTasks(ImporterBaseTestSupport):
                     user=get_user_model().objects.get(username=self.user),
                     func_name="dummy_func",
                     step=conf[0],  # step name
-                    action="import",
+                    action="upload",
                     input_params={
                         "files": {"base_file": "/tmp/filepath"},
                         "store_spatial_files": True,

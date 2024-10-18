@@ -64,6 +64,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
         self.client.force_login(get_user_model().objects.get(username="admin"))
         payload = {
             "base_file": SimpleUploadedFile(name="file.invalid", content=b"abc"),
+            "action": "upload"
         }
         response = self.client.post(self.url, data=payload)
         self.assertEqual(500, response.status_code)
@@ -76,6 +77,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 content=b'{"type": "FeatureCollection", "content": "some-content"}',
             ),
             "store_spatial_files": "invalid",
+            "action": "upload"
         }
         expected = {
             "success": False,
@@ -99,6 +101,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 content=b'{"type": "FeatureCollection", "content": "some-content"}',
             ),
             "store_spatial_files": True,
+            "action": "upload"
         }
 
         response = self.client.post(self.url, data=payload)
@@ -116,6 +119,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 content=b'{"type": "FeatureCollection", "content": "some-content"}',
             ),
             "store_spatial_files": True,
+            "action": "upload"
         }
 
         response = self.client.post(self.url, data=payload)
@@ -133,6 +137,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
             "base_file": open(f"{project_dir}/tests/fixture/valid.zip", "rb"),
             "zip_file": open(f"{project_dir}/tests/fixture/valid.zip", "rb"),
             "store_spatial_files": True,
+            "action": "upload"
         }
 
         response = self.client.post(self.url, data=payload)
@@ -191,6 +196,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 content=b'{"type": "FeatureCollection", "content": "some-content"}',
             ),
             "store_spatial_files": True,
+            "action": "upload"
         }
 
         response = self.client.post(self.url, data=payload)
@@ -221,6 +227,7 @@ class TestImporterViewSet(ImporterBaseTestSupport):
                 content=b'{"type": "FeatureCollection", "content": "some-content"}',
             ),
             "store_spatial_files": True,
+            "action": "upload"
         }
 
         response = self.client.post(self.url, data=payload)

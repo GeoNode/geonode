@@ -158,7 +158,7 @@ class ExecutionRequestApi(GeoNodeBaseTestSupport):
     def test_endpoint_should_return_the_source(self):
         # creating dummy execution request
         obj = ExecutionRequest.objects.create(
-            user=self.superuser, func_name="import_new_resource", action="import", source="upload_workflow"
+            user=self.superuser, func_name="import_new_resource", action="upload", source="upload_workflow"
         )
         self.client.force_login(self.superuser)
 

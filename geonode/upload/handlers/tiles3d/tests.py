@@ -58,8 +58,8 @@ class TestTiles3DFileHandler(TestCase):
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.TASKS["import"]), 3)
-        self.assertTupleEqual(expected, self.handler.TASKS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 3)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_copy(self):
         expected = (
@@ -190,10 +190,14 @@ class TestTiles3DFileHandler(TestCase):
         """
         expected = {
             "id": "3dtiles",
-            "label": "3D Tiles",
-            "format": "vector",
-            "ext": ["json"],
-            "optional": ["xml", "sld"],
+            "formats": [
+                {
+                    "label": "3D Tiles",
+                    "required_ext": ["zip"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
         actual = self.handler.supported_file_extension_config
         self.assertDictEqual(actual, expected)

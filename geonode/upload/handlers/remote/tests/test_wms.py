@@ -96,8 +96,8 @@ class TestRemoteWMSResourceHandler(TestCase):
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.TASKS["import"]), 3)
-        self.assertTupleEqual(expected, self.handler.TASKS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 3)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
@@ -120,7 +120,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     def test_extract_params_from_data(self):
         actual, _data = self.handler.extract_params_from_data(
             _data={"defaults": f"{self.valid_payload_with_parse_true}"},
-            action="import",
+            action="upload",
         )
         self.assertTrue("title" in actual)
         self.assertTrue("url" in actual)

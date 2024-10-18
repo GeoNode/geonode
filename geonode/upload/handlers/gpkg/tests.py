@@ -55,8 +55,8 @@ class TestGPKGHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.TASKS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.TASKS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
