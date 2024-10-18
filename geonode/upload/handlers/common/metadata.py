@@ -18,7 +18,6 @@
 #########################################################################
 import logging
 from geonode.upload.handlers.base import BaseHandler
-from geonode.upload.handlers.utils import UploadSourcesEnum
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.handlers.xml.serializer import MetadataFileSerializer
 from geonode.upload.orchestrator import orchestrator
@@ -33,16 +32,6 @@ class MetadataFileHandler(BaseHandler):
     Handler to import metadata files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
-
-    @staticmethod
-    def can_handle(_data) -> bool:
-        """
-        This endpoint will return True or False if with the info provided
-        the handler is able to handle the file or not
-        """
-        if _data.get("source", None) == UploadSourcesEnum.resource_file_upload.value:
-            return True
-        return False
 
     @staticmethod
     def has_serializer(data) -> bool:
@@ -69,7 +58,7 @@ class MetadataFileHandler(BaseHandler):
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "source": _data.pop("source", "resource_file_upload"),
+            "action": _data.pop("action"),
         }, _data
 
     @staticmethod

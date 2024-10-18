@@ -38,7 +38,7 @@ class TestKMLHandler(TestCase):
         cls.invalid_kml = f"{project_dir}/tests/fixture/inva.lid.kml"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_kml}
-        cls.valid_files = {"base_file": cls.valid_kml, "source": "upload"}
+        cls.valid_files = {"base_file": cls.valid_kml, "action": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="extruded_polygon", owner=cls.owner)
 

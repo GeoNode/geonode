@@ -36,7 +36,7 @@ class ShapeFileSerializer(DynamicModelSerializer):
             "store_spatial_files",
             "overwrite_existing_layer",
             "skip_existing_layers",
-            "source",
+            "action",
         )
 
     base_file = serializers.FileField()
@@ -48,7 +48,7 @@ class ShapeFileSerializer(DynamicModelSerializer):
     store_spatial_files = serializers.BooleanField(required=False, default=True)
     overwrite_existing_layer = serializers.BooleanField(required=False, default=False)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
-    source = serializers.CharField(required=False, default="upload")
+    action = serializers.CharField(required=True)
 
 
 class OverwriteShapeFileSerializer(ShapeFileSerializer):

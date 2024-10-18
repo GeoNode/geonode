@@ -44,7 +44,7 @@ class TestGPKGHandler(TestCase):
         cls.invalid_gpkg = f"{project_dir}/tests/fixture/invalid.gpkg"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
-        cls.valid_files = {"base_file": cls.valid_gpkg, "source": "upload"}
+        cls.valid_files = {"base_file": cls.valid_gpkg, "action": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="stazioni_metropolitana", owner=cls.owner)
 

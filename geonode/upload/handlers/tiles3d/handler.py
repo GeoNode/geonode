@@ -155,7 +155,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "source": _data.pop("source", "upload"),
+            "action": _data.pop("action", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data

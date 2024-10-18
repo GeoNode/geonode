@@ -40,6 +40,7 @@ class XMLFileHandler(MetadataFileHandler):
             "geonode.upload.rollback",
         ),
     }
+
     @property
     def supported_file_extension_config(self):
         return {
@@ -63,9 +64,9 @@ class XMLFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")
-        ) and MetadataFileHandler.can_handle(_data)
+        return (base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")) and _data.get(
+            "action", None
+        ) == ira.RESOURCE_METADATA_UPLOAD.value
 
     @staticmethod
     def is_valid(files, user=None, **kwargs):

@@ -29,7 +29,6 @@ import datetime
 import requests
 import tempfile
 import ipaddress
-import itertools
 import traceback
 
 from lxml import etree
@@ -1722,11 +1721,13 @@ def get_supported_datasets_file_types():
     default_types = [
         {
             "id": "zip",
-            "formats": {
-                "label": "Zip Archive",
-                "required_ext": ["zip"],
-                "optional_ext": ["xml", "sld"],
-            },
+            "formats": [
+                {
+                    "label": "Zip Archive",
+                    "required_ext": ["zip"],
+                    "optional_ext": ["xml", "sld"],
+                }
+            ],
             "action": ["upload", "replace"],
             "type": "archive",
         }
@@ -1764,4 +1765,12 @@ def get_supported_datasets_file_types():
 
 
 def get_allowed_extensions():
-    return list(itertools.chain.from_iterable([_type["ext"] for _type in get_supported_datasets_file_types()]))
+    """
+    The main extension is rappresented by the position 0 of the configuration
+    that the handlers returns
+    """
+    allowed_extention = []
+    for _type in get_supported_datasets_file_types():
+        for val in _type["formats"]:
+            allowed_extention.append(val["required_ext"][0])
+    return list(set(allowed_extention))

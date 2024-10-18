@@ -29,7 +29,6 @@ from pathlib import Path
 
 from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileException
 from geonode.upload.handlers.shapefile.serializer import OverwriteShapeFileSerializer, ShapeFileSerializer
-from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -39,32 +38,6 @@ class ShapeFileHandler(BaseVectorFileHandler):
     Handler to import Shapefile files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
-
-    TASKS = {
-        exa.UPLOAD.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-        exa.COPY.value: (
-            "start_copy",
-            "geonode.upload.copy_dynamic_model",
-            "geonode.upload.copy_geonode_data_table",
-            "geonode.upload.publish_resource",
-            "geonode.upload.copy_geonode_resource",
-        ),
-        ira.ROLLBACK.value: (
-            "start_rollback",
-            "geonode.upload.rollback",
-        ),
-        ira.REPLACE.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-    }
 
     @property
     def supported_file_extension_config(self):
@@ -120,7 +93,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "source": _data.pop("source", "upload"),
+            "action": _data.pop("action", "upload"),
         }
 
         return additional_params, _data
@@ -140,7 +113,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
 
         _filename = Path(_file).stem
 
-        _shp_ext_needed = [x["requires"] for x in get_supported_datasets_file_types() if x["id"] == "shp"][0]
+        _shp_ext_needed = ShapeFileHandler._get_ext_needed()
 
         """
         Check if the ext required for the shape file are available in the files uploaded
@@ -165,6 +138,13 @@ class ShapeFileHandler(BaseVectorFileHandler):
             )
 
         return True
+
+    @staticmethod
+    def _get_ext_needed():
+        for x in get_supported_datasets_file_types():
+            if x["id"] == "shp":
+                for item in x["formats"][0]["required_ext"]:
+                    yield item
 
     def get_ogr2ogr_driver(self):
         return ogr.GetDriverByName("ESRI Shapefile")

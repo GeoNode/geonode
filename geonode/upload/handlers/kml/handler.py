@@ -55,12 +55,6 @@ class KMLFileHandler(BaseVectorFileHandler):
             "start_rollback",
             "geonode.upload.rollback",
         ),
-        ira.REPLACE.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
     }
 
     @property

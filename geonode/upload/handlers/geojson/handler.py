@@ -19,11 +19,9 @@
 import json
 import logging
 import os
-from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from osgeo import ogr
-from geonode.upload.utils import ImporterRequestAction as ira
 
 from geonode.upload.handlers.geojson.exceptions import InvalidGeoJsonException
 
@@ -35,32 +33,6 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
     Handler to import GeoJson files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
-
-    TASKS = {
-        exa.UPLOAD.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-        exa.COPY.value: (
-            "start_copy",
-            "geonode.upload.copy_dynamic_model",
-            "geonode.upload.copy_geonode_data_table",
-            "geonode.upload.publish_resource",
-            "geonode.upload.copy_geonode_resource",
-        ),
-        ira.ROLLBACK.value: (
-            "start_rollback",
-            "geonode.upload.rollback",
-        ),
-        ira.REPLACE.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-    }
 
     @property
     def supported_file_extension_config(self):

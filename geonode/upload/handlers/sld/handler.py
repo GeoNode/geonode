@@ -64,9 +64,9 @@ class SLDFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")
-        ) and MetadataFileHandler.can_handle(_data)
+        return (base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")) and _data.get(
+            "action", None
+        ) == ira.RESOURCE_SLD_UPLOAD.value
 
     @staticmethod
     def is_valid(files, user, **kwargs):
