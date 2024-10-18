@@ -41,7 +41,6 @@ class TestDataStoreManager(TestCase):
             input_params={
                 **{"handler_module_path": "geonode.upload.handlers.gpkg.handler.GPKGFileHandler"},
             },
-            source="importer_copy",
         )
         self.datastore = DataStoreManager(
             self.files, "geonode.upload.handlers.gpkg.handler.GPKGFileHandler", self.user, execution_id
@@ -53,7 +52,6 @@ class TestDataStoreManager(TestCase):
             step="create",
             action="upload",
             input_params={"url": "https://geosolutionsgroup.com"},
-            source="importer_copy",
         )
         self.datastore_url = DataStoreManager(
             self.files, "geonode.upload.handlers.common.remote.BaseRemoteResourceHandler", self.user, execution_id_url

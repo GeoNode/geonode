@@ -196,7 +196,7 @@ class TestTiles3DFileHandler(TestCase):
                     "required_ext": ["zip"],
                 }
             ],
-            "actions": list(self.TASKS.keys()),
+            "actions": list(Tiles3DFileHandler.TASKS.keys()),
             "type": "vector",
         }
         actual = self.handler.supported_file_extension_config

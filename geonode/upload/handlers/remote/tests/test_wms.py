@@ -35,9 +35,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.handler = RemoteWMSResourceHandler()
-        cls.valid_url = (
-            "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
-        )
+        cls.valid_url = "http://geoserver:8080/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_payload = {
             "url": "http://invalid.com",

@@ -310,7 +310,6 @@ class ImportOrchestrator:
             input_params=input_params,
             action=action,
             name=name,
-            source=source,
         )
         return execution.exec_id
 

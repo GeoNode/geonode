@@ -324,7 +324,6 @@ class ResourceImporter(DynamicModelViewSet):
                         **{"handler_module_path": handler_module_path},
                         **extracted_params,
                     },
-                    source="importer_copy",
                 )
 
                 sig = import_orchestrator.s(
