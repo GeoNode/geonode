@@ -34,7 +34,7 @@ class SLDFileHandler(MetadataFileHandler):
     """
 
     TASKS = {
-        ira.RESOURCE_SLD_UPLOAD.value: ("start_import", "geonode.upload.import_resource"),
+        ira.RESOURCE_STYLE_UPLOAD.value: ("start_import", "geonode.upload.import_resource"),
         ira.ROLLBACK.value: (
             "start_rollback",
             "geonode.upload.rollback",
@@ -66,7 +66,7 @@ class SLDFileHandler(MetadataFileHandler):
             return False
         return (base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")) and _data.get(
             "action", None
-        ) == ira.RESOURCE_SLD_UPLOAD.value
+        ) == ira.RESOURCE_STYLE_UPLOAD.value
 
     @staticmethod
     def is_valid(files, user, **kwargs):
