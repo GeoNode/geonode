@@ -108,7 +108,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
             },
-            action='upload'
+            action="upload",
         )
         exec_obj = ExecutionRequest.objects.filter(exec_id=exec_id).first()
         self.assertEqual(count + 1, ExecutionRequest.objects.count())
@@ -151,7 +151,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
             },
-            action='upload'
+            action="upload",
         )
         # test under tests
         self.orchestrator.perform_next_step(

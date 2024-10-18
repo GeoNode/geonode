@@ -85,7 +85,7 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
         # defining the payload
         payload = QueryDict("", mutable=True)
         payload.update({"defaults": '{"title":"title_of_the_cloned_resource"}'})
-        payload['action'] = "copy"
+        payload["action"] = "copy"
 
         # calling the endpoint
         response = self.client.put(_url, data=payload, content_type="application/json")
@@ -114,7 +114,7 @@ class BaseClassEnd2End(TransactionImporterBaseTestSupport):
         self.assertTrue(schema_entity.name in [y.name for y in resources])
 
     def _import_resource(self, payload, initial_name):
-        payload['action'] = "upload"
+        payload["action"] = "upload"
         _url = reverse("importer_upload")
         self.client.force_login(get_user_model().objects.get(username="admin"))
 
@@ -149,10 +149,7 @@ class ImporterCopyEnd2EndGpkgTest(BaseClassEnd2End):
     )
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_geopackage(self):
-        payload = {
-            "base_file": open(self.valid_gkpg, "rb"),
-            "action": "copy"
-        }
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "copy"}
         initial_name = "stazioni_metropolitana"
         # first we need to import a resource
         with transaction.atomic():
@@ -171,10 +168,7 @@ class ImporterCopyEnd2EndGeoJsonTest(BaseClassEnd2End):
     )
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_geojson(self):
-        payload = {
-            "base_file": open(self.valid_geojson, "rb"),
-            "action": "copy"
-        }
+        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "copy"}
         initial_name = "valid"
         # first we need to import a resource
         with transaction.atomic():
@@ -193,7 +187,7 @@ class ImporterCopyEnd2EndShapeFileTest(BaseClassEnd2End):
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_shapefile(self):
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
-        payload['action'] = "copy"
+        payload["action"] = "copy"
         initial_name = "air_runways"
         # first we need to import a resource
         with transaction.atomic():
@@ -211,10 +205,7 @@ class ImporterCopyEnd2EndKMLTest(BaseClassEnd2End):
     )
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_copy_dataset_from_kml(self):
-        payload = {
-            "base_file": open(self.valid_kml, "rb"),
-            "action": "copy"
-        }
+        payload = {"base_file": open(self.valid_kml, "rb"), "action": "copy"}
         initial_name = "sample_point_dataset"
         # first we need to import a resource
         with transaction.atomic():
