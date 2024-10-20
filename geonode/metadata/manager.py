@@ -19,9 +19,9 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
-from geonode.metadata.handlers import CoreHandler
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.api.serializers import MetadataSerializer
+from geonode.metadata.registry import metadata_registry
 
 logger = logging.getLogger(__name__)
 
@@ -41,21 +41,25 @@ class MetadataManager(MetadataManagerInterface):
     def __init__(self):
         self.jsonschema = MODEL_SCHEMA
         self.schema = None
-        self.handlers = []
         self.serializer_class = MetadataSerializer
+        self.instance = {}
+        self.handlers = {}
 
-    def add_handler(self, handler):
+    def add_handler(self, handler_id, handler):
         
-        # Handlers initialization
-        handler_obj = handler()
-        self.handlers.append(handler_obj)
+        handler_instance = handler()
+        
+        self.handlers[handler_id] = handler_instance
+
     
     def build_schema(self):
-        for handler in self.handlers:
+
+        for handler in self.handlers.values():
 
             if self.schema:
+                subschema = handler.update_schema(self.jsonschema)["properties"]
                 # Update the properties key of the current schema with the properties of the new handler
-                self.schema["properties"].update(handler.update_schema(self.jsonschema)["properties"])
+                self.schema["properties"].update(subschema)
             else:
                 self.schema = handler.update_schema(self.jsonschema)
 
@@ -68,22 +72,17 @@ class MetadataManager(MetadataManagerInterface):
         return self.schema
     
     def build_schema_instance(self, resource):
-
-        instance = {}
         
         # serialized_resource = self.get_resource_base(resource)
         schema = self.get_schema()
 
         for fieldname, field in schema["properties"].items():
             handler_id = field["geonode:handler"]
-            # temp 
-            handler = self.handlers[0]
+            handler = self.handlers[handler_id]
             content = handler.get_jsonschema_instance(resource, fieldname)
-            instance[fieldname] = content
+            self.instance[fieldname] = content
         
-        return instance
-
-        
+        return self.instance
     
     def resource_base_serialization(self, resource):
         """

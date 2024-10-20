@@ -1,6 +1,4 @@
 from django.apps import AppConfig
-from django.utils.module_loading import import_string
-import logging
 
 class MetadataConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
@@ -12,16 +10,12 @@ class MetadataConfig(AppConfig):
         super(MetadataConfig, self).ready()
 
 def run_setup_hooks(*args, **kwargs):
-    from geonode.metadata.settings import METADATA_HANDLERS
+    from geonode.metadata.registry import metadata_registry
     from geonode.metadata.manager import metadata_manager
 
-    logger = logging.getLogger(__name__)
+    # registry initialization
+    metadata_registry.init_registry()
+    handlers = metadata_registry.handler_registry
 
-    _handlers = [
-        import_string(module_path) for module_path in METADATA_HANDLERS
-    ]
-    for _handler in _handlers:
-        metadata_manager.add_handler(_handler)
-    logger.info(
-        f"The following metadata handlers have been registered: {', '.join(METADATA_HANDLERS)}"
-    )
+    for handler_id, handler in handlers.items():
+        metadata_manager.add_handler(handler_id, handler)
