@@ -102,7 +102,7 @@ gisdata==0.5.4
 
 setuptools>=59
 gdal<=3.4.3
-pdok-geopackage-validator==0.8.5
+pdok-geopackage-validator==0.10.0
 geonode-django-dynamic-model==0.4.0
 
 
