@@ -37,7 +37,9 @@ class MetadataViewSet(ViewSet):
         pass
 
     # Get the JSON schema
-    @action(detail=False, methods=['get'])
+    @action(detail=False, 
+            methods=['get'],
+            )
     def schema(self, request):
         ''' 
         The user is able to export her/his keys with
@@ -53,10 +55,15 @@ class MetadataViewSet(ViewSet):
             response = {"Message": "Schema not found"}
             return Response(response)
 
-    def retrieve(self, request, pk=None):
+    # Get the JSON schema
+    @action(detail=False, 
+            methods=['get'],
+            url_path="instance/(?P<pk>\d+)"
+            )
+    def instance(self, request, pk=None):
 
         data = self.queryset.filter(pk=pk)
-        
+
         if data.exists():
             schema_instance = metadata_manager.build_schema_instance(data)
             serialized_resource = self.serializer_class(data=schema_instance)
