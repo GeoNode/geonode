@@ -9,7 +9,7 @@
   "title": {
     "type": "string",
     "title": "title",
-    "description": "Νame by which the cited resource is known",
+    "description": "Name by which the cited resource is known",
     "maxLength": 255,
     "geonode:handler": "base"
   },
