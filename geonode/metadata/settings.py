@@ -11,8 +11,8 @@ MODEL_SCHEMA = {
             }
 
 # The base schema is defined as a file in order to be customizable from other GeoNode instances
-JSONSCHEMA_BASE = os.path.join(PROJECT_ROOT, "metadata/jsonschema_examples/core_schema.json")
+JSONSCHEMA_BASE = os.path.join(PROJECT_ROOT, "metadata/jsonschema_examples/base_schema.json")
 
 METADATA_HANDLERS = {
-    "base": "geonode.metadata.handlers.CoreHandler",
+    "base": "geonode.metadata.handlers.BaseHandler",
 }

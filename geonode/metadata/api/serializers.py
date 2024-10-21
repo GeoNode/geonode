@@ -5,7 +5,6 @@ class MetadataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResourceBase
         fields = [
-                  "uuid", 
                   "title",
                   "abstract",
                   "purpose",
@@ -20,17 +19,8 @@ class MetadataSerializer(serializers.ModelSerializer):
                   "supplemental_information",
                   "data_quality_statement",
                   "srid",
-                  "csw_typename",
-                  "csw_schema",
-                  "csw_mdsource",
-                  "csw_type",
-                  "csw_anytext",
-                  "csw_wkt_geometry",
                   "metadata_uploaded",
                   "metadata_uploaded_preserve",
-                  "metadata_xml",
-                  "popular_count",
-                  "share_count",
                   "featured",
                   "was_published",
                   "is_published",
@@ -39,7 +29,6 @@ class MetadataSerializer(serializers.ModelSerializer):
                   "advertised",
                   "thumbnail_url",
                   "thumbnail_path",
-                  "rating",
                   "state",
                   "sourcetype",
                   "remote_typename",

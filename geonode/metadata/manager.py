@@ -79,6 +79,7 @@ class MetadataManager(MetadataManagerInterface):
         for fieldname, field in schema["properties"].items():
             handler_id = field["geonode:handler"]
             handler = self.handlers[handler_id]
+            #TODO see if the resource exists
             content = handler.get_jsonschema_instance(resource, fieldname)
             self.instance[fieldname] = content
         

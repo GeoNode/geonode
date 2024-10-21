@@ -22,6 +22,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from geonode.base.models import ResourceBase
 from geonode.metadata.settings import JSONSCHEMA_BASE
+from geonode.base.enumerations import ALL_LANGUAGES
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +66,7 @@ class Handler(metaclass=ABCMeta):
         pass
 
 
-class CoreHandler(Handler):
+class BaseHandler(Handler):
     """
     The base handler builds a valid empty schema with the simple
     fields of the ResourceBase model
@@ -73,16 +74,30 @@ class CoreHandler(Handler):
 
     def __init__(self):
         self.json_base_schema = JSONSCHEMA_BASE
-        self.basic_schema = None
+        self.base_schema = None
     
     def update_schema(self, jsonschema):
         with open(self.json_base_schema) as f:
-            self.basic_schema = json.load(f)
+            self.base_schema = json.load(f)
         # building the full base schema
-        for key, val in dict.items(self.basic_schema):
-            # add the base handler identity to the dictionary
-            val.update({"geonode:handler": "base"})
-            jsonschema["properties"].update({key: val})
+        for property, values in self.base_schema.items():
+
+            jsonschema["properties"].update({property: values})
+            
+            # add the base handler identity to the dictionary if it doesn't exist
+            if "geonode:handler" not in values:
+                values.update({"geonode:handler": "base"})
+
+            # build the language choices
+            if property == "language":
+                values["oneOf"] = []
+                for key, val in dict(ALL_LANGUAGES).items():
+                    langChoice = {
+                               "const": key,
+                               "title": val
+                                 }
+                    values["oneOf"].append(langChoice)
+
 
         return jsonschema
 
@@ -91,7 +106,7 @@ class CoreHandler(Handler):
         field_value = resource.values().first()[field_name]
         
         return field_value
-
+    
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
         
         pass

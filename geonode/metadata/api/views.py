@@ -34,8 +34,7 @@ class MetadataViewSet(ViewSet):
     serializer_class = MetadataSerializer
 
     def list(self, request):
-        serializer = self.serializer_class(many=True)
-        return Response(serializer.data)
+        pass
 
     # Get the JSON schema
     @action(detail=False, methods=['get'])
@@ -57,9 +56,12 @@ class MetadataViewSet(ViewSet):
     def retrieve(self, request, pk=None):
 
         data = self.queryset.filter(pk=pk)
-        #serializer = self._get_and_validate_serializer(data=data)
-        # resource = metadata_manager.get_resource_base(data, self.serializer_class)
-        schema_instance = metadata_manager.build_schema_instance(data)
-        #serialized_resource = self.serializer_class(data=schema_instance)
-        #serialized_resource.is_valid(raise_exception=True)
-        return Response(schema_instance)
+        
+        if data.exists():
+            schema_instance = metadata_manager.build_schema_instance(data)
+            serialized_resource = self.serializer_class(data=schema_instance)
+            serialized_resource.is_valid(raise_exception=True)
+            return Response(serialized_resource.data)
+        else:
+            result = {"message": "The dataset was not found"}
+            return Response(result)
