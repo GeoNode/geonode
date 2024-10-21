@@ -37,10 +37,12 @@ class MetadataViewSet(ViewSet):
         pass
 
     # Get the JSON schema
+    # A pk argument is set for futured multiple schemas
     @action(detail=False, 
             methods=['get'],
+            url_path="schema(?:/(?P<pk>\d+))?"
             )
-    def schema(self, request):
+    def schema(self, request, pk=None):
         ''' 
         The user is able to export her/his keys with
         resource scope.
