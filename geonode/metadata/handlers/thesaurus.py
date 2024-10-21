@@ -72,8 +72,13 @@ class TKeywordsHandler(MetadataHandler):
 
             keywords = {
                 "type": "array",
-                "minItems": r["card_min"],
-                "maxItems": r["card_max"],
+                "minItems": r["card_min"]
+            }
+
+            if r["card_max"] != -1:
+                keywords["maxItems"] =  r["card_max"]
+
+            keywords.update({
                 "items": {
                     "type": "object",
                     "properties": {
@@ -92,7 +97,7 @@ class TKeywordsHandler(MetadataHandler):
                 "ui:options": {
                     'geonode-ui:autocomplete': reverse("thesaurus_autocomplete")
                 }
-            }
+            })
 
             thesaurus["properties"] = {"keywords": keywords}
 
