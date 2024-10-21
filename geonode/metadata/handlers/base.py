@@ -19,54 +19,17 @@
 
 import json
 import logging
-from abc import ABCMeta, abstractmethod
 from geonode.base.models import ResourceBase
+from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES
+from django.utils.translation import gettext as _
+
 
 logger = logging.getLogger(__name__)
 
-class Handler(metaclass=ABCMeta):
-    """
-    Handlers take care of reading, storing, encoding, 
-    decoding subschemas of the main Resource
-    """
 
-    @abstractmethod
-    def update_schema(self, jsonschema: dict = {}):
-        """
-        It is called by the MetadataManager when creating the JSON Schema 
-        It adds the subschema handled by the handler, and returns the 
-        augmented instance of the JSON Schema.
-        """
-        pass
-
-    @abstractmethod
-    def get_jsonschema_instance(resource: ResourceBase, field_name: str):
-        """
-        Called when reading metadata, returns the instance of the sub-schema 
-        associated with the field field_name.
-        """
-        pass
-
-    @abstractmethod
-    def update_resource(resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
-        """
-        Called when persisting data, updates the field field_name of the resource 
-        with the content content, where json_instance is  the full JSON Schema instance, 
-        in case the handler needs some cross related data contained in the resource.
-        """
-        pass
-
-    @abstractmethod
-    def load_context(resource: ResourceBase, context: dict):
-        """
-        Called before calls to update_resource in order to initialize info needed by the handler
-        """
-        pass
-
-
-class BaseHandler(Handler):
+class BaseHandler(MetadataHandler):
     """
     The base handler builds a valid empty schema with the simple
     fields of the ResourceBase model
@@ -75,42 +38,47 @@ class BaseHandler(Handler):
     def __init__(self):
         self.json_base_schema = JSONSCHEMA_BASE
         self.base_schema = None
-    
+
     def update_schema(self, jsonschema):
+        def localize(subschema: dict, annotation_name):
+            if annotation_name in subschema:
+                subschema[annotation_name] = _(subschema[annotation_name])
+
         with open(self.json_base_schema) as f:
             self.base_schema = json.load(f)
         # building the full base schema
-        for property, values in self.base_schema.items():
+        for subschema_name, subschema_def in self.base_schema.items():
+            localize(subschema_def, 'title')
+            localize(subschema_def, 'abstract')
 
-            jsonschema["properties"].update({property: values})
-            
+            jsonschema["properties"].update({subschema_name: subschema_def})
+
             # add the base handler identity to the dictionary if it doesn't exist
-            if "geonode:handler" not in values:
-                values.update({"geonode:handler": "base"})
+            if "geonode:handler" not in subschema_def:
+                subschema_def.update({"geonode:handler": "base"})
 
             # build the language choices
-            if property == "language":
-                values["oneOf"] = []
+            if subschema_name == "language":
+                subschema_def["oneOf"] = []
                 for key, val in dict(ALL_LANGUAGES).items():
                     langChoice = {
-                               "const": key,
-                               "title": val
-                                 }
-                    values["oneOf"].append(langChoice)
-
+                        "const": key,
+                        "title": val
+                    }
+                    subschema_def["oneOf"].append(langChoice)
 
         return jsonschema
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
 
         field_value = resource.values().first()[field_name]
-        
+
         return field_value
-    
+
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
-        
+
         pass
 
     def load_context(self, resource: ResourceBase, context: dict):
-        
+
         pass

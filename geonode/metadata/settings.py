@@ -14,5 +14,5 @@ MODEL_SCHEMA = {
 JSONSCHEMA_BASE = os.path.join(PROJECT_ROOT, "metadata/jsonschema_examples/base_schema.json")
 
 METADATA_HANDLERS = {
-    "base": "geonode.metadata.handlers.BaseHandler",
+    "base": "geonode.metadata.handlers.base.BaseHandler",
 }
