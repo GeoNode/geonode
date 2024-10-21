@@ -109,7 +109,7 @@ class TKeywordsHandler(MetadataHandler):
             "properties": thesauri,
         }
 
-        jsonschema["tkeywords"] = tkeywords
+        jsonschema["properties"]["tkeywords"] = tkeywords
 
         return jsonschema
 
