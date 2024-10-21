@@ -115,9 +115,7 @@ class TKeywordsHandler(MetadataHandler):
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
 
-        field_value = resource.values().first()[field_name]
-
-        return field_value
+        return None
 
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
 
