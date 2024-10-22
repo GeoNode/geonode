@@ -39,7 +39,7 @@ class BaseHandler(MetadataHandler):
         self.json_base_schema = JSONSCHEMA_BASE
         self.base_schema = None
 
-    def update_schema(self, jsonschema):
+    def update_schema(self, jsonschema, lang=None):
         def localize(subschema: dict, annotation_name):
             if annotation_name in subschema:
                 subschema[annotation_name] = _(subschema[annotation_name])
@@ -51,7 +51,7 @@ class BaseHandler(MetadataHandler):
             localize(subschema_def, 'title')
             localize(subschema_def, 'abstract')
 
-            jsonschema["properties"].update({subschema_name: subschema_def})
+            jsonschema["properties"][subschema_name] = subschema_def
 
             # add the base handler identity to the dictionary if it doesn't exist
             if "geonode:handler" not in subschema_def:

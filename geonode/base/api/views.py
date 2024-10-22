@@ -24,17 +24,21 @@ import re
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
+from dal import autocomplete
 
 from django.apps import apps
 from django.core.validators import URLValidator
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.conf import settings
 from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
+from django.utils.translation import get_language
+from drf_spectacular.types import OpenApiTypes
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -54,7 +58,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.favorite.models import Favorite
-from geonode.base.models import Configuration, ExtraMetadata, LinkedResource
+from geonode.base.models import Configuration, ExtraMetadata, LinkedResource, ThesaurusKeywordLabel, Thesaurus
 from geonode.thumbs.exceptions import ThumbnailError
 from geonode.thumbs.thumbnails import create_thumbnail
 from geonode.thumbs.utils import _decode_base64, BASE64_PATTERN
@@ -104,7 +108,7 @@ from .serializers import (
 )
 from geonode.people.api.serializers import UserSerializer
 from .pagination import GeoNodeApiPagination
-from geonode.base.utils import validate_extra_metadata
+from geonode.base.utils import validate_extra_metadata, remove_country_from_languagecode
 
 import logging
 
@@ -225,6 +229,66 @@ class ThesaurusKeywordViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     queryset = ThesaurusKeyword.objects.all()
     serializer_class = ThesaurusKeywordSerializer
     pagination_class = GeoNodeApiPagination
+
+
+class ThesaurusViewSet(DynamicModelViewSet):
+
+    queryset = Thesaurus.objects.all()
+    serializer_class = ThesaurusKeywordSerializer
+
+    @extend_schema(
+        methods=["get"],
+        description="API endpoint allowing to retrieve the published Resources.",
+    )
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="(?P<thesaurusid>\d+)/keywords/autocomplete",  # noqa
+        url_name="keywords_autocomplete",
+    )
+    def tkeywords_autocomplete(self, request, thesaurusid):
+
+        lang = get_language()
+        all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
+
+        # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
+        all_localized_keywords_qs = ThesaurusKeywordLabel.objects.filter(
+            lang=lang, keyword_id__in=all_keywords_qs
+        ).values("keyword_id")
+        if not all_localized_keywords_qs.exists():
+            lang = remove_country_from_languagecode(lang)
+            all_localized_keywords_qs = ThesaurusKeywordLabel.objects.filter(
+                lang=lang, keyword_id__in=all_keywords_qs
+            ).values("keyword_id")
+
+        # consider all the keywords that do not have a translation in the requested language
+        keywords_not_translated_qs = (
+            ThesaurusKeywordLabel.objects.exclude(keyword_id__in=all_localized_keywords_qs)
+            .order_by("keyword_id")
+            .distinct("keyword_id")
+            .values("keyword_id")
+        )
+        qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs)
+        if q:=request.query_params.get("q", None):
+            qs = qs.filter(label__istartswith=q)
+
+        ret = []
+        for tkl in qs.all():
+            ret.append(
+                {
+                    "id": tkl.keyword.pk,
+                    "text": tkl.label,
+                    "selected_text": tkl.label,
+                })
+        for tk in all_keywords_qs.filter(id__in=keywords_not_translated_qs).all():
+            ret.append(
+                {
+                    "id": tk.pk,
+                    "text": f"! {tk.alt_label}",
+                    "selected_text": f"! {tk.alt_label}",
+                })
+
+        return JsonResponse({"results":ret})
 
 
 class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):

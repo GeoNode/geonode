@@ -31,7 +31,7 @@ class MetadataHandler(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def update_schema(self, jsonschema: dict):
+    def update_schema(self, jsonschema: dict, lang=None):
         """
         It is called by the MetadataManager when creating the JSON Schema 
         It adds the subschema handled by the handler, and returns the 
@@ -40,7 +40,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_jsonschema_instance(resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
         """
         Called when reading metadata, returns the instance of the sub-schema 
         associated with the field field_name.
@@ -48,7 +48,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update_resource(resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
         """
         Called when persisting data, updates the field field_name of the resource 
         with the content content, where json_instance is  the full JSON Schema instance, 
@@ -57,7 +57,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def load_context(resource: ResourceBase, context: dict):
+    def load_context(self, resource: ResourceBase, context: dict):
         """
         Called before calls to update_resource in order to initialize info needed by the handler
         """

@@ -44,14 +44,14 @@ class TKeywordsHandler(MetadataHandler):
         self.json_base_schema = JSONSCHEMA_BASE
         self.base_schema = None
 
-    def update_schema(self, jsonschema):
+    def update_schema(self, jsonschema, lang=None):
 
         from geonode.base.models import Thesaurus
 
         # this query return the list of thesaurus X the list of localized titles
         q = (
             Thesaurus.objects.filter(~Q(card_max=0))
-            .values("identifier", "title", "description", "order", "card_min", "card_max",
+            .values("id", "identifier", "title", "description", "order", "card_min", "card_max",
                     "rel_thesaurus__label", "rel_thesaurus__lang")
             .order_by("order")
         )
@@ -59,7 +59,7 @@ class TKeywordsHandler(MetadataHandler):
         thesauri = {}
         for r in q.all():
             identifier = r["identifier"]
-            logger.info(f"Adding Thesaurus {identifier} to JSON Schema")
+            logger.info(f"Adding Thesaurus {identifier} to JSON Schema lang {lang}")
 
             thesaurus = {}
             thesauri[identifier] = thesaurus
@@ -95,7 +95,9 @@ class TKeywordsHandler(MetadataHandler):
                     }
                 },
                 "ui:options": {
-                    'geonode-ui:autocomplete': reverse("thesaurus_autocomplete")
+                    'geonode-ui:autocomplete': reverse(
+                        "thesaurus-keywords_autocomplete",
+                        kwargs={"thesaurusid": r["id"]})
                 }
             })
 

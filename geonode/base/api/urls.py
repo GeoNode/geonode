@@ -26,6 +26,7 @@ router.register(r"owners", views.OwnerViewSet, "owners")
 router.register(r"categories", views.TopicCategoryViewSet, "categories")
 router.register(r"keywords", views.HierarchicalKeywordViewSet, "keywords")
 router.register(r"tkeywords", views.ThesaurusKeywordViewSet, "tkeywords")
+router.register(r"thesaurus", views.ThesaurusViewSet, "thesaurus")
 router.register(r"regions", views.RegionViewSet, "regions")
 
 urlpatterns = []

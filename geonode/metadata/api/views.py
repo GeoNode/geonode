@@ -17,13 +17,16 @@
 #
 #########################################################################
 
+from rest_framework.viewsets import ViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from django.utils.translation.trans_real import get_language_from_request
+
+from geonode.base.models import ResourceBase
 from geonode.metadata.manager import metadata_manager
 from geonode.metadata.api.serializers import MetadataSerializer
-from rest_framework.viewsets import ViewSet
-from geonode.base.models import ResourceBase
-from rest_framework.decorators import action
-from django.http import JsonResponse
-from rest_framework.response import Response
+
 
 class MetadataViewSet(ViewSet):
     """
@@ -47,8 +50,9 @@ class MetadataViewSet(ViewSet):
         The user is able to export her/his keys with
         resource scope.
         '''
-        
-        schema = metadata_manager.get_schema()
+
+        lang = get_language_from_request(request)[:2]
+        schema = metadata_manager.get_schema(lang)
     
         if schema:
             return Response(schema)

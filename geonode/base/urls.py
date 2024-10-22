@@ -26,7 +26,6 @@ from .views import (
     OwnerRightsRequestView,
     ResourceBaseAutocomplete,
     HierarchicalKeywordAutocomplete,
-    ThesaurusKeywordLabelAutocomplete,
     LinkedResourcesAutocomplete,
 )
 
@@ -56,11 +55,6 @@ urlpatterns = [
         r"^thesaurus_available",
         ThesaurusAvailable.as_view(),
         name="thesaurus_available",
-    ),
-    re_path(
-        r"^thesaurus_autocomplete/$",
-        ThesaurusKeywordLabelAutocomplete.as_view(),
-        name="thesaurus_autocomplete",
     ),
     re_path(
         r"^datasets_autocomplete/$",

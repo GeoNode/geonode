@@ -18,16 +18,21 @@
 #########################################################################
 
 import logging
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
+
+from django.utils.translation import gettext as _
+
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.api.serializers import MetadataSerializer
-from geonode.metadata.registry import metadata_registry
+
 
 logger = logging.getLogger(__name__)
+
 
 class MetadataManagerInterface(metaclass=ABCMeta):
 
     pass
+
 
 class MetadataManager(MetadataManagerInterface):
     """
@@ -52,22 +57,18 @@ class MetadataManager(MetadataManagerInterface):
         self.handlers[handler_id] = handler_instance
 
     
-    def build_schema(self):
+    def build_schema(self, lang=None):
+        self.schema =  self.jsonschema.copy()
+        self.schema["title"] = _(self.schema["title"])
 
         for handler in self.handlers.values():
-
-            if self.schema:
-                subschema = handler.update_schema(self.jsonschema)["properties"]
-                # Update the properties key of the current schema with the properties of the new handler
-                self.schema["properties"].update(subschema)
-            else:
-                self.schema = handler.update_schema(self.jsonschema)
+            self.schema = handler.update_schema(self.schema, lang)
 
         return self.schema    
 
-    def get_schema(self):
+    def get_schema(self, lang=None):
         if not self.schema:
-           self.build_schema()
+           self.build_schema(lang)
             
         return self.schema
     
@@ -93,5 +94,6 @@ class MetadataManager(MetadataManagerInterface):
         
         serialized_data = serializer(resource, many=True).data
         return serialized_data
+
 
 metadata_manager = MetadataManager()
