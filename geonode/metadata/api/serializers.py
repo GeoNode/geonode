@@ -19,7 +19,6 @@ class MetadataSerializer(serializers.ModelSerializer):
                   "supplemental_information",
                   "data_quality_statement",
                   "srid",
-                  "metadata_uploaded",
                   "metadata_uploaded_preserve",
                   "featured",
                   "was_published",
@@ -31,9 +30,5 @@ class MetadataSerializer(serializers.ModelSerializer):
                   "thumbnail_path",
                   "state",
                   "sourcetype",
-                  "remote_typename",
-                  "dirty_state",
-                  "resource_type",
                   "metadata_only",
-                  "subtype",
                   ]

@@ -71,13 +71,14 @@ class BaseHandler(MetadataHandler):
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
 
-        field_value = resource.values().first()[field_name]
+        field_value = getattr(resource, field_name)
 
         return field_value
 
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
-
-        pass
+       
+        if field_name in content:
+            setattr(resource, field_name, content[field_name])
 
     def load_context(self, resource: ResourceBase, context: dict):
 

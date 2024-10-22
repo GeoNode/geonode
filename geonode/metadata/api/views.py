@@ -63,18 +63,33 @@ class MetadataViewSet(ViewSet):
 
     # Get the JSON schema
     @action(detail=False, 
-            methods=['get'],
+            methods=['get', 'put'],
             url_path="instance/(?P<pk>\d+)"
             )
     def instance(self, request, pk=None):
+ 
+        try:
+            resource = ResourceBase.objects.get(pk=pk)
+            
+            # schema_instance is defined outside of the if statement in order to be used
+            # also by the PUT method
+            schema_instance = metadata_manager.build_schema_instance(resource)
 
-        data = self.queryset.filter(pk=pk)
+            if request.method == 'GET':
+                serialized_resource = self.serializer_class(data=schema_instance)
+                serialized_resource.is_valid(raise_exception=True)
+                
+                return Response(serialized_resource.data)
+            
+            elif request.method == 'PUT':
 
-        if data.exists():
-            schema_instance = metadata_manager.build_schema_instance(data)
-            serialized_resource = self.serializer_class(data=schema_instance)
-            serialized_resource.is_valid(raise_exception=True)
-            return Response(serialized_resource.data)
-        else:
+                content = request.data
+                serialized_content = self.serializer_class(data=content)
+                serialized_content.is_valid(raise_exception=True)
+                result = metadata_manager.update_schema_instance(resource, serialized_content.data, schema_instance)
+                
+                return Response(result)
+            
+        except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
             return Response(result)

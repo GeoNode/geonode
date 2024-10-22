@@ -23,8 +23,7 @@ from abc import ABCMeta
 from django.utils.translation import gettext as _
 
 from geonode.metadata.settings import MODEL_SCHEMA
-from geonode.metadata.api.serializers import MetadataSerializer
-
+from geonode.metadata.registry import metadata_registry
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +45,6 @@ class MetadataManager(MetadataManagerInterface):
     def __init__(self):
         self.jsonschema = MODEL_SCHEMA
         self.schema = None
-        self.serializer_class = MetadataSerializer
         self.instance = {}
         self.handlers = {}
 
@@ -74,26 +72,31 @@ class MetadataManager(MetadataManagerInterface):
     
     def build_schema_instance(self, resource):
         
-        # serialized_resource = self.get_resource_base(resource)
         schema = self.get_schema()
 
         for fieldname, field in schema["properties"].items():
             handler_id = field["geonode:handler"]
             handler = self.handlers[handler_id]
-            #TODO see if the resource exists
             content = handler.get_jsonschema_instance(resource, fieldname)
             self.instance[fieldname] = content
         
         return self.instance
     
-    def resource_base_serialization(self, resource):
-        """
-        Get a serialized dataset from the ResourceBase model
-        """
-        serializer = self.serializer_class
+    def update_schema_instance(self, resource, content, json_instance):
         
-        serialized_data = serializer(resource, many=True).data
-        return serialized_data
+        schema = self.get_schema()
+
+        for fieldname, field in schema["properties"].items():
+            handler_id = field["geonode:handler"]
+            handler = self.handlers[handler_id]
+            handler.update_resource(resource, fieldname, content, json_instance)
+        
+        try:
+            resource.save()
+            return {"message": "The resource was updated successfully"}
+        
+        except:
+            return {"message": "Something went wrong... The resource was not updated"}
 
 
 metadata_manager = MetadataManager()
