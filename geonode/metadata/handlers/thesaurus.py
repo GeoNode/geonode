@@ -56,29 +56,38 @@ class TKeywordsHandler(MetadataHandler):
             .order_by("order")
         )
 
-        thesauri = {}
+        # We don't know if we have the title for the requested lang: so let's loop on all retrieved translations
+        collected_thesauri = {}
         for r in q.all():
             identifier = r["identifier"]
-            logger.info(f"Adding Thesaurus {identifier} to JSON Schema lang {lang}")
+            thesaurus = collected_thesauri.get(identifier, {})
+            if not thesaurus:
+                # init
+                logger.debug(f"Initializing Thesaurus {identifier} JSON Schema")
+                collected_thesauri[identifier] = thesaurus
+                thesaurus["id"] = r["id"]
+                thesaurus["card"] = {}
+                thesaurus["card"]["minItems"] = r["card_min"]
+                if r["card_max"] != -1:
+                    thesaurus["card"]["maxItems"] =  r["card_max"]
+                thesaurus["title"] = r["title"]  # default title
+                thesaurus["description"] = r["description"]  # not localized in db
 
+            # check if this is the localized record we're looking for
+            if r["rel_thesaurus__lang"] == lang:
+                logger.debug(f"Localizing Thesaurus {identifier} JSON Schema for lang {lang}")
+                thesaurus["title"] = r["rel_thesaurus__label"]
+
+        # copy info to json schema
+        thesauri = {}
+        for id,ct in collected_thesauri.items():
             thesaurus = {}
-            thesauri[identifier] = thesaurus
-
             thesaurus["type"] = "object"
-
-            title = r["title"]  ## todo i18n
-            thesaurus["title"] = title
-            thesaurus["description"] = r["description"]  # not localized in db
+            thesaurus["title"] = ct["title"]
+            thesaurus["description"] = ct["description"]
 
             keywords = {
                 "type": "array",
-                "minItems": r["card_min"]
-            }
-
-            if r["card_max"] != -1:
-                keywords["maxItems"] =  r["card_max"]
-
-            keywords.update({
                 "items": {
                     "type": "object",
                     "properties": {
@@ -97,11 +106,12 @@ class TKeywordsHandler(MetadataHandler):
                 "ui:options": {
                     'geonode-ui:autocomplete': reverse(
                         "thesaurus-keywords_autocomplete",
-                        kwargs={"thesaurusid": r["id"]})
+                        kwargs={"thesaurusid": ct["id"]})
                 }
-            })
-
+            }
+            keywords.update(ct["card"])
             thesaurus["properties"] = {"keywords": keywords}
+            thesauri[id] = thesaurus
 
         tkeywords = {
             "type": "object",
