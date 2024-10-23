@@ -78,6 +78,7 @@ class BaseHandler(MetadataHandler):
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
        
         if field_name in content:
+            # insert the content value to the corresponding field_name
             setattr(resource, field_name, content[field_name])
 
     def load_context(self, resource: ResourceBase, context: dict):

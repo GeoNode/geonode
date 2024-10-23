@@ -66,13 +66,11 @@ class MetadataViewSet(ViewSet):
             methods=['get', 'put'],
             url_path="instance/(?P<pk>\d+)"
             )
-    def instance(self, request, pk=None):
+    def schema_instance(self, request, pk=None):
  
         try:
             resource = ResourceBase.objects.get(pk=pk)
             
-            # schema_instance is defined outside of the if statement in order to be used
-            # also by the PUT method
             schema_instance = metadata_manager.build_schema_instance(resource)
 
             if request.method == 'GET':
