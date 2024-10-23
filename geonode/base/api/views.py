@@ -252,23 +252,24 @@ class ThesaurusViewSet(DynamicModelViewSet):
         all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
 
         # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
-        all_localized_keywords_qs = ThesaurusKeywordLabel.objects.filter(
+        localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(
             lang=lang, keyword_id__in=all_keywords_qs
         ).values("keyword_id")
-        if not all_localized_keywords_qs.exists():
+        if not localized_k_ids_qs.exists():
             lang = remove_country_from_languagecode(lang)
-            all_localized_keywords_qs = ThesaurusKeywordLabel.objects.filter(
+            localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(
                 lang=lang, keyword_id__in=all_keywords_qs
             ).values("keyword_id")
 
         # consider all the keywords that do not have a translation in the requested language
         keywords_not_translated_qs = (
-            ThesaurusKeywordLabel.objects.exclude(keyword_id__in=all_localized_keywords_qs)
-            .order_by("keyword_id")
-            .distinct("keyword_id")
-            .values("keyword_id")
+            all_keywords_qs.exclude(id__in=localized_k_ids_qs)
+            .order_by("id")
+            .distinct("id")
+            .values("id")
         )
-        qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs)
+
+        qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).order_by("label")
         if q:=request.query_params.get("q", None):
             qs = qs.filter(label__istartswith=q)
 
@@ -276,13 +277,13 @@ class ThesaurusViewSet(DynamicModelViewSet):
         for tkl in qs.all():
             ret.append(
                 {
-                    "id": tkl.keyword.pk,
+                    "id": tkl.keyword.about,
                     "label": tkl.label,
                 })
-        for tk in all_keywords_qs.filter(id__in=keywords_not_translated_qs).all():
+        for tk in all_keywords_qs.filter(id__in=keywords_not_translated_qs).order_by("alt_label").all():
             ret.append(
                 {
-                    "id": tk.pk,
+                    "id": tk.about,
                     "label": f"! {tk.alt_label}",
                 })
 
