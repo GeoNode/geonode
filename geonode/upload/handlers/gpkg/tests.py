@@ -44,7 +44,7 @@ class TestGPKGHandler(TestCase):
         cls.invalid_gpkg = f"{project_dir}/tests/fixture/invalid.gpkg"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_gpkg}
-        cls.valid_files = {"base_file": cls.valid_gpkg, "source": "upload"}
+        cls.valid_files = {"base_file": cls.valid_gpkg, "action": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="stazioni_metropolitana", owner=cls.owner)
 
@@ -55,8 +55,8 @@ class TestGPKGHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
@@ -66,8 +66,8 @@ class TestGPKGHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 5)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_gpkg_is_invalid(self):
         with self.assertRaises(InvalidGeopackageException) as _exc:

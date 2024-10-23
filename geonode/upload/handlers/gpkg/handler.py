@@ -37,8 +37,8 @@ class GPKGFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
-        exa.IMPORT.value: (
+    TASKS = {
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.publish_resource",
@@ -61,9 +61,14 @@ class GPKGFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "gpkg",
-            "label": "GeoPackage",
-            "format": "vector",
-            "ext": ["gpkg"],
+            "formats": [
+                {
+                    "label": "GeoPackage",
+                    "required_ext": ["gpkg"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @property
@@ -84,9 +89,9 @@ class GPKGFileHandler(BaseVectorFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".gpkg") if isinstance(base, str) else base.name.endswith(".gpkg")
-        ) and BaseVectorFileHandler.can_handle(_data)
+        return (base.endswith(".gpkg") if isinstance(base, str) else base.name.endswith(".gpkg")) and _data.get(
+            "action", None
+        ) in GPKGFileHandler.TASKS
 
     @staticmethod
     def is_valid(files, user, **kwargs):

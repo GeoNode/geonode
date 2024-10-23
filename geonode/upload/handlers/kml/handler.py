@@ -37,8 +37,8 @@ class KMLFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
-        exa.IMPORT.value: (
+    TASKS = {
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.publish_resource",
@@ -61,9 +61,15 @@ class KMLFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "kml",
-            "label": "KML/KMZ",
-            "format": "vector",
-            "ext": ["kml", "kmz"],
+            "formats": [
+                {"label": "KML", "required_ext": ["kml"]},
+                {
+                    "label": "KMZ",
+                    "required_ext": ["kmz"],
+                },
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @property

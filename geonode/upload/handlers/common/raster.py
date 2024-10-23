@@ -35,7 +35,7 @@ from geonode.upload.api.exceptions import ImportException
 from geonode.upload.celery_tasks import ErrorBaseTaskClass, import_orchestrator
 from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.geotiff.exceptions import InvalidGeoTiffException
-from geonode.upload.handlers.utils import UploadSourcesEnum, create_alternate, should_be_imported
+from geonode.upload.handlers.utils import create_alternate, should_be_imported
 from geonode.upload.models import ResourceHandlerInfo
 from geonode.upload.orchestrator import orchestrator
 from osgeo import gdal
@@ -84,16 +84,6 @@ class BaseRasterFileHandler(BaseHandler):
         return True
 
     @staticmethod
-    def can_handle(_data) -> bool:
-        """
-        This endpoint will return True or False if with the info provided
-        the handler is able to handle the file or not
-        """
-        if _data.get("source", None) != UploadSourcesEnum.upload.value:
-            return False
-        return True
-
-    @staticmethod
     def has_serializer(_data) -> bool:
         """
         This endpoint will return True or False if with the info provided
@@ -107,7 +97,7 @@ class BaseRasterFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return action in BaseHandler.ACTIONS
+        return action in BaseHandler.TASKS
 
     @staticmethod
     def create_error_log(exc, task_name, *args):
@@ -132,7 +122,7 @@ class BaseRasterFileHandler(BaseHandler):
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "source": _data.pop("source", "upload"),
+            "action": _data.pop("action", "upload"),
         }, _data
 
     @staticmethod
@@ -285,6 +275,8 @@ class BaseRasterFileHandler(BaseHandler):
                     dataset = Dataset.objects.filter(pk=_exec.input_params.get("resource_pk")).first()
                     if not dataset:
                         raise ImportException("The dataset selected for the ovewrite does not exists")
+                    if dataset.is_vector():
+                        raise Exception("cannot override a vector dataset with a raster one")
                     alternate = dataset.alternate.split(":")[-1]
                     orchestrator.update_execution_request_obj(_exec, {"geonode_resource": dataset})
                 else:
@@ -293,6 +285,8 @@ class BaseRasterFileHandler(BaseHandler):
                     dataset_exists = user_datasets.exists()
 
                     if dataset_exists and should_be_overwritten:
+                        if user_datasets.is_vector():
+                            raise Exception("cannot override a vector dataset with a raster one")
                         layer_name, alternate = (
                             layer_name,
                             user_datasets.first().alternate.split(":")[-1],
@@ -310,7 +304,7 @@ class BaseRasterFileHandler(BaseHandler):
                         "geonode.upload.import_resource",
                         layer_name,
                         alternate,
-                        exa.IMPORT.value,
+                        exa.UPLOAD.value,
                     )
                 )
                 return layer_name, alternate, execution_id

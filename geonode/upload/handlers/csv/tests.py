@@ -46,7 +46,7 @@ class TestCSVHandler(TestCase):
         cls.missing_geom = f"{project_dir}/tests/fixture/missing_geom.csv"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_csv}
-        cls.valid_files = {"base_file": cls.valid_csv, "source": "upload"}
+        cls.valid_files = {"base_file": cls.valid_csv, "action": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="test", owner=cls.owner)
 
@@ -57,8 +57,8 @@ class TestCSVHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
@@ -68,8 +68,8 @@ class TestCSVHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 5)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_csv_is_invalid(self):
         with self.assertRaises(InvalidCSVException) as _exc:

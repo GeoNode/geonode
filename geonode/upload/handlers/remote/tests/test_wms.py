@@ -35,9 +35,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.handler = RemoteWMSResourceHandler()
-        cls.valid_url = (
-            "https://development.demo.geonode.org/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
-        )
+        cls.valid_url = "http://geoserver:8080/geoserver/ows?service=WMS&version=1.3.0&request=GetCapabilities"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_payload = {
             "url": "http://invalid.com",
@@ -96,16 +94,16 @@ class TestRemoteWMSResourceHandler(TestCase):
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 3)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 3)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
             "start_copy",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 2)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 2)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_url_is_invalid(self):
         with self.assertRaises(ImportException) as _exc:
@@ -120,7 +118,7 @@ class TestRemoteWMSResourceHandler(TestCase):
     def test_extract_params_from_data(self):
         actual, _data = self.handler.extract_params_from_data(
             _data={"defaults": f"{self.valid_payload_with_parse_true}"},
-            action="import",
+            action="upload",
         )
         self.assertTrue("title" in actual)
         self.assertTrue("url" in actual)

@@ -44,7 +44,7 @@ class TestXMLFileHandler(TestCase):
         cls.valid_files = {
             "base_file": "/tmp/test_xml.xml",
             "xml_file": "/tmp/test_xml.xml",
-            "source": "resource_file_upload",
+            "action": "resource_metadata_upload",
         }
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="extruded_polygon", owner=cls.owner)
@@ -58,8 +58,8 @@ class TestXMLFileHandler(TestCase):
             "start_import",
             "geonode.upload.import_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 2)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["resource_metadata_upload"]), 2)
+        self.assertTupleEqual(expected, self.handler.TASKS["resource_metadata_upload"])
 
     def test_is_valid_should_raise_exception_if_the_xml_is_invalid(self):
         with self.assertRaises(InvalidXmlException) as _exc:

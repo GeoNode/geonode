@@ -82,16 +82,16 @@ class TestBaseRemoteResourceHandler(TestCase):
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 3)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 3)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
             "start_copy",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 2)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 2)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_url_is_invalid(self):
         with self.assertRaises(ImportException) as _exc:
@@ -106,7 +106,7 @@ class TestBaseRemoteResourceHandler(TestCase):
     def test_extract_params_from_data(self):
         actual, _data = self.handler.extract_params_from_data(
             _data={"defaults": '{"url": "http://abc123defsadsa.org", "title": "Remote Title", "type": "3dtiles"}'},
-            action="import",
+            action="upload",
         )
         self.assertTrue("title" in actual)
         self.assertTrue("url" in actual)

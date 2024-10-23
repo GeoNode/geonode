@@ -39,7 +39,6 @@ from geonode.upload.handlers.gpkg.tasks import SingleMessageErrorHandler
 from geonode.upload.handlers.utils import (
     GEOM_TYPE_MAPPING,
     STANDARD_TYPE_MAPPING,
-    UploadSourcesEnum,
     drop_dynamic_model_schema,
 )
 from geonode.resource.manager import resource_manager
@@ -55,6 +54,7 @@ from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
 import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -64,6 +64,32 @@ class BaseVectorFileHandler(BaseHandler):
     Handler to import Vector files into GeoNode data db
     It must provide the task_lists required to comple the upload
     """
+
+    TASKS = {
+        exa.UPLOAD.value: (
+            "start_import",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
+        ),
+        exa.COPY.value: (
+            "start_copy",
+            "geonode.upload.copy_dynamic_model",
+            "geonode.upload.copy_geonode_data_table",
+            "geonode.upload.publish_resource",
+            "geonode.upload.copy_geonode_resource",
+        ),
+        ira.ROLLBACK.value: (
+            "start_rollback",
+            "geonode.upload.rollback",
+        ),
+        ira.REPLACE.value: (
+            "start_import",
+            "geonode.upload.import_resource",
+            "geonode.upload.publish_resource",
+            "geonode.upload.create_geonode_resource",
+        ),
+    }
 
     @property
     def default_geometry_column_name(self):
@@ -99,7 +125,7 @@ class BaseVectorFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        if _data.get("source", None) != UploadSourcesEnum.upload.value:
+        if _data.get("action", None) not in BaseVectorFileHandler.TASKS:
             return False
         return True
 
@@ -117,7 +143,7 @@ class BaseVectorFileHandler(BaseHandler):
         This endpoint will return True or False if with the info provided
         the handler is able to handle the file or not
         """
-        return action in BaseHandler.ACTIONS
+        return action in BaseHandler.TASKS
 
     @staticmethod
     def create_error_log(exc, task_name, *args):
@@ -142,7 +168,7 @@ class BaseVectorFileHandler(BaseHandler):
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
             "resource_pk": _data.pop("resource_pk", None),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "source": _data.pop("source", "upload"),
+            "action": _data.pop("action", "upload"),
         }, _data
 
     @staticmethod
@@ -431,6 +457,9 @@ class BaseVectorFileHandler(BaseHandler):
             dataset = Dataset.objects.filter(pk=_exec_obj.input_params.get("resource_pk")).first()
             if not dataset:
                 raise ImportException("The dataset selected for the ovewrite does not exists")
+            if should_be_overwritten:
+                if not dataset.is_vector():
+                    raise Exception("Cannot override a raster dataset with a vector one")
             alternate = dataset.alternate.split(":")
             return alternate[-1]
 
@@ -438,6 +467,9 @@ class BaseVectorFileHandler(BaseHandler):
         dataset_available = Dataset.objects.filter(alternate__iexact=f"{workspace.name}:{layer_name}")
 
         dataset_exists = dataset_available.exists()
+        if should_be_overwritten:
+            if not dataset_available.is_vector():
+                raise Exception("Cannot override a raster dataset with a vector one")
 
         if dataset_exists and should_be_overwritten:
             alternate = dataset_available.first().alternate.split(":")[-1]
@@ -851,7 +883,7 @@ def import_next_step(
             actual_step,
             layer_name,
             alternate,
-            exa.IMPORT.value,
+            exa.UPLOAD.value,
         )
 
         import_orchestrator.apply_async(task_params, kwargs)
@@ -859,7 +891,7 @@ def import_next_step(
         call_rollback_function(
             execution_id,
             handlers_module_path=handlers_module_path,
-            prev_action=exa.IMPORT.value,
+            prev_action=exa.UPLOAD.value,
             layer=layer_name,
             alternate=alternate,
             error=e,
@@ -927,7 +959,7 @@ def import_with_ogr2ogr(
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,
-            prev_action=exa.IMPORT.value,
+            prev_action=exa.UPLOAD.value,
             layer=original_name,
             alternate=alternate,
             error=e,

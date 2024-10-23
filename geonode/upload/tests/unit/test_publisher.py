@@ -60,7 +60,7 @@ class TestDataPublisher(TestCase):
         """
         values_found = self.publisher.extract_resource_to_publish(
             files={"base_file": self.gpkg_path},
-            action="import",
+            action="upload",
             layer_name="stazioni_metropolitana",
         )
         expected = {"crs": "EPSG:32632", "name": "stazioni_metropolitana"}
@@ -75,7 +75,7 @@ class TestDataPublisher(TestCase):
         """
         values_found = self.publisher.extract_resource_to_publish(
             files={"base_file": "/wrong/path/file.gpkg"},
-            action="import",
+            action="upload",
             layer_name="stazioni_metropolitana",
         )
         self.assertListEqual([], values_found)

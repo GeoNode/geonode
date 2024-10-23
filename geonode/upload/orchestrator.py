@@ -48,19 +48,29 @@ class ImportOrchestrator:
 
     """
 
+    def get_handler_registry(self):
+        return BaseHandler.get_registry()
+
     def get_handler(self, _data) -> Optional[BaseHandler]:
         """
         If is part of the supported format, return the handler which can handle the import
         otherwise return None
         """
-        for handler in BaseHandler.get_registry():
-            if handler.can_handle(_data):
-                return handler()
-        logger.error("Handler not found")
+        for handler in self.get_handler_registry():
+            can_handle = handler.can_handle(_data)
+            match can_handle:
+                case True:
+                    return handler()
+                case False:
+                    logger.info(
+                        f"The handler {str(handler)} cannot manage the requested action: {_data.get('action', None)}"
+                    )
+
+        logger.error("No handlers found for this dataset type/action")
         return None
 
     def get_serializer(self, _data) -> serializers.Serializer:
-        for handler in BaseHandler.get_registry():
+        for handler in self.get_handler_registry():
             _serializer = handler.has_serializer(_data)
             if _serializer:
                 return _serializer
@@ -77,7 +87,7 @@ class ImportOrchestrator:
             raise ImportException(detail=f"The handler is not available: {module_path}")
 
     def load_handler_by_id(self, handler_id):
-        for handler in BaseHandler.get_registry():
+        for handler in self.get_handler_registry():
             if handler().id == handler_id:
                 return handler
         logger.error("Handler not found")
@@ -300,7 +310,6 @@ class ImportOrchestrator:
             input_params=input_params,
             action=action,
             name=name,
-            source=source,
         )
         return execution.exec_id
 

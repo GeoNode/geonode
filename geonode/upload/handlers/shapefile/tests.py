@@ -48,7 +48,7 @@ class TestShapeFileFileHandler(TestCase):
             "dbf_file": f"{file_path}/san_andres_y_providencia_highway.dbf",
             "prj_file": f"{file_path}/san_andres_y_providencia_highway.prj",
             "shx_file": f"{file_path}/san_andres_y_providencia_highway.shx",
-            "source": "upload",
+            "action": "upload",
         }
         cls.invalid_shp = f"{project_dir}/tests/fixture/invalid.geojson"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
@@ -62,8 +62,8 @@ class TestShapeFileFileHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_copy_task_list_is_the_expected_one(self):
         expected = (
@@ -73,8 +73,8 @@ class TestShapeFileFileHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 5)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")

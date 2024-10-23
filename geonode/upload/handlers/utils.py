@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import enum
 import hashlib
 
 from django.contrib.auth import get_user_model
@@ -30,12 +29,6 @@ from uuid import UUID
 from geonode.upload.publisher import DataPublisher
 
 logger = logging.getLogger("importer")
-
-
-# TODO this part should be improved when we will drop the legacy upload templates
-class UploadSourcesEnum(enum.Enum):
-    upload = "upload"  # used in the default upload flow
-    resource_file_upload = "resource_file_upload"  # source used for the single resource metadata upload
 
 
 STANDARD_TYPE_MAPPING = {

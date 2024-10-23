@@ -90,7 +90,7 @@ def import_orchestrator(
     step="start_import",
     layer_name=None,
     alternate=None,
-    action=exa.IMPORT.value,
+    action=exa.UPLOAD.value,
     **kwargs,
 ):
     """
@@ -179,7 +179,7 @@ def import_resource(self, execution_id, /, handler_module_path, action, **kwargs
         call_rollback_function(
             execution_id,
             handlers_module_path=handler_module_path,
-            prev_action=exa.IMPORT.value,
+            prev_action=exa.UPLOAD.value,
             layer=None,
             alternate=None,
             error=e,
@@ -309,7 +309,7 @@ def create_geonode_resource(
     layer_name: Optional[str] = None,
     alternate: Optional[str] = None,
     handler_module_path: str = None,
-    action: str = exa.IMPORT.value,
+    action: str = exa.UPLOAD.value,
     **kwargs,
 ):
     """

@@ -176,9 +176,7 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
     def test_import_geopackage(self):
         self._cleanup_layers(name="stazioni_metropolitana")
 
-        payload = {
-            "base_file": open(self.valid_gkpg, "rb"),
-        }
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
         initial_name = "stazioni_metropolitana"
         self._assertimport(payload, initial_name)
         self._cleanup_layers(name="stazioni_metropolitana")
@@ -188,14 +186,10 @@ class ImporterGeoPackageImportTest(BaseImporterEndToEndTest):
     def test_import_gpkg_overwrite(self):
         self._cleanup_layers(name="stazioni_metropolitana")
         initial_name = "stazioni_metropolitana"
-        payload = {
-            "base_file": open(self.valid_gkpg, "rb"),
-        }
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {
-            "base_file": open(self.valid_gkpg, "rb"),
-        }
+        payload = {"base_file": open(self.valid_gkpg, "rb"), "action": "upload"}
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
@@ -210,9 +204,7 @@ class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
     def test_import_geopackage_with_no_crs_table(self):
 
         self._cleanup_layers(name="mattia_test")
-        payload = {
-            "base_file": open(self.no_crs_gpkg, "rb"),
-        }
+        payload = {"base_file": open(self.no_crs_gpkg, "rb"), "action": "upload"}
         initial_name = "mattia_test"
         with self.assertLogs(level="ERROR") as _log:
             self._assertimport(payload, initial_name)
@@ -235,10 +227,7 @@ class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
         _select_valid_layers.return_value = []
 
         self._cleanup_layers(name="mattia_test")
-        payload = {
-            "base_file": open(self.no_crs_gpkg, "rb"),
-            "store_spatial_file": True,
-        }
+        payload = {"base_file": open(self.no_crs_gpkg, "rb"), "store_spatial_file": True, "action": "upload"}
 
         with self.assertLogs(level="ERROR") as _log:
             self.client.force_login(self.admin)
@@ -261,9 +250,7 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
 
         self._cleanup_layers(name="valid")
 
-        payload = {
-            "base_file": open(self.valid_geojson, "rb"),
-        }
+        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
         initial_name = "valid"
         self._assertimport(payload, initial_name)
 
@@ -273,14 +260,10 @@ class ImporterGeoJsonImportTest(BaseImporterEndToEndTest):
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_geojson_overwrite(self):
         self._cleanup_layers(name="valid")
-        payload = {
-            "base_file": open(self.valid_geojson, "rb"),
-        }
+        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
         initial_name = "valid"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
-        payload = {
-            "base_file": open(self.valid_geojson, "rb"),
-        }
+        payload = {"base_file": open(self.valid_geojson, "rb"), "action": "upload"}
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
@@ -294,9 +277,7 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
     def test_import_geojson(self):
         self._cleanup_layers(name="valid")
 
-        payload = {
-            "base_file": open(self.valid_csv, "rb"),
-        }
+        payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
         initial_name = "valid"
         self._assertimport(payload, initial_name)
         self._cleanup_layers(name="valid")
@@ -305,15 +286,11 @@ class ImporterGCSVImportTest(BaseImporterEndToEndTest):
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_csv_overwrite(self):
         self._cleanup_layers(name="valid")
-        payload = {
-            "base_file": open(self.valid_csv, "rb"),
-        }
+        payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
         initial_name = "valid"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {
-            "base_file": open(self.valid_csv, "rb"),
-        }
+        payload = {"base_file": open(self.valid_csv, "rb"), "action": "upload"}
         initial_name = "valid"
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
@@ -326,9 +303,7 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_kml(self):
         self._cleanup_layers(name="sample_point_dataset")
-        payload = {
-            "base_file": open(self.valid_kml, "rb"),
-        }
+        payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
         initial_name = "sample_point_dataset"
         self._assertimport(payload, initial_name)
         self._cleanup_layers(name="sample_point_dataset")
@@ -339,14 +314,10 @@ class ImporterKMLImportTest(BaseImporterEndToEndTest):
         initial_name = "sample_point_dataset"
 
         self._cleanup_layers(name="sample_point_dataset")
-        payload = {
-            "base_file": open(self.valid_kml, "rb"),
-        }
+        payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {
-            "base_file": open(self.valid_kml, "rb"),
-        }
+        payload = {"base_file": open(self.valid_kml, "rb"), "action": "upload"}
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
         self._assertimport(payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated)
@@ -359,6 +330,7 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
     def test_import_shapefile(self):
         self._cleanup_layers(name="air_Runways")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
+        payload["action"] = "upload"
         initial_name = "air_Runways"
         self._assertimport(payload, initial_name)
         self._cleanup_layers(name="air_Runways")
@@ -369,11 +341,13 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
 
         self._cleanup_layers(name="air_Runways")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
+        payload["action"] = "upload"
         initial_name = "air_Runways"
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
+        payload["action"] = "upload"
         self._assertimport(
             payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
         )
@@ -386,9 +360,7 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
     def test_import_raster(self):
         self._cleanup_layers(name="test_raster")
 
-        payload = {
-            "base_file": open(self.valid_tif, "rb"),
-        }
+        payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         initial_name = "test_raster"
         self._assertimport(payload, initial_name)
         self._cleanup_layers(name="test_raster")
@@ -399,14 +371,10 @@ class ImporterRasterImportTest(BaseImporterEndToEndTest):
         initial_name = "test_raster"
 
         self._cleanup_layers(name="test_raster")
-        payload = {
-            "base_file": open(self.valid_tif, "rb"),
-        }
+        payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         prev_dataset = self._assertimport(payload, initial_name, keep_resource=True)
 
-        payload = {
-            "base_file": open(self.valid_tif, "rb"),
-        }
+        payload = {"base_file": open(self.valid_tif, "rb"), "action": "upload"}
         initial_name = "test_raster"
         payload["overwrite_existing_layer"] = True
         payload["resource_pk"] = prev_dataset.pk
@@ -422,6 +390,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             "url": "https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.1/TilesetWithFullMetadata/tileset.json",
             "title": "Remote Title",
             "type": "3dtiles",
+            "action": "upload",
         }
         initial_name = "remote_title"
         assert_payload = {
@@ -438,6 +407,7 @@ class Importer3dTilesImportTest(BaseImporterEndToEndTest):
             "url": "https://raw.githubusercontent.com/CesiumGS/3d-tiles-samples/main/1.1/TilesetWithFullMetadata/tileset.json",
             "title": "Remote Title",
             "type": "3dtiles",
+            "action": "upload",
         }
         initial_name = "remote_title"
         assert_payload = {
@@ -485,6 +455,7 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
             "type": "wms",
             "lookup": resource_to_take,
             "parse_remote_metadata": True,
+            "action": "upload",
         }
         initial_name = res.title
         assert_payload = {

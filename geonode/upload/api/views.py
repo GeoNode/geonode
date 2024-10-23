@@ -176,7 +176,6 @@ class ImporterViewSet(DynamicModelViewSet):
             )
 
         handler = orchestrator.get_handler(_data)
-
         # not file but handler means that is a remote resource
         if handler:
             asset = None
@@ -191,8 +190,6 @@ class ImporterViewSet(DynamicModelViewSet):
 
                     self.validate_upload(request, storage_manager)
 
-                action = ExecutionRequestAction.IMPORT.value
-
                 input_params = {
                     **{"files": files, "handler_module_path": str(handler)},
                     **extracted_params,
@@ -205,7 +202,7 @@ class ImporterViewSet(DynamicModelViewSet):
                             "asset_module_path": f"{asset.__module__}.{asset.__class__.__name__}",
                         }
                     )
-
+                action = input_params.get("action")
                 execution_id = orchestrator.create_execution_request(
                     user=request.user,
                     func_name=next(iter(handler.get_task_list(action=action))),
@@ -213,7 +210,6 @@ class ImporterViewSet(DynamicModelViewSet):
                     input_params=input_params,
                     action=action,
                     name=_file.name if _file else extracted_params.get("title", None),
-                    source=extracted_params.get("source"),
                 )
 
                 sig = import_orchestrator.s(files, str(execution_id), handler=str(handler), action=action)
@@ -234,7 +230,7 @@ class ImporterViewSet(DynamicModelViewSet):
                 logger.exception(e)
                 raise ImportException(detail=e.args[0] if len(e.args) > 0 else e)
 
-        raise ImportException(detail="No handlers found for this dataset type")
+        raise ImportException(detail="No handlers found for this dataset type/action")
 
     def _handle_asset(self, request, asset_dir, storage_manager, _data, handler):
         if storage_manager is None:
@@ -328,7 +324,6 @@ class ResourceImporter(DynamicModelViewSet):
                         **{"handler_module_path": handler_module_path},
                         **extracted_params,
                     },
-                    source="importer_copy",
                 )
 
                 sig = import_orchestrator.s(
