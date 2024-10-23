@@ -103,7 +103,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
         """
         if action == exa.COPY.value:
             title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title")}, _data
+            return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
         additional_params = {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),

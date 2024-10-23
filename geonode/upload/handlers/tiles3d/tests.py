@@ -99,7 +99,7 @@ class TestTiles3DFileHandler(TestCase):
             action="copy",
         )
 
-        self.assertEqual(actual, {"title": "title_of_the_cloned_resource"})
+        self.assertEqual(actual, {"store_spatial_file": True, "title": "title_of_the_cloned_resource"})
 
     def test_is_valid_should_raise_exception_if_the_3dtiles_is_invalid(self):
         data = {"base_file": "/using/double/dot/in/the/name/is/an/error/file.invalid.json"}

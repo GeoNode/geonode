@@ -135,7 +135,7 @@ class BaseVectorFileHandler(BaseHandler):
         """
         if action == exa.COPY.value:
             title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title")}, _data
+            return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
@@ -258,7 +258,7 @@ class BaseVectorFileHandler(BaseHandler):
         that the execution is completed
         """
         _exec = BaseHandler.perform_last_step(execution_id=execution_id)
-        if _exec and not _exec.input_params.get("store_spatial_file", False):
+        if _exec and not _exec.input_params.get("store_spatial_file", True):
             resources = ResourceHandlerInfo.objects.filter(execution_request=_exec)
             # getting all assets list
             assets = filter(None, [get_default_asset(x.resource) for x in resources])

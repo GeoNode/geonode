@@ -102,7 +102,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         """
         if action == exa.COPY.value:
             title = json.loads(_data.get("defaults"))
-            return {"title": title.pop("title")}, _data
+            return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
         return {
             "source": _data.pop("source", "upload"),
