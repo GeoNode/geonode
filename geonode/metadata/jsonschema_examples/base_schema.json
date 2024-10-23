@@ -3,7 +3,8 @@
     "type": "string",
     "description": "The UUID of the resource",
     "maxLength": 36,
-    "ui:widget": "hidden",
+    "readOnly": true,
+    "NO_ui:widget": "hidden",
     "geonode:handler": "base"
   },
   "title": {
@@ -24,6 +25,56 @@
     },
     "geonode:handler": "base"
   },
+  "date": {
+    "type": "string",
+    "format": "date-time",
+    "title": "Date"
+  },
+  "date_type": {
+    "type": "string",
+    "title": "date type",
+    "maxLength": 255,
+    "enum": [
+      "Creation",
+      "Publication",
+      "Revision"
+    ],
+    "default": "Publication"
+  },
+  "category": {
+    "type": "string",
+    "title": "category",
+    "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets",
+    "maxLength": 255
+  },
+  "language": {
+    "type": "string",
+    "title": "language",
+    "description": "Language used within the dataset",
+    "maxLength": 255,
+    "default": "eng"
+  },
+  "license": {
+    "type": "string",
+    "title": "license",
+    "description": "license of the dataset",
+    "maxLength": 255,
+    "default": "eng"
+  },
+  "attribution": {
+    "type": "string",
+    "title": "Attribution",
+    "description": "Authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
+    "maxLength": 2048
+  },
+  "regions": {
+    "type": "array",
+    "title": "Regions",
+    "description": "keyword identifies a location",
+    "items": {
+      "type": "string"
+    }
+  },
   "purpose": {
     "type": "string",
     "title": "purpose",
@@ -40,28 +91,11 @@
     "maxLength": 255,
     "ui:widget": "hidden"
   },
-  "date_type": {
-    "type": "string",
-    "title": "date type",
-    "maxLength": 255,
-    "enum": [
-      "Creation",
-      "Publication",
-      "Revision"
-    ],
-    "default": "Publication"
-  },
   "edition": {
     "type": "string",
     "title": "edition",
     "description": "Version of the cited resource",
     "maxLength": 255
-  },
-  "attribution": {
-    "type": "string",
-    "title": "Attribution",
-    "description": "Authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
-    "maxLength": 2048
   },
   "doi": {
     "type": "string",
@@ -73,57 +107,7 @@
     "type": "string",
     "title": "maintenance frequency",
     "description": "frequency with which modifications and deletions are made to the data after it is first produced",
-    "maxLength": 255,
-    "oneOf": [
-      {
-        "const": "unknown",
-        "title": "frequency of maintenance for the data is not known"
-      },
-      {
-        "const": "continual",
-        "title": "data is repeatedly and frequently updated"
-      },
-      {
-        "const": "notPlanned",
-        "title": "there are no plans to update the data"
-      },
-      {
-        "const": "daily",
-        "title": "data is updated each day"
-      },
-      {
-        "const": "annually",
-        "title": "data is updated every year"
-      },
-      {
-        "const": "asNeeded",
-        "title": "data is updated as deemed necessary"
-      },
-      {
-        "const": "monthly",
-        "title": "data is updated each month"
-      },
-      {
-        "const": "fortnightly",
-        "title": "data is updated every two weeks"
-      },
-      {
-        "const": "irregular",
-        "title": "data is updated in intervals that are uneven in duration"
-      },
-      {
-        "const": "weekly",
-        "title": "data is updated on a weekly basis"
-      },
-      {
-        "const": "biannually",
-        "title": "data is updated twice each year"
-      },
-      {
-        "const": "quarterly",
-        "title": "data is updated every three months"
-      }
-    ]
+    "maxLength": 255
   },
   "constraints_other": {
     "type": "string",
@@ -133,13 +117,6 @@
       "widget": "textarea",
       "rows": 5
     }
-  },
-  "language": {
-    "type": "string",
-    "title": "language",
-    "description": "Language used within the dataset",
-    "maxLength": 255,
-    "default": "eng"
   },
   "supplemental_information": {
     "type": "string",
@@ -168,141 +145,5 @@
     "maxLength": 30,
     "default": "EPSG:4326",
     "ui:widget": "hidden"
-  },
-  "metadata_uploaded_preserve": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "default": false
-  },
-  "featured": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "title": "Featured",
-    "description": "Should this resource be advertised in home page?",
-    "default": false
-  },
-  "was_published": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "title": "Was published",
-    "description": "Previous Published state.",
-    "default": true
-  },
-  "is_published": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "title": "Is published",
-    "description": "Should this resource be published and searchable?",
-    "default": true
-  },
-  "was_approved": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "title": "Was Approved",
-    "description": "Previous Approved state.",
-    "default": true
-  },
-  "is_approved": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "title": "Approved",
-    "description": "Is this resource validated from a publisher or editor?",
-    "default": true
-  },
-  "advertised": {
-    "$comment": "metadata XML specific fields",
-    "type": "boolean",
-    "title": "Advertised",
-    "description": "If False, will hide the resource from search results and catalog listings",
-    "default": true
-  },
-  "thumbnail_url": {
-    "$comment": "fields necessary for the apis",
-    "type": "string",
-    "title": "Thumbnail url",
-    "ui:options": {
-      "widget": "textarea",
-      "rows": 5
-    }
-  },
-  "thumbnail_path": {
-    "$comment": "fields necessary for the apis",
-    "type": "string",
-    "title": "Thumbnail path",
-    "ui:options": {
-      "widget": "textarea",
-      "rows": 5
-    }
-  },
-  "state": {
-    "$comment": "fields necessary for the apis",
-    "type": "string",
-    "title": "State",
-    "description": "Hold the resource processing state.",
-    "default": "READY",
-    "maxLength": 16,
-    "oneOf": [
-      {
-        "const": "READY",
-        "title": "READY"
-      },
-      {
-        "const": "RUNNING",
-        "title": "RUNNING"
-      },
-      {
-        "const": "PENDING",
-        "title": "PENDING"
-      },
-      {
-        "const": "WAITING",
-        "title": "WAITING"
-      },
-      {
-        "const": "INCOMPLETE",
-        "title": "INCOMPLETE"
-      },
-      {
-        "const": "COMPLETE",
-        "title": "COMPLETE"
-      },
-      {
-        "const": "INVALID",
-        "title": "INVALID"
-      },
-      {
-        "const": "PROCESSED",
-        "title": "PROCESSED"
-      }
-    ]
-  },
-  "sourcetype": {
-    "$comment": "fields necessary for the apis",
-    "type": "string",
-    "title": "Source Type",
-    "description": "The resource source type, which can be one of 'LOCAL', 'REMOTE' or 'COPYREMOTE'.",
-    "default": "LOCAL",
-    "maxLength": 16,
-    "oneOf": [
-      {
-        "const": "LOCAL",
-        "title": "LOCAL"
-      },
-      {
-        "const": "REMOTE",
-        "title": "REMOTE"
-      },
-      {
-        "const": "COPYREMOTE",
-        "title": "COPYREMOTE"
-      }
-    ]
-  },
-  "metadata_only": {
-    "$comment": "fields controlling security state",
-    "type": "boolean",
-    "title": "Metadata",
-    "description": "If true, will be excluded from search",
-    "default": false
   }
 }

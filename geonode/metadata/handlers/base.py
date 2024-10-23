@@ -19,14 +19,54 @@
 
 import json
 import logging
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, TopicCategory, License, Region
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
-from geonode.base.enumerations import ALL_LANGUAGES
+from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
 from django.utils.translation import gettext as _
 
 
 logger = logging.getLogger(__name__)
+
+
+class CategorySubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        # subschema["title"] = _("topiccategory")
+        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.gn_description, "description": tc.description}
+                              for tc in TopicCategory.objects.order_by("gn_description")]
+
+class FrequencySubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["oneOf"] = [{"const": key,"title": val}
+                              for key, val in dict(UPDATE_FREQUENCIES).items()]
+
+class LanguageSubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["oneOf"] = [{"const": key,"title": val}
+                              for key, val in dict(ALL_LANGUAGES).items()]
+
+class LicenseSubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.name, "description": tc.description}
+                              for tc in License.objects.order_by("name")]
+
+class RegionSubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["items"]["anyOf"] = [{"const": tc.code,"title": tc.name}
+                                       for tc in Region.objects.order_by("name")]
+
+SUBHANDLERS = {
+    "category": CategorySubHandler,
+    "language": LanguageSubHandler,
+    "license": LicenseSubHandler,
+    "maintenance_frequency": FrequencySubHandler,
+    "regions": RegionSubHandler,
+}
 
 
 class BaseHandler(MetadataHandler):
@@ -47,25 +87,21 @@ class BaseHandler(MetadataHandler):
         with open(self.json_base_schema) as f:
             self.base_schema = json.load(f)
         # building the full base schema
-        for subschema_name, subschema_def in self.base_schema.items():
-            localize(subschema_def, 'title')
-            localize(subschema_def, 'abstract')
+        for property_name, subschema in self.base_schema.items():
+            localize(subschema, 'title')
+            localize(subschema, 'abstract')
 
-            jsonschema["properties"][subschema_name] = subschema_def
+            jsonschema["properties"][property_name] = subschema
 
-            # add the base handler identity to the dictionary if it doesn't exist
-            if "geonode:handler" not in subschema_def:
-                subschema_def.update({"geonode:handler": "base"})
+            # add the base handler info to the dictionary if it doesn't exist
+            if "geonode:handler" not in subschema:
+                subschema.update({"geonode:handler": "base"})
 
-            # build the language choices
-            if subschema_name == "language":
-                subschema_def["oneOf"] = []
-                for key, val in dict(ALL_LANGUAGES).items():
-                    langChoice = {
-                        "const": key,
-                        "title": val
-                    }
-                    subschema_def["oneOf"].append(langChoice)
+            # perform further specific initializations
+
+            if subhandler := SUBHANDLERS.get(property_name, None):
+                logger.debug(f"Running subhandler for base field {property_name}")
+                subhandler.update_subschema(subschema, lang)
 
         return jsonschema
 
@@ -84,3 +120,4 @@ class BaseHandler(MetadataHandler):
     def load_context(self, resource: ResourceBase, context: dict):
 
         pass
+

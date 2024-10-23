@@ -18,6 +18,7 @@
 #########################################################################
 
 import logging
+import copy
 from abc import ABCMeta
 
 from django.utils.translation import gettext as _
@@ -43,44 +44,42 @@ class MetadataManager(MetadataManagerInterface):
     """
 
     def __init__(self):
-        self.jsonschema = MODEL_SCHEMA
-        self.schema = None
-        self.instance = {}
+        self.root_schema = MODEL_SCHEMA
+        self.cached_schema = None
         self.handlers = {}
 
     def add_handler(self, handler_id, handler):
-        
-        handler_instance = handler()
-        
-        self.handlers[handler_id] = handler_instance
-
+        self.handlers[handler_id] = handler()
     
     def build_schema(self, lang=None):
-        self.schema =  self.jsonschema.copy()
-        self.schema["title"] = _(self.schema["title"])
+        schema =  copy.deepcopy(self.root_schema)
+        schema["title"] = _(schema["title"])
 
         for handler in self.handlers.values():
-            self.schema = handler.update_schema(self.schema, lang)
+            schema = handler.update_schema(schema, lang)
 
-        return self.schema    
+        return schema
 
     def get_schema(self, lang=None):
-        if not self.schema:
-           self.build_schema(lang)
+        return self.build_schema(lang)
+        #### we dont want caching for the moment
+        if not self.cached_schema:
+            self.cached_schema = self.build_schema(lang)
             
-        return self.schema
+        return self.cached_schema
     
     def build_schema_instance(self, resource):
         
         schema = self.get_schema()
+        instance = {}
 
         for fieldname, field in schema["properties"].items():
             handler_id = field["geonode:handler"]
             handler = self.handlers[handler_id]
             content = handler.get_jsonschema_instance(resource, fieldname)
-            self.instance[fieldname] = content
+            instance[fieldname] = content
         
-        return self.instance
+        return instance
     
     def update_schema_instance(self, resource, content, json_instance):
         
