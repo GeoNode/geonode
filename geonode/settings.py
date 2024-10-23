@@ -1138,42 +1138,51 @@ PYCSW = {
             "allowed_ips": "*",
             # 'csw_harvest_pagesize': '10',
         },
-        "metadata:main": {
-            "identification_title": "GeoNode Catalogue",
-            "identification_abstract": "GeoNode is an open source platform"
-            " that facilitates the creation, sharing, and collaborative use"
-            " of geospatial data",
-            "identification_keywords": "sdi, catalogue, discovery, metadata," " GeoNode",
-            "identification_keywords_type": "theme",
-            "identification_fees": "None",
-            "identification_accessconstraints": "None",
-            "provider_name": "Organization Name",
-            "provider_url": SITEURL,
-            "contact_name": "Lastname, Firstname",
-            "contact_position": "Position Title",
-            "contact_address": "Mailing Address",
-            "contact_city": "City",
-            "contact_stateorprovince": "Administrative Area",
-            "contact_postalcode": "Zip or Postal Code",
-            "contact_country": "Country",
-            "contact_phone": "+xx-xxx-xxx-xxxx",
-            "contact_fax": "+xx-xxx-xxx-xxxx",
-            "contact_email": "Email Address",
-            "contact_url": "Contact URL",
-            "contact_hours": "Hours of Service",
-            "contact_instructions": "During hours of service. Off on " "weekends.",
-            "contact_role": "pointOfContact",
-        },
-        "metadata:inspire": {
-            "enabled": "true",
-            "languages_supported": "eng,gre",
-            "default_language": "eng",
-            "date": "YYYY-MM-DD",
-            "gemet_keywords": "Utility and governmental services",
-            "conformity_service": "notEvaluated",
-            "contact_name": "Organization Name",
-            "contact_email": "Email Address",
-            "temp_extent": "YYYY-MM-DD/YYYY-MM-DD",
+        "metadata": {
+            "inspire": {
+                "enabled": True,
+                "languages_supported": "eng,gre",
+                "default_language": "eng",
+                "date": "YYYY-MM-DD",
+                "gemet_keywords": "Utility and governmental services",
+                "conformity_service": "notEvaluated",
+                "contact_name": "Organization Name",
+                "contact_email": "Email Address",
+                "temp_extent": {
+                    "begin": "YYYY-MM-DD",
+                    "end": "YYYY-MM-DD",
+                },
+            },
+            "identification": {
+                "title": "GeoNode Catalogue",
+                "description": "GeoNode is an open source platform"
+                " that facilitates the creation, sharing, and collaborative use"
+                " of geospatial data",
+                "keywords": "sdi, catalogue, discovery, metadata," " GeoNode",
+                "keywords_type": "theme",
+                "fees": "None",
+                "accessconstraints": "None",
+            },
+            "provider": {
+                "name": "Organization Name",
+                "url": SITEURL,
+            },
+            "contact": {
+                "name": "Lastname, Firstname",
+                "position": "Position Title",
+                "address": "Mailing Address",
+                "city": "City",
+                "stateorprovince": "Administrative Area",
+                "postalcode": "Zip or Postal Code",
+                "country": "Country",
+                "phone": "+xx-xxx-xxx-xxxx",
+                "fax": "+xx-xxx-xxx-xxxx",
+                "email": "Email Address",
+                "url": "Contact URL",
+                "hours": "Hours of Service",
+                "instructions": "During hours of service. Off on " "weekends.",
+                "role": "pointOfContact",
+            },
         },
     }
 }
@@ -1457,10 +1466,10 @@ if GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY == "mapstore":
             pycsw_config = PYCSW["CONFIGURATION"]
             if pycsw_config:
                 pycsw_catalogue = {
-                    f"{pycsw_config['metadata:main']['identification_title']}": {
+                    f"{pycsw_config['metadata']['identification']}": {
                         "url": CATALOGUE["default"]["URL"],
                         "type": "csw",
-                        "title": pycsw_config["metadata:main"]["identification_title"],
+                        "title": pycsw_config["metadata"]["identification"]["title"],
                         "autoload": True,
                         "layerOptions": {"tileSize": DEFAULT_TILE_SIZE},
                     }

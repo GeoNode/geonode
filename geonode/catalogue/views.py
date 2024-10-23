@@ -164,12 +164,12 @@ def opensearch_dispatch(request):
     """OpenSearch wrapper"""
 
     ctx = {
-        "shortname": settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_title"],
-        "description": settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_abstract"],
-        "developer": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_name"],
-        "contact": settings.PYCSW["CONFIGURATION"]["metadata:main"]["contact_email"],
-        "attribution": settings.PYCSW["CONFIGURATION"]["metadata:main"]["provider_name"],
-        "tags": settings.PYCSW["CONFIGURATION"]["metadata:main"]["identification_keywords"].replace(",", " "),
+        "shortname": settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["title"],
+        "description": settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["description"],
+        "developer": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["name"],
+        "contact": settings.PYCSW["CONFIGURATION"]["metadata"]["contact"]["email"],
+        "attribution": settings.PYCSW["CONFIGURATION"]["metadata"]["provider"]["name"],
+        "tags": settings.PYCSW["CONFIGURATION"]["metadata"]["identification"]["keywords"].replace(",", " "),
         "url": settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL,
     }
 
