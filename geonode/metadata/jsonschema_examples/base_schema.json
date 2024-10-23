@@ -41,6 +41,16 @@
     ],
     "default": "Publication"
   },
+  "group": {
+    "type": "string",
+    "title": "group",
+    "todo": true
+  },
+  "keywords": {
+    "type": "string",
+    "title": "keywords",
+    "todo": true
+  },
   "category": {
     "type": "string",
     "title": "category",
@@ -75,21 +85,30 @@
       "type": "string"
     }
   },
-  "purpose": {
+  "data_quality_statement": {
     "type": "string",
-    "title": "purpose",
-    "description": "Summary of the intentions with which the resource(s) was developed",
-    "maxLength": 500,
+    "title": "data quality statement",
+    "description": "general explanation of the data producer's knowledge about the lineage of a dataset",
+    "maxLength": 2000,
     "ui:options": {
       "widget": "textarea",
       "rows": 5
-    },
-    "geonode:handler": "base"
+    }
   },
-  "alternate": {
+  "restriction_code_type": {
     "type": "string",
-    "maxLength": 255,
-    "ui:widget": "hidden"
+    "title": "restriction_code_type",
+    "description": "limitation(s) placed upon the access or use of the data.",
+    "maxLength": 255
+  },
+  "constraints_other": {
+    "type": "string",
+    "title": "Other constrains",
+    "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    }
   },
   "edition": {
     "type": "string",
@@ -103,20 +122,16 @@
     "description": "a DOI will be added by Admin before publication.",
     "maxLength": 255
   },
-  "maintenance_frequency": {
+  "purpose": {
     "type": "string",
-    "title": "maintenance frequency",
-    "description": "frequency with which modifications and deletions are made to the data after it is first produced",
-    "maxLength": 255
-  },
-  "constraints_other": {
-    "type": "string",
-    "title": "Other constrains",
-    "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
+    "title": "purpose",
+    "description": "Summary of the intentions with which the resource(s) was developed",
+    "maxLength": 500,
     "ui:options": {
       "widget": "textarea",
       "rows": 5
-    }
+    },
+    "geonode:handler": "base"
   },
   "supplemental_information": {
     "type": "string",
@@ -129,21 +144,29 @@
       "rows": 5
     }
   },
-  "data_quality_statement": {
+  "temporal_extent_start": {
     "type": "string",
-    "title": "data quality statement",
-    "description": "general explanation of the data producer's knowledge about the lineage of a dataset",
-    "maxLength": 2000,
-    "ui:options": {
-      "widget": "textarea",
-      "rows": 5
-    }
+    "format": "date-time",
+    "title": "temporal_extent_start",
+    "description": "time period covered by the content of the dataset (start)"
   },
-  "srid": {
+  "temporal_extent_end": {
     "type": "string",
-    "description": "The SRID of the resource",
-    "maxLength": 30,
-    "default": "EPSG:4326",
-    "ui:widget": "hidden"
+    "format": "date-time",
+    "title": "temporal_extent_end",
+    "description": "time period covered by the content of the dataset (end)"
+  },
+  "maintenance_frequency": {
+    "type": "string",
+    "title": "maintenance frequency",
+    "description": "frequency with which modifications and deletions are made to the data after it is first produced",
+    "maxLength": 255
+  },
+  "spatial_representation_type": {
+    "type": "string",
+    "title": "spatial_representation_type",
+    "description": "method used to represent geographic information in the dataset.",
+    "maxLength": 255
   }
+
 }

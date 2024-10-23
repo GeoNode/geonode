@@ -19,7 +19,8 @@
 
 import json
 import logging
-from geonode.base.models import ResourceBase, TopicCategory, License, Region
+from geonode.base.models import ResourceBase, TopicCategory, License, Region, RestrictionCodeType, \
+    SpatialRepresentationType
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
@@ -60,12 +61,27 @@ class RegionSubHandler:
         subschema["items"]["anyOf"] = [{"const": tc.code,"title": tc.name}
                                        for tc in Region.objects.order_by("name")]
 
+class RestrictionsSubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
+                              for tc in RestrictionCodeType.objects.order_by("identifier")]
+
+class SpatialRepresentationTypeSubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
+                              for tc in SpatialRepresentationType.objects.order_by("identifier")]
+
+
 SUBHANDLERS = {
     "category": CategorySubHandler,
     "language": LanguageSubHandler,
     "license": LicenseSubHandler,
     "maintenance_frequency": FrequencySubHandler,
     "regions": RegionSubHandler,
+    "restriction_code_type": RestrictionsSubHandler,
+    "spatial_representation_type": SpatialRepresentationTypeSubHandler,
 }
 
 
