@@ -277,15 +277,13 @@ class ThesaurusViewSet(DynamicModelViewSet):
             ret.append(
                 {
                     "id": tkl.keyword.pk,
-                    "text": tkl.label,
-                    "selected_text": tkl.label,
+                    "label": tkl.label,
                 })
         for tk in all_keywords_qs.filter(id__in=keywords_not_translated_qs).all():
             ret.append(
                 {
                     "id": tk.pk,
-                    "text": f"! {tk.alt_label}",
-                    "selected_text": f"! {tk.alt_label}",
+                    "label": f"! {tk.alt_label}",
                 })
 
         return JsonResponse({"results":ret})
