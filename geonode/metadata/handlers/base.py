@@ -21,7 +21,7 @@ import json
 import logging
 from datetime import datetime
 
-from geonode.base.models import ResourceBase, TopicCategory, License, Region, RestrictionCodeType, \
+from geonode.base.models import ResourceBase, TopicCategory, License, RestrictionCodeType, \
     SpatialRepresentationType
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
@@ -93,17 +93,6 @@ class KeywordsSubHandler(SubHandler):
     def serialize(cls, value):
         return "TODO!!!"
 
-class RegionSubHandler(SubHandler):
-    @classmethod
-    def update_subschema(cls, subschema, lang=None):
-        subschema["items"]["anyOf"] = [{"const": tc.code,"title": tc.name}
-                                       for tc in Region.objects.order_by("name")]
-    @classmethod
-    def serialize(cls, db_value):
-        # TODO
-        return []
-
-
 class RestrictionsSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
@@ -125,7 +114,6 @@ SUBHANDLERS = {
     "license": LicenseSubHandler,
     "keywords": KeywordsSubHandler,
     "maintenance_frequency": FrequencySubHandler,
-    "regions": RegionSubHandler,
     "restriction_code_type": RestrictionsSubHandler,
     "spatial_representation_type": SpatialRepresentationTypeSubHandler,
 }

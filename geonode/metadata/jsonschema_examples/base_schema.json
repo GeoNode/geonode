@@ -71,14 +71,6 @@
     "description": "Authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
     "maxLength": 2048
   },
-  "regions": {
-    "type": "array",
-    "title": "Regions",
-    "description": "keyword identifies a location",
-    "items": {
-      "type": "string"
-    }
-  },
   "data_quality_statement": {
     "type": "string",
     "title": "data quality statement",
