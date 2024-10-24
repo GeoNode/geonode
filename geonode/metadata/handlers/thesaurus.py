@@ -125,13 +125,7 @@ class TKeywordsHandler(MetadataHandler):
         }
 
         # add thesauri after category
-        ret_properties = {}
-        for key,val in jsonschema["properties"].items():
-            ret_properties[key] = val
-            if key == "category":
-                ret_properties["tkeywords"] = tkeywords
-
-        jsonschema["properties"] = ret_properties
+        self._add_after(jsonschema, "category", "tkeywords", tkeywords)
 
         return jsonschema
 

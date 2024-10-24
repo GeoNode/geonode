@@ -62,3 +62,14 @@ class MetadataHandler(metaclass=ABCMeta):
         Called before calls to update_resource in order to initialize info needed by the handler
         """
         pass
+
+    def _add_after(self, jsonschema, after_what, property_name, subschema):
+        # add thesauri after category
+        ret_properties = {}
+        for key,val in jsonschema["properties"].items():
+            ret_properties[key] = val
+            if key == after_what:
+                ret_properties[property_name] = subschema
+
+        jsonschema["properties"] = ret_properties
+

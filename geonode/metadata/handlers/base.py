@@ -148,10 +148,9 @@ class BaseHandler(MetadataHandler):
                 subschema.update({"geonode:handler": "base"})
 
             # perform further specific initializations
-
-            if subhandler := SUBHANDLERS.get(property_name, None):
+            if property_name in SUBHANDLERS:
                 logger.debug(f"Running subhandler for base field {property_name}")
-                subhandler.update_subschema(subschema, lang)
+                SUBHANDLERS[property_name].update_subschema(subschema, lang)
 
         return jsonschema
 
@@ -160,9 +159,9 @@ class BaseHandler(MetadataHandler):
         field_value = getattr(resource, field_name)
 
         # perform specific transformation if any
-        if subhandler := SUBHANDLERS.get(field_name, None):
+        if field_name in SUBHANDLERS:
             logger.debug(f"Serializing base field {field_name}")
-            field_value = subhandler.serialize(field_value)
+            field_value = SUBHANDLERS[field_name].serialize(field_value)
 
         return field_value
 
