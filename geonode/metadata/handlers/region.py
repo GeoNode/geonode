@@ -55,13 +55,11 @@ class RegionHandler(MetadataHandler):
                 "anyOf": subschema
             },
             "geonode:handler": "region",
-            #TODO autocomplete
-            # "ui:options": {
-                #"geonode-ui:autocomplete": reverse(
-                 #       "regions_autocomplete",
-                        #kwargs={"regionsid": ct["id"]}
-                 #       )
-                # },
+            "ui:options": {
+                "geonode-ui:autocomplete": reverse(
+                        "autocomplete_region"
+                        )
+                 },
         }
 
         # add regions after Attribution
