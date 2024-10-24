@@ -19,6 +19,8 @@
 
 import json
 import logging
+from datetime import datetime
+
 from geonode.base.models import ResourceBase, TopicCategory, License, Region, RestrictionCodeType, \
     SpatialRepresentationType
 from geonode.metadata.handlers.abstract import MetadataHandler
@@ -30,44 +32,85 @@ from django.utils.translation import gettext as _
 logger = logging.getLogger(__name__)
 
 
-class CategorySubHandler:
+class SubHandler:
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        pass
+
+    @classmethod
+    def serialize(cls, db_value):
+        return db_value
+
+
+class CategorySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         # subschema["title"] = _("topiccategory")
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.gn_description, "description": tc.description}
                               for tc in TopicCategory.objects.order_by("gn_description")]
 
-class FrequencySubHandler:
+class DateTypeSubHandler(SubHandler):
+    @classmethod
+    def update_subschema(cls, subschema, lang=None):
+        subschema["oneOf"] = [{"const": i.lower(), "title": _(i)}
+                              for i in ["Creation", "Publication", "Revision"]]
+        subschema["default"] = "Publication"
+
+class DateSubHandler(SubHandler):
+    @classmethod
+    def serialize(cls, value):
+        if isinstance(value, datetime):
+            return value.isoformat()
+        return value
+
+class FrequencySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key,"title": val}
                               for key, val in dict(UPDATE_FREQUENCIES).items()]
 
-class LanguageSubHandler:
+class LanguageSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key,"title": val}
                               for key, val in dict(ALL_LANGUAGES).items()]
 
-class LicenseSubHandler:
+class LicenseSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.name, "description": tc.description}
                               for tc in License.objects.order_by("name")]
 
-class RegionSubHandler:
+    @classmethod
+    def serialize(cls, db_value):
+        if isinstance(db_value, License):
+            return db_value.identifier
+        return db_value
+
+
+class KeywordsSubHandler(SubHandler):
+    @classmethod
+    def serialize(cls, value):
+        return "TODO!!!"
+
+class RegionSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["items"]["anyOf"] = [{"const": tc.code,"title": tc.name}
                                        for tc in Region.objects.order_by("name")]
+    @classmethod
+    def serialize(cls, db_value):
+        # TODO
+        return None
 
-class RestrictionsSubHandler:
+
+class RestrictionsSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
                               for tc in RestrictionCodeType.objects.order_by("identifier")]
 
-class SpatialRepresentationTypeSubHandler:
+class SpatialRepresentationTypeSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
@@ -76,8 +119,11 @@ class SpatialRepresentationTypeSubHandler:
 
 SUBHANDLERS = {
     "category": CategorySubHandler,
+    "date_type": DateTypeSubHandler,
+    "date": DateSubHandler,
     "language": LanguageSubHandler,
     "license": LicenseSubHandler,
+    "keywords": KeywordsSubHandler,
     "maintenance_frequency": FrequencySubHandler,
     "regions": RegionSubHandler,
     "restriction_code_type": RestrictionsSubHandler,
@@ -124,6 +170,11 @@ class BaseHandler(MetadataHandler):
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
 
         field_value = getattr(resource, field_name)
+
+        # perform specific transformation if any
+        if subhandler := SUBHANDLERS.get(field_name, None):
+            logger.debug(f"Serializing base field {field_name}")
+            field_value = subhandler.serialize(field_value)
 
         return field_value
 

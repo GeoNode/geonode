@@ -33,13 +33,7 @@
   "date_type": {
     "type": "string",
     "title": "date type",
-    "maxLength": 255,
-    "enum": [
-      "Creation",
-      "Publication",
-      "Revision"
-    ],
-    "default": "Publication"
+    "maxLength": 255
   },
   "group": {
     "type": "string",
