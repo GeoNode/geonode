@@ -101,7 +101,7 @@ class RegionSubHandler(SubHandler):
     @classmethod
     def serialize(cls, db_value):
         # TODO
-        return None
+        return []
 
 
 class RestrictionsSubHandler(SubHandler):

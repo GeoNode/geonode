@@ -119,6 +119,9 @@ class TKeywordsHandler(MetadataHandler):
             "description": _("Keywords from controlled vocabularies"),
             "geonode:handler": "thesaurus",
             "properties": thesauri,
+            # "ui:options": {
+            #     'geonode-ui:group': 'Thesauri grop'
+            # }
         }
 
         # add thesauri after category
@@ -134,7 +137,7 @@ class TKeywordsHandler(MetadataHandler):
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
 
-        return None
+        return {}
 
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
 
