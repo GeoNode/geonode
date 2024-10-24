@@ -81,13 +81,10 @@ class TKeywordsHandler(MetadataHandler):
         # copy info to json schema
         thesauri = {}
         for id,ct in collected_thesauri.items():
-            thesaurus = {}
-            thesaurus["type"] = "object"
-            thesaurus["title"] = ct["title"]
-            thesaurus["description"] = ct["description"]
-
-            keywords = {
+            thesaurus = {
                 "type": "array",
+                "title": ct["title"],
+                "description": ct["description"],
                 "items": {
                     "type": "object",
                     "properties": {
@@ -103,14 +100,14 @@ class TKeywordsHandler(MetadataHandler):
                         }
                     }
                 },
-                "ui:options": {
-                    'geonode-ui:autocomplete': reverse(
-                        "thesaurus-keywords_autocomplete",
-                        kwargs={"thesaurusid": ct["id"]})
-                }
+                 "ui:options": {
+                     'geonode-ui:autocomplete': reverse(
+                         "thesaurus-keywords_autocomplete",
+                         kwargs={"thesaurusid": ct["id"]})
+                 }
             }
-            keywords.update(ct["card"])
-            thesaurus["properties"] = {"keywords": keywords}
+
+            thesaurus.update(ct["card"])
             thesauri[id] = thesaurus
 
         tkeywords = {
