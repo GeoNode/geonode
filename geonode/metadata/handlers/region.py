@@ -35,10 +35,6 @@ class RegionHandler(MetadataHandler):
     The RegionsHandler adds the Regions model options to the schema
     """
 
-    def __init__(self):
-        self.json_base_schema = JSONSCHEMA_BASE
-        self.base_schema = None
-
     def update_schema(self, jsonschema, lang=None):
 
         from geonode.base.models import Region
@@ -65,15 +61,7 @@ class RegionHandler(MetadataHandler):
         }
 
         # add regions after Attribution
-
-        ret_properties = {}
-        for key, val in jsonschema["properties"].items():
-            ret_properties[key] = val
-            if key == "attribution":
-                ret_properties["regions"] = regions
-
-        jsonschema["properties"] = ret_properties
-
+        self._add_after(jsonschema, "attribution", "regions", regions)
         return jsonschema
        
     @classmethod

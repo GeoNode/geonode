@@ -74,7 +74,10 @@ class MetadataManager(MetadataManagerInterface):
         instance = {}
 
         for fieldname, field in schema["properties"].items():
-            handler_id = field["geonode:handler"]
+            handler_id = field.get("geonode:handler", None)
+            if not handler_id:
+                logger.warning(f"Missing geonode:handler for schema property {fieldname}. Skipping")
+                continue
             handler = self.handlers[handler_id]
             content = handler.get_jsonschema_instance(resource, fieldname)
             instance[fieldname] = content

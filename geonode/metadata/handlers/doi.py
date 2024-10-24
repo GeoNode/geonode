@@ -34,7 +34,8 @@ class DOIHandler(MetadataHandler):
                 "type": "string",
                 "title": "DOI",
                 "description": "a DOI will be added by Admin before publication.",
-                "maxLength": 255
+                "maxLength": 255,
+                "geonode:handler": "doi",
         }
 
         # add DOI after edition
