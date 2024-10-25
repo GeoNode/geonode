@@ -54,6 +54,11 @@ class CategorySubHandler(SubHandler):
         if isinstance(db_value, TopicCategory):
             return db_value.identifier
         return db_value
+    
+    @classmethod
+    def get_fk_instance(cls, field_value):
+        db_value = TopicCategory.objects.get(identifier=field_value)
+        return db_value
 
 class DateTypeSubHandler(SubHandler):
     @classmethod
@@ -92,8 +97,12 @@ class LicenseSubHandler(SubHandler):
         if isinstance(db_value, License):
             return db_value.identifier
         return db_value
-
-
+    
+    @classmethod
+    def get_fk_instance(cls, field_value):
+        db_value = License.objects.get(identifier=field_value)
+        return db_value
+    
 class KeywordsSubHandler(SubHandler):
     @classmethod
     def serialize(cls, value):
@@ -110,6 +119,11 @@ class RestrictionsSubHandler(SubHandler):
         if isinstance(db_value, RestrictionCodeType):
             return db_value.identifier
         return db_value
+    
+    @classmethod
+    def get_fk_instance(cls, field_value):
+        db_value = RestrictionCodeType.objects.get(identifier=field_value)
+        return db_value
 
 class SpatialRepresentationTypeSubHandler(SubHandler):
     @classmethod
@@ -123,6 +137,10 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
             return db_value.identifier
         return db_value
 
+    @classmethod
+    def get_fk_instance(cls, field_value):
+        db_value = SpatialRepresentationType.objects.get(identifier=field_value)
+        return db_value
 
 SUBHANDLERS = {
     "category": CategorySubHandler,
@@ -191,8 +209,8 @@ class BaseHandler(MetadataHandler):
 
                 if field_name in SUBHANDLERS:
                     logger.debug(f"Deserializing base field {field_name}")
-                    # Serialize the field_value before setting it in the resource object
-                    field_value = SUBHANDLERS[field_name].serialize(field_value)
+                    # Set the field_value of a foreign key to the resource object
+                    field_value = SUBHANDLERS[field_name].get_fk_instance(field_value)
 
                 setattr(resource, field_name, field_value)
             except Exception as e:
