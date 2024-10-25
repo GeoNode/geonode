@@ -102,12 +102,6 @@
     "description": "Version of the cited resource",
     "maxLength": 255
   },
-  "doi": {
-    "type": "string",
-    "title": "DOI",
-    "description": "a DOI will be added by Admin before publication.",
-    "maxLength": 255
-  },
   "purpose": {
     "type": "string",
     "title": "purpose",

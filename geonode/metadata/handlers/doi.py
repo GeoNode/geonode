@@ -19,57 +19,32 @@
 
 import logging
 
-from rest_framework.reverse import reverse
-from django.utils.translation import gettext as _
-
 from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
-from geonode.metadata.settings import JSONSCHEMA_BASE
-from geonode.base.views import RegionAutocomplete
+
 
 logger = logging.getLogger(__name__)
 
 
-class RegionHandler(MetadataHandler):
-    """
-    The RegionsHandler adds the Regions model options to the schema
-    """
+class DOIHandler(MetadataHandler):
 
     def update_schema(self, jsonschema, lang=None):
 
-        from geonode.base.models import Region
-
-        subschema = [{"const": tc.code,"title": tc.name}
-                                       for tc in Region.objects.order_by("name")]
-        
-        regions = {
-            "type": "array",
-            "title": _("Regions"),
-            "description": _("keyword identifies a location"),
-            "items": {
+        doi_schema = {
                 "type": "string",
-                "anyOf": subschema
-            },
-            "geonode:handler": "region",
-            "ui:options": {
-                "geonode-ui:autocomplete": reverse(
-                        "autocomplete_region"
-                        )
-                 },
+                "title": "DOI",
+                "description": "a DOI will be added by Admin before publication.",
+                "maxLength": 255,
+                "geonode:handler": "doi",
         }
 
-        # add regions after Attribution
-        self._add_after(jsonschema, "attribution", "regions", regions)
+        # add DOI after edition
+        self._add_after(jsonschema, "edition", "doi", doi_schema)
         return jsonschema
-       
-    @classmethod
-    def serialize(cls, db_value):
-        # TODO
-        return []
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
 
-        return None
+        return resource.doi
 
     def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
 
