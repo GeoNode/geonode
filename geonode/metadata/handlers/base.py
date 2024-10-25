@@ -183,18 +183,21 @@ class BaseHandler(MetadataHandler):
 
         return field_value
 
-    def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
        
-        if field_name in content:
+        if field_name in json_instance:
+            try:
+                field_value = json_instance[field_name]
 
-            field_value = content[field_name]
+                if field_name in SUBHANDLERS:
+                    logger.debug(f"Deserializing base field {field_name}")
+                    # Serialize the field_value before setting it in the resource object
+                    field_value = SUBHANDLERS[field_name].serialize(field_value)
 
-            if field_name in SUBHANDLERS:
-                logger.debug(f"Deserializing base field {field_name}")
-                # Serialize the field_value before setting it in the resource object
-                field_value = SUBHANDLERS[field_name].serialize(field_value)
-            
-            setattr(resource, field_name, field_value)
+                setattr(resource, field_name, field_value)
+            except Exception as e:
+                logger.warning(f"Error setting field {field_name}={field_value}: {e}")
+
 
     def load_context(self, resource: ResourceBase, context: dict):
 

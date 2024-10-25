@@ -48,7 +48,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
         """
         Called when persisting data, updates the field field_name of the resource 
         with the content content, where json_instance is  the full JSON Schema instance, 

@@ -92,7 +92,7 @@ class MetadataManager(MetadataManagerInterface):
 
         for fieldname, subschema in schema["properties"].items():
             handler = self.handlers[subschema["geonode:handler"]]
-            handler.update_resource(resource, fieldname, json_instance[fieldname], json_instance)
+            handler.update_resource(resource, fieldname, json_instance)
         
         try:
             resource.save()

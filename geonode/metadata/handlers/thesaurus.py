@@ -130,9 +130,9 @@ class TKeywordsHandler(MetadataHandler):
 
         return {}
 
-    def update_resource(self, resource: ResourceBase, field_name: str, content: dict, json_instance: dict):
-
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
         pass
+
 
     def load_context(self, resource: ResourceBase, context: dict):
 
