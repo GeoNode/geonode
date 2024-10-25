@@ -44,7 +44,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         cls.orchestrator = ImportOrchestrator()
 
     def test_get_handler(self):
-        _data = {"base_file": "file.gpkg", "source": "upload"}
+        _data = {"base_file": "file.gpkg", "action": "upload"}
         actual = self.orchestrator.get_handler(_data)
         self.assertIsNotNone(actual)
         self.assertEqual("geonode.upload.handlers.gpkg.handler.GPKGFileHandler", str(actual))
@@ -102,12 +102,13 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         }
         exec_id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
-            func_name=next(iter(handler.get_task_list(action="import"))),
-            step=next(iter(handler.get_task_list(action="import"))),
+            func_name=next(iter(handler.get_task_list(action="upload"))),
+            step=next(iter(handler.get_task_list(action="upload"))),
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
             },
+            action="upload",
         )
         exec_obj = ExecutionRequest.objects.filter(exec_id=exec_id).first()
         self.assertEqual(count + 1, ExecutionRequest.objects.count())
@@ -120,7 +121,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
-            func_name=next(iter(handler.get_task_list(action="import"))),
+            func_name=next(iter(handler.get_task_list(action="upload"))),
             step="start_import",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
@@ -130,7 +131,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         # test under tests
         self.orchestrator.perform_next_step(
             _id,
-            "import",
+            "upload",
             step="start_import",
             handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
@@ -144,17 +145,18 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
-            func_name=next(iter(handler.get_task_list(action="import"))),
+            func_name=next(iter(handler.get_task_list(action="upload"))),
             step="geonode.upload.create_geonode_resource",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
                 "store_spatial_files": True,
             },
+            action="upload",
         )
         # test under tests
         self.orchestrator.perform_next_step(
             _id,
-            "import",
+            "upload",
             step="geonode.upload.create_geonode_resource",
             handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
         )
@@ -167,7 +169,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         handler = self.orchestrator.load_handler("geonode.upload.handlers.gpkg.handler.GPKGFileHandler")
         _id = self.orchestrator.create_execution_request(
             user=get_user_model().objects.first(),
-            func_name=next(iter(handler.get_task_list(action="import"))),
+            func_name=next(iter(handler.get_task_list(action="upload"))),
             step="start_import",  # adding the first step for the GPKG file
             input_params={
                 "files": {"base_file": "/tmp/file.txt"},
@@ -178,7 +180,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
         with self.assertRaises(Exception):
             self.orchestrator.perform_next_step(
                 _id,
-                "import",
+                "upload",
                 step="start_import",
                 handler_module_path="geonode.upload.handlers.gpkg.handler.GPKGFileHandler",
             )

@@ -19,11 +19,9 @@
 import json
 import logging
 import os
-from geonode.resource.enumerator import ExecutionRequestAction as exa
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from osgeo import ogr
-from geonode.upload.utils import ImporterRequestAction as ira
 
 from geonode.upload.handlers.geojson.exceptions import InvalidGeoJsonException
 
@@ -36,34 +34,24 @@ class GeoJsonFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
-        exa.IMPORT.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-        exa.COPY.value: (
-            "start_copy",
-            "geonode.upload.copy_dynamic_model",
-            "geonode.upload.copy_geonode_data_table",
-            "geonode.upload.publish_resource",
-            "geonode.upload.copy_geonode_resource",
-        ),
-        ira.ROLLBACK.value: (
-            "start_rollback",
-            "geonode.upload.rollback",
-        ),
-    }
-
     @property
     def supported_file_extension_config(self):
         return {
             "id": "geojson",
-            "label": "GeoJSON",
-            "format": "vector",
-            "ext": ["json", "geojson"],
-            "optional": ["xml", "sld"],
+            "formats": [
+                {
+                    "label": "GeoJSON",
+                    "required_ext": ["geojson"],
+                    "optional_ext": ["sld", "xml"],
+                },
+                {
+                    "label": "GeoJSON",
+                    "required_ext": ["json"],
+                    "optional_ext": ["sld", "xml"],
+                },
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @staticmethod

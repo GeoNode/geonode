@@ -22,6 +22,7 @@ from geonode.resource.manager import resource_manager
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.sld.exceptions import InvalidSldException
 from owslib.etree import etree as dlxml
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -32,25 +33,26 @@ class SLDFileHandler(MetadataFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
+    TASKS = {
+        ira.RESOURCE_STYLE_UPLOAD.value: ("start_import", "geonode.upload.import_resource"),
+        ira.ROLLBACK.value: (
+            "start_rollback",
+            "geonode.upload.rollback",
+        ),
+    }
+
     @property
     def supported_file_extension_config(self):
         return {
             "id": "sld",
-            "label": "Styled Layer Descriptor (SLD)",
-            "format": "metadata",
-            "ext": ["sld"],
-            "mimeType": ["application/json"],
-            "needsFiles": [
-                "shp",
-                "prj",
-                "dbf",
-                "shx",
-                "csv",
-                "tiff",
-                "zip",
-                "xml",
-                "geojson",
+            "formats": [
+                {
+                    "label": "Styled Layer Descriptor 1.0, 1.1 (SLD)",
+                    "required_ext": ["sld"],
+                }
             ],
+            "actions": list(self.TASKS.keys()),
+            "type": "metadata",
         }
 
     @staticmethod
@@ -62,9 +64,9 @@ class SLDFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")
-        ) and MetadataFileHandler.can_handle(_data)
+        return (base.endswith(".sld") if isinstance(base, str) else base.name.endswith(".sld")) and _data.get(
+            "action", None
+        ) == ira.RESOURCE_STYLE_UPLOAD.value
 
     @staticmethod
     def is_valid(files, user, **kwargs):

@@ -47,8 +47,8 @@ class BaseRemoteResourceHandler(BaseHandler):
     As first implementation only remote 3dtiles are supported
     """
 
-    ACTIONS = {
-        exa.IMPORT.value: (
+    TASKS = {
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
@@ -105,7 +105,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
         return {
-            "source": _data.pop("source", "upload"),
+            "action": _data.pop("action", "upload"),
             "title": _data.pop("title", None),
             "url": _data.pop("url", None),
             "type": _data.pop("type", None),
@@ -163,7 +163,7 @@ class BaseRemoteResourceHandler(BaseHandler):
                     "geonode.upload.import_resource",
                     layer_name,
                     alternate,
-                    exa.IMPORT.value,
+                    exa.UPLOAD.value,
                 )
             )
             return layer_name, alternate, execution_id

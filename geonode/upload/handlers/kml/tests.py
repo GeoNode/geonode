@@ -38,7 +38,7 @@ class TestKMLHandler(TestCase):
         cls.invalid_kml = f"{project_dir}/tests/fixture/inva.lid.kml"
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_files = {"base_file": cls.invalid_kml}
-        cls.valid_files = {"base_file": cls.valid_kml, "source": "upload"}
+        cls.valid_files = {"base_file": cls.valid_kml, "action": "upload"}
         cls.owner = get_user_model().objects.first()
         cls.layer = create_single_dataset(name="extruded_polygon", owner=cls.owner)
 
@@ -49,8 +49,8 @@ class TestKMLHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_geojson(self):
         expected = (
@@ -60,8 +60,8 @@ class TestKMLHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 5)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 5)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_kml_is_invalid(self):
         with self.assertRaises(InvalidKmlException) as _exc:

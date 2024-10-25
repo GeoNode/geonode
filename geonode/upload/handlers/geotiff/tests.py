@@ -35,7 +35,7 @@ class TestGeoTiffFileHandler(TestCase):
         super().setUpClass()
         cls.handler = GeoTiffFileHandler()
         cls.valid_tiff = f"{project_dir}/tests/fixture/test_raster.tif"
-        cls.valid_files = {"base_file": cls.valid_tiff, "source": "upload"}
+        cls.valid_files = {"base_file": cls.valid_tiff, "action": "upload"}
         cls.user, _ = get_user_model().objects.get_or_create(username="admin")
         cls.invalid_tiff = {"base_file": "invalid.file.foo"}
         cls.owner = get_user_model().objects.first()
@@ -48,8 +48,8 @@ class TestGeoTiffFileHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.create_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["import"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["import"])
+        self.assertEqual(len(self.handler.TASKS["upload"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["upload"])
 
     def test_task_list_is_the_expected_one_copy(self):
         expected = (
@@ -58,8 +58,8 @@ class TestGeoTiffFileHandler(TestCase):
             "geonode.upload.publish_resource",
             "geonode.upload.copy_geonode_resource",
         )
-        self.assertEqual(len(self.handler.ACTIONS["copy"]), 4)
-        self.assertTupleEqual(expected, self.handler.ACTIONS["copy"])
+        self.assertEqual(len(self.handler.TASKS["copy"]), 4)
+        self.assertTupleEqual(expected, self.handler.TASKS["copy"])
 
     def test_is_valid_should_raise_exception_if_the_parallelism_is_met(self):
         parallelism, created = UploadParallelismLimit.objects.get_or_create(slug="default_max_parallel_uploads")

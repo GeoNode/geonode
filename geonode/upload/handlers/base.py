@@ -46,8 +46,8 @@ class BaseHandler(ABC):
 
     REGISTRY = []
 
-    ACTIONS = {
-        exa.IMPORT.value: (),
+    TASKS = {
+        exa.UPLOAD.value: (),
         exa.COPY.value: (),
         exa.DELETE.value: (),
         exa.UPDATE.value: (),
@@ -70,9 +70,9 @@ class BaseHandler(ABC):
 
     @classmethod
     def get_task_list(cls, action) -> tuple:
-        if action not in cls.ACTIONS:
+        if action not in cls.TASKS:
             raise Exception("The requested action is not implemented yet")
-        return cls.ACTIONS.get(action)
+        return cls.TASKS.get(action)
 
     @property
     def default_geometry_column_name(self):
@@ -140,7 +140,7 @@ class BaseHandler(ABC):
         the Handler must be ready to handle them. If is not in the actual
         flow the already in place flow is followd
         """
-        return action in BaseHandler.ACTIONS
+        return action in BaseHandler.TASKS
 
     @staticmethod
     def extract_params_from_data(_data):
@@ -300,7 +300,7 @@ class BaseHandler(ABC):
         return self.create_resourcehandlerinfo(handler_module_path, resource, execution_id, **kwargs)
 
     def rollback(self, exec_id, rollback_from_step, action_to_rollback, *args, **kwargs):
-        steps = self.ACTIONS.get(action_to_rollback)
+        steps = self.TASKS.get(action_to_rollback)
 
         if rollback_from_step not in steps:
             logger.info(f"Step not found {rollback_from_step}, skipping")

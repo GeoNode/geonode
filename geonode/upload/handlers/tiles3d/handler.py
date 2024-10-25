@@ -42,8 +42,8 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
-        exa.IMPORT.value: (
+    TASKS = {
+        exa.UPLOAD.value: (
             "start_import",
             "geonode.upload.import_resource",
             "geonode.upload.create_geonode_resource",
@@ -62,10 +62,14 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "3dtiles",
-            "label": "3D Tiles",
-            "format": "vector",
-            "ext": ["json"],
-            "optional": ["xml", "sld"],
+            "formats": [
+                {
+                    "label": "3D Tiles",
+                    "required_ext": ["zip"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @staticmethod
@@ -151,7 +155,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         return {
             "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
             "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "source": _data.pop("source", "upload"),
+            "action": _data.pop("action", "upload"),
             "original_zip_name": _data.pop("original_zip_name", None),
             "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
         }, _data
@@ -198,7 +202,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
                 "geonode.upload.import_resource",
                 layer_name,
                 alternate,
-                exa.IMPORT.value,
+                exa.UPLOAD.value,
             )
         )
         return layer_name, alternate, execution_id

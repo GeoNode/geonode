@@ -752,9 +752,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         bobby = get_user_model().objects.get(username="bobby")
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
-        payload = {
-            "base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"),
-        }
+        payload = {"base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"), "action": "upload"}
         response = self.client.post(reverse("importer_upload"), data=payload)
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
         if layer is None:
