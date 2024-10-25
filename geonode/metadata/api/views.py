@@ -25,7 +25,6 @@ from django.utils.translation.trans_real import get_language_from_request
 
 from geonode.base.models import ResourceBase
 from geonode.metadata.manager import metadata_manager
-from geonode.metadata.api.serializers import MetadataSerializer
 
 
 class MetadataViewSet(ViewSet):
@@ -34,7 +33,6 @@ class MetadataViewSet(ViewSet):
     """
     
     queryset = ResourceBase.objects.all()
-    serializer_class = MetadataSerializer
 
     def list(self, request):
         pass
@@ -76,13 +74,10 @@ class MetadataViewSet(ViewSet):
                 return JsonResponse(schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent":3})
             
             elif request.method == 'PUT':
+                
+                updated_content = metadata_manager.update_schema_instance(resource, request.data, schema_instance)
 
-                content = request.data
-                serialized_content = self.serializer_class(data=content)
-                serialized_content.is_valid(raise_exception=True)
-                result = metadata_manager.update_schema_instance(resource, serialized_content.data, schema_instance)
-
-                return Response(result)
+                return Response(updated_content)
             
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
