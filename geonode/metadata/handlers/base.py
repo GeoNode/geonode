@@ -48,6 +48,12 @@ class CategorySubHandler(SubHandler):
         # subschema["title"] = _("topiccategory")
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.gn_description, "description": tc.description}
                               for tc in TopicCategory.objects.order_by("gn_description")]
+    
+    @classmethod
+    def serialize(cls, db_value):
+        if isinstance(db_value, TopicCategory):
+            return db_value.identifier
+        return db_value
 
 class DateTypeSubHandler(SubHandler):
     @classmethod
@@ -98,12 +104,24 @@ class RestrictionsSubHandler(SubHandler):
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
                               for tc in RestrictionCodeType.objects.order_by("identifier")]
+    
+    @classmethod
+    def serialize(cls, db_value):
+        if isinstance(db_value, RestrictionCodeType):
+            return db_value.identifier
+        return db_value
 
 class SpatialRepresentationTypeSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
                               for tc in SpatialRepresentationType.objects.order_by("identifier")]
+    
+    @classmethod
+    def serialize(cls, db_value):
+        if isinstance(db_value, SpatialRepresentationType):
+            return db_value.identifier
+        return db_value
 
 
 SUBHANDLERS = {
