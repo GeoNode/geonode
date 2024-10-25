@@ -17,6 +17,9 @@
 #
 #########################################################################
 from django.http import JsonResponse
+import json
+import logging
+
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -25,6 +28,9 @@ from django.utils.translation.trans_real import get_language_from_request
 
 from geonode.base.models import ResourceBase
 from geonode.metadata.manager import metadata_manager
+
+
+logger = logging.getLogger(__name__)
 
 
 class MetadataViewSet(ViewSet):
@@ -61,23 +67,23 @@ class MetadataViewSet(ViewSet):
 
     # Get the JSON schema
     @action(detail=False, 
-            methods=['get', 'put'],
+            methods=['get', 'put', 'patch'],
             url_path="instance/(?P<pk>\d+)"
             )
     def schema_instance(self, request, pk=None):
  
         try:
             resource = ResourceBase.objects.get(pk=pk)
-            schema_instance = metadata_manager.build_schema_instance(resource)
 
             if request.method == 'GET':
+                schema_instance = metadata_manager.build_schema_instance(resource)
                 return JsonResponse(schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent":3})
             
-            elif request.method == 'PUT':
-                
-                updated_content = metadata_manager.update_schema_instance(resource, request.data, schema_instance)
-
-                return Response(updated_content)
+            elif request.method in ('PUT', "PATCH"):
+                logger.info(f"handling request {request.method}")
+                logger.info(f"handling content {request.data}")
+                update_response = metadata_manager.update_schema_instance(resource, request.data)
+                return Response(update_response)
             
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}

@@ -84,14 +84,15 @@ class MetadataManager(MetadataManagerInterface):
         
         return instance
     
-    def update_schema_instance(self, resource, content, json_instance):
-        
+    def update_schema_instance(self, resource, json_instance):
+
+        logger.info(f"RECEIVED INSTANCE {json_instance}")
+
         schema = self.get_schema()
 
-        for fieldname, field in schema["properties"].items():
-            handler_id = field["geonode:handler"]
-            handler = self.handlers[handler_id]
-            handler.update_resource(resource, fieldname, content, json_instance)
+        for fieldname, subschema in schema["properties"].items():
+            handler = self.handlers[subschema["geonode:handler"]]
+            handler.update_resource(resource, fieldname, json_instance[fieldname], json_instance)
         
         try:
             resource.save()
