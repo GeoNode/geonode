@@ -40,7 +40,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang:str=None):
         """
         Called when reading metadata, returns the instance of the sub-schema 
         associated with the field field_name.

@@ -61,8 +61,8 @@ class CategorySubHandler(SubHandler):
     
     @classmethod
     def deserialize(cls, field_value):
-        field_value = TopicCategory.objects.get(identifier=field_value)
-        return field_value
+        return TopicCategory.objects.get(identifier=field_value)
+
 
 class DateTypeSubHandler(SubHandler):
     @classmethod
@@ -78,17 +78,20 @@ class DateSubHandler(SubHandler):
             return value.isoformat()
         return value
 
+
 class FrequencySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key,"title": val}
                               for key, val in dict(UPDATE_FREQUENCIES).items()]
 
+
 class LanguageSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         subschema["oneOf"] = [{"const": key,"title": val}
                               for key, val in dict(ALL_LANGUAGES).items()]
+
 
 class LicenseSubHandler(SubHandler):
     @classmethod
@@ -104,13 +107,14 @@ class LicenseSubHandler(SubHandler):
     
     @classmethod
     def deserialize(cls, field_value):
-        field_value = License.objects.get(identifier=field_value)
-        return field_value
+        return License.objects.get(identifier=field_value)
+
     
 class KeywordsSubHandler(SubHandler):
     @classmethod
     def serialize(cls, value):
         return "TODO!!!"
+
 
 class RestrictionsSubHandler(SubHandler):
     @classmethod
@@ -126,8 +130,8 @@ class RestrictionsSubHandler(SubHandler):
     
     @classmethod
     def deserialize(cls, field_value):
-        field_value = RestrictionCodeType.objects.get(identifier=field_value)
-        return field_value
+        return RestrictionCodeType.objects.get(identifier=field_value)
+
 
 class SpatialRepresentationTypeSubHandler(SubHandler):
     @classmethod
@@ -143,8 +147,8 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
 
     @classmethod
     def deserialize(cls, field_value):
-        field_value = SpatialRepresentationType.objects.get(identifier=field_value)
-        return field_value
+        return SpatialRepresentationType.objects.get(identifier=field_value)
+
 
 SUBHANDLERS = {
     "category": CategorySubHandler,
@@ -194,7 +198,7 @@ class BaseHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang:str=None):
 
         field_value = getattr(resource, field_name)
 
@@ -208,9 +212,8 @@ class BaseHandler(MetadataHandler):
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
        
         if field_name in json_instance:
+            field_value = json_instance[field_name]
             try:
-                field_value = json_instance[field_name]
-
                 if field_name in SUBHANDLERS:
                     logger.debug(f"Deserializing base field {field_name}")
                     # Deserialize field values before setting them to the ResourceBase

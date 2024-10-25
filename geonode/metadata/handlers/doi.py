@@ -42,7 +42,7 @@ class DOIHandler(MetadataHandler):
         self._add_after(jsonschema, "edition", "doi", doi_schema)
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
 
         return resource.doi
 

@@ -55,7 +55,7 @@ class MetadataViewSet(ViewSet):
         resource scope.
         '''
 
-        lang = get_language_from_request(request)[:2]
+        lang = request.query_params.get("lang", get_language_from_request(request)[:2])
         schema = metadata_manager.get_schema(lang)
     
         if schema:
@@ -76,7 +76,8 @@ class MetadataViewSet(ViewSet):
             resource = ResourceBase.objects.get(pk=pk)
 
             if request.method == 'GET':
-                schema_instance = metadata_manager.build_schema_instance(resource)
+                lang = request.query_params.get("lang", get_language_from_request(request)[:2])
+                schema_instance = metadata_manager.build_schema_instance(resource, lang)
                 return JsonResponse(schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent":3})
             
             elif request.method in ('PUT', "PATCH"):

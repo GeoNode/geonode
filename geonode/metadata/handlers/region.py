@@ -67,7 +67,7 @@ class RegionHandler(MetadataHandler):
         # TODO
         return []
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
 
         return None
 

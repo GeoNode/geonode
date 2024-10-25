@@ -17,7 +17,6 @@
 #
 #########################################################################
 
-import json
 import logging
 
 from rest_framework.reverse import reverse
@@ -25,13 +24,15 @@ from rest_framework.reverse import reverse
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
-from geonode.base.enumerations import ALL_LANGUAGES
 
 
 logger = logging.getLogger(__name__)
+
+
+TKEYWORDS = "tkeywords"
 
 
 class TKeywordsHandler(MetadataHandler):
@@ -39,10 +40,6 @@ class TKeywordsHandler(MetadataHandler):
     The base handler builds a valid empty schema with the simple
     fields of the ResourceBase model
     """
-
-    def __init__(self):
-        self.json_base_schema = JSONSCHEMA_BASE
-        self.base_schema = None
 
     def update_schema(self, jsonschema, lang=None):
 
@@ -122,16 +119,41 @@ class TKeywordsHandler(MetadataHandler):
         }
 
         # add thesauri after category
-        self._add_after(jsonschema, "category", "tkeywords", tkeywords)
+        self._add_after(jsonschema, "category", TKEYWORDS, tkeywords)
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang:str=None):
 
-        return {}
+        tks = {}
+        for tk in resource.tkeywords.all():
+            tks[tk.id] = tk
+        tkls = ThesaurusKeywordLabel.objects.filter(keyword__id__in=tks.keys(), lang=lang)  # read all entries in a single query
+
+        ret = {}
+        for tkl in tkls:
+            keywords = ret.setdefault(tkl.keyword.thesaurus.identifier, [])
+            keywords.append({"id": tkl.keyword.about, "label": tkl.label})
+            del tks[tkl.keyword.id]
+
+        if tks:
+            logger.info(f"Returning untraslated '{lang}' keywords: {tks}")
+            for tk in tks.values():
+                keywords = ret.setdefault(tk.thesaurus.identifier, [])
+                keywords.append({"id": tk.about, "label": tk.alt_label})
+
+        return ret
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
-        pass
+
+        kids = []
+        for thes_id, keywords in json_instance.get(TKEYWORDS, {}).items():
+            logger.info(f"Getting info for thesaurus {thes_id}")
+            for keyword in keywords:
+                kids.append(keyword["id"])
+
+        kw_requested = ThesaurusKeyword.objects.filter(about__in=kids)
+        resource.tkeywords.set(kw_requested)
 
 
     def load_context(self, resource: ResourceBase, context: dict):

@@ -68,7 +68,7 @@ class MetadataManager(MetadataManagerInterface):
             
         return self.cached_schema
     
-    def build_schema_instance(self, resource):
+    def build_schema_instance(self, resource, lang=None):
         
         schema = self.get_schema()
         instance = {}
@@ -79,7 +79,7 @@ class MetadataManager(MetadataManagerInterface):
                 logger.warning(f"Missing geonode:handler for schema property {fieldname}. Skipping")
                 continue
             handler = self.handlers[handler_id]
-            content = handler.get_jsonschema_instance(resource, fieldname)
+            content = handler.get_jsonschema_instance(resource, fieldname, lang)
             instance[fieldname] = content
         
         return instance
