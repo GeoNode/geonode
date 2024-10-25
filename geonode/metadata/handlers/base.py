@@ -40,6 +40,10 @@ class SubHandler:
     @classmethod
     def serialize(cls, db_value):
         return db_value
+    
+    @classmethod
+    def deserialize(cls, field_value):
+        return field_value
 
 
 class CategorySubHandler(SubHandler):
@@ -56,9 +60,9 @@ class CategorySubHandler(SubHandler):
         return db_value
     
     @classmethod
-    def get_fk_instance(cls, field_value):
-        db_value = TopicCategory.objects.get(identifier=field_value)
-        return db_value
+    def deserialize(cls, field_value):
+        field_value = TopicCategory.objects.get(identifier=field_value)
+        return field_value
 
 class DateTypeSubHandler(SubHandler):
     @classmethod
@@ -99,9 +103,9 @@ class LicenseSubHandler(SubHandler):
         return db_value
     
     @classmethod
-    def get_fk_instance(cls, field_value):
-        db_value = License.objects.get(identifier=field_value)
-        return db_value
+    def deserialize(cls, field_value):
+        field_value = License.objects.get(identifier=field_value)
+        return field_value
     
 class KeywordsSubHandler(SubHandler):
     @classmethod
@@ -121,9 +125,9 @@ class RestrictionsSubHandler(SubHandler):
         return db_value
     
     @classmethod
-    def get_fk_instance(cls, field_value):
-        db_value = RestrictionCodeType.objects.get(identifier=field_value)
-        return db_value
+    def deserialize(cls, field_value):
+        field_value = RestrictionCodeType.objects.get(identifier=field_value)
+        return field_value
 
 class SpatialRepresentationTypeSubHandler(SubHandler):
     @classmethod
@@ -138,9 +142,9 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
         return db_value
 
     @classmethod
-    def get_fk_instance(cls, field_value):
-        db_value = SpatialRepresentationType.objects.get(identifier=field_value)
-        return db_value
+    def deserialize(cls, field_value):
+        field_value = SpatialRepresentationType.objects.get(identifier=field_value)
+        return field_value
 
 SUBHANDLERS = {
     "category": CategorySubHandler,
@@ -209,8 +213,8 @@ class BaseHandler(MetadataHandler):
 
                 if field_name in SUBHANDLERS:
                     logger.debug(f"Deserializing base field {field_name}")
-                    # Set the field_value of a foreign key to the resource object
-                    field_value = SUBHANDLERS[field_name].get_fk_instance(field_value)
+                    # Deserialize field values before setting them to the ResourceBase
+                    field_value = SUBHANDLERS[field_name].deserialize(field_value)
 
                 setattr(resource, field_name, field_value)
             except Exception as e:
