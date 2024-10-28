@@ -20,4 +20,4 @@ from rest_framework import routers
 from geonode.metadata.api import views
 
 router = routers.DefaultRouter()
-router.register(r"metadata", views.MetadataViewSet, basename = "metadata")
+router.register(r"metadata", views.MetadataViewSet, basename="metadata")

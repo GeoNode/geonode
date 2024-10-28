@@ -21,8 +21,7 @@ import json
 import logging
 from datetime import datetime
 
-from geonode.base.models import ResourceBase, TopicCategory, License, RestrictionCodeType, \
-    SpatialRepresentationType
+from geonode.base.models import ResourceBase, TopicCategory, License, RestrictionCodeType, SpatialRepresentationType
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
@@ -40,7 +39,7 @@ class SubHandler:
     @classmethod
     def serialize(cls, db_value):
         return db_value
-    
+
     @classmethod
     def deserialize(cls, field_value):
         return field_value
@@ -50,15 +49,17 @@ class CategorySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
         # subschema["title"] = _("topiccategory")
-        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.gn_description, "description": tc.description}
-                              for tc in TopicCategory.objects.order_by("gn_description")]
-    
+        subschema["oneOf"] = [
+            {"const": tc.identifier, "title": tc.gn_description, "description": tc.description}
+            for tc in TopicCategory.objects.order_by("gn_description")
+        ]
+
     @classmethod
     def serialize(cls, db_value):
         if isinstance(db_value, TopicCategory):
             return db_value.identifier
         return db_value
-    
+
     @classmethod
     def deserialize(cls, field_value):
         return TopicCategory.objects.get(identifier=field_value)
@@ -67,9 +68,9 @@ class CategorySubHandler(SubHandler):
 class DateTypeSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [{"const": i.lower(), "title": _(i)}
-                              for i in ["Creation", "Publication", "Revision"]]
+        subschema["oneOf"] = [{"const": i.lower(), "title": _(i)} for i in ["Creation", "Publication", "Revision"]]
         subschema["default"] = "Publication"
+
 
 class DateSubHandler(SubHandler):
     @classmethod
@@ -82,34 +83,34 @@ class DateSubHandler(SubHandler):
 class FrequencySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [{"const": key,"title": val}
-                              for key, val in dict(UPDATE_FREQUENCIES).items()]
+        subschema["oneOf"] = [{"const": key, "title": val} for key, val in dict(UPDATE_FREQUENCIES).items()]
 
 
 class LanguageSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [{"const": key,"title": val}
-                              for key, val in dict(ALL_LANGUAGES).items()]
+        subschema["oneOf"] = [{"const": key, "title": val} for key, val in dict(ALL_LANGUAGES).items()]
 
 
 class LicenseSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.name, "description": tc.description}
-                              for tc in License.objects.order_by("name")]
+        subschema["oneOf"] = [
+            {"const": tc.identifier, "title": tc.name, "description": tc.description}
+            for tc in License.objects.order_by("name")
+        ]
 
     @classmethod
     def serialize(cls, db_value):
         if isinstance(db_value, License):
             return db_value.identifier
         return db_value
-    
+
     @classmethod
     def deserialize(cls, field_value):
         return License.objects.get(identifier=field_value)
 
-    
+
 class KeywordsSubHandler(SubHandler):
     @classmethod
     def serialize(cls, value):
@@ -119,15 +120,17 @@ class KeywordsSubHandler(SubHandler):
 class RestrictionsSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
-                              for tc in RestrictionCodeType.objects.order_by("identifier")]
-    
+        subschema["oneOf"] = [
+            {"const": tc.identifier, "title": tc.identifier, "description": tc.description}
+            for tc in RestrictionCodeType.objects.order_by("identifier")
+        ]
+
     @classmethod
     def serialize(cls, db_value):
         if isinstance(db_value, RestrictionCodeType):
             return db_value.identifier
         return db_value
-    
+
     @classmethod
     def deserialize(cls, field_value):
         return RestrictionCodeType.objects.get(identifier=field_value)
@@ -136,9 +139,11 @@ class RestrictionsSubHandler(SubHandler):
 class SpatialRepresentationTypeSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [{"const": tc.identifier,"title": tc.identifier, "description": tc.description}
-                              for tc in SpatialRepresentationType.objects.order_by("identifier")]
-    
+        subschema["oneOf"] = [
+            {"const": tc.identifier, "title": tc.identifier, "description": tc.description}
+            for tc in SpatialRepresentationType.objects.order_by("identifier")
+        ]
+
     @classmethod
     def serialize(cls, db_value):
         if isinstance(db_value, SpatialRepresentationType):
@@ -182,8 +187,8 @@ class BaseHandler(MetadataHandler):
             self.base_schema = json.load(f)
         # building the full base schema
         for property_name, subschema in self.base_schema.items():
-            localize(subschema, 'title')
-            localize(subschema, 'abstract')
+            localize(subschema, "title")
+            localize(subschema, "abstract")
 
             jsonschema["properties"][property_name] = subschema
 
@@ -198,7 +203,7 @@ class BaseHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang:str=None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang: str = None):
 
         field_value = getattr(resource, field_name)
 
@@ -210,7 +215,7 @@ class BaseHandler(MetadataHandler):
         return field_value
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
-       
+
         if field_name in json_instance:
             field_value = json_instance[field_name]
             try:
@@ -223,8 +228,6 @@ class BaseHandler(MetadataHandler):
             except Exception as e:
                 logger.warning(f"Error setting field {field_name}={field_value}: {e}")
 
-
     def load_context(self, resource: ResourceBase, context: dict):
 
         pass
-

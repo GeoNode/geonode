@@ -26,23 +26,23 @@ logger = logging.getLogger(__name__)
 
 class MetadataHandler(metaclass=ABCMeta):
     """
-    Handlers take care of reading, storing, encoding, 
+    Handlers take care of reading, storing, encoding,
     decoding subschemas of the main Resource
     """
 
     @abstractmethod
     def update_schema(self, jsonschema: dict, lang=None):
         """
-        It is called by the MetadataManager when creating the JSON Schema 
-        It adds the subschema handled by the handler, and returns the 
+        It is called by the MetadataManager when creating the JSON Schema
+        It adds the subschema handled by the handler, and returns the
         augmented instance of the JSON Schema.
         """
         pass
 
     @abstractmethod
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang:str=None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang: str = None):
         """
-        Called when reading metadata, returns the instance of the sub-schema 
+        Called when reading metadata, returns the instance of the sub-schema
         associated with the field field_name.
         """
         pass
@@ -50,8 +50,8 @@ class MetadataHandler(metaclass=ABCMeta):
     @abstractmethod
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
         """
-        Called when persisting data, updates the field field_name of the resource 
-        with the content content, where json_instance is  the full JSON Schema instance, 
+        Called when persisting data, updates the field field_name of the resource
+        with the content content, where json_instance is  the full JSON Schema instance,
         in case the handler needs some cross related data contained in the resource.
         """
         pass
@@ -66,10 +66,9 @@ class MetadataHandler(metaclass=ABCMeta):
     def _add_after(self, jsonschema, after_what, property_name, subschema):
         # add thesauri after category
         ret_properties = {}
-        for key,val in jsonschema["properties"].items():
+        for key, val in jsonschema["properties"].items():
             ret_properties[key] = val
             if key == after_what:
                 ret_properties[property_name] = subschema
 
         jsonschema["properties"] = ret_properties
-

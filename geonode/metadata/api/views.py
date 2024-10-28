@@ -16,14 +16,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from django.http import JsonResponse
-import json
 import logging
+
 
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from django.http import JsonResponse
 from django.utils.translation.trans_real import get_language_from_request
 
 from geonode.base.models import ResourceBase
@@ -37,7 +37,7 @@ class MetadataViewSet(ViewSet):
     """
     Simple viewset that return the metadata JSON schema
     """
-    
+
     queryset = ResourceBase.objects.all()
 
     def list(self, request):
@@ -45,19 +45,16 @@ class MetadataViewSet(ViewSet):
 
     # Get the JSON schema
     # A pk argument is set for futured multiple schemas
-    @action(detail=False, 
-            methods=['get'],
-            url_path="schema(?:/(?P<pk>\d+))?"
-            )
+    @action(detail=False, methods=["get"], url_path=r"schema(?:/(?P<pk>\d+))?")
     def schema(self, request, pk=None):
-        ''' 
+        """
         The user is able to export her/his keys with
         resource scope.
-        '''
+        """
 
         lang = request.query_params.get("lang", get_language_from_request(request)[:2])
         schema = metadata_manager.get_schema(lang)
-    
+
         if schema:
             return Response(schema)
 
@@ -66,26 +63,25 @@ class MetadataViewSet(ViewSet):
             return Response(response)
 
     # Get the JSON schema
-    @action(detail=False, 
-            methods=['get', 'put', 'patch'],
-            url_path="instance/(?P<pk>\d+)"
-            )
+    @action(detail=False, methods=["get", "put", "patch"], url_path=r"instance/(?P<pk>\d+)")
     def schema_instance(self, request, pk=None):
- 
+
         try:
             resource = ResourceBase.objects.get(pk=pk)
 
-            if request.method == 'GET':
+            if request.method == "GET":
                 lang = request.query_params.get("lang", get_language_from_request(request)[:2])
                 schema_instance = metadata_manager.build_schema_instance(resource, lang)
-                return JsonResponse(schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent":3})
-            
-            elif request.method in ('PUT', "PATCH"):
+                return JsonResponse(
+                    schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent": 3}
+                )
+
+            elif request.method in ("PUT", "PATCH"):
                 logger.info(f"handling request {request.method}")
                 logger.info(f"handling content {request.data}")
                 update_response = metadata_manager.update_schema_instance(resource, request.data)
                 return Response(update_response)
-            
+
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
             return Response(result)

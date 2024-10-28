@@ -31,11 +31,11 @@ class DOIHandler(MetadataHandler):
     def update_schema(self, jsonschema, lang=None):
 
         doi_schema = {
-                "type": "string",
-                "title": "DOI",
-                "description": "a DOI will be added by Admin before publication.",
-                "maxLength": 255,
-                "geonode:handler": "doi",
+            "type": "string",
+            "title": "DOI",
+            "description": "a DOI will be added by Admin before publication.",
+            "maxLength": 255,
+            "geonode:handler": "doi",
         }
 
         # add DOI after edition

@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class MetadataConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "geonode.metadata"
@@ -8,6 +9,7 @@ class MetadataConfig(AppConfig):
         """Finalize setup"""
         run_setup_hooks()
         super(MetadataConfig, self).ready()
+
 
 def run_setup_hooks(*args, **kwargs):
     from geonode.metadata.registry import metadata_registry

@@ -24,8 +24,6 @@ from django.utils.translation import gettext as _
 
 from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
-from geonode.metadata.settings import JSONSCHEMA_BASE
-from geonode.base.views import RegionAutocomplete
 
 logger = logging.getLogger(__name__)
 
@@ -39,29 +37,21 @@ class RegionHandler(MetadataHandler):
 
         from geonode.base.models import Region
 
-        subschema = [{"const": tc.code,"title": tc.name}
-                                       for tc in Region.objects.order_by("name")]
-        
+        subschema = [{"const": tc.code, "title": tc.name} for tc in Region.objects.order_by("name")]
+
         regions = {
             "type": "array",
             "title": _("Regions"),
             "description": _("keyword identifies a location"),
-            "items": {
-                "type": "string",
-                "anyOf": subschema
-            },
+            "items": {"type": "string", "anyOf": subschema},
             "geonode:handler": "region",
-            "ui:options": {
-                "geonode-ui:autocomplete": reverse(
-                        "autocomplete_region"
-                        )
-                 },
+            "ui:options": {"geonode-ui:autocomplete": reverse("autocomplete_region")},
         }
 
         # add regions after Attribution
         self._add_after(jsonschema, "attribution", "regions", regions)
         return jsonschema
-       
+
     @classmethod
     def serialize(cls, db_value):
         # TODO

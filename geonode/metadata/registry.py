@@ -11,9 +11,7 @@ class MetadataHandlersRegistry:
 
     def init_registry(self):
         self.register()
-        logger.info(
-            f"The following metadata handlers have been registered: {', '.join(METADATA_HANDLERS)}"
-        )
+        logger.info(f"The following metadata handlers have been registered: {', '.join(METADATA_HANDLERS)}")
 
     def register(self):
         for handler_id, module_path in METADATA_HANDLERS.items():

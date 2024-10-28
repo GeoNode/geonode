@@ -26,7 +26,6 @@ from django.utils.translation import gettext as _
 
 from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler
-from geonode.metadata.settings import JSONSCHEMA_BASE
 
 
 logger = logging.getLogger(__name__)
@@ -48,8 +47,17 @@ class TKeywordsHandler(MetadataHandler):
         # this query return the list of thesaurus X the list of localized titles
         q = (
             Thesaurus.objects.filter(~Q(card_max=0))
-            .values("id", "identifier", "title", "description", "order", "card_min", "card_max",
-                    "rel_thesaurus__label", "rel_thesaurus__lang")
+            .values(
+                "id",
+                "identifier",
+                "title",
+                "description",
+                "order",
+                "card_min",
+                "card_max",
+                "rel_thesaurus__label",
+                "rel_thesaurus__lang",
+            )
             .order_by("order")
         )
 
@@ -66,7 +74,7 @@ class TKeywordsHandler(MetadataHandler):
                 thesaurus["card"] = {}
                 thesaurus["card"]["minItems"] = r["card_min"]
                 if r["card_max"] != -1:
-                    thesaurus["card"]["maxItems"] =  r["card_max"]
+                    thesaurus["card"]["maxItems"] = r["card_max"]
                 thesaurus["title"] = r["title"]  # default title
                 thesaurus["description"] = r["description"]  # not localized in db
 
@@ -77,7 +85,7 @@ class TKeywordsHandler(MetadataHandler):
 
         # copy info to json schema
         thesauri = {}
-        for id,ct in collected_thesauri.items():
+        for id, ct in collected_thesauri.items():
             thesaurus = {
                 "type": "array",
                 "title": ct["title"],
@@ -94,14 +102,14 @@ class TKeywordsHandler(MetadataHandler):
                             "type": "string",
                             "title": "Label",
                             "description": "localized label for the keyword",
-                        }
-                    }
+                        },
+                    },
                 },
-                 "ui:options": {
-                     'geonode-ui:autocomplete': reverse(
-                         "thesaurus-keywords_autocomplete",
-                         kwargs={"thesaurusid": ct["id"]})
-                 }
+                "ui:options": {
+                    "geonode-ui:autocomplete": reverse(
+                        "thesaurus-keywords_autocomplete", kwargs={"thesaurusid": ct["id"]}
+                    )
+                },
             }
 
             thesaurus.update(ct["card"])
@@ -123,12 +131,14 @@ class TKeywordsHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang:str=None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang: str = None):
 
         tks = {}
         for tk in resource.tkeywords.all():
             tks[tk.id] = tk
-        tkls = ThesaurusKeywordLabel.objects.filter(keyword__id__in=tks.keys(), lang=lang)  # read all entries in a single query
+        tkls = ThesaurusKeywordLabel.objects.filter(
+            keyword__id__in=tks.keys(), lang=lang
+        )  # read all entries in a single query
 
         ret = {}
         for tkl in tkls:
@@ -154,7 +164,6 @@ class TKeywordsHandler(MetadataHandler):
 
         kw_requested = ThesaurusKeyword.objects.filter(about__in=kids)
         resource.tkeywords.set(kw_requested)
-
 
     def load_context(self, resource: ResourceBase, context: dict):
 

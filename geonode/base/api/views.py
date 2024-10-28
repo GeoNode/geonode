@@ -24,7 +24,6 @@ import re
 from uuid import uuid4
 from urllib.parse import urljoin, urlparse
 from PIL import Image
-from dal import autocomplete
 
 from django.apps import apps
 from django.core.validators import URLValidator
@@ -36,9 +35,8 @@ from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 from django.contrib.auth import get_user_model
 from django.utils.translation import get_language
-from drf_spectacular.types import OpenApiTypes
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema
 from dynamic_rest.viewsets import DynamicModelViewSet, WithDynamicViewSetMixin
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
 
@@ -252,25 +250,22 @@ class ThesaurusViewSet(DynamicModelViewSet):
         all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
 
         # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
-        localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(
-            lang=lang, keyword_id__in=all_keywords_qs
-        ).values("keyword_id")
+        localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
+            "keyword_id"
+        )
         if not localized_k_ids_qs.exists():
             lang = remove_country_from_languagecode(lang)
-            localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(
-                lang=lang, keyword_id__in=all_keywords_qs
-            ).values("keyword_id")
+            localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
+                "keyword_id"
+            )
 
         # consider all the keywords that do not have a translation in the requested language
         keywords_not_translated_qs = (
-            all_keywords_qs.exclude(id__in=localized_k_ids_qs)
-            .order_by("id")
-            .distinct("id")
-            .values("id")
+            all_keywords_qs.exclude(id__in=localized_k_ids_qs).order_by("id").distinct("id").values("id")
         )
 
         qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).order_by("label")
-        if q:=request.query_params.get("q", None):
+        if q := request.query_params.get("q", None):
             qs = qs.filter(label__istartswith=q)
 
         ret = []
@@ -279,15 +274,17 @@ class ThesaurusViewSet(DynamicModelViewSet):
                 {
                     "id": tkl.keyword.about,
                     "label": tkl.label,
-                })
+                }
+            )
         for tk in all_keywords_qs.filter(id__in=keywords_not_translated_qs).order_by("alt_label").all():
             ret.append(
                 {
                     "id": tk.about,
                     "label": f"! {tk.alt_label}",
-                })
+                }
+            )
 
-        return JsonResponse({"results":ret})
+        return JsonResponse({"results": ret})
 
 
 class TopicCategoryViewSet(WithDynamicViewSetMixin, ListModelMixin, RetrieveModelMixin, GenericViewSet):
