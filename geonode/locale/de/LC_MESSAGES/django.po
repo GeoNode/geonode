@@ -6853,3 +6853,6 @@ msgstr "Zugriff verweigert"
 
 #~ msgid "Thesaurus"
 #~ msgstr "Thesaurus"
+
+msgid "All resources"
+msgstr "Alle ressourcen"
