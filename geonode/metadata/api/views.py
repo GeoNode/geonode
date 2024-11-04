@@ -156,7 +156,7 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
     def get_results(self, context):
         def get_label(user):
             names = [n for n in (user.first_name, user.last_name) if n]
-            postfix = f" {' '.join(names)}" if names else ""
+            postfix = f" ({' '.join(names)})" if names else ""
             return f"{user.username}{postfix}"
 
         """Return data for the 'results' key of the response."""
