@@ -32,6 +32,7 @@ from django.db.models import Q
 
 from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.base.utils import remove_country_from_languagecode
+from geonode.base.views import LinkedResourcesAutocomplete
 from geonode.metadata.manager import metadata_manager
 from geonode.people.utils import get_available_users
 
@@ -161,3 +162,11 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
 
         """Return data for the 'results' key of the response."""
         return [{"id": self.get_result_value(result), "label": get_label(result)} for result in context["object_list"]]
+
+
+class MetadataLinkedResourcesAutocomplete(LinkedResourcesAutocomplete):
+    def get_results(self, context):
+        return [
+            {"id": self.get_result_value(result), "label": self.get_result_label(result)}
+            for result in context["object_list"]
+        ]

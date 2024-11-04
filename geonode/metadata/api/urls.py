@@ -20,7 +20,7 @@ from django.urls import path
 from rest_framework import routers
 
 from geonode.metadata.api import views
-from geonode.metadata.api.views import ProfileAutocomplete
+from geonode.metadata.api.views import ProfileAutocomplete, MetadataLinkedResourcesAutocomplete
 
 router = routers.DefaultRouter()
 router.register(r"metadata", views.MetadataViewSet, basename="metadata")
@@ -32,5 +32,10 @@ urlpatterns = router.urls + [
         name="metadata_autocomplete_tkeywords",
     ),
     path(r"metadata/autocomplete/users", ProfileAutocomplete.as_view(), name="metadata_autocomplete_users"),
+    path(
+        r"metadata/autocomplete/resources",
+        MetadataLinkedResourcesAutocomplete.as_view(),
+        name="metadata_autocomplete_resources",
+    ),
     # path(r"metadata/autocomplete/users", login_required(ProfileAutocomplete.as_view()), name="metadata_autocomplete_users"),
 ]

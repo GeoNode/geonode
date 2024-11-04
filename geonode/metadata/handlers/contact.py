@@ -67,6 +67,7 @@ class ContactHandler(MetadataHandler):
                         "id": {
                             "type": "string",
                             "title": _("User id"),
+                            "ui:widget": "hidden",
                         },
                         "label": {
                             "type": "string",

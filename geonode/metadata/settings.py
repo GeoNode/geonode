@@ -17,5 +17,6 @@ METADATA_HANDLERS = {
     "thesaurus": "geonode.metadata.handlers.thesaurus.TKeywordsHandler",
     "region": "geonode.metadata.handlers.region.RegionHandler",
     "doi": "geonode.metadata.handlers.doi.DOIHandler",
+    "linkedresource": "geonode.metadata.handlers.linkedresource.LinkedResourceHandler",
     "contact": "geonode.metadata.handlers.contact.ContactHandler",
 }
