@@ -1,3 +1,3 @@
-from geonode.metadata.api.urls import router
+from geonode.metadata.api.urls import urlpatterns
 
-urlpatterns = [] + router.urls
+urlpatterns += []  # make flake8 happy

@@ -16,8 +16,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+from django.urls import path
 from rest_framework import routers
+
 from geonode.metadata.api import views
+from geonode.metadata.api.views import ProfileAutocomplete
 
 router = routers.DefaultRouter()
 router.register(r"metadata", views.MetadataViewSet, basename="metadata")
+
+urlpatterns = router.urls + [
+    path(
+        r"metadata/autocomplete/thesaurus/<thesaurusid>)/keywords",
+        views.tkeywords_autocomplete,
+        name="metadata_autocomplete_tkeywords",
+    ),
+    path(r"metadata/autocomplete/users", ProfileAutocomplete.as_view(), name="metadata_autocomplete_users"),
+    # path(r"metadata/autocomplete/users", login_required(ProfileAutocomplete.as_view()), name="metadata_autocomplete_users"),
+]

@@ -52,11 +52,6 @@ class RegionHandler(MetadataHandler):
         self._add_after(jsonschema, "attribution", "regions", regions)
         return jsonschema
 
-    @classmethod
-    def serialize(cls, db_value):
-        # TODO
-        return []
-
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
 
         return None

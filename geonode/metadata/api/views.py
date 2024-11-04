@@ -18,17 +18,22 @@
 #########################################################################
 import logging
 
-
+from dal import autocomplete
+from django.contrib.auth import get_user_model
+from django.core.handlers.wsgi import WSGIRequest
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.http import JsonResponse
 from django.utils.translation.trans_real import get_language_from_request
+from django.utils.translation import get_language
+from django.db.models import Q
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.utils import remove_country_from_languagecode
 from geonode.metadata.manager import metadata_manager
-
+from geonode.people.utils import get_available_users
 
 logger = logging.getLogger(__name__)
 
@@ -85,3 +90,74 @@ class MetadataViewSet(ViewSet):
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
             return Response(result)
+
+
+def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
+
+    lang = get_language()
+    all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
+
+    # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
+    localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
+        "keyword_id"
+    )
+    if not localized_k_ids_qs.exists():
+        lang = remove_country_from_languagecode(lang)
+        localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
+            "keyword_id"
+        )
+
+    # consider all the keywords that do not have a translation in the requested language
+    keywords_not_translated_qs = (
+        all_keywords_qs.exclude(id__in=localized_k_ids_qs).order_by("id").distinct("id").values("id")
+    )
+
+    qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).order_by("label")
+    # if q := request.query_params.get("q", None):
+    if q := request.GET.get("q", None):
+        qs = qs.filter(label__istartswith=q)
+
+    ret = []
+    for tkl in qs.all():
+        ret.append(
+            {
+                "id": tkl.keyword.about,
+                "label": tkl.label,
+            }
+        )
+    for tk in all_keywords_qs.filter(id__in=keywords_not_translated_qs).order_by("alt_label").all():
+        ret.append(
+            {
+                "id": tk.about,
+                "label": f"! {tk.alt_label}",
+            }
+        )
+
+    return JsonResponse({"results": ret})
+
+
+class ProfileAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if self.request and self.request.user:
+            qs = get_available_users(self.request.user)
+        else:
+            qs = get_user_model().objects.all()
+
+        if self.q:
+            qs = qs.filter(
+                Q(username__icontains=self.q)
+                | Q(email__icontains=self.q)
+                | Q(first_name__icontains=self.q)
+                | Q(last_name__icontains=self.q)
+            )
+
+        return qs
+
+    def get_results(self, context):
+        def get_label(user):
+            names = [n for n in (user.first_name, user.last_name) if n]
+            postfix = f" {' '.join(names)}" if names else ""
+            return f"{user.username}{postfix}"
+
+        """Return data for the 'results' key of the response."""
+        return [{"id": self.get_result_value(result), "label": get_label(result)} for result in context["object_list"]]

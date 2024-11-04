@@ -107,7 +107,7 @@ class TKeywordsHandler(MetadataHandler):
                 },
                 "ui:options": {
                     "geonode-ui:autocomplete": reverse(
-                        "thesaurus-keywords_autocomplete", kwargs={"thesaurusid": ct["id"]}
+                        "metadata_autocomplete_tkeywords", kwargs={"thesaurusid": ct["id"]}
                     )
                 },
             }
