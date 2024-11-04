@@ -24,7 +24,7 @@ jsonschema==4.22.0
 schema==0.7.7
 rdflib==6.3.2
 smart_open==7.0.4
-PyMuPDF==1.24.3
+PyMuPDF==1.24.13
 defusedxml==0.7.1
 zipstream-ng==1.7.1
 
