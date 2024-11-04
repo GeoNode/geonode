@@ -117,7 +117,7 @@ google-cloud-core==2.4.1
 boto3==1.34.103
 
 # Django Caches
-whitenoise==6.6.0
+whitenoise==6.8.2
 Brotli==1.1.0
 
 # Contribs
