@@ -35,17 +35,24 @@ class RegionHandler(MetadataHandler):
 
     def update_schema(self, jsonschema, lang=None):
 
-        from geonode.base.models import Region
-
-        subschema = [{"const": tc.code, "title": tc.name} for tc in Region.objects.order_by("name")]
-
         regions = {
             "type": "array",
             "title": _("Regions"),
             "description": _("keyword identifies a location"),
-            "items": {"type": "string", "anyOf": subschema},
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                    },
+                    "label": {
+                        "type": "string",
+                        "title": _("title")
+                    },
+                },
+            },
             "geonode:handler": "region",
-            "ui:options": {"geonode-ui:autocomplete": reverse("autocomplete_region")},
+            "ui:options": {"geonode-ui:autocomplete": reverse("metadata_autocomplete_regions")},
         }
 
         # add regions after Attribution
@@ -54,7 +61,7 @@ class RegionHandler(MetadataHandler):
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
 
-        return None
+        return []
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
 
