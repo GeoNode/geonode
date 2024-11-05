@@ -22,7 +22,7 @@ import logging
 from rest_framework.reverse import reverse
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase
+from geonode.base.models import ResourceBase, Region
 from geonode.metadata.handlers.abstract import MetadataHandler
 
 logger = logging.getLogger(__name__)
@@ -60,12 +60,16 @@ class RegionHandler(MetadataHandler):
         return jsonschema
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
-
-        return []
+        return [{"id": r.id, "label": r.name} for r in resource.regions.all()]
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
 
-        pass
+        data = json_instance[field_name]
+        new_ids = {item["id"] for item in data}
+        logger.info(f"Regions added {data} --> {new_ids}")
+
+        regions = Region.objects.filter(id__in=new_ids)
+        resource.regions.set(regions)
 
     def load_context(self, resource: ResourceBase, context: dict):
 
