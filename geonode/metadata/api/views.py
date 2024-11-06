@@ -174,9 +174,6 @@ class MetadataLinkedResourcesAutocomplete(LinkedResourcesAutocomplete):
 
 class MetadataRegionsAutocomplete(RegionAutocomplete):
     def get_results(self, context):
-
-        context['object_list'] = self.object_list
-
         return [
             {"id": self.get_result_value(result), "label": self.get_result_label(result)}
             for result in context["object_list"]
