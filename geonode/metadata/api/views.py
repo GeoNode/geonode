@@ -179,6 +179,6 @@ class MetadataRegionsAutocomplete(RegionAutocomplete):
 
         return [
             {"id": self.get_result_value(result), "label": self.get_result_label(result)}
-            for result in context['object_list']
+            for result in context["object_list"]
         ]
 
