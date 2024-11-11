@@ -30,6 +30,12 @@ class BasePermissionsHandler(ABC):
     (example advanced workflow)
     """
 
+    def __str__(self):
+        return f"{self.__module__}.{self.__class__.__name__}"
+
+    def __repr__(self):
+        return self.__str__()
+
     @staticmethod
     def fixup_perms(instance, perms_payload, *args, **kwargs):
         return perms_payload
