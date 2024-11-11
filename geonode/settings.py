@@ -2327,3 +2327,6 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+
+
+PERMISSIONS_HANDLERS = ["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"]
