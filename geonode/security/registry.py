@@ -34,6 +34,9 @@ class PermissionsHandlerRegistry:
         self.__check_item(item)
         self.REGISTRY.append(item)
 
+    def reset(self):
+        self.REGISTRY = []
+
     def _register(self):
         for module_path in settings.PERMISSIONS_HANDLERS:
             self.add(module_path)

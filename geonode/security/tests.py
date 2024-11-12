@@ -2678,6 +2678,9 @@ class TestPermissionsRegistry(GeoNodeBaseTestSupport):
     Test to verify the permissions registry
     """
 
+    def tearDown(self):
+        permissions_registry.reset()
+
     def test_registry_is_correctly_initiated(self):
         """
         The permissions registry should initiated correctly
