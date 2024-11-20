@@ -276,7 +276,7 @@ def download(request, resourceid, sender=Dataset):
             register_event(request, "download", instance)
             folder = os.path.dirname(dataset_files[0])
 
-            zs = ZipStream.from_path(folder)
+            zs = ZipStream.from_path(folder, arcname="/")
             return StreamingHttpResponse(
                 zs,
                 content_type="application/zip",
