@@ -15,6 +15,7 @@ JSONSCHEMA_BASE = os.path.join(PROJECT_ROOT, "metadata/jsonschema_examples/base_
 METADATA_HANDLERS = {
     "base": "geonode.metadata.handlers.base.BaseHandler",
     "thesaurus": "geonode.metadata.handlers.thesaurus.TKeywordsHandler",
+    "hkeyword": "geonode.metadata.handlers.hkeyword.HKeywordHandler",
     "region": "geonode.metadata.handlers.region.RegionHandler",
     "doi": "geonode.metadata.handlers.doi.DOIHandler",
     "linkedresource": "geonode.metadata.handlers.linkedresource.LinkedResourceHandler",

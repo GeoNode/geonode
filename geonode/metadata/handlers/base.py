@@ -111,12 +111,6 @@ class LicenseSubHandler(SubHandler):
         return License.objects.get(identifier=field_value)
 
 
-class KeywordsSubHandler(SubHandler):
-    @classmethod
-    def serialize(cls, value):
-        return "TODO!!!"
-
-
 class RestrictionsSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
@@ -161,7 +155,6 @@ SUBHANDLERS = {
     "date": DateSubHandler,
     "language": LanguageSubHandler,
     "license": LicenseSubHandler,
-    "keywords": KeywordsSubHandler,
     "maintenance_frequency": FrequencySubHandler,
     "restriction_code_type": RestrictionsSubHandler,
     "spatial_representation_type": SpatialRepresentationTypeSubHandler,

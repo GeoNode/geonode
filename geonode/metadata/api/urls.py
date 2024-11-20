@@ -21,7 +21,7 @@ from rest_framework import routers
 
 from geonode.metadata.api import views
 from geonode.metadata.api.views import ProfileAutocomplete, MetadataLinkedResourcesAutocomplete, \
-    MetadataRegionsAutocomplete
+    MetadataRegionsAutocomplete, MetadataHKeywordAutocomplete
 
 router = routers.DefaultRouter()
 router.register(r"metadata", views.MetadataViewSet, basename="metadata")
@@ -42,6 +42,11 @@ urlpatterns = router.urls + [
         r"metadata/autocomplete/regions",
         MetadataRegionsAutocomplete.as_view(),
         name="metadata_autocomplete_regions",
+    ),
+    path(
+        r"metadata/autocomplete/hkeywords",
+        MetadataHKeywordAutocomplete.as_view(),
+        name="metadata_autocomplete_hkeywords",
     ),
     # path(r"metadata/autocomplete/users", login_required(ProfileAutocomplete.as_view()), name="metadata_autocomplete_users"),
 ]
