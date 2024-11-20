@@ -53,7 +53,8 @@ class MetadataManager(MetadataManagerInterface):
         schema = copy.deepcopy(self.root_schema)
         schema["title"] = _(schema["title"])
 
-        for handler in self.handlers.values():
+        for key, handler in self.handlers.items():
+            logger.debug(f"build_schema: update schema -> {key}")
             schema = handler.update_schema(schema, lang)
 
         return schema
@@ -72,6 +73,7 @@ class MetadataManager(MetadataManagerInterface):
         instance = {}
 
         for fieldname, field in schema["properties"].items():
+            # logger.debug(f"build_schema_instance: getting handler for property {fieldname}")
             handler_id = field.get("geonode:handler", None)
             if not handler_id:
                 logger.warning(f"Missing geonode:handler for schema property {fieldname}. Skipping")
