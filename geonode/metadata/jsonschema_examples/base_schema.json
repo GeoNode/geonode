@@ -1,7 +1,7 @@
 {
   "uuid": {
     "type": "string",
-    "description": "The UUID of the resource",
+    "title": "UUID",
     "maxLength": 36,
     "readOnly": true,
     "NO_ui:widget": "hidden",
@@ -10,14 +10,14 @@
   "title": {
     "type": "string",
     "title": "title",
-    "description": "Name by which the cited resource is known",
+    "description": "name by which the cited resource is known",
     "maxLength": 255,
     "geonode:handler": "base"
   },
   "abstract": {
     "type": "string",
     "title": "abstract",
-    "description": "Brief narrative summary of the content of the resource(s)",
+    "description": "brief narrative summary of the content of the resource(s)",
     "maxLength": 2000,
     "ui:options": {
       "widget": "textarea",
@@ -40,27 +40,22 @@
     "title": "group",
     "todo": true
   },
-  "keywords": {
-    "type": "string",
-    "title": "keywords",
-    "todo": true
-  },
   "category": {
     "type": "string",
-    "title": "category",
-    "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets",
+    "title": "Category",
+    "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.",
     "maxLength": 255
   },
   "language": {
     "type": "string",
     "title": "language",
-    "description": "Language used within the dataset",
+    "description": "language used within the dataset",
     "maxLength": 255,
     "default": "eng"
   },
   "license": {
     "type": "string",
-    "title": "license",
+    "title": "License",
     "description": "license of the dataset",
     "maxLength": 255,
     "default": "eng"
@@ -68,7 +63,7 @@
   "attribution": {
     "type": "string",
     "title": "Attribution",
-    "description": "Authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
+    "description": "authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
     "maxLength": 2048
   },
   "data_quality_statement": {
@@ -83,13 +78,13 @@
   },
   "restriction_code_type": {
     "type": "string",
-    "title": "restriction_code_type",
+    "title": "restrictions",
     "description": "limitation(s) placed upon the access or use of the data.",
     "maxLength": 255
   },
   "constraints_other": {
     "type": "string",
-    "title": "Other constrains",
+    "title": "Other constraints",
     "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
     "ui:options": {
       "widget": "textarea",
@@ -99,13 +94,13 @@
   "edition": {
     "type": "string",
     "title": "edition",
-    "description": "Version of the cited resource",
+    "description": "version of the cited resource",
     "maxLength": 255
   },
   "purpose": {
     "type": "string",
     "title": "purpose",
-    "description": "Summary of the intentions with which the resource(s) was developed",
+    "description": "summary of the intentions with which the resource(s) was developed",
     "maxLength": 500,
     "ui:options": {
       "widget": "textarea",
@@ -127,13 +122,13 @@
   "temporal_extent_start": {
     "type": "string",
     "format": "date-time",
-    "title": "temporal_extent_start",
+    "title": "temporal extent start",
     "description": "time period covered by the content of the dataset (start)"
   },
   "temporal_extent_end": {
     "type": "string",
     "format": "date-time",
-    "title": "temporal_extent_end",
+    "title": "temporal extent end",
     "description": "time period covered by the content of the dataset (end)"
   },
   "maintenance_frequency": {
@@ -144,7 +139,7 @@
   },
   "spatial_representation_type": {
     "type": "string",
-    "title": "spatial_representation_type",
+    "title": "spatial representation type",
     "description": "method used to represent geographic information in the dataset.",
     "maxLength": 255
   }

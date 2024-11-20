@@ -188,7 +188,7 @@ class BaseHandler(MetadataHandler):
         # building the full base schema
         for property_name, subschema in self.base_schema.items():
             localize(subschema, "title")
-            localize(subschema, "abstract")
+            localize(subschema, "description")
 
             jsonschema["properties"][property_name] = subschema
 

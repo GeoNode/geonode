@@ -33,7 +33,7 @@ class LinkedResourceHandler(MetadataHandler):
     def update_schema(self, jsonschema, lang=None):
         linked = {
             "type": "array",
-            "title": _("Linked resources"),
+            "title": _("Related resources"),
             "description": _("Resources related to this one"),
             "items": {
                 "type": "object",

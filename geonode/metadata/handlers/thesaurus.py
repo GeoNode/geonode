@@ -117,8 +117,8 @@ class TKeywordsHandler(MetadataHandler):
 
         tkeywords = {
             "type": "object",
-            "title": _("Thesaurus keywords"),
-            "description": _("Keywords from controlled vocabularies"),
+            "title": _("Keywords from Thesaurus"),
+            "description": _("List of keywords from Thesaurus"),
             "geonode:handler": "thesaurus",
             "properties": thesauri,
             # "ui:options": {

@@ -19,6 +19,8 @@
 
 import logging
 
+from django.utils.translation import gettext as _
+
 from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 
@@ -33,7 +35,7 @@ class DOIHandler(MetadataHandler):
         doi_schema = {
             "type": "string",
             "title": "DOI",
-            "description": "a DOI will be added by Admin before publication.",
+            "description": _("a DOI will be added by Admin before publication."),
             "maxLength": 255,
             "geonode:handler": "doi",
         }
