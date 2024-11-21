@@ -37,25 +37,7 @@ class HKeywordHandler(MetadataHandler):
             "title": _("Keywords"),
             "description": _("Hierarchical keywords"),
             "items": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "title": _("User id"),
-                        "ui:widget": "hidden",
-                    },
-                    "label": {
-                        "type": "string",
-                        "title": _("User name"),
-                    },
-                },
-
-                # "ui:options": {
-                #     "geonode-ui:autocomplete": {
-                #         "url": reverse("metadata_autocomplete_hkeywords"),
-                #         "creatable": True,
-                #     },
-                # },
+                "type": "string",
             },
             "ui:options": {
                 "geonode-ui:autocomplete": {
@@ -63,18 +45,14 @@ class HKeywordHandler(MetadataHandler):
                     "creatable": True,
                 },
             },
-
             "geonode:handler": "hkeyword",
         }
 
-        # jsonschema["properties"]["hkeywords"] = hkeywords
         self._add_after(jsonschema, "tkeywords", "hkeywords", hkeywords)
         return jsonschema
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
-        # return [keyword.name for keyword in resource.keywords.all()]
-        return [{"id": keyword.name, "label": keyword.name} for keyword in resource.keywords.all()]
-
+        return [keyword.name for keyword in resource.keywords.all()]
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
         # TODO: see also resourcebase_form.disable_keywords_widget_for_non_superuser(request.user)

@@ -183,7 +183,7 @@ class MetadataRegionsAutocomplete(RegionAutocomplete):
 class MetadataHKeywordAutocomplete(HierarchicalKeywordAutocomplete):
     def get_results(self, context):
         return [
-            {"id": self.get_result_value(result), "label": self.get_result_label(result)}
+            self.get_result_label(result)
             for result in context["object_list"]
         ]
 
