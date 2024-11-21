@@ -99,9 +99,9 @@ class Command(BaseCommand):
                 logger.info("Moving file to the asset folder")
 
                 if len(asset.location) == 1:
-                    # In older installations, all documents are stored in a single folder. 
-                    # Instead of moving the entire folder, we can simply move the individual document. 
-                    # This approach prevents the risk of breaking the other documents 
+                    # In older installations, all documents are stored in a single folder.
+                    # Instead of moving the entire folder, we can simply move the individual document.
+                    # This approach prevents the risk of breaking the other documents
                     # that are stored in the same folder
                     # oldpath = {MEDIA_ROOT}/documents/document/file.extension
                     dest = shutil.move(asset.location[0], handler._create_asset_dir())
