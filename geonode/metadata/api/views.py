@@ -33,8 +33,10 @@ from django.db.models import Q
 from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
+from geonode.groups.models import GroupProfile
 from geonode.metadata.manager import metadata_manager
 from geonode.people.utils import get_available_users
+from geonode.security.utils import get_user_visible_groups
 
 logger = logging.getLogger(__name__)
 
@@ -184,6 +186,30 @@ class MetadataHKeywordAutocomplete(HierarchicalKeywordAutocomplete):
     def get_results(self, context):
         return [
             self.get_result_label(result)
+            for result in context["object_list"]
+        ]
+
+
+class MetadataGroupAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        user = self.request.user if self.request else None
+
+        if not user:
+            qs = GroupProfile.objects.none()
+        elif user.is_superuser or user.is_staff:
+            qs = GroupProfile.objects.all()
+        else:
+            qs = GroupProfile.objects.filter(groupmember__user=user)
+
+        qs = qs.order_by("title")
+        if self.q:
+            qs = qs.filter(title__icontains=self.q)
+
+        return qs
+
+    def get_results(self, context):
+        return [
+            {"id": self.get_result_value(result), "label": result.title}
             for result in context["object_list"]
         ]
 

@@ -35,11 +35,6 @@
     "title": "date type",
     "maxLength": 255
   },
-  "group": {
-    "type": "string",
-    "title": "group",
-    "todo": true
-  },
   "category": {
     "type": "string",
     "title": "Category",
