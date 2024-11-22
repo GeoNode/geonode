@@ -37,8 +37,12 @@ class ContactHandler(MetadataHandler):
 
     def update_schema(self, jsonschema, lang=None):
         contacts = {}
+        required = []
         for role in Roles:
-            card = ("1" if role.is_required else "0") + ".." + ("N" if role.is_multivalue else "1")
+            card = f'[{"1" if role.is_required else "0"}..{"N" if role.is_multivalue else "1"}]'
+            if role.is_required:
+                required.append(role.name)
+
             if role.is_multivalue:
                 contact = {
                     "type": "array",
@@ -57,7 +61,6 @@ class ContactHandler(MetadataHandler):
                         },
                     },
                     "ui:options": {"geonode-ui:autocomplete": reverse("metadata_autocomplete_users")},
-                    "xxrequired": role.is_required,
                 }
             else:
                 contact = {
@@ -75,7 +78,7 @@ class ContactHandler(MetadataHandler):
                         },
                     },
                     "ui:options": {"geonode-ui:autocomplete": reverse("metadata_autocomplete_users")},
-                    "xxrequired": role.is_required,
+                    "required": ["id"] if role.is_required else [],
                 }
 
             contacts[role.name] = contact
@@ -84,6 +87,7 @@ class ContactHandler(MetadataHandler):
                 "type": "object",
                 "title": _("Contacts"),
                 "properties": contacts,
+                "required": required,
                 "geonode:handler": "contact",
             }
 
@@ -114,7 +118,8 @@ class ContactHandler(MetadataHandler):
         logger.info(f"CONTACTS {data}")
         for rolename, users in data.items():
             if rolename == Roles.OWNER.OWNER.name:
-                logger.debug("Skipping role owner")
+                resource.owner = get_user_model().objects.get(pk=users["id"])
+                # logger.debug("Skipping role owner")
                 continue
             role = Roles.get_role_by_name(rolename)
             ids = [u["id"] for u in users]
