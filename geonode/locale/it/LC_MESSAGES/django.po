@@ -6489,3 +6489,6 @@ msgstr "Permesso negato"
 
 #~ msgid "Thesaurus"
 #~ msgstr "Thesaurus"
+
+msgid "All resources"
+msgstr "Tutte le risorse"

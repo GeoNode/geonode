@@ -22,6 +22,7 @@ from geonode.resource.manager import resource_manager
 from geonode.upload.handlers.common.metadata import MetadataFileHandler
 from geonode.upload.handlers.xml.exceptions import InvalidXmlException
 from owslib.etree import etree as dlxml
+from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -32,25 +33,26 @@ class XMLFileHandler(MetadataFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
+    TASKS = {
+        ira.RESOURCE_METADATA_UPLOAD.value: ("start_import", "geonode.upload.import_resource"),
+        ira.ROLLBACK.value: (
+            "start_rollback",
+            "geonode.upload.rollback",
+        ),
+    }
+
     @property
     def supported_file_extension_config(self):
         return {
             "id": "xml",
-            "label": "XML Metadata File",
-            "format": "metadata",
-            "ext": ["xml"],
-            "mimeType": ["application/json"],
-            "needsFiles": [
-                "shp",
-                "prj",
-                "dbf",
-                "shx",
-                "csv",
-                "tiff",
-                "zip",
-                "sld",
-                "geojson",
+            "formats": [
+                {
+                    "label": "XML Metadata File (XML - ISO, FGDC, ebRIM, Dublin Core)",
+                    "required_ext": ["xml"],
+                }
             ],
+            "actions": list(self.TASKS.keys()),
+            "type": "metadata",
         }
 
     @staticmethod
@@ -62,9 +64,9 @@ class XMLFileHandler(MetadataFileHandler):
         base = _data.get("base_file")
         if not base:
             return False
-        return (
-            base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")
-        ) and MetadataFileHandler.can_handle(_data)
+        return (base.endswith(".xml") if isinstance(base, str) else base.name.endswith(".xml")) and _data.get(
+            "action", None
+        ) == ira.RESOURCE_METADATA_UPLOAD.value
 
     @staticmethod
     def is_valid(files, user=None, **kwargs):

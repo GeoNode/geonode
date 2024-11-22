@@ -32,7 +32,7 @@ class BaseVectorFileHandler(BaseHandler):
     It must provide the task_lists required to comple the upload
     """
     
-    ACTIONS = {
+    TASKS = {
         exa.IMPORT.value: (),  # define the list of the step (celery task) needed to execute the action for the resource
         exa.COPY.value: (),
         exa.DELETE.value: (),
@@ -242,7 +242,7 @@ class NewVectorFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
+    TASKS = {
         exa.IMPORT.value: (
             "start_import",
             "geonode.upload.import_resource",

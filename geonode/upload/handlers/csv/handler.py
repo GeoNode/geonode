@@ -29,7 +29,6 @@ from geonode.base.models import ResourceBase
 from dynamic_models.models import ModelSchema
 from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from geonode.upload.handlers.utils import GEOM_TYPE_MAPPING
-from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
 
@@ -40,26 +39,6 @@ class CSVFileHandler(BaseVectorFileHandler):
     It must provide the task_lists required to comple the upload
     """
 
-    ACTIONS = {
-        exa.IMPORT.value: (
-            "start_import",
-            "geonode.upload.import_resource",
-            "geonode.upload.publish_resource",
-            "geonode.upload.create_geonode_resource",
-        ),
-        exa.COPY.value: (
-            "start_copy",
-            "geonode.upload.copy_dynamic_model",
-            "geonode.upload.copy_geonode_data_table",
-            "geonode.upload.publish_resource",
-            "geonode.upload.copy_geonode_resource",
-        ),
-        ira.ROLLBACK.value: (
-            "start_rollback",
-            "geonode.upload.rollback",
-        ),
-    }
-
     possible_geometry_column_name = ["geom", "geometry", "wkt_geom", "the_geom"]
     possible_lat_column = ["latitude", "lat", "y"]
     possible_long_column = ["longitude", "long", "x"]
@@ -69,11 +48,15 @@ class CSVFileHandler(BaseVectorFileHandler):
     def supported_file_extension_config(self):
         return {
             "id": "csv",
-            "label": "CSV",
-            "format": "vector",
-            "mimeType": ["text/csv"],
-            "ext": ["csv"],
-            "optional": ["sld", "xml"],
+            "formats": [
+                {
+                    "label": "CSV",
+                    "required_ext": ["csv"],
+                    "optional_ext": ["sld", "xml"],
+                }
+            ],
+            "actions": list(self.TASKS.keys()),
+            "type": "vector",
         }
 
     @staticmethod
