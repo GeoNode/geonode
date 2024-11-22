@@ -25,6 +25,9 @@ import requests
 import re
 import logging
 
+from geonode.assets.local import LocalAssetHandler
+from geonode.assets.models import LocalAsset
+
 from .utils import utils
 
 from requests.auth import HTTPBasicAuth
@@ -166,23 +169,21 @@ class Command(BaseCommand):
 
                     logger.info(f" - Dumping '{app_name}' into '{dump_name}.json'")
                     # Point stdout at a file for dumping data to.
-                    with open(os.path.join(fixtures_target, f"{dump_name}.json"), "w") as output:
-                        call_command("dumpdata", app_name, format="json", indent=2, stdout=output)
+                    output_file = os.path.join(fixtures_target, f"{dump_name}.json")
+                    call_command("dumpdata", app_name, output=output_file)
 
                 # Store Media Root
-                logger.info("*** Dumping GeoNode media folder...")
 
-                media_root = settings.MEDIA_ROOT
                 media_folder = os.path.join(target_folder, utils.MEDIA_ROOT)
-                if not os.path.exists(media_folder):
-                    os.makedirs(media_folder, exist_ok=True)
+                logger.info("*** Dumping GeoNode media folder...")
+                self.backup_folder(folder=media_folder, root=settings.MEDIA_ROOT, config=config)
 
-                copy_tree(
-                    media_root,
-                    media_folder,
-                    ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
-                )
-                logger.info(f"Saved media files from '{media_root}'")
+                logger.info("*** Dumping GeoNode assets folder...")
+                assets_folder = os.path.join(target_folder, utils.ASSETS_ROOT)
+                self.backup_folder(folder=assets_folder, root=settings.ASSETS_ROOT, config=config)
+                for instance in LocalAsset.objects.iterator():
+                    if not LocalAssetHandler._are_files_managed(instance):
+                        logger.warning(f"The file for the asset with id {instance.pk} were not backup since is not managed by GeoNode")
 
                 # Create Final ZIP Archive
                 logger.info("*** Creating final ZIP archive...")
@@ -213,6 +214,17 @@ class Command(BaseCommand):
                 logger.info("Backup Finished. Archive generated.")
 
                 return str(os.path.join(backup_dir, f"{dir_time_suffix}.zip"))
+
+    def backup_folder(self, folder, root, config):
+        if not os.path.exists(folder):
+            os.makedirs(root, exist_ok=True)
+
+        copy_tree(
+            root,
+            folder,
+            ignore=utils.ignore_time(config.gs_data_dt_filter[0], config.gs_data_dt_filter[1]),
+        )
+        logger.info(f"Saved files from '{root}'")
 
     def create_geoserver_backup(self, config, settings, target_folder, ignore_errors):
         # Create GeoServer Backup

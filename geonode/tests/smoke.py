@@ -186,15 +186,6 @@ class GeoNodeUtilsTests(GeoNodeBaseTestSupport):
         self.assertAlmostEqual(sw[0], -180.0, places=3, msg="SW lon is correct")
         self.assertAlmostEqual(sw[1], -90.0, places=3, msg="SW lat is correct")
 
-    def test_split_query(self):
-        query = 'alpha "beta gamma"   delta  '
-        from geonode.utils import _split_query
-
-        keywords = _split_query(query)
-        self.assertEqual(keywords[0], "alpha")
-        self.assertEqual(keywords[1], "beta gamma")
-        self.assertEqual(keywords[2], "delta")
-
 
 class PermissionViewTests(GeoNodeBaseTestSupport):
     def setUp(self):

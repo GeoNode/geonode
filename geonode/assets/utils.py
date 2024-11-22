@@ -43,8 +43,8 @@ def get_default_asset(resource: ResourceBase, link_type=None) -> Asset or None:
     filters = {"link__resource": resource}
     if link_type:
         filters["link__link_type"] = link_type
-
-    return Asset.objects.filter(**filters).first()
+    asset = Asset.objects.filter(**filters).first()
+    return asset.get_real_instance() if asset else None
 
 
 DEFAULT_TYPES = {"image": ["jpg", "jpeg", "gif", "png", "bmp", "svg"]}
@@ -55,6 +55,7 @@ def find_type(ext):
 
 
 def create_link(resource, asset, link_type=None, extension=None, name=None, mime=None, asset_handler=None, **kwargs):
+    asset = asset.get_real_instance()
     asset_handler = asset_handler or asset_handler_registry.get_handler(asset)
 
     if not link_type or not extension or not name:

@@ -16,10 +16,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import ast
 import logging
 
-from dynamic_rest.fields.fields import DynamicField, DynamicRelationField
+from dynamic_rest.fields.fields import DynamicRelationField
 from dynamic_rest.serializers import DynamicModelSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError, ValidationError
@@ -36,14 +35,6 @@ from geonode.layers.models import Dataset
 from geonode.maps.models import Map, MapLayer
 
 logger = logging.getLogger(__name__)
-
-
-class DynamicListAsStringField(DynamicField):
-    def to_representation(self, value):
-        return ast.literal_eval(value) if isinstance(value, str) else value
-
-    def to_internal_value(self, data):
-        return str(data)
 
 
 class DynamicFullyEmbedM2MRelationField(DynamicRelationField):

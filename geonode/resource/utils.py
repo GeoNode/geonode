@@ -45,7 +45,7 @@ from ..base.models import (
     HierarchicalKeyword,
     SpatialRepresentationType,
 )
-
+from geonode.maps.models import Map
 from ..layers.models import Dataset
 from ..documents.models import Document
 from ..documents.enumerations import DOCUMENT_TYPE_MAP, DOCUMENT_MIMETYPE_MAP
@@ -361,7 +361,11 @@ def document_post_save(instance, *args, **kwargs):
         url = instance.doc_url
 
     Document.objects.filter(id=instance.id).update(
-        extension=instance.extension, subtype=instance.subtype, doc_url=instance.doc_url, csw_type=instance.csw_type
+        title=instance.title,
+        extension=instance.extension,
+        subtype=instance.subtype,
+        doc_url=instance.doc_url,
+        csw_type=instance.csw_type,
     )
 
     if name and url and ext:
@@ -407,6 +411,12 @@ def metadata_post_save(instance, *args, **kwargs):
         if _uuid != instance.uuid:
             instance.uuid = _uuid
             Dataset.objects.filter(id=instance.id).update(uuid=_uuid)
+
+    if isinstance(instance, Map):
+        """
+        For maps, we can calculate the bbox based on the maplayers
+        """
+        instance.compute_bbox()
 
     # Set a default user for accountstream to work correctly.
     if instance.owner is None:

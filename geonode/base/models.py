@@ -617,20 +617,14 @@ class ResourceBaseManager(PolymorphicManager):
             filename = f"{_resource.get_real_instance().resource_type}-{_resource.get_real_instance().uuid}"
             remove_thumbs(filename)
 
-            # Remove the uploaded sessions, if any
-            if "geonode.upload" in settings.INSTALLED_APPS:
-                from geonode.upload.models import Upload
-
-                # Need to call delete one by one in order to invoke the
-                #  'delete' overridden method
-                for upload in Upload.objects.filter(resource_id=_resource.get_real_instance().id):
-                    upload.delete()
-
 
 class ResourceBase(PolymorphicModel, PermissionLevelMixin, ItemBase):
     """
     Base Resource Object loosely based on ISO 19115:2003
     """
+
+    # fixing up the publishing option based on user permissions
+    ROLE_BASED_MANAGED_FIELDS = ["is_approved", "is_published", "featured"]
 
     BASE_PERMISSIONS = {
         "read": ["view_resourcebase"],

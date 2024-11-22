@@ -42,6 +42,7 @@ STATICFILES_DIRS = "static_dirs"
 TEMPLATE_DIRS = "template_dirs"
 LOCALE_PATHS = "locale_dirs"
 EXTERNAL_ROOT = "external"
+ASSETS_ROOT = "assets"
 
 
 logger = logging.getLogger(__name__)

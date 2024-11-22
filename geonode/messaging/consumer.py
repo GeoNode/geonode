@@ -18,7 +18,6 @@
 #########################################################################
 
 import logging
-import time
 import json
 from datetime import datetime
 
@@ -26,7 +25,6 @@ from datetime import datetime
 from kombu.mixins import ConsumerMixin
 from geonode.security.views import send_email_consumer
 from geonode.layers.views import dataset_view_counter
-from geonode.layers.models import Dataset
 from geonode.geoserver.helpers import gs_slurp
 
 from .queues import (
@@ -158,9 +156,6 @@ class Consumer(ConsumerMixin):
         dataset_id = body.get("dataset_id")
         dataset_view_counter(dataset_id, viewer)
 
-        # TODO Disabled for now. This should be handeld through Notifications
-        # if settings.EMAIL_ENABLE:
-        #     send_email_owner_on_view(owner_dataset, viewer, dataset_id)
         message.ack()
         logger.debug("on_dataset_viewer: finished")
         self._check_message_limit()
@@ -190,27 +185,3 @@ def _update_dataset_data(body, last_message):
 
     if update_dataset:
         gs_slurp(True, workspace=workspace, store=store, filter=filter, remove_deleted=True, execute_signals=True)
-
-
-def _wait_for_dataset(dataset_id, num_attempts=5, wait_seconds=1):
-    """Blocks execution while the Dataset instance is not found on the database
-
-    This is a workaround for the fact that the
-    ``geonode.geoserver.signals.geoserver_post_save_local`` function might
-    try to access the layer's ``id`` parameter before the layer is done being
-    saved in the database.
-
-    """
-
-    for current in range(1, num_attempts + 1):
-        try:
-            instance = Dataset.objects.get(id=dataset_id)
-            logger.debug(f"Attempt {current}/{num_attempts} - Found layer in the " "database")
-            break
-        except Dataset.DoesNotExist:
-            time.sleep(wait_seconds)
-            logger.debug(f"Attempt {current}/{num_attempts} - Could not find layer " "instance")
-    else:
-        logger.debug(f"Reached maximum attempts and layer {dataset_id} is still not " "saved. Exiting...")
-        raise Dataset.DoesNotExist
-    return instance
