@@ -45,13 +45,10 @@ class DOIHandler(MetadataHandler):
         return jsonschema
 
     def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
-
         return resource.doi
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
-
-        pass
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+        resource.doi = json_instance[field_name]
 
     def load_context(self, resource: ResourceBase, context: dict):
-
         pass
