@@ -124,7 +124,7 @@ class Command(BaseCommand):
             logger.info("Updating location field with new folder value")
 
             if len(asset.location) == 1:
-                asset.location = dest
+                asset.location = [dest]
             else:
                 asset.location = [x.replace(source, dest) for x in asset.location]
             asset.save()
