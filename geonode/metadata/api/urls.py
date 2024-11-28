@@ -20,15 +20,20 @@ from django.urls import path
 from rest_framework import routers
 
 from geonode.metadata.api import views
-from geonode.metadata.api.views import ProfileAutocomplete, MetadataLinkedResourcesAutocomplete, \
-    MetadataRegionsAutocomplete, MetadataHKeywordAutocomplete, MetadataGroupAutocomplete
+from geonode.metadata.api.views import (
+    ProfileAutocomplete,
+    MetadataLinkedResourcesAutocomplete,
+    MetadataRegionsAutocomplete,
+    MetadataHKeywordAutocomplete,
+    MetadataGroupAutocomplete,
+)
 
 router = routers.DefaultRouter()
 router.register(r"metadata", views.MetadataViewSet, basename="metadata")
 
 urlpatterns = router.urls + [
     path(
-        r"metadata/autocomplete/thesaurus/<thesaurusid>)/keywords",
+        r"metadata/autocomplete/thesaurus/<thesaurusid>/keywords",
         views.tkeywords_autocomplete,
         name="metadata_autocomplete_tkeywords",
     ),

@@ -49,20 +49,20 @@
     "default": "eng"
   },
   "license": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "License",
     "description": "license of the dataset",
     "maxLength": 255,
     "default": "eng"
   },
   "attribution": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "Attribution",
     "description": "authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
     "maxLength": 2048
   },
   "data_quality_statement": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "data quality statement",
     "description": "general explanation of the data producer's knowledge about the lineage of a dataset",
     "maxLength": 2000,
@@ -78,7 +78,7 @@
     "maxLength": 255
   },
   "constraints_other": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "Other constraints",
     "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
     "ui:options": {
@@ -87,13 +87,13 @@
     }
   },
   "edition": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "edition",
     "description": "version of the cited resource",
     "maxLength": 255
   },
   "purpose": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "purpose",
     "description": "summary of the intentions with which the resource(s) was developed",
     "maxLength": 500,
@@ -104,7 +104,7 @@
     "geonode:handler": "base"
   },
   "supplemental_information": {
-    "type": "string",
+    "type": ["string", "null"],
     "title": "supplemental information",
     "description": "any other descriptive information about the dataset",
     "maxLength": 2000,
@@ -115,13 +115,13 @@
     }
   },
   "temporal_extent_start": {
-    "type": "string",
+    "type": ["string", "null"],
     "format": "date-time",
     "title": "temporal extent start",
     "description": "time period covered by the content of the dataset (start)"
   },
   "temporal_extent_end": {
-    "type": "string",
+    "type": ["string", "null"],
     "format": "date-time",
     "title": "temporal extent end",
     "description": "time period covered by the content of the dataset (end)"

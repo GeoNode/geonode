@@ -88,16 +88,17 @@ class ContactHandler(MetadataHandler):
                 "title": _("Contacts"),
                 "properties": contacts,
                 "required": required,
+                "geonode:required": bool(required),
                 "geonode:handler": "contact",
             }
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
         def __create_user_entry(user):
             names = [n for n in (user.first_name, user.last_name) if n]
             postfix = f" ({' '.join(names)})" if names else ""
-            return {"id": user.id, "label": f"{user.username}{postfix}"}
+            return {"id": str(user.id), "label": f"{user.username}{postfix}"}
 
         contacts = {}
         for role in Roles:
@@ -113,18 +114,27 @@ class ContactHandler(MetadataHandler):
 
         return contacts
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
         data = json_instance[field_name]
-        logger.info(f"CONTACTS {data}")
+        logger.debug(f"CONTACTS {data}")
         for rolename, users in data.items():
             if rolename == Roles.OWNER.OWNER.name:
-                resource.owner = get_user_model().objects.get(pk=users["id"])
+                if not users:
+                    logger.warning(f"User not specified for role '{rolename}'")
+                    (
+                        errors.setdefault("contacts", {})
+                        .setdefault(rolename, {})
+                        .setdefault("__errors", [])
+                        .append(f"User not specified for role '{rolename}'")
+                    )
+                else:
+                    resource.owner = get_user_model().objects.get(pk=users["id"])
                 # logger.debug("Skipping role owner")
-                continue
-            role = Roles.get_role_by_name(rolename)
-            ids = [u["id"] for u in users]
-            profiles = get_user_model().objects.filter(pk__in=ids)
-            resource.__set_contact_role_element__(profiles, role)
+            else:
+                role = Roles.get_role_by_name(rolename)
+                ids = [u["id"] for u in users]
+                profiles = get_user_model().objects.filter(pk__in=ids)
+                resource.__set_contact_role_element__(profiles, role)
 
     def load_context(self, resource: ResourceBase, context: dict):
 

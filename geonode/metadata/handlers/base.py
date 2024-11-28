@@ -50,7 +50,7 @@ class CategorySubHandler(SubHandler):
     def update_subschema(cls, subschema, lang=None):
         # subschema["title"] = _("topiccategory")
         subschema["oneOf"] = [
-            {"const": tc.identifier, "title": tc.gn_description, "description": tc.description}
+            {"const": tc.identifier, "title": _(tc.gn_description), "description": _(tc.description)}
             for tc in TopicCategory.objects.order_by("gn_description")
         ]
 
@@ -191,36 +191,33 @@ class BaseHandler(MetadataHandler):
 
             # perform further specific initializations
             if property_name in SUBHANDLERS:
-                logger.debug(f"Running subhandler for base field {property_name}")
+                # logger.debug(f"Running subhandler for base field {property_name}")
                 SUBHANDLERS[property_name].update_subschema(subschema, lang)
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang: str = None):
-
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang: str = None):
         field_value = getattr(resource, field_name)
 
         # perform specific transformation if any
         if field_name in SUBHANDLERS:
-            logger.debug(f"Serializing base field {field_name}")
+            # logger.debug(f"Serializing base field {field_name}")
             field_value = SUBHANDLERS[field_name].serialize(field_value)
 
         return field_value
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+        field_value = json_instance.get(field_name, None)
 
-        if field_name in json_instance:
-            field_value = json_instance[field_name]
-            try:
-                if field_name in SUBHANDLERS:
-                    logger.debug(f"Deserializing base field {field_name}")
-                    # Deserialize field values before setting them to the ResourceBase
-                    field_value = SUBHANDLERS[field_name].deserialize(field_value)
+        try:
+            if field_name in SUBHANDLERS:
+                logger.debug(f"Deserializing base field {field_name}")
+                # Deserialize field values before setting them to the ResourceBase
+                field_value = SUBHANDLERS[field_name].deserialize(field_value)
 
-                setattr(resource, field_name, field_value)
-            except Exception as e:
-                logger.warning(f"Error setting field {field_name}={field_value}: {e}")
+            setattr(resource, field_name, field_value)
+        except Exception as e:
+            logger.warning(f"Error setting field {field_name}={field_value}: {e}")
 
     def load_context(self, resource: ResourceBase, context: dict):
-
         pass

@@ -45,10 +45,7 @@ class RegionHandler(MetadataHandler):
                     "id": {
                         "type": "string",
                     },
-                    "label": {
-                        "type": "string",
-                        "title": _("title")
-                    },
+                    "label": {"type": "string", "title": _("title")},
                 },
             },
             "geonode:handler": "region",
@@ -59,10 +56,10 @@ class RegionHandler(MetadataHandler):
         self._add_after(jsonschema, "attribution", "regions", regions)
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
-        return [{"id": r.id, "label": r.name} for r in resource.regions.all()]
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+        return [{"id": str(r.id), "label": r.name} for r in resource.regions.all()]
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
 
         data = json_instance[field_name]
         new_ids = {item["id"] for item in data}

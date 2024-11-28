@@ -19,7 +19,7 @@
 
 import logging
 import copy
-from abc import ABCMeta
+from cachetools import FIFOCache
 
 from django.utils.translation import gettext as _
 
@@ -28,11 +28,7 @@ from geonode.metadata.settings import MODEL_SCHEMA
 logger = logging.getLogger(__name__)
 
 
-class MetadataManagerInterface(metaclass=ABCMeta):
-    pass
-
-
-class MetadataManager(MetadataManagerInterface):
+class MetadataManager:
     """
     The metadata manager is the bridge between the API and the geonode model.
     The metadata manager will loop over all of the registered metadata handlers,
@@ -41,66 +37,90 @@ class MetadataManager(MetadataManagerInterface):
     to be delivered to the caller.
     """
 
+    # FIFO bc we want to renew the data once in a while
+    _schema_cache = FIFOCache(32)
+
     def __init__(self):
         self.root_schema = MODEL_SCHEMA
-        self.cached_schema = None
         self.handlers = {}
 
     def add_handler(self, handler_id, handler):
         self.handlers[handler_id] = handler()
 
     def build_schema(self, lang=None):
+        logger.debug(f"build_schema {lang}")
+
         schema = copy.deepcopy(self.root_schema)
         schema["title"] = _(schema["title"])
 
         for key, handler in self.handlers.items():
-            logger.debug(f"build_schema: update schema -> {key}")
+            # logger.debug(f"build_schema: update schema -> {key}")
             schema = handler.update_schema(schema, lang)
 
+        # Set required fields.
+        required = []
+        for fieldname, field in schema["properties"].items():
+            if field.get("geonode:required", False):
+                required.append(fieldname)
+
+        if required:
+            schema["required"] = required
         return schema
 
     def get_schema(self, lang=None):
-        return self.build_schema(lang)
-        # we dont want caching for the moment
-        if not self.cached_schema:
-            self.cached_schema = self.build_schema(lang)
-
-        return self.cached_schema
+        cache_key = str(lang)
+        ret = MetadataManager._schema_cache.get(cache_key, None)
+        if not ret:
+            logger.info(f"Building schema for {cache_key}")
+            ret = self.build_schema(lang)
+            MetadataManager._schema_cache[cache_key] = ret
+            logger.info("Schema built")
+        return ret
 
     def build_schema_instance(self, resource, lang=None):
+        schema = self.get_schema(lang)
 
-        schema = self.get_schema()
+        context = {}
+        for handler in self.handlers.values():
+            handler.load_serialization_context(resource, schema, context)
+
         instance = {}
-
-        for fieldname, field in schema["properties"].items():
+        for fieldname, subschema in schema["properties"].items():
             # logger.debug(f"build_schema_instance: getting handler for property {fieldname}")
-            handler_id = field.get("geonode:handler", None)
+            handler_id = subschema.get("geonode:handler", None)
             if not handler_id:
                 logger.warning(f"Missing geonode:handler for schema property {fieldname}. Skipping")
                 continue
             handler = self.handlers[handler_id]
-            content = handler.get_jsonschema_instance(resource, fieldname, lang)
+            content = handler.get_jsonschema_instance(resource, fieldname, context, lang)
             instance[fieldname] = content
 
         return instance
 
-    def update_schema_instance(self, resource, json_instance):
+    def update_schema_instance(self, resource, json_instance) -> dict:
 
-        logger.info(f"RECEIVED INSTANCE {json_instance}")
+        logger.debug(f"RECEIVED INSTANCE {json_instance}")
 
         schema = self.get_schema()
+        errors = {}
 
         for fieldname, subschema in schema["properties"].items():
             handler = self.handlers[subschema["geonode:handler"]]
-            handler.update_resource(resource, fieldname, json_instance)
-
+            # todo: get errors also
+            handler.update_resource(resource, fieldname, json_instance, errors)
         try:
             resource.save()
-            return {"message": "The resource was updated successfully"}
-
         except Exception as e:
             logger.warning(f"Error while updating schema instance: {e}")
-            return {"message": "Something went wrong... The resource was not updated"}
+            errors.setdefault("__errors", []).append(f"Error while saving the resource: {e}")
+
+        if "error" in resource.title.lower():
+            errors.setdefault("title", {}).setdefault("__errors", []).append("this is a test error under /title")
+            errors.setdefault("properties", {}).setdefault("title", {}).setdefault("__errors", []).append(
+                "this is a test error under /properties/title"
+            )
+
+        return errors
 
 
 metadata_manager = MetadataManager()

@@ -40,7 +40,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang: str = None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context: dict, lang: str = None):
         """
         Called when reading metadata, returns the instance of the sub-schema
         associated with the field field_name.
@@ -48,7 +48,7 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
         """
         Called when persisting data, updates the field field_name of the resource
         with the content content, where json_instance is  the full JSON Schema instance,
@@ -56,8 +56,13 @@ class MetadataHandler(metaclass=ABCMeta):
         """
         pass
 
-    @abstractmethod
-    def load_context(self, resource: ResourceBase, context: dict):
+    def load_serialization_context(self, resource: ResourceBase, jsonschema: dict, context: dict):
+        """
+        Called before calls to get_jsonschema_instance in order to initialize info needed by the handler
+        """
+        pass
+
+    def load_deserialization_context(self, resource: ResourceBase, context: dict):
         """
         Called before calls to update_resource in order to initialize info needed by the handler
         """
@@ -66,9 +71,15 @@ class MetadataHandler(metaclass=ABCMeta):
     def _add_after(self, jsonschema, after_what, property_name, subschema):
         # add thesauri after category
         ret_properties = {}
+        added = False
         for key, val in jsonschema["properties"].items():
             ret_properties[key] = val
             if key == after_what:
                 ret_properties[property_name] = subschema
+                added = True
+
+        if not added:
+            logger.warning(f'Could not add "{property_name}" after "{after_what}"')
+            ret_properties[property_name] = subschema
 
         jsonschema["properties"] = ret_properties

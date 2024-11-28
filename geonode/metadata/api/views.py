@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+import json
 
 from dal import autocomplete
 from django.contrib.auth import get_user_model
@@ -36,7 +37,6 @@ from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, 
 from geonode.groups.models import GroupProfile
 from geonode.metadata.manager import metadata_manager
 from geonode.people.utils import get_available_users
-from geonode.security.utils import get_user_visible_groups
 
 logger = logging.getLogger(__name__)
 
@@ -85,10 +85,23 @@ class MetadataViewSet(ViewSet):
                 )
 
             elif request.method in ("PUT", "PATCH"):
-                logger.info(f"handling request {request.method}")
-                logger.info(f"handling content {request.data}")
-                update_response = metadata_manager.update_schema_instance(resource, request.data)
-                return Response(update_response)
+                logger.debug(f"handling request {request.method}")
+                # try:
+                #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
+                # except Exception as e:
+                #     logger.warning(f"Can't parse JSON {request.data}: {e}")
+                errors = metadata_manager.update_schema_instance(resource, request.data)
+
+                response = {
+                    "message": (
+                        "Some errors were found while updating the resource"
+                        if errors
+                        else "The resource was updated successfully"
+                    ),
+                    "extraErrors": errors,
+                }
+
+                return Response(response, status=400 if errors else 200)
 
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
@@ -184,10 +197,7 @@ class MetadataRegionsAutocomplete(RegionAutocomplete):
 
 class MetadataHKeywordAutocomplete(HierarchicalKeywordAutocomplete):
     def get_results(self, context):
-        return [
-            self.get_result_label(result)
-            for result in context["object_list"]
-        ]
+        return [self.get_result_label(result) for result in context["object_list"]]
 
 
 class MetadataGroupAutocomplete(autocomplete.Select2QuerySetView):
@@ -208,10 +218,4 @@ class MetadataGroupAutocomplete(autocomplete.Select2QuerySetView):
         return qs
 
     def get_results(self, context):
-        return [
-            {"id": self.get_result_value(result), "label": result.title}
-            for result in context["object_list"]
-        ]
-
-
-
+        return [{"id": self.get_result_value(result), "label": result.title} for result in context["object_list"]]

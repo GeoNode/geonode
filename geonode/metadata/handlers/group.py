@@ -59,10 +59,14 @@ class GroupHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
-        return {"id": resource.group.groupprofile.pk, "label": resource.group.groupprofile.title} if resource.group else None
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+        return (
+            {"id": str(resource.group.groupprofile.pk), "label": resource.group.groupprofile.title}
+            if resource.group
+            else None
+        )
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
         data = json_instance[field_name]
         id = data.get("id", None) if data else None
         if id is not None:

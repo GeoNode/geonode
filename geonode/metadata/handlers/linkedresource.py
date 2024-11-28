@@ -51,10 +51,10 @@ class LinkedResourceHandler(MetadataHandler):
         jsonschema["properties"]["linkedresources"] = linked
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
-        return [{"id": lr.target.id, "label": lr.target.title} for lr in resource.get_linked_resources()]
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+        return [{"id": str(lr.target.id), "label": lr.target.title} for lr in resource.get_linked_resources()]
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
 
         data = json_instance[field_name]
         new_ids = {item["id"] for item in data}

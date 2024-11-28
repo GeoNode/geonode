@@ -33,7 +33,7 @@ class DOIHandler(MetadataHandler):
     def update_schema(self, jsonschema, lang=None):
 
         doi_schema = {
-            "type": "string",
+            "type": ["string", "null"],
             "title": "DOI",
             "description": _("a DOI will be added by Admin before publication."),
             "maxLength": 255,
@@ -44,7 +44,7 @@ class DOIHandler(MetadataHandler):
         self._add_after(jsonschema, "edition", "doi", doi_schema)
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang=None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
         return resource.doi
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):

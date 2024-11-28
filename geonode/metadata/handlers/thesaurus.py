@@ -24,7 +24,7 @@ from rest_framework.reverse import reverse
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import ResourceBase, Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler
 
 
@@ -36,17 +36,14 @@ TKEYWORDS = "tkeywords"
 
 class TKeywordsHandler(MetadataHandler):
     """
-    The base handler builds a valid empty schema with the simple
-    fields of the ResourceBase model
+    Handles the keywords for all the Thesauri with max card > 0
     """
 
-    def update_schema(self, jsonschema, lang=None):
-
-        from geonode.base.models import Thesaurus
-
+    @staticmethod
+    def collect_thesauri(filter, lang=None):
         # this query return the list of thesaurus X the list of localized titles
         q = (
-            Thesaurus.objects.filter(~Q(card_max=0))
+            Thesaurus.objects.filter(filter)
             .values(
                 "id",
                 "identifier",
@@ -68,7 +65,7 @@ class TKeywordsHandler(MetadataHandler):
             thesaurus = collected_thesauri.get(identifier, {})
             if not thesaurus:
                 # init
-                logger.debug(f"Initializing Thesaurus {identifier} JSON Schema")
+                logger.debug(f"Initializing Thesaurus {lang}/{identifier} JSON Schema")
                 collected_thesauri[identifier] = thesaurus
                 thesaurus["id"] = r["id"]
                 thesaurus["card"] = {}
@@ -82,6 +79,12 @@ class TKeywordsHandler(MetadataHandler):
             if r["rel_thesaurus__lang"] == lang:
                 logger.debug(f"Localizing Thesaurus {identifier} JSON Schema for lang {lang}")
                 thesaurus["title"] = r["rel_thesaurus__label"]
+
+        return collected_thesauri
+
+    def update_schema(self, jsonschema, lang=None):
+
+        collected_thesauri = self.collect_thesauri(~Q(card_max=0), lang=lang)
 
         # copy info to json schema
         thesauri = {}
@@ -131,7 +134,7 @@ class TKeywordsHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, lang: str = None):
+    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang: str = None):
 
         tks = {}
         for tk in resource.tkeywords.all():
@@ -154,7 +157,7 @@ class TKeywordsHandler(MetadataHandler):
 
         return ret
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
 
         kids = []
         for thes_id, keywords in json_instance.get(TKEYWORDS, {}).items():

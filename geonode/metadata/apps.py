@@ -1,4 +1,9 @@
+import logging
+
 from django.apps import AppConfig
+from django.utils.module_loading import import_string
+
+logger = logging.getLogger(__name__)
 
 
 class MetadataConfig(AppConfig):
@@ -12,12 +17,17 @@ class MetadataConfig(AppConfig):
 
 
 def run_setup_hooks(*args, **kwargs):
-    from geonode.metadata.registry import metadata_registry
+    setup_metadata_handlers()
+
+
+def setup_metadata_handlers():
     from geonode.metadata.manager import metadata_manager
+    from geonode.metadata.settings import METADATA_HANDLERS
 
-    # registry initialization
-    metadata_registry.init_registry()
-    handlers = metadata_registry.handler_registry
-
-    for handler_id, handler in handlers.items():
+    ids = []
+    for handler_id, module_path in METADATA_HANDLERS.items():
+        handler = import_string(module_path)
         metadata_manager.add_handler(handler_id, handler)
+        ids.append(handler_id)
+
+    logger.info(f"Metadata handlers from config: {', '.join(METADATA_HANDLERS)}")
