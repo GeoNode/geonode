@@ -74,6 +74,3 @@ class GroupHandler(MetadataHandler):
             resource.group = gp.group
         else:
             resource.group = None
-
-    def load_context(self, resource: ResourceBase, context: dict):
-        pass

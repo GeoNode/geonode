@@ -114,28 +114,18 @@ class ContactHandler(MetadataHandler):
 
         return contacts
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: dict, **kwargs):
         data = json_instance[field_name]
         logger.debug(f"CONTACTS {data}")
         for rolename, users in data.items():
             if rolename == Roles.OWNER.OWNER.name:
                 if not users:
                     logger.warning(f"User not specified for role '{rolename}'")
-                    (
-                        errors.setdefault("contacts", {})
-                        .setdefault(rolename, {})
-                        .setdefault("__errors", [])
-                        .append(f"User not specified for role '{rolename}'")
-                    )
+                    self._set_error(errors, ["contacts", rolename], f"User not specified for role '{rolename}'")
                 else:
                     resource.owner = get_user_model().objects.get(pk=users["id"])
-                # logger.debug("Skipping role owner")
             else:
                 role = Roles.get_role_by_name(rolename)
                 ids = [u["id"] for u in users]
                 profiles = get_user_model().objects.filter(pk__in=ids)
                 resource.__set_contact_role_element__(profiles, role)
-
-    def load_context(self, resource: ResourceBase, context: dict):
-
-        pass

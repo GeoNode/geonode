@@ -60,6 +60,3 @@ class HKeywordHandler(MetadataHandler):
         cleaned = [k for k in hkeywords if k]
         logger.debug(f"hkeywords: {hkeywords} --> {cleaned}")
         KeywordHandler(resource, cleaned).set_keywords()
-
-    def load_context(self, resource: ResourceBase, context: dict):
-        pass

@@ -55,7 +55,6 @@ class LinkedResourceHandler(MetadataHandler):
         return [{"id": str(lr.target.id), "label": lr.target.title} for lr in resource.get_linked_resources()]
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
-
         data = json_instance[field_name]
         new_ids = {item["id"] for item in data}
 
@@ -66,6 +65,3 @@ class LinkedResourceHandler(MetadataHandler):
 
         # delete remaining links
         LinkedResource.objects.filter(source_id=resource.id, internal=False).exclude(target_id__in=new_ids).delete()
-
-    def load_context(self, resource: ResourceBase, context: dict):
-        pass

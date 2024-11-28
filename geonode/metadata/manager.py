@@ -23,6 +23,7 @@ from cachetools import FIFOCache
 
 from django.utils.translation import gettext as _
 
+from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import MODEL_SCHEMA
 
 logger = logging.getLogger(__name__)
@@ -95,6 +96,13 @@ class MetadataManager:
             content = handler.get_jsonschema_instance(resource, fieldname, context, lang)
             instance[fieldname] = content
 
+        # TESTING ONLY
+        if "error" in resource.title.lower():
+            errors = {}
+            MetadataHandler._set_error(errors, ["title"], "GET: test msg under /title")
+            MetadataHandler._set_error(errors, ["properties", "title"], "GET: test msg under /properties/title")
+            instance["extraErrors"] = errors
+
         return instance
 
     def update_schema_instance(self, resource, json_instance) -> dict:
@@ -114,10 +122,16 @@ class MetadataManager:
             logger.warning(f"Error while updating schema instance: {e}")
             errors.setdefault("__errors", []).append(f"Error while saving the resource: {e}")
 
+        # TESTING ONLY
         if "error" in resource.title.lower():
-            errors.setdefault("title", {}).setdefault("__errors", []).append("this is a test error under /title")
+            errors.setdefault("title", {}).setdefault("__errors", []).append("PUT: this is a test error under /title")
             errors.setdefault("properties", {}).setdefault("title", {}).setdefault("__errors", []).append(
-                "this is a test error under /properties/title"
+                "PUT: this is a test error under /properties/title"
+            )
+
+            MetadataHandler._set_error(errors, ["title"], "PUT: this is another test msg under /title")
+            MetadataHandler._set_error(
+                errors, ["properties", "title"], "PUT: this is another test msg under /properties/title"
             )
 
         return errors

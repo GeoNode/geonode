@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 class DOIHandler(MetadataHandler):
 
     def update_schema(self, jsonschema, lang=None):
-
         doi_schema = {
             "type": ["string", "null"],
             "title": "DOI",
@@ -49,6 +48,3 @@ class DOIHandler(MetadataHandler):
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
         resource.doi = json_instance[field_name]
-
-    def load_context(self, resource: ResourceBase, context: dict):
-        pass

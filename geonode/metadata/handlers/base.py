@@ -218,6 +218,3 @@ class BaseHandler(MetadataHandler):
             setattr(resource, field_name, field_value)
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-
-    def load_context(self, resource: ResourceBase, context: dict):
-        pass

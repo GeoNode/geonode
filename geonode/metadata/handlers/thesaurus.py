@@ -167,7 +167,3 @@ class TKeywordsHandler(MetadataHandler):
 
         kw_requested = ThesaurusKeyword.objects.filter(about__in=kids)
         resource.tkeywords.set(kw_requested)
-
-    def load_context(self, resource: ResourceBase, context: dict):
-
-        pass

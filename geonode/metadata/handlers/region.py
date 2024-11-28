@@ -34,7 +34,6 @@ class RegionHandler(MetadataHandler):
     """
 
     def update_schema(self, jsonschema, lang=None):
-
         regions = {
             "type": "array",
             "title": _("Regions"),
@@ -60,14 +59,9 @@ class RegionHandler(MetadataHandler):
         return [{"id": str(r.id), "label": r.name} for r in resource.regions.all()]
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
-
         data = json_instance[field_name]
         new_ids = {item["id"] for item in data}
         logger.info(f"Regions added {data} --> {new_ids}")
 
         regions = Region.objects.filter(id__in=new_ids)
         resource.regions.set(regions)
-
-    def load_context(self, resource: ResourceBase, context: dict):
-
-        pass

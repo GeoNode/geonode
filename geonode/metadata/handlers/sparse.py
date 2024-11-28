@@ -75,15 +75,11 @@ class SparseHandler(MetadataHandler):
         return field.value if field else None
 
     def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
-        if field_name in json_instance:
-            field_value = json_instance[field_name]
-            try:
-                sf, created = SparseField.objects.update_or_create(
-                    defaults={"value": field_value}, resource=resource, name=field_name
-                )
-            except Exception as e:
-                logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-                errors.append(f"{field_name}: error inserting value: {e}")
-
-    def load_context(self, resource: ResourceBase, context: dict):
-        pass
+        field_value = json_instance.get(field_name, None)
+        try:
+            sf, created = SparseField.objects.update_or_create(
+                defaults={"value": field_value}, resource=resource, name=field_name
+            )
+        except Exception as e:
+            logger.warning(f"Error setting field {field_name}={field_value}: {e}")
+            self._set_error(errors, ["field_name"], f"Error setting value: {e}")

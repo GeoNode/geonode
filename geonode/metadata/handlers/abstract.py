@@ -83,3 +83,11 @@ class MetadataHandler(metaclass=ABCMeta):
             ret_properties[property_name] = subschema
 
         jsonschema["properties"] = ret_properties
+
+    @staticmethod
+    def _set_error(errors: dict, path: list, msg: str):
+        elem = errors
+        for step in path:
+            elem = elem.setdefault(step, {})
+        elem = elem.setdefault("__errors", [])
+        elem.append(msg)
