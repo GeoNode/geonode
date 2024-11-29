@@ -17,7 +17,6 @@
 #
 #########################################################################
 import logging
-import json
 
 from dal import autocomplete
 from django.contrib.auth import get_user_model

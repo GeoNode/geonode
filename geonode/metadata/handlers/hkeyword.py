@@ -18,11 +18,10 @@
 #########################################################################
 
 import logging
-
 from rest_framework.reverse import reverse
+
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.resource.utils import KeywordHandler
 
@@ -51,10 +50,10 @@ class HKeywordHandler(MetadataHandler):
         self._add_after(jsonschema, "tkeywords", "hkeywords", hkeywords)
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         return [keyword.name for keyword in resource.keywords.all()]
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         # TODO: see also resourcebase_form.disable_keywords_widget_for_non_superuser(request.user)
         hkeywords = json_instance["hkeywords"]
         cleaned = [k for k in hkeywords if k]

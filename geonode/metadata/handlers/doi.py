@@ -21,9 +21,7 @@ import logging
 
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
-
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +41,8 @@ class DOIHandler(MetadataHandler):
         self._add_after(jsonschema, "edition", "doi", doi_schema)
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         return resource.doi
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         resource.doi = json_instance[field_name]

@@ -19,7 +19,6 @@
 
 import logging
 
-from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.models import SparseField
 
@@ -68,13 +67,18 @@ class SparseHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang: str = None):
-        # TODO: reading fields one by one may kill performance. We may want the manager to perform a loadcontext as a first call
-        # before looping on the get_jsonschema_instance calls
-        field = SparseField.objects.filter(resource=resource, name=field_name).first()
-        return field.value if field else None
+    def load_serialization_context(self, resource, jsonschema: dict, context: dict):
+        logger.debug(f"Preloading sparse fields {sparse_field_registry.fields().keys()}")
+        context["sparse"] = {
+            "fields": {
+                f.name: f.value for f in SparseField.get_fields(resource, names=sparse_field_registry.fields().keys())
+            }
+        }
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
+        return context["sparse"]["fields"].get(field_name, None)
+
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         field_value = json_instance.get(field_name, None)
         try:
             sf, created = SparseField.objects.update_or_create(

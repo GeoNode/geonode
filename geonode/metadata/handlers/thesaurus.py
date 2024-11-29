@@ -24,7 +24,7 @@ from rest_framework.reverse import reverse
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase, Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler
 
 
@@ -134,8 +134,7 @@ class TKeywordsHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang: str = None):
-
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         tks = {}
         for tk in resource.tkeywords.all():
             tks[tk.id] = tk
@@ -157,8 +156,7 @@ class TKeywordsHandler(MetadataHandler):
 
         return ret
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
-
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         kids = []
         for thes_id, keywords in json_instance.get(TKEYWORDS, {}).items():
             logger.info(f"Getting info for thesaurus {thes_id}")

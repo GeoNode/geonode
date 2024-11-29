@@ -40,7 +40,9 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context: dict, lang: str = None):
+    def get_jsonschema_instance(
+        self, resource: ResourceBase, field_name: str, context: dict, errors: dict, lang: str = None
+    ):
         """
         Called when reading metadata, returns the instance of the sub-schema
         associated with the field field_name.
@@ -48,7 +50,9 @@ class MetadataHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def update_resource(
+        self, resource: ResourceBase, field_name: str, json_instance: dict, context: dict, errors: dict, **kwargs
+    ):
         """
         Called when persisting data, updates the field field_name of the resource
         with the content content, where json_instance is  the full JSON Schema instance,
@@ -62,7 +66,7 @@ class MetadataHandler(metaclass=ABCMeta):
         """
         pass
 
-    def load_deserialization_context(self, resource: ResourceBase, context: dict):
+    def load_deserialization_context(self, resource: ResourceBase, jsonschema: dict, context: dict):
         """
         Called before calls to update_resource in order to initialize info needed by the handler
         """
@@ -86,6 +90,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _set_error(errors: dict, path: list, msg: str):
+        logger.warning(f"Reported message: {'/'.join(path)}: {msg} ")
         elem = errors
         for step in path:
             elem = elem.setdefault(step, {})

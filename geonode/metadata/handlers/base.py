@@ -21,7 +21,7 @@ import json
 import logging
 from datetime import datetime
 
-from geonode.base.models import ResourceBase, TopicCategory, License, RestrictionCodeType, SpatialRepresentationType
+from geonode.base.models import TopicCategory, License, RestrictionCodeType, SpatialRepresentationType
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
@@ -196,7 +196,7 @@ class BaseHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang: str = None):
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         field_value = getattr(resource, field_name)
 
         # perform specific transformation if any
@@ -206,7 +206,7 @@ class BaseHandler(MetadataHandler):
 
         return field_value
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         field_value = json_instance.get(field_name, None)
 
         try:

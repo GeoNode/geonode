@@ -37,12 +37,12 @@ class SparseField(models.Model):
         return f"{self.name}={self.value}"
 
     @staticmethod
-    def get_fields(cls, resource: ResourceBase, names=None):
+    def get_fields(resource: ResourceBase, names=None):
         qs = SparseField.objects.filter(resource=resource)
         if names:
             qs = qs.filter(name__in=names)
 
-        return qs
+        return qs.all()
 
     class Meta:
         ordering = (

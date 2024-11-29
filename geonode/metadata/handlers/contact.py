@@ -18,12 +18,11 @@
 #########################################################################
 
 import logging
+from rest_framework.reverse import reverse
 
 from django.contrib.auth import get_user_model
-from rest_framework.reverse import reverse
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.people import Roles
 
@@ -94,7 +93,7 @@ class ContactHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         def __create_user_entry(user):
             names = [n for n in (user.first_name, user.last_name) if n]
             postfix = f" ({' '.join(names)})" if names else ""
@@ -114,7 +113,7 @@ class ContactHandler(MetadataHandler):
 
         return contacts
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: dict, **kwargs):
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         data = json_instance[field_name]
         logger.debug(f"CONTACTS {data}")
         for rolename, users in data.items():

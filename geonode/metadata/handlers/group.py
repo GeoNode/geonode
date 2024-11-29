@@ -18,11 +18,10 @@
 #########################################################################
 
 import logging
-
 from rest_framework.reverse import reverse
+
 from django.utils.translation import gettext as _
 
-from geonode.base.models import ResourceBase
 from geonode.groups.models import GroupProfile
 from geonode.metadata.handlers.abstract import MetadataHandler
 
@@ -59,14 +58,14 @@ class GroupHandler(MetadataHandler):
 
         return jsonschema
 
-    def get_jsonschema_instance(self, resource: ResourceBase, field_name: str, context, lang=None):
+    def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         return (
             {"id": str(resource.group.groupprofile.pk), "label": resource.group.groupprofile.title}
             if resource.group
             else None
         )
 
-    def update_resource(self, resource: ResourceBase, field_name: str, json_instance: dict, errors: list, **kwargs):
+    def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         data = json_instance[field_name]
         id = data.get("id", None) if data else None
         if id is not None:

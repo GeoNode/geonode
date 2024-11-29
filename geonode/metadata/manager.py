@@ -86,6 +86,7 @@ class MetadataManager:
             handler.load_serialization_context(resource, schema, context)
 
         instance = {}
+        errors = {}
         for fieldname, subschema in schema["properties"].items():
             # logger.debug(f"build_schema_instance: getting handler for property {fieldname}")
             handler_id = subschema.get("geonode:handler", None)
@@ -93,12 +94,11 @@ class MetadataManager:
                 logger.warning(f"Missing geonode:handler for schema property {fieldname}. Skipping")
                 continue
             handler = self.handlers[handler_id]
-            content = handler.get_jsonschema_instance(resource, fieldname, context, lang)
+            content = handler.get_jsonschema_instance(resource, fieldname, context, errors, lang)
             instance[fieldname] = content
 
         # TESTING ONLY
         if "error" in resource.title.lower():
-            errors = {}
             MetadataHandler._set_error(errors, ["title"], "GET: test msg under /title")
             MetadataHandler._set_error(errors, ["properties", "title"], "GET: test msg under /properties/title")
             instance["extraErrors"] = errors
@@ -106,21 +106,25 @@ class MetadataManager:
         return instance
 
     def update_schema_instance(self, resource, json_instance) -> dict:
-
         logger.debug(f"RECEIVED INSTANCE {json_instance}")
-
         schema = self.get_schema()
+        context = {}
+        for handler in self.handlers.values():
+            handler.load_deserialization_context(resource, schema, context)
+
         errors = {}
 
         for fieldname, subschema in schema["properties"].items():
             handler = self.handlers[subschema["geonode:handler"]]
-            # todo: get errors also
-            handler.update_resource(resource, fieldname, json_instance, errors)
+            try:
+                handler.update_resource(resource, fieldname, json_instance, context, errors)
+            except Exception as e:
+                MetadataHandler._set_error(errors, [fieldname], f"Error while processing this field: {e}")
         try:
             resource.save()
         except Exception as e:
             logger.warning(f"Error while updating schema instance: {e}")
-            errors.setdefault("__errors", []).append(f"Error while saving the resource: {e}")
+            MetadataHandler._set_error(errors, [], f"Error while saving the resource: {e}")
 
         # TESTING ONLY
         if "error" in resource.title.lower():
