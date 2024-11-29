@@ -2365,3 +2365,8 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+
+INSPIRE_ENABLE = ast.literal_eval(os.getenv("INSPIRE_ENABLE", "False"))
+if INSPIRE_ENABLE:
+    INSTALLED_APPS += ("geonode.inspire",)
+    GEONODE_APPS += ("geonode.inspire",)
