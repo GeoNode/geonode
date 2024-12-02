@@ -138,7 +138,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         if not volume:
             raise Invalid3DTilesException("The mandatory 'boundingVolume' for the key 'root' is missing")
 
-        error = payload.get("root", {}).get("geometricError", None)
+        error = payload.get("geometricError", None) or payload.get("root", {}).get("geometricError", None)
         if error is None:
             raise Invalid3DTilesException("The mandatory 'geometricError' for the key 'root' is missing")
 
