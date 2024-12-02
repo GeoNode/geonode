@@ -163,7 +163,10 @@ class TestTiles3DFileHandler(TestCase):
             self.handler.is_valid(files={"base_file": _path}, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue("The mandatory 'geometricError' for the key 'root' is missing" in str(_exc.exception.detail))
+        self.assertTrue(
+            "The provided 3DTiles is not valid, some of the mandatory keys are missing. Mandatory keys are: 'asset', 'geometricError', 'root'"
+            in str(_exc.exception.detail)
+        )
         os.remove(_path)
 
     def test_get_ogr2ogr_driver_should_return_the_expected_driver(self):
