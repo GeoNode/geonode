@@ -457,7 +457,7 @@ class ImporterWMSImportTest(BaseImporterEndToEndTest):
             "parse_remote_metadata": True,
             "action": "upload",
         }
-        initial_name = res.title
+        initial_name = res.title.lower().replace(" ", "_")
         assert_payload = {
             "subtype": "remote",
             "title": res.title,
