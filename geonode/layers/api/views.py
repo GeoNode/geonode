@@ -216,7 +216,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         if request.method == "GET":
 
             if layer.is_vector() and layer.has_time == True and time_info is not None:
-                return JsonResponse(serializer.to_representation(time_info), status=200)
+                return Response(serializer.to_representation(time_info), status=200)
             else:
                 return JsonResponse({"message": "No time information available."}, status=404)
 
