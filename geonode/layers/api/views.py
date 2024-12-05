@@ -47,12 +47,13 @@ from .serializers import (
     DatasetSerializer,
     DatasetListSerializer,
     DatasetMetadataSerializer,
-    DatasetTimeSeriesSerializer
+    DatasetTimeSeriesSerializer,
 )
 from .permissions import DatasetPermissionsFilter
 
 from geonode import geoserver
 from geonode.utils import check_ogc_backend
+
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import get_time_info
 
@@ -87,7 +88,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         if self.action == "list":
             return DatasetListSerializer
         if self.action == "timeseries_info":
-           return DatasetTimeSeriesSerializer
+            return DatasetTimeSeriesSerializer
         return DatasetSerializer
 
     def partial_update(self, request, *args, **kwargs):
@@ -195,14 +196,13 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         dataset = self.get_object()
         resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
-    
+
     @action(
         detail=True,
         url_path="timeseries",
         url_name="timeseries",
         methods=["get", "put"],
         permission_classes=[IsAuthenticated],
-
     )
     def timeseries_info(self, request, pk, *args, **kwards):
 
@@ -212,28 +212,22 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         time_info = get_time_info(layer)
 
         if request.method == "GET":
-               
+
             if layer.is_vector() and layer.has_time == True and time_info is not None:
-                
-                return Response(
-                    time_info,
-                    status=200
-                )
+
+                return Response(time_info, status=200)
             else:
-                return Response (
-                {"message": "No time information available."}, 
-                status=404
-               )
+                return Response({"message": "No time information available."}, status=404)
 
         if request.method == "PUT":
-            
+
             serializer.is_valid(raise_exception=True)
             ts = serializer.validated_data
-            
+
             start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
             end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
 
-            if layer.is_vector() and ts.get('has_time') == True:
+            if layer.is_vector() and ts.get("has_time") == True:
 
                 # Save the has_time value to the database
                 layer.has_time = True
@@ -249,7 +243,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                         "presentation": ts.get("presentation", None),
                         "precision_value": ts.get("precision_value", None),
                         "precision_step": ts.get("precision_step", None),
-                        "enabled": ts.get('has_time', False)
+                        "enabled": ts.get("has_time", False),
                     },
                 )
 
@@ -258,15 +252,14 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                     instance=layer,
                     notify=True,
                 )
-                return Response(
-                    {"message": "the time information data was updated successfully"},
-                    status = 200
-                    )
+                return Response({"message": "the time information data was updated successfully"}, status=200)
             else:
                 # Save the has_time value to the database
                 layer.has_time = False
                 layer.save()
 
                 return Response(
-                    {"message": "The time information was not updated since the time dimension is disabled for this layer"}
-                    )
+                    {
+                        "message": "The time information was not updated since the time dimension is disabled for this layer"
+                    }
+                )
