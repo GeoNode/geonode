@@ -229,6 +229,9 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
             
             serializer.is_valid(raise_exception=True)
             ts = serializer.validated_data
+            
+            start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
+            end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
 
             if layer.is_vector() and ts.get('has_time') == True:
 
@@ -241,8 +244,8 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                     None,
                     instance=layer,
                     time_info={
-                        "attribute": ts.get('attribute', None),
-                        "end_attribute": ts.get('end_attribute', None),
+                        "attribute": start_attr,
+                        "end_attribute": end_attr,
                         "presentation": ts.get("presentation", None),
                         "precision_value": ts.get("precision_value", None),
                         "precision_step": ts.get("precision_step", None),
