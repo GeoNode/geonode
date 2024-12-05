@@ -1807,6 +1807,7 @@ def set_time_info(layer, attribute, end_attribute, presentation, precision_value
     if resource:
         gs_catalog.save(resource)
 
+
 def get_time_info(layer):
     """
     Get the time configuration for a layer
@@ -1836,6 +1837,7 @@ def get_time_info(layer):
         return time_info
     else:
         return None
+
 
 ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 

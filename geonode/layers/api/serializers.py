@@ -220,25 +220,24 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
 
         # Remove the fields that are passed from the get_serializer_context()method
-        excluded_fields = ['request_fields', 
-                           'sideloading',
-                           'debug',
-                           'envelope',
-                           'include_fields',
-                          ]
-        
+        excluded_fields = [
+            "request_fields",
+            "sideloading",
+            "debug",
+            "envelope",
+            "include_fields",
+        ]
+
         for f in excluded_fields:
             kwargs.pop(f, None)
         super().__init__(*args, **kwargs)
 
     @staticmethod
     def _get_choices():
-        
+
         attributes = Attribute.objects.all()
         choices = [(None, "-----")] + [
-            (_a.pk, _a.attribute)
-            for _a in attributes
-            if _a.attribute_type in ["xsd:dateTime", "xsd:date"]
+            (_a.pk, _a.attribute) for _a in attributes if _a.attribute_type in ["xsd:dateTime", "xsd:date"]
         ]
         return choices
 
@@ -254,10 +253,10 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
                 "CONTINUOUS_INTERVAL",
                 "Continuous Intervals for data that is frequently updated, resolution describes the frequency of updates",
             ),
-        ]
+        ],
     )
     precision_value = serializers.IntegerField(required=False)
     precision_step = serializers.ChoiceField(
         required=False,
-        choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2]
+        choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
     )
