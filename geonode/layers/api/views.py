@@ -40,6 +40,8 @@ from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSeri
 from geonode.resource.utils import update_resource
 from geonode.resource.manager import resource_manager
 from rest_framework.exceptions import NotFound
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 
 from geonode.storage.manager import StorageManager
 
@@ -208,16 +210,15 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
 
         serializer = DatasetTimeSeriesSerializer(data=request.data)
 
-        layer = Dataset.objects.get(id=pk)
+        layer = get_object_or_404(Dataset, id=pk)
         time_info = get_time_info(layer)
 
         if request.method == "GET":
 
             if layer.is_vector() and layer.has_time == True and time_info is not None:
-
-                return Response(time_info, status=200)
+                return JsonResponse(serializer.to_representation(time_info), status=200)
             else:
-                return Response({"message": "No time information available."}, status=404)
+                return JsonResponse({"message": "No time information available."}, status=404)
 
         if request.method == "PUT":
 
@@ -252,13 +253,13 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                     instance=layer,
                     notify=True,
                 )
-                return Response({"message": "the time information data was updated successfully"}, status=200)
+                return JsonResponse({"message": "the time information data was updated successfully"}, status=200)
             else:
                 # Save the has_time value to the database
                 layer.has_time = False
                 layer.save()
 
-                return Response(
+                return JsonResponse(
                     {
                         "message": "The time information was not updated since the time dimension is disabled for this layer"
                     }

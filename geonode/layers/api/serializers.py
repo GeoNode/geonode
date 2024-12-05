@@ -216,22 +216,7 @@ class DatasetMetadataSerializer(serializers.Serializer):
 
 
 class DatasetTimeSeriesSerializer(serializers.Serializer):
-
-    def __init__(self, *args, **kwargs):
-
-        # Remove the fields that are passed from the get_serializer_context()method
-        excluded_fields = [
-            "request_fields",
-            "sideloading",
-            "debug",
-            "envelope",
-            "include_fields",
-        ]
-
-        for f in excluded_fields:
-            kwargs.pop(f, None)
-        super().__init__(*args, **kwargs)
-
+    
     @staticmethod
     def _get_choices():
 
@@ -260,3 +245,6 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
         required=False,
         choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
     )
+    
+    def to_representation(self, time_info):
+        return super().to_representation(time_info)
