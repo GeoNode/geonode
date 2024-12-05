@@ -47,8 +47,14 @@ from .serializers import (
     DatasetSerializer,
     DatasetListSerializer,
     DatasetMetadataSerializer,
+    DatasetTimeSeriesSerializer
 )
 from .permissions import DatasetPermissionsFilter
+
+from geonode import geoserver
+from geonode.utils import check_ogc_backend
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    from geonode.geoserver.helpers import get_time_info
 
 import logging
 
@@ -80,6 +86,8 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
     def get_serializer_class(self):
         if self.action == "list":
             return DatasetListSerializer
+        if self.action == "timeseries_info":
+           return DatasetTimeSeriesSerializer
         return DatasetSerializer
 
     def partial_update(self, request, *args, **kwargs):
@@ -187,3 +195,75 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         dataset = self.get_object()
         resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
+    
+    @action(
+        detail=True,
+        url_path="timeseries",
+        url_name="timeseries",
+        methods=["get", "put"],
+        permission_classes=[IsAuthenticated],
+
+    )
+    def timeseries_info(self, request, pk, *args, **kwards):
+
+        serializer = DatasetTimeSeriesSerializer(data=request.data)
+
+        layer = Dataset.objects.get(id=pk)
+        time_info = get_time_info(layer)
+
+        if request.method == "GET":
+               
+            if layer.is_vector() and layer.has_time == True and time_info is not None:
+                
+                return Response(
+                    time_info,
+                    status=200
+                )
+            else:
+                return Response (
+                {"message": "No time information available."}, 
+                status=404
+               )
+
+        if request.method == "PUT":
+            
+            serializer.is_valid(raise_exception=True)
+            ts = serializer.validated_data
+
+            if layer.is_vector() and ts.get('has_time') == True:
+
+                # Save the has_time value to the database
+                layer.has_time = True
+                layer.save()
+
+                resource_manager.exec(
+                    "set_time_info",
+                    None,
+                    instance=layer,
+                    time_info={
+                        "attribute": ts.get('attribute', None),
+                        "end_attribute": ts.get('end_attribute', None),
+                        "presentation": ts.get("presentation", None),
+                        "precision_value": ts.get("precision_value", None),
+                        "precision_step": ts.get("precision_step", None),
+                        "enabled": ts.get('has_time', False)
+                    },
+                )
+
+                resource_manager.update(
+                    layer.uuid,
+                    instance=layer,
+                    notify=True,
+                )
+                return Response(
+                    {"message": "the time information data was updated successfully"},
+                    status = 200
+                    )
+            else:
+                # Save the has_time value to the database
+                layer.has_time = False
+                layer.save()
+
+                return Response(
+                    {"message": "The time information was not updated since the time dimension is disabled for this layer"}
+                    )
