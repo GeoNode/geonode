@@ -221,18 +221,15 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
 
         super().__init__(*args, **kwargs)
 
-        choices = self._get_choices()
-        self.fields["attribute"].choices = choices
-        self.fields["end_attribute"].choices = choices
+        layer = self.context.get("layer")
 
-    @staticmethod
-    def _get_choices():
-
-        attributes = Attribute.objects.all()
-
-        return [(None, "-----")] + [
-            (_a.pk, _a.attribute) for _a in attributes if _a.attribute_type in ["xsd:dateTime", "xsd:date"]
-        ]
+        if layer:
+            # use the get_choices method of the Dataset model
+            choices = [(None, "-----")] + layer.get_choices
+            self.fields["attribute"].choices = choices
+            self.fields["end_attribute"].choices = choices
+        else:
+            choices = [(None, "-----")]
 
     has_time = serializers.BooleanField(default=False)
     attribute = serializers.ChoiceField(choices=[], required=False)

@@ -166,9 +166,18 @@ class Dataset(ResourceBase):
 
     @property
     def supports_time(self):
-        if self.is_vector():
+        valid_attributes = self.get_choices
+        # check if the layer object if a vector and
+        # includes valid_attributes
+        if self.is_vector() and valid_attributes:
             return True
         return False
+
+    @property
+    def get_choices(self):
+
+        attributes = Attribute.objects.filter(dataset_id=self.pk)
+        return [(_a.pk, _a.attribute) for _a in attributes if _a.attribute_type in ["xsd:dateTime", "xsd:date"]]
 
     @property
     def display_type(self):
