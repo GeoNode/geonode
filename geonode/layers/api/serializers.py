@@ -217,18 +217,26 @@ class DatasetMetadataSerializer(serializers.Serializer):
 
 class DatasetTimeSeriesSerializer(serializers.Serializer):
 
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        choices = self._get_choices()
+        self.fields["attribute"].choices = choices
+        self.fields["end_attribute"].choices = choices
+
     @staticmethod
     def _get_choices():
 
         attributes = Attribute.objects.all()
-        choices = [(None, "-----")] + [
+
+        return [(None, "-----")] + [
             (_a.pk, _a.attribute) for _a in attributes if _a.attribute_type in ["xsd:dateTime", "xsd:date"]
         ]
-        return choices
 
     has_time = serializers.BooleanField(default=False)
-    attribute = serializers.ChoiceField(choices=_get_choices(), required=False)
-    end_attribute = serializers.ChoiceField(choices=_get_choices(), required=False)
+    attribute = serializers.ChoiceField(choices=[], required=False)
+    end_attribute = serializers.ChoiceField(choices=[], required=False)
     presentation = serializers.ChoiceField(
         required=False,
         choices=[
