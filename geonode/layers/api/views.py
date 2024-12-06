@@ -40,6 +40,8 @@ from geonode.maps.api.serializers import SimpleMapLayerSerializer, SimpleMapSeri
 from geonode.resource.utils import update_resource
 from geonode.resource.manager import resource_manager
 from rest_framework.exceptions import NotFound
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 
 from geonode.storage.manager import StorageManager
 
@@ -47,8 +49,15 @@ from .serializers import (
     DatasetSerializer,
     DatasetListSerializer,
     DatasetMetadataSerializer,
+    DatasetTimeSeriesSerializer,
 )
 from .permissions import DatasetPermissionsFilter
+
+from geonode import geoserver
+from geonode.utils import check_ogc_backend
+
+if check_ogc_backend(geoserver.BACKEND_PACKAGE):
+    from geonode.geoserver.helpers import get_time_info
 
 import logging
 
@@ -80,6 +89,8 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
     def get_serializer_class(self):
         if self.action == "list":
             return DatasetListSerializer
+        if self.action == "timeseries_info":
+            return DatasetTimeSeriesSerializer
         return DatasetSerializer
 
     def partial_update(self, request, *args, **kwargs):
@@ -187,3 +198,98 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         dataset = self.get_object()
         resources = dataset.maps
         return Response(SimpleMapSerializer(many=True).to_representation(resources))
+
+    @action(
+        detail=True,
+        url_path="timeseries",
+        url_name="timeseries",
+        methods=["get", "put"],
+        permission_classes=[IsAuthenticated],
+    )
+    def timeseries_info(self, request, pk, *args, **kwards):
+        """
+        Endpoint for timeseries information
+
+        url = "http://localhost:8080/api/v2/datasets/{dataset_id}/timeseries"
+
+        cURL examples:
+        GET method
+        curl -X GET http://localhost:8000/api/v2/datasets/1/timeseries -u <username>:<password>
+
+        PUT method
+        curl -X PUT http://localhost:8000/api/v2/datasets/1/timeseries -u <username>:<password>
+        -H "Content-Type: application/json" -d '{"has_time": true, "attribute": 4, "end_attribute": 5,
+        "presentation": "DISCRETE_INTERVAL", "precision_value": 2, "precision_step": "months"}'
+        """
+
+        layer = get_object_or_404(Dataset, id=pk)
+
+        if layer.supports_time is False:
+            return JsonResponse({"message": "The time dimension is not supported for this dataset."}, status=200)
+
+        if request.method == "GET":
+
+            time_info = get_time_info(layer)
+            serializer = DatasetTimeSeriesSerializer(data=time_info, context={"layer": layer})
+            serializer.is_valid(raise_exception=True)
+            serialized_time_info = serializer.data
+
+            if layer.has_time is True and time_info is not None:
+                serialized_time_info["has_time"] = layer.has_time
+                return JsonResponse(serialized_time_info, status=200)
+            else:
+                return JsonResponse({"message": "No time information available."}, status=404)
+
+        if request.method == "PUT":
+
+            serializer = DatasetTimeSeriesSerializer(data=request.data, context={"layer": layer})
+            serializer.is_valid(raise_exception=True)
+            serialized_time_info = serializer.validated_data
+
+            if serialized_time_info.get("has_time") is True:
+
+                start_attr = (
+                    layer.attributes.get(pk=serialized_time_info.get("attribute")).attribute
+                    if serialized_time_info.get("attribute")
+                    else None
+                )
+                end_attr = (
+                    layer.attributes.get(pk=serialized_time_info.get("end_attribute")).attribute
+                    if serialized_time_info.get("end_attribute")
+                    else None
+                )
+
+                # Save the has_time value to the database
+                layer.has_time = True
+                layer.save()
+
+                resource_manager.exec(
+                    "set_time_info",
+                    None,
+                    instance=layer,
+                    time_info={
+                        "attribute": start_attr,
+                        "end_attribute": end_attr,
+                        "presentation": serialized_time_info.get("presentation", None),
+                        "precision_value": serialized_time_info.get("precision_value", None),
+                        "precision_step": serialized_time_info.get("precision_step", None),
+                        "enabled": serialized_time_info.get("has_time", False),
+                    },
+                )
+
+                resource_manager.update(
+                    layer.uuid,
+                    instance=layer,
+                    notify=True,
+                )
+                return JsonResponse({"message": "the time information data was updated successfully"}, status=200)
+            else:
+                # Save the has_time value to the database
+                layer.has_time = False
+                layer.save()
+
+                return JsonResponse(
+                    {
+                        "message": "The time information was not updated since the time dimension is disabled for this layer"
+                    }
+                )
