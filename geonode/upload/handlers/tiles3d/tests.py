@@ -154,7 +154,6 @@ class TestTiles3DFileHandler(TestCase):
     def test_validate_should_raise_exception_for_invalid_root_geometricError(self):
         _json = {
             "asset": {"version": "1.1"},
-            "geometricError": 1.0,
             "root": {"boundingVolume": {"box": []}, "foo": 0.0},
         }
         _path = "/tmp/tileset.json"
@@ -164,7 +163,10 @@ class TestTiles3DFileHandler(TestCase):
             self.handler.is_valid(files={"base_file": _path}, user=self.user)
 
         self.assertIsNotNone(_exc)
-        self.assertTrue("The mandatory 'geometricError' for the key 'root' is missing" in str(_exc.exception.detail))
+        self.assertTrue(
+            "The provided 3DTiles is not valid, some of the mandatory keys are missing. Mandatory keys are: 'asset', 'geometricError', 'root'"
+            in str(_exc.exception.detail)
+        )
         os.remove(_path)
 
     def test_get_ogr2ogr_driver_should_return_the_expected_driver(self):
