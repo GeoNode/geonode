@@ -224,7 +224,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
 
         layer = get_object_or_404(Dataset, id=pk)
 
-        if layer.is_vector() == False:
+        if layer.is_vector() is False:
             return JsonResponse({"message": "The time dimension is not supported for raster data."}, status=200)
 
         if request.method == "GET":
@@ -233,7 +233,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
             time_info = get_time_info(layer)
             serialized_time_info = serializer(get_time_info(layer)).data
 
-            if layer.has_time == True and time_info is not None:
+            if layer.has_time is True and time_info is not None:
                 serialized_time_info["has_time"] = layer.has_time
                 return JsonResponse(serialized_time_info, status=200)
             else:
@@ -245,7 +245,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
             serializer.is_valid(raise_exception=True)
             serialized_time_info = serializer.validated_data
 
-            if serialized_time_info.get("has_time") == True:
+            if serialized_time_info.get("has_time") is True:
 
                 start_attr = (
                     layer.attributes.get(pk=serialized_time_info.get("attribute")).attribute
