@@ -245,6 +245,3 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
         required=False,
         choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
     )
-
-    def to_representation(self, time_info):
-        return super().to_representation(time_info)

@@ -207,28 +207,56 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
         permission_classes=[IsAuthenticated],
     )
     def timeseries_info(self, request, pk, *args, **kwards):
+        """
+        Endpoint for timeseries information
 
-        serializer = DatasetTimeSeriesSerializer(data=request.data)
+        url = "http://localhost:8080/api/v2/datasets/{dataset_id}/timeseries"
+
+        cURL examples:
+        GET method
+        curl -X GET http://localhost:8000/api/v2/datasets/1/timeseries -u <username>:<password>
+
+        PUT method
+        curl -X PUT http://localhost:8000/api/v2/datasets/1/timeseries -u <username>:<password>
+        -H "Content-Type: application/json" -d '{"has_time": true, "attribute": 4, "end_attribute": 5,
+        "presentation": "DISCRETE_INTERVAL", "precision_value": 2, "precision_step": "months"}'
+        """
 
         layer = get_object_or_404(Dataset, id=pk)
-        time_info = get_time_info(layer)
+
+        if layer.is_vector() == False:
+            return JsonResponse({"message": "The time dimension is not supported for raster data."}, status=200)
 
         if request.method == "GET":
 
-            if layer.is_vector() and layer.has_time == True and time_info is not None:
-                return Response(serializer.to_representation(time_info), status=200)
+            serializer = DatasetTimeSeriesSerializer
+            time_info = get_time_info(layer)
+            serialized_time_info = serializer(get_time_info(layer)).data
+
+            if layer.has_time == True and time_info is not None:
+                serialized_time_info["has_time"] = layer.has_time
+                return JsonResponse(serialized_time_info, status=200)
             else:
                 return JsonResponse({"message": "No time information available."}, status=404)
 
         if request.method == "PUT":
 
+            serializer = DatasetTimeSeriesSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
-            ts = serializer.validated_data
+            serialized_time_info = serializer.validated_data
 
-            start_attr = layer.attributes.get(pk=ts.get("attribute")).attribute if ts.get("attribute") else None
-            end_attr = layer.attributes.get(pk=ts.get("end_attribute")).attribute if ts.get("end_attribute") else None
+            if serialized_time_info.get("has_time") == True:
 
-            if layer.is_vector() and ts.get("has_time") == True:
+                start_attr = (
+                    layer.attributes.get(pk=serialized_time_info.get("attribute")).attribute
+                    if serialized_time_info.get("attribute")
+                    else None
+                )
+                end_attr = (
+                    layer.attributes.get(pk=serialized_time_info.get("end_attribute")).attribute
+                    if serialized_time_info.get("end_attribute")
+                    else None
+                )
 
                 # Save the has_time value to the database
                 layer.has_time = True
@@ -241,10 +269,10 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                     time_info={
                         "attribute": start_attr,
                         "end_attribute": end_attr,
-                        "presentation": ts.get("presentation", None),
-                        "precision_value": ts.get("precision_value", None),
-                        "precision_step": ts.get("precision_step", None),
-                        "enabled": ts.get("has_time", False),
+                        "presentation": serialized_time_info.get("presentation", None),
+                        "precision_value": serialized_time_info.get("precision_value", None),
+                        "precision_step": serialized_time_info.get("precision_step", None),
+                        "enabled": serialized_time_info.get("has_time", False),
                     },
                 )
 
