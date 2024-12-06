@@ -343,6 +343,7 @@ class ThesaurusAvailableForm(forms.Form):
 
     @staticmethod
     def _get_thesauro_title_label(item, lang):
+        lang = remove_country_from_languagecode(lang)
         tname = ThesaurusLabel.objects.values_list("label", flat=True).filter(thesaurus=item).filter(lang=lang)
         if not tname:
             return Thesaurus.objects.get(id=item.id).title
