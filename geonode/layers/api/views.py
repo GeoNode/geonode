@@ -224,7 +224,7 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
 
         layer = get_object_or_404(Dataset, id=pk)
 
-        if layer.is_vector() is False:
+        if layer.support_time is False:
             return JsonResponse({"message": "The time dimension is not supported for raster data."}, status=200)
 
         if request.method == "GET":

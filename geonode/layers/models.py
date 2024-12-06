@@ -165,6 +165,12 @@ class Dataset(ResourceBase):
         return self.subtype == "raster"
 
     @property
+    def support_time(self):
+        if self.is_vector():
+            return True
+        return False
+
+    @property
     def display_type(self):
         if self.subtype in ["vector", "vector_time"]:
             return "Vector Data"
