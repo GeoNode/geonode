@@ -333,7 +333,7 @@ def dataset_metadata(
         )
 
         initial = {}
-        if layer.support_time and layer.has_time:
+        if layer.supports_time and layer.has_time:
             initial = get_time_info(layer)
 
         timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries", initial=initial)
@@ -446,7 +446,7 @@ def dataset_metadata(
         layer.has_time = dataset_form.cleaned_data.get("has_time", layer.has_time)
 
         if (
-            layer.support_time
+            layer.supports_time
             and timeseries_form.cleaned_data
             and ("has_time" in dataset_form.changed_data or timeseries_form.changed_data)
         ):
