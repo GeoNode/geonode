@@ -304,7 +304,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         mock_gs_time_info.enabled = True
         mock_gs_time_info.attribute = "begin"
         mock_gs_time_info.end_attribute = "end"
-        mock_gs_time_info.presentation = "continuous"
+        mock_gs_time_info.presentation = "DISCRETE_INTERVAL"
         mock_gs_time_info.resolution = 5000
         mock_gs_time_info._lookup = [("seconds", 1), ("minutes", 60)]
 
