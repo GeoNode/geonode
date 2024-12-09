@@ -38,8 +38,10 @@ from geonode.geoserver.helpers import (
     extract_name_from_sld,
     get_dataset_capabilities_url,
     get_layer_ows_url,
+    get_time_info,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
+from unittest.mock import patch, Mock, MagicMock
 
 
 logger = logging.getLogger(__name__)
@@ -275,3 +277,76 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         expected_url = f"{ows_url}geonode/CA/ows"
         capabilities_url = get_layer_ows_url(dataset)
         self.assertEqual(capabilities_url, expected_url, capabilities_url)
+
+    # Tests for geonode.geoserver.helpers.get_time_info
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_get_time_info_valid_layer(self, mock_gs_catalog):
+
+        mock_layer = Mock()
+        mock_layer.name = "test_layer"
+        mock_attribute = Mock(pk=1)
+        mock_end_attribute = Mock(pk=2)
+
+        mock_query_set = MagicMock()
+
+        # Mock filter to return the mock QuerySet
+        def mock_filter(attribute=None):
+            if attribute == "begin":
+                mock_query_set.first.return_value = mock_attribute
+            elif attribute == "end":
+                mock_query_set.first.return_value = mock_end_attribute
+            return mock_query_set
+
+        mock_layer.attributes.filter = mock_filter
+
+        # Build mock GeoServer's time info
+        mock_gs_time_info = Mock()
+        mock_gs_time_info.enabled = True
+        mock_gs_time_info.attribute = "begin"
+        mock_gs_time_info.end_attribute = "end"
+        mock_gs_time_info.presentation = "continuous"
+        mock_gs_time_info.resolution = 5000
+        mock_gs_time_info._lookup = [("seconds", 1), ("minutes", 60)]
+
+        mock_gs_layer = Mock()
+        mock_gs_layer.resource.metadata.get.return_value = mock_gs_time_info
+        mock_gs_catalog.get_layer.return_value = mock_gs_layer
+
+        result = get_time_info(mock_layer)
+
+        self.assertEqual(result["attribute"], 1)
+        self.assertEqual(result["end_attribute"], 2)
+        self.assertEqual(result["presentation"], "DISCRETE_INTERVAL")
+        self.assertEqual(result["precision_value"], 5)
+        self.assertEqual(result["precision_step"], "seconds")
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_get_time_info_with_time_disabled(self, mock_gs_catalog):
+        mock_layer = Mock()
+        mock_layer.name = "test_layer"
+
+        mock_gs_time_info = Mock()
+        mock_gs_time_info.enabled = False
+        mock_gs_time_info.attribute = "begin"
+        mock_gs_time_info.end_attribute = "end"
+        mock_gs_time_info.presentation = "DISCRETE_INTERVAL"
+        mock_gs_time_info.resolution = 10000
+        mock_gs_time_info._lookup = [("seconds", 1), ("minutes", 60)]
+
+        mock_gs_layer = Mock()
+        mock_gs_layer.resource.metadata.get.return_value = mock_gs_time_info
+        mock_gs_catalog.get_layer.return_value = mock_gs_layer
+
+        result = get_time_info(mock_layer)
+        self.assertEqual(result, {})
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_get_time_info_no_layer(self, mock_gs_catalog):
+
+        mock_gs_catalog.get_layer.return_value = None
+
+        mock_layer = Mock()
+        mock_layer.name = "nonexistent_layer"
+
+        result = get_time_info(mock_layer)
+        self.assertIsNone(result)
