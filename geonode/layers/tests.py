@@ -23,7 +23,7 @@ import shutil
 import logging
 
 from uuid import uuid4
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 from collections import namedtuple
 
 from django.urls import reverse
@@ -936,6 +936,42 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertTupleEqual(
             ({"alternate": layer.alternate, "download_format": "application/zip"},), pathed_template.mock_calls[1].args
         )
+
+    @patch.object(Dataset, "get_choices", new_callable=PropertyMock)
+    def test_supports_time_with_vector_time_subtype(self, mock_get_choices):
+
+        # set valid attributes
+        mock_get_choices.return_value = [(4, "timestamp"), (5, "begin"), (6, "end")]
+
+        mock_dataset = Dataset(subtype="vector")
+        self.assertTrue(mock_dataset.supports_time)
+
+    @patch.object(Dataset, "get_choices", new_callable=PropertyMock)
+    def test_supports_time_with_non_vector_subtype(self, mock_get_choices):
+
+        # set valid attributes
+        mock_get_choices.return_value = [(4, "timestamp"), (5, "begin"), (6, "end")]
+
+        mock_dataset = Dataset(subtype="raster")
+        self.assertFalse(mock_dataset.supports_time)
+
+    @patch.object(Dataset, "get_choices", new_callable=PropertyMock)
+    def test_supports_time_with_vector_subtype_and_invalid_attributes(self, mock_get_choices):
+
+        # Get an empty list from get_choices method due to invalid attributes
+        mock_get_choices.return_value = []
+
+        mock_dataset = Dataset(subtype="vector")
+        self.assertFalse(mock_dataset.supports_time)
+
+    @patch.object(Dataset, "get_choices", new_callable=PropertyMock)
+    def test_supports_time_with_raster_subtype_and_invalid_attributes(self, mock_get_choices):
+
+        # Get an empty list from get_choices method due to invalid attributes
+        mock_get_choices.return_value = []
+
+        mock_dataset = Dataset(subtype="raster")
+        self.assertFalse(mock_dataset.supports_time)
 
 
 class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):

@@ -1808,6 +1808,37 @@ def set_time_info(layer, attribute, end_attribute, presentation, precision_value
         gs_catalog.save(resource)
 
 
+def get_time_info(layer):
+    """
+    Get the time configuration for a layer
+    """
+    time_info = {}
+    gs_layer = gs_catalog.get_layer(name=layer.name)
+    if gs_layer is not None:
+        gs_time_info = gs_layer.resource.metadata.get("time")
+        if gs_time_info.enabled:
+            _attr = layer.attributes.filter(attribute=gs_time_info.attribute).first()
+            time_info["attribute"] = _attr.pk if _attr else None
+            if gs_time_info.end_attribute is not None:
+                end_attr = layer.attributes.filter(attribute=gs_time_info.end_attribute).first()
+                time_info["end_attribute"] = end_attr.pk if end_attr else None
+            time_info["presentation"] = gs_time_info.presentation
+            lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
+            if gs_time_info.resolution is not None:
+                res = gs_time_info.resolution // 1000
+                for el in lookup_value:
+                    if res % el[1] == 0:
+                        time_info["precision_value"] = res // el[1]
+                        time_info["precision_step"] = el[0]
+                        break
+            else:
+                time_info["precision_value"] = gs_time_info.resolution
+                time_info["precision_step"] = "seconds"
+        return time_info
+    else:
+        return None
+
+
 ogc_server_settings = OGC_Servers_Handler(settings.OGC_SERVER)["default"]
 
 _wms = None

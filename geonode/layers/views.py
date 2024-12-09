@@ -63,7 +63,7 @@ from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
 from geonode.geoserver.helpers import ogc_server_settings
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
-    from geonode.geoserver.helpers import gs_catalog
+    from geonode.geoserver.helpers import gs_catalog, get_time_info
 
 CONTEXT_LOG_FILE = ogc_server_settings.LOG_FILE
 
@@ -332,28 +332,9 @@ def dataset_metadata(
             prefix="category_choice_field", initial=topic_category.id if topic_category else None
         )
 
-        gs_layer = gs_catalog.get_layer(name=layer.name)
         initial = {}
-        if gs_layer is not None and layer.has_time:
-            gs_time_info = gs_layer.resource.metadata.get("time")
-            if gs_time_info.enabled:
-                _attr = layer.attributes.filter(attribute=gs_time_info.attribute).first()
-                initial["attribute"] = _attr.pk if _attr else None
-                if gs_time_info.end_attribute is not None:
-                    end_attr = layer.attributes.filter(attribute=gs_time_info.end_attribute).first()
-                    initial["end_attribute"] = end_attr.pk if end_attr else None
-                initial["presentation"] = gs_time_info.presentation
-                lookup_value = sorted(list(gs_time_info._lookup), key=lambda x: x[1], reverse=True)
-                if gs_time_info.resolution is not None:
-                    res = gs_time_info.resolution // 1000
-                    for el in lookup_value:
-                        if res % el[1] == 0:
-                            initial["precision_value"] = res // el[1]
-                            initial["precision_step"] = el[0]
-                            break
-                else:
-                    initial["precision_value"] = gs_time_info.resolution
-                    initial["precision_step"] = "seconds"
+        if layer.supports_time and layer.has_time:
+            initial = get_time_info(layer)
 
         timeseries_form = DatasetTimeSerieForm(instance=layer, prefix="timeseries", initial=initial)
 
@@ -465,7 +446,7 @@ def dataset_metadata(
         layer.has_time = dataset_form.cleaned_data.get("has_time", layer.has_time)
 
         if (
-            layer.is_vector()
+            layer.supports_time
             and timeseries_form.cleaned_data
             and ("has_time" in dataset_form.changed_data or timeseries_form.changed_data)
         ):
