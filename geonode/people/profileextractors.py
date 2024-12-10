@@ -195,11 +195,6 @@ class OpenIDExtractor(BaseExtractor):
         return data.get("roles", "")
 
 
-def _get_latest_position(data):
-    all_positions = data.get("positions", {"values": []})["values"]
-    return all_positions[0] if any(all_positions) else None
-
-
 class OpenIDGroupRoleMapper:
     """GeoNode will look for names like: ["GroupProfile1.Role", "GroupProfile2.Role", ..., "GroupProfileN.Role"]"""
 

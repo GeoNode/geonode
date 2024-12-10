@@ -2,7 +2,7 @@
 Pillow==10.4.0
 lxml==5.2.1
 psycopg2==2.9.9
-Django==4.2.9
+Django==4.2.16
 
 # Other
 amqp==5.2.0
@@ -26,7 +26,7 @@ rdflib==6.3.2
 smart_open==7.0.4
 PyMuPDF==1.24.3
 defusedxml==0.7.1
-zipstream-ng==1.7.1
+zipstream-ng==1.8.0
 
 # Django Apps
 django-allauth==0.63.6
@@ -88,7 +88,6 @@ geonode-pinax-notifications==6.0.0.2
 # GeoNode org maintained apps.
 # django-geonode-mapstore-client==4.0.5
 git+https://github.com/GeoNode/geonode-mapstore-client.git@master#egg=django_geonode_mapstore_client
-git+https://github.com/GeoNode/geonode-importer.git@master#egg=geonode-importer
 django-avatar==8.0.0
 geonode-oauth-toolkit==2.2.2.2
 geonode-user-messages==2.0.2.2
@@ -98,6 +97,14 @@ gn-arcrest==10.5.6
 geoserver-restconfig~=2.0.12
 gn-gsimporter==2.0.4
 gisdata==0.5.4
+
+# importer dependencies
+
+setuptools>=59
+gdal<=3.4.3
+pdok-geopackage-validator==0.8.5
+geonode-django-dynamic-model==0.4.0
+
 
 # datetimepicker widget
 django-bootstrap3-datetimepicker-2==2.8.3

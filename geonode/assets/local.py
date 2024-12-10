@@ -7,7 +7,7 @@ from django.conf import settings
 from django.http import HttpResponse, StreamingHttpResponse
 from django.urls import reverse
 from django_downloadview import DownloadResponse
-from zipstream import ZipStream, walk
+from zipstream import ZipStream
 
 from geonode.assets.handlers import asset_handler_registry, AssetHandlerInterface, AssetDownloadHandlerInterface
 from geonode.assets.models import LocalAsset
@@ -261,9 +261,7 @@ class LocalAssetDownloadHandler(AssetDownloadHandlerInterface):
             match attachment:
                 case True:
                     logger.info(f"Zipping file '{localfile}' with name '{orig_base}'")
-                    zs = ZipStream(sized=True)
-                    for filepath in walk(LocalAssetHandler._get_managed_dir(asset)):
-                        zs.add_path(filepath, os.path.basename(filepath))
+                    zs = ZipStream(sized=True).from_path(LocalAssetHandler._get_managed_dir(asset), arcname="/")
                     # closing zip for all contents to be written
                     return StreamingHttpResponse(
                         zs,

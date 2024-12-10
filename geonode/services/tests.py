@@ -29,10 +29,8 @@ from collections import namedtuple
 from arcrest import MapService as ArcMapService
 from unittest import TestCase as StandardTestCase
 from owslib.wms import WebMapService as OwsWebMapService
-
 from django.test import Client, override_settings
 from django.urls import reverse
-from django.db.utils import IntegrityError
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import slugify
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -826,7 +824,7 @@ class WmsServiceHandlerTestCase(GeoNodeBaseTestSupport):
             # Try adding the same URL again
             form = forms.CreateServiceForm(form_data)
             self.assertEqual(Service.objects.count(), 1)
-            with self.assertRaises(IntegrityError):
+            with self.assertRaises(KeyError):
                 self.client.post(reverse("register_service"), data=form_data)
             self.assertEqual(Service.objects.count(), 1)
 

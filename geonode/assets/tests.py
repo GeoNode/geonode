@@ -226,7 +226,26 @@ class AssetsDownloadTests(APITestCase):
         u, _ = get_user_model().objects.get_or_create(username="admin")
         self.assertTrue(self.client.login(username="admin", password="admin"), "Login failed")
 
-        asset = self._setup_test(u)
+        asset_handler = asset_handler_registry.get_default_handler()
+        asset = asset_handler.create(
+            title="Test Asset",
+            description="Description of test asset",
+            type="NeverMind",
+            owner=u,
+            files=[ONE_JSON],
+            clone_files=True,
+        )
+        asset.save()
+        self.assertIsInstance(asset, LocalAsset)
+
+        reloaded = LocalAsset.objects.get(pk=asset.pk)
+
+        # put two more files in the asset dir
+        asset_dir = os.path.dirname(reloaded.location[0])
+        sub_dir = os.path.join(asset_dir, "subdir")
+        os.mkdir(sub_dir)
+        shutil.copy(TWO_JSON, asset_dir)
+        shutil.copy(THREE_JSON, sub_dir)
 
         for path, key in ((None, "one"), ("one.json", "one"), ("two.json", "two"), ("subdir/three.json", "three")):
             # args = [asset.pk, path] if path else [asset.pk]

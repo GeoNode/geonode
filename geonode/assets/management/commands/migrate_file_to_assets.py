@@ -98,9 +98,19 @@ class Command(BaseCommand):
 
                 logger.info("Moving file to the asset folder")
 
-                dest = shutil.move(source, handler._create_asset_dir())
+                if len(asset.location) == 1:
+                    # In older installations, all documents are stored in a single folder.
+                    # Instead of moving the entire folder, we can simply move the individual document.
+                    # This approach prevents the risk of breaking the other documents
+                    # that are stored in the same folder
+                    # oldpath = {MEDIA_ROOT}/documents/document/file.extension
+                    dest = shutil.move(asset.location[0], handler._create_asset_dir())
+                else:
+                    dest = shutil.move(source, handler._create_asset_dir())
 
-                logger.info("Fixing perms")
+                logger.info(f"New destination path: {dest}")
+
+                logger.info("Fixing file/folder perms if required")
                 if settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS is not None:
                     os.chmod(os.path.dirname(dest), settings.FILE_UPLOAD_DIRECTORY_PERMISSIONS)
 
@@ -113,7 +123,10 @@ class Command(BaseCommand):
 
             logger.info("Updating location field with new folder value")
 
-            asset.location = [x.replace(source, dest) for x in asset.location]
+            if len(asset.location) == 1:
+                asset.location = [dest]
+            else:
+                asset.location = [x.replace(source, dest) for x in asset.location]
             asset.save()
 
             logger.info("Checking if geoserver should be updated")

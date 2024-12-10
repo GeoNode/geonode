@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
 from dynamic_rest.filters import DynamicFilterBackend, DynamicSortingFilter
@@ -26,8 +25,6 @@ from geonode.base.api.pagination import GeoNodeApiPagination
 from geonode.base.api.permissions import IsOwnerOrReadOnly
 from geonode.resource.api.exceptions import ExecutionRequestException
 from geonode.resource.api.serializer import ExecutionRequestSerializer
-from geonode.resource.manager import resource_manager
-from geonode.security.utils import get_resources_with_perms
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -40,55 +37,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from ..models import ExecutionRequest
-from .utils import filtered, resolve_type_serializer
 
 logger = logging.getLogger(__name__)
-
-
-@api_view(["GET"])
-def resource_service_search(request, resource_type: str = None):
-    """
-    Return a list of resources matching the filtering criteria.
-
-    Sample requests:
-
-     - Get all ResourceBases the user has access to:
-        http://localhost:8000/api/v2/resource-service/search
-
-     - Get all ResourceBases filtered by type criteria the user has access to:
-        http://localhost:8000/api/v2/resource-service/search/layer
-
-     - Get ResourceBases filtered by model criteria the user has access to:
-        http://localhost:8000/api/v2/resource-service/search/?filter={"title__icontains":"foo"}
-
-    """
-    try:
-        search_filter = json.loads(request.GET.get("filter", "{}"))
-    except Exception as e:
-        return Response(status=status.HTTP_400_BAD_REQUEST, exception=e)
-
-    _resource_type, _serializer = resolve_type_serializer(resource_type)
-    logger.error(f"Serializing '{_resource_type}' resources through {_serializer}.")
-    return filtered(request, resource_manager.search(search_filter, resource_type=_resource_type), _serializer)
-
-
-@api_view(["GET"])
-def resource_service_exists(request, uuid: str):
-    """
-    Returns a JSON boolean success field valorized with the 'exists' operation outcome.
-
-    -  GET http://localhost:8000/api/v2/resource-service/exists/13decd74-df04-11eb-a0c1-00155dc3de71
-       ```
-        200,
-        {
-            'success': true
-        }
-       ```
-    """
-    _exists = False
-    if resource_manager.exists(uuid):
-        _exists = get_resources_with_perms(request.user).filter(uuid=uuid).exists()
-    return Response({"success": _exists}, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -137,6 +87,9 @@ class ExecutionRequestViewset(WithDynamicViewSetMixin, ListModelMixin, RetrieveM
     serializer_class = ExecutionRequestSerializer
     pagination_class = GeoNodeApiPagination
     http_method_names = ["get", "delete"]
+
+    class Meta:
+        ordering = ["created"]
 
     def get_queryset(self, queryset=None):
         return ExecutionRequest.objects.filter(user=self.request.user).order_by("pk")

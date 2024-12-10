@@ -18,7 +18,6 @@
 #########################################################################
 
 from geonode.upload.models import (
-    Upload,
     UploadParallelismLimit,
     UploadSizeLimit,
 )
@@ -75,6 +74,5 @@ class UploadParallelismLimitAdmin(admin.ModelAdmin):
         return False
 
 
-admin.site.register(Upload, UploadAdmin)
 admin.site.register(UploadSizeLimit, UploadSizeLimitAdmin)
 admin.site.register(UploadParallelismLimit, UploadParallelismLimitAdmin)

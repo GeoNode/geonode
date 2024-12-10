@@ -200,9 +200,7 @@ class DocumentUploadView(CreateView):
             )
 
         self.object.handle_moderated_uploads()
-        resource_manager.set_permissions(
-            None, instance=self.object, permissions=form.cleaned_data["permissions"], created=True
-        )
+        self.object.set_default_permissions(owner=self.request.user, created=True)
 
         abstract = None
         date = None

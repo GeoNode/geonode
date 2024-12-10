@@ -25,6 +25,8 @@ import logging
 import typing
 from pathlib import Path
 
+from deprecated import deprecated
+
 import geonode.upload.files
 import requests
 from django.core.files import uploadedfile
@@ -176,6 +178,10 @@ class BaseHarvesterWorker(abc.ABC):
 
         return True
 
+    @deprecated(
+        version="4.4.0",
+        reason="Copy remote datasets/document to local is deprecated. From now on, the configuration will be ignored",
+    )
     def should_copy_resource(
         self,
         harvestable_resource: "HarvestableResource",  # noqa
@@ -243,8 +249,6 @@ class BaseHarvesterWorker(abc.ABC):
         }
         if harvested_info.resource_descriptor.identification.lonlat_extent:
             defaults["ll_bbox_polygon"] = harvested_info.resource_descriptor.identification.lonlat_extent
-        if self.should_copy_resource(harvestable_resource):
-            defaults["sourcetype"] = enumerations.SOURCE_TYPE_COPYREMOTE
         else:
             defaults["subtype"] = "remote"
             defaults["sourcetype"] = enumerations.SOURCE_TYPE_REMOTE
@@ -297,19 +301,9 @@ class BaseHarvesterWorker(abc.ABC):
     def _create_new_geonode_resource(self, geonode_resource_type, defaults: typing.Dict):
         logger.debug(f"Creating a new GeoNode resource for resource with uuid: {defaults['uuid']!r}...")
         resource_defaults = defaults.copy()
-        resource_files = resource_defaults.pop("files", [])
-        if len(resource_files) > 0:
-            logger.debug("calling resource_manager.ingest...")
-            geonode_resource = resource_manager.ingest(
-                resource_files,
-                uuid=resource_defaults["uuid"],
-                resource_type=geonode_resource_type,
-                defaults=resource_defaults,
-                importer_session_opts={"name": resource_defaults["uuid"]},
-            )
-        else:
-            logger.debug("calling resource_manager.create...")
-            geonode_resource = resource_manager.create(resource_defaults["uuid"], geonode_resource_type, defaults)
+
+        logger.debug("calling resource_manager.create...")
+        geonode_resource = resource_manager.create(resource_defaults["uuid"], geonode_resource_type, defaults)
         return geonode_resource
 
     def _update_existing_geonode_resource(self, geonode_resource: ResourceBase, defaults: typing.Dict):

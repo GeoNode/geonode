@@ -3948,7 +3948,7 @@ geonode (2.4.0+beta26) trusty; urgency=high
   * [85e635] add geonode support in Readme
 
   [ Tyler Garner ]
-  * [98d398] support GeoJSON upload through importer. Relies on 2.6+ fix https://github.com/geoserver/geoserver/commit/a7efe793d3b1025eceb41c899f381a5b16df5b9b
+  * [98d398] support GeoJSON upload through geonode.upload. Relies on 2.6+ fix https://github.com/geoserver/geoserver/commit/a7efe793d3b1025eceb41c899f381a5b16df5b9b
 
   [ Matt Bertrand ]
   * [7fd2d6] Add owner filter to haystack search
