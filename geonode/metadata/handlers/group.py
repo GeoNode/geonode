@@ -35,7 +35,7 @@ class GroupHandler(MetadataHandler):
     an entry in the resource management panel
     """
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         group_schema = {
             "type": "object",
             "title": _("group"),
@@ -54,7 +54,7 @@ class GroupHandler(MetadataHandler):
         }
 
         # add group after date_type
-        self._add_after(jsonschema, "date_type", "group", group_schema)
+        self._add_subschema(jsonschema, "group", group_schema, after_what="date_type")
 
         return jsonschema
 

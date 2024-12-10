@@ -171,17 +171,14 @@ class BaseHandler(MetadataHandler):
         self.json_base_schema = JSONSCHEMA_BASE
         self.base_schema = None
 
-    def update_schema(self, jsonschema, lang=None):
-        def localize(subschema: dict, annotation_name):
-            if annotation_name in subschema:
-                subschema[annotation_name] = _(subschema[annotation_name])
+    def update_schema(self, jsonschema, context, lang=None):
 
         with open(self.json_base_schema) as f:
             self.base_schema = json.load(f)
         # building the full base schema
         for property_name, subschema in self.base_schema.items():
-            localize(subschema, "title")
-            localize(subschema, "description")
+            self._localize_subschema_label(context, subschema, lang, "title")
+            self._localize_subschema_label(context, subschema, lang, "description")
 
             jsonschema["properties"][property_name] = subschema
 

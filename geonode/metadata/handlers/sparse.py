@@ -16,13 +16,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-
+import json
 import logging
 
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)
+
+
+CONTEXT_ID = "sparse"
 
 
 class SparseFieldRegistry:
@@ -44,17 +47,17 @@ class SparseHandler(MetadataHandler):
     Handles sparse in fields in the SparseField table
     """
 
-    def update_schema(self, jsonschema, lang=None):
-        # building the full base schema
+    def update_schema(self, jsonschema, context, lang=None):
+        # add all registered fields
 
         # TODO: manage i18n (thesaurus?)
-
         for field_name, field_info in sparse_field_registry.fields().items():
             subschema = field_info["schema"]
-            if after := field_info["after"]:
-                self._add_after(jsonschema, after, field_name, subschema)
-            else:
-                jsonschema["properties"][field_name] = subschema
+
+            self._localize_subschema_label(context, subschema, lang, "title")
+            self._localize_subschema_label(context, subschema, lang, "description")
+
+            self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
             # add the handler info to the dictionary if it doesn't exist
             if "geonode:handler" not in subschema:
@@ -69,21 +72,49 @@ class SparseHandler(MetadataHandler):
 
     def load_serialization_context(self, resource, jsonschema: dict, context: dict):
         logger.debug(f"Preloading sparse fields {sparse_field_registry.fields().keys()}")
-        context["sparse"] = {
+        context[CONTEXT_ID] = {
             "fields": {
                 f.name: f.value for f in SparseField.get_fields(resource, names=sparse_field_registry.fields().keys())
-            }
+            },
+            "schema": jsonschema,
         }
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
-        return context["sparse"]["fields"].get(field_name, None)
+        field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
+        match field_type:
+            case "string":
+                return context[CONTEXT_ID]["fields"].get(field_name, None)
+            case "array":
+                # assuming it's an array of string: TODO implement other cases
+                try:
+                    arr = context[CONTEXT_ID]["fields"].get(field_name, None) or "[]"
+                    return json.loads(arr)
+                except Exception as e:
+                    logger.warning(f"Error loading field '{field_name}' with content ({type(arr)}){arr}: {e}")
+            case _:
+                logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
+                return None
+
+    def load_deserialization_context(self, resource, jsonschema: dict, context: dict):
+        context[CONTEXT_ID] = {"schema": jsonschema}
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-        field_value = json_instance.get(field_name, None)
+        bare_value = json_instance.get(field_name, None)
+        type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
+        match type:
+            case "string":
+                field_value = bare_value
+            case "array":
+                field_value = json.dumps(bare_value) if bare_value else []
+            case _:
+                logger.warning(f"Unhandled type '{type}' for sparse field '{field_name}'")
+                self._set_error(errors, [field_name], f"Unhandled type {type}. Contact your administrator")
+                return
+
         try:
             sf, created = SparseField.objects.update_or_create(
                 defaults={"value": field_value}, resource=resource, name=field_name
             )
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-            self._set_error(errors, ["field_name"], f"Error setting value: {e}")
+            self._set_error(errors, [field_name], f"Error setting value: {e}")

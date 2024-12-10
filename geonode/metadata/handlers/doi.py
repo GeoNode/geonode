@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 class DOIHandler(MetadataHandler):
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         doi_schema = {
             "type": ["string", "null"],
             "title": "DOI",
@@ -38,7 +38,7 @@ class DOIHandler(MetadataHandler):
         }
 
         # add DOI after edition
-        self._add_after(jsonschema, "edition", "doi", doi_schema)
+        self._add_subschema(jsonschema, "doi", doi_schema, after_what="edition")
         return jsonschema
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):

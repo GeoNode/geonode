@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class LinkedResourceHandler(MetadataHandler):
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         linked = {
             "type": "array",
             "title": _("Related resources"),

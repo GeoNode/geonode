@@ -19,12 +19,12 @@
 import logging
 
 from dal import autocomplete
-from django.contrib.auth import get_user_model
-from django.core.handlers.wsgi import WSGIRequest
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from django.contrib.auth import get_user_model
+from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.translation.trans_real import get_language_from_request
 from django.utils.translation import get_language
@@ -109,18 +109,13 @@ class MetadataViewSet(ViewSet):
 
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
 
-    lang = get_language()
+    lang = remove_country_from_languagecode(get_language())
     all_keywords_qs = ThesaurusKeyword.objects.filter(thesaurus_id=thesaurusid)
 
     # try find results found for given language e.g. (en-us) if no results found remove country code from language to (en) and try again
     localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
         "keyword_id"
     )
-    if not localized_k_ids_qs.exists():
-        lang = remove_country_from_languagecode(lang)
-        localized_k_ids_qs = ThesaurusKeywordLabel.objects.filter(lang=lang, keyword_id__in=all_keywords_qs).values(
-            "keyword_id"
-        )
 
     # consider all the keywords that do not have a translation in the requested language
     keywords_not_translated_qs = (

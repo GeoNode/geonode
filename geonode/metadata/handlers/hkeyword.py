@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class HKeywordHandler(MetadataHandler):
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         hkeywords = {
             "type": "array",
             "title": _("Keywords"),
@@ -47,7 +47,7 @@ class HKeywordHandler(MetadataHandler):
             "geonode:handler": "hkeyword",
         }
 
-        self._add_after(jsonschema, "tkeywords", "hkeywords", hkeywords)
+        self._add_subschema(jsonschema, "hkeywords", hkeywords, after_what="tkeywords")
         return jsonschema
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):

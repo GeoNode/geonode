@@ -33,7 +33,7 @@ class RegionHandler(MetadataHandler):
     The RegionsHandler adds the Regions model options to the schema
     """
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         regions = {
             "type": "array",
             "title": _("Regions"),
@@ -52,7 +52,7 @@ class RegionHandler(MetadataHandler):
         }
 
         # add regions after Attribution
-        self._add_after(jsonschema, "attribution", "regions", regions)
+        self._add_subschema(jsonschema, "regions", regions, after_what="attribution")
         return jsonschema
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):

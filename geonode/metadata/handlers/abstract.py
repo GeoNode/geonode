@@ -19,6 +19,10 @@
 
 import logging
 from abc import ABCMeta, abstractmethod
+from typing_extensions import deprecated
+
+from django.utils.translation import gettext as _
+
 from geonode.base.models import ResourceBase
 
 logger = logging.getLogger(__name__)
@@ -31,7 +35,7 @@ class MetadataHandler(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def update_schema(self, jsonschema: dict, lang=None):
+    def update_schema(self, jsonschema: dict, context, lang=None):
         """
         It is called by the MetadataManager when creating the JSON Schema
         It adds the subschema handled by the handler, and returns the
@@ -72,8 +76,28 @@ class MetadataHandler(metaclass=ABCMeta):
         """
         pass
 
+    def _add_subschema(self, jsonschema, property_name, subschema, after_what=None):
+        after_what = after_what or subschema.get("geonode:after", None)
+
+        if not after_what:
+            jsonschema["properties"][property_name] = subschema
+        else:
+            ret_properties = {}
+            added = False
+            for key, val in jsonschema["properties"].items():
+                ret_properties[key] = val
+                if key == after_what:
+                    ret_properties[property_name] = subschema
+                    added = True
+
+            if not added:
+                logger.warning(f'Could not add "{property_name}" after "{after_what}"')
+                ret_properties[property_name] = subschema
+
+            jsonschema["properties"] = ret_properties
+
+    @deprecated("Use _add_subschema instead")
     def _add_after(self, jsonschema, after_what, property_name, subschema):
-        # add thesauri after category
         ret_properties = {}
         added = False
         for key, val in jsonschema["properties"].items():
@@ -96,3 +120,18 @@ class MetadataHandler(metaclass=ABCMeta):
             elem = elem.setdefault(step, {})
         elem = elem.setdefault("__errors", [])
         elem.append(msg)
+
+    @staticmethod
+    def _localize_label(context, lang: str, text: str):
+        # Try localization via thesaurus:
+        label = context["labels"].get(text, None)
+        # fallback: gettext()
+        if not label:
+            label = _(text)
+
+        return label
+
+    @staticmethod
+    def _localize_subschema_label(context, subschema: dict, lang: str, annotation_name: str):
+        if annotation_name in subschema:
+            subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])

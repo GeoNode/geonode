@@ -82,7 +82,7 @@ class TKeywordsHandler(MetadataHandler):
 
         return collected_thesauri
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
 
         collected_thesauri = self.collect_thesauri(~Q(card_max=0), lang=lang)
 
@@ -130,7 +130,7 @@ class TKeywordsHandler(MetadataHandler):
         }
 
         # add thesauri after category
-        self._add_after(jsonschema, "category", TKEYWORDS, tkeywords)
+        self._add_subschema(jsonschema, TKEYWORDS, tkeywords, after_what="category")
 
         return jsonschema
 

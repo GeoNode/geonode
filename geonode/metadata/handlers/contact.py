@@ -34,18 +34,20 @@ class ContactHandler(MetadataHandler):
     Handles role contacts
     """
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         contacts = {}
         required = []
         for role in Roles:
-            card = f'[{"1" if role.is_required else "0"}..{"N" if role.is_multivalue else "1"}]'
+            minitems = 1 if role.is_required else 0
+            card = f'[{minitems}..{"N" if role.is_multivalue else "1"}]'
             if role.is_required:
                 required.append(role.name)
 
             if role.is_multivalue:
                 contact = {
                     "type": "array",
-                    "title": _(role.label) + " " + card,
+                    "title": self._localize_label(context, lang, role.label) + " " + card,
+                    "minItems": minitems,
                     "items": {
                         "type": "object",
                         "properties": {
@@ -64,7 +66,7 @@ class ContactHandler(MetadataHandler):
             else:
                 contact = {
                     "type": "object",
-                    "title": _(role.label) + " " + card,
+                    "title": self._localize_label(context, lang, role.label) + " " + card,
                     "properties": {
                         "id": {
                             "type": "string",
@@ -84,7 +86,7 @@ class ContactHandler(MetadataHandler):
 
             jsonschema["properties"]["contacts"] = {
                 "type": "object",
-                "title": _("Contacts"),
+                "title": self._localize_label(context, lang, "contacts"),
                 "properties": contacts,
                 "required": required,
                 "geonode:required": bool(required),

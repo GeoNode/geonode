@@ -24,6 +24,7 @@ from cachetools import FIFOCache
 from django.utils.translation import gettext as _
 
 from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.metadata.i18n import get_localized_labels
 from geonode.metadata.settings import MODEL_SCHEMA
 
 logger = logging.getLogger(__name__)
@@ -48,15 +49,21 @@ class MetadataManager:
     def add_handler(self, handler_id, handler):
         self.handlers[handler_id] = handler()
 
+    def _init_schema_context(self, lang):
+        # todo: cache localizations
+        return {"labels": get_localized_labels(lang)}
+
     def build_schema(self, lang=None):
         logger.debug(f"build_schema {lang}")
 
         schema = copy.deepcopy(self.root_schema)
         schema["title"] = _(schema["title"])
 
+        context = self._init_schema_context(lang)
+
         for key, handler in self.handlers.items():
             # logger.debug(f"build_schema: update schema -> {key}")
-            schema = handler.update_schema(schema, lang)
+            schema = handler.update_schema(schema, context, lang)
 
         # Set required fields.
         required = []

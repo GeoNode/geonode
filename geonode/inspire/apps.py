@@ -27,6 +27,6 @@ class BaseAppConfig(NotificationsAppConfigBase, AppConfig):
     def ready(self):
         super().ready()
 
-        from geonode.inspire.inspire import init
+        from geonode.inspire.metadata import init
 
         init()

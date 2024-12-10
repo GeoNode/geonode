@@ -25,13 +25,15 @@ FIELDVAL_ACCESS_USE_FREETEXT = "http://inspire.ec.europa.eu/metadata-codelist/Co
 # Should be "otherRestrictions", see https://github.com/GeoNode/geonode/issues/12745
 FIELDVAL_RESTRICTION_TYPE_DEFAULT = "limitation not listed"
 
+CONTEXT_ID = "inspire"
+
 
 class INSPIREHandler(MetadataHandler):
     """
     The INSPIRE Handler adds the Regions model options to the schema
     """
 
-    def update_schema(self, jsonschema, lang=None):
+    def update_schema(self, jsonschema, context, lang=None):
         # Schema overriding for INSPIRE
         # Some Additional Sparse Fields are registered in geonode.inspire.inspire.init()
 
@@ -157,11 +159,11 @@ class INSPIREHandler(MetadataHandler):
         return jsonschema
 
     def load_serialization_context(self, resource: ResourceBase, jsonschema: dict, context: dict):
-        context["inspire"] = {"schema": jsonschema}
+        context[CONTEXT_ID] = {"schema": jsonschema}
         fields = {}
         for field in SparseField.get_fields(resource, names=(FIELD_RESTRICTION_ACCESS_USE,)):
             fields[field.name] = field.value
-        context["inspire"]["fields"] = fields
+        context[CONTEXT_ID]["fields"] = fields
 
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         if field_name == FIELD_RESTRICTION_TYPE:
@@ -170,7 +172,7 @@ class INSPIREHandler(MetadataHandler):
             return FIELDVAL_RESTRICTION_TYPE_DEFAULT
 
         elif field_name == FIELD_RESTRICTION_PUBLIC_ACCESS:
-            if context["inspire"]["schema"]["properties"][FIELD_RESTRICTION_PUBLIC_ACCESS].get("readOnly", False):
+            if context[CONTEXT_ID]["schema"]["properties"][FIELD_RESTRICTION_PUBLIC_ACCESS].get("readOnly", False):
                 self._set_error(
                     errors,
                     [FIELD_RESTRICTION_PUBLIC_ACCESS],
@@ -184,7 +186,7 @@ class INSPIREHandler(MetadataHandler):
                 return {"id": resource.constraints_other}
 
         elif field_name == FIELD_RESTRICTION_ACCESS_USE:
-            if context["inspire"]["schema"]["properties"][FIELD_RESTRICTION_ACCESS_USE].get("readOnly", False):
+            if context[CONTEXT_ID]["schema"]["properties"][FIELD_RESTRICTION_ACCESS_USE].get("readOnly", False):
                 self._set_error(
                     errors,
                     [FIELD_RESTRICTION_ACCESS_USE],
@@ -195,7 +197,7 @@ class INSPIREHandler(MetadataHandler):
                     "Get it from https://inspire.ec.europa.eu/metadata-codelist/ConditionsApplyingToAccessAndUse"
                 )
             else:
-                val = context["inspire"]["fields"].get(FIELD_RESTRICTION_ACCESS_USE, None)
+                val = context[CONTEXT_ID]["fields"].get(FIELD_RESTRICTION_ACCESS_USE, None)
                 if not val:
                     return {"choice": {"id": None}, "freetext": None}
                 elif val.startswith("http"):
@@ -213,7 +215,7 @@ class INSPIREHandler(MetadataHandler):
             raise Exception(f"The INSPIRE handler does not support field {field_name}")
 
     def load_deserialization_context(self, resource: ResourceBase, jsonschema: dict, context: dict):
-        context["inspire"] = {"schema": jsonschema}
+        context[CONTEXT_ID] = {"schema": jsonschema}
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
         if field_name == FIELD_RESTRICTION_TYPE:
@@ -243,7 +245,7 @@ class INSPIREHandler(MetadataHandler):
 
             field_value = json_instance.get(field_name, {})
 
-            if context["inspire"]["schema"]["properties"][FIELD_RESTRICTION_ACCESS_USE].get("readOnly", False):
+            if context[CONTEXT_ID]["schema"]["properties"][FIELD_RESTRICTION_ACCESS_USE].get("readOnly", False):
                 content = "N/A"
                 self._set_error(
                     errors,
