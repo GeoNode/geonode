@@ -31,6 +31,10 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
+from geonode.layers.models import Dataset, Attribute
+from uuid import uuid4
+from django.contrib.auth import get_user_model
+
 from geonode.geoserver.helpers import (
     gs_catalog,
     ows_endpoint_in_path,
@@ -269,7 +273,6 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_ows_url(self):
-        from geonode.layers.models import Dataset
 
         ows_url = settings.GEOSERVER_PUBLIC_LOCATION
         identifier = "geonode:CA"
@@ -282,22 +285,18 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
     @patch("geonode.geoserver.helpers.gs_catalog")
     def test_get_time_info_valid_layer(self, mock_gs_catalog):
 
-        mock_layer = Mock()
-        mock_layer.name = "test_layer"
-        mock_attribute = Mock(pk=1)
-        mock_end_attribute = Mock(pk=2)
+        mock_dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="geonode:states",
+            store="httpfooremoteservce",
+            subtype="remote",
+            alternate="geonode:states",
+        )
 
-        mock_query_set = MagicMock()
+        Attribute.objects.create(pk=5, attribute="begin", dataset_id=mock_dataset.pk)
 
-        # Mock filter to return the mock QuerySet
-        def mock_filter(attribute=None):
-            if attribute == "begin":
-                mock_query_set.first.return_value = mock_attribute
-            elif attribute == "end":
-                mock_query_set.first.return_value = mock_end_attribute
-            return mock_query_set
-
-        mock_layer.attributes.filter = mock_filter
+        Attribute.objects.create(pk=6, attribute="end", dataset_id=mock_dataset.pk)
 
         # Build mock GeoServer's time info
         mock_gs_time_info = Mock()
@@ -312,18 +311,29 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         mock_gs_layer.resource.metadata.get.return_value = mock_gs_time_info
         mock_gs_catalog.get_layer.return_value = mock_gs_layer
 
-        result = get_time_info(mock_layer)
+        result = get_time_info(mock_dataset)
 
-        self.assertEqual(result["attribute"], 1)
-        self.assertEqual(result["end_attribute"], 2)
+        self.assertEqual(result["attribute"], 5)
+        self.assertEqual(result["end_attribute"], 6)
         self.assertEqual(result["presentation"], "DISCRETE_INTERVAL")
         self.assertEqual(result["precision_value"], 5)
         self.assertEqual(result["precision_step"], "seconds")
 
     @patch("geonode.geoserver.helpers.gs_catalog")
     def test_get_time_info_with_time_disabled(self, mock_gs_catalog):
-        mock_layer = Mock()
-        mock_layer.name = "test_layer"
+
+        mock_dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="geonode:states",
+            store="httpfooremoteservce",
+            subtype="remote",
+            alternate="geonode:states",
+        )
+
+        Attribute.objects.create(pk=5, attribute="begin", dataset_id=mock_dataset.pk)
+
+        Attribute.objects.create(pk=6, attribute="end", dataset_id=mock_dataset.pk)
 
         mock_gs_time_info = Mock()
         mock_gs_time_info.enabled = False
@@ -337,7 +347,7 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         mock_gs_layer.resource.metadata.get.return_value = mock_gs_time_info
         mock_gs_catalog.get_layer.return_value = mock_gs_layer
 
-        result = get_time_info(mock_layer)
+        result = get_time_info(mock_dataset)
         self.assertEqual(result, {})
 
     @patch("geonode.geoserver.helpers.gs_catalog")
