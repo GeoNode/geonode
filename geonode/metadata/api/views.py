@@ -52,7 +52,7 @@ class MetadataViewSet(ViewSet):
 
     # Get the JSON schema
     # A pk argument is set for futured multiple schemas
-    @action(detail=False, methods=["get"], url_path=r"schema(?:/(?P<pk>\d+))?")
+    @action(detail=False, methods=["get"], url_path=r"schema(?:/(?P<pk>\d+))?", url_name="schema")
     def schema(self, request, pk=None):
         """
         The user is able to export her/his keys with
@@ -70,7 +70,7 @@ class MetadataViewSet(ViewSet):
             return Response(response)
 
     # Get the JSON schema
-    @action(detail=False, methods=["get", "put", "patch"], url_path=r"instance/(?P<pk>\d+)")
+    @action(detail=False, methods=["get", "put", "patch"], url_path=r"instance/(?P<pk>\d+)", url_name="schema_instance")
     def schema_instance(self, request, pk=None):
 
         try:
