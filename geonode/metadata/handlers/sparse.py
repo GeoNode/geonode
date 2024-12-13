@@ -46,17 +46,24 @@ class SparseHandler(MetadataHandler):
     """
     Handles sparse in fields in the SparseField table
     """
+    def _recurse_localization(self, context, schema, lang):
+        self._localize_subschema_label(context, schema, lang, "title")
+        self._localize_subschema_label(context, schema, lang, "description")
+
+        match schema["type"]:
+            case "object":
+                for _, subschema in schema["properties"].items():
+                    self._recurse_localization(context, subschema, lang)
+            case "array":
+                self._recurse_localization(context, schema["items"], lang)
+            case _:
+                pass
 
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
-
-        # TODO: manage i18n (thesaurus?)
         for field_name, field_info in sparse_field_registry.fields().items():
             subschema = field_info["schema"]
-
-            self._localize_subschema_label(context, subschema, lang, "title")
-            self._localize_subschema_label(context, subschema, lang, "description")
-
+            self._recurse_localization(context, subschema, lang)
             self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
             # add the handler info to the dictionary if it doesn't exist
