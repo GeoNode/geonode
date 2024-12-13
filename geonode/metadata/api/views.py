@@ -104,7 +104,7 @@ class MetadataViewSet(ViewSet):
 
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}
-            return Response(result)
+            return Response(result, status=404)
 
 
 def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):

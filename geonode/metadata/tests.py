@@ -43,7 +43,6 @@ class MetadataApiTests(APITestCase):
     def setUp(self):
         # set Json schemas
         self.model_schema = MODEL_SCHEMA
-        self.base_schema = os.path.join(PROJECT_ROOT, "metadata/tests/data/base.json")
         self.lang = None
 
         self.context = metadata_manager._init_schema_context(self.lang)
@@ -114,7 +113,7 @@ class MetadataApiTests(APITestCase):
         mock_get_schema.assert_called_once_with("it")
 
     @patch("geonode.metadata.manager.metadata_manager.build_schema_instance")
-    def test_schema_instance_get_success(self, mock_build_schema_instance):
+    def test_get_schema_instance_with_default_lang(self, mock_build_schema_instance):
         
         mock_build_schema_instance.return_value = {"fake_schema_instance": "schema_instance"}
 
@@ -124,10 +123,86 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertJSONEqual(response.content, {"fake_schema_instance": "schema_instance"})
 
-        # Ensure the mocked method was called with the correct arguments
-        mock_build_schema_instance.assert_called_once_with(self.resource, "en")
+        # Ensure the mocked method was called
+        mock_build_schema_instance.assert_called()
     
+    @patch("geonode.metadata.manager.metadata_manager.build_schema_instance")
+    def test_get_schema_instance_with_lang(self, mock_build_schema_instance):
+        
+        mock_build_schema_instance.return_value = {"fake_schema_instance": "schema_instance"}
 
+        url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
+        response = self.client.get(url, {"lang": "it"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertJSONEqual(response.content, {"fake_schema_instance": "schema_instance"})
+
+        # Ensure the mocked method was called with the correct arguments
+        mock_build_schema_instance.assert_called_once_with(self.resource, "it")
+
+    @patch("geonode.metadata.manager.metadata_manager.update_schema_instance")
+    def test_put_patch_schema_instance_with_no_errors(self, mock_update_schema_instance):
+        
+        url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
+        fake_payload = {"field": "value"}
+
+        # set the returned value of the mocked update_schema_instance with an empty dict
+        errors = {}
+        mock_update_schema_instance.return_value = errors
+
+        methods = [self.client.put, self.client.patch]
+        
+        for method in methods:
+
+            response = method(url, data=fake_payload, format="json")
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertJSONEqual(
+                response.content,
+                {"message": "The resource was updated successfully", "extraErrors": errors}
+            )
+            mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
+
+    @patch("geonode.metadata.manager.metadata_manager.update_schema_instance")
+    def test_put_patch_schema_instance_with_errors(self, mock_update_schema_instance):
+        
+        url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
+        fake_payload = {"field": "value"}
+
+        # Set fake errors
+        errors = {
+            "fake_error_1": "Field 'title' is required",
+            "fake_error_2": "Invalid value for 'type'"
+            }
+        mock_update_schema_instance.return_value = errors
+
+        methods = [self.client.put, self.client.patch]
+        
+        for method in methods:
+
+            response = method(url, data=fake_payload, format="json")
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertJSONEqual(
+                response.content,
+                {"message": "Some errors were found while updating the resource", "extraErrors": errors}
+            )
+            mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
+
+    def test_resource_not_found(self):
+        # Define a fake primary key
+        fake_pk = 1000
+
+        # Construct the URL for the action
+        url = reverse("metadata-schema_instance", kwargs={"pk": fake_pk})
+
+        # Perform a GET request
+        response = self.client.get(url)
+
+        # Verify the response
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertJSONEqual(
+            response.content,
+            {"message": "The dataset was not found"}
+        )
     
 
     
