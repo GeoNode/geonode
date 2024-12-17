@@ -124,10 +124,12 @@ class TKeywordsHandler(MetadataHandler):
             "description": _("List of keywords from Thesaurus"),
             "geonode:handler": "thesaurus",
             "properties": thesauri,
-            # "ui:options": {
-            #     'geonode-ui:group': 'Thesauri grop'
-            # }
         }
+
+        # We are going to hide the tkeywords property if there's no thesaurus configured
+        # We can't remove the property altogether, since hkeywords relies on tkeywords for positioning
+        if not thesauri:
+            tkeywords["ui:widget"] = "hidden"
 
         # add thesauri after category
         self._add_subschema(jsonschema, TKEYWORDS, tkeywords, after_what="category")
@@ -149,7 +151,7 @@ class TKeywordsHandler(MetadataHandler):
             del tks[tkl.keyword.id]
 
         if tks:
-            logger.info(f"Returning untraslated '{lang}' keywords: {tks}")
+            logger.info(f"Returning untranslated '{lang}' keywords: {tks}")
             for tk in tks.values():
                 keywords = ret.setdefault(tk.thesaurus.identifier, [])
                 keywords.append({"id": tk.about, "label": tk.alt_label})

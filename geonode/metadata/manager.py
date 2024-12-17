@@ -106,8 +106,8 @@ class MetadataManager:
 
         # TESTING ONLY
         if "error" in resource.title.lower():
-            MetadataHandler._set_error(errors, ["title"], "GET: test msg under /title")
-            MetadataHandler._set_error(errors, ["properties", "title"], "GET: test msg under /properties/title")
+            for fieldname in schema["properties"]:
+                MetadataHandler._set_error(errors, [fieldname], f"TEST: test msg for field '{fieldname}' in GET request")
             instance["extraErrors"] = errors
 
         return instance
@@ -135,17 +135,21 @@ class MetadataManager:
 
         # TESTING ONLY
         if "error" in resource.title.lower():
-            errors.setdefault("title", {}).setdefault("__errors", []).append("PUT: this is a test error under /title")
-            errors.setdefault("properties", {}).setdefault("title", {}).setdefault("__errors", []).append(
-                "PUT: this is a test error under /properties/title"
-            )
-
-            MetadataHandler._set_error(errors, ["title"], "PUT: this is another test msg under /title")
-            MetadataHandler._set_error(
-                errors, ["properties", "title"], "PUT: this is another test msg under /properties/title"
-            )
+            _create_test_errors(schema, errors, [], "TEST: field <{schema_type}>'{path}' PUT request")
 
         return errors
+
+
+def _create_test_errors(schema, errors, path, msg_template, create_message = True):
+    if create_message:
+        stringpath = "/".join(path)
+        MetadataHandler._set_error(errors, path, msg_template.format(path=stringpath, schema_type=schema['type']))
+
+    if schema["type"] == "object":
+        for field, subschema in schema["properties"].items():
+            _create_test_errors(subschema, errors, path + [field], msg_template)
+    elif schema["type"] == "array":
+        _create_test_errors(schema["items"], errors, path, msg_template, create_message=False)
 
 
 metadata_manager = MetadataManager()
