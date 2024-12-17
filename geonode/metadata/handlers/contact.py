@@ -43,7 +43,7 @@ ROLE_NAMES_MAP = {
     Roles.PRINCIPAL_INVESTIGATOR: Roles.PRINCIPAL_INVESTIGATOR.name,
 }
 
-NAMES_ROLE_MAP = {v:k for k,v in ROLE_NAMES_MAP.items()}
+NAMES_ROLE_MAP = {v: k for k, v in ROLE_NAMES_MAP.items()}
 
 
 class ContactHandler(MetadataHandler):

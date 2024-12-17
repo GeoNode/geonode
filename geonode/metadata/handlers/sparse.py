@@ -19,7 +19,7 @@
 import json
 import logging
 
-from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.metadata.handlers.abstract import MetadataHandler, UnsetFieldException
 from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)
@@ -46,13 +46,14 @@ class SparseHandler(MetadataHandler):
     """
     Handles sparse in fields in the SparseField table
     """
+
     def _recurse_localization(self, context, schema, lang):
         self._localize_subschema_label(context, schema, lang, "title")
         self._localize_subschema_label(context, schema, lang, "description")
 
         match schema["type"]:
             case "object":
-                for _, subschema in schema["properties"].items():
+                for subschema in schema["properties"].values():
                     self._recurse_localization(context, subschema, lang)
             case "array":
                 self._recurse_localization(context, schema["items"], lang)
@@ -86,42 +87,76 @@ class SparseHandler(MetadataHandler):
             "schema": jsonschema,
         }
 
+    @staticmethod
+    def _check_type(declared, checked):
+        return declared == checked or (type(declared) is list and checked in declared)
+
     def get_jsonschema_instance(self, resource, field_name, context, errors, lang=None):
         field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
-        match field_type:
-            case "string":
-                return context[CONTEXT_ID]["fields"].get(field_name, None)
-            case "array":
-                # assuming it's an array of string: TODO implement other cases
-                try:
-                    arr = context[CONTEXT_ID]["fields"].get(field_name, None) or "[]"
-                    return json.loads(arr)
-                except Exception as e:
-                    logger.warning(f"Error loading field '{field_name}' with content ({type(arr)}){arr}: {e}")
-            case _:
-                logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
-                return None
+        field_value = context[CONTEXT_ID]["fields"].get(field_name, None)
+
+        is_nullable = self._check_type(field_type, "null")
+        is_string = self._check_type(field_type, "string")
+        is_number = self._check_type(field_type, "number")
+
+        if field_name not in context[CONTEXT_ID]["fields"] and not is_nullable:
+            raise UnsetFieldException()
+
+        if is_string or is_number:
+            return field_value
+        elif field_type == "array":
+            # assuming it's a single level array: TODO implement other cases
+            try:
+                return json.loads(field_value) if field_value is not None else None
+            except Exception as e:
+                logger.warning(
+                    f"Error loading field '{field_name}' with content ({type(field_value)}){field_value}: {e}"
+                )
+        elif field_type == "object":
+            # assuming it's a single level object: TODO implement other cases
+            try:
+                return json.loads(field_value) if field_value is not None else None
+            except Exception as e:
+                logger.warning(
+                    f"Error loading field '{field_name}' with content ({type(field_value)}){field_value}: {e}"
+                )
+        else:
+            logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
+            return None
 
     def load_deserialization_context(self, resource, jsonschema: dict, context: dict):
         context[CONTEXT_ID] = {"schema": jsonschema}
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
+        def check_type(declared, checked):
+            return declared == checked or (type(declared) is list and checked in declared)
+
         bare_value = json_instance.get(field_name, None)
-        type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
-        match type:
-            case "string":
-                field_value = bare_value
-            case "array":
-                field_value = json.dumps(bare_value) if bare_value else []
-            case _:
-                logger.warning(f"Unhandled type '{type}' for sparse field '{field_name}'")
-                self._set_error(errors, [field_name], f"Unhandled type {type}. Contact your administrator")
-                return
+        field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
+
+        is_nullable = check_type(field_type, "null")
+
+        if check_type(field_type, "string") or check_type(field_type, "number"):
+            field_value = bare_value
+        elif field_type == "array":
+            field_value = json.dumps(bare_value) if bare_value else "[]"
+        elif field_type == "object":
+            field_value = json.dumps(bare_value) if bare_value else "{}"
+        else:
+            logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
+            self._set_error(errors, [field_name], f"Unhandled type {field_type}. Contact your administrator")
+            return
 
         try:
-            sf, created = SparseField.objects.update_or_create(
-                defaults={"value": field_value}, resource=resource, name=field_name
-            )
+            if field_value is not None:
+                SparseField.objects.update_or_create(
+                    defaults={"value": field_value}, resource=resource, name=field_name
+                )
+            elif is_nullable:
+                SparseField.objects.filter(resource=resource, name=field_name).delete()
+            else:
+                self._set_error(errors, [field_name], f"Empty value not stored for field '{field_name}'")
+                logger.debug(f"Not setting null value for {field_name}")
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
             self._set_error(errors, [field_name], f"Error setting value: {e}")
