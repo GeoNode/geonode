@@ -19,6 +19,9 @@
 import logging
 
 from dal import autocomplete
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -30,6 +33,7 @@ from django.utils.translation.trans_real import get_language_from_request
 from django.utils.translation import get_language
 from django.db.models import Q
 
+from geonode.base.api.permissions import UserHasPerms
 from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
@@ -41,6 +45,9 @@ logger = logging.getLogger(__name__)
 
 
 class MetadataViewSet(ViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
+
     """
     Simple viewset that return the metadata JSON schema
     """
@@ -70,9 +77,22 @@ class MetadataViewSet(ViewSet):
             return Response(response)
 
     # Get the JSON schema
-    @action(detail=False, methods=["get", "put", "patch"], url_path=r"instance/(?P<pk>\d+)")
+    @action(
+        detail=False,
+        methods=["get", "put", "patch"],
+        url_path=r"instance/(?P<pk>\d+)",
+        permission_classes=[
+            UserHasPerms(
+                perms_dict={
+                    "default": {
+                        "GET": ["base.view_resourcebase"],
+                        "POST": ["change_resourcebase_metadata"],
+                    }
+                }
+            )
+        ],
+    )
     def schema_instance(self, request, pk=None):
-
         try:
             resource = ResourceBase.objects.get(pk=pk)
 
@@ -83,7 +103,7 @@ class MetadataViewSet(ViewSet):
                     schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent": 3}
                 )
 
-            elif request.method in ("PUT", "PATCH"):
+            elif request.method in ("PUT"):
                 logger.debug(f"handling request {request.method}")
                 # try:
                 #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
