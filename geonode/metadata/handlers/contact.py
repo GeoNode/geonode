@@ -55,10 +55,11 @@ class ContactHandler(MetadataHandler):
         contacts = {}
         required = []
         for role in Roles:
+            rolename = ROLE_NAMES_MAP[role]
             minitems = 1 if role.is_required else 0
             card = f'[{minitems}..{"N" if role.is_multivalue else "1"}]'
             if role.is_required:
-                required.append(role.name)
+                required.append(rolename)
 
             if role.is_multivalue:
                 contact = {
@@ -99,7 +100,7 @@ class ContactHandler(MetadataHandler):
                     "required": ["id"] if role.is_required else [],
                 }
 
-            rolename = ROLE_NAMES_MAP[role]
+
             contacts[rolename] = contact
 
             jsonschema["properties"]["contacts"] = {
