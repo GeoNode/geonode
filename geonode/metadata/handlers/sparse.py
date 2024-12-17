@@ -96,14 +96,31 @@ class SparseHandler(MetadataHandler):
         field_value = context[CONTEXT_ID]["fields"].get(field_name, None)
 
         is_nullable = self._check_type(field_type, "null")
-        is_string = self._check_type(field_type, "string")
-        is_number = self._check_type(field_type, "number")
 
         if field_name not in context[CONTEXT_ID]["fields"] and not is_nullable:
             raise UnsetFieldException()
 
-        if is_string or is_number:
+        if is_nullable and field_value is None:
+            return None
+
+        if self._check_type(field_type, "string"):
             return field_value
+        elif self._check_type(field_type, "number"):
+            try:
+                return float(field_value)
+            except:
+                logger.warning(
+                    f"Error loading NUMBER field '{field_name}' with content ({type(field_value)}){field_value}"
+                )
+                raise UnsetFieldException()  # should be a different exception
+        elif self._check_type(field_type, "integer"):
+            try:
+                return int(field_value)
+            except:
+                logger.warning(
+                    f"Error loading INTEGER field '{field_name}' with content ({type(field_value)}){field_value}"
+                )
+                raise UnsetFieldException()  # should be a different exception
         elif field_type == "array":
             # assuming it's a single level array: TODO implement other cases
             try:
@@ -136,8 +153,20 @@ class SparseHandler(MetadataHandler):
 
         is_nullable = check_type(field_type, "null")
 
-        if check_type(field_type, "string") or check_type(field_type, "number"):
+        if check_type(field_type, "string"):
             field_value = bare_value
+        elif check_type(field_type, "number"):
+            try:
+                field_value = str(float(bare_value))
+            except ValueError as e:
+                self._set_error(errors, [field_name], f"Error parsing number '{bare_value}'")
+                return
+        elif check_type(field_type, "integer"):
+            try:
+                field_value = str(int(bare_value))
+            except ValueError as e:
+                self._set_error(errors, [field_name], f"Error parsing integer '{bare_value}'")
+                return
         elif field_type == "array":
             field_value = json.dumps(bare_value) if bare_value else "[]"
         elif field_type == "object":
