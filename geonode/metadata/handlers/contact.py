@@ -28,6 +28,23 @@ from geonode.people import Roles
 
 logger = logging.getLogger(__name__)
 
+# contact roles names are spread in the code, let's map them here:
+ROLE_NAMES_MAP = {
+    Roles.OWNER: "owner",  # this is not saved as a contact
+    Roles.METADATA_AUTHOR: "author",
+    Roles.PROCESSOR: Roles.PROCESSOR.name,
+    Roles.PUBLISHER: Roles.PUBLISHER.name,
+    Roles.CUSTODIAN: Roles.CUSTODIAN.name,
+    Roles.POC: "pointOfContact",
+    Roles.DISTRIBUTOR: Roles.DISTRIBUTOR.name,
+    Roles.RESOURCE_USER: Roles.RESOURCE_USER.name,
+    Roles.RESOURCE_PROVIDER: Roles.RESOURCE_PROVIDER.name,
+    Roles.ORIGINATOR: Roles.ORIGINATOR.name,
+    Roles.PRINCIPAL_INVESTIGATOR: Roles.PRINCIPAL_INVESTIGATOR.name,
+}
+
+NAMES_ROLE_MAP = {v:k for k,v in ROLE_NAMES_MAP.items()}
+
 
 class ContactHandler(MetadataHandler):
     """
@@ -82,7 +99,8 @@ class ContactHandler(MetadataHandler):
                     "required": ["id"] if role.is_required else [],
                 }
 
-            contacts[role.name] = contact
+            rolename = ROLE_NAMES_MAP[role]
+            contacts[rolename] = contact
 
             jsonschema["properties"]["contacts"] = {
                 "type": "object",
@@ -103,15 +121,16 @@ class ContactHandler(MetadataHandler):
 
         contacts = {}
         for role in Roles:
+            rolename = ROLE_NAMES_MAP[role]
             if role.is_multivalue:
-                content = [__create_user_entry(user) for user in resource.__get_contact_role_elements__(role) or []]
+                content = [__create_user_entry(user) for user in resource.__get_contact_role_elements__(rolename) or []]
             else:
-                users = resource.__get_contact_role_elements__(role)
+                users = resource.__get_contact_role_elements__(rolename)
                 if not users and role == Roles.OWNER:
                     users = [resource.owner]
                 content = __create_user_entry(users[0]) if users else None
 
-            contacts[role.name] = content
+            contacts[rolename] = content
 
         return contacts
 
@@ -119,14 +138,13 @@ class ContactHandler(MetadataHandler):
         data = json_instance[field_name]
         logger.debug(f"CONTACTS {data}")
         for rolename, users in data.items():
-            if rolename == Roles.OWNER.OWNER.name:
+            if rolename == Roles.OWNER.name:
                 if not users:
                     logger.warning(f"User not specified for role '{rolename}'")
                     self._set_error(errors, ["contacts", rolename], f"User not specified for role '{rolename}'")
                 else:
                     resource.owner = get_user_model().objects.get(pk=users["id"])
             else:
-                role = Roles.get_role_by_name(rolename)
                 ids = [u["id"] for u in users]
                 profiles = get_user_model().objects.filter(pk__in=ids)
-                resource.__set_contact_role_element__(profiles, role)
+                resource.__set_contact_role_element__(profiles, rolename)
