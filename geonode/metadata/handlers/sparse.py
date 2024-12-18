@@ -157,20 +157,20 @@ class SparseHandler(MetadataHandler):
             field_value = bare_value
         elif check_type(field_type, "number"):
             try:
-                field_value = str(float(bare_value))
+                field_value = str(float(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 self._set_error(errors, [field_name], f"Error parsing number '{bare_value}'")
                 return
         elif check_type(field_type, "integer"):
             try:
-                field_value = str(int(bare_value))
+                field_value = str(int(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 self._set_error(errors, [field_name], f"Error parsing integer '{bare_value}'")
                 return
         elif field_type == "array":
-            field_value = json.dumps(bare_value) if bare_value else "[]"
+            field_value = json.dumps(bare_value) if bare_value is not None else "[]"
         elif field_type == "object":
-            field_value = json.dumps(bare_value) if bare_value else "{}"
+            field_value = json.dumps(bare_value) if bare_value is not None else "{}"
         else:
             logger.warning(f"Unhandled type '{field_type}' for sparse field '{field_name}'")
             self._set_error(errors, [field_name], f"Unhandled type {field_type}. Contact your administrator")
