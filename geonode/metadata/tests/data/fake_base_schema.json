@@ -1,0 +1,32 @@
+{
+    "uuid": {
+      "type": "string",
+      "title": "UUID",
+      "maxLength": 36,
+      "readOnly": true,
+      "NO_ui:widget": "hidden",
+      "geonode:handler": "base"
+    },
+    "title": {
+      "type": "string",
+      "title": "title",
+      "description": "name by which the cited resource is known",
+      "maxLength": 255,
+      "geonode:handler": "base"
+    },
+    "abstract": {
+      "type": "string",
+      "title": "abstract",
+      "description": "brief narrative summary of the content of the resource(s)",
+      "maxLength": 2000,
+      "ui:options": {
+        "widget": "textarea",
+        "rows": 5
+      }
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Date"
+    }
+}
