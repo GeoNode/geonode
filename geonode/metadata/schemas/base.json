@@ -36,11 +36,19 @@
     "maxLength": 255
   },
   "category": {
-    "type": "string",
-    "title": "Category",
-    "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.",
-    "maxLength": 255,
-    "geonode:required": true
+     "type": "object",
+     "title": "Category",
+     "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.",
+     "properties": {
+       "id": {
+         "type": "string"
+       },
+       "label": {
+         "type": "string"
+       }
+     },
+     "required": ["id"],
+     "geonode:required": true
   },
   "language": {
     "type": "string",

@@ -25,7 +25,7 @@ from rest_framework.reverse import reverse
 from django.utils.translation import gettext as _
 
 from geonode.base.models import TopicCategory, License, RestrictionCodeType, SpatialRepresentationType
-from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.metadata.handlers.abstract import MetadataHandler, UnparsableFieldException
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
 
@@ -53,20 +53,24 @@ class CategorySubHandler(SubHandler):
         subschema["ui:options"] = {
             "geonode-ui:autocomplete": reverse("metadata_autocomplete_categories"),
         }
-        # subschema["oneOf"] = [
-        #     {"const": tc.identifier, "title": _(tc.gn_description), "description": _(tc.description)}
-        #     for tc in TopicCategory.objects.order_by("gn_description")
-        # ]
 
     @classmethod
     def serialize(cls, db_value):
-        if isinstance(db_value, TopicCategory):
-            return db_value.identifier
-        return db_value
+        if db_value is None:
+            return None
+        elif isinstance(db_value, TopicCategory):
+            return {"id": db_value.identifier, "label": _(db_value.gn_description)}
+        else:
+            logger.warning(f"Category: can't decode <{type(db_value)}>'{db_value}'")
+            return None
 
     @classmethod
     def deserialize(cls, field_value):
-        return TopicCategory.objects.get(identifier=field_value)
+        if field_value:
+            obj = json.loads(field_value)
+            return TopicCategory.objects.get(identifier=obj["id"])
+        else:
+            return None
 
 
 class DateTypeSubHandler(SubHandler):
@@ -219,3 +223,5 @@ class BaseHandler(MetadataHandler):
             setattr(resource, field_name, field_value)
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
+            self._set_error(errors, [field_name], f"Error while storing field. Contact your administrator")
+

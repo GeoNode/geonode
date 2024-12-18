@@ -137,5 +137,13 @@ class MetadataHandler(metaclass=ABCMeta):
             subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
 
 
-class UnsetFieldException(Exception):
+class MetadataFieldException(Exception):
+    pass
+
+
+class UnsetFieldException(MetadataFieldException):
+    pass
+
+
+class UnparsableFieldException(MetadataFieldException):
     pass
