@@ -39,21 +39,21 @@
     "type": "string",
     "title": "Category",
     "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.",
-    "maxLength": 255
+    "maxLength": 255,
+    "geonode:required": true
   },
   "language": {
     "type": "string",
     "title": "language",
     "description": "language used within the dataset",
-    "maxLength": 255,
-    "default": "eng"
+    "maxLength": 16
   },
   "license": {
-    "type": ["string", "null"],
+    "type": "string",
     "title": "License",
     "description": "license of the dataset",
     "maxLength": 255,
-    "default": "eng"
+    "geonode:required": true
   },
   "attribution": {
     "type": ["string", "null"],

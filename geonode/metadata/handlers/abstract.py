@@ -114,7 +114,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _set_error(errors: dict, path: list, msg: str):
-        logger.warning(f"Reported message: {'/'.join(path)}: {msg} ")
+        logger.info(f"Reported message: {'/'.join(path)}: {msg} ")
         elem = errors
         for step in path:
             elem = elem.setdefault(step, {})

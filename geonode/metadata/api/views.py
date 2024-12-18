@@ -30,11 +30,11 @@ from django.contrib.auth import get_user_model
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.translation.trans_real import get_language_from_request
-from django.utils.translation import get_language
+from django.utils.translation import get_language, gettext as _
 from django.db.models import Q
 
 from geonode.base.api.permissions import UserHasPerms
-from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
 from geonode.groups.models import GroupProfile
@@ -160,6 +160,24 @@ def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
             {
                 "id": tk.about,
                 "label": f"! {tk.alt_label}",
+            }
+        )
+
+    return JsonResponse({"results": ret})
+
+
+def categories_autocomplete(request: WSGIRequest):
+    qs = TopicCategory.objects.order_by("gn_description")
+
+    if q := request.GET.get("q", None):
+        qs = qs.filter(gn_description__istartswith=q)
+
+    ret = []
+    for record in qs.all():
+        ret.append(
+            {
+                "id": record.identifier,
+                "label": _(record.gn_description),
             }
         )
 

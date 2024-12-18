@@ -21,11 +21,13 @@ import json
 import logging
 from datetime import datetime
 
+from rest_framework.reverse import reverse
+from django.utils.translation import gettext as _
+
 from geonode.base.models import TopicCategory, License, RestrictionCodeType, SpatialRepresentationType
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
-from django.utils.translation import gettext as _
 
 
 logger = logging.getLogger(__name__)
@@ -48,11 +50,13 @@ class SubHandler:
 class CategorySubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        # subschema["title"] = _("topiccategory")
-        subschema["oneOf"] = [
-            {"const": tc.identifier, "title": _(tc.gn_description), "description": _(tc.description)}
-            for tc in TopicCategory.objects.order_by("gn_description")
-        ]
+        subschema["ui:options"] = {
+            "geonode-ui:autocomplete": reverse("metadata_autocomplete_categories"),
+        }
+        # subschema["oneOf"] = [
+        #     {"const": tc.identifier, "title": _(tc.gn_description), "description": _(tc.description)}
+        #     for tc in TopicCategory.objects.order_by("gn_description")
+        # ]
 
     @classmethod
     def serialize(cls, db_value):
