@@ -66,11 +66,7 @@ class CategorySubHandler(SubHandler):
 
     @classmethod
     def deserialize(cls, field_value):
-        if field_value:
-            obj = json.loads(field_value)
-            return TopicCategory.objects.get(identifier=obj["id"])
-        else:
-            return None
+        return TopicCategory.objects.get(identifier=field_value["id"]) if field_value else None
 
 
 class DateTypeSubHandler(SubHandler):
