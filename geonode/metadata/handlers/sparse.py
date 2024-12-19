@@ -108,17 +108,17 @@ class SparseHandler(MetadataHandler):
         elif self._check_type(field_type, "number"):
             try:
                 return float(field_value)
-            except:
+            except Exception as e:
                 logger.warning(
-                    f"Error loading NUMBER field '{field_name}' with content ({type(field_value)}){field_value}"
+                    f"Error loading NUMBER field '{field_name}' with content ({type(field_value)}){field_value}: {e}"
                 )
                 raise UnsetFieldException()  # should be a different exception
         elif self._check_type(field_type, "integer"):
             try:
                 return int(field_value)
-            except:
+            except Exception as e:
                 logger.warning(
-                    f"Error loading INTEGER field '{field_name}' with content ({type(field_value)}){field_value}"
+                    f"Error loading INTEGER field '{field_name}' with content ({type(field_value)}){field_value}: {e}"
                 )
                 raise UnsetFieldException()  # should be a different exception
         elif field_type == "array":
@@ -159,12 +159,14 @@ class SparseHandler(MetadataHandler):
             try:
                 field_value = str(float(bare_value)) if bare_value is not None else None
             except ValueError as e:
+                logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
                 self._set_error(errors, [field_name], f"Error parsing number '{bare_value}'")
                 return
         elif check_type(field_type, "integer"):
             try:
                 field_value = str(int(bare_value)) if bare_value is not None else None
             except ValueError as e:
+                logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
                 self._set_error(errors, [field_name], f"Error parsing integer '{bare_value}'")
                 return
         elif field_type == "array":

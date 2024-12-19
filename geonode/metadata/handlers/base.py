@@ -25,7 +25,7 @@ from rest_framework.reverse import reverse
 from django.utils.translation import gettext as _
 
 from geonode.base.models import TopicCategory, License, RestrictionCodeType, SpatialRepresentationType
-from geonode.metadata.handlers.abstract import MetadataHandler, UnparsableFieldException
+from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.settings import JSONSCHEMA_BASE
 from geonode.base.enumerations import ALL_LANGUAGES, UPDATE_FREQUENCIES
 
@@ -222,5 +222,4 @@ class BaseHandler(MetadataHandler):
             setattr(resource, field_name, field_value)
         except Exception as e:
             logger.warning(f"Error setting field {field_name}={field_value}: {e}")
-            self._set_error(errors, [field_name], f"Error while storing field. Contact your administrator")
-
+            self._set_error(errors, [field_name], "Error while storing field. Contact your administrator")

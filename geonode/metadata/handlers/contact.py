@@ -100,7 +100,6 @@ class ContactHandler(MetadataHandler):
                     "required": ["id"] if role.is_required else [],
                 }
 
-
             contacts[rolename] = contact
 
             jsonschema["properties"]["contacts"] = {
