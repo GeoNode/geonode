@@ -8,7 +8,7 @@ I18N_THESAURUS_IDENTIFIER = "labels_i18n"
 
 
 def get_localized_tkeywords(lang, thesaurus_identifier: str):
-    logger.debug("Loading localized tkeyword from DB")
+    logger.debug(f"Loading localized tkeyword from DB lang:{lang}")
 
     query = (
         "select "

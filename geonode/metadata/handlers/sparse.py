@@ -16,6 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
+import copy
 import json
 import logging
 
@@ -63,7 +64,7 @@ class SparseHandler(MetadataHandler):
     def update_schema(self, jsonschema, context, lang=None):
         # add all registered fields
         for field_name, field_info in sparse_field_registry.fields().items():
-            subschema = field_info["schema"]
+            subschema = copy.deepcopy(field_info["schema"])
             self._recurse_localization(context, subschema, lang)
             self._add_subschema(jsonschema, field_name, subschema, after_what=field_info["after"])
 
