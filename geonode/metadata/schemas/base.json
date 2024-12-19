@@ -57,11 +57,20 @@
     "maxLength": 16
   },
   "license": {
-    "type": "string",
+    "type": "object",
     "title": "License",
     "description": "license of the dataset",
     "maxLength": 255,
-    "geonode:required": true
+     "properties": {
+       "id": {
+         "type": "string"
+       },
+       "label": {
+         "type": "string"
+       }
+     },
+     "required": ["id"],
+     "geonode:required": true
   },
   "attribution": {
     "type": ["string", "null"],

@@ -63,5 +63,10 @@ urlpatterns = router.urls + [
         views.categories_autocomplete,
         name="metadata_autocomplete_categories",
     ),
+    path(
+        r"metadata/autocomplete/licenses",
+        views.licenses_autocomplete,
+        name="metadata_autocomplete_licenses",
+    ),
     # path(r"metadata/autocomplete/users", login_required(ProfileAutocomplete.as_view()), name="metadata_autocomplete_users"),
 ]

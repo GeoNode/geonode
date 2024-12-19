@@ -99,20 +99,23 @@ class LanguageSubHandler(SubHandler):
 class LicenseSubHandler(SubHandler):
     @classmethod
     def update_subschema(cls, subschema, lang=None):
-        subschema["oneOf"] = [
-            {"const": tc.identifier, "title": tc.name, "description": tc.description}
-            for tc in License.objects.order_by("name")
-        ]
+        subschema["ui:options"] = {
+            "geonode-ui:autocomplete": reverse("metadata_autocomplete_licenses"),
+        }
 
     @classmethod
     def serialize(cls, db_value):
-        if isinstance(db_value, License):
-            return db_value.identifier
-        return db_value
+        if db_value is None:
+            return None
+        elif isinstance(db_value, License):
+            return {"id": db_value.identifier, "label": _(db_value.name)}
+        else:
+            logger.warning(f"License: can't decode <{type(db_value)}>'{db_value}'")
+            return None
 
     @classmethod
     def deserialize(cls, field_value):
-        return License.objects.get(identifier=field_value)
+        return License.objects.get(identifier=field_value["id"]) if field_value else None
 
 
 class RestrictionsSubHandler(SubHandler):

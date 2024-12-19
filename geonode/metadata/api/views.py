@@ -34,7 +34,7 @@ from django.utils.translation import get_language, gettext as _
 from django.db.models import Q
 
 from geonode.base.api.permissions import UserHasPerms
-from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory
+from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory, License
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
 from geonode.groups.models import GroupProfile
@@ -178,6 +178,24 @@ def categories_autocomplete(request: WSGIRequest):
             {
                 "id": record.identifier,
                 "label": _(record.gn_description),
+            }
+        )
+
+    return JsonResponse({"results": ret})
+
+
+def licenses_autocomplete(request: WSGIRequest):
+    qs = License.objects.order_by("name")
+
+    if q := request.GET.get("q", None):
+        qs = qs.filter(name__istartswith=q)
+
+    ret = []
+    for record in qs.all():
+        ret.append(
+            {
+                "id": record.identifier,
+                "label": _(record.name),
             }
         )
 
