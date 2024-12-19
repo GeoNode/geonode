@@ -334,32 +334,6 @@ class HierarchicalKeywordAutocomplete(SimpleSelect2View):
     filter_arg = "slug__icontains"
 
 
-class ThesaurusKeywordLabelAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        thesaurus = settings.THESAURUS
-        tname = thesaurus["name"]
-        lang = "en"
-
-        # Filters thesaurus results based on thesaurus name and language
-        qs = ThesaurusKeywordLabel.objects.all().filter(keyword__thesaurus__identifier=tname, lang=lang)
-
-        if self.q:
-            qs = qs.filter(label__icontains=self.q)
-
-        return qs
-
-    # Overides the get results method to return custom json to frontend
-    def get_results(self, context):
-        return [
-            {
-                "id": self.get_result_value(result.keyword),
-                "text": self.get_result_label(result),
-                "selected_text": self.get_selected_result_label(result),
-            }
-            for result in context["object_list"]
-        ]
-
-
 class DatasetsAutocomplete(SimpleSelect2View):
     model = Dataset
     filter_arg = "title__icontains"

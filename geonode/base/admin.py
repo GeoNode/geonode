@@ -247,7 +247,7 @@ class ThesaurusAdmin(admin.ModelAdmin):
         if request.method == "POST":
             try:
                 rdf_file = request.FILES["rdf_file"]
-                name = slugify(rdf_file.name)
+                name = slugify(rdf_file.name).removesuffix("-rdf")
                 call_command("load_thesaurus", file=rdf_file, name=name)
                 self.message_user(request, "Your RDF file has been imported", messages.SUCCESS)
                 return redirect("..")
