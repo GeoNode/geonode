@@ -21,18 +21,35 @@ import os
 import json
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
+from datetime import datetime
 
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
+from django.utils.translation import gettext as _
 
-from geonode.tests.base import GeoNodeBaseTestSupport
+from django.test.testcases import TestCase
 from geonode.metadata.settings import MODEL_SCHEMA
-from geonode.base.models import ResourceBase
+from geonode.base.models import (
+    ResourceBase, 
+    TopicCategory,
+    RestrictionCodeType,
+    License,
+    SpatialRepresentationType
+)
 from geonode.settings import PROJECT_ROOT
-from geonode.metadata.handlers.base import BaseHandler
-from geonode.metadata.tests.utils import MockSubHandler
+from geonode.metadata.handlers.base import (
+    BaseHandler, 
+    CategorySubHandler,
+    DateTypeSubHandler,
+    DateSubHandler,
+    FrequencySubHandler,
+    LanguageSubHandler,
+    LicenseSubHandler,
+    RestrictionsSubHandler,
+    SpatialRepresentationTypeSubHandler,
+)
 
-class HandlersTests(GeoNodeBaseTestSupport):
+class HandlersTests(TestCase):
 
     def setUp(self):
         # set Json schemas
@@ -44,7 +61,16 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.test_user_1 = get_user_model().objects.create_user(
             "user_1", "user_1@fakemail.com", "user_1_password", is_active=True
         )
+        
+        # Testing database setup
         self.resource = ResourceBase.objects.create(title="Test Resource", uuid=str(uuid4()), owner=self.test_user_1)
+        
+        # Create two instances for the TopicCategory model
+        self.category = TopicCategory.objects.create(identifier="fake_category", gn_description="a fake gn description", description="a detailed description")
+        self.license = License.objects.create(identifier="fake_license", name="a fake name", description="a detailed description")
+        self.restrictions = RestrictionCodeType.objects.create(identifier="fake_restrictions", description="a detailed description")
+        self.spatial_repr = SpatialRepresentationType.objects.create(identifier="fake_spatial_repr", description="a detailed description")
+        
         self.factory = RequestFactory()
 
         # Fake base schema path
@@ -59,12 +85,6 @@ class HandlersTests(GeoNodeBaseTestSupport):
         with open(os.path.join(PROJECT_ROOT, "metadata/tests/data/fake_schema.json")) as f:
             self.fake_schema = json.load(f)
 
-        self.fake_subhandlers = {
-            "date": MockSubHandler,
-            "date_type": MockSubHandler,
-            "category": MockSubHandler
-        }
-
         # Handlers
         self.base_handler = BaseHandler()
 
@@ -74,15 +94,30 @@ class HandlersTests(GeoNodeBaseTestSupport):
     # Tests for the Base handler
     @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
     def test_base_handler_update_schema(self, mock_subhandlers):
-
-        # Use of mock_subhandlers as a dictionary
-        mock_subhandlers.update(self.fake_subhandlers)
         
-        # Only the path is defined since it is loaded inside the base handler
+        """
+        Ensure that the update_schema method gets a simple valid schema and 
+        populate it with the base_schema properties accordignly
+        """
+
         self.base_handler.json_base_schema = self.fake_base_schema_path
 
-        # Input schema and context
+        # Model schema definition
         jsonschema = self.model_schema
+
+        # Mock subhandlers and update_subschema functionality, which
+        # will be used for the field "date"
+        field_name = "date"
+        mock_subhandlers[field_name] = MagicMock()
+        mock_subhandlers[field_name].update_subschema = MagicMock()
+
+        def mock_update_subschema(subschema, lang=None):
+            subschema["oneOf"] = [
+                {"const": "fake const", "title": "fake title"}
+            ]
+        
+        # Add the mock behavior for update_subschema
+        mock_subhandlers[field_name].update_subschema.side_effect = mock_update_subschema
 
         # Call the method
         updated_schema = self.base_handler.update_schema(jsonschema, self.context, self.lang)
@@ -91,41 +126,58 @@ class HandlersTests(GeoNodeBaseTestSupport):
         for field in self.fake_base_schema:
             self.assertIn(field, updated_schema["properties"])
 
-        # Check subhandler execution
+        # Check subhandler execution for the field name "date"
         self.assertEqual(updated_schema["properties"]["date"].get("oneOf"), [{"const": "fake const", "title": "fake title"}])
-        self.assertEqual(updated_schema["properties"]["date_type"].get("oneOf"), [{"const": "fake const", "title": "fake title"}])
         self.assertNotIn("oneOf", updated_schema["properties"]["uuid"])
         self.assertNotIn("oneOf", updated_schema["properties"]["title"])
         self.assertNotIn("oneOf", updated_schema["properties"]["abstract"])
 
         # Check geonode:handler addition
+        self.assertEqual(updated_schema["properties"]["abstract"].get("geonode:handler"), "base")
         self.assertEqual(updated_schema["properties"]["date"].get("geonode:handler"), "base")
-        self.assertEqual(updated_schema["properties"]["date_type"].get("geonode:handler"), "base")
 
-    def test_base_handler_get_jsonschema_instance_without_subhandlers(self):
+    @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
+    def test_base_handler_get_jsonschema_instance_without_subhandlers(self, mock_subhandlers):
+
+        """
+        Ensure that the get_json_schema_instance will get the db value 
+        from a simple field
+        """
         
-        fieldname = "title"
-        self.assertTrue(hasattr(self.resource, fieldname), f"Field '{fieldname}' does not exist.")
+        field_name = "title"
+        self.assertTrue(hasattr(self.resource, field_name), f"Field '{field_name}' does not exist.")
         expected_field_value = self.resource.title
 
         # Call the method
-        field_value = self.base_handler.get_jsonschema_instance(self.resource, fieldname, self.context, self.errors, lang=None)
+        field_value = self.base_handler.get_jsonschema_instance(self.resource, field_name, self.context, self.errors, lang=None)
+
+        # Ensure that the serialize method was not called
+        mock_subhandlers.get(field_name, MagicMock()).serialize.assert_not_called()
         self.assertEqual(expected_field_value, field_value)
         self.assertEqual(self.errors, {})
 
     @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
     def test_base_handler_get_jsonschema_instance_with_subhandlers(self, mock_subhandlers):
         
-        field_name = "category" # A field name which is included in the  SUBHANDLERS
+        """
+        Ensure that when a field name corresponds to a model in th ResourceBase,
+        the get_jsonschema_instance method gets a field_value which is a model
+        and assign it to the corresponding value. For testing we use the "category 
+        field"
+        """
+        
+        field_name = "category"
         
         # Create a fake resource
         fake_resource = MagicMock()
+        
         fake_resource.category = MagicMock()
         fake_resource.category.identifier = "mocked_category_value"
-        expected_field_value = fake_resource.category.identifier
+        expected_field_value = fake_resource.category.identifier 
 
-        # Use of mock_subhandlers as a dictionary
-        mock_subhandlers.update(self.fake_subhandlers)
+        # Add a SUBHANDLER for the field that returns the MagicMock model
+        mock_subhandlers[field_name] = MagicMock()
+        mock_subhandlers[field_name].serialize.return_value = expected_field_value
 
         # Call the method
         field_value = self.base_handler.get_jsonschema_instance(
@@ -136,7 +188,522 @@ class HandlersTests(GeoNodeBaseTestSupport):
             lang=self.lang
             )
         
+        # Ensure that the serialize method has been called once
+        mock_subhandlers[field_name].serialize.assert_called_once_with(fake_resource.category)
         self.assertEqual(expected_field_value, field_value)
+
+    
+    @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
+    def test_update_resource_success_without_subhandlers(self, mock_subhandlers):
+
+        """
+        Ensure that when a simple field name like title is set to the resource
+        without calling the SUBHANDLERS classes
+        """
+        field_name = "title"
+        expected_field_value = "new_fake_title_value"
+        json_instance = {field_name: expected_field_value}
+
+        # Call the method
+        self.base_handler.update_resource(
+            resource=self.resource,
+            field_name=field_name,
+            json_instance=json_instance,
+            context=self.context,
+            errors=self.errors
+        )
+ 
+        # Ensure that the deserialize method was not called
+        mock_subhandlers.get(field_name, MagicMock()).deserialize.assert_not_called()
+        self.assertEqual(expected_field_value, self.resource.title)
+    
+
+    @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
+    def test_update_resource_success_with_subhandlers(self, mock_subhandlers):
+
+        """
+        Ensure that when a field name corresponds to a model in th ResourceBase,
+        the update_resource method receives a field_value and assign it to the 
+        corresponding model. For testing we use the "category field"
+        """
+        field_name = "category"
+        field_value = "new_category_value"
+        json_instance = {field_name: field_value}
+
+        # Fake resource object
+        fake_resource = MagicMock()
+
+        # Simulate a MagicMock model for category
+        mock_category_model = MagicMock()
+        mock_category_model.identifier = field_value
+
+        # Add a SUBHANDLER for the field that returns the MagicMock model
+        mock_subhandlers[field_name] = MagicMock()
+        mock_subhandlers[field_name].deserialize.return_value = mock_category_model
+
+        # Call the method
+        self.base_handler.update_resource(
+            resource=fake_resource,
+            field_name=field_name,
+            json_instance=json_instance,
+            context=self.context,
+            errors=self.errors
+        )
+
+        mock_subhandlers[field_name].deserialize.assert_called_once_with(field_value)
+        self.assertEqual(fake_resource.category, mock_category_model)
+  
+    
+    @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
+    @patch("geonode.metadata.handlers.base.logger")
+    def test_update_resource_exception_handling(self, mock_logger, mock_subhandlers):
+        """
+        Handling exception
+        """
+        field_name = "category"
+        field_value = "new_category_value"
+        json_instance = {field_name: field_value}
+
+        # Fake resource object
+        fake_resource = MagicMock()
+
+        # Add a SUBHANDLER for the field that raises an exception during deserialization
+        mock_subhandlers[field_name] = MagicMock()
+        mock_subhandlers[field_name].deserialize.side_effect = Exception("Deserialization error")
+
+        # Call the method
+        self.base_handler.update_resource(
+            resource=fake_resource,
+            field_name=field_name,
+            json_instance=json_instance,
+            context=self.context,
+            errors=self.errors
+        )
+
+        mock_subhandlers[field_name].deserialize.assert_called_once_with(field_value)
+
+        # Ensure that the exception is logged
+        mock_logger.warning.assert_called_once_with(
+        f"Error setting field {field_name}={field_value}: Deserialization error"
+        )
+    
+    # Tests for subhandler classes of the base handler
+    def test_category_subhandler_update_subschema(self):
+
+        """ 
+        Test for the update_subschema of the CategorySubHandler.
+        An instance of this model has been created initial setup
+        """
+        
+        subschema = {
+          "type": "string",
+          "title": "Category",
+          "description": "a fake description",
+          "maxLength": 255
+        }
+
+        # Call the update_subschema method with the real database data
+        CategorySubHandler.update_subschema(subschema, lang='en')
+
+        # Assertions
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(len(subschema["oneOf"]), 1)
+
+        # Check that each entry in "oneOf" contains the expected "const", "title", and "description"
+        self.assertEqual(subschema["oneOf"][0]["const"], "fake_category")
+        self.assertEqual(subschema["oneOf"][0]["title"], "a fake gn description")
+        self.assertEqual(subschema["oneOf"][0]["description"], "a detailed description")
+
+    
+    def test_category_subhandler_serialize_with_existed_db_value(self):
+        
+        """
+        Test the serialize method with existed db value.
+        An instance of this model has been created initial setup
+        """
+        
+        # Test the case where the db_value is a model instance
+        serialized_value = CategorySubHandler.serialize(self.category)
+
+        # Assert that the serialize method returns the identifier
+        self.assertEqual(serialized_value, self.category.identifier)
+
+    
+    def test_category_subhandler_serialize_with_non_existed_db_value(self):
+        
+        """
+        Test the serialize method without an existed db value.
+        An instance of this model has been created initial setup
+        """
+        
+        # Test the case where the db_value is not a model instance
+        non_category_value = "nonexistent value"
+        
+        serialized_value = CategorySubHandler.serialize(non_category_value)
+
+        # Assert that the serialize method returns the input value unchanged
+        self.assertEqual(serialized_value, non_category_value)
+
+    def test_category_subhandler_deserialize(self):
+        
+        """
+        Test the deserialize method.
+        An instance of this model has been created initial setup
+        """
+
+        # Call the method using the "fake_category" identifier from the created instance
+        deserialized_value = CategorySubHandler.deserialize("fake_category")
+
+        # Assert that the deserialized value is the correct model instance
+        self.assertEqual(deserialized_value, self.category)
+        self.assertEqual(deserialized_value.identifier, "fake_category")
+    
+    
+    def test_license_subhandler_update_subschema(self):
+
+        """ 
+        Test for the update_subschema of the LicenseSubHandler.
+        An instance of the License model has been created
+        """
+        
+        subschema = {
+          "type": ["string", "null"],
+          "title": "License",
+          "description": "license of the dataset",
+          "maxLength": 255,
+          "default": "eng"
+        }
+
+        # Call the update_subschema method with the real database data
+        LicenseSubHandler.update_subschema(subschema, lang='en')
+
+        # Assertions
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(len(subschema["oneOf"]), 1)
+
+        # Check that each entry in "oneOf" contains the expected "const", "title", and "description"
+        self.assertEqual(subschema["oneOf"][0]["const"], "fake_license")
+        self.assertEqual(subschema["oneOf"][0]["title"], "a fake name")
+        self.assertEqual(subschema["oneOf"][0]["description"], "a detailed description")
+
+    
+    def test_license_subhandler_serialize_with_existed_db_value(self):
+        
+        """
+        Test the serialize method with existed db value.
+        An instance of this model has been created initial setup
+        """
+
+        # Test the case where the db_value is a model instance
+        serialized_value = LicenseSubHandler.serialize(self.license)
+
+        # Assert that the serialize method returns the identifier
+        self.assertEqual(serialized_value, self.license.identifier)
+
+    def test_license_subhandler_serialize_with_non_existed_db_value(self):
+        
+        """
+        Test the serialize method without an existed db value.
+        An instance of this model has been created initial setup
+        """
+
+        # Test the case where the db_value is not a model instance
+        non_license_value = "nonexistent value"
+        
+        serialized_value = LicenseSubHandler.serialize(non_license_value)
+
+        # Assert that the serialize method returns the input value unchanged
+        self.assertEqual(serialized_value, non_license_value)
+
+    def test_license_subhandler_deserialize(self):
+        
+        """
+        Test the deserialize method.
+        An instance of this model has been created initial setup
+        """
+
+        # Call the method using the "fake_category" identifier from the created instance
+        deserialized_value = LicenseSubHandler.deserialize("fake_license")
+
+        # Assert that the deserialized value is the correct model instance
+        self.assertEqual(deserialized_value, self.license)
+        self.assertEqual(deserialized_value.identifier, "fake_license")
+
+
+    def test_restrictions_subhandler_update_subschema(self):
+
+        """ 
+        Test for the update_subschema of the LicenseSubHandler.
+        An instance of the RestrictionCodeType model has been created
+        """
+        
+        subschema = {
+          "type": "string",
+          "title": "restrictions",
+          "description": "limitation(s) placed upon the access or use of the data.",
+          "maxLength": 255
+        }
+
+        # Call the update_subschema method with the real database data
+        RestrictionsSubHandler.update_subschema(subschema, lang='en')
+
+        # Assertions
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(len(subschema["oneOf"]), 1)
+
+        # Check that each entry in "oneOf" contains the expected "const", "title", and "description"
+        self.assertEqual(subschema["oneOf"][0]["const"], "fake_restrictions")
+        self.assertEqual(subschema["oneOf"][0]["title"], "fake_restrictions")
+        self.assertEqual(subschema["oneOf"][0]["description"], "a detailed description")
+
+    
+    def test_restrictions_subhandler_serialize_with_existed_db_value(self):
+        
+        """
+        Test the serialize method with existed db value.
+        An instance of this model has been created initial setup
+        """
+
+        # Test the case where the db_value is a model instance
+        serialized_value = RestrictionsSubHandler.serialize(self.restrictions)
+
+        # Assert that the serialize method returns the identifier
+        self.assertEqual(serialized_value, self.restrictions.identifier)
+
+    def test_restrictions_subhandler_serialize_with_non_existed_db_value(self):
+        
+        """
+        Test the serialize method without an existed db value.
+        An instance of this model has been created initial setup
+        """
+
+        # Test the case where the db_value is not a model instance
+        non_restrictions_value = "nonexistent value"
+        
+        serialized_value = RestrictionsSubHandler.serialize(non_restrictions_value)
+
+        # Assert that the serialize method returns the input value unchanged
+        self.assertEqual(serialized_value, non_restrictions_value)
+
+    def test_restrictions_subhandler_deserialize(self):
+        
+        """
+        Test the deserialize method.
+        An instance of this model has been created initial setup
+        """
+
+        # Call the method using the "fake_category" identifier from the created instance
+        deserialized_value = RestrictionsSubHandler.deserialize("fake_restrictions")
+
+        # Assert that the deserialized value is the correct model instance
+        self.assertEqual(deserialized_value, self.restrictions)
+        self.assertEqual(deserialized_value.identifier, "fake_restrictions")
+
+
+    def test_spatial_repr_type_subhandler_update_subschema(self):
+
+        """ 
+        Test for the update_subschema of the SpatialRepresentationTypeSubHandler.
+        An instance of the SpatialRepresentationType model has been created
+        """
+        
+        subschema = {
+          "type": "string",
+          "title": "spatial representation type",
+          "description": "method used to represent geographic information in the dataset.",
+          "maxLength": 255
+        }
+
+        # Call the update_subschema method with the real database data
+        SpatialRepresentationTypeSubHandler.update_subschema(subschema, lang='en')
+
+        # Assertions
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(len(subschema["oneOf"]), 1)
+
+        # Check that each entry in "oneOf" contains the expected "const", "title", and "description"
+        self.assertEqual(subschema["oneOf"][0]["const"], "fake_spatial_repr")
+        self.assertEqual(subschema["oneOf"][0]["title"], "fake_spatial_repr")
+        self.assertEqual(subschema["oneOf"][0]["description"], "a detailed description")
+
+    
+    def test_spatial_repr_type_subhandler_serialize_with_existed_db_value(self):
+        
+        """
+        Test the serialize method with existed db value.
+        An instance of this model has been created initial setup
+        """
+
+        # Test the case where the db_value is a model instance
+        serialized_value = SpatialRepresentationTypeSubHandler.serialize(self.spatial_repr)
+
+        # Assert that the serialize method returns the identifier
+        self.assertEqual(serialized_value, self.spatial_repr.identifier)
+
+    def test_spatial_repr_type_subhandler_serialize_with_non_existed_db_value(self):
+        
+        """
+        Test the serialize method without an existed db value.
+        An instance of this model has been created initial setup
+        """
+
+        # Test the case where the db_value is not a model instance
+        non_spatial_repr_value = "nonexistent value"
+        
+        serialized_value = SpatialRepresentationTypeSubHandler.serialize(non_spatial_repr_value)
+
+        # Assert that the serialize method returns the input value unchanged
+        self.assertEqual(serialized_value, non_spatial_repr_value)
+
+    def test_spatial_repr_type_subhandler_deserialize(self):
+        
+        """
+        Test the deserialize method.
+        An instance of this model has been created initial setup
+        """
+
+        # Call the method using the "fake_category" identifier from the created instance
+        deserialized_value = SpatialRepresentationTypeSubHandler.deserialize("fake_spatial_repr")
+
+        # Assert that the deserialized value is the correct model instance
+        self.assertEqual(deserialized_value, self.spatial_repr)
+        self.assertEqual(deserialized_value.identifier, "fake_spatial_repr")
+
+
+    def test_date_type_subhandler_update_subschema(self):
+        
+        """
+        SubHandler test for the date type
+        """
+        
+        # Prepare the initial subschema
+        subschema = {
+          "type": "string",
+          "title": "date type",
+          "maxLength": 255
+        }
+
+        # Expected values for "oneOf"
+        expected_one_of_values = [
+            {"const": "creation", "title": "Creation"},
+            {"const": "publication", "title": "Publication"},
+            {"const": "revision", "title": "Revision"},
+        ]
+
+        # Call the method to update the subschema
+        DateTypeSubHandler.update_subschema(subschema, lang="en")
+
+        # Assertions
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(subschema["oneOf"], expected_one_of_values)
+        self.assertIn("default", subschema)
+        self.assertEqual(subschema["default"], "Publication")
+    
+
+    def test_date_subhandler_serialize_with_valid_datetime(self):
+        
+        """
+        Subhandler test for the date serialization to the isoformat
+        """
+        
+        test_datetime = datetime(2024, 12, 19, 15, 30, 45)
+
+        # Call the serialize method
+        serialized_value = DateSubHandler.serialize(test_datetime)
+
+        # Expected ISO 8601 format
+        expected_value = "2024-12-19T15:30:45"
+
+        self.assertEqual(serialized_value, expected_value)
+
+    def test_date_subhandler_serialize_without_datetime(self):
+
+        """
+        Subhandler test for the date serialization to the isoformat with non
+        existent datetime object
+        """
+        
+        test_value = "nonexistent datetime"
+
+        # Call the serialize method
+        serialized_value = DateSubHandler.serialize(test_value)
+
+        self.assertEqual(serialized_value, test_value)
+
+
+    @patch("geonode.metadata.handlers.base.UPDATE_FREQUENCIES", new=[
+        ("fake_frequency1", _("Fake frequency 1")),
+        ("fake_frequency2", _("Fake frequency 2")),
+        ("fake_frequency3", _("Fake frequency 3")),
+    ])
+    def test_frequency_subhandler_update_subschema(self):
+
+        """
+        Subhandler test for the maintenance frequency
+        """
+        
+        subschema = {
+          "type": "string",
+          "title": "maintenance frequency",
+          "description": "a detailed description",
+          "maxLength": 255
+        }
+
+        # Expected values for "oneOf"
+        expected_one_of_values = [
+            {"const": "fake_frequency1", "title": "Fake frequency 1"},
+            {"const": "fake_frequency2", "title": "Fake frequency 2"},
+            {"const": "fake_frequency3", "title": "Fake frequency 3"},
+        ]
+
+        # Call the method to update the subschema
+        FrequencySubHandler.update_subschema(subschema, lang="en")
+
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(subschema["oneOf"], expected_one_of_values)
+
+    
+    @patch("geonode.metadata.handlers.base.ALL_LANGUAGES", new=[
+        ("fake_language1", "Fake language 1"),
+        ("fake_language2", "Fake language 2"),
+        ("fake_language3", "Fake language 3"),
+    ])
+    def test_language_subhandler_update_subschema(self):
+
+        """
+        Language subhandler test
+        """
+        
+        subschema = {
+          "type": "string",
+          "title": "language",
+          "description": "language used within the dataset",
+          "maxLength": 255,
+          "default": "eng"
+        }
+
+        # Expected values for "oneOf"
+        expected_one_of_values = [
+            {"const": "fake_language1", "title": "Fake language 1"},
+            {"const": "fake_language2", "title": "Fake language 2"},
+            {"const": "fake_language3", "title": "Fake language 3"},
+        ]
+
+        # Call the method to update the subschema
+        LanguageSubHandler.update_subschema(subschema, lang="en")
+
+        self.assertIn("oneOf", subschema)
+        self.assertEqual(subschema["oneOf"], expected_one_of_values)
+
+
+
+
+
+
+
+
+
+
 
 
         
