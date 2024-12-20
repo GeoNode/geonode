@@ -34,7 +34,9 @@ from geonode.base.models import (
     TopicCategory,
     RestrictionCodeType,
     License,
-    SpatialRepresentationType
+    SpatialRepresentationType,
+    Region,
+    LinkedResource
 )
 from geonode.settings import PROJECT_ROOT
 from geonode.metadata.handlers.base import (
@@ -48,8 +50,11 @@ from geonode.metadata.handlers.base import (
     RestrictionsSubHandler,
     SpatialRepresentationTypeSubHandler,
 )
+from geonode.metadata.handlers.region import RegionHandler
+from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
+from geonode.tests.base import GeoNodeBaseTestSupport
 
-class HandlersTests(TestCase):
+class HandlersTests(GeoNodeBaseTestSupport):
 
     def setUp(self):
         # set Json schemas
@@ -64,8 +69,10 @@ class HandlersTests(TestCase):
         
         # Testing database setup
         self.resource = ResourceBase.objects.create(title="Test Resource", uuid=str(uuid4()), owner=self.test_user_1)
+        self.extra_resource_1 = ResourceBase.objects.create(title="Extra resource 1", uuid=str(uuid4()), owner=self.test_user_1)
+        self.extra_resource_2 = ResourceBase.objects.create(title="Extra resource 2", uuid=str(uuid4()), owner=self.test_user_1)
+        self.extra_resource_3 = ResourceBase.objects.create(title="Extra resource 3", uuid=str(uuid4()), owner=self.test_user_1)
         
-        # Create two instances for the TopicCategory model
         self.category = TopicCategory.objects.create(identifier="fake_category", gn_description="a fake gn description", description="a detailed description")
         self.license = License.objects.create(identifier="fake_license", name="a fake name", description="a detailed description")
         self.restrictions = RestrictionCodeType.objects.create(identifier="fake_restrictions", description="a detailed description")
@@ -87,10 +94,21 @@ class HandlersTests(TestCase):
 
         # Handlers
         self.base_handler = BaseHandler()
+        self.region_handler = RegionHandler()
+        self.linkedresource_handler = LinkedResourceHandler()
+
+        # A fake subschema
+        self.fake_subschema = {
+            "type": "string",
+            "title": "new field",
+            "description": "A new field was added",
+            "maxLength": 255
+            }
 
     def tearDown(self):
         super().tearDown()
 
+    
     # Tests for the Base handler
     @patch("geonode.metadata.handlers.base.SUBHANDLERS", new_callable=dict)
     def test_base_handler_update_schema(self, mock_subhandlers):
@@ -301,7 +319,11 @@ class HandlersTests(TestCase):
           "description": "a fake description",
           "maxLength": 255
         }
-
+    
+        # Delete all the TopicCategory models escept the "fake_category"
+        fake_category = TopicCategory.objects.get(identifier="fake_category")
+        TopicCategory.objects.exclude(identifier=fake_category.identifier).delete()
+        
         # Call the update_subschema method with the real database data
         CategorySubHandler.update_subschema(subschema, lang='en')
 
@@ -365,7 +387,7 @@ class HandlersTests(TestCase):
         Test for the update_subschema of the LicenseSubHandler.
         An instance of the License model has been created
         """
-        
+
         subschema = {
           "type": ["string", "null"],
           "title": "License",
@@ -373,6 +395,10 @@ class HandlersTests(TestCase):
           "maxLength": 255,
           "default": "eng"
         }
+
+        # Delete all the License models except the "fake_license"
+        fake_license = License.objects.get(identifier="fake_license")
+        License.objects.exclude(identifier=fake_license.identifier).delete()
 
         # Call the update_subschema method with the real database data
         LicenseSubHandler.update_subschema(subschema, lang='en')
@@ -443,6 +469,10 @@ class HandlersTests(TestCase):
           "description": "limitation(s) placed upon the access or use of the data.",
           "maxLength": 255
         }
+        
+        # Delete all the RestrictionCodeType models except the "fake_license"
+        fake_restrictions = RestrictionCodeType.objects.get(identifier="fake_restrictions")
+        RestrictionCodeType.objects.exclude(identifier=fake_restrictions.identifier).delete()
 
         # Call the update_subschema method with the real database data
         RestrictionsSubHandler.update_subschema(subschema, lang='en')
@@ -513,6 +543,10 @@ class HandlersTests(TestCase):
           "description": "method used to represent geographic information in the dataset.",
           "maxLength": 255
         }
+
+        # Delete all the SpatialRepresentationType models except the "fake_spatial_repr"
+        fake_spatial_repr = SpatialRepresentationType.objects.get(identifier="fake_spatial_repr")
+        SpatialRepresentationType.objects.exclude(identifier=fake_spatial_repr.identifier).delete()
 
         # Call the update_subschema method with the real database data
         SpatialRepresentationTypeSubHandler.update_subschema(subschema, lang='en')
@@ -695,6 +729,298 @@ class HandlersTests(TestCase):
         self.assertIn("oneOf", subschema)
         self.assertEqual(subschema["oneOf"], expected_one_of_values)
 
+    
+    def test_add_sub_schema_without_after_what(self):
+        
+        """
+        This method is used by most of the handlers in the update_schema
+        method, in order to add the subschema to the desired place. 
+        This test ensures the method's functionality without after_what
+        """
+        
+        jsonschema = self.fake_schema
+        subschema = self.fake_subschema
+        property_name = "new_field"
+
+        self.base_handler._add_subschema(jsonschema, property_name, subschema)
+
+        self.assertIn(property_name, jsonschema["properties"])
+        self.assertEqual(jsonschema["properties"][property_name], subschema)
+
+    
+    def test_add_sub_schema_with_after_what(self):
+        
+        """
+        This method is used by most of the handlers in the update_schema
+        method, in order to add the subschema to the desired place.
+        This test ensures the method's functionality with after_what
+        """
+        
+        jsonschema = self.fake_schema
+        subschema = self.fake_subschema
+        property_name = "new_field"
+
+        # Add the "new_field" after the field "field2"
+        self.base_handler._add_subschema(jsonschema, property_name, subschema, after_what="field2")
+
+        self.assertIn(property_name, jsonschema["properties"])
+        # Check that the new field has been added with the defined order
+        self.assertEqual(list(jsonschema["properties"].keys()), ["field1", "field2", "new_field", "field3"])
+
+    
+    def test_add_subschema_with_nonexistent_after_what(self):
+        
+        """
+        This method is used by most of the handlers in the update_schema
+        method, in order to add the subschema to the desired place.
+        This test ensures the method's functionality with a non-existent
+        after_what
+        """
+        
+        jsonschema = self.fake_schema
+        subschema = self.fake_subschema
+        property_name = "new_field"
+
+        self.base_handler._add_subschema(jsonschema, property_name, subschema, after_what="nonexistent_property")
+
+        # Check that the new property was added
+        self.assertIn(property_name, jsonschema["properties"])
+
+        # Check that the order is maintained as best as possible
+        self.assertEqual(list(jsonschema["properties"].keys()), ["field1", "field2", "field3", "new_field"])
+
+        # Check that the subschema was added
+        self.assertEqual(jsonschema["properties"][property_name], subschema)
+
+    
+    def test_add_subschema_to_empty_jsonschema(self):
+        
+        """
+        This method is used by most of the handlers in the update_schema
+        method, in order to add the subschema to the desired place.
+        This test ensures the method's functionality with an empty schema
+        """
+        
+        jsonschema = {"properties": {}}
+        subschema = self.fake_subschema
+        property_name = "new_field"
+
+        self.base_handler._add_subschema(jsonschema, property_name, subschema, after_what="nonexistent_property")
+
+        self.assertIn(property_name, jsonschema["properties"])
+        self.assertEqual(jsonschema["properties"][property_name], subschema)
+
+    
+    # Tests for the Region handler
+    
+    @patch('geonode.metadata.handlers.region.reverse')
+    def test_region_handler_update_schema(self, mock_reverse):
+        
+        """
+        Test for the update_schema of the region_handler. In this
+        test we don't check if the region subschema was added after
+        the defined property because the _add_subschema method has 
+        been tested above
+        """
+        
+        jsonschema = self.fake_schema
+        mock_reverse.return_value = "/mocked_endpoint"
+
+        # Define the expected regions schema
+        expected_regions = {
+            "type": "array",
+            "title": "Regions",
+            "description": "keyword identifies a location",
+            "items": {
+                "type": "object",
+               "properties": {
+                    "id": {"type": "string"},
+                    "label": {"type": "string", "title": "title"},
+                },
+            },
+            "geonode:handler": "region",
+            "ui:options": {"geonode-ui:autocomplete": "/mocked_endpoint"},
+        }
+
+        # Call the method
+        updated_schema = self.region_handler.update_schema(jsonschema, self.context, lang=self.lang)
+
+        self.assertIn("regions", updated_schema["properties"])
+        self.assertEqual(updated_schema["properties"]["regions"], expected_regions)
+
+
+    def test_region_handler_get_jsonschema_instance(self):
+        
+        """
+        Test the get_jsonschema_instance of the region handler
+        using two region examples: Italy and Greece
+        """
+
+        # Add two Region instances to the ResourceBase instance
+        region_1 = Region.objects.get(code="ITA")
+        region_2 = Region.objects.get(code="GRC")
+        self.resource.regions.add(region_1, region_2)
+        
+        # Call the method to get the JSON schema instance
+        field_name = "regions"
+
+        region_instance = self.region_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+
+        # Assert that the JSON schema contains the regions we added
+        expected_region_subschema = [
+            {"id": str(region_1.id), "label": region_1.name},
+            {"id": str(region_2.id), "label": region_2.name}
+        ]
+        
+        self.assertEqual(
+            sorted(region_instance, key=lambda x: x["id"]),
+            sorted(expected_region_subschema, key=lambda x: x["id"])
+        )
+
+    
+    def test_region_handler_update_resource(self):
+        
+        """
+        Test the update resource of the region handler
+        using two region examples from the testing database
+        """
+
+        # Initially we add two Region instances to the ResourceBase instance
+        region_1 = Region.objects.get(code="GLO")
+        region_2 = Region.objects.get(code="AFR")
+        self.resource.regions.add(region_1, region_2)
+
+        # Definition of the new regions which will be used from the tested method
+        # in order to update the database replacing the above regions with the regions below
+        updated_region_1 = Region.objects.get(code="ITA")
+        updated_region_2 = Region.objects.get(code="GRC")
+        region_3 = Region.objects.get(code="CYP")
+
+        payload_data = {
+            "regions": [
+                {"id": str(updated_region_1.id), "label": updated_region_1.name},
+                {"id": str(updated_region_2.id), "label": updated_region_2.name},
+                {"id": str(region_3.id), "label": region_3.name},
+            ]
+        }
+        
+        # Call the method to get the JSON schema instance
+        field_name = "regions"
+
+        # Call the method
+        self.region_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
+
+        # Ensure that only the regions defined in the payload_data are included in the resource model
+        self.assertEqual(
+            sorted(self.resource.regions.all(), key=lambda region: region.name),
+            sorted([updated_region_1, updated_region_2, region_3], key=lambda region: region.name)
+        )
+
+
+    # Tests for the linkedresource handler
+    
+    @patch('geonode.metadata.handlers.linkedresource.reverse')
+    def test_linkedresource_handler_update_schema(self, mock_reverse):
+        
+        """
+        Test for the update_schema of the linkedresource
+        """
+        
+        jsonschema = self.fake_schema
+        mock_reverse.return_value = "/mocked_endpoint"
+
+        # Define the expected regions schema
+        expected_linked = {
+            "type": "array",
+            "title": _("Related resources"),
+            "description": _("Resources related to this one"),
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                    },
+                    "label": {"type": "string", "title": _("title")},
+                },
+            },
+            "geonode:handler": "linkedresource",
+            "ui:options": {"geonode-ui:autocomplete": "/mocked_endpoint"},
+        }
+
+        # Call the method
+        updated_schema = self.linkedresource_handler.update_schema(jsonschema, self.context, lang=self.lang)
+
+        self.assertIn("linkedresources", updated_schema["properties"])
+        self.assertEqual(updated_schema["properties"]["linkedresources"], expected_linked)
+
+
+    def test_linkedresource_handler_get_jsonschema_instance(self):
+        
+        """
+        Test the get_jsonschema_instance of the linkedresource handler
+        """
+
+        # Add a linked resource to the main resource (self.resource)
+        linked_resource = LinkedResource.objects.create(
+            source=self.resource,
+            target=self.extra_resource_1,
+            )
+
+        field_name = "linkedresources"
+
+        linkedresource_instance = self.linkedresource_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+
+        expected_linkedresource_subschema = [
+            {"id": str(linked_resource.target.id), "label": linked_resource.target.title},
+        ]
+        
+        self.assertEqual(linkedresource_instance, expected_linkedresource_subschema)
+
+    
+    def test_linkedresource_handler_update_resource(self):
+        
+        """
+        Test the update resource of the linkedresource handler
+        """
+
+        # Add a linked resource just to test if it will be removed
+        # after the update_resource call
+        # Add a linked resource to the main resource (self.resource)
+        LinkedResource.objects.create(
+            source=self.resource,
+            target=self.extra_resource_3,
+            )
+
+        payload_data = {
+            "linkedresources": [
+                {"id": self.extra_resource_1.id},
+                {"id": self.extra_resource_2.id}
+            ]
+        }
+        
+        # Call the method to get the JSON schema instance
+        field_name = "linkedresources"
+
+        # Call the method
+        self.linkedresource_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
+
+        # Verify the new links
+        linked_resources = LinkedResource.objects.filter(source=self.resource, internal=False)
+        linked_targets = [link.target for link in linked_resources]
+        self.assertIn(self.extra_resource_1, linked_targets)
+        self.assertIn(self.extra_resource_2, linked_targets)
+        # Ensure that the initial linked resource has been removed
+        self.assertNotIn(self.extra_resource_3, linked_targets)
+
+        # Ensure that there is only one linked resource
+        self.assertEqual(len(linked_targets), 2)
+
+
+    
 
 
 
