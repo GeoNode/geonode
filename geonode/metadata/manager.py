@@ -23,7 +23,7 @@ from cachetools import FIFOCache
 
 from django.utils.translation import gettext as _
 
-from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.metadata.handlers.abstract import MetadataHandler, UnsetFieldException
 from geonode.metadata.i18n import get_localized_labels
 from geonode.metadata.settings import MODEL_SCHEMA
 
@@ -101,13 +101,18 @@ class MetadataManager:
                 logger.warning(f"Missing geonode:handler for schema property {fieldname}. Skipping")
                 continue
             handler = self.handlers[handler_id]
-            content = handler.get_jsonschema_instance(resource, fieldname, context, errors, lang)
-            instance[fieldname] = content
+            try:
+                content = handler.get_jsonschema_instance(resource, fieldname, context, errors, lang)
+                instance[fieldname] = content
+            except UnsetFieldException:
+                pass
 
         # TESTING ONLY
         if "error" in resource.title.lower():
             for fieldname in schema["properties"]:
-                MetadataHandler._set_error(errors, [fieldname], f"TEST: test msg for field '{fieldname}' in GET request")
+                MetadataHandler._set_error(
+                    errors, [fieldname], f"TEST: test msg for field '{fieldname}' in GET request"
+                )
             instance["extraErrors"] = errors
 
         return instance
@@ -140,10 +145,10 @@ class MetadataManager:
         return errors
 
 
-def _create_test_errors(schema, errors, path, msg_template, create_message = True):
+def _create_test_errors(schema, errors, path, msg_template, create_message=True):
     if create_message:
-        stringpath = "/".join(path)
-        MetadataHandler._set_error(errors, path, msg_template.format(path=stringpath, schema_type=schema['type']))
+        stringpath = "/".join(path) if path else "ROOT"
+        MetadataHandler._set_error(errors, path, msg_template.format(path=stringpath, schema_type=schema["type"]))
 
     if schema["type"] == "object":
         for field, subschema in schema["properties"].items():

@@ -114,7 +114,7 @@ class MetadataHandler(metaclass=ABCMeta):
 
     @staticmethod
     def _set_error(errors: dict, path: list, msg: str):
-        logger.warning(f"Reported message: {'/'.join(path)}: {msg} ")
+        logger.info(f"Reported message: {'/'.join(path)}: {msg} ")
         elem = errors
         for step in path:
             elem = elem.setdefault(step, {})
@@ -135,3 +135,15 @@ class MetadataHandler(metaclass=ABCMeta):
     def _localize_subschema_label(context, subschema: dict, lang: str, annotation_name: str):
         if annotation_name in subschema:
             subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
+
+
+class MetadataFieldException(Exception):
+    pass
+
+
+class UnsetFieldException(MetadataFieldException):
+    pass
+
+
+class UnparsableFieldException(MetadataFieldException):
+    pass

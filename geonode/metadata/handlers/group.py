@@ -66,7 +66,7 @@ class GroupHandler(MetadataHandler):
         )
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-        data = json_instance[field_name]
+        data = json_instance.get(field_name, None)
         id = data.get("id", None) if data else None
         if id is not None:
             gp = GroupProfile.objects.get(pk=id)

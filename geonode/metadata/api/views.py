@@ -19,6 +19,9 @@
 import logging
 
 from dal import autocomplete
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -27,10 +30,11 @@ from django.contrib.auth import get_user_model
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.utils.translation.trans_real import get_language_from_request
-from django.utils.translation import get_language
+from django.utils.translation import get_language, gettext as _
 from django.db.models import Q
 
-from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.api.permissions import UserHasPerms
+from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeywordLabel, TopicCategory, License
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
 from geonode.groups.models import GroupProfile
@@ -41,6 +45,9 @@ logger = logging.getLogger(__name__)
 
 
 class MetadataViewSet(ViewSet):
+    authentication_classes = [SessionAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticatedOrReadOnly, UserHasPerms]
+
     """
     Simple viewset that return the metadata JSON schema
     """
@@ -71,8 +78,22 @@ class MetadataViewSet(ViewSet):
 
     # Get the JSON schema
     @action(detail=False, methods=["get", "put", "patch"], url_path=r"instance/(?P<pk>\d+)", url_name="schema_instance")
+    @action(
+        detail=False,
+        methods=["get", "put", "patch"],
+        url_path=r"instance/(?P<pk>\d+)",
+        permission_classes=[
+            UserHasPerms(
+                perms_dict={
+                    "default": {
+                        "GET": ["base.view_resourcebase"],
+                        "POST": ["change_resourcebase_metadata"],
+                    }
+                }
+            )
+        ],
+    )
     def schema_instance(self, request, pk=None):
-
         try:
             resource = ResourceBase.objects.get(pk=pk)
 
@@ -83,7 +104,7 @@ class MetadataViewSet(ViewSet):
                     schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent": 3}
                 )
 
-            elif request.method in ("PUT", "PATCH"):
+            elif request.method in ("PUT"):
                 logger.debug(f"handling request {request.method}")
                 # try:
                 #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
@@ -140,6 +161,42 @@ def tkeywords_autocomplete(request: WSGIRequest, thesaurusid):
             {
                 "id": tk.about,
                 "label": f"! {tk.alt_label}",
+            }
+        )
+
+    return JsonResponse({"results": ret})
+
+
+def categories_autocomplete(request: WSGIRequest):
+    qs = TopicCategory.objects.order_by("gn_description")
+
+    if q := request.GET.get("q", None):
+        qs = qs.filter(gn_description__istartswith=q)
+
+    ret = []
+    for record in qs.all():
+        ret.append(
+            {
+                "id": record.identifier,
+                "label": _(record.gn_description),
+            }
+        )
+
+    return JsonResponse({"results": ret})
+
+
+def licenses_autocomplete(request: WSGIRequest):
+    qs = License.objects.order_by("name")
+
+    if q := request.GET.get("q", None):
+        qs = qs.filter(name__istartswith=q)
+
+    ret = []
+    for record in qs.all():
+        ret.append(
+            {
+                "id": record.identifier,
+                "label": _(record.name),
             }
         )
 
