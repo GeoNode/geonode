@@ -134,7 +134,7 @@ class RestrictionsSubHandler(SubHandler):
 
     @classmethod
     def deserialize(cls, field_value):
-        return RestrictionCodeType.objects.get(identifier=field_value)
+        return RestrictionCodeType.objects.get(identifier=field_value) if field_value else None
 
 
 class SpatialRepresentationTypeSubHandler(SubHandler):
@@ -153,7 +153,7 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
 
     @classmethod
     def deserialize(cls, field_value):
-        return SpatialRepresentationType.objects.get(identifier=field_value)
+        return SpatialRepresentationType.objects.get(identifier=field_value) if field_value else None
 
 
 SUBHANDLERS = {
