@@ -77,11 +77,11 @@ class MetadataViewSet(ViewSet):
             return Response(response)
 
     # Get the JSON schema
-    @action(detail=False, methods=["get", "put", "patch"], url_path=r"instance/(?P<pk>\d+)", url_name="schema_instance")
     @action(
         detail=False,
         methods=["get", "put", "patch"],
         url_path=r"instance/(?P<pk>\d+)",
+        url_name="schema_instance",
         permission_classes=[
             UserHasPerms(
                 perms_dict={
