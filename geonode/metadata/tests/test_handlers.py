@@ -1172,7 +1172,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
         Test the get_jsonschema_instance of the group handler
         """
 
-        group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
+        GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
         self.resource.group = self.fake_group
 
         field_name = "group"
