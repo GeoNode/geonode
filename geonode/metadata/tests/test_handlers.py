@@ -1028,3 +1028,146 @@ class HandlersTests(GeoNodeBaseTestSupport):
         ]
 
         self.assertEqual(linkedresource_instance, expected_linkedresource_subschema)
+
+    def test_linkedresource_handler_update_resource(self):
+        """
+        Test the update resource of the linkedresource handler
+        """
+
+        # Add a linked resource just to test if it will be removed
+        # after the update_resource call
+        # Add a linked resource to the main resource (self.resource)
+        LinkedResource.objects.create(
+            source=self.resource,
+            target=self.extra_resource_3,
+        )
+
+        payload_data = {"linkedresources": [{"id": self.extra_resource_1.id}, {"id": self.extra_resource_2.id}]}
+
+        # Call the method to get the JSON schema instance
+        field_name = "linkedresources"
+
+        # Call the method
+        self.linkedresource_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
+
+        # Verify the new links
+        linked_resources = LinkedResource.objects.filter(source=self.resource, internal=False)
+        linked_targets = [link.target for link in linked_resources]
+        self.assertIn(self.extra_resource_1, linked_targets)
+        self.assertIn(self.extra_resource_2, linked_targets)
+        # Ensure that the initial linked resource has been removed
+        self.assertNotIn(self.extra_resource_3, linked_targets)
+
+        # Ensure that there is only one linked resource
+        self.assertEqual(len(linked_targets), 2)
+
+    # Tests for the DOI handler
+    def test_doi_handler_update_schema(self):
+        """
+        Test for the update_schema of the doi_handler
+        """
+
+        # fake_schema definition which includes the "edition" field
+        schema = {
+            "properties": {
+                "edition": {"type": "string", "title": "edition", "maxLength": 255},
+                "fake_field": {"type": "string", "title": "fake_field", "maxLength": 255},
+            }
+        }
+
+        # Define the expected regions schema
+        expected_doi_subschema = {
+            "type": ["string", "null"],
+            "title": "DOI",
+            "description": _("a DOI will be added by Admin before publication."),
+            "maxLength": 255,
+            "geonode:handler": "doi",
+        }
+
+        # Call the method
+        updated_schema = self.doi_handler.update_schema(schema, self.context, lang=self.lang)
+
+        self.assertIn("doi", updated_schema["properties"])
+        self.assertEqual(updated_schema["properties"]["doi"], expected_doi_subschema)
+        # Check that the new field has been added with the expected order
+        self.assertEqual(list(schema["properties"].keys()), ["edition", "doi", "fake_field"])
+
+    def test_doi_handler_get_jsonschema_instance(self):
+        """
+        Test the get_jsonschema_instance of the doi handler
+        """
+
+        # Initially we add a doi to the ResourceBase instance
+        self.resource.doi = "10.1234/fake_doi"
+
+        field_name = "doi"
+
+        # Call the method
+        result = self.doi_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+
+        # Assert the result is as expected
+        self.assertEqual(result, "10.1234/fake_doi")
+
+    def test_doi_handler_update_resource(self):
+        """
+        Test the update resource of the doi handler
+        """
+
+        # Initially we add a doi to the ResourceBase instance
+        self.resource.doi = "10.1234/fake_doi"
+
+        payload_data = {"doi": "10.1000/new_fake_doi"}
+
+        # Call the method to get the JSON schema instance
+        field_name = "doi"
+
+        # Call the method
+        self.doi_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
+
+        # Ensure that only the regions defined in the payload_data are included in the resource model
+        self.assertEqual(self.resource.doi, "10.1000/new_fake_doi")
+
+    # Tests for the Group handler
+    @patch("geonode.metadata.handlers.group.reverse")
+    def test_group_handler_update_schema(self, mock_reverse):
+        """
+        Test for the update_schema of the group_handler
+        """
+
+        mock_reverse.return_value = "/mocked_endpoint"
+
+        # fake_schema definition which includes the "date_type" field
+        schema = {
+            "properties": {
+                "date_type": {"type": "string", "title": "date_type", "maxLength": 255},
+                "fake_field": {"type": "string", "title": "fake_field", "maxLength": 255},
+            }
+        }
+
+        # Define the expected regions schema
+        expected_group_subschema = {
+            "type": "object",
+            "title": _("group"),
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "ui:widget": "hidden",
+                },
+                "label": {
+                    "type": "string",
+                    "title": _("group"),
+                },
+            },
+            "geonode:handler": "group",
+            "ui:options": {"geonode-ui:autocomplete": "/mocked_endpoint"},
+        }
+
+        # Call the method
+        updated_schema = self.group_handler.update_schema(schema, self.context, lang=self.lang)
+
+        self.assertIn("group", updated_schema["properties"])
+        self.assertEqual(updated_schema["properties"]["group"], expected_group_subschema)
+        # Check that the new field has been added with the expected order
+        self.assertEqual(list(schema["properties"].keys()), ["date_type", "group", "fake_field"])
