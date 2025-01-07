@@ -27,6 +27,7 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import Group
+from geonode.groups.models import GroupProfile
 
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.base.models import (
@@ -61,6 +62,7 @@ from geonode.metadata.handlers.contact import ContactHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
 from geonode.metadata.handlers.sparse import SparseHandler
 from geonode.tests.base import GeoNodeBaseTestSupport
+from geonode.resource.utils import KeywordHandler
 
 
 class HandlersTests(GeoNodeBaseTestSupport):
@@ -1164,3 +1166,180 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(updated_schema["properties"]["group"], expected_group_subschema)
         # Check that the new field has been added with the expected order
         self.assertEqual(list(schema["properties"].keys()), ["date_type", "group", "fake_field"])
+
+    def test_group_handler_get_jsonschema_instance_with_group(self):
+        """
+        Test the get_jsonschema_instance of the group handler
+        """
+
+        group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
+        self.resource.group = self.fake_group
+
+        field_name = "group"
+
+        expected_group_instance = {
+            "id": str(self.resource.group.groupprofile.pk),
+            "label": self.resource.group.groupprofile.title,
+        }
+
+        group_instance = self.group_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+
+        self.assertEqual(group_instance, expected_group_instance)
+
+    def test_group_handler_get_jsonschema_instance_without_group(self):
+        """
+        Test the get_jsonschema_instance of the group handler
+        in case that we don't have a group
+        """
+
+        field_name = "group"
+
+        group_instance = self.group_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+
+        self.assertIsNone(group_instance)
+
+    def test_group_handler_update_resource_with_valid_id(self):
+
+        group_profile = GroupProfile.objects.create(group=self.fake_group, title="Test Group Profile")
+
+        field_name = "group"
+        payload_data = {"group": {"id": group_profile.pk}}
+
+        # Call the method
+        self.group_handler.update_resource(self.resource, field_name, payload_data, self.context, self.errors)
+
+        # Assert the resource group was updated
+        self.assertEqual(self.resource.group, group_profile.group)
+
+    def test_group_handler_update_resource_with_no_id(self):
+
+        field_name = "group"
+        json_instance = {"group": None}
+
+        # Call the method
+        self.group_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+
+        # Assert the resource group was set to None
+        self.assertIsNone(self.resource.group)
+
+    def test_group_handler_update_resource_without_field(self):
+
+        field_name = "group"
+        json_instance = {}
+
+        # Call the method
+        self.group_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+
+        # Assert the resource group was set to None
+        self.assertIsNone(self.resource.group)
+
+    # Tests hkeyword handler
+    @patch("geonode.metadata.handlers.hkeyword.reverse")
+    def test_hkeyword_handler_update_schema(self, mock_reverse):
+        """
+        Test for the update_schema of the hkeyword_handler
+        """
+
+        mock_reverse.return_value = "/mocked_endpoint"
+
+        # fake_schema definition which includes the "tkeywords" field
+        schema = {
+            "properties": {
+                "tkeywords": {"type": "string", "title": "tkeywords", "maxLength": 255},
+                "fake_field": {"type": "string", "title": "fake_field", "maxLength": 255},
+            }
+        }
+
+        # Define the expected regions schema
+        expected_hkeywords_subschema = {
+            "type": "array",
+            "title": _("Keywords"),
+            "description": _("Hierarchical keywords"),
+            "items": {
+                "type": "string",
+            },
+            "ui:options": {
+                "geonode-ui:autocomplete": {
+                    "url": "/mocked_endpoint",
+                    "creatable": True,
+                },
+            },
+            "geonode:handler": "hkeyword",
+        }
+
+        # Call the method
+        updated_schema = self.hkeyword_handler.update_schema(schema, self.context, lang=self.lang)
+
+        self.assertIn("hkeywords", updated_schema["properties"])
+        self.assertEqual(updated_schema["properties"]["hkeywords"], expected_hkeywords_subschema)
+        # Check that the new field has been added with the expected order
+        self.assertEqual(list(schema["properties"].keys()), ["tkeywords", "hkeywords", "fake_field"])
+
+    def test_hkeywords_handler_get_jsonschema_instance_with_keywords(self):
+
+        field_name = "keywords"
+
+        hkeywords = ["Keyword 1", "Keyword 2"]
+        KeywordHandler(self.resource, hkeywords).set_keywords()
+
+        # Call the method
+        result = self.hkeyword_handler.get_jsonschema_instance(self.resource, field_name, self.context, self.errors)
+
+        #  Assert the correct list of keyword names with order-independent
+        expected = ["Keyword 1", "Keyword 2"]
+        self.assertCountEqual(result, expected)
+
+    def test_hkeywords_handler_get_jsonschema_instance_no_keywords(self):
+
+        # Ensure no keywords are defined with the resource
+        KeywordHandler(self.resource, []).set_keywords()
+
+        field_name = "keywords"
+
+        # Call the method
+        result = self.hkeyword_handler.get_jsonschema_instance(self.resource, field_name, self.context, self.errors)
+
+        # Assert the result is an empty list
+        self.assertEqual(result, [])
+
+    def test_hkeywords_handler_update_resource_with_valid_keywords(self):
+
+        field_name = "hkeywords"
+        json_instance = {"hkeywords": ["new keyword 1", "new keyword 2"]}
+
+        # Call the method
+        self.hkeyword_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+
+        # Assert that the keywords were correctly added to the resource
+        keywords = list(self.resource.keywords.all())
+        keyword_names = [keyword.name for keyword in keywords]
+        expected_keywords = ["new keyword 1", "new keyword 2"]
+        self.assertCountEqual(keyword_names, expected_keywords)
+
+    def test_hkeywords_handler_update_resource_without_keywords(self):
+
+        field_name = "hkeywords"
+        json_instance = {"hkeywords": []}
+
+        # Call the method
+        self.hkeyword_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+
+        self.assertEqual(self.resource.keywords.count(), 0)
+
+    def test_hkeywords_handler_update_resource_with_null_empty_keywords(self):
+
+        field_name = "hkeywords"
+        json_instance = {"hkeywords": [None, "valid keyword", ""]}
+
+        # Call the method
+        self.hkeyword_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+
+        # Assert that the keywords were correctly added to the resource
+        keywords = list(self.resource.keywords.all())
+        keyword_names = [keyword.name for keyword in keywords]
+        expected_keywords = ["valid keyword"]
+        self.assertCountEqual(keyword_names, expected_keywords)

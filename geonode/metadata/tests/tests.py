@@ -26,6 +26,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from rest_framework import status
+from django.contrib.auth.models import Permission
 
 from rest_framework.test import APITestCase, APIClient
 from geonode.metadata.settings import MODEL_SCHEMA
@@ -65,8 +66,18 @@ class MetadataApiTests(APITestCase):
             "fake_handler3": self.handler3,
         }
 
+        # Assign necessary permissions to the user
+        permissions = [
+            "base.view_resourcebase",
+            "change_resourcebase_metadata",
+        ]
+        for perm in permissions:
+            app_label, codename = perm.split(".")
+            permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
+            self.test_user_1.user_permissions.add(permission)
+
         self.client = APIClient()
-        self.client.login(username="user_1", password="user_1_password")
+        self.client.force_login(self.test_user_1)
 
     def tearDown(self):
         super().tearDown()
