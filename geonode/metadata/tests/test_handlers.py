@@ -27,8 +27,6 @@ from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import Group
-from geonode.groups.models import GroupProfile
-from geonode.people import Roles
 
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.base.models import (
@@ -39,9 +37,7 @@ from geonode.base.models import (
     SpatialRepresentationType,
     Region,
     LinkedResource,
-    ContactRole,
     Thesaurus,
-    ThesaurusKeywordLabel,
     ThesaurusKeyword,
 )
 from geonode.settings import PROJECT_ROOT
@@ -61,13 +57,10 @@ from geonode.metadata.handlers.doi import DOIHandler
 from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
 from geonode.metadata.handlers.group import GroupHandler
 from geonode.metadata.handlers.hkeyword import HKeywordHandler
-from geonode.metadata.handlers.contact import ContactHandler, ROLE_NAMES_MAP
+from geonode.metadata.handlers.contact import ContactHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
-from geonode.metadata.handlers.sparse import SparseHandler, sparse_field_registry
+from geonode.metadata.handlers.sparse import SparseHandler
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.resource.utils import KeywordHandler
-from geonode.metadata.handlers.abstract import UnsetFieldException
-from geonode.metadata.models import SparseField
 
 
 class HandlersTests(GeoNodeBaseTestSupport):
