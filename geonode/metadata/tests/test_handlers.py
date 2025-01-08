@@ -42,7 +42,6 @@ from geonode.base.models import (
     Thesaurus,
     ThesaurusKeyword,
     ContactRole,
-    ThesaurusKeyword,
 )
 from geonode.settings import PROJECT_ROOT
 from geonode.metadata.handlers.base import (
@@ -61,7 +60,6 @@ from geonode.metadata.handlers.doi import DOIHandler
 from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
 from geonode.metadata.handlers.group import GroupHandler
 from geonode.metadata.handlers.hkeyword import HKeywordHandler
-from geonode.metadata.handlers.contact import ContactHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
 from geonode.metadata.handlers.sparse import SparseHandler
 from geonode.resource.utils import KeywordHandler

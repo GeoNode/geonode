@@ -36,7 +36,6 @@ from geonode.metadata.api.views import (
     MetadataLinkedResourcesAutocomplete,
     MetadataRegionsAutocomplete,
     MetadataHKeywordAutocomplete,
-    MetadataGroupAutocomplete,
 )
 from geonode.metadata.settings import METADATA_HANDLERS
 from geonode.base.models import ResourceBase
