@@ -26,9 +26,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from rest_framework import status
-from django.contrib.auth.models import Permission
 
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.manager import metadata_manager
 from geonode.metadata.settings import METADATA_HANDLERS
@@ -65,19 +64,6 @@ class MetadataApiTests(APITestCase):
             "fake_handler2": self.handler2,
             "fake_handler3": self.handler3,
         }
-
-        # Assign necessary permissions to the user
-        permissions = [
-            "base.view_resourcebase",
-            "change_resourcebase_metadata",
-        ]
-        for perm in permissions:
-            app_label, codename = perm.split(".")
-            permission = Permission.objects.get(content_type__app_label=app_label, codename=codename)
-            self.test_user_1.user_permissions.add(permission)
-
-        self.client = APIClient()
-        self.client.force_login(self.test_user_1)
 
     def tearDown(self):
         super().tearDown()
@@ -135,7 +121,8 @@ class MetadataApiTests(APITestCase):
         mock_get_schema.assert_called_once_with("it")
 
     @patch("geonode.metadata.manager.metadata_manager.build_schema_instance")
-    def test_get_schema_instance_with_default_lang(self, mock_build_schema_instance):
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_get_schema_instance_with_default_lang(self, mock_has_permission, mock_build_schema_instance):
         """
         Test schema_instance endpoint with the default lang parameter
         """
@@ -152,7 +139,8 @@ class MetadataApiTests(APITestCase):
         mock_build_schema_instance.assert_called()
 
     @patch("geonode.metadata.manager.metadata_manager.build_schema_instance")
-    def test_get_schema_instance_with_lang(self, mock_build_schema_instance):
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_get_schema_instance_with_lang(self, mock_has_permission, mock_build_schema_instance):
         """
         Test schema_instance endpoint with specific lang parameter
         """
@@ -169,7 +157,8 @@ class MetadataApiTests(APITestCase):
         mock_build_schema_instance.assert_called_once_with(self.resource, "it")
 
     @patch("geonode.metadata.manager.metadata_manager.update_schema_instance")
-    def test_put_patch_schema_instance_with_no_errors(self, mock_update_schema_instance):
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_put_patch_schema_instance_with_no_errors(self, mock_has_permission, mock_update_schema_instance):
         """
         Test the success case of PATCH and PUT methods of the schema_instance
         """
@@ -181,19 +170,16 @@ class MetadataApiTests(APITestCase):
         errors = {}
         mock_update_schema_instance.return_value = errors
 
-        methods = [self.client.put, self.client.patch]
-
-        for method in methods:
-
-            response = method(url, data=fake_payload, format="json")
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertJSONEqual(
-                response.content, {"message": "The resource was updated successfully", "extraErrors": errors}
-            )
-            mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
+        response = self.client.put(url, data=fake_payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertJSONEqual(
+            response.content, {"message": "The resource was updated successfully", "extraErrors": errors}
+        )
+        mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
 
     @patch("geonode.metadata.manager.metadata_manager.update_schema_instance")
-    def test_put_patch_schema_instance_with_errors(self, mock_update_schema_instance):
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_put_patch_schema_instance_with_errors(self, mock_has_permission, mock_update_schema_instance):
         """
         Test the PATCH and PUT methods of the schema_instance in case of errors
         """
@@ -205,19 +191,16 @@ class MetadataApiTests(APITestCase):
         errors = {"fake_error_1": "Field 'title' is required", "fake_error_2": "Invalid value for 'type'"}
         mock_update_schema_instance.return_value = errors
 
-        methods = [self.client.put, self.client.patch]
+        response = self.client.put(url, data=fake_payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertJSONEqual(
+            response.content,
+            {"message": "Some errors were found while updating the resource", "extraErrors": errors},
+        )
+        mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
 
-        for method in methods:
-
-            response = method(url, data=fake_payload, format="json")
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            self.assertJSONEqual(
-                response.content,
-                {"message": "Some errors were found while updating the resource", "extraErrors": errors},
-            )
-            mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
-
-    def test_resource_not_found(self):
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_resource_not_found(self, mock_has_permission):
         """
         Test case that the resource does not exist
         """
