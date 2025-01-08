@@ -22,6 +22,7 @@ from geonode.upload.models import (
     UploadSizeLimit,
 )
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 
 def import_link(obj):
@@ -32,7 +33,7 @@ import_link.short_description = "Link"
 import_link.allow_tags = True
 
 
-class UploadAdmin(admin.ModelAdmin):
+class UploadAdmin(ModelAdmin):
     list_display = ("id", "import_id", "name", "resource", "user", "date", "state", import_link)
     list_display_links = ("id",)
     date_hierarchy = "date"
@@ -48,7 +49,7 @@ class UploadAdmin(admin.ModelAdmin):
             obj.delete()
 
 
-class UploadSizeLimitAdmin(admin.ModelAdmin):
+class UploadSizeLimitAdmin(ModelAdmin):
     list_display = ("slug", "description", "max_size", "max_size_label")
 
     def has_delete_permission(self, request, obj=None):
@@ -58,7 +59,7 @@ class UploadSizeLimitAdmin(admin.ModelAdmin):
         return super(UploadSizeLimitAdmin, self).has_delete_permission(request, obj)
 
 
-class UploadParallelismLimitAdmin(admin.ModelAdmin):
+class UploadParallelismLimitAdmin(ModelAdmin):
     list_display = (
         "slug",
         "description",

@@ -35,6 +35,8 @@ from django.template.response import TemplateResponse
 from django.http import HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
 from django.forms import modelform_factory
+from unfold.admin import ModelAdmin
+
 from geonode.base.admin import set_user_and_group_dataset_permission
 
 from .models import Profile
@@ -45,7 +47,7 @@ csrf_protect_m = method_decorator(csrf_protect)
 sensitive_post_parameters_m = method_decorator(sensitive_post_parameters())
 
 
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(ModelAdmin):
     modelform_factory(get_user_model(), fields="__all__")
     add_form_template = "admin/auth/user/add_form.html"
     change_user_password_template = None

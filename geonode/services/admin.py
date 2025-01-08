@@ -18,6 +18,7 @@
 #########################################################################
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from geonode.base.admin import ResourceBaseAdminForm
 
@@ -30,7 +31,7 @@ class ServiceAdminForm(ResourceBaseAdminForm):
         fields = "__all__"
 
 
-class ServiceAdmin(admin.ModelAdmin):
+class ServiceAdmin(ModelAdmin):
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display = ("id", "name", "base_url", "type", "method")
     list_display_links = ("id", "name")

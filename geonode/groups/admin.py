@@ -18,7 +18,9 @@
 #########################################################################
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from modeltranslation.admin import TranslationAdmin
+
 from geonode.base.admin import set_user_and_group_dataset_permission
 
 from . import models
@@ -37,7 +39,7 @@ class GroupMemberInline(admin.TabularInline):
     model = models.GroupMember
 
 
-class GroupProfileAdmin(admin.ModelAdmin):
+class GroupProfileAdmin(ModelAdmin):
     inlines = [GroupMemberInline]
     exclude = [
         "group",

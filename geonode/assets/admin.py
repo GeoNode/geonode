@@ -3,6 +3,7 @@ import logging
 from django.db import models
 from django.forms import widgets
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from geonode.assets.local import LocalAssetHandler
 from geonode.assets.models import LocalAsset
@@ -27,7 +28,7 @@ class PrettyJSONWidget(widgets.Textarea):
 
 
 @admin.register(LocalAsset)
-class LocalAssetAdmin(admin.ModelAdmin):
+class LocalAssetAdmin(ModelAdmin):
     model = LocalAsset
 
     list_display = ("id", "title", "type", "owner", "created_formatted", "managed", "links", "link0")

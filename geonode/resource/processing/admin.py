@@ -17,6 +17,7 @@
 #
 #########################################################################
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import ProcessingWorkflow, ProcessingWorkflowTasks, SampleProcessingTask
 
@@ -26,7 +27,7 @@ class ProcessingWorkflowTasksInline(admin.TabularInline):
 
 
 @admin.register(ProcessingWorkflow)
-class ProcessingWorkflowAdmin(admin.ModelAdmin):
+class ProcessingWorkflowAdmin(ModelAdmin):
     list_display = ("id", "is_enabled", "name")  # , 'date', 'description')
     list_display_links = (
         "id",
@@ -37,10 +38,10 @@ class ProcessingWorkflowAdmin(admin.ModelAdmin):
 
 
 @admin.register(ProcessingWorkflowTasks)
-class ProcessingWorkflowTasksAdmin(admin.ModelAdmin):
+class ProcessingWorkflowTasksAdmin(ModelAdmin):
     pass
 
 
 @admin.register(SampleProcessingTask)
-class SampleProcessingTaskAdmin(admin.ModelAdmin):
+class SampleProcessingTaskAdmin(ModelAdmin):
     pass

@@ -19,6 +19,7 @@
 
 from django import forms
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from modeltranslation.admin import TabbedTranslationAdmin
 
@@ -94,7 +95,7 @@ class MapAdmin(TabbedTranslationAdmin):
             resource_manager.delete(obj.uuid, instance=obj)
 
 
-class MapLayerAdmin(admin.ModelAdmin):
+class MapLayerAdmin(ModelAdmin):
     list_display = ("id", "map", "name")
     list_filter = ("map",)
     search_fields = (

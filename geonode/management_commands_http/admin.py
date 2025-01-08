@@ -17,6 +17,7 @@
 #
 #########################################################################
 from django.contrib import admin, messages
+from unfold.admin import ModelAdmin
 from django.forms.models import ModelForm
 
 from geonode.management_commands_http.forms import ManagementCommandJobAdminForm
@@ -29,7 +30,7 @@ from geonode.management_commands_http.utils.jobs import (
 
 
 @admin.register(ManagementCommandJob)
-class ManagementCommandJobAdmin(admin.ModelAdmin):
+class ManagementCommandJobAdmin(ModelAdmin):
     actions = ["start", "stop"]
     list_per_page = 20
     list_display = (

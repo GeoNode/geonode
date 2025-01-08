@@ -18,6 +18,7 @@
 #########################################################################
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 # Register your models here.
 
@@ -41,7 +42,7 @@ from geonode.monitoring.models import (
 
 
 @admin.register(Host)
-class HostAdmin(admin.ModelAdmin):
+class HostAdmin(ModelAdmin):
     list_display = (
         "name",
         "active",
@@ -49,17 +50,17 @@ class HostAdmin(admin.ModelAdmin):
 
 
 @admin.register(EventType)
-class EventTypeAdmin(admin.ModelAdmin):
+class EventTypeAdmin(ModelAdmin):
     list_display = ("name",)
 
 
 @admin.register(ServiceType)
-class ServiceTypeAdmin(admin.ModelAdmin):
+class ServiceTypeAdmin(ModelAdmin):
     list_display = ("name",)
 
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
+class ServiceAdmin(ModelAdmin):
     list_display = (
         "name",
         "active",
@@ -79,7 +80,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 
 @admin.register(ServiceTypeMetric)
-class ServiceTypeMetricAdmin(admin.ModelAdmin):
+class ServiceTypeMetricAdmin(ModelAdmin):
     list_display = (
         "service_type",
         "metric",
@@ -92,7 +93,7 @@ class ServiceTypeMetricAdmin(admin.ModelAdmin):
 
 
 @admin.register(Metric)
-class MetricAdmin(admin.ModelAdmin):
+class MetricAdmin(ModelAdmin):
     list_display = (
         "name",
         "type",
@@ -101,7 +102,7 @@ class MetricAdmin(admin.ModelAdmin):
 
 
 @admin.register(RequestEvent)
-class RequestEvent(admin.ModelAdmin):
+class RequestEvent(ModelAdmin):
     list_display = (
         "service",
         "created",
@@ -123,12 +124,12 @@ class RequestEvent(admin.ModelAdmin):
 
 
 @admin.register(MetricLabel)
-class MetricLabelAdmin(admin.ModelAdmin):
+class MetricLabelAdmin(ModelAdmin):
     list_display = ("name",)
 
 
 @admin.register(MetricValue)
-class MetricValueAdmin(admin.ModelAdmin):
+class MetricValueAdmin(ModelAdmin):
     list_display = (
         "service_metric",
         "service",
@@ -145,7 +146,7 @@ class MetricValueAdmin(admin.ModelAdmin):
 
 
 @admin.register(MonitoredResource)
-class MonitoredResourceAdmin(admin.ModelAdmin):
+class MonitoredResourceAdmin(ModelAdmin):
     list_display = (
         "id",
         "name",
@@ -155,7 +156,7 @@ class MonitoredResourceAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExceptionEvent)
-class ExceptionEventAdmin(admin.ModelAdmin):
+class ExceptionEventAdmin(ModelAdmin):
     list_display = (
         "created",
         "service",
@@ -164,7 +165,7 @@ class ExceptionEventAdmin(admin.ModelAdmin):
 
 
 @admin.register(NotificationCheck)
-class NotificationCheckAdmin(admin.ModelAdmin):
+class NotificationCheckAdmin(ModelAdmin):
     list_display = (
         "name",
         "active",
@@ -173,7 +174,7 @@ class NotificationCheckAdmin(admin.ModelAdmin):
 
 
 @admin.register(MetricNotificationCheck)
-class MetricNotificationCheckAdmin(admin.ModelAdmin):
+class MetricNotificationCheckAdmin(ModelAdmin):
     list_display = (
         "id",
         "notification_check",
@@ -190,7 +191,7 @@ class MetricNotificationCheckAdmin(admin.ModelAdmin):
 
 
 @admin.register(NotificationMetricDefinition)
-class NotificationCheckDefinitionAdmin(admin.ModelAdmin):
+class NotificationCheckDefinitionAdmin(ModelAdmin):
     list_display = (
         "notification_check",
         "metric",
@@ -206,7 +207,7 @@ class NotificationCheckDefinitionAdmin(admin.ModelAdmin):
 
 
 @admin.register(NotificationReceiver)
-class NotificationReceiverAdmin(admin.ModelAdmin):
+class NotificationReceiverAdmin(ModelAdmin):
     list_display = (
         "notification_check",
         "user",

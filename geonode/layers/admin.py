@@ -18,6 +18,7 @@
 #########################################################################
 
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.db.models import Prefetch
 
 from modeltranslation.admin import TabbedTranslationAdmin
@@ -54,7 +55,7 @@ class DatasetAdminForm(ResourceBaseAdminForm):
     )
 
 
-class DatasetAdmin(TabbedTranslationAdmin):
+class DatasetAdmin(ModelAdmin):
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
     list_display = (
         "id",
@@ -84,6 +85,7 @@ class DatasetAdmin(TabbedTranslationAdmin):
         "state",
         "dirty_state",
     )
+    list_filter_sheet = True
     search_fields = ("alternate", "title", "abstract", "purpose", "is_approved", "is_published", "state")
     filter_horizontal = ("contacts",)
     date_hierarchy = "date"
@@ -103,7 +105,7 @@ class DatasetAdmin(TabbedTranslationAdmin):
             resource_manager.delete(obj.uuid, instance=obj)
 
 
-class AttributeAdmin(admin.ModelAdmin):
+class AttributeAdmin(ModelAdmin):
     model = Attribute
     list_display_links = ("id",)
     list_display = ("id", "dataset", "attribute", "description", "attribute_label", "attribute_type", "display_order")
@@ -114,7 +116,7 @@ class AttributeAdmin(admin.ModelAdmin):
     )
 
 
-class StyleAdmin(admin.ModelAdmin):
+class StyleAdmin(ModelAdmin):
     model = Style
     list_display_links = ("sld_title",)
     list_display = ("id", "name", "sld_title", "workspace", "sld_url")

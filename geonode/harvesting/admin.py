@@ -24,6 +24,7 @@ from django.contrib import (
     admin,
     messages,
 )
+from unfold.admin import ModelAdmin
 from django.contrib.humanize.templatetags import humanize
 from django.urls import reverse
 from django.utils.html import (
@@ -41,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 @admin.register(models.Harvester)
-class HarvesterAdmin(admin.ModelAdmin):
+class HarvesterAdmin(ModelAdmin):
     form = forms.HarvesterForm
 
     list_display = (
@@ -275,7 +276,7 @@ class HarvesterAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.AsynchronousHarvestingSession)
-class AsynchronousHarvestingSessionAdmin(admin.ModelAdmin):
+class AsynchronousHarvestingSessionAdmin(ModelAdmin):
     list_display = (
         "id",
         "session_type",
@@ -307,7 +308,7 @@ class AsynchronousHarvestingSessionAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.HarvestableResource)
-class HarvestableResourceAdmin(admin.ModelAdmin):
+class HarvestableResourceAdmin(ModelAdmin):
     list_display = (
         "id",
         "last_refreshed",

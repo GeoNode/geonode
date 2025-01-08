@@ -19,6 +19,7 @@
 
 from django import forms
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from django.conf import settings
 from django.shortcuts import redirect, render
 from django.urls import path
@@ -171,7 +172,7 @@ class RestrictionCodeTypeAdmin(TabbedTranslationAdmin):
         return False
 
 
-class ContactRoleAdmin(admin.ModelAdmin):
+class ContactRoleAdmin(ModelAdmin):
     model = ContactRole
     list_display_links = ("id",)
     list_display = ("id", "contact", "resource", "role")
@@ -179,7 +180,7 @@ class ContactRoleAdmin(admin.ModelAdmin):
     form = forms.modelform_factory(ContactRole, fields="__all__")
 
 
-class LinkAdmin(admin.ModelAdmin):
+class LinkAdmin(ModelAdmin):
     model = Link
     list_display_links = ("id",)
     list_display = ("id", "resource", "extension", "link_type", "name", "mime")
@@ -196,22 +197,22 @@ class HierarchicalKeywordAdmin(TreeAdmin):
     form = movenodeform_factory(HierarchicalKeyword)
 
 
-class MenuPlaceholderAdmin(admin.ModelAdmin):
+class MenuPlaceholderAdmin(ModelAdmin):
     model = MenuPlaceholder
     list_display = ("name",)
 
 
-class MenuAdmin(admin.ModelAdmin):
+class MenuAdmin(ModelAdmin):
     model = Menu
     list_display = ("title", "placeholder", "order")
 
 
-class MenuItemAdmin(admin.ModelAdmin):
+class MenuItemAdmin(ModelAdmin):
     model = MenuItem
     list_display = ("title", "menu", "order", "blank_target", "url")
 
 
-class ConfigurationAdmin(admin.ModelAdmin):
+class ConfigurationAdmin(ModelAdmin):
     model = Configuration
 
     def has_delete_permission(self, request, obj=None):
@@ -230,7 +231,7 @@ class ConfigurationAdmin(admin.ModelAdmin):
         return form
 
 
-class ThesaurusAdmin(admin.ModelAdmin):
+class ThesaurusAdmin(ModelAdmin):
     change_list_template = "admin/thesauri/change_list.html"
 
     model = Thesaurus
@@ -260,7 +261,7 @@ class ThesaurusAdmin(admin.ModelAdmin):
         return render(request, "admin/thesauri/upload_form.html", payload)
 
 
-class ThesaurusLabelAdmin(admin.ModelAdmin):
+class ThesaurusLabelAdmin(ModelAdmin):
     model = ThesaurusLabel
     list_display = ("thesaurus_id", "lang", "label")
     list_display_links = ("label",)
@@ -273,7 +274,7 @@ class ThesaurusLabelAdmin(admin.ModelAdmin):
     thesaurus_id.admin_order_field = "thesaurus__identifier"
 
 
-class ThesaurusKeywordAdmin(admin.ModelAdmin):
+class ThesaurusKeywordAdmin(ModelAdmin):
     model = ThesaurusKeyword
 
     list_display = (
@@ -298,7 +299,7 @@ class ThesaurusKeywordAdmin(admin.ModelAdmin):
     thesaurus_id.admin_order_field = "thesaurus__identifier"
 
 
-class ThesaurusKeywordLabelAdmin(admin.ModelAdmin):
+class ThesaurusKeywordLabelAdmin(ModelAdmin):
     model = ThesaurusKeywordLabel
 
     list_display = ("thesaurus_id", "keyword_id", "lang", "label")

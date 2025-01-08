@@ -18,6 +18,7 @@
 #########################################################################
 from django import forms
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import GeoNodeThemeCustomization, JumbotronThemeSlide
 
@@ -68,7 +69,7 @@ class GeonodeThemCustomizationForm(forms.ModelForm):
 
 
 @admin.register(GeoNodeThemeCustomization)
-class GeoNodeThemeCustomizationAdmin(admin.ModelAdmin):
+class GeoNodeThemeCustomizationAdmin(ModelAdmin):
     form = GeonodeThemCustomizationForm
     list_display = ("id", "is_enabled", "name", "date", "description")
     list_display_links = (
@@ -78,5 +79,5 @@ class GeoNodeThemeCustomizationAdmin(admin.ModelAdmin):
 
 
 @admin.register(JumbotronThemeSlide)
-class JumbotronThemeSlideAdmin(admin.ModelAdmin):
+class JumbotronThemeSlideAdmin(ModelAdmin):
     pass

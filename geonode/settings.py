@@ -32,6 +32,7 @@ from urllib.parse import urlparse, urljoin
 # General Django development settings
 #
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from django.templatetags.static import static
 from geonode import get_version
 from kombu import Queue, Exchange
 from kombu.serialization import register
@@ -455,7 +456,13 @@ INSTALLED_APPS = (
     "modeltranslation",
     "dal",
     "dal_select2",
-    "grappelli",
+    "unfold",  # before django.contrib.admin
+    "unfold.contrib.filters",  # optional, if special filters are needed
+    "unfold.contrib.forms",  # optional, if special form elements are needed
+    "unfold.contrib.inlines",  # optional, if special inlines are needed
+    #"unfold.contrib.import_export",  # optional, if django-import-export package is used
+    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -2327,3 +2334,20 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+
+UNFOLD = {
+    "SITE_TITLE": "GeoNode Back Office",
+    "SITE_HEADER": "GeoNode Back Office",
+    "SITE_URL": "/",
+    "SITE_ICON": lambda request: static("mapstore/img/geonode-logo.svg"),
+    "EXTENSIONS": {
+        "modeltranslation": {
+            "flags": {
+                "en": "🇬🇧",
+            },
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+    }
+}
