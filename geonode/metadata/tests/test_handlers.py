@@ -28,6 +28,7 @@ from django.test import RequestFactory
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import Group
 from geonode.groups.models import GroupProfile
+from geonode.people import Roles
 
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.base.models import (
@@ -39,6 +40,8 @@ from geonode.base.models import (
     Region,
     LinkedResource,
     Thesaurus,
+    ThesaurusKeyword,
+    ContactRole,
     ThesaurusKeyword,
 )
 from geonode.settings import PROJECT_ROOT
@@ -61,8 +64,10 @@ from geonode.metadata.handlers.hkeyword import HKeywordHandler
 from geonode.metadata.handlers.contact import ContactHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
 from geonode.metadata.handlers.sparse import SparseHandler
-from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.utils import KeywordHandler
+from geonode.metadata.handlers.contact import ContactHandler, ROLE_NAMES_MAP
+
+from geonode.tests.base import GeoNodeBaseTestSupport
 
 
 class HandlersTests(GeoNodeBaseTestSupport):
@@ -1343,3 +1348,202 @@ class HandlersTests(GeoNodeBaseTestSupport):
         keyword_names = [keyword.name for keyword in keywords]
         expected_keywords = ["valid keyword"]
         self.assertCountEqual(keyword_names, expected_keywords)
+
+    # Tests for contact handler
+    @patch("geonode.metadata.handlers.contact.reverse")
+    def test_contact_handler_update_schema(self, mock_reverse):
+        # Mock reverse function
+        mock_reverse.return_value = "/mocked/url"
+
+        # Call update_schema
+        updated_schema = self.contact_handler.update_schema(self.fake_schema, self.context, self.lang)
+
+        self.assertIn("contacts", updated_schema["properties"])
+
+        # Check if all roles are included in the contacts
+        contacts = updated_schema["properties"]["contacts"]["properties"]
+        for role in Roles:
+            rolename = ROLE_NAMES_MAP.get(role, role.name)
+            self.assertIn(rolename, contacts)
+
+            contact = contacts[rolename]
+            self.assertIn("type", contact)
+
+            if role.is_multivalue:
+                self.assertEqual(contact.get("type"), "array")
+                self.assertIn("minItems", contact)
+                self.assertIn("properties", contact["items"])
+                if role.is_required:
+                    self.assertEqual(contact["minItems"], 1)
+                else:
+                    self.assertEqual(contact["minItems"], 0)
+            else:
+                self.assertEqual(contact.get("type"), "object")
+                self.assertIn("properties", contact)
+                # Assert 'id' field is required if the role is required
+                if role.is_required:
+                    self.assertIn("id", contact["required"])
+                else:
+                    self.assertNotIn("id", contact["required"])
+
+    def test_contact_handler_get_jsonschema_instance(self):
+
+        field_name = "contacts"
+
+        # Create an author role for testing
+        author_role = get_user_model().objects.create_user(
+            "author_role", "author_role@fakemail.com", "new_fake_user_password", is_active=True
+        )
+
+        # Assign metadata author role
+        ContactRole.objects.create(
+            resource=self.resource, role=ROLE_NAMES_MAP[Roles.METADATA_AUTHOR], contact=author_role
+        )
+
+        # Call the method
+        result = self.contact_handler.get_jsonschema_instance(
+            self.resource, field_name, self.context, self.errors, self.lang
+        )
+
+        # Assert the output structure and content
+        self.assertIn(ROLE_NAMES_MAP[Roles.OWNER], result)
+        self.assertIn(ROLE_NAMES_MAP[Roles.METADATA_AUTHOR], result)
+
+        # Check owner which is defined in the setUp method as test_user
+        owner_entry = result[ROLE_NAMES_MAP[Roles.OWNER]]
+        self.assertEqual(owner_entry["id"], str(self.test_user.id))
+        self.assertEqual(owner_entry["label"], f"{self.test_user.username}")
+
+        # Check metadata author
+        author_entry = result[ROLE_NAMES_MAP[Roles.METADATA_AUTHOR]]
+        self.assertEqual(len(author_entry), 1)  # Assuming it's a multivalue role
+        self.assertEqual(author_entry[0]["id"], str(author_role.id))
+        self.assertEqual(author_entry[0]["label"], f"{author_role.username}")
+
+    def test_contact_handler_update_resource(self):
+
+        field_name = "contacts"
+
+        # Create a new owner instead of the initial test_user which is already defined as the owner
+        new_owner = get_user_model().objects.create_user(
+            "new_owner", "new_owner@fakemail.com", "new_owner_password", is_active=True
+        )
+
+        # Create an author role for testing
+        author_role = get_user_model().objects.create_user(
+            "author_role", "author_role@fakemail.com", "new_fake_user_password", is_active=True
+        )
+
+        # Prepare the JSON instance for updating
+        json_instance = {
+            field_name: {
+                ROLE_NAMES_MAP[Roles.OWNER]: {"id": str(new_owner.id), "label": f"{new_owner.username}"},
+                ROLE_NAMES_MAP[Roles.METADATA_AUTHOR]: [
+                    {"id": str(author_role.id), "label": f"{author_role.username}"},
+                ],
+            }
+        }
+
+        # Call the method
+        self.contact_handler.update_resource(self.resource, field_name, json_instance, self.context, self.errors)
+
+        # Assert the owner has been updated
+        self.assertEqual(self.resource.owner, new_owner)
+
+        # Assert that the author role has been updated
+        contacts = self.resource.__get_contact_role_elements__(ROLE_NAMES_MAP[Roles.METADATA_AUTHOR])
+
+        self.assertEqual(len(contacts), 1)
+        self.assertEqual(contacts[0].id, author_role.id)
+
+    # Tests for thesaurus handler
+    @patch("geonode.metadata.handlers.thesaurus.reverse")
+    @patch("geonode.metadata.handlers.thesaurus.TKeywordsHandler.collect_thesauri")
+    def test_tkeywords_handler_update_schema_with_thesauri(self, mock_collect_thesauri, mocked_endpoint):
+
+        # fake_schema definition which includes the "category" field
+        schema = {
+            "properties": {
+                "category": {"type": "string", "title": "category", "maxLength": 255},
+                "fake_field": {"type": "string", "title": "fake_field", "maxLength": 255},
+            }
+        }
+
+        # Mock data for collect_thesauri
+        mock_collect_thesauri.return_value = {
+            "3-2-4-3-spatialscope": {
+                "id": 1,
+                "card": {"minItems": 0, "maxItems": 1},
+                "title": "Spatial scope",
+                "description": "Administrative level that the data set intends to cover.",
+            },
+            "3-2-4-1-gemet-inspire-themes": {
+                "id": 2,
+                "card": {"minItems": 1},
+                "title": "GEMET - INSPIRE themes, version 1.0",
+                "description": "GEMET - INSPIRE themes, version 1.0",
+            },
+        }
+
+        # Mock reverse to return a URL
+        mocked_endpoint.side_effect = lambda name, kwargs: f"/mocked/url/{kwargs['thesaurusid']}"
+
+        # Call the method
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
+
+        # Assert tkeywords property is added
+        tkeywords = updated_schema["properties"].get("tkeywords")
+        self.assertIsNotNone(tkeywords)
+        self.assertEqual(tkeywords["type"], "object")
+        self.assertEqual(tkeywords["title"], "Keywords from Thesaurus")
+
+        # Assert thesaurus structure for "3-2-4-3-spatialscope"
+        thesaurus = tkeywords["properties"]["3-2-4-3-spatialscope"]
+        self.assertEqual(thesaurus["type"], "array")
+        self.assertEqual(thesaurus["title"], "Spatial scope")
+        self.assertEqual(
+            thesaurus["description"],
+            "Administrative level that the data set intends to cover.",
+        )
+        self.assertEqual(thesaurus["minItems"], 0)
+        self.assertEqual(thesaurus["maxItems"], 1)
+        self.assertEqual(
+            thesaurus["ui:options"]["geonode-ui:autocomplete"],
+            "/mocked/url/1",
+        )
+
+        # Assert thesaurus structure for "3-2-4-1-gemet-inspire-themes"
+        thesaurus = tkeywords["properties"]["3-2-4-1-gemet-inspire-themes"]
+        self.assertEqual(thesaurus["type"], "array")
+        self.assertEqual(thesaurus["title"], "GEMET - INSPIRE themes, version 1.0")
+        self.assertEqual(
+            thesaurus["description"],
+            "GEMET - INSPIRE themes, version 1.0",
+        )
+        self.assertEqual(thesaurus["minItems"], 1)
+        self.assertNotIn("maxItems", thesaurus)
+        self.assertEqual(
+            thesaurus["ui:options"]["geonode-ui:autocomplete"],
+            "/mocked/url/2",
+        )
+
+    @patch("geonode.metadata.handlers.thesaurus.TKeywordsHandler.collect_thesauri")
+    def test_tkeywords_handler_update_schema_no_thesauri(self, mock_collect_thesauri):
+
+        schema = {
+            "properties": {
+                "category": {"type": "string", "title": "category", "maxLength": 255},
+                "fake_field": {"type": "string", "title": "fake_field", "maxLength": 255},
+            }
+        }
+
+        # Mock empty thesauri
+        mock_collect_thesauri.return_value = {}
+
+        # Call the method
+        updated_schema = self.tkeywords_handler.update_schema(schema, context={}, lang="en")
+
+        # Assert tkeywords property is hidden
+        tkeywords = updated_schema["properties"].get("tkeywords")
+        self.assertIsNotNone(tkeywords)
+        self.assertEqual(tkeywords["ui:widget"], "hidden")

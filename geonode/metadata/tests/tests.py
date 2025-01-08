@@ -26,13 +26,27 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
 from rest_framework import status
+from django.utils.translation import gettext as _
 
 from rest_framework.test import APITestCase
 from geonode.metadata.settings import MODEL_SCHEMA
 from geonode.metadata.manager import metadata_manager
+from geonode.metadata.api.views import (
+    ProfileAutocomplete,
+    MetadataLinkedResourcesAutocomplete,
+    MetadataRegionsAutocomplete,
+    MetadataHKeywordAutocomplete,
+    MetadataGroupAutocomplete,
+)
 from geonode.metadata.settings import METADATA_HANDLERS
 from geonode.base.models import ResourceBase
 from geonode.settings import PROJECT_ROOT
+from geonode.base.models import (
+    TopicCategory,
+    License,
+    Region,
+    HierarchicalKeyword,
+)
 
 
 class MetadataApiTests(APITestCase):
@@ -49,6 +63,9 @@ class MetadataApiTests(APITestCase):
             "user_2", "user_2@fakemail.com", "user_2_password", is_active=True
         )
         self.resource = ResourceBase.objects.create(title="Test Resource", uuid=str(uuid4()), owner=self.test_user_1)
+        self.other_resource = ResourceBase.objects.create(
+            title="Test other Resource", uuid=str(uuid4()), owner=self.test_user_1
+        )
         self.factory = RequestFactory()
 
         # Setup of the Manager
@@ -64,6 +81,16 @@ class MetadataApiTests(APITestCase):
             "fake_handler2": self.handler2,
             "fake_handler3": self.handler3,
         }
+
+        # Setup the database
+        TopicCategory.objects.create(identifier="cat1", gn_description="fake category 1")
+        TopicCategory.objects.create(identifier="cat2", gn_description="fake category 2")
+        License.objects.create(identifier="license1", name="fake license 1")
+        License.objects.create(identifier="license2", name="fake license 2")
+        Region.objects.create(code="fake_code_1", name="fake name 1")
+        Region.objects.create(code="fake_code_2", name="fake name 2")
+        HierarchicalKeyword.objects.create(name="fake_keyword_1", slug="fake keyword 1")
+        HierarchicalKeyword.objects.create(name="fake_keyword_2", slug="fake keyword 2")
 
     def tearDown(self):
         super().tearDown()
@@ -217,7 +244,372 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertJSONEqual(response.content, {"message": "The dataset was not found"})
 
-    # TODO tests for autocomplete views
+    # Tests for categories autocomplete
+    def test_categories_autocomplete_no_query(self):
+        """
+        Test the response when no query parameter is provided
+        """
+
+        self.url = reverse("metadata_autocomplete_categories")
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        self.assertIn({"id": "cat1", "label": _("fake category 1")}, results)
+        self.assertIn({"id": "cat2", "label": _("fake category 2")}, results)
+
+    def test_categories_autocomplete_with_query(self):
+        """
+        Test the response when a query parameter is provided
+        """
+
+        self.url = reverse("metadata_autocomplete_categories")
+        response = self.client.get(self.url, {"q": "fake cat"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        self.assertIn({"id": "cat1", "label": _("fake category 1")}, results)
+        self.assertIn({"id": "cat2", "label": _("fake category 2")}, results)
+
+    def test_categories_autocomplete_with_query_one_match(self):
+        """
+        Test partial matches for the query parameter
+        """
+
+        self.url = reverse("metadata_autocomplete_categories")
+        response = self.client.get(self.url, {"q": "fake category 2"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIn({"id": "cat2", "label": _("fake category 2")}, results)
+
+    def test_categories_autocomplete_with_query_no_match(self):
+        """
+        Test when no results match the query parameter
+        """
+
+        self.url = reverse("metadata_autocomplete_categories")
+        response = self.client.get(self.url, {"q": "A missing category"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 0)
+
+    # Tests for License autocomplete
+    def test_license_autocomplete_no_query(self):
+        """
+        Test the response when no query parameter is provided
+        """
+
+        self.url = reverse("metadata_autocomplete_licenses")
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
+        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+
+    def test_license_autocomplete_with_query(self):
+        """
+        Test the response when a query parameter is provided
+        """
+
+        self.url = reverse("metadata_autocomplete_licenses")
+        response = self.client.get(self.url, {"q": "fake lic"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+        self.assertIn({"id": "license1", "label": _("fake license 1")}, results)
+        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+
+    def test_license_autocomplete_with_query_one_match(self):
+        """
+        Test partial matches for the query parameter
+        """
+
+        self.url = reverse("metadata_autocomplete_licenses")
+        response = self.client.get(self.url, {"q": "fake license 2"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIn({"id": "license2", "label": _("fake license 2")}, results)
+
+    def test_license_autocomplete_with_query_no_match(self):
+        """
+        Test when no results match the query parameter
+        """
+
+        self.url = reverse("metadata_autocomplete_licenses")
+        response = self.client.get(self.url, {"q": "A missing category"})
+
+        self.assertEqual(response.status_code, 200)
+        results = response.json()["results"]
+        self.assertEqual(len(results), 0)
+
+    # Tests for Profile autocomplete
+
+    @patch("geonode.people.utils.get_available_users")
+    def test_profile_autocomplete_no_query(self, mock_get_available_users):
+        """
+        Test that the queryset is restricted to available users
+        """
+
+        mocked_available_users = [self.test_user_1, self.test_user_2]
+
+        mock_get_available_users.return_value = get_user_model().objects.filter(
+            pk__in=[u.pk for u in mocked_available_users]
+        )
+
+        request = self.factory.get(reverse("metadata_autocomplete_users"))
+        request.user = self.test_user_1
+
+        view = ProfileAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["label"], "user_1")
+        self.assertEqual(results[1]["label"], "user_2")
+
+    @patch("geonode.people.utils.get_available_users")
+    def test_profile_autocomplete_with_query(self, mock_get_available_users):
+        """
+        Test that the queryset is restricted to one user
+        """
+
+        mocked_available_users = [self.test_user_1, self.test_user_2]
+
+        mock_get_available_users.return_value = get_user_model().objects.filter(
+            pk__in=[u.pk for u in mocked_available_users]
+        )
+
+        request = self.factory.get(reverse("metadata_autocomplete_users"), {"q": "user_2"})
+        request.user = self.test_user_1
+
+        view = ProfileAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["label"], "user_2")
+
+    @patch("geonode.people.utils.get_available_users")
+    def test_profile_autocomplete_no_match(self, mock_get_available_users):
+        """
+        Test when there is no match of available users
+        """
+
+        mocked_available_users = [self.test_user_1, self.test_user_2]
+
+        mock_get_available_users.return_value = get_user_model().objects.filter(
+            pk__in=[u.pk for u in mocked_available_users]
+        )
+
+        request = self.factory.get(reverse("metadata_autocomplete_users"), {"q": "missing_user"})
+        request.user = self.test_user_1
+
+        view = ProfileAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+        self.assertEqual(len(results), 0)
+
+    # Tests for MetadataLinkedResourcesAutocomplete view
+    @patch("geonode.base.views.get_visible_resources")
+    def test_linked_resources_autocomplete_with_query(self, mock_get_visible_resources):
+
+        request = self.factory.get("/metadata/autocomplete/resources", {"q": "Test other Resource"})
+        request.user = self.test_user_1
+
+        # Mock the return value of get_visible_resources
+        mock_get_visible_resources.return_value = [self.other_resource]
+
+        view = MetadataLinkedResourcesAutocomplete.as_view()
+        response = view(request)
+
+        # Ensure the queryset was filtered by the query parameter
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["label"], "Test other Resource [resourcebase]")
+
+    @patch("geonode.base.views.get_visible_resources")
+    def test_linked_resources_autocomplete_without_query(self, mock_get_visible_resources):
+
+        request = self.factory.get("/metadata/autocomplete/resources")
+        request.user = self.test_user_1
+
+        # Mock the return value of get_visible_resources
+        mock_get_visible_resources.return_value = [self.resource, self.other_resource]
+
+        view = MetadataLinkedResourcesAutocomplete.as_view()
+        response = view(request)
+
+        # Ensure the queryset was filtered by the query parameter
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["label"], "Test Resource [resourcebase]")
+        self.assertEqual(results[1]["label"], "Test other Resource [resourcebase]")
+
+    @patch("geonode.base.views.get_visible_resources")
+    def test_linked_resources_autocomplete_no_match(self, mock_get_visible_resources):
+
+        request = self.factory.get("/metadata/autocomplete/resources")
+        request.user = self.test_user_1
+
+        # Mock the return value of get_visible_resources
+        mock_get_visible_resources.return_value = []
+
+        view = MetadataLinkedResourcesAutocomplete.as_view()
+        response = view(request)
+
+        # Ensure the queryset was filtered by the query parameter
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+        self.assertEqual(len(results), 0)
+
+    # Tests for the Region autocomplete view
+
+    def test_regions_autocomplete_without_query(self):
+        """
+        Test filtering the queryset with the 'q' parameter
+        """
+        # Simulate a request with a query parameter
+        request = self.factory.get("/metadata/autocomplete/regions")
+
+        view = MetadataRegionsAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["label"], "fake name 1")
+        self.assertEqual(results[1]["label"], "fake name 2")
+
+    def test_regions_autocomplete_with_general_query(self):
+        """
+        Test filtering the queryset with the 'q' parameter
+        """
+        # Simulate a request with a query parameter
+        request = self.factory.get("/metadata/autocomplete/regions", {"q": "fake name"})
+
+        view = MetadataRegionsAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["label"], "fake name 1")
+        self.assertEqual(results[1]["label"], "fake name 2")
+
+    def test_regions_autocomplete_one_match(self):
+        """
+        Test filtering the queryset with the 'q' parameter
+        """
+        # Simulate a request with a query parameter
+        request = self.factory.get("/metadata/autocomplete/regions", {"q": "fake name 2"})
+
+        view = MetadataRegionsAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["label"], "fake name 2")
+
+    def test_regions_autocomplete_no_match(self):
+        """
+        Test filtering the queryset with the 'q' parameter
+        """
+        # Simulate a request with a query parameter
+        request = self.factory.get("/metadata/autocomplete/regions", {"q": "missing region"})
+
+        view = MetadataRegionsAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 0)
+
+    # Tests for hkeyword_autocomplete view
+    def test_hkeyword_autocomplete_without_query(self):
+
+        request = self.factory.get("/metadata/autocomplete/hkeywords")
+
+        view = MetadataHKeywordAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert all keywords are returned
+        self.assertEqual(len(results), 2)
+        self.assertIn("fake_keyword_1", results)
+        self.assertIn("fake_keyword_2", results)
+
+    def test_hkeyword_autocomplete_with_query(self):
+
+        request = self.factory.get("/metadata/autocomplete/hkeywords", {"q": "fake keyword"})
+
+        view = MetadataHKeywordAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert all keywords are returned
+        self.assertEqual(len(results), 2)
+        self.assertIn("fake_keyword_1", results)
+        self.assertIn("fake_keyword_2", results)
+
+    def test_hkeyword_autocomplete_one_match(self):
+
+        request = self.factory.get("/metadata/autocomplete/hkeywords", {"q": "fake keyword 2"})
+
+        view = MetadataHKeywordAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert all keywords are returned
+        self.assertEqual(len(results), 1)
+        self.assertIn("fake_keyword_2", results)
+
+    def test_hkeyword_autocomplete_no_match(self):
+
+        request = self.factory.get("/metadata/autocomplete/hkeywords", {"q": "missing keyword"})
+
+        view = MetadataHKeywordAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert all keywords are returned
+        self.assertEqual(len(results), 0)
 
     # Manager tests
 
