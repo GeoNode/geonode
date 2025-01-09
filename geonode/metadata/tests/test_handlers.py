@@ -65,6 +65,9 @@ from geonode.metadata.handlers.thesaurus import TKeywordsHandler
 from geonode.metadata.handlers.sparse import SparseHandler
 from geonode.resource.utils import KeywordHandler
 from geonode.metadata.handlers.contact import ContactHandler, ROLE_NAMES_MAP
+from geonode.metadata.handlers.sparse import SparseHandler, sparse_field_registry
+from geonode.metadata.models import SparseField
+from geonode.metadata.handlers.abstract import UnsetFieldException
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 
@@ -1548,37 +1551,24 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(tkeywords["ui:widget"], "hidden")
 
     def test_tkeywords_handler_get_jsonschema_instance_translated_keywords(self):
-        
         """
-        Test for the get_jsonschema_instance of the tkeywords handler. 
+        Test for the get_jsonschema_instance of the tkeywords handler.
         In the setUp function we have set two keywords. In this test
         we test the translated keywords
 
         """
 
         # Create two instances of ThesaurusKeywordLabel
-        ThesaurusKeywordLabel.objects.create(
-                                             keyword=self.keyword1, 
-                                             lang="en", 
-                                             label="Localized Label 1"
-                                             )
-        
-        ThesaurusKeywordLabel.objects.create(
-                                             keyword=self.keyword2, 
-                                             lang="en", 
-                                             label="Localized Label 2"
-                                             )
+        ThesaurusKeywordLabel.objects.create(keyword=self.keyword1, lang="en", label="Localized Label 1")
+
+        ThesaurusKeywordLabel.objects.create(keyword=self.keyword2, lang="en", label="Localized Label 2")
 
         # Add the keywords to the resource:
         self.resource.tkeywords.add(self.keyword1, self.keyword2)
 
         # Call the method
         result = self.tkeywords_handler.get_jsonschema_instance(
-            resource=self.resource,
-            field_name="tkeywords",
-            context={},
-            errors=[],
-            lang="en"
+            resource=self.resource, field_name="tkeywords", context={}, errors=[], lang="en"
         )
 
         # Assertions for the results
@@ -1594,11 +1584,9 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(len(inspire_themes_keywords), 1)
         self.assertEqual(inspire_themes_keywords, [{"id": "http://example.com/keyword2", "label": "Localized Label 2"}])
 
-
     def test_tkeywords_handler_get_jsonschema_instance_untranslated_keywords(self):
-        
         """
-        Test for the get_jsonschema_instance of the tkeywords handler. 
+        Test for the get_jsonschema_instance of the tkeywords handler.
         In the setUp function we have set two keywords. In this test
         we test the untranslated keywords
 
@@ -1609,11 +1597,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
 
         # Call the method
         result = self.tkeywords_handler.get_jsonschema_instance(
-            resource=self.resource,
-            field_name="tkeywords",
-            context=self.context,
-            errors=self.errors,
-            lang=self.lang
+            resource=self.resource, field_name="tkeywords", context=self.context, errors=self.errors, lang=self.lang
         )
 
         # Assertions for the results
@@ -1629,15 +1613,14 @@ class HandlersTests(GeoNodeBaseTestSupport):
         self.assertEqual(len(inspire_themes_keywords), 1)
         self.assertEqual(inspire_themes_keywords, [{"id": "http://example.com/keyword2", "label": "Alt Label 2"}])
 
-
     def test_tkeywords_handler_update_resource(self):
         """
         Ensures that the method will import the keyword1 and
-        the keyword2 in the database. It will not import the 
+        the keyword2 in the database. It will not import the
         keyword3 since it is not included in the ThesaurusKeyword
         model
         """
-        
+
         # JSON instance to simulate the input
         json_instance = {
             "tkeywords": {
@@ -1667,12 +1650,189 @@ class HandlersTests(GeoNodeBaseTestSupport):
         expected_keywords = ThesaurusKeyword.objects.filter(
             about__in=["http://example.com/keyword1", "http://example.com/keyword2"]
         )
-        
+
         self.assertQuerysetEqual(
-            updated_keywords.order_by("id"), 
-            expected_keywords.order_by("id"), 
-            transform=lambda x: x
+            updated_keywords.order_by("id"), expected_keywords.order_by("id"), transform=lambda x: x
         )
 
         # Ensure that only the keyword1 and keyword2 are stored in the database
         self.assertEqual(len(updated_keywords), 2)
+
+    # Tests for the sparse handler
+
+    def test_sparse_handler_update_schema(self):
+
+        # Register two fields in the SparseFieldRegistry
+        sparse_field_registry.register(
+            field_name="new_sparse_field", schema={"type": "string", "title": "New Sparse Field"}, after="field1"
+        )
+
+        sparse_field_registry.register(
+            field_name="another_sparse_field",
+            schema={"type": "number", "title": "Another Sparse Field"},
+            after="field2",
+        )
+
+        # Call the update_schema method using the fake_schema defined in the setUp method
+        updated_schema = self.sparse_handler.update_schema(self.fake_schema, self.context)
+
+        # Assert that the new fields have been added
+        self.assertIn("new_sparse_field", updated_schema["properties"])
+        self.assertIn("another_sparse_field", updated_schema["properties"])
+
+        # Check that the fields have the correct type
+        self.assertEqual(updated_schema["properties"]["new_sparse_field"]["type"], "string")
+        self.assertEqual(updated_schema["properties"]["another_sparse_field"]["type"], "number")
+
+        # Check that the handler info was added
+        self.assertEqual(updated_schema["properties"]["new_sparse_field"]["geonode:handler"], "sparse")
+        self.assertEqual(updated_schema["properties"]["another_sparse_field"]["geonode:handler"], "sparse")
+
+        # Check the order of the schema
+        self.assertEqual(
+            list(updated_schema["properties"].keys()),
+            ["field1", "new_sparse_field", "field2", "another_sparse_field", "field3"],
+        )
+
+    def test_sparse_handler_get_jsonschema_instance(self):
+
+        CONTEXT_ID = "sparse"
+
+        # Set up the context
+        self.context = {
+            CONTEXT_ID: {
+                "schema": {
+                    "properties": {
+                        "string_field": {"type": "string"},
+                        "number_field": {"type": "number"},
+                        "integer_field": {"type": "integer"},
+                        "nullable_field": {"type": ["null", "string"]},
+                        "array_field": {"type": "array"},
+                        "object_field": {"type": "object"},
+                    }
+                },
+                "fields": {
+                    "string_field": "test string",
+                    "number_field": "42.0",
+                    "integer_field": "7",
+                    "nullable_field": None,
+                    "array_field": '["item1", "item2"]',
+                    "object_field": '{"key": "value"}',
+                },
+            }
+        }
+
+        # Test string field
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "string_field", self.context, self.errors)
+        self.assertEqual(result, "test string")
+
+        # Test number field
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "number_field", self.context, self.errors)
+        self.assertEqual(result, 42.0)
+
+        # Test integer field
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "integer_field", self.context, self.errors)
+        self.assertEqual(result, 7)
+
+        # Test nullable field
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "nullable_field", self.context, self.errors)
+        self.assertIsNone(result)
+
+        # Test array field
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "array_field", self.context, self.errors)
+        self.assertEqual(result, ["item1", "item2"])
+
+        # Test object field
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "object_field", self.context, self.errors)
+        self.assertEqual(result, {"key": "value"})
+
+        # Test missing field with no default and non-nullable
+        # with self.assertRaises(UnsetFieldException):
+        #    self.sparse_handler.get_jsonschema_instance(self.resource, "missing_field", context, self.errors)
+
+        # Test invalid number field
+        self.context[CONTEXT_ID]["fields"]["number_field"] = "invalid_number"
+        with self.assertRaises(UnsetFieldException):
+            self.sparse_handler.get_jsonschema_instance(self.resource, "number_field", self.context, self.errors)
+
+        # Test invalid integer field
+        self.context[CONTEXT_ID]["fields"]["integer_field"] = "invalid_integer"
+        with self.assertRaises(UnsetFieldException):
+            self.sparse_handler.get_jsonschema_instance(self.resource, "integer_field", self.context, self.errors)
+
+        # Test unhandled type
+        self.context[CONTEXT_ID]["schema"]["properties"]["unknown_field"] = {"type": "unknown"}
+        self.context[CONTEXT_ID]["fields"]["unknown_field"] = "some_value"
+        result = self.sparse_handler.get_jsonschema_instance(self.resource, "unknown_field", self.context, self.errors)
+        self.assertIsNone(result)
+
+    def test_sparse_handler_update_resource(self):
+
+        self.context = {
+            "sparse": {
+                "schema": {
+                    "properties": {
+                        "string_field": {"type": "string"},
+                        "number_field": {"type": "number"},
+                        "integer_field": {"type": "integer"},
+                        "nullable_field": {"type": ["null", "string"]},
+                        "array_field": {"type": "array"},
+                        "object_field": {"type": "object"},
+                    }
+                }
+            }
+        }
+
+        # Test string field
+        json_instance_string_field = {"string_field": "updated string"}
+        self.sparse_handler.update_resource(
+            self.resource, "string_field", json_instance_string_field, self.context, self.errors
+        )
+        sparse_field = SparseField.objects.get(resource=self.resource, name="string_field")
+        self.assertEqual(sparse_field.value, "updated string")
+
+        # Test number field
+        json_instance_number_field = {"number_field": 123.45}
+        self.sparse_handler.update_resource(
+            self.resource, "number_field", json_instance_number_field, self.context, self.errors
+        )
+        sparse_field = SparseField.objects.get(resource=self.resource, name="number_field")
+        self.assertEqual(float(sparse_field.value), 123.45)
+
+        # Test nullable field
+        json_instance_nullable_field = {"nullable_field": None}
+        self.sparse_handler.update_resource(
+            self.resource, "nullable_field", json_instance_nullable_field, self.context, self.errors
+        )
+        sparse_field = SparseField.objects.filter(resource=self.resource, name="nullable_field").first()
+        self.assertIsNone(sparse_field)
+
+        # Test array field
+        json_instance_array_field = {"array_field": ["item1", "item2"]}
+        self.sparse_handler.update_resource(
+            self.resource, "array_field", json_instance_array_field, self.context, self.errors
+        )
+        sparse_field = SparseField.objects.get(resource=self.resource, name="array_field")
+        self.assertEqual(sparse_field.value, '["item1", "item2"]')
+
+        # Test object field
+        json_instance_object_field = {"object_field": {"key": "value"}}
+        self.sparse_handler.update_resource(
+            self.resource, "object_field", json_instance_object_field, self.context, self.errors
+        )
+        sparse_field = SparseField.objects.get(resource=self.resource, name="object_field")
+        self.assertEqual(sparse_field.value, '{"key": "value"}')
+
+        # Test invalid number
+        json_instance_invalid_number = {"number_field": "not_a_number"}
+        self.sparse_handler.update_resource(
+            self.resource, "number_field", json_instance_invalid_number, self.context, self.errors
+        )
+        self.assertIn("Error parsing number", str(self.errors))
+
+        # Test invalid integer number
+        json_instance_invalid_int_number = {"integer_field": "not_an_integer"}
+        self.sparse_handler.update_resource(
+            self.resource, "integer_field", json_instance_invalid_int_number, self.context, self.errors
+        )
+        self.assertIn("Error parsing integer", str(self.errors))

@@ -146,24 +146,22 @@ class SparseHandler(MetadataHandler):
         context[CONTEXT_ID] = {"schema": jsonschema}
 
     def update_resource(self, resource, field_name, json_instance, context, errors, **kwargs):
-        def check_type(declared, checked):
-            return declared == checked or (type(declared) is list and checked in declared)
 
         bare_value = json_instance.get(field_name, None)
         field_type = context[CONTEXT_ID]["schema"]["properties"][field_name]["type"]
 
-        is_nullable = check_type(field_type, "null")
+        is_nullable = self._check_type(field_type, "null")
 
-        if check_type(field_type, "string"):
+        if self._check_type(field_type, "string"):
             field_value = bare_value
-        elif check_type(field_type, "number"):
+        elif self._check_type(field_type, "number"):
             try:
                 field_value = str(float(bare_value)) if bare_value is not None else None
             except ValueError as e:
                 logger.warning(f"Error parsing sparse field '{field_name}'::'{field_type}'='{bare_value}': {e}")
                 self._set_error(errors, [field_name], f"Error parsing number '{bare_value}'")
                 return
-        elif check_type(field_type, "integer"):
+        elif self._check_type(field_type, "integer"):
             try:
                 field_value = str(int(bare_value)) if bare_value is not None else None
             except ValueError as e:

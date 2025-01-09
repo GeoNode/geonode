@@ -111,9 +111,13 @@ class MetadataApiTests(APITestCase):
         self.keyword2 = ThesaurusKeyword.objects.create(
             about="keyword2", alt_label="Alternative Label 2", thesaurus=self.thesaurus
         )
+        self.keyword3 = ThesaurusKeyword.objects.create(
+            about="keyword3", alt_label="Alternative Label 3", thesaurus=self.thesaurus
+        )
 
         ThesaurusKeywordLabel.objects.create(keyword=self.keyword1, label="Label 1", lang="en")
-        ThesaurusKeywordLabel.objects.create(keyword=self.keyword2, label="Italiano etichetta", lang="it")
+        ThesaurusKeywordLabel.objects.create(keyword=self.keyword2, label="Label 2", lang="en")
+        ThesaurusKeywordLabel.objects.create(keyword=self.keyword3, label="Italiano etichetta", lang="it")
 
     def tearDown(self):
         super().tearDown()
@@ -752,25 +756,31 @@ class MetadataApiTests(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         results = response.json()["results"]
-        self.assertEqual(len(results), 2)
+        self.assertEqual(len(results), 3)
 
         self.assertIn({"id": "keyword1", "label": "Label 1"}, results)
+        self.assertIn({"id": "keyword2", "label": "Label 2"}, results)
 
         # Check that untranslated keywords are prefixed with "!"
-        self.assertIn({"id": "keyword2", "label": "! Alternative Label 2"}, results)
+        self.assertIn({"id": "keyword3", "label": "! Alternative Label 3"}, results)
 
-    """
     def test_tkeywords_autocomplete_with_query(self):
-        
+        """
+        Test of the tkeywords autocomplete view using a specific query.
+        Keep in mind that the non-translated keywords will be included
+        in the result
+        """
+
         url = reverse("metadata_autocomplete_tkeywords", kwargs={"thesaurusid": self.thesaurus_id})
         response = self.client.get(url, {"q": "Label 1"})
         self.assertEqual(response.status_code, 200)
 
         results = response.json()["results"]
-        self.assertEqual(len(results), 1)
 
+        # Ensure that the Label 2 is not included in the result
+        self.assertEqual(len(results), 2)
         self.assertIn({"id": "keyword1", "label": "Label 1"}, results)
-    """
+        self.assertIn({"id": "keyword3", "label": "! Alternative Label 3"}, results)
 
     # Manager tests
 
