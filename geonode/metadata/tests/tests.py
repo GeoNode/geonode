@@ -36,6 +36,8 @@ from geonode.metadata.api.views import (
     MetadataLinkedResourcesAutocomplete,
     MetadataRegionsAutocomplete,
     MetadataHKeywordAutocomplete,
+    MetadataGroupAutocomplete,
+    tkeywords_autocomplete,
 )
 from geonode.metadata.settings import METADATA_HANDLERS
 from geonode.base.models import ResourceBase
@@ -45,7 +47,11 @@ from geonode.base.models import (
     License,
     Region,
     HierarchicalKeyword,
+    ThesaurusKeyword,
+    ThesaurusKeywordLabel,
+    Thesaurus,
 )
+from geonode.groups.models import GroupProfile, GroupMember
 
 
 class MetadataApiTests(APITestCase):
@@ -90,6 +96,24 @@ class MetadataApiTests(APITestCase):
         Region.objects.create(code="fake_code_2", name="fake name 2")
         HierarchicalKeyword.objects.create(name="fake_keyword_1", slug="fake keyword 1")
         HierarchicalKeyword.objects.create(name="fake_keyword_2", slug="fake keyword 2")
+
+        # Create groups for the metadata group autocomplete
+        self.group1 = GroupProfile.objects.create(title="Group A", slug="group_a")
+        self.group2 = GroupProfile.objects.create(title="Group B", slug="group_b")
+
+        # Create Thesaurus keywords for the Thesaurus autocomplete
+        self.thesaurus = Thesaurus.objects.create(title="Spatial scope thesaurus", identifier="3-2-4-3-spatialscope")
+        self.thesaurus_id = self.thesaurus.id
+        # Create keywords for the thesaurus
+        self.keyword1 = ThesaurusKeyword.objects.create(
+            about="keyword1", alt_label="Alternative Label 1", thesaurus=self.thesaurus
+        )
+        self.keyword2 = ThesaurusKeyword.objects.create(
+            about="keyword2", alt_label="Alternative Label 2", thesaurus=self.thesaurus
+        )
+
+        ThesaurusKeywordLabel.objects.create(keyword=self.keyword1, label="Label 1", lang="en")
+        ThesaurusKeywordLabel.objects.create(keyword=self.keyword2, label="Italiano etichetta", lang="it")
 
     def tearDown(self):
         super().tearDown()
@@ -609,6 +633,144 @@ class MetadataApiTests(APITestCase):
 
         # Assert all keywords are returned
         self.assertEqual(len(results), 0)
+
+    # Tests for the Metadata GroupProfile autocomplete
+    def test_metadata_group_autocomplete_no_user(self):
+        """
+        Test group autocomplete when the user is None
+        """
+        request = self.factory.get("/metadata/autocomplete/groups")
+        request.user = None
+        view = MetadataGroupAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        self.assertEqual(len(results), 0)
+        self.assertEqual(results, [])
+
+    def test_metadata_group_autocomplete_superuser(self):
+        """
+        Test group autocomplete when the user is SuperUser
+        """
+
+        # Create a superuser
+        superuser = get_user_model().objects.create_superuser(
+            username="superuser", email="superuser@example.com", password="password"
+        )
+
+        request = self.factory.get("/metadata/autocomplete/groups")
+        request.user = superuser
+        view = MetadataGroupAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["label"], "Group A")
+        self.assertEqual(results[1]["label"], "Group B")
+
+    def test_metadata_group_autocomplete_staff_user(self):
+        """
+        Test group autocomplete when the user is staff user
+        """
+
+        # Create a staff user
+        staff_user = get_user_model().objects.create_user(
+            username="staff", email="staff@example.com", password="password", is_staff=True
+        )
+
+        request = self.factory.get("/metadata/autocomplete/groups")
+        request.user = staff_user
+        view = MetadataGroupAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0]["label"], "Group A")
+        self.assertEqual(results[1]["label"], "Group B")
+
+    def test_metadata_group_autocomplete_simple_user(self):
+        """
+        Test group autocomplete when the user is a simple user
+        with an associated group (Group B)
+        """
+
+        # Associate Group B with test_user_1
+        GroupMember.objects.create(user=self.test_user_1, group=self.group2)
+
+        request = self.factory.get("/metadata/autocomplete/groups")
+        request.user = self.test_user_1
+        view = MetadataGroupAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["label"], "Group B")
+
+    def test_metadata_group_autocomplete_superuser_with_query(self):
+        """
+        Test group autocomplete when the user is SuperUser
+        and creates a specific query
+        """
+        superuser = get_user_model().objects.create_superuser(
+            username="superuser", email="superuser@example.com", password="password"
+        )
+
+        request = self.factory.get("/metadata/autocomplete/groups", {"q": "Group A"})
+        request.user = superuser
+        view = MetadataGroupAutocomplete.as_view()
+        response = view(request)
+
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)["results"]
+
+        # Assert the results match the query
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["label"], "Group A")
+
+    # Tests for Thesaurus autocomplete
+
+    def test_tkeywords_autocomplete_no_query(self):
+
+        url = reverse("metadata_autocomplete_tkeywords", kwargs={"thesaurusid": self.thesaurus_id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 2)
+
+        self.assertIn({"id": "keyword1", "label": "Label 1"}, results)
+
+        # Check that untranslated keywords are prefixed with "!"
+        self.assertIn({"id": "keyword2", "label": "! Alternative Label 2"}, results)
+
+    """
+    def test_tkeywords_autocomplete_with_query(self):
+        
+        url = reverse("metadata_autocomplete_tkeywords", kwargs={"thesaurusid": self.thesaurus_id})
+        response = self.client.get(url, {"q": "Label 1"})
+        self.assertEqual(response.status_code, 200)
+
+        results = response.json()["results"]
+        self.assertEqual(len(results), 1)
+
+        self.assertIn({"id": "keyword1", "label": "Label 1"}, results)
+    """
 
     # Manager tests
 

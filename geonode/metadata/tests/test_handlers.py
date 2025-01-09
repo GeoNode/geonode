@@ -41,6 +41,7 @@ from geonode.base.models import (
     LinkedResource,
     Thesaurus,
     ThesaurusKeyword,
+    ThesaurusKeywordLabel,
     ContactRole,
 )
 from geonode.settings import PROJECT_ROOT
@@ -106,7 +107,7 @@ class HandlersTests(GeoNodeBaseTestSupport):
             identifier="fake_spatial_repr", description="a detailed description"
         )
         self.fake_group = Group.objects.create(name="fake group")
-        # Create instances for theraurus
+        # Create instances for thesaurus
         self.thesaurus1 = Thesaurus.objects.create(title="Spatial scope thesaurus", identifier="3-2-4-3-spatialscope")
         self.thesaurus2 = Thesaurus.objects.create(
             title="INSPIRE themes thesaurus", identifier="3-2-4-1-gemet-inspire-themes"
@@ -1545,3 +1546,133 @@ class HandlersTests(GeoNodeBaseTestSupport):
         tkeywords = updated_schema["properties"].get("tkeywords")
         self.assertIsNotNone(tkeywords)
         self.assertEqual(tkeywords["ui:widget"], "hidden")
+
+    def test_tkeywords_handler_get_jsonschema_instance_translated_keywords(self):
+        
+        """
+        Test for the get_jsonschema_instance of the tkeywords handler. 
+        In the setUp function we have set two keywords. In this test
+        we test the translated keywords
+
+        """
+
+        # Create two instances of ThesaurusKeywordLabel
+        ThesaurusKeywordLabel.objects.create(
+                                             keyword=self.keyword1, 
+                                             lang="en", 
+                                             label="Localized Label 1"
+                                             )
+        
+        ThesaurusKeywordLabel.objects.create(
+                                             keyword=self.keyword2, 
+                                             lang="en", 
+                                             label="Localized Label 2"
+                                             )
+
+        # Add the keywords to the resource:
+        self.resource.tkeywords.add(self.keyword1, self.keyword2)
+
+        # Call the method
+        result = self.tkeywords_handler.get_jsonschema_instance(
+            resource=self.resource,
+            field_name="tkeywords",
+            context={},
+            errors=[],
+            lang="en"
+        )
+
+        # Assertions for the results
+        # Check the structure for "3-2-4-3-spatialscope"
+        self.assertIn("3-2-4-3-spatialscope", result)
+        spatial_scope_keywords = result["3-2-4-3-spatialscope"]
+        self.assertEqual(len(spatial_scope_keywords), 1)
+        self.assertEqual(spatial_scope_keywords, [{"id": "http://example.com/keyword1", "label": "Localized Label 1"}])
+
+        # Check the structure for "3-2-4-1-gemet-inspire-themes"
+        self.assertIn("3-2-4-1-gemet-inspire-themes", result)
+        inspire_themes_keywords = result["3-2-4-1-gemet-inspire-themes"]
+        self.assertEqual(len(inspire_themes_keywords), 1)
+        self.assertEqual(inspire_themes_keywords, [{"id": "http://example.com/keyword2", "label": "Localized Label 2"}])
+
+
+    def test_tkeywords_handler_get_jsonschema_instance_untranslated_keywords(self):
+        
+        """
+        Test for the get_jsonschema_instance of the tkeywords handler. 
+        In the setUp function we have set two keywords. In this test
+        we test the untranslated keywords
+
+        """
+
+        # Add the keywords to the resource without using the ThesaurusKeywordLabel
+        self.resource.tkeywords.add(self.keyword1, self.keyword2)
+
+        # Call the method
+        result = self.tkeywords_handler.get_jsonschema_instance(
+            resource=self.resource,
+            field_name="tkeywords",
+            context=self.context,
+            errors=self.errors,
+            lang=self.lang
+        )
+
+        # Assertions for the results
+        # Check the structure for "3-2-4-3-spatialscope"
+        self.assertIn("3-2-4-3-spatialscope", result)
+        spatial_scope_keywords = result["3-2-4-3-spatialscope"]
+        self.assertEqual(len(spatial_scope_keywords), 1)
+        self.assertEqual(spatial_scope_keywords, [{"id": "http://example.com/keyword1", "label": "Alt Label 1"}])
+
+        # Check the structure for "3-2-4-1-gemet-inspire-themes"
+        self.assertIn("3-2-4-1-gemet-inspire-themes", result)
+        inspire_themes_keywords = result["3-2-4-1-gemet-inspire-themes"]
+        self.assertEqual(len(inspire_themes_keywords), 1)
+        self.assertEqual(inspire_themes_keywords, [{"id": "http://example.com/keyword2", "label": "Alt Label 2"}])
+
+
+    def test_tkeywords_handler_update_resource(self):
+        """
+        Ensures that the method will import the keyword1 and
+        the keyword2 in the database. It will not import the 
+        keyword3 since it is not included in the ThesaurusKeyword
+        model
+        """
+        
+        # JSON instance to simulate the input
+        json_instance = {
+            "tkeywords": {
+                "thes-1": [
+                    {"id": "http://example.com/keyword1", "label": "Keyword 1"},
+                    {"id": "http://example.com/keyword2", "label": "Keyword 2"},
+                ],
+                "thes-2": [
+                    {"id": "http://example.com/keyword3", "label": "Keyword 3"},
+                ],
+            }
+        }
+
+        # Call the method
+        self.tkeywords_handler.update_resource(
+            resource=self.resource,
+            field_name="tkeywords",
+            json_instance=json_instance,
+            context=self.context,
+            errors=self.errors,
+        )
+
+        # Fetch the resource from the database and verify its tkeywords after running the update_resource
+        updated_keywords = self.resource.tkeywords.all()
+
+        # Check the correct keywords are associated
+        expected_keywords = ThesaurusKeyword.objects.filter(
+            about__in=["http://example.com/keyword1", "http://example.com/keyword2"]
+        )
+        
+        self.assertQuerysetEqual(
+            updated_keywords.order_by("id"), 
+            expected_keywords.order_by("id"), 
+            transform=lambda x: x
+        )
+
+        # Ensure that only the keyword1 and keyword2 are stored in the database
+        self.assertEqual(len(updated_keywords), 2)
