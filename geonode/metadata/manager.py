@@ -23,8 +23,9 @@ from cachetools import FIFOCache
 
 from django.utils.translation import gettext as _
 
+from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
 from geonode.metadata.handlers.abstract import MetadataHandler, UnsetFieldException
-from geonode.metadata.i18n import get_localized_labels
+from geonode.metadata.i18n import get_localized_labels, I18N_THESAURUS_IDENTIFIER
 from geonode.metadata.settings import MODEL_SCHEMA
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,15 @@ class MetadataManager:
     def __init__(self):
         self.root_schema = MODEL_SCHEMA
         self.handlers = {}
+
+    @classmethod
+    def clear_schema_cache(cls):
+        logger.info("Clearing schema cache")
+        while True:
+            try:
+                MetadataManager._schema_cache.popitem()
+            except KeyError:
+                return
 
     def add_handler(self, handler_id, handler):
         self.handlers[handler_id] = handler()
@@ -155,6 +165,20 @@ def _create_test_errors(schema, errors, path, msg_template, create_message=True)
             _create_test_errors(subschema, errors, path + [field], msg_template)
     elif schema["type"] == "array":
         _create_test_errors(schema["items"], errors, path, msg_template, create_message=False)
+
+
+# signals for invalidating cached data
+def thesaurus_changed(sender, instance, **kwargs):
+    base = f"Thesaurus changed: class {sender.__class__.__name__} -->"
+    if sender == Thesaurus and instance.identifier == I18N_THESAURUS_IDENTIFIER:
+        logger.debug(f"{base} {instance.identifier}")
+        MetadataManager.clear_schema_cache()
+    elif sender == ThesaurusKeyword and instance.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
+        logger.debug(f"{base} {instance.about} ALT:{instance.alt_label}")
+        MetadataManager.clear_schema_cache()
+    elif sender == ThesaurusKeywordLabel and instance.keyword.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
+        logger.debug(f"{base} {instance.keyword.about} ALT:{instance.keyword.alt_label} L:{instance.lang}")
+        MetadataManager.clear_schema_cache()
 
 
 metadata_manager = MetadataManager()

@@ -4,7 +4,7 @@ from django.db import connection
 
 logger = logging.getLogger(__name__)
 
-I18N_THESAURUS_IDENTIFIER = "labels_i18n"
+I18N_THESAURUS_IDENTIFIER = "labels-i18n"
 
 
 def get_localized_tkeywords(lang, thesaurus_identifier: str):
