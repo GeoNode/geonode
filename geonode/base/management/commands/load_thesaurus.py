@@ -114,7 +114,8 @@ class Command(BaseCommand):
                     thesaurus_label.save()
 
         for concept in g.subjects(RDF.type, SKOS.Concept):
-            pref = preferredLabel(g, concept, default_lang)[0][1]
+            prefs = preferredLabel(g, concept, default_lang)
+            pref = prefs[0][1] if prefs else "-"
             about = str(concept)
             alt_label = g.value(concept, SKOS.altLabel, object=None, default=None)
             if alt_label is not None:
