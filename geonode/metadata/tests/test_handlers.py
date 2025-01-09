@@ -62,7 +62,6 @@ from geonode.metadata.handlers.linkedresource import LinkedResourceHandler
 from geonode.metadata.handlers.group import GroupHandler
 from geonode.metadata.handlers.hkeyword import HKeywordHandler
 from geonode.metadata.handlers.thesaurus import TKeywordsHandler
-from geonode.metadata.handlers.sparse import SparseHandler
 from geonode.resource.utils import KeywordHandler
 from geonode.metadata.handlers.contact import ContactHandler, ROLE_NAMES_MAP
 from geonode.metadata.handlers.sparse import SparseHandler, sparse_field_registry
