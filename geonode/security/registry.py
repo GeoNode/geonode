@@ -52,9 +52,25 @@ class PermissionsHandlerRegistry:
         if not isinstance(item, BasePermissionsHandler):
             raise Exception(f"Handler {item} is not a subclass of BasePermissionsHandler")
 
-    def fixup_perms(self, instance, payload, *args, **kwargs):
+    def fixup_perms(self, instance, payload, include_virtual=True, *args, **kwargs):
         for handler in self.REGISTRY:
-            payload = handler.fixup_perms(instance, payload, *args, **kwargs)
+            payload = handler.fixup_perms(instance, payload, include_virtual, *args, **kwargs)
+        return payload
+
+    def get_perms(self, instance, user=None, include_virtual=True, *args, **kwargs):
+        """
+        Return the payload with the permissions from the handlers.
+        The permissions payload can be edited by each permissions handler.
+        For example before return the payload, we can virtually remove perms
+        to the resource
+        """
+        if user:
+            payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
+        else:
+            payload = instance.get_all_level_info()
+
+        for handler in self.REGISTRY:
+            payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
     @classmethod

@@ -588,6 +588,7 @@ class ResourceManager(ResourceManagerInterface):
                         created=created,
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,
+                        include_virtual=False,
                     )
 
                     """
@@ -800,7 +801,7 @@ class ResourceManager(ResourceManagerInterface):
                         uuid,
                         instance=_resource,
                         owner=owner,
-                        permissions=_resource.get_all_level_info(),
+                        permissions=permissions_registry.get_perms(instance=_resource, include_virtual=True),
                         created=created,
                     ):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer

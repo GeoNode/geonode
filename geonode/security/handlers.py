@@ -37,7 +37,14 @@ class BasePermissionsHandler(ABC):
         return self.__str__()
 
     @staticmethod
-    def fixup_perms(instance, perms_payload, *args, **kwargs):
+    def fixup_perms(instance, perms_payload, include_virtual, *args, **kwargs):
+        return perms_payload
+
+    @staticmethod
+    def get_perms(instance, perms_payload, user, include_virtual, *args, **kwargs):
+        """
+        By default we dont provide any additional perms
+        """
         return perms_payload
 
 
@@ -47,7 +54,7 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
     """
 
     @staticmethod
-    def fixup_perms(instance, perms_payload, *args, **kwargs):
+    def fixup_perms(instance, perms_payload, include_virtual, *args, **kwargs):
         # Fixup Advanced Workflow permissions
         return AdvancedSecurityWorkflowManager.get_permissions(
             instance.uuid,
