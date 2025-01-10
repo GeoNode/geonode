@@ -2172,8 +2172,8 @@ MANAGEMENT_COMMANDS_EXPOSED_OVER_HTTP = set(
 
 FILE_UPLOAD_HANDLERS = [
     "geonode.upload.uploadhandler.SizeRestrictedFileUploadHandler",
-    "django.core.files.uploadhandler.MemoryFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
 ]
 
 DEFAULT_MAX_UPLOAD_SIZE = int(os.getenv("DEFAULT_MAX_UPLOAD_SIZE", 104857600))  # 100 MB
