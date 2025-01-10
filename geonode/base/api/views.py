@@ -1527,12 +1527,14 @@ def base_linked_resources_instances(instance, user, params={}):
 
 def base_linked_resources_payload(instance, user, params={}):
     lres = base_linked_resources_instances(instance, user, params)
-    ret = {
-        "linked_to": LinkedResourceSerializer(lres["linked_to"], embed=True, many=True).data,
-        "linked_by": LinkedResourceSerializer(
+    ret = {}
+    if "linked_to" in lres:
+        ret["linked_to"] = LinkedResourceSerializer(lres["linked_to"], embed=True, many=True).data
+    if "linked_by" in lres:
+        ret["linked_by"] = LinkedResourceSerializer(
             instance=lres["linked_by"], serialize_source=True, embed=True, many=True
-        ).data,
-    }
+        ).data
+
     if lres.get("WARNINGS", None):
         ret["WARNINGS"] = lres["WARNINGS"]
 
