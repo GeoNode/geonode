@@ -358,7 +358,9 @@ def set_datasets_permissions(
             # for the selected resource
             resource = resource.first()
             # getting the actual permissions available for the dataset
-            original_perms = PermSpec(permissions_registry.get_perms(instance=resource, include_virtual=False), resource)
+            original_perms = PermSpec(
+                permissions_registry.get_perms(instance=resource, include_virtual=False), resource
+            )
             new_perms_payload = {"organizations": [], "users": [], "groups": []}
             # if the username is specified, we add them to the payload with the compact
             # perm value

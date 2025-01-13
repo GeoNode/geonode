@@ -625,7 +625,9 @@ class AdvancedSecurityWorkflowManager:
                 _permissions = copy.deepcopy(permissions)
 
         if _resource:
-            perm_spec = _permissions or copy.deepcopy(permissions_registry.get_perms(instance=_resource, include_virtual=True))
+            perm_spec = _permissions or copy.deepcopy(
+                permissions_registry.get_perms(instance=_resource, include_virtual=True)
+            )
 
             # Sanity checks
             if isinstance(perm_spec, str):

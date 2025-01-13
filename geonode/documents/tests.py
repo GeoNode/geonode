@@ -402,7 +402,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertFalse(self.anonymous_user.has_perm("view_resourcebase", document.get_self_resource()))
 
         # Test that previous permissions for users other than ones specified in
-        # the perm_spec (and the document owner) were 
+        # the perm_spec (and the document owner) were
         current_perms = permissions_registry.get_perms(instance=document, include_virtual=True)
         self.assertEqual(len(current_perms["users"]), 1)
 

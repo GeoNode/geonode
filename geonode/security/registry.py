@@ -71,7 +71,7 @@ class PermissionsHandlerRegistry:
 
         for handler in self.REGISTRY:
             payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
-        
+
         if user:
             return payload["users"][user]
         return payload
