@@ -1401,8 +1401,14 @@ if RECAPTCHA_ENABLED:
     if "django_recaptcha" not in INSTALLED_APPS:
         INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
-        "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
+        "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.recaptcha.AllauthReCaptchaSignupForm"
     )
+
+    # https://docs.allauth.org/en/dev/account/configuration.html
+    ACCOUNT_FORMS = dict(
+        login='geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm'
+    )
+    
     """
      In order to generate reCaptcha keys, please see:
       - https://pypi.org/project/django-recaptcha/#installation
