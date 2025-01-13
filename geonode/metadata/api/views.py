@@ -76,7 +76,7 @@ class MetadataViewSet(ViewSet):
             response = {"Message": "Schema not found"}
             return Response(response)
 
-    # Get the JSON schema
+    # Handle the JSON schema instance
     @action(
         detail=False,
         methods=["get", "put", "patch"],
@@ -87,7 +87,7 @@ class MetadataViewSet(ViewSet):
                 perms_dict={
                     "default": {
                         "GET": ["base.view_resourcebase"],
-                        "POST": ["change_resourcebase_metadata"],
+                        "PUT": ["change_resourcebase_metadata"],
                     }
                 }
             )
