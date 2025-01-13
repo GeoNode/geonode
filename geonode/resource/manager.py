@@ -801,7 +801,7 @@ class ResourceManager(ResourceManagerInterface):
                         uuid,
                         instance=_resource,
                         owner=owner,
-                        permissions=permissions_registry.get_perms(instance=_resource, include_virtual=True),
+                        permissions=permissions_registry.get_perms(instance=_resource),
                         created=created,
                     ):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer

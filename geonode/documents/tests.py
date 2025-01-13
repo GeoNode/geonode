@@ -403,7 +403,7 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the document owner) were
-        current_perms = permissions_registry.get_perms(instance=document, include_virtual=True)
+        current_perms = permissions_registry.get_perms(instance=document)
         self.assertEqual(len(current_perms["users"]), 1)
 
         # Test that the User permissions specified in the perm_spec were

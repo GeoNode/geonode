@@ -525,7 +525,7 @@ class PermsSerializer(DynamicModelSerializer):
         request = self.context.get("request", None)
         resource = ResourceBase.objects.get(pk=instance)
         return (
-            permissions_registry.get_perms(instance=resource, user=request.user, include_virtual=True)
+            permissions_registry.get_perms(instance=resource, user=request.user)
             if request and request.user and resource
             else []
         )

@@ -2377,10 +2377,7 @@ class BaseApiTests(APITestCase):
             self.assertTrue(
                 "bobby"
                 in "bobby"
-                in [
-                    x.username
-                    for x in permissions_registry.get_perms(instance=resource, include_virtual=True).get("users", [])
-                ]
+                in [x.username for x in permissions_registry.get_perms(instance=resource).get("users", [])]
             )
             # copying the resource, should remove the perms for bobby
             # only the default perms should be available
@@ -2398,17 +2395,11 @@ class BaseApiTests(APITestCase):
         self.assertIsNotNone(_resource)
         self.assertNotIn(
             "bobby",
-            [
-                x.username
-                for x in permissions_registry.get_perms(instance=_resource, include_virtual=True).get("users", [])
-            ],
+            [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
         )
         self.assertIn(
             "admin",
-            [
-                x.username
-                for x in permissions_registry.get_perms(instance=_resource, include_virtual=True).get("users", [])
-            ],
+            [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
         )
 
     def test_resource_service_copy_with_perms_doc(self):
@@ -3447,7 +3438,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
             "groups": {anonymous_group: set(["view_resourcebase"])},
         }
 
-        actual_perms = permissions_registry.get_perms(instance=resource, include_virtual=True).copy()
+        actual_perms = permissions_registry.get_perms(instance=resource).copy()
         self.assertIsNotNone(actual_perms)
         self.assertTrue(self.user in actual_perms["users"].keys())
         self.assertTrue(anonymous_group in actual_perms["groups"].keys())

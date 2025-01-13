@@ -335,7 +335,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         # Add test to test perms being sent to the front end.
         layer = Dataset.objects.first()
         layer.set_default_permissions()
-        perms_info = permissions_registry.get_perms(instance=layer, include_virtual=True)
+        perms_info = permissions_registry.get_perms(instance=layer)
 
         # Ensure there is only one group 'anonymous' by default
         self.assertEqual(len(perms_info["groups"].keys()), 1)
@@ -696,7 +696,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         try:
             # Add test to test perms being sent to the front end.
             dataset.set_default_permissions()
-            perms_info = permissions_registry.get_perms(instance=dataset, include_virtual=True)
+            perms_info = permissions_registry.get_perms(instance=dataset)
 
             # Ensure there is only one group 'anonymous' by default
             self.assertEqual(len(perms_info["groups"].keys()), 1)

@@ -939,7 +939,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         # Test that previous permissions for users other than ones specified in
         # the perm_spec (and the layers owner) were removed
-        current_perms = permissions_registry.get_perms(instance=layer, include_virtual=True)
+        current_perms = permissions_registry.get_perms(instance=layer)
         self.assertGreaterEqual(len(current_perms["users"]), 1)
 
         # Test that there are no duplicates on returned permissions
@@ -1899,7 +1899,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             permissions, expected = item
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
                 self.assertSetEqual(
                     set(expected_perms),
                     set(perms_got),
@@ -1981,7 +1981,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             permissions, expected = item
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
                 self.assertSetEqual(
                     set(expected_perms),
                     set(perms_got),
@@ -2054,7 +2054,9 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
                 permissions, expected = item
                 self.resource.set_permissions(permissions)
                 for authorized_subject, expected_perms in expected.items():
-                    perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                    perms_got = [
+                        x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)
+                    ]
                     self.assertSetEqual(
                         set(expected_perms),
                         set(perms_got),
@@ -2125,7 +2127,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             permissions, expected = item
             self.resource.set_permissions(permissions)
             for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
                 self.assertSetEqual(
                     set(expected_perms),
                     set(perms_got),
@@ -2180,7 +2182,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             sut.refresh_from_db()
             self.assertEqual(sut.role, "manager")
             for authorized_subject, expected_perms in expected.items():
-                perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+                perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
                 self.assertSetEqual(
                     set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
                 )
@@ -2212,7 +2214,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.group_member: ["download_resourcebase", "view_resourcebase"],
         }
         for authorized_subject, expected_perms in expected.items():
-            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
             self.assertSetEqual(
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
@@ -2245,7 +2247,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             self.group_member: ["download_resourcebase", "view_resourcebase"],
         }
         for authorized_subject, expected_perms in expected.items():
-            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
             self.assertSetEqual(
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
@@ -2301,7 +2303,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
             ],
         }
         for authorized_subject, expected_perms in expected.items():
-            perms_got = [x for x in self.resource.get_self_resource().get_user_perms(authorized_subject)]
+            perms_got = [x for x in permissions_registry.get_perms(instance=self.resource, user=authorized_subject)]
             self.assertSetEqual(
                 set(expected_perms), set(perms_got), msg=f"use case #0 - user: {authorized_subject.username}"
             )
@@ -2313,10 +2315,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         """
 
         resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
-        self.assertFalse(
-            self.group_profile.group
-            in permissions_registry.get_perms(instance=resource, include_virtual=True)["groups"].keys()
-        )
+        self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
     @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
     def test_if_anonymoys_default_download_perms_is_false_should_not_assign_perms_to_user_group(self):
@@ -2325,10 +2324,7 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         """
 
         resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
-        self.assertFalse(
-            self.group_profile.group
-            in permissions_registry.get_perms(instance=resource, include_virtual=True)["groups"].keys()
-        )
+        self.assertFalse(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
 
     @override_settings(DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION=False)
     @override_settings(RESOURCE_PUBLISHING=True)
@@ -2339,13 +2335,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
         """
 
         resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
-        self.assertTrue(
-            self.group_profile.group
-            in permissions_registry.get_perms(instance=resource, include_virtual=True)["groups"].keys()
-        )
-        group_val = permissions_registry.get_perms(instance=resource, include_virtual=True)["groups"][
-            self.group_profile.group
-        ]
+        self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
+        group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
     @override_settings(DEFAULT_ANONYMOUS_VIEW_PERMISSION=False)
@@ -2360,13 +2351,8 @@ class SetPermissionsTestCase(GeoNodeBaseTestSupport):
 
         resource = resource_manager.create(str(uuid.uuid4), Dataset, defaults={"owner": self.group_member})
 
-        self.assertTrue(
-            self.group_profile.group
-            in permissions_registry.get_perms(instance=resource, include_virtual=True)["groups"].keys()
-        )
-        group_val = permissions_registry.get_perms(instance=resource, include_virtual=True)["groups"][
-            self.group_profile.group
-        ]
+        self.assertTrue(self.group_profile.group in permissions_registry.get_perms(instance=resource)["groups"].keys())
+        group_val = permissions_registry.get_perms(instance=resource)["groups"][self.group_profile.group]
         self.assertSetEqual({"view_resourcebase", "download_resourcebase"}, set(group_val))
 
 
@@ -2427,7 +2413,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             assign_perm(perm, self.member_with_perms, self.resource.get_self_resource())
 
         # Assert inital assignment of permissions to groups and users
-        resource_perm_specs = permissions_registry.get_perms(instance=self.resource, include_virtual=True)
+        resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
         self.assertSetEqual(
             set(resource_perm_specs["users"][self.author]), set(self.owner_perms + self.edit_perms + self.dataset_perms)
         )
@@ -2476,7 +2462,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             # Admin publishes and approves the resource
             response = self.admin_approve_and_publish_resource()
             self.assertEqual(response.status_code, 200)
-            resource_perm_specs = permissions_registry.get_perms(instance=self.resource, include_virtual=True)
+            resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
 
             # Once a resource has been published, the 'publish_resourcebase' permission should be removed anyway
             self.assertSetEqual(
@@ -2487,7 +2473,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             # Admin un-approves and un-publishes the resource
             response = self.admin_unapprove_and_unpublish_resource()
             self.assertEqual(response.status_code, 200)
-            resource_perm_specs = permissions_registry.get_perms(instance=self.resource, include_virtual=True)
+            resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
 
             self.assertSetEqual(
                 set(resource_perm_specs["users"][self.author]),
@@ -2497,7 +2483,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             GroupMember.objects.get(group=self.owner_group, user=self.author).demote()
 
     def assertions_for_approved_or_published_is_true(self):
-        resource_perm_specs = permissions_registry.get_perms(instance=self.resource, include_virtual=True)
+        resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
         self.assertSetEqual(set(resource_perm_specs["users"][self.author]), set(self.owner_perms))
         self.assertSetEqual(
             set(resource_perm_specs["users"][self.member_with_perms]), set(self.owner_perms + self.dataset_perms)
@@ -2514,7 +2500,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertSetEqual(set(resource_perm_specs["groups"][self.resource_group.group]), set(self.safe_perms))
 
     def assertions_for_approved_and_published_is_false(self):
-        resource_perm_specs = permissions_registry.get_perms(instance=self.resource, include_virtual=True)
+        resource_perm_specs = permissions_registry.get_perms(instance=self.resource)
         self.assertSetEqual(
             set(resource_perm_specs["users"][self.author]), set(self.owner_perms + self.edit_perms + self.dataset_perms)
         )
@@ -2638,7 +2624,7 @@ class TestUserHasPerms(GeoNodeBaseTestSupport):
             assign_perm(perm, get_anonymous_user(), resource)
             assign_perm(perm, Group.objects.get(name="anonymous"), resource)
 
-        perm_spec = permissions_registry.get_perms(instance=resource, include_virtual=True)
+        perm_spec = permissions_registry.get_perms(instance=resource)
         anonymous_user_perm = perm_spec["users"].get(get_anonymous_user())
         self.assertEqual(anonymous_user_perm, None, "Anynmous user wasn't removed")
 

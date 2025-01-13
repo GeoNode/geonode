@@ -626,9 +626,7 @@ class AdvancedSecurityWorkflowManager:
         if _resource:
             from geonode.security.registry import permissions_registry
 
-            perm_spec = _permissions or copy.deepcopy(
-                permissions_registry.get_perms(instance=_resource, include_virtual=True)
-            )
+            perm_spec = _permissions or copy.deepcopy(permissions_registry.get_perms(instance=_resource))
 
             # Sanity checks
             if isinstance(perm_spec, str):
@@ -714,7 +712,7 @@ class AdvancedSecurityWorkflowManager:
                 ).filter(owner=user)
                 _resources = queryset.iterator()
             for _r in _resources:
-                perm_spec = permissions_registry.get_perms(instance=_r, include_virtual=True)
+                perm_spec = permissions_registry.get_perms(instance=_r)
                 if "users" not in perm_spec:
                     perm_spec["users"] = {}
                 if "groups" not in perm_spec:

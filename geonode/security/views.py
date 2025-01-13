@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 
 
 def _perms_info(obj):
-    return permissions_registry.get_perms(instance=obj, include_virtual=True)
+    return permissions_registry.get_perms(instance=obj)
 
 
 def _perms_info_json(obj):

@@ -37,6 +37,7 @@ from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
 from itertools import chain
 from guardian.shortcuts import get_groups_with_perms
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -251,7 +252,7 @@ class UserHasPerms(DjangoModelPermissions):
             )
 
             # getting the user permission for that resource
-            resource_perms = res.get_user_perms(request.user)
+            resource_perms = permissions_registry.get_perms(instance=res, user=request.user)
 
             groups = get_groups_with_perms(res, attach_perms=True)
             # we are making this because the request.user.groups sometimes returns empty si is not fully reliable

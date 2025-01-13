@@ -350,7 +350,7 @@ def sync_resources_with_guardian(resource=None, force=False):
                 batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync resources {dataset}")
 
                 gf_utils.collect_delete_layer_rules(get_dataset_workspace(dataset), dataset.name, batch)
-                perm_spec = permissions_registry.get_perms(instance=dataset, include_virtual=True)
+                perm_spec = permissions_registry.get_perms(instance=dataset)
                 # All the other users
                 if "users" in perm_spec:
                     for user, perms in perm_spec["users"].items():

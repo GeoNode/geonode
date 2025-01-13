@@ -134,7 +134,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
                 )
         for layer in self.layers:
             user = get_user_model().objects.first()
-            perm_spec = permissions_registry.get_perms(instance=layer, include_virtual=True)
+            perm_spec = permissions_registry.get_perms(instance=layer)
             self.assertFalse(user in perm_spec["users"], f"{layer} - {user}")
 
     @override_settings(ASYNC_SIGNALS=False)
@@ -167,7 +167,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
                     verbose=True,
                 )
         for layer in self.layers:
-            perm_spec = permissions_registry.get_perms(instance=layer, include_virtual=True)
+            perm_spec = permissions_registry.get_perms(instance=layer)
             self.assertTrue(self.groups[0] in perm_spec["groups"])
 
     @override_settings(ASYNC_SIGNALS=False)
@@ -215,7 +215,7 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
                     verbose=True,
                 )
         for layer in self.layers:
-            perm_spec = permissions_registry.get_perms(instance=layer, include_virtual=True)
+            perm_spec = permissions_registry.get_perms(instance=layer)
             self.assertTrue(user not in perm_spec["users"])
 
     def test_forgot_username(self):

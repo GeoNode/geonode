@@ -54,7 +54,7 @@ class PermissionsHandlerRegistry:
 
     def fixup_perms(self, instance, payload, include_virtual=True, *args, **kwargs):
         for handler in self.REGISTRY:
-            payload = handler.fixup_perms(instance, payload, include_virtual, *args, **kwargs)
+            payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
     def get_perms(self, instance, user=None, include_virtual=True, *args, **kwargs):
