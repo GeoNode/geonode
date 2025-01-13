@@ -29,7 +29,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
-from geonode.security.registry import permissions_registry
 
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
@@ -625,6 +624,8 @@ class AdvancedSecurityWorkflowManager:
                 _permissions = copy.deepcopy(permissions)
 
         if _resource:
+            from geonode.security.registry import permissions_registry
+
             perm_spec = _permissions or copy.deepcopy(
                 permissions_registry.get_perms(instance=_resource, include_virtual=True)
             )
@@ -691,6 +692,7 @@ class AdvancedSecurityWorkflowManager:
             If the user is demoted, we assign by default at least the view and the download permission
             to the resource
             """
+            from geonode.security.registry import permissions_registry
             # Fetching all the resources belonging to Group "group"; i.e. assgined to "group" metadata
             queryset = get_objects_for_user(
                 user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
