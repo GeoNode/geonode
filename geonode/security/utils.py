@@ -693,6 +693,7 @@ class AdvancedSecurityWorkflowManager:
             to the resource
             """
             from geonode.security.registry import permissions_registry
+
             # Fetching all the resources belonging to Group "group"; i.e. assgined to "group" metadata
             queryset = get_objects_for_user(
                 user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
