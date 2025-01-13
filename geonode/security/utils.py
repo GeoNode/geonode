@@ -29,6 +29,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group, Permission
 from guardian.utils import get_user_obj_perms_model
 from guardian.shortcuts import get_objects_for_user, get_objects_for_group
+from geonode.security.registry import permissions_registry
 
 from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile
@@ -624,7 +625,7 @@ class AdvancedSecurityWorkflowManager:
                 _permissions = copy.deepcopy(permissions)
 
         if _resource:
-            perm_spec = _permissions or copy.deepcopy(_resource.get_all_level_info())
+            perm_spec = _permissions or copy.deepcopy(permissions_registry.get_perms(instance=_resource, include_virtual=True))
 
             # Sanity checks
             if isinstance(perm_spec, str):
@@ -708,7 +709,7 @@ class AdvancedSecurityWorkflowManager:
                 ).filter(owner=user)
                 _resources = queryset.iterator()
             for _r in _resources:
-                perm_spec = _r.get_all_level_info()
+                perm_spec = permissions_registry.get_perms(instance=_r, include_virtual=True)
                 if "users" not in perm_spec:
                     perm_spec["users"] = {}
                 if "groups" not in perm_spec:

@@ -569,7 +569,7 @@ class ResourceManager(ResourceManagerInterface):
 
                     # Gathering and validating the current permissions (if any has been passed)
                     if not created and permissions is None:
-                        permissions = _resource.get_all_level_info()
+                        permissions = permissions_registry.get_perms(instance=_resource, include_virtual=False)
 
                     if permissions:
                         if PermSpecCompact.validate(permissions):
