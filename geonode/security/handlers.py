@@ -54,7 +54,7 @@ class AdvancedWorkflowPermissionsHandler(BasePermissionsHandler):
     """
 
     @staticmethod
-    def fixup_perms(instance, perms_payload, include_virtual, *args, **kwargs):
+    def get_perms(instance, perms_payload, include_virtual=True, *args, **kwargs):
         # Fixup Advanced Workflow permissions
         return AdvancedSecurityWorkflowManager.get_permissions(
             instance.uuid,
