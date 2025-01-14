@@ -35,7 +35,6 @@ from geonode.security.utils import get_users_with_perms, get_visible_resources
 from geonode.groups.models import GroupProfile
 from rest_framework.permissions import DjangoModelPermissions
 from guardian.shortcuts import get_objects_for_user
-from itertools import chain
 from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
@@ -251,16 +250,8 @@ class UserHasPerms(DjangoModelPermissions):
             )
 
             # getting the user permission for that resource
-            resource_perms = permissions_registry.get_perms(instance=res)
+            available_perms = permissions_registry.get_perms(instance=res, user=request.user)
 
-            # merging all available permissions into a single list
-            available_perms = list(
-                set(
-                    chain.from_iterable(
-                        list(resource_perms["users"].values()) + list(resource_perms["groups"].values())
-                    )
-                )
-            )
             if request.user.has_perm("base.add_resourcebase"):
                 available_perms.append("add_resourcebase")
             # fixup the permissions name
