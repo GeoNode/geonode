@@ -253,8 +253,6 @@ class UserHasPerms(DjangoModelPermissions):
             # getting the user permission for that resource
             resource_perms = permissions_registry.get_perms(instance=res)
 
-            if request.user.has_perm("base.add_resourcebase"):
-                resource_perms.append("add_resourcebase")
             # merging all available permissions into a single list
             available_perms = list(
                 set(
@@ -263,6 +261,8 @@ class UserHasPerms(DjangoModelPermissions):
                     )
                 )
             )
+            if request.user.has_perm("base.add_resourcebase"):
+                available_perms.append("add_resourcebase")
             # fixup the permissions name
             perms_without_base = [x.replace("base.", "") for x in perms]
             # if at least one of the permissions is available the request is True
