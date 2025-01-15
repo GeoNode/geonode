@@ -130,6 +130,7 @@ class MetadataManager:
 
     def update_schema_instance(self, resource, json_instance) -> dict:
         logger.debug(f"RECEIVED INSTANCE {json_instance}")
+        resource = resource.get_real_instance()
         schema = self.get_schema()
         context = {}
         for handler in self.handlers.values():
