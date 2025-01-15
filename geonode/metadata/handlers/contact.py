@@ -20,6 +20,7 @@
 import logging
 from rest_framework.reverse import reverse
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 
@@ -57,14 +58,14 @@ class ContactHandler(MetadataHandler):
         for role in Roles:
             rolename = ROLE_NAMES_MAP[role]
             minitems = 1 if role.is_required else 0
-            card = f'[{minitems}..{"N" if role.is_multivalue else "1"}]'
+            card = f' [{minitems}..{"N" if role.is_multivalue else "1"}]' if settings.DEBUG else ""
             if role.is_required:
                 required.append(rolename)
 
             if role.is_multivalue:
                 contact = {
                     "type": "array",
-                    "title": self._localize_label(context, lang, role.label) + " " + card,
+                    "title": self._localize_label(context, lang, role.label) + card,
                     "minItems": minitems,
                     "items": {
                         "type": "object",
@@ -84,7 +85,7 @@ class ContactHandler(MetadataHandler):
             else:
                 contact = {
                     "type": "object",
-                    "title": self._localize_label(context, lang, role.label) + " " + card,
+                    "title": self._localize_label(context, lang, role.label) + card,
                     "properties": {
                         "id": {
                             "type": "string",
