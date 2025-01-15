@@ -20,7 +20,8 @@ import copy
 import json
 import logging
 
-from geonode.metadata.handlers.abstract import MetadataHandler, UnsetFieldException
+from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.models import SparseField
 
 logger = logging.getLogger(__name__)

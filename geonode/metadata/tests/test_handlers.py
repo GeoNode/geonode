@@ -66,7 +66,7 @@ from geonode.resource.utils import KeywordHandler
 from geonode.metadata.handlers.contact import ContactHandler, ROLE_NAMES_MAP
 from geonode.metadata.handlers.sparse import SparseHandler, sparse_field_registry
 from geonode.metadata.models import SparseField
-from geonode.metadata.handlers.abstract import UnsetFieldException
+from geonode.metadata.exceptions import UnsetFieldException
 
 from geonode.tests.base import GeoNodeBaseTestSupport
 

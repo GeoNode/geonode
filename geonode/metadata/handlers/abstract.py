@@ -135,15 +135,3 @@ class MetadataHandler(metaclass=ABCMeta):
     def _localize_subschema_label(context, subschema: dict, lang: str, annotation_name: str):
         if annotation_name in subschema:
             subschema[annotation_name] = MetadataHandler._localize_label(context, lang, subschema[annotation_name])
-
-
-class MetadataFieldException(Exception):
-    pass
-
-
-class UnsetFieldException(MetadataFieldException):
-    pass
-
-
-class UnparsableFieldException(MetadataFieldException):
-    pass

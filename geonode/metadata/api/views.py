@@ -79,7 +79,7 @@ class MetadataViewSet(ViewSet):
     # Handle the JSON schema instance
     @action(
         detail=False,
-        methods=["get", "put", "patch"],
+        methods=["get", "put"],
         url_path=r"instance/(?P<pk>\d+)",
         url_name="schema_instance",
         permission_classes=[

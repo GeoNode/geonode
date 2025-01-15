@@ -24,7 +24,8 @@ from cachetools import FIFOCache
 from django.utils.translation import gettext as _
 
 from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
-from geonode.metadata.handlers.abstract import MetadataHandler, UnsetFieldException
+from geonode.metadata.handlers.abstract import MetadataHandler
+from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.i18n import get_localized_labels, I18N_THESAURUS_IDENTIFIER
 from geonode.metadata.settings import MODEL_SCHEMA
 
