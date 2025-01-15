@@ -1457,7 +1457,7 @@ def base_linked_resources(instance, user, params):
         return Response(data={"message": e.args[0], "success": False}, status=500, exception=True)
 
 
-def base_linked_resources_payload(instance, user, params={}):
+def base_linked_resources_instances(instance, user, params={}):
     resource_type = params.get("resource_type", None)
     link_type = params.get("link_type", None)
     type_list = resource_type.split(",") if resource_type else []
@@ -1498,7 +1498,7 @@ def base_linked_resources_payload(instance, user, params={}):
         linked_to_visib_ids = linked_to_visib.values_list("id", flat=True)
         linked_to = [lres for lres in linked_to_over_loopable if lres.target.id in linked_to_visib_ids]
 
-        ret["linked_to"] = LinkedResourceSerializer(linked_to, embed=True, many=True).data
+        ret["linked_to"] = linked_to
 
     if not link_type or link_type == "linked_by":
         linked_by_over = instance.get_linked_resources(as_target=True)
@@ -1517,11 +1517,25 @@ def base_linked_resources_payload(instance, user, params={}):
         linked_by_visib_ids = linked_by_visib.values_list("id", flat=True)
         linked_by = [lres for lres in linked_by_over_loopable if lres.source.id in linked_by_visib_ids]
 
-        ret["linked_by"] = LinkedResourceSerializer(
-            instance=linked_by, serialize_source=True, embed=True, many=True
-        ).data
+        ret["linked_by"] = linked_by
 
     if not ret["WARNINGS"]:
         ret.pop("WARNINGS")
+
+    return ret
+
+
+def base_linked_resources_payload(instance, user, params={}):
+    lres = base_linked_resources_instances(instance, user, params)
+    ret = {}
+    if "linked_to" in lres:
+        ret["linked_to"] = LinkedResourceSerializer(lres["linked_to"], embed=True, many=True).data
+    if "linked_by" in lres:
+        ret["linked_by"] = LinkedResourceSerializer(
+            instance=lres["linked_by"], serialize_source=True, embed=True, many=True
+        ).data
+
+    if lres.get("WARNINGS", None):
+        ret["WARNINGS"] = lres["WARNINGS"]
 
     return ret

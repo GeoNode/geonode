@@ -79,3 +79,7 @@ class Roles(enum.Enum):
     @classmethod
     def get_toggled_ones(cls):
         return [role for role in cls if role.is_toggled_in_metadata_editor]
+
+    @classmethod
+    def get_role_by_name(cls, name):
+        return next((role for role in cls if role.name == name))
