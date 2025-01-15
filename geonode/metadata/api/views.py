@@ -208,7 +208,7 @@ class ProfileAutocomplete(autocomplete.Select2QuerySetView):
         if self.request and self.request.user:
             qs = get_available_users(self.request.user)
         else:
-            qs = get_user_model().objects.all()
+            qs = get_user_model().objects.none()
 
         if self.q:
             qs = qs.filter(
