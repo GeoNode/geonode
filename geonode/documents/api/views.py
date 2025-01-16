@@ -137,7 +137,7 @@ class DocumentViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedList
 
             resource.set_missing_info()
             resourcebase_post_save(resource.get_real_instance())
-            resource_manager.set_permissions(None, instance=resource, permissions=None, created=True)
+            resource.set_default_permissions(owner=self.request.user, created=True)
             resource.handle_moderated_uploads()
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=False)
             return resource

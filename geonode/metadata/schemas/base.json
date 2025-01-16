@@ -1,0 +1,159 @@
+{
+  "uuid": {
+    "type": "string",
+    "title": "UUID",
+    "maxLength": 36,
+    "readOnly": true,
+    "NO_ui:widget": "hidden",
+    "geonode:handler": "base"
+  },
+  "title": {
+    "type": "string",
+    "title": "title",
+    "description": "name by which the cited resource is known",
+    "maxLength": 255,
+    "geonode:handler": "base"
+  },
+  "abstract": {
+    "type": "string",
+    "title": "abstract",
+    "description": "brief narrative summary of the content of the resource(s)",
+    "maxLength": 2000,
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    },
+    "geonode:handler": "base"
+  },
+  "date": {
+    "type": "string",
+    "format": "date-time",
+    "title": "Date"
+  },
+  "date_type": {
+    "type": "string",
+    "title": "date type",
+    "maxLength": 255
+  },
+  "category": {
+     "type": "object",
+     "title": "Category",
+     "description": "high-level geographic data thematic classification to assist in the grouping and search of available geographic data sets.",
+     "properties": {
+       "id": {
+         "type": "string"
+       },
+       "label": {
+         "type": "string"
+       }
+     },
+     "required": ["id"],
+     "geonode:required": true
+  },
+  "language": {
+    "type": "string",
+    "title": "language",
+    "description": "language used within the dataset",
+    "maxLength": 16
+  },
+  "license": {
+    "type": "object",
+    "title": "License",
+    "description": "license of the dataset",
+    "maxLength": 255,
+     "properties": {
+       "id": {
+         "type": "string"
+       },
+       "label": {
+         "type": "string"
+       }
+     },
+     "required": ["id"],
+     "geonode:required": true
+  },
+  "attribution": {
+    "type": ["string", "null"],
+    "title": "Attribution",
+    "description": "authority or function assigned, as to a ruler, legislative assembly, delegate, or the like.",
+    "maxLength": 2048
+  },
+  "data_quality_statement": {
+    "type": ["string", "null"],
+    "title": "data quality statement",
+    "description": "general explanation of the data producer's knowledge about the lineage of a dataset",
+    "maxLength": 2000,
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    }
+  },
+  "restriction_code_type": {
+    "type": "string",
+    "title": "restrictions",
+    "description": "limitation(s) placed upon the access or use of the data.",
+    "maxLength": 255
+  },
+  "constraints_other": {
+    "type": ["string", "null"],
+    "title": "Other constraints",
+    "description": "other restrictions and legal prerequisites for accessing and using the resource or metadata",
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    }
+  },
+  "edition": {
+    "type": ["string", "null"],
+    "title": "edition",
+    "description": "version of the cited resource",
+    "maxLength": 255
+  },
+  "purpose": {
+    "type": ["string", "null"],
+    "title": "purpose",
+    "description": "summary of the intentions with which the resource(s) was developed",
+    "maxLength": 500,
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    },
+    "geonode:handler": "base"
+  },
+  "supplemental_information": {
+    "type": ["string", "null"],
+    "title": "supplemental information",
+    "description": "any other descriptive information about the dataset",
+    "maxLength": 2000,
+    "default": "No information provided",
+    "ui:options": {
+      "widget": "textarea",
+      "rows": 5
+    }
+  },
+  "temporal_extent_start": {
+    "type": ["string", "null"],
+    "format": "date-time",
+    "title": "temporal extent start",
+    "description": "time period covered by the content of the dataset (start)"
+  },
+  "temporal_extent_end": {
+    "type": ["string", "null"],
+    "format": "date-time",
+    "title": "temporal extent end",
+    "description": "time period covered by the content of the dataset (end)"
+  },
+  "maintenance_frequency": {
+    "type": "string",
+    "title": "maintenance frequency",
+    "description": "frequency with which modifications and deletions are made to the data after it is first produced",
+    "maxLength": 255
+  },
+  "spatial_representation_type": {
+    "type": "string",
+    "title": "spatial representation type",
+    "description": "method used to represent geographic information in the dataset.",
+    "maxLength": 255
+  }
+
+}

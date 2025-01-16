@@ -1,0 +1,26 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "{GEONODE_SITE}/resource.json",
+    "title": "GeoNode resource",
+    "type": "object",
+    "properties": {
+        "field1": {
+            "type": "string",
+            "title": "fake_handler1",
+            "maxLength": 255,
+            "geonode:handler": "fake_handler1"
+        },
+        "field2": {
+            "type": "string",
+            "title": "fake_handler2",
+            "maxLength": 255,
+            "geonode:handler": "fake_handler2"
+        },
+        "field3": {
+            "type": "string",
+            "title": "fake_handler3",
+            "maxLength": 255,
+            "geonode:handler": "fake_handler3"
+        }
+    }
+ }
