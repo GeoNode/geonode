@@ -37,6 +37,7 @@ from geonode.groups.conf import settings as groups_settings
 from geonode.groups.models import GroupProfile, GroupMember, GroupCategory
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -334,7 +335,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         # Add test to test perms being sent to the front end.
         layer = Dataset.objects.first()
         layer.set_default_permissions()
-        perms_info = layer.get_all_level_info()
+        perms_info = permissions_registry.get_perms(instance=layer)
 
         # Ensure there is only one group 'anonymous' by default
         self.assertEqual(len(perms_info["groups"].keys()), 1)
@@ -695,7 +696,7 @@ class GroupsSmokeTest(GeoNodeBaseTestSupport):
         try:
             # Add test to test perms being sent to the front end.
             dataset.set_default_permissions()
-            perms_info = dataset.get_all_level_info()
+            perms_info = permissions_registry.get_perms(instance=dataset)
 
             # Ensure there is only one group 'anonymous' by default
             self.assertEqual(len(perms_info["groups"].keys()), 1)

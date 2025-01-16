@@ -45,7 +45,12 @@ from geonode.thumbs.thumbnails import _generate_thumbnail_name
 from geonode.thumbs.utils import ThumbnailAlgorithms
 from geonode.documents.tasks import create_document_thumbnail
 from geonode.security.permissions import PermSpecCompact, DATA_STYLABLE_RESOURCES_SUBTYPES
-from geonode.security.utils import perms_as_set, get_user_groups, skip_registered_members_common_group
+from geonode.security.utils import (
+    perms_as_set,
+    get_user_groups,
+    skip_registered_members_common_group,
+)
+from geonode.security.registry import permissions_registry
 
 from . import settings as rm_settings
 from .utils import update_resource, resourcebase_post_save
@@ -564,7 +569,7 @@ class ResourceManager(ResourceManagerInterface):
 
                     # Gathering and validating the current permissions (if any has been passed)
                     if not created and permissions is None:
-                        permissions = _resource.get_all_level_info()
+                        permissions = permissions_registry.get_perms(instance=_resource, include_virtual=False)
 
                     if permissions:
                         if PermSpecCompact.validate(permissions):
@@ -574,14 +579,16 @@ class ResourceManager(ResourceManagerInterface):
                     else:
                         _permissions = None
 
-                    # Fixup Advanced Workflow permissions
-                    _perm_spec = AdvancedSecurityWorkflowManager.get_permissions(
-                        _resource.uuid,
-                        instance=_resource,
-                        permissions=_permissions,
+                    """
+                    Align _perm_spec based on the permissions handlers
+                    """
+                    _perm_spec = permissions_registry.fixup_perms(
+                        _resource,
+                        _permissions,
                         created=created,
                         approval_status_changed=approval_status_changed,
                         group_status_changed=group_status_changed,
+                        include_virtual=False,
                     )
 
                     """
@@ -794,7 +801,7 @@ class ResourceManager(ResourceManagerInterface):
                         uuid,
                         instance=_resource,
                         owner=owner,
-                        permissions=_resource.get_all_level_info(),
+                        permissions=permissions_registry.get_perms(instance=_resource),
                         created=created,
                     ):
                         # This might not be a severe error. E.g. for datasets outside of local GeoServer

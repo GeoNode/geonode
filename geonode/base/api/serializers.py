@@ -69,6 +69,7 @@ from geonode.utils import build_absolute_uri
 from geonode.security.utils import get_resources_with_perms, get_geoapp_subtypes
 from geonode.resource.models import ExecutionRequest
 from django.contrib.gis.geos import Polygon
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -523,7 +524,11 @@ class PermsSerializer(DynamicModelSerializer):
     def to_representation(self, instance):
         request = self.context.get("request", None)
         resource = ResourceBase.objects.get(pk=instance)
-        return resource.get_user_perms(request.user) if request and request.user and resource else []
+        return (
+            permissions_registry.get_perms(instance=resource, user=request.user)
+            if request and request.user and resource
+            else []
+        )
 
 
 class LinksSerializer(DynamicModelSerializer):

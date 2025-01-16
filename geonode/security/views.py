@@ -35,13 +35,13 @@ from geonode.layers.models import Dataset
 from geonode.groups.models import GroupProfile
 
 from geonode.notifications_helper import send_notification
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
 
 def _perms_info(obj):
-    info = obj.get_all_level_info()
-    return info
+    return permissions_registry.get_perms(instance=obj)
 
 
 def _perms_info_json(obj):

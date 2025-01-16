@@ -48,6 +48,7 @@ from geonode.base.models import Region
 from geonode.utils import check_ogc_backend
 from geonode import GeoNodeException, geoserver
 from geonode.layers.models import shp_exts, csv_exts, vec_exts, cov_exts, Dataset
+from geonode.security.registry import permissions_registry
 
 READ_PERMISSIONS = ["view_resourcebase"]
 WRITE_PERMISSIONS = ["change_dataset_data", "change_dataset_style", "change_resourcebase_metadata"]
@@ -357,7 +358,9 @@ def set_datasets_permissions(
             # for the selected resource
             resource = resource.first()
             # getting the actual permissions available for the dataset
-            original_perms = PermSpec(resource.get_all_level_info(), resource)
+            original_perms = PermSpec(
+                permissions_registry.get_perms(instance=resource, include_virtual=False), resource
+            )
             new_perms_payload = {"organizations": [], "users": [], "groups": []}
             # if the username is specified, we add them to the payload with the compact
             # perm value

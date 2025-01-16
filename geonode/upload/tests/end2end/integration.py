@@ -41,6 +41,7 @@ from geonode.catalogue import get_catalogue
 from geonode.tests.utils import upload_step, Client
 from geonode.geoserver.helpers import ogc_server_settings, cascading_delete
 from geonode.geoserver.signals import gs_catalog
+from geonode.security.registry import permissions_registry
 
 from geoserver.catalog import Catalog
 from gisdata import BAD_DATA
@@ -695,7 +696,7 @@ class TestUploadDBDataStore(UploaderBase):
         resp, data = self.client.upload_file(thefile, perms='{"users": {"AnonymousUser": []}, "groups":{}}')
         _dataset = Dataset.objects.get(name=dataset_name)
         _user = get_user_model().objects.get(username="AnonymousUser")
-        self.assertEqual(_dataset.get_user_perms(_user).count(), 0)
+        self.assertEqual(permissions_registry.get_perms(instance=_dataset, user=_user).count(), 0)
 
         # initial state is no positions or info
         self.assertTrue(get_wms_timepositions() is None)
