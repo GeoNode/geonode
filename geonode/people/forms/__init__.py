@@ -24,21 +24,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.utils.translation import gettext_lazy as _
 
-try:
-    from captcha.fields import ReCaptchaField
-except ImportError:
-    from django_recaptcha.fields import ReCaptchaField
-
 # Ported in from django-registration
 attrs_dict = {"class": "required"}
-
-
-class AllauthReCaptchaSignupForm(forms.Form):
-    captcha = ReCaptchaField(label=False)
-
-    def signup(self, request, user):
-        """Required, or else it thorws deprecation warnings"""
-        pass
 
 
 class ProfileCreationForm(UserCreationForm):
