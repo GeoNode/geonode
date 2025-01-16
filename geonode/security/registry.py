@@ -34,6 +34,11 @@ class PermissionsHandlerRegistry:
         self.__check_item(item)
         self.REGISTRY.append(item)
 
+    def remove(self, module_path):
+        item = import_string(module_path)()
+        self.__check_item(item)
+        self.REGISTRY.remove(item)
+
     def reset(self):
         self.REGISTRY = []
 
