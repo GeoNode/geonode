@@ -54,11 +54,11 @@ class CustomSignupView(SignupView):
         form = ret["form"]
         form.field_order = [f for f in form.fields.keys() if f != "captcha"] + ["captcha"]
         form.order_fields(form.field_order)
-        return ret    
-    
+        return ret
+
 
 class CustomLoginView(LoginView):
-    template_name = 'people/account_login.html'
+    template_name = "people/account_login.html"
 
 
 @login_required

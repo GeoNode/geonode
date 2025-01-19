@@ -1403,10 +1403,7 @@ if RECAPTCHA_ENABLED:
     )
 
     # https://docs.allauth.org/en/dev/account/configuration.html
-    ACCOUNT_FORMS = dict(
-        login='geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm'
-    )
-    
+    ACCOUNT_FORMS = dict(login="geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm")
     """
      In order to generate reCaptcha keys, please see:
       - https://pypi.org/project/django-recaptcha/#installation
