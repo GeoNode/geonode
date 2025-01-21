@@ -2,7 +2,7 @@ from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.db.models import signals
-
+from django.utils.timezone import now
 
 site_url = urlsplit(settings.SITEURL)
 
@@ -11,6 +11,7 @@ PROXIED_LINK_TYPES = ["OGC:WMS", "OGC:WFS", "data"]
 
 class ProxyUrlsRegistry:
     _first_init = True
+    _last_registry_load = None
 
     def initialize(self):
         from geonode.base.models import Link
@@ -30,6 +31,8 @@ class ProxyUrlsRegistry:
             signals.post_delete.connect(link_post_delete, sender=Link)
             self._first_init = False
 
+        self._last_registry_load = now()
+
     def set(self, hosts):
         self.proxy_allowed_hosts = set(hosts)
         return self
@@ -45,6 +48,10 @@ class ProxyUrlsRegistry:
         self.proxy_allowed_hosts.remove(host)
 
     def get_proxy_allowed_hosts(self):
+        if self._last_registry_load is None or (now() - self._last_registry_load).days >= getattr(
+            settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1
+        ):
+            self.initialize()
         return self.proxy_allowed_hosts
 
 
