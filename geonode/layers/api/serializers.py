@@ -213,3 +213,40 @@ class DatasetMetadataSerializer(serializers.Serializer):
 
     class Meta:
         fields = "metadata_file"
+
+
+class DatasetTimeSeriesSerializer(serializers.Serializer):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        layer = self.context.get("layer")
+
+        if layer:
+            # use the get_choices method of the Dataset model
+            choices = [(None, "-----")] + layer.get_choices
+            self.fields["attribute"].choices = choices
+            self.fields["end_attribute"].choices = choices
+        else:
+            choices = [(None, "-----")]
+
+    has_time = serializers.BooleanField(default=False)
+    attribute = serializers.ChoiceField(choices=[], required=False)
+    end_attribute = serializers.ChoiceField(choices=[], required=False)
+    presentation = serializers.ChoiceField(
+        required=False,
+        choices=[
+            ("LIST", "List of all the distinct time values"),
+            ("DISCRETE_INTERVAL", "Intervals defined by the resolution"),
+            (
+                "CONTINUOUS_INTERVAL",
+                "Continuous Intervals for data that is frequently updated, resolution describes the frequency of updates",
+            ),
+        ],
+    )
+    precision_value = serializers.IntegerField(required=False)
+    precision_step = serializers.ChoiceField(
+        required=False,
+        choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
+    )
