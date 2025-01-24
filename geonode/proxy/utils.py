@@ -35,10 +35,12 @@ class ProxyUrlsRegistry:
 
     def set(self, hosts):
         self.proxy_allowed_hosts = set(hosts)
+        self._last_registry_load = now()
         return self
 
     def clear(self):
         self.proxy_allowed_hosts = set()
+        self._last_registry_load = now()
         return self
 
     def register_host(self, host):
