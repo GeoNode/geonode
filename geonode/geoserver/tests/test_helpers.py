@@ -31,6 +31,10 @@ from geonode.base.populate_test_data import all_public, create_models, remove_mo
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.geoserver.views import _response_callback
+from geonode.layers.models import Dataset, Attribute
+from uuid import uuid4
+from django.contrib.auth import get_user_model
+
 from geonode.geoserver.helpers import (
     gs_catalog,
     ows_endpoint_in_path,
@@ -38,8 +42,10 @@ from geonode.geoserver.helpers import (
     extract_name_from_sld,
     get_dataset_capabilities_url,
     get_layer_ows_url,
+    get_time_info,
 )
 from geonode.geoserver.ows import _wcs_link, _wfs_link, _wms_link
+from unittest.mock import patch, Mock
 
 
 logger = logging.getLogger(__name__)
@@ -267,7 +273,6 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
 
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     def test_layer_ows_url(self):
-        from geonode.layers.models import Dataset
 
         ows_url = settings.GEOSERVER_PUBLIC_LOCATION
         identifier = "geonode:CA"
@@ -275,3 +280,83 @@ xlink:href="{settings.GEOSERVER_LOCATION}ows?service=WMS&amp;request=GetLegendGr
         expected_url = f"{ows_url}geonode/CA/ows"
         capabilities_url = get_layer_ows_url(dataset)
         self.assertEqual(capabilities_url, expected_url, capabilities_url)
+
+    # Tests for geonode.geoserver.helpers.get_time_info
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_get_time_info_valid_layer(self, mock_gs_catalog):
+
+        mock_dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="geonode:states",
+            store="httpfooremoteservce",
+            subtype="remote",
+            alternate="geonode:states",
+        )
+
+        Attribute.objects.create(pk=5, attribute="begin", dataset_id=mock_dataset.pk)
+
+        Attribute.objects.create(pk=6, attribute="end", dataset_id=mock_dataset.pk)
+
+        # Build mock GeoServer's time info
+        mock_gs_time_info = Mock()
+        mock_gs_time_info.enabled = True
+        mock_gs_time_info.attribute = "begin"
+        mock_gs_time_info.end_attribute = "end"
+        mock_gs_time_info.presentation = "DISCRETE_INTERVAL"
+        mock_gs_time_info.resolution = 5000
+        mock_gs_time_info._lookup = [("seconds", 1), ("minutes", 60)]
+
+        mock_gs_layer = Mock()
+        mock_gs_layer.resource.metadata.get.return_value = mock_gs_time_info
+        mock_gs_catalog.get_layer.return_value = mock_gs_layer
+
+        result = get_time_info(mock_dataset)
+
+        self.assertEqual(result["attribute"], 5)
+        self.assertEqual(result["end_attribute"], 6)
+        self.assertEqual(result["presentation"], "DISCRETE_INTERVAL")
+        self.assertEqual(result["precision_value"], 5)
+        self.assertEqual(result["precision_step"], "seconds")
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_get_time_info_with_time_disabled(self, mock_gs_catalog):
+
+        mock_dataset = Dataset.objects.create(
+            uuid=str(uuid4()),
+            owner=get_user_model().objects.get(username=self.user),
+            name="geonode:states",
+            store="httpfooremoteservce",
+            subtype="remote",
+            alternate="geonode:states",
+        )
+
+        Attribute.objects.create(pk=5, attribute="begin", dataset_id=mock_dataset.pk)
+
+        Attribute.objects.create(pk=6, attribute="end", dataset_id=mock_dataset.pk)
+
+        mock_gs_time_info = Mock()
+        mock_gs_time_info.enabled = False
+        mock_gs_time_info.attribute = "begin"
+        mock_gs_time_info.end_attribute = "end"
+        mock_gs_time_info.presentation = "DISCRETE_INTERVAL"
+        mock_gs_time_info.resolution = 10000
+        mock_gs_time_info._lookup = [("seconds", 1), ("minutes", 60)]
+
+        mock_gs_layer = Mock()
+        mock_gs_layer.resource.metadata.get.return_value = mock_gs_time_info
+        mock_gs_catalog.get_layer.return_value = mock_gs_layer
+
+        result = get_time_info(mock_dataset)
+        self.assertEqual(result, {})
+
+    @patch("geonode.geoserver.helpers.gs_catalog")
+    def test_get_time_info_no_layer(self, mock_gs_catalog):
+
+        mock_gs_catalog.get_layer.return_value = None
+
+        mock_layer = Mock()
+        mock_layer.name = "nonexistent_layer"
+
+        result = get_time_info(mock_layer)
+        self.assertIsNone(result)

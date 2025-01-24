@@ -1,0 +1,14 @@
+{% extends "account/login.html" %}
+{% comment %} Inherited from Django AllAuth default login form {% endcomment %}
+
+{% block extra_script %}
+<script type="text/javascript">
+    $( document ).ready(function() {
+        let recaptchaControl= $(".g-recaptcha" );
+
+        if (recaptchaControl.length ) {
+            recaptchaControl.removeClass('form-control');
+        }
+    });    
+</script>
+{% endblock extra_script %}
