@@ -28,7 +28,7 @@ except ImportError:
 
 class AllauthReCaptchaSignupForm(forms.Form):
     captcha = ReCaptchaField(label=False)
-    
+
     def signup(self, request, user):
         """Required, or else it thorws deprecation warnings"""
         pass

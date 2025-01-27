@@ -1405,10 +1405,8 @@ if RECAPTCHA_ENABLED:
     )
 
     # https://docs.allauth.org/en/dev/account/configuration.html
-    ACCOUNT_FORMS = dict(
-        login='geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm'
-    )
-    
+    ACCOUNT_FORMS = dict(login="geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm")
+
     """
      In order to generate reCaptcha keys, please see:
       - https://pypi.org/project/django-recaptcha/#installation
@@ -2370,3 +2368,8 @@ ASSET_HANDLERS = [
 ]
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
+
+# Django-Avatar - Change default templates to Geonode based
+AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
+AVATAR_CHANGE_TEMPLATE = "people/avatar/change.html"
+AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"

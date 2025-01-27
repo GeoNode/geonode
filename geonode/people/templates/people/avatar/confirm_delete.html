@@ -1,0 +1,26 @@
+{% extends "geonode_base.html" %}
+{% load i18n bootstrap_tags %}
+
+{% block body_outer %}
+<div class="page-header">
+    <h2>{% trans "Delete Avatar" %}</h2>
+</div>
+<div class="row">
+    <div class="col-md-12">
+    {% if not avatars %}
+        {% url 'avatar_change' as avatar_change_url %}
+        <p>{% blocktrans %}You have no avatars to delete. Please <a href="{{ avatar_change_url }}">upload one</a> now.{% endblocktrans %}</p>
+    {% else %}
+        <p>{% trans "Please select the avatars that you would like to delete." %}</p>
+        <form method="POST" action="{% url 'avatar:delete' %}">
+            {{ delete_avatar_form|as_bootstrap_inline }}
+            <p>
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary" value="{% trans 'Delete These' %}" />
+                <a href="{% url 'profile_edit' user.username %}" class="btn btn-link"> {% trans "Go back to Edit Your Profile" %}</a>
+            </p>
+        </form>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
