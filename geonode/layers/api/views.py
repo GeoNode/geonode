@@ -260,7 +260,10 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                 )
 
                 if start_attr is None and end_attr is None:
-                    return JsonResponse({"message": "Please select at least one option between the attribute and end_attribute"}, status=200)
+                    return JsonResponse(
+                        {"message": "Please select at least one option between the attribute and end_attribute"},
+                        status=200,
+                    )
 
                 # Save the has_time value to the database
                 layer.has_time = True
@@ -291,8 +294,4 @@ class DatasetViewSet(ApiPresetsInitializer, DynamicModelViewSet, AdvertisedListM
                 layer.has_time = False
                 layer.save()
 
-                return JsonResponse(
-                    {
-                        "message": "The time dimension information for this layer was disabled"
-                    }
-                )
+                return JsonResponse({"message": "The time dimension information for this layer was disabled"})
