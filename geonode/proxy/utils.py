@@ -12,6 +12,7 @@ PROXIED_LINK_TYPES = ["OGC:WMS", "OGC:WFS", "data"]
 class ProxyUrlsRegistry:
     _first_init = True
     _last_registry_load = None
+    _registry_reload_threshold = getattr(settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1)
 
     def initialize(self):
         from geonode.base.models import Link
@@ -50,8 +51,9 @@ class ProxyUrlsRegistry:
         self.proxy_allowed_hosts.remove(host)
 
     def get_proxy_allowed_hosts(self):
-        if self._last_registry_load is None or (now() - self._last_registry_load).days >= getattr(
-            settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1
+        if (
+            self._last_registry_load is None
+            or (now() - self._last_registry_load).days >= self._registry_reload_threshold
         ):
             self.initialize()
         return self.proxy_allowed_hosts
