@@ -1362,7 +1362,6 @@ except ValueError:
     AVATAR_PROVIDERS = (
         (
             "avatar.providers.PrimaryAvatarProvider",
-            "avatar.providers.GravatarAvatarProvider",
             "avatar.providers.DefaultAvatarProvider",
         )
         if os.getenv("AVATAR_PROVIDERS") is None
