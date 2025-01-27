@@ -250,5 +250,5 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
     precision_step = serializers.ChoiceField(
         required=False,
         choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
-        default="years"
+        default="seconds"
     )
