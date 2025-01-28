@@ -54,6 +54,7 @@ from geonode.upload.orchestrator import orchestrator
 from django.db.models import Q
 import pyproj
 from geonode.geoserver.security import delete_dataset_cache, set_geowebcache_invalidate_cache
+from geonode.geoserver.helpers import get_time_info
 from geonode.upload.utils import ImporterRequestAction as ira
 
 logger = logging.getLogger("importer")
@@ -774,8 +775,40 @@ class BaseVectorFileHandler(BaseHandler):
             execution_id=str(_exec.exec_id),
             asset=get_default_asset(resource),
         )
+
         copy_assets_and_links(resource, target=new_resource)
+
+        if resource.dataset.has_time is True:
+
+            new_resource.has_time = True
+            new_resource.save()
+
+            time_info = None
+            try:
+                time_info = get_time_info(resource.dataset)
+            except ValueError as e:
+                logger.info(f"Failed to retrieve time information: {e}")
+
+            time_info["attribute"] = (
+                resource.dataset.attributes.get(pk=time_info.get("attribute")).attribute
+                if time_info.get("attribute")
+                else None
+            )
+            time_info["end_attribute"] = (
+                resource.dataset.attributes.get(pk=time_info.get("end_attribute")).attribute
+                if time_info.get("end_attribute")
+                else None
+            )
+
+            resource_manager.exec(
+                "set_time_info",
+                None,
+                instance=new_resource,
+                time_info=time_info,
+            )
+
         new_resource.refresh_from_db()
+
         return new_resource
 
     def get_ogr2ogr_task_group(
