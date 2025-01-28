@@ -20,7 +20,9 @@
 
 import logging
 
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Count
+
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_GROUP
 from geonode.groups.models import GroupProfile
 from geonode.security.utils import get_user_visible_groups
@@ -41,7 +43,7 @@ class GroupFacetProvider(FacetProvider):
         return {
             "name": self.name,
             "filter": "filter{group.in}",
-            "label": "Group",
+            "label": _("Group"),
             "type": FACET_TYPE_GROUP,
         }
 
