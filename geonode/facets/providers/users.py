@@ -19,6 +19,7 @@
 
 import logging
 
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.db.models import Count
 
@@ -40,7 +41,7 @@ class OwnerFacetProvider(FacetProvider):
         return {
             "name": "owner",
             "filter": "filter{owner.pk.in}",
-            "label": "Owner",
+            "label": _("Owner"),
             "type": FACET_TYPE_USER,
         }
 
