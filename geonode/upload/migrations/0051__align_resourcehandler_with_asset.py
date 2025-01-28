@@ -10,7 +10,7 @@ from geonode.utils import get_allowed_extensions
 logger = logging.getLogger("django")
 
 def dataset_migration(apps, _):
-    NewResources = apps.get_model("importer", "ResourceHandlerInfo")
+    NewResources = apps.get_model("upload", "ResourceHandlerInfo")
     for old_resource in Dataset.objects.exclude(
         pk__in=NewResources.objects.values_list("resource_id", flat=True)
     ).exclude(subtype__in=["remote", None]):
