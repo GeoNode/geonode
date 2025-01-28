@@ -213,6 +213,9 @@ msgstr ""
 "Un espacio o una lista de palabras clave separadas por comas. Utilice el "
 "widget para seleccionar desde el árbol jerárquico."
 
+msgid "Region"
+msgstr "Region"
+
 msgid "Regions"
 msgstr "Regiones"
 
@@ -386,6 +389,9 @@ msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "frecuencia de actualización"
+
+msgid "Keyword"
+msgstr "Palabra claves"
 
 msgid "keywords"
 msgstr "palabras claves"

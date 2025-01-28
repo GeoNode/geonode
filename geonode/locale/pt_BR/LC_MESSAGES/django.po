@@ -181,6 +181,9 @@ msgstr ""
 "Uma lista de palavras-chave separadas por vírgula ou espaço. Utilize o widget para selecionar "
 "a partir da árvore hierárquica."
 
+msgid "Region"
+msgstr "Região"
+
 msgid "Regions"
 msgstr "Regiões"
 
@@ -327,6 +330,9 @@ msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "frequência de manutenção"
+
+msgid "Keyword"
+msgstr "Palavra-chave"
 
 msgid "keywords"
 msgstr "palavras-chave"

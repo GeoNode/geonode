@@ -199,6 +199,9 @@ msgstr ""
 "Une liste de mots-clés séparés par des espaces ou des virgules. Utilisez le "
 "widget pour choisir à partir de l'arbre hiérarchique."
 
+msgid "Region"
+msgstr "Région"
+
 msgid "Regions"
 msgstr "Régions"
 
@@ -358,6 +361,9 @@ msgstr "DOI"
 
 msgid "maintenance frequency"
 msgstr "fréquence des mises à jour"
+
+msgid "Keyword"
+msgstr "Mot-clés"
 
 msgid "keywords"
 msgstr "mots-clés"
