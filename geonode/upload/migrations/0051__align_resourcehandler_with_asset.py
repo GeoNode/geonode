@@ -2,7 +2,7 @@
 
 import logging
 from django.db import migrations
-from upload.orchestrator import orchestrator
+from geonode.upload.orchestrator import orchestrator
 from geonode.layers.models import Dataset
 from geonode.assets.utils import get_default_asset
 from geonode.utils import get_allowed_extensions
