@@ -81,8 +81,11 @@ class RemoteTiles3DResourceHandler(BaseRemoteResourceHandler, Tiles3DFileHandler
         execution_id: str,
         resource_type: Dataset = ResourceBase,
         asset=None,
+        custom: object = {},
     ):
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
+        resource = super().create_geonode_resource(
+            layer_name, alternate, execution_id, resource_type, asset=asset, custom=custom
+        )
         _exec = orchestrator.get_execution_object(exec_id=execution_id)
         try:
             js_file = requests.get(_exec.input_params.get("url"), timeout=10).json()

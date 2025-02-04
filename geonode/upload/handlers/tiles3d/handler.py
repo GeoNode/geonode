@@ -23,6 +23,7 @@ from pathlib import Path
 import math
 from geonode.layers.models import Dataset
 from geonode.resource.enumerator import ExecutionRequestAction as exa
+from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.utils import UploadLimitValidator
 from geonode.upload.handlers.tiles3d.utils import box_to_wgs84, sphere_to_wgs84
 from geonode.upload.orchestrator import orchestrator
@@ -161,13 +162,7 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
             title = json.loads(_data.get("defaults"))
             return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
-        return {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "action": _data.pop("action", "upload"),
-            "original_zip_name": _data.pop("original_zip_name", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
-        }, _data
+        return BaseHandler.extract_params_from_data(_data)
 
     def import_resource(self, files: dict, execution_id: str, **kwargs) -> str:
         logger.info("Total number of layers available: 1")
@@ -223,12 +218,15 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         execution_id: str,
         resource_type: Dataset = ...,
         asset=None,
+        custom: object = {},
     ):
         # we want just the tileset.json as location of the asset
         asset.location = [path for path in asset.location if path.endswith(".json")]
         asset.save()
 
-        resource = super().create_geonode_resource(layer_name, alternate, execution_id, ResourceBase, asset)
+        resource = super().create_geonode_resource(
+            layer_name, alternate, execution_id, ResourceBase, asset=asset, custom=custom
+        )
 
         # fixing-up bbox for the 3dtile object
         js_file = None

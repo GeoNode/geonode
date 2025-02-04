@@ -148,7 +148,16 @@ class BaseHandler(ABC):
         Remove from the _data the params that needs to save into the executionRequest object
         all the other are returned
         """
-        return []
+        return {
+            "resource_pk": _data.pop("resource_pk", None),
+            "dataset_title": _data.pop("dataset_title", None),
+            "original_zip_name": _data.pop("original_zip_name", None),
+            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
+            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
+            "store_spatial_file": _data.pop("store_spatial_files", "True"),
+            "action": _data.pop("action", "upload"),
+            "custom": _data.pop("custom", {}),
+        }, _data
 
     @staticmethod
     def perform_last_step(execution_id):
@@ -253,7 +262,7 @@ class BaseHandler(ABC):
         """
         return NotImplementedError
 
-    def create_geonode_resource(self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset):
+    def create_geonode_resource(self, layer_name, alternate, execution_id, resource_type: Dataset = Dataset, custom={}):
         """
         Base function to create the resource into geonode. Each handler can specify
         and handle the resource in a different way

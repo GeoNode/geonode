@@ -352,6 +352,7 @@ def create_geonode_resource(
 
         handler = import_string(handler_module_path)()
         _overwrite = _exec.input_params.get("overwrite_existing_layer")
+        _custom = _exec.input_params.get("custom")
 
         if _overwrite:
             resource = handler.overwrite_geonode_resource(
@@ -359,6 +360,7 @@ def create_geonode_resource(
                 alternate=alternate,
                 execution_id=execution_id,
                 asset=_asset,
+                custom=_custom,
             )
         else:
             resource = handler.create_geonode_resource(
@@ -366,6 +368,7 @@ def create_geonode_resource(
                 alternate=alternate,
                 execution_id=execution_id,
                 asset=_asset,
+                custom=_custom,
             )
 
         # assign geonode resource to ExectionRequest

@@ -27,6 +27,7 @@ from geonode.upload.handlers.common.vector import BaseVectorFileHandler
 from osgeo import ogr
 from pathlib import Path
 
+from geonode.upload.handlers.base import BaseHandler
 from geonode.upload.handlers.shapefile.exceptions import InvalidShapeFileException
 from geonode.upload.handlers.shapefile.serializer import OverwriteShapeFileSerializer, ShapeFileSerializer
 
@@ -88,15 +89,7 @@ class ShapeFileHandler(BaseVectorFileHandler):
             title = json.loads(_data.get("defaults"))
             return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
-        additional_params = {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
-            "resource_pk": _data.pop("resource_pk", None),
-            "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "action": _data.pop("action", "upload"),
-        }
-
-        return additional_params, _data
+        return BaseHandler.extract_params_from_data(_data)
 
     @staticmethod
     def is_valid(files, user, **kwargs):

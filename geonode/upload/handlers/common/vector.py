@@ -163,13 +163,7 @@ class BaseVectorFileHandler(BaseHandler):
             title = json.loads(_data.get("defaults"))
             return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
-        return {
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
-            "resource_pk": _data.pop("resource_pk", None),
-            "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "action": _data.pop("action", "upload"),
-        }, _data
+        return BaseHandler.extract_params_from_data(_data)
 
     @staticmethod
     def publish_resources(resources: List[str], catalog, store, workspace):
@@ -605,6 +599,7 @@ class BaseVectorFileHandler(BaseHandler):
         execution_id: str,
         resource_type: Dataset = Dataset,
         asset=None,
+        custom: object = {},
     ):
         """
         Base function to create the resource into geonode. Each handler can specify
@@ -632,6 +627,7 @@ class BaseVectorFileHandler(BaseHandler):
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, workspace),
+            custom=custom,
         )
 
         saved_dataset.refresh_from_db()
@@ -666,6 +662,7 @@ class BaseVectorFileHandler(BaseHandler):
         execution_id: str,
         resource_type: Dataset = Dataset,
         asset=None,
+        custom={},
     ):
         _exec = self._get_execution_request_object(execution_id)
 
@@ -682,7 +679,7 @@ class BaseVectorFileHandler(BaseHandler):
             DataPublisher(str(self)).recalculate_geoserver_featuretype(dataset)
             set_geowebcache_invalidate_cache(dataset_alternate=dataset.alternate)
 
-            dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location)
+            dataset = resource_manager.update(dataset.uuid, instance=dataset, files=asset.location, vals=custom)
 
             self.handle_xml_file(dataset, _exec)
             self.handle_sld_file(dataset, _exec)
@@ -694,7 +691,7 @@ class BaseVectorFileHandler(BaseHandler):
             logger.warning(
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
-            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
+            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, custom)
         elif not dataset.exists() and not _overwrite:
             logger.warning("The resource does not exists, please use 'create_geonode_resource' to create one")
         return
