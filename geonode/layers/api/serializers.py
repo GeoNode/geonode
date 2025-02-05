@@ -232,8 +232,8 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
             choices = [(None, "-----")]
 
     has_time = serializers.BooleanField(default=False)
-    attribute = serializers.ChoiceField(choices=[], required=False)
-    end_attribute = serializers.ChoiceField(choices=[], required=False)
+    attribute = serializers.ChoiceField(choices=[], required=False, allow_null=True, default=None)
+    end_attribute = serializers.ChoiceField(choices=[], required=False, allow_null=True, default=None)
     presentation = serializers.ChoiceField(
         required=False,
         choices=[
@@ -244,9 +244,11 @@ class DatasetTimeSeriesSerializer(serializers.Serializer):
                 "Continuous Intervals for data that is frequently updated, resolution describes the frequency of updates",
             ),
         ],
+        default="LIST",
     )
-    precision_value = serializers.IntegerField(required=False)
+    precision_value = serializers.IntegerField(required=False, allow_null=True)
     precision_step = serializers.ChoiceField(
         required=False,
         choices=[("years",) * 2, ("months",) * 2, ("days",) * 2, ("hours",) * 2, ("minutes",) * 2, ("seconds",) * 2],
+        default="seconds",
     )
