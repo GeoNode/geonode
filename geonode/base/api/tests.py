@@ -58,8 +58,6 @@ from guardian.shortcuts import get_anonymous_user
 from geonode.assets.utils import create_asset_and_link
 from geonode.maps.models import Map, MapLayer
 from geonode.tests.base import GeoNodeBaseTestSupport
-from geonode.assets.utils import get_default_asset
-from geonode.assets.handlers import asset_handler_registry
 
 from geonode.base import enumerations
 from geonode.base.api.serializers import ResourceBaseSerializer
@@ -2532,12 +2530,7 @@ class BaseApiTests(APITestCase):
         Ensure we can access the Resource Base list.
         """
         doc = Document.objects.first()
-        asset = get_default_asset(doc)
-        handler = asset_handler_registry.get_handler(asset)
-        expected_payload = [
-            {"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe},
-            {"ajax_safe": False, "default": False, "url": handler.create_download_url(asset)},
-        ]
+        expected_payload = [{"url": build_absolute_uri(doc.download_url), "ajax_safe": doc.download_is_ajax_safe}]
         # From resource base API
         json = self._get_for_object(doc, "base-resources-detail")
         download_url = json.get("resource").get("download_urls")
