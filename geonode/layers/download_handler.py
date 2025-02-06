@@ -25,10 +25,7 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from geonode.assets.utils import get_default_asset
-from geonode.assets.handlers import asset_handler_registry
 from geonode.base.auth import get_or_create_token
-from geonode.base.views import _resolve_resourcebase
 from geonode.geoserver.helpers import wps_format_is_supported
 from geonode.layers.views import _resolve_dataset
 from geonode.proxy.views import fetch_response_headers
@@ -44,10 +41,9 @@ class DatasetDownloadHandler:
     def __repr__(self):
         return self.__str__()
 
-    def __init__(self, request, resource_name, resource_pk=None) -> None:
+    def __init__(self, request, resource_name) -> None:
         self.request = request
         self.resource_name = resource_name
-        self.resource_pk = resource_pk
         self._resource = None
 
     def get_download_response(self):
@@ -79,18 +75,12 @@ class DatasetDownloadHandler:
         resource = self.get_resource()
         if not resource:
             return None
-
-        if resource.subtype not in ["vector", "raster", "vector_time", "3dtiles"]:
+        if resource.subtype not in ["vector", "raster", "vector_time"]:
             logger.info("Download URL is available only for datasets that have been harvested and copied locally")
             return None
 
         if self.is_link_resource:
             return resource.link_set.filter(resource=resource.get_self_resource(), link_type="original").first().url
-
-        if resource.subtype == "3dtiles":
-            asset = get_default_asset(resource)
-            if asset is not None:
-                return asset_handler_registry.get_handler(asset).create_download_url(asset)
 
         return reverse("dataset_download", args=[resource.alternate])
 
@@ -100,23 +90,12 @@ class DatasetDownloadHandler:
         """
         if not self._resource:
             try:
-
-                if self.resource_pk:
-                    self._resource = _resolve_resourcebase(
-                        self.request,
-                        self.resource_pk,
-                        "base.download_resourcebase",
-                        _("You do not have download permissions for this dataset."),
-                    )
-                elif self.resource_name:
-                    self._resource = _resolve_dataset(
-                        self.request,
-                        self.resource_name,
-                        "base.download_resourcebase",
-                        _("You do not have download permissions for this dataset."),
-                    )
-                else:
-                    raise Exception("Layer not found")
+                self._resource = _resolve_dataset(
+                    self.request,
+                    self.resource_name,
+                    "base.download_resourcebase",
+                    _("You do not have download permissions for this dataset."),
+                )
             except Exception as e:
                 logger.debug(e)
 
