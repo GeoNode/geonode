@@ -319,9 +319,9 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                 extra_data.update(profile_data)
             except Exception:
                 logger.exception(OAuth2Error("Invalid profile_url, falling back to id_token checks..."))
-        if not extra_data and "id_token" in response:
+        if "id_token" in response:
             try:
-                extra_data = jwt.decode(
+                extra_data_id_token = jwt.decode(
                     response["id_token"],
                     # Since the token was received by direct communication
                     # protected by TLS between this library and Google, we
@@ -338,6 +338,7 @@ class GenericOpenIDConnectAdapter(OAuth2Adapter, SocialAccountAdapter):
                     issuer=self.id_token_issuer,
                     audience=app.client_id,
                 )
+                extra_data.update(extra_data_id_token)
             except jwt.PyJWTError as e:
                 raise OAuth2Error("Invalid id_token") from e
         login = self.get_provider().sociallogin_from_response(request, extra_data)
