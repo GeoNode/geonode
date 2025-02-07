@@ -27,6 +27,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
+from geonode.resource.utils import resourcebase_post_save
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import ResourceManager
 from geonode.base.models import LinkedResource, ResourceBase
@@ -333,3 +334,58 @@ class TestResourceManager(GeoNodeBaseTestSupport):
             ),
             "Error in using SCALE image algo",
         )
+
+
+class TestResourcebasePostSave(GeoNodeBaseTestSupport):
+    @patch("geonode.resource.utils.call_storers")
+    def test_resourcebase_post_save(self, mock_call_storers):
+        """
+        Test the custom dict is correctly handled if passed as expected
+        """
+
+        instance = create_single_dataset(name="storer_db")
+        kwargs = {"custom": [1, 2, 3]}
+
+        mock_call_storers.return_value = instance
+
+        resourcebase_post_save(instance=instance, **kwargs)
+
+        mock_call_storers.assert_called_with(instance, kwargs["custom"])
+
+        instance.delete()
+
+    @patch("geonode.resource.utils.call_storers")
+    def test_resourcebase_post_save_raise_error(self, mock_call_storers):
+        """
+        Test the custom dict is ignored if not correctly passed
+        """
+
+        instance = create_single_dataset(name="storer_db")
+        kwargs = {"key": [1, 2, 3]}
+
+        mock_call_storers.return_value = instance
+
+        resourcebase_post_save(instance=instance, **kwargs)
+
+        with self.assertRaises(Exception):
+            mock_call_storers.assert_called_with(instance, kwargs["custom"])
+
+        instance.delete()
+
+    @patch("geonode.resource.utils.call_storers")
+    def test_resource_manager_update_should_handle_customs(self, mock_call_storers):
+        """
+        If custom payload is correctly applied, the storer will update the data
+        """
+        from geonode.resource.manager import resource_manager
+
+        instance = create_single_dataset(name="storer_db")
+
+        mock_call_storers.return_value = instance
+
+        self.custom = {"uuid": "abc123cfde", "name": "updated name"}
+
+        resource_manager.update(str(instance.uuid), instance=instance, custom=self.custom)
+        mock_call_storers.assert_called_with(instance, self.custom)
+
+        instance.delete()
