@@ -423,7 +423,8 @@ class ResourceManager(ResourceManagerInterface):
             finally:
                 try:
                     _resource.save(notify=notify)
-                    resourcebase_post_save(_resource.get_real_instance(), kwargs={**kwargs, **custom})
+                    kwargs["custom"] = custom
+                    resourcebase_post_save(_resource.get_real_instance(), **kwargs)
                     _resource.set_permissions(
                         created=False,
                         approval_status_changed=(
