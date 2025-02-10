@@ -2221,7 +2221,7 @@ List of modules that implement custom metadata storers that will be called when 
 """
 METADATA_STORERS = [
     # "geonode.resource.regions_storer.spatial_predicate_region_assignor",
-    # "geonode.upload.handlers.common.metadata_storer.store_metadata",
+    # "geonode.resource.metadata_storer.store_metadata",
 ]
 
 
