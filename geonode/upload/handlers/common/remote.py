@@ -104,13 +104,15 @@ class BaseRemoteResourceHandler(BaseHandler):
             title = json.loads(_data.get("defaults"))
             return {"title": title.pop("title"), "store_spatial_file": True}, _data
 
-        return {
-            "action": _data.pop("action", "upload"),
-            "title": _data.pop("title", None),
-            "url": _data.pop("url", None),
-            "type": _data.pop("type", None),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
-        }, _data
+        return (
+            BaseHandler.extract_params_from_data(_data)[0]
+            | {
+                "title": _data.pop("title", None),
+                "url": _data.pop("url", None),
+                "type": _data.pop("type", None),
+            },
+            _data,
+        )
 
     def pre_validation(self, files, execution_id, **kwargs):
         """
@@ -199,6 +201,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         execution_id: str,
         resource_type: ResourceBase = ResourceBase,
         asset=None,
+        custom: object = {},
     ):
         """
         Creating geonode base resource
@@ -213,6 +216,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             None,
             resource_type=resource_type,
             defaults=self.generate_resource_payload(layer_name, alternate, asset, _exec, None, **params),
+            custom=custom,
         )
         resource_manager.set_thumbnail(None, instance=resource)
 
@@ -268,6 +272,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         execution_id: str,
         resource_type: Dataset = ResourceBase,
         asset=None,
+        custom={},
     ):
         _exec = self._get_execution_request_object(execution_id)
         resource = resource_type.objects.filter(alternate__icontains=alternate, owner=_exec.user)
@@ -278,7 +283,7 @@ class BaseRemoteResourceHandler(BaseHandler):
         if resource.exists() and _overwrite:
             resource = resource.first()
 
-            resource = resource_manager.update(resource.uuid, instance=resource)
+            resource = resource_manager.update(resource.uuid, instance=resource, vals=custom)
             resource_manager.set_thumbnail(resource.uuid, instance=resource, overwrite=True)
             resource.refresh_from_db()
             return resource
@@ -286,7 +291,7 @@ class BaseRemoteResourceHandler(BaseHandler):
             logger.warning(
                 f"The dataset required {alternate} does not exists, but an overwrite is required, the resource will be created"
             )
-            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset)
+            return self.create_geonode_resource(layer_name, alternate, execution_id, resource_type, asset, custom)
         elif not resource.exists() and not _overwrite:
             logger.warning("The resource does not exists, please use 'create_geonode_resource' to create one")
         return

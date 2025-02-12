@@ -52,14 +52,7 @@ class MetadataFileHandler(BaseHandler):
         Remove from the _data the params that needs to save into the executionRequest object
         all the other are returned
         """
-        return {
-            "dataset_title": _data.pop("dataset_title", None),
-            "skip_existing_layers": _data.pop("skip_existing_layers", "False"),
-            "overwrite_existing_layer": _data.pop("overwrite_existing_layer", False),
-            "resource_pk": _data.pop("resource_pk", None),
-            "store_spatial_file": _data.pop("store_spatial_files", "True"),
-            "action": _data.pop("action"),
-        }, _data
+        return BaseHandler.extract_params_from_data(_data)
 
     @staticmethod
     def perform_last_step(execution_id):

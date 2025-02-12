@@ -338,7 +338,6 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
     @mock.patch.dict(os.environ, {"GEONODE_GEODATABASE": "test_geonode_data"})
     @override_settings(GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data")
     def test_import_shapefile_overwrite(self):
-
         self._cleanup_layers(name="air_Runways")
         payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
         payload["action"] = "upload"
@@ -351,6 +350,21 @@ class ImporterShapefileImportTest(BaseImporterEndToEndTest):
         self._assertimport(
             payload, initial_name, overwrite=True, last_update=prev_dataset.last_updated, keep_resource=True
         )
+        self._cleanup_layers(name="air_Runways")
+
+    @override_settings(
+        METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"],
+        GEODATABASE_URL=f"{geourl.split('/geonode_data')[0]}/test_geonode_data",
+    )
+    def test_import_with_custom_payload(self):
+        self._cleanup_layers(name="air_Runways")
+        payload = {_filename: open(_file, "rb") for _filename, _file in self.valid_shp.items()}
+        payload["action"] = "upload"
+        abstract = "this is a test import"
+        payload["custom"] = {"abstract": abstract}
+        initial_name = "air_Runways"
+        resource = self._assertimport(payload, initial_name, keep_resource=True)
+        self.assertEquals(abstract, resource["abstract"])
         self._cleanup_layers(name="air_Runways")
 
 

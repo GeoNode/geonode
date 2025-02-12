@@ -35,6 +35,7 @@ class ImporterSerializer(DynamicModelSerializer):
             "store_spatial_files",
             "skip_existing_layers",
             "action",
+            "custom",
         )
 
     base_file = serializers.FileField()
@@ -43,6 +44,7 @@ class ImporterSerializer(DynamicModelSerializer):
     store_spatial_files = serializers.BooleanField(required=False, default=True)
     skip_existing_layers = serializers.BooleanField(required=False, default=False)
     action = serializers.CharField(required=True)
+    custom = serializers.JSONField(required=False, default={})
 
 
 class OverwriteImporterSerializer(ImporterSerializer):
