@@ -37,9 +37,19 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 class DocumentAdmin(TabbedTranslationAdmin):
     exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
-    list_display = ("id", "title", "date", "category", "group", "is_approved", "is_published", "metadata_completeness")
+    list_display = (
+        "id",
+        "title",
+        "date",
+        "category",
+        "group",
+        "is_approved",
+        "is_published",
+        "advertised",
+        "metadata_completeness",
+    )
     list_display_links = ("id",)
-    list_editable = ("title", "category", "group", "is_approved", "is_published")
+    list_editable = ("title", "category", "group", "is_approved", "is_published", "advertised")
     list_filter = (
         "date",
         "date_type",
