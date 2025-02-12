@@ -13,7 +13,7 @@
    <gmd:hierarchyLevel>
     <gmd:MD_ScopeCode codeSpace="ISOTC211/19115" codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
    </gmd:hierarchyLevel>
-   {% for contact_roles, label in layer.get_defined_contact_roles %}
+   {% for label, contact_roles in layer.get_defined_multivalue_contact_roles.items %}
    {% for contact_role in contact_roles %}
    <gmd:contact>
      <gmd:CI_ResponsibleParty>
