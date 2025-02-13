@@ -1,4 +1,4 @@
-version: '3.9'
+#version: '3.9'
 
 # Common Django template for GeoNode and Celery services below
 x-common-django:
@@ -14,8 +14,9 @@ x-common-django:
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
-    - data:/data
+    - /opt/data:/data
     - tmp:/tmp
+    - /mnt/blockstorage/thomas/:/share
   depends_on:
     db:
       condition: service_healthy
@@ -109,6 +110,7 @@ services:
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
+      - /mnt/blockstorage/thomas/:/share
     restart: unless-stopped
     depends_on:
       data-dir-conf:

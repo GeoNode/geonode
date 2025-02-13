@@ -502,6 +502,8 @@ INSTALLED_APPS = (
     "allauth.socialaccount",
     # GeoNode
     "geonode",
+    "allauth.socialaccount.providers.microsoft",
+
 )
 
 markdown_white_listed_tags = [
@@ -1365,7 +1367,7 @@ except ValueError:
     )
 
 # Number of results per page listed in the GeoNode search pages
-CLIENT_RESULTS_LIMIT = int(os.getenv("CLIENT_RESULTS_LIMIT", "5"))
+CLIENT_RESULTS_LIMIT = int(os.getenv("CLIENT_RESULTS_LIMIT", "16"))
 
 # LOCKDOWN API endpoints to prevent unauthenticated access.
 # If set to True, search won't deliver results and filtering ResourceBase-objects is not possible for anonymous users
@@ -1977,9 +1979,18 @@ if SOCIALACCOUNT_OIDC_PROVIDER_ENABLED:
 _AZURE_TENANT_ID = os.getenv("MICROSOFT_TENANT_ID", "")
 _AZURE_SOCIALACCOUNT_PROVIDER = {
     "NAME": "Microsoft Azure",
+    "APP":{
+        "client_id": os.getenv("MICROSOFT_CLIENT_ID"),
+        "secret": os.getenv("MICROSOFT_CLIENT_SECRET"),
+        "key":"",
+    },
     "SCOPE": [
         "User.Read",
         "openid",
+         "email",
+        "profile",
+        "User.Read",
+        "Mail.Send",
     ],
     "AUTH_PARAMS": {
         "access_type": "online",
@@ -2366,3 +2377,10 @@ DATASET_DOWNLOAD_HANDLERS = ast.literal_eval(os.getenv("DATASET_DOWNLOAD_HANDLER
 AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS = ast.literal_eval(
     os.getenv("AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS", "True")
 )
+
+GRAPH_API_CREDENTIALS = {
+    'client_id': os.getenv('MICROSOFT_CLIENT_ID'),
+    'client_secret': os.getenv('MICROSOFT_CLIENT_SECRET'),
+    'tenant_id': os.getenv('MICROSOFT_TENANT_ID'),
+    'mail_from': os.getenv('DEFAULT_FROM_EMAIL')
+}
