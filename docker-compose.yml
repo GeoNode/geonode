@@ -1,12 +1,12 @@
-version: '3.9'
+#version: '3.9'
 
 # Common Django template for GeoNode and Celery services below
 x-common-django:
   &default-common-django
   image: geonode/geonode:4.3.0
-  #build:
-  #    context: ./
-  #    dockerfile: Dockerfile
+  build:
+      context: ./
+      dockerfile: Dockerfile
   restart: unless-stopped
   env_file:
     - .env
@@ -14,8 +14,9 @@ x-common-django:
     - statics:/mnt/volumes/statics
     - geoserver-data-dir:/geoserver_data/data
     - backup-restore:/backup_restore
-    - data:/data
+    - /opt/data:/data
     - tmp:/tmp
+    - /mnt/blockstorage/thomas/:/share
   depends_on:
     db:
       condition: service_healthy
@@ -91,7 +92,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.24.3-v1
+    image: geonode/geoserver:2.24.4-v1
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -109,6 +110,7 @@ services:
       - backup-restore:/backup_restore
       - data:/data
       - tmp:/tmp
+      - /mnt/blockstorage/thomas/:/share
     restart: unless-stopped
     depends_on:
       data-dir-conf:
@@ -117,7 +119,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.24.3-v1
+    image: geonode/geoserver_data:2.24.4-v1
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
