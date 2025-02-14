@@ -591,19 +591,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         # text which is not JSON should fail
         self.assertRaises(ValidationError, lambda: field.clean("<users></users>"))
 
-    def test_sld_upload(self):
-        """Test layer remove functionality"""
-        layer = Dataset.objects.all().first()
-        url = reverse("dataset_sld_upload", args=(layer.alternate,))
-        # Now test with a valid user
-        self.client.login(username="admin", password="admin")
-
-        # test a method other than POST and GET
-        response = self.client.put(url)
-        content = response.content.decode("utf-8")
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse("#modal_perms" in content)
-
     def test_category_counts(self):
         topics = TopicCategory.objects.all()
         topics = topics.annotate(**{"dataset_count": Count("resourcebase__dataset__category")})

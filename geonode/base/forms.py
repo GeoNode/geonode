@@ -28,7 +28,6 @@ import dal.forward
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 from django.db.models import Prefetch, Q
 from django.forms import models
 from django.forms.fields import ChoiceField, MultipleChoiceField
@@ -43,10 +42,8 @@ from tinymce.widgets import TinyMCE
 from django.contrib.admin.utils import flatten
 from django.utils.translation import get_language
 
-from geonode.base.enumerations import ALL_LANGUAGES
 from geonode.base.models import (
     HierarchicalKeyword,
-    License,
     LinkedResource,
     Region,
     ResourceBase,
@@ -657,23 +654,6 @@ class ResourceBaseForm(TranslationModelForm, LinkedResourceForm):
             "was_approved",
             "was_published",
         )
-
-
-class BatchEditForm(forms.Form):
-    LANGUAGES = (("", "--------"),) + ALL_LANGUAGES
-    group = forms.ModelChoiceField(label=_("Group"), queryset=Group.objects.all(), required=False)
-    owner = forms.ModelChoiceField(label=_("Owner"), queryset=get_user_model().objects.all(), required=False)
-    category = forms.ModelChoiceField(label=_("Category"), queryset=TopicCategory.objects.all(), required=False)
-    license = forms.ModelChoiceField(label=_("License"), queryset=License.objects.all(), required=False)
-    regions = forms.ModelChoiceField(label=_("Regions"), queryset=Region.objects.all(), required=False)
-    date = forms.DateTimeField(label=_("Date"), required=False)
-    language = forms.ChoiceField(
-        label=_("Language"),
-        required=False,
-        choices=LANGUAGES,
-    )
-    keywords = forms.CharField(required=False)
-    ids = forms.CharField(required=False, widget=forms.HiddenInput())
 
 
 def get_user_choices():

@@ -24,7 +24,6 @@ from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.maps.models import Map, MapLayer
 from geonode.base.admin import ResourceBaseAdminForm
-from geonode.base.admin import metadata_batch_edit
 
 
 class MapLayerInline(admin.TabularInline):
@@ -81,7 +80,6 @@ class MapAdmin(TabbedTranslationAdmin):
     )
     readonly_fields = ("geographic_bounding_box",)
     form = MapAdminForm
-    actions = [metadata_batch_edit]
 
     def delete_queryset(self, request, queryset):
         """

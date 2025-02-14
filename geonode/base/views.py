@@ -44,11 +44,9 @@ from django.urls import reverse
 from django.utils.translation import get_language
 
 # Geonode dependencies
-from geonode.maps.models import Map
 from geonode.layers.models import Dataset
 from geonode.utils import resolve_object
 from geonode.base import register_event
-from geonode.documents.models import Document
 from geonode.groups.models import GroupProfile
 from geonode.tasks.tasks import set_permissions
 from geonode.resource.manager import resource_manager
@@ -57,7 +55,7 @@ from geonode.notifications_helper import send_notification
 from geonode.base.utils import OwnerRightsRequestViewUtils, remove_country_from_languagecode
 from geonode.base.forms import UserAndGroupPermissionsForm
 
-from geonode.base.forms import BatchEditForm, OwnerRightsRequestForm
+from geonode.base.forms import OwnerRightsRequestForm
 from geonode.base.models import Region, ResourceBase, HierarchicalKeyword, ThesaurusKeyword, ThesaurusKeywordLabel
 
 from geonode.base.enumerations import SOURCE_TYPE_LOCAL
@@ -179,84 +177,6 @@ def user_and_group_permission(request, model):
         }
     )
     return render(request, "base/user_and_group_permissions.html", context={"form": form, "model": model})
-
-
-def batch_modify(request, model):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    if model == "Document":
-        Resource = Document
-    if model == "Dataset":
-        Resource = Dataset
-    if model == "Map":
-        Resource = Map
-    template = "base/batch_edit.html"
-    ids = request.POST.get("ids")
-
-    if "cancel" in request.POST or not ids:
-        return HttpResponseRedirect(get_url_for_model(model))
-
-    if request.method == "POST":
-        form = BatchEditForm(request.POST)
-        if form.is_valid():
-            keywords = [keyword.strip() for keyword in form.cleaned_data.pop("keywords").split(",") if keyword]
-            regions = form.cleaned_data.pop("regions")
-            ids = form.cleaned_data.pop("ids")
-            if not form.cleaned_data.get("date"):
-                form.cleaned_data.pop("date")
-
-            to_update = {}
-            for _key, _value in form.cleaned_data.items():
-                if _value:
-                    to_update[_key] = _value
-            resources = Resource.objects.filter(id__in=ids.split(","))
-            resources.update(**to_update)
-            if regions:
-                regions_through = Resource.regions.through
-                new_regions = [regions_through(region=regions, resourcebase=resource) for resource in resources]
-                regions_through.objects.bulk_create(new_regions, ignore_conflicts=True)
-
-            if keywords:
-                keywords_through = Resource.keywords.through
-                keywords_through.objects.filter(content_object__in=resources).delete()
-
-                def get_or_create(keyword):
-                    try:
-                        return HierarchicalKeyword.objects.get(name=keyword)
-                    except HierarchicalKeyword.DoesNotExist:
-                        return HierarchicalKeyword.add_root(name=keyword)
-
-                hierarchical_keyword = [get_or_create(keyword) for keyword in keywords]
-
-                new_keywords = []
-                for keyword in hierarchical_keyword:
-                    new_keywords += [
-                        keywords_through(content_object=resource, tag_id=keyword.pk) for resource in resources
-                    ]
-                keywords_through.objects.bulk_create(new_keywords, ignore_conflicts=True)
-
-            return HttpResponseRedirect(get_url_for_model(model))
-
-        return render(
-            request,
-            template,
-            context={
-                "form": form,
-                "ids": ids,
-                "model": model,
-            },
-        )
-
-    form = BatchEditForm()
-    return render(
-        request,
-        template,
-        context={
-            "form": form,
-            "ids": ids,
-            "model": model,
-        },
-    )
 
 
 class SimpleSelect2View(autocomplete.Select2QuerySetView):

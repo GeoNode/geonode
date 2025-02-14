@@ -24,7 +24,6 @@ from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.base.admin import ResourceBaseAdminForm
 from geonode.layers.models import Dataset, Attribute, Style
-from geonode.base.admin import metadata_batch_edit
 
 from geonode.base.fields import MultiThesauriField
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
@@ -90,7 +89,6 @@ class DatasetAdmin(TabbedTranslationAdmin):
     readonly_fields = ("uuid", "alternate", "workspace", "geographic_bounding_box")
     inlines = [AttributeInline]
     form = DatasetAdminForm
-    actions = [metadata_batch_edit]
 
     def delete_queryset(self, request, queryset):
         """

@@ -52,31 +52,8 @@ from geonode.base.models import (
     ThesaurusKeywordLabel,
 )
 
-from geonode.base.forms import BatchEditForm, ThesaurusImportForm, UserAndGroupPermissionsForm
+from geonode.base.forms import ThesaurusImportForm, UserAndGroupPermissionsForm
 from geonode.base.widgets import TaggitSelect2Custom
-
-
-def metadata_batch_edit(modeladmin, request, queryset):
-    ids = ",".join(str(element.pk) for element in queryset)
-    resource = queryset[0].class_name.lower()
-    form = BatchEditForm({"ids": ids})
-    name_space_mapper = {
-        "dataset": "dataset_batch_metadata",
-        "map": "map_batch_metadata",
-        "document": "document_batch_metadata",
-    }
-
-    try:
-        name_space = name_space_mapper[resource]
-    except KeyError:
-        name_space = None
-
-    return render(
-        request, "base/batch_edit.html", context={"form": form, "ids": ids, "model": resource, "name_space": name_space}
-    )
-
-
-metadata_batch_edit.short_description = "Metadata batch edit"
 
 
 def set_user_and_group_dataset_permission(modeladmin, request, queryset):

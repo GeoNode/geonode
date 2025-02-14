@@ -23,7 +23,6 @@ from modeltranslation.admin import TabbedTranslationAdmin
 
 from geonode.documents.models import Document
 from geonode.base.admin import ResourceBaseAdminForm
-from geonode.base.admin import metadata_batch_edit
 
 
 class DocumentAdminForm(ResourceBaseAdminForm):
@@ -69,7 +68,6 @@ class DocumentAdmin(TabbedTranslationAdmin):
     readonly_fields = ("geographic_bounding_box",)
     date_hierarchy = "date"
     form = DocumentAdminForm
-    actions = [metadata_batch_edit]
 
     def delete_queryset(self, request, queryset):
         """
