@@ -1,0 +1,27 @@
+{% extends "geonode_base.html" %}
+{% load i18n avatar_tags bootstrap_tags %}
+
+{% block body_outer %}
+<div class="page-header">
+    <h2>{% trans "Add Avatar" %}</h2>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <h3>{% trans "Your current avatar: " %}</h3>
+        {% avatar user %}
+        {% if not avatars %}
+            <p>{% trans "You haven't uploaded an avatar yet. Please upload one now." %}</p>
+        {% endif %}
+        <hr />
+        <h3>{% trans "Add new avatar" %}</h3>
+        <form enctype="multipart/form-data" method="POST" action="{% url 'avatar:add' %}">
+            {{ upload_avatar_form|as_bootstrap_inline }}
+            <p>
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary" value="{% trans "Upload New Image" %}" />
+                <a href="{% url 'profile_edit' user.username %}" class="btn btn-link"> {% trans "Go back to Edit Your Profile" %}</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

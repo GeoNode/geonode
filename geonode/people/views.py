@@ -16,7 +16,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-from allauth.account.views import SignupView
+from allauth.account.views import SignupView, LoginView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -55,6 +55,10 @@ class CustomSignupView(SignupView):
         form.field_order = [f for f in form.fields.keys() if f != "captcha"] + ["captcha"]
         form.order_fields(form.field_order)
         return ret
+
+
+class CustomLoginView(LoginView):
+    template_name = "people/account_login.html"
 
 
 @login_required

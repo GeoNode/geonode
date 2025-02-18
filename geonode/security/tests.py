@@ -29,6 +29,7 @@ import mock
 
 from requests.auth import HTTPBasicAuth
 from tastypie.test import ResourceTestCaseMixin
+from avatar.templatetags.avatar_tags import avatar_url
 
 from django.db.models import Q
 from django.urls import reverse
@@ -49,7 +50,7 @@ from geonode.documents.models import Document
 from geonode.compat import ensure_string
 from geonode.security.handlers import BasePermissionsHandler
 from geonode.upload.models import ResourceHandlerInfo
-from geonode.utils import check_ogc_backend
+from geonode.utils import check_ogc_backend, build_absolute_uri
 from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
 from geonode.resource.manager import resource_manager
@@ -1365,13 +1366,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "username": standard_user.username,
                         "first_name": standard_user.first_name,
                         "last_name": standard_user.last_name,
-                        "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "permissions": "owner",
                         "is_staff": False,
                         "is_superuser": False,
                     },
                     {
-                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "first_name": "admin",
                         "id": 1,
                         "last_name": "",
@@ -1418,13 +1419,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "username": standard_user.username,
                         "first_name": standard_user.first_name,
                         "last_name": standard_user.last_name,
-                        "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "permissions": "owner",
                         "is_staff": False,
                         "is_superuser": False,
                     },
                     {
-                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "first_name": "admin",
                         "id": 1,
                         "last_name": "",
@@ -1488,7 +1489,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "username": standard_user.username,
                         "first_name": standard_user.first_name,
                         "last_name": standard_user.last_name,
-                        "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "permissions": "view",
                     }
                 ]
@@ -1568,13 +1569,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "username": standard_user.username,
                         "first_name": standard_user.first_name,
                         "last_name": standard_user.last_name,
-                        "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "permissions": "download",
                         "is_staff": False,
                         "is_superuser": False,
                     },
                     {
-                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "first_name": "admin",
                         "id": 1,
                         "last_name": "",
@@ -1627,13 +1628,13 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
                         "username": standard_user.username,
                         "first_name": standard_user.first_name,
                         "last_name": standard_user.last_name,
-                        "avatar": "https://www.gravatar.com/avatar/d41d8cd98f00b204e9800998ecf8427e/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "permissions": "view",
                         "is_staff": False,
                         "is_superuser": False,
                     },
                     {
-                        "avatar": "https://www.gravatar.com/avatar/7a68c67c8d409ff07e42aa5d5ab7b765/?s=240",
+                        "avatar": build_absolute_uri(avatar_url(standard_user)),
                         "first_name": "admin",
                         "id": 1,
                         "last_name": "",

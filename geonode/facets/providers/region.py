@@ -20,6 +20,7 @@
 import logging
 
 from django.db.models import Count
+from django.utils.translation import gettext_lazy as _
 
 from geonode.base.models import Region
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_PLACE
@@ -40,7 +41,7 @@ class RegionFacetProvider(FacetProvider):
         return {
             "name": self.name,
             "filter": "filter{regions.code.in}",
-            "label": "Region",
+            "label": _("Region"),
             "type": FACET_TYPE_PLACE,
         }
 

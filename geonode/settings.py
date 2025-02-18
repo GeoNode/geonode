@@ -1360,7 +1360,6 @@ except ValueError:
     AVATAR_PROVIDERS = (
         (
             "avatar.providers.PrimaryAvatarProvider",
-            "avatar.providers.GravatarAvatarProvider",
             "avatar.providers.DefaultAvatarProvider",
         )
         if os.getenv("AVATAR_PROVIDERS") is None
@@ -1399,8 +1398,11 @@ if RECAPTCHA_ENABLED:
     if "django_recaptcha" not in INSTALLED_APPS:
         INSTALLED_APPS += ("django_recaptcha",)
     ACCOUNT_SIGNUP_FORM_CLASS = os.getenv(
-        "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.AllauthReCaptchaSignupForm"
+        "ACCOUNT_SIGNUP_FORM_CLASS", "geonode.people.forms.recaptcha.AllauthReCaptchaSignupForm"
     )
+
+    # https://docs.allauth.org/en/dev/account/configuration.html
+    ACCOUNT_FORMS = dict(login="geonode.people.forms.recaptcha.AllauthRecaptchaLoginForm")
     """
      In order to generate reCaptcha keys, please see:
       - https://pypi.org/project/django-recaptcha/#installation
@@ -1989,11 +1991,12 @@ _AZURE_SOCIALACCOUNT_PROVIDER = {
         "prompt": "select_account",
     },
     "COMMON_FIELDS": {"email": "mail", "last_name": "surname", "first_name": "givenName"},
-    "UID_FIELD": "unique_name",
+    "UID_FIELD": "sub",
     "GROUP_ROLE_MAPPER_CLASS": SOCIALACCOUNT_GROUP_ROLE_MAPPER,
     "ACCOUNT_CLASS": "allauth.socialaccount.providers.microsoft.provider.MicrosoftGraphAccount",
     "ACCESS_TOKEN_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/token",
     "AUTHORIZE_URL": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/oauth2/v2.0/authorize",
+    "ID_TOKEN_ISSUER": f"https://login.microsoftonline.com/{_AZURE_TENANT_ID}/v2.0",
     "PROFILE_URL": "https://graph.microsoft.com/v1.0/me",
 }
 
@@ -2329,5 +2332,9 @@ ASSET_HANDLERS = [
 INSTALLED_APPS += ("geonode.assets",)
 GEONODE_APPS += ("geonode.assets",)
 
-
 PERMISSIONS_HANDLERS = ["geonode.security.handlers.AdvancedWorkflowPermissionsHandler"]
+
+# Django-Avatar - Change default templates to Geonode based
+AVATAR_ADD_TEMPLATE = "people/avatar/add.html"
+AVATAR_CHANGE_TEMPLATE = "people/avatar/change.html"
+AVATAR_DELETE_TEMPLATE = "people/avatar/confirm_delete.html"

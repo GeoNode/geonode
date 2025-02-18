@@ -20,6 +20,7 @@
 import logging
 
 from django.db.models import Count
+from django.utils.translation import gettext_lazy as _
 
 from geonode.base.models import HierarchicalKeyword
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_KEYWORD
@@ -40,7 +41,7 @@ class KeywordFacetProvider(FacetProvider):
         return {
             "name": self.name,
             "filter": "filter{keywords.slug.in}",
-            "label": "Keyword",
+            "label": _("Keyword"),
             "type": FACET_TYPE_KEYWORD,
         }
 
