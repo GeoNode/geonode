@@ -29,8 +29,6 @@ from geonode.base.admin import metadata_batch_edit
 from geonode.base.fields import MultiThesauriField
 from geonode.base.models import ThesaurusKeyword, ThesaurusKeywordLabel
 
-from dal import autocomplete
-
 
 class AttributeInline(admin.TabularInline):
     model = Attribute
@@ -44,9 +42,6 @@ class DatasetAdminForm(ResourceBaseAdminForm):
     tkeywords = MultiThesauriField(
         queryset=ThesaurusKeyword.objects.prefetch_related(
             Prefetch("keyword", queryset=ThesaurusKeywordLabel.objects.filter(lang="en"))
-        ),
-        widget=autocomplete.ModelSelect2Multiple(
-            url="thesaurus_autocomplete",
         ),
         label=("Keywords from Thesaurus"),
         required=False,
