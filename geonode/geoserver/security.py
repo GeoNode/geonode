@@ -37,6 +37,7 @@ from geonode.geoserver.geofence import Batch, Rule, AutoPriorityBatch
 from geonode.geoserver.helpers import geofence, gf_utils, gs_catalog
 from geonode.groups.models import GroupProfile
 from geonode.utils import get_dataset_workspace
+from geonode.security.registry import permissions_registry
 
 
 logger = logging.getLogger(__name__)
@@ -349,8 +350,7 @@ def sync_resources_with_guardian(resource=None, force=False):
                 batch = AutoPriorityBatch(gf_utils.get_first_available_priority(), f"Sync resources {dataset}")
 
                 gf_utils.collect_delete_layer_rules(get_dataset_workspace(dataset), dataset.name, batch)
-
-                perm_spec = dataset.get_all_level_info()
+                perm_spec = permissions_registry.get_perms(instance=dataset)
                 # All the other users
                 if "users" in perm_spec:
                     for user, perms in perm_spec["users"].items():

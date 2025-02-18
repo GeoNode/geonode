@@ -39,6 +39,7 @@ from geonode.security.utils import get_visible_resources
 from .models import Service
 from . import forms, enumerations
 from .serviceprocessors import get_service_handler
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +140,7 @@ def harvest_resources_handle_get(request, service, handler):
         {"id": "type-filter", "data_key": "type"},
     ]
 
-    perms_list = service.get_user_perms(request.user)
+    perms_list = permissions_registry.get_perms(instance=service, user=request.user)
 
     result = render(
         request,
@@ -249,7 +250,7 @@ def service_detail(request, service_id):
 
     permissions_json = _perms_info_json(service)
 
-    perms_list = service.get_user_perms(request.user)
+    perms_list = permissions_registry.get_perms(instance=service, user=request.user)
 
     harvested_resources_ids = []
     if service.harvester:

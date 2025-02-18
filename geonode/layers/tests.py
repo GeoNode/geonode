@@ -76,6 +76,7 @@ from geonode.layers.utils import (
 
 from geonode.base.populate_test_data import all_public, create_models, remove_models, create_single_dataset
 from geonode.layers.download_handler import DatasetDownloadHandler
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -641,7 +642,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         layer = Dataset.objects.first()
         user = get_anonymous_user()
         layer.set_permissions({"users": {user.username: ["change_dataset_data"]}})
-        perms = layer.get_all_level_info()
+        perms = permissions_registry.get_perms(instance=layer)
         self.assertNotIn(user, perms["users"])
         self.assertNotIn(user.username, perms["users"])
 
@@ -736,13 +737,13 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     def test_assign_remove_permissions(self):
         # Assing
         layer = Dataset.objects.all().first()
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         self.assertNotIn(get_user_model().objects.get(username="norman"), perm_spec["users"])
 
         utils.set_datasets_permissions(
             "edit", resources_names=[layer.name], users_usernames=["norman"], delete_flag=False, verbose=True
         )
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         _c = 0
         if "users" in perm_spec:
             for _u in perm_spec["users"]:
@@ -755,7 +756,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         utils.set_datasets_permissions(
             "read", resources_names=[layer.name], users_usernames=["norman"], delete_flag=True, verbose=True
         )
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         _c = 0
         if "users" in perm_spec:
             for _u in perm_spec["users"]:
@@ -768,7 +769,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     def test_assign_remove_permissions_for_groups(self):
         # Assing
         layer = Dataset.objects.all().first()
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         group_profile = GroupProfile.objects.create(slug="group1", title="group1", access="public")
         self.assertNotIn(group_profile, perm_spec["groups"])
 
@@ -776,7 +777,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         utils.set_datasets_permissions(
             "manage", resources_names=[layer.name], groups_names=["group1"], delete_flag=False, verbose=True
         )
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         expected = {
             "change_dataset_data",
             "change_dataset_style",
@@ -795,7 +796,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         utils.set_datasets_permissions(
             "view", resources_names=[layer.name], groups_names=["group1"], delete_flag=False, verbose=True
         )
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         expected = {"view_resourcebase"}
         # checking the perms list
         self.assertSetEqual(expected, set(perm_spec["groups"][group_profile.group]))
@@ -804,7 +805,7 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         utils.set_datasets_permissions(
             "view", resources_names=[layer.name], groups_names=["group1"], delete_flag=True, verbose=True
         )
-        perm_spec = layer.get_all_level_info()
+        perm_spec = permissions_registry.get_perms(instance=layer)
         # checking the perms list
         self.assertTrue(group_profile.group not in perm_spec["groups"])
 
@@ -1851,7 +1852,7 @@ class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
     def _assert_perms(self, expected_perms, dataset, username, assertion=True):
         dataset.refresh_from_db()
 
-        perms = dataset.get_all_level_info()
+        perms = permissions_registry.get_perms(instance=dataset)
         if assertion:
             self.assertTrue(username in [user.username for user in perms["users"]])
             actual = set(

@@ -61,6 +61,7 @@ from geonode.security.utils import get_user_visible_groups
 from geonode.people.forms import ProfileForm
 from geonode.utils import check_ogc_backend, llbbox_to_mercator, resolve_object
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.security.registry import permissions_registry
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog, get_time_info
@@ -627,7 +628,7 @@ def dataset_metadata_detail(request, layername, template="datasets/dataset_metad
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
 
     register_event(request, "view_metadata", layer)
-    perms_list = layer.get_user_perms(request.user)
+    perms_list = permissions_registry.get_perms(instance=layer, user=request.user)
 
     return render(
         request,

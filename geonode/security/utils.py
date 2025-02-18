@@ -624,7 +624,9 @@ class AdvancedSecurityWorkflowManager:
                 _permissions = copy.deepcopy(permissions)
 
         if _resource:
-            perm_spec = _permissions or copy.deepcopy(_resource.get_all_level_info())
+            from geonode.security.registry import permissions_registry
+
+            perm_spec = _permissions or copy.deepcopy(permissions_registry.get_perms(instance=_resource))
 
             # Sanity checks
             if isinstance(perm_spec, str):
@@ -688,6 +690,8 @@ class AdvancedSecurityWorkflowManager:
             If the user is demoted, we assign by default at least the view and the download permission
             to the resource
             """
+            from geonode.security.registry import permissions_registry
+
             # Fetching all the resources belonging to Group "group"; i.e. assgined to "group" metadata
             queryset = get_objects_for_user(
                 user, ["base.view_resourcebase", "base.change_resourcebase"], any_perm=True
@@ -708,7 +712,7 @@ class AdvancedSecurityWorkflowManager:
                 ).filter(owner=user)
                 _resources = queryset.iterator()
             for _r in _resources:
-                perm_spec = _r.get_all_level_info()
+                perm_spec = permissions_registry.get_perms(instance=_r)
                 if "users" not in perm_spec:
                     perm_spec["users"] = {}
                 if "groups" not in perm_spec:
