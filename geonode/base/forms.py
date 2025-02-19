@@ -247,9 +247,6 @@ class TKeywordForm(forms.ModelForm):
         queryset=ThesaurusKeyword.objects.prefetch_related(
             Prefetch("keyword", queryset=ThesaurusKeywordLabel.objects.filter(lang="en"))
         ),
-        widget=autocomplete.ModelSelect2Multiple(
-            url="thesaurus_autocomplete",
-        ),
         label=_("Keywords from Thesaurus"),
         required=False,
         help_text=_(
