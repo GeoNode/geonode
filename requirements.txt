@@ -18,7 +18,7 @@ celery==5.4.0
 kombu==5.3.7
 vine==5.1.0
 tqdm==4.66.4
-Deprecated==1.2.14
+Deprecated==1.2.18
 wrapt==1.16.0
 jsonschema==4.22.0
 schema==0.7.7
