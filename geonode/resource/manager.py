@@ -313,7 +313,9 @@ class ResourceManager(ResourceManagerInterface):
                 ResourceBase.objects.filter(uuid=uuid).delete()
         return 0
 
-    def create(self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}) -> ResourceBase:
+    def create(
+        self, uuid: str, /, resource_type: typing.Optional[object] = None, defaults: dict = {}, *args, **kwargs
+    ) -> ResourceBase:
         if resource_type.objects.filter(uuid=uuid).exists():
             return resource_type.objects.filter(uuid=uuid).get()
         uuid = uuid or str(uuid4())
@@ -341,7 +343,7 @@ class ResourceManager(ResourceManagerInterface):
                         uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
-                resourcebase_post_save(_resource.get_real_instance())
+                resourcebase_post_save(_resource.get_real_instance(), **kwargs)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
