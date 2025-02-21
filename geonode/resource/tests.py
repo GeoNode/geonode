@@ -31,7 +31,7 @@ from geonode.base.populate_test_data import create_models
 from geonode.resource.utils import resourcebase_post_save
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import ResourceManager
-from geonode.base.models import License, LinkedResource, ResourceBase
+from geonode.base.models import License, LinkedResource, ResourceBase, Group
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
@@ -114,18 +114,16 @@ class TestResourceManager(GeoNodeBaseTestSupport):
     @override_settings(METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"])
     def test_create_passing_custom_to_post_save(self):
         license = License.objects.all().first()
-        public_group, _public_created = GroupProfile.objects.get_or_create(
-            slug="public_group", title="public_group", access="public"
-        )
+        group = Group.objects.all().first()
         dataset = self.rm.create(
             None,
             resource_type=Dataset,
             defaults=dict(owner=self.user, title="test"),
-            custom=dict(group=public_group.pk, license=license),
+            custom=dict(group=group.pk, license=license),
         )
         self.assertIsNotNone(dataset.license)
         self.assertIsNotNone(dataset.group)
-        self.assertEqual(public_group.pk, dataset.group.pk)
+        self.assertEqual(group.pk, dataset.group.pk)
 
     def test_update(self):
         dt = create_single_dataset("test_update_dataset")
