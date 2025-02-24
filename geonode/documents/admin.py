@@ -35,7 +35,7 @@ class DocumentAdminForm(ResourceBaseAdminForm):
 
 
 class DocumentAdmin(TabbedTranslationAdmin):
-    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid")
+    exclude = ("ll_bbox_polygon", "bbox_polygon", "srid", "tkeywords")
     list_display = (
         "id",
         "title",
