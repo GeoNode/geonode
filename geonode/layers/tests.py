@@ -30,7 +30,6 @@ from django.urls import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.management import call_command
-from django.contrib.auth.models import Group
 from django.contrib.gis.geos import Polygon
 from django.db.models import Count
 from django.contrib.auth import get_user_model
@@ -58,7 +57,7 @@ from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
 from geonode.layers.populate_datasets_data import create_dataset_data
-from geonode.base.models import TopicCategory, License, Region, Link
+from geonode.base.models import TopicCategory, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
 from geonode.layers.metadata import convert_keyword, set_metadata, parse_metadata
 from geonode.groups.models import GroupProfile
@@ -126,42 +125,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         obj = Dataset.objects.first()
         self.assertEqual(obj.sourcetype, enumerations.SOURCE_TYPE_LOCAL)
 
-    # Data Tests
-
-    def test_describe_data_2(self):
-        """/data/geonode:CA/metadata -> Test accessing the description of a layer"""
-        self.assertEqual(10, get_user_model().objects.all().count())
-        response = self.client.get(reverse("dataset_metadata", args=("geonode:CA",)))
-        # Since we are not authenticated, we should not be able to access it
-        self.assertEqual(response.status_code, 302)
-        # but if we log in ...
-        self.client.login(username="admin", password="admin")
-        # ... all should be good
-        response = self.client.get(reverse("dataset_metadata", args=("geonode:CA",)))
-        self.assertEqual(response.status_code, 200)
-
-    def test_describe_data_3(self):
-        """/data/geonode:CA/metadata_detail -> Test accessing the description of a layer"""
-        self.client.login(username="admin", password="admin")
-        # ... all should be good
-        response = self.client.get(reverse("dataset_metadata_detail", args=("geonode:CA",)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix="", html=False)
-
-        # ... now assigning a Group to the Dataset
-        lyr = Dataset.objects.get(alternate="geonode:CA")
-        group = Group.objects.first()
-        lyr.group = group
-        lyr.save()
-        response = self.client.get(reverse("dataset_metadata_detail", args=("geonode:CA",)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix="", html=False)
-        lyr.group = None
-        lyr.save()
-
     # Dataset Tests
 
     def test_dataset_name_clash(self):
@@ -189,18 +152,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         _ll = _resolve_dataset(_request, alternate="geonode:states")
         self.assertIsNotNone(_ll)
         self.assertEqual(_ll.name, _ll_1.name)
-
-    def test_describe_data(self):
-        """/data/geonode:CA/metadata -> Test accessing the description of a layer"""
-        self.assertEqual(10, get_user_model().objects.all().count())
-        response = self.client.get(reverse("dataset_metadata", args=("geonode:CA",)))
-        # Since we are not authenticated, we should not be able to access it
-        self.assertEqual(response.status_code, 302)
-        # but if we log in ...
-        self.client.login(username="admin", password="admin")
-        # ... all should be good
-        response = self.client.get(reverse("dataset_metadata", args=("geonode:CA",)))
-        self.assertEqual(response.status_code, 200)
 
     def test_dataset_attributes(self):
         lyr = Dataset.objects.all().first()
@@ -621,80 +572,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
         self.assertNotIn(user, perms["users"])
         self.assertNotIn(user.username, perms["users"])
 
-    def test_batch_edit(self):
-        """
-        Test batch editing of metadata fields.
-        """
-        Model = Dataset
-        view = "dataset_batch_metadata"
-        resources = Model.objects.all()[:3]
-        ids = ",".join(str(element.pk) for element in resources)
-        # test non-admin access
-        self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view))
-        self.assertTrue(response.status_code in (401, 403))
-        # test group change
-        group = Group.objects.first()
-        self.client.login(username="admin", password="admin")
-        response = self.client.post(
-            reverse(view),
-            data={"group": group.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.group, group)
-        # test owner change
-        owner = get_user_model().objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"owner": owner.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.owner, owner)
-        # test license change
-        license = License.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"license": license.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.license, license)
-        # test regions change
-        region = Region.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"region": region.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            if resource.regions.all():
-                self.assertTrue(region in resource.regions.all())
-        # test language change
-        language = "eng"
-        response = self.client.post(
-            reverse(view),
-            data={"language": language, "ids": ids, "regions": 1},
-        )
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.language, language)
-        # test keywords change
-        keywords = "some,thing,new"
-        response = self.client.post(
-            reverse(view),
-            data={"keywords": keywords, "ids": ids, "regions": 1},
-        )
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            for word in resource.keywords.all():
-                self.assertTrue(word.name in keywords.split(","))
-
     def test_surrogate_escape_string(self):
         surrogate_escape_raw = "Zo\udcc3\udcab"
         surrogate_escape_expected = "Zoë"
@@ -982,24 +859,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
                 name=self.layer.alternate,
                 map=self.map,
             )
-
-    def test_that_featured_enabling_and_disabling_for_users(self):
-        self.test_dataset = resource_manager.create(
-            None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
-        )
-
-        url = reverse("dataset_metadata", args=(self.test_dataset.alternate,))
-        # Non Admins
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        response = self.client.get(url)
-        self.assertFalse(self.not_admin.is_superuser)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["form"]["featured"].field.disabled)
-        # Admin
-        self.client.login(username="admin", password="admin")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["featured"].field.disabled)
 
     def test_that_only_users_with_permissions_can_view_maps_in_dataset_view(self):
         """

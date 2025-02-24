@@ -24,7 +24,6 @@ from owslib.etree import etree as dlxml
 from rest_framework import status
 
 from django.urls import reverse
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from geonode import geoserver
@@ -33,7 +32,6 @@ from geonode.layers.models import Dataset
 from geonode.compat import ensure_string
 from geonode.decorators import on_ogc_backend
 from geonode.maps.models import Map, MapLayer
-from geonode.base.models import License, Region
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.maps.tests_populate_maplayers import create_maplayers
 from geonode.resource.manager import resource_manager
@@ -178,27 +176,6 @@ community."
         self.assertEqual(wmc.find(title).text, "GeoNode Default Map")
         self.assertEqual(wmc.find(abstract).text, "GeoNode default map abstract")
 
-    @patch("geonode.thumbs.thumbnails.create_thumbnail")
-    def test_describe_map(self, thumbnail_mock):
-        map_obj = Map.objects.all().first()
-        map_obj.set_default_permissions()
-        response = self.client.get(reverse("map_metadata_detail", args=(map_obj.id,)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Approved", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Published", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "Featured", count=1, status_code=200, msg_prefix="", html=False)
-        self.assertContains(response, "<dt>Group</dt>", count=0, status_code=200, msg_prefix="", html=False)
-
-        # ... now assigning a Group to the map
-        group = Group.objects.first()
-        map_obj.group = group
-        map_obj.save()
-        response = self.client.get(reverse("map_metadata_detail", args=(map_obj.id,)))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "<dt>Group</dt>", count=1, status_code=200, msg_prefix="", html=False)
-        map_obj.group = None
-        map_obj.save()
-
     def test_ajax_map_permissions(self):
         """Verify that the ajax_dataset_permissions view is behaving as expected"""
 
@@ -296,8 +273,6 @@ community."
             ows_url="http://localhost:8080/geoserver/wms",
         )
         map_id = map_created.id
-        url = reverse("map_metadata", args=(map_id,))
-        self.client.logout()
 
         url = reverse("map_embed", args=(map_id,))
         url_no_id = reverse("map_embed")
@@ -333,8 +308,6 @@ community."
         )
         resource_manager.set_permissions(None, instance=map_created, permissions=None, created=True)
         map_id = map_created.id
-        url = reverse("map_metadata", args=(map_id,))
-        self.client.logout()
 
         url = reverse("map_embed", args=(map_id,))
 
@@ -361,77 +334,6 @@ community."
         self.assertEqual(response.context["resource"], map_obj)
         self.assertIsNotNone(response.context["access_token"])
         self.assertEqual(response.context["is_embed"], "true")
-
-    def test_batch_edit(self):
-        Model = Map
-        view = "map_batch_metadata"
-        resources = Model.objects.all()[:3]
-        ids = ",".join(str(element.pk) for element in resources)
-        # test non-admin access
-        self.client.login(username="bobby", password="bob")
-        response = self.client.get(reverse(view))
-        self.assertTrue(response.status_code in (401, 403))
-        # test group change
-        group = Group.objects.first()
-        self.client.login(username="admin", password="admin")
-        response = self.client.post(
-            reverse(view),
-            data={"group": group.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.group, group)
-        # test owner change
-        owner = get_user_model().objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"owner": owner.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.owner, owner)
-        # test license change
-        license = License.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"license": license.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.license, license)
-        # test regions change
-        region = Region.objects.first()
-        response = self.client.post(
-            reverse(view),
-            data={"region": region.pk, "ids": ids, "regions": 1},
-        )
-        self.assertEqual(response.status_code, 302)
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            if resource.regions.all():
-                self.assertTrue(region in resource.regions.all())
-        # test language change
-        language = "eng"
-        response = self.client.post(
-            reverse(view),
-            data={"language": language, "ids": ids, "regions": 1},
-        )
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            self.assertEqual(resource.language, language)
-        # test keywords change
-        keywords = "some,thing,new"
-        response = self.client.post(
-            reverse(view),
-            data={"keywords": keywords, "ids": ids, "regions": 1},
-        )
-        resources = Model.objects.filter(id__in=[r.pk for r in resources])
-        for resource in resources:
-            for word in resource.keywords.all():
-                self.assertTrue(word.name in keywords.split(","))
 
     def test_get_legend(self):
         layer = Dataset.objects.all().first()

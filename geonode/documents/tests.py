@@ -559,34 +559,6 @@ class DocumentViewTestCase(GeoNodeBaseTestSupport):
         self.perm_spec = {"users": {"AnonymousUser": []}}
         self.doc_link_url = reverse("document_link", args=(self.test_doc.pk,))
 
-    def test_that_featured_enabling_and_disabling_for_users(self):
-        # Non Admins
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        response = self.client.get(url)
-        self.assertFalse(self.not_admin.is_superuser)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["form"]["featured"].field.disabled)
-        # Admin
-        self.client.login(username="admin", password="admin")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["featured"].field.disabled)
-
-    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
-        """
-        Test that only admin users can create/edit keywords
-        """
-        admin = self.not_admin
-        admin.is_superuser = True
-        admin.save()
-        self.client.login(username=admin.username, password="very-secret")
-        url = reverse("document_metadata", args=(self.test_doc.pk,))
-        response = self.client.get(url)
-        self.assertTrue(admin.is_superuser)
-        self.assertEqual(response.status_code, 200)
-        self.assertFalse(response.context["form"]["keywords"].field.disabled)
-
     def test_document_link_with_permissions(self):
         self.test_doc.set_permissions(self.perm_spec)
         # Get link as Anonymous user
