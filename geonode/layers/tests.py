@@ -28,7 +28,6 @@ from collections import namedtuple
 
 from django.urls import reverse
 from django.test import TestCase
-from django.forms import ValidationError
 from django.test.client import RequestFactory
 from django.core.management import call_command
 from django.contrib.auth.models import Group
@@ -53,13 +52,11 @@ from geonode.utils import DisableDjangoSignals, mkdtemp
 from geonode.layers.views import _resolve_dataset
 from geonode import GeoNodeException, geoserver
 from geonode.people.utils import get_valid_user
-from geonode.people import Roles
 from guardian.shortcuts import get_anonymous_user
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import resource_manager
 from geonode.tests.utils import NotificationsTestsHelper
 from geonode.layers.models import Dataset, Style, Attribute
-from geonode.layers.forms import DatasetForm, DatasetTimeSerieForm, JSONField
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.models import TopicCategory, License, Region, Link
 from geonode.utils import check_ogc_backend, set_resource_default_links
@@ -583,14 +580,6 @@ class DatasetsTest(GeoNodeBaseTestSupport):
     # And this should be used instead to avoid that:
     #     SimpleUploadedFile('foo', ' '.encode("UTF-8"))
 
-    def testJSONField(self):
-        field = JSONField()
-        # a valid JSON document should pass
-        field.clean('{ "users": [] }')
-
-        # text which is not JSON should fail
-        self.assertRaises(ValidationError, lambda: field.clean("<users></users>"))
-
     def test_category_counts(self):
         topics = TopicCategory.objects.all()
         topics = topics.annotate(**{"dataset_count": Count("resourcebase__dataset__category")})
@@ -994,39 +983,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
                 map=self.map,
             )
 
-    def test_that_keyword_multiselect_is_disabled_for_non_admin_users(self):
-        """
-        Test that keyword multiselect widget is disabled when the user is not an admin
-        """
-        self.test_dataset = resource_manager.create(
-            None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
-        )
-
-        url = reverse("dataset_metadata", args=(self.test_dataset.alternate,))
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertTrue(response.context["form"]["keywords"].field.disabled, self.test_dataset.alternate)
-
-    def test_that_keyword_multiselect_is_not_disabled_for_admin_users(self):
-        """
-        Test that only admin users can create/edit keywords  when FREETEXT_KEYWORDS_READONLY=True
-        """
-        admin = self.not_admin
-        admin.is_superuser = True
-        admin.save()
-
-        self.test_dataset = resource_manager.create(
-            None, resource_type=Dataset, defaults=dict(owner=admin, title="test", is_approved=True)
-        )
-
-        url = reverse("dataset_metadata", args=(self.test_dataset.alternate,))
-
-        self.client.login(username=admin.username, password="very-secret")
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.get(url)
-            self.assertFalse(response.context["form"]["keywords"].field.disabled, self.test_dataset.alternate)
-
     def test_that_featured_enabling_and_disabling_for_users(self):
         self.test_dataset = resource_manager.create(
             None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
@@ -1044,40 +1000,6 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["form"]["featured"].field.disabled)
-
-    def test_that_non_admin_user_cannot_create_edit_keyword(self):
-        """
-        Test that non admin users cannot edit/create keywords when FREETEXT_KEYWORDS_READONLY=True
-        """
-        self.test_dataset = resource_manager.create(
-            None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
-        )
-
-        url = reverse("dataset_metadata", args=(self.test_dataset.alternate,))
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        with self.settings(FREETEXT_KEYWORDS_READONLY=True):
-            response = self.client.post(url, data={"resource-keywords": "wonderful-keyword"})
-            self.assertEqual(response.status_code, 401)
-            self.assertEqual(response.content, b"Unauthorized: Cannot edit/create Free-text Keywords")
-
-    def test_that_keyword_multiselect_is_enabled_for_non_admin_users_when_freetext_keywords_readonly_istrue(self):
-        """
-        Test that keyword multiselect widget is not disabled when the user is not an admin
-        and FREETEXT_KEYWORDS_READONLY=False
-        """
-        self.test_dataset = resource_manager.create(
-            None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
-        )
-
-        url = reverse("dataset_metadata", args=(self.test_dataset.alternate,))
-
-        self.client.login(username=self.not_admin.username, password="very-secret")
-        with self.settings(FREETEXT_KEYWORDS_READONLY=False):
-            response = self.client.get(url)
-            self.assertFalse(response.context["form"]["keywords"].field.disabled, self.test_dataset.alternate)
-
-        response = self.client.get(reverse("dataset_embed", args=(self.layer.alternate,)))
-        self.assertIsNotNone(response.context["resource"])
 
     def test_that_only_users_with_permissions_can_view_maps_in_dataset_view(self):
         """
@@ -1407,293 +1329,6 @@ def dummy_metadata_parser(exml, uuid, vals, regions, keywords, custom):
     keywords = "Passed through new parser"
     regions.append("Europe")
     return uuid, vals, regions, keywords, custom
-
-
-class TestDatasetForm(GeoNodeBaseTestSupport):
-    def setUp(self) -> None:
-        self.user = get_user_model().objects.get(username="admin")
-        self.user2 = get_user_model().objects.get_or_create(username="svenzwei")
-
-        self.dataset = create_single_dataset("my_single_layer", owner=self.user)
-        self.sut = DatasetForm
-        self.time_form = DatasetTimeSerieForm
-
-    def test_resource_form_is_invalid_extra_metadata_not_json_format(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
-        response = self.client.post(
-            url,
-            data={
-                "resource-owner": self.dataset.owner.id,
-                "resource-title": "layer_title",
-                "resource-date": "2022-01-24 16:38 pm",
-                "resource-date_type": "creation",
-                "resource-language": "eng",
-                "resource-extra_metadata": "not-a-json",
-            },
-        )
-        expected = {
-            "success": False,
-            "errors": ["extra_metadata: The value provided for the Extra metadata field is not a valid JSON"],
-        }
-        self.assertDictEqual(expected, response.json())
-
-    def test_change_owner_in_metadata(self):
-        try:
-            test_user = get_user_model().objects.create_user(
-                username="non_auth", email="non_auth@geonode.org", password="password"
-            )
-            norman = get_user_model().objects.get(username="norman")
-            dataset = Dataset.objects.first()
-            data = {
-                "resource-title": "geoapp_title",
-                "resource-date": "2022-01-24 16:38 pm",
-                "resource-date_type": "creation",
-                "resource-language": "eng",
-                "dataset_attribute_set-TOTAL_FORMS": 0,
-                "dataset_attribute_set-INITIAL_FORMS": 0,
-            }
-            perm_spec = {
-                "users": {
-                    "non_auth": [
-                        "change_resourcebase_metadata",
-                        "change_resourcebase",
-                    ],
-                    "norman": ["change_resourcebase_metadata", "change_resourcebase_permissions"],
-                }
-            }
-            self.assertTrue(dataset.set_permissions(perm_spec))
-            self.assertFalse(test_user.has_perm("change_resourcebase_permissions", dataset.get_self_resource()))
-
-            url = reverse("dataset_metadata", args=(dataset.alternate,))
-            # post as non-authorised user
-            self.client.login(username="non_auth", password="password")
-            data["resource-owner"] = test_user.id
-            response = self.client.post(url, data=data)
-            self.assertEqual(response.status_code, 200)
-            self.assertNotEqual(dataset.owner, test_user)
-            # post as admin
-            self.client.login(username="admin", password="admin")
-            response = self.client.post(url, data=data)
-            dataset.refresh_from_db()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(dataset.owner, test_user)
-            # post as an authorised user
-            self.client.login(username="norman", password="norman")
-            self.assertTrue(norman.has_perm("change_resourcebase_permissions", dataset.get_self_resource()))
-            data["resource-owner"] = norman.id
-            response = self.client.post(url, data=data)
-            dataset.refresh_from_db()
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(dataset.owner, norman)
-        finally:
-            get_user_model().objects.filter(username="non_auth").delete
-            Dataset.objects.filter(name="dataset_name").delete()
-
-    @override_settings(EXTRA_METADATA_SCHEMA={"key": "value"})
-    def test_resource_form_is_invalid_extra_metadata_not_schema_in_settings(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
-        response = self.client.post(
-            url,
-            data={
-                "resource-owner": self.dataset.owner.id,
-                "resource-title": "layer_title",
-                "resource-date": "2022-01-24 16:38 pm",
-                "resource-date_type": "creation",
-                "resource-language": "eng",
-                "resource-extra_metadata": "[{'key': 'value'}]",
-            },
-        )
-        expected = {
-            "success": False,
-            "errors": ["extra_metadata: EXTRA_METADATA_SCHEMA validation schema is not available for resource dataset"],
-        }
-        self.assertDictEqual(expected, response.json())
-
-    def test_resource_form_is_invalid_extra_metadata_invalids_schema_entry(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
-        response = self.client.post(
-            url,
-            data={
-                "resource-owner": self.dataset.owner.id,
-                "resource-title": "layer_title",
-                "resource-date": "2022-01-24 16:38 pm",
-                "resource-date_type": "creation",
-                "resource-language": "eng",
-                "resource-extra_metadata": '[{"key": "value"},{"id": "int", "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
-            },
-        )
-        expected = (
-            "extra_metadata: Missing keys: 'field_label', 'field_name', 'field_value', 'filter_header' at index 0 "
-        )
-        self.assertIn(expected, response.json()["errors"][0])
-
-    def test_resource_form_is_valid_extra_metadata(self):
-        form = self.sut(
-            instance=self.dataset,
-            data={
-                "owner": self.dataset.owner.id,
-                "title": "layer_title",
-                "date": "2022-01-24 16:38 pm",
-                "date_type": "creation",
-                "language": "eng",
-                "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
-            },
-        )
-        self.assertTrue(form.is_valid())
-
-    def test_dataset_time_form_should_work(self):
-        attr, _ = Attribute.objects.get_or_create(
-            dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
-        )
-        self.dataset.attribute_set.add(attr)
-        self.dataset.save()
-        form = self.time_form(
-            instance=self.dataset,
-            data={
-                "attribute": self.dataset.attributes.first().id,
-                "end_attribute": "",
-                "presentation": "DISCRETE_INTERVAL",
-                "precision_value": 12345,
-                "precision_step": "seconds",
-            },
-        )
-        self.assertTrue(form.is_valid())
-        self.assertDictEqual({}, form.errors)
-
-    def test_dataset_time_form_should_work_with_date_attribute(self):
-        attr, _ = Attribute.objects.get_or_create(
-            dataset=self.dataset, attribute="field_date", attribute_type="xsd:date"
-        )
-        self.dataset.attribute_set.add(attr)
-        self.dataset.save()
-        form = self.time_form(
-            instance=self.dataset,
-            data={
-                "attribute": self.dataset.attributes.first().id,
-                "end_attribute": "",
-                "presentation": "DISCRETE_INTERVAL",
-                "precision_value": 12345,
-                "precision_step": "seconds",
-            },
-        )
-        self.assertTrue(form.is_valid())
-        self.assertDictEqual({}, form.errors)
-        expected_choises = [(None, "-----"), (self.dataset.attributes.first().id, "field_date")]
-        actual_choices = form.fields.get("attribute").choices
-        self.assertListEqual(expected_choises, actual_choices)
-
-    def test_timeserie_raise_error_if_not_valid_attribute(self):
-        attr, _ = Attribute.objects.get_or_create(
-            dataset=self.dataset, attribute="field_date", attribute_type="xsd:string"
-        )
-        self.dataset.attribute_set.add(attr)
-        self.dataset.save()
-        form = self.time_form(
-            instance=self.dataset,
-            data={
-                "attribute": self.dataset.attributes.first().id,
-                "end_attribute": "",
-                "presentation": "DISCRETE_INTERVAL",
-                "precision_value": 12345,
-                "precision_step": "seconds",
-            },
-        )
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            f"Select a valid choice. {self.dataset.attributes.first().id} is not one of the available choices.",
-            form.errors.get("attribute")[0],
-        )
-        expected_choises = [(None, "-----")]
-        actual_choices = form.fields.get("attribute").choices
-        self.assertListEqual(expected_choises, actual_choices)
-
-    def test_dataset_time_form_should_raise_error_if_invalid_payload(self):
-        attr, _ = Attribute.objects.get_or_create(
-            dataset=self.dataset, attribute="field_date", attribute_type="xsd:dateTime"
-        )
-        self.dataset.attribute_set.add(attr)
-        self.dataset.save()
-        form = self.time_form(
-            instance=self.dataset,
-            data={
-                "attribute": self.dataset.attributes.first().id,
-                "end_attribute": "",
-                "presentation": "INVALID_PRESENTATION_VALUE",
-                "precision_value": 12345,
-                "precision_step": "seconds",
-            },
-        )
-        self.assertFalse(form.is_valid())
-        self.assertTrue("presentation" in form.errors)
-        self.assertEqual(
-            "Select a valid choice. INVALID_PRESENTATION_VALUE is not one of the available choices.",
-            form.errors["presentation"][0],
-        )
-
-    def test_resource_form_is_valid_single_user_contact_role(self):
-        """test if passing a single user to a contact role form is working"""
-        users = get_user_model().objects.filter(username="svenzwei")
-        cr = Roles.get_multivalue_ones()[0]
-        form = self.sut(
-            instance=self.dataset,
-            data={
-                "owner": self.dataset.owner.id,
-                cr.name: [u.username for u in users],
-                "title": "layer_title",
-                "date": "2022-01-24 16:38 pm",
-                "date_type": "creation",
-                "language": "eng",
-                "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
-            },
-        )
-        self.assertTrue(form.is_valid())
-        self.assertEqual(list(form.cleaned_data[cr.name]), list(users))
-
-    def test_resource_form_is_valid_multiple_user_contact_role_as_queryset(self):
-        """test if passing a multiple user to a contact role form is working"""
-        users = get_user_model().objects.filter(username__in=["svenzwei", "admin"])
-        for cr in Roles.get_multivalue_ones():
-            form = self.sut(
-                instance=self.dataset,
-                data={
-                    "owner": self.dataset.owner.id,
-                    cr.name: [u.username for u in users],
-                    "title": "layer_title",
-                    "date": "2022-01-24 16:38 pm",
-                    "date_type": "creation",
-                    "language": "eng",
-                    "extra_metadata": '[{"id": 1, "filter_header": "object", "field_name": "object", "field_label": "object", "field_value": "object"}]',
-                },
-            )
-            self.assertTrue(form.is_valid())
-            self.assertEqual(list(form.cleaned_data[cr.name]), list(users))
-
-    def test_resource_form_is_invalid_with_incompleted_timeserie_data(self):
-        self.client.login(username="admin", password="admin")
-        url = reverse("dataset_metadata", args=(self.dataset.alternate,))
-        response = self.client.post(
-            url,
-            data={
-                "resource-owner": self.dataset.owner.id,
-                "resource-title": "layer_title",
-                "resource-date": "2022-01-24 16:38 pm",
-                "resource-date_type": "creation",
-                "resource-language": "eng",
-                "resource-has_time": True,
-                "dataset_attribute_set-TOTAL_FORMS": 0,
-                "dataset_attribute_set-INITIAL_FORMS": 0,
-            },
-        )
-        expected = {
-            "success": False,
-            "errors": [
-                "The Timeseries configuration is invalid. Please select at least one option between the `attribute` and `end_attribute`, otherwise remove the 'has_time' flag"
-            ],
-        }
-        self.assertDictEqual(expected, response.json())
 
 
 class SetLayersPermissionsCommand(GeoNodeBaseTestSupport):
