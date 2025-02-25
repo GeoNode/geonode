@@ -76,6 +76,13 @@ class DateTypeSubHandler(SubHandler):
         subschema["default"] = "Publication"
 
 
+class TitleSubHandler(SubHandler):
+    @classmethod
+    def deserialize(cls, field_value):
+        # ref https://github.com/GeoNode/geonode/issues/8198
+        return field_value.replace(",", "_")
+
+
 class DateSubHandler(SubHandler):
     @classmethod
     def serialize(cls, value):
@@ -157,6 +164,7 @@ class SpatialRepresentationTypeSubHandler(SubHandler):
 
 
 SUBHANDLERS = {
+    "title": TitleSubHandler,
     "category": CategorySubHandler,
     "date_type": DateTypeSubHandler,
     "date": DateSubHandler,
