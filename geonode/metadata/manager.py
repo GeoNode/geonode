@@ -119,7 +119,7 @@ class MetadataManager:
                 pass
 
         # TESTING ONLY
-        if "error" in resource.title.lower():
+        if resource.title and "error" in resource.title.lower():
             for fieldname in schema["properties"]:
                 MetadataHandler._set_error(
                     errors, [fieldname], f"TEST: test msg for field '{fieldname}' in GET request"
@@ -151,7 +151,7 @@ class MetadataManager:
             MetadataHandler._set_error(errors, [], f"Error while saving the resource: {e}")
 
         # TESTING ONLY
-        if "error" in resource.title.lower():
+        if resource.title and "error" in resource.title.lower():
             _create_test_errors(schema, errors, [], "TEST: field <{schema_type}>'{path}' PUT request")
 
         return errors

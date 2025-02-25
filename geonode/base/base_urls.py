@@ -25,18 +25,6 @@ js_info_dict = {
 }
 
 urlpatterns = [
-    # 'geonode.resourcebases.views',
-    re_path(r"^(?P<resourcebaseid>\d+)/metadata$", views.resourcebase_metadata, name="resourcebase_metadata"),
-    re_path(
-        r"^(?P<resourcebaseid>[^/]*)/metadata_detail$",
-        views.resourcebase_metadata_detail,
-        name="resourcebase_metadata_detail",
-    ),
-    re_path(
-        r"^(?P<resourcebaseid>\d+)/metadata_advanced$",
-        views.resourcebase_metadata_advanced,
-        name="resourcebase_metadata_advanced",
-    ),
     re_path(
         r"^(?P<resourcebaseid>[^/]+)/embed$",
         views.resourcebase_embed,

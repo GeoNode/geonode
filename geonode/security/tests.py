@@ -57,7 +57,6 @@ from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.groups.models import Group, GroupMember, GroupProfile
 from geonode.layers.populate_datasets_data import create_dataset_data
 from geonode.base.auth import create_auth_token, get_or_create_token
-
 from geonode.base.models import Configuration, UserGeoLimit, GroupGeoLimit
 from geonode.base.populate_test_data import (
     all_public,
@@ -1088,18 +1087,25 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3. change_resourcebase_metadata
         # 3.1 has not change_resourcebase_metadata: verify that bobby cannot
         # access the layer metadata page
-        response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
+        response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
         self.assertTrue(response.status_code in (401, 403), response.status_code)
         # 3.2 has delete_resourcebase: verify that bobby can access the layer
         # delete page
         layer.set_permissions(
             {
-                "users": {"bobby": ["change_resourcebase", "change_resourcebase_metadata", "delete_resourcebase"]},
+                "users": {
+                    "bobby": [
+                        "change_resourcebase",
+                        "change_resourcebase_metadata",
+                        "delete_resourcebase",
+                        "view_resourcebase",
+                    ]
+                },
                 "groups": [],
             }
         )
         self.assertTrue(bob.has_perm("change_resourcebase_metadata", layer.get_self_resource()))
-        response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
+        response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
         self.assertEqual(response.status_code, 200, response.status_code)
 
         if check_ogc_backend(geoserver.BACKEND_PACKAGE):
@@ -1172,7 +1178,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         # 3. change_resourcebase_metadata
         # 3.1 has not change_resourcebase_metadata: verify that anonymous user
         # cannot access the layer metadata page but redirected to login
-        response = self.client.get(reverse("dataset_metadata", args=(layer.alternate,)))
+        response = self.client.get(reverse("metadata-schema_instance", args=(layer.id,)))
         self.assertTrue(response.status_code in (302, 403))
 
     def test_get_visible_resources_should_return_resource_with_metadata_only_false(self):
@@ -2401,7 +2407,7 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             "dataset_attribute_set-TOTAL_FORMS": 0,
             "dataset_attribute_set-INITIAL_FORMS": 0,
         }
-        self.url = reverse("dataset_metadata", args=(self.resource.alternate,))
+        self.url = reverse("metadata-schema_instance", args=(self.resource.id,))
 
         # Assign manage perms to user member_with_perms
         for perm in self.dataset_perms:
@@ -2444,21 +2450,20 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertions_for_approved_and_published_is_false()
 
         # Admin publishes and approves resource
-        response = self.admin_approve_and_publish_resource()
-        self.assertEqual(response.status_code, 200)
+        self.admin_approve_and_publish_resource()
         self.assertions_for_approved_or_published_is_true()
 
         # Admin Un approves and un publishes resource
-        response = self.admin_unapprove_and_unpublish_resource()
-        self.assertEqual(response.status_code, 200)
+        self.admin_unapprove_and_unpublish_resource()
+        self.resource.refresh_from_db()
         self.assertions_for_approved_and_published_is_false()
 
     def test_owner_is_group_manager(self):
         try:
             GroupMember.objects.get(group=self.owner_group, user=self.author).promote()
             # Admin publishes and approves the resource
-            response = self.admin_approve_and_publish_resource()
-            self.assertEqual(response.status_code, 200)
+            self.admin_approve_and_publish_resource()
+            self.resource.refresh_from_db()
             resource_perm_specs = self.resource.get_all_level_info()
 
             # Once a resource has been published, the 'publish_resourcebase' permission should be removed anyway
@@ -2468,8 +2473,8 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
             )
 
             # Admin un-approves and un-publishes the resource
-            response = self.admin_unapprove_and_unpublish_resource()
-            self.assertEqual(response.status_code, 200)
+            self.admin_unapprove_and_unpublish_resource()
+            self.resource.refresh_from_db()
             resource_perm_specs = self.resource.get_all_level_info()
 
             self.assertSetEqual(
@@ -2517,19 +2522,17 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
 
     def admin_approve_and_publish_resource(self):
         self.assertTrue(self.client.login(username="admin", password="admin"))
-        self.data["resource-is_approved"] = "on"
-        self.data["resource-is_published"] = "on"
-        response = self.client.post(self.url, data=self.data)
+        self.resource.is_approved = True
+        self.resource.is_published = True
+        self.resource.save()
         self.resource.refresh_from_db()
-        return response
 
     def admin_unapprove_and_unpublish_resource(self):
         self.assertTrue(self.client.login(username="admin", password="admin"))
-        self.data.pop("resource-is_approved")
-        self.data.pop("resource-is_published")
-        response = self.client.post(self.url, data=self.data)
+        self.resource.is_approved = False
+        self.resource.is_published = False
+        self.resource.save()
         self.resource.refresh_from_db()
-        return response
 
 
 class TestUserHasPerms(GeoNodeBaseTestSupport):

@@ -181,21 +181,6 @@ def superuser_only(function):
     return _inner
 
 
-def check_keyword_write_perms(function):
-    def _inner(request, *args, **kwargs):
-        keyword_readonly = (
-            settings.FREETEXT_KEYWORDS_READONLY and request.method == "POST" and not auth.get_user(request).is_superuser
-        )
-        request.keyword_readonly = keyword_readonly
-        if keyword_readonly and "resource-keywords" in request.POST:
-            return HttpResponse(
-                "Unauthorized: Cannot edit/create Free-text Keywords", status=401, content_type="application/json"
-            )
-        return function(request, *args, **kwargs)
-
-    return _inner
-
-
 def superuser_protected(function):
     """Decorator that forces a view to be accessible by SUPERUSERS only."""
 

@@ -12,7 +12,8 @@
     "title": "title",
     "description": "name by which the cited resource is known",
     "maxLength": 255,
-    "geonode:handler": "base"
+    "geonode:handler": "base",
+    "geonode:required": true
   },
   "abstract": {
     "type": "string",
