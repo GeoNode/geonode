@@ -878,20 +878,16 @@ class TestLayerDetailMapViewRights(GeoNodeBaseTestSupport):
             self.test_dataset = resource_manager.create(
                 None, resource_type=Dataset, defaults=dict(owner=self.not_admin, title="test", is_approved=True)
             )
+            from geonode.metadata.manager import metadata_manager
 
-            data = {
-                "resource-title": "test,comma,2021",
-                "resource-owner": self.test_dataset.owner.id,
-                "resource-date": str(self.test_dataset.date),
-                "resource-date_type": self.test_dataset.date_type,
-                "resource-language": self.test_dataset.language,
-                "dataset_attribute_set-TOTAL_FORMS": 0,
-                "dataset_attribute_set-INITIAL_FORMS": 0,
-            }
+            payload = metadata_manager.build_schema_instance(self.test_dataset)
+            payload["title"] = "test,comma,2021"
 
-            url = reverse("dataset_metadata", args=(self.test_dataset.alternate,))
             self.client.login(username=self.not_admin.username, password="very-secret")
-            response = self.client.post(url, data=data)
+
+            url = reverse("metadata-schema_instance", args=(self.test_dataset.id,))
+            response = self.client.put(url, data=payload, content_type="application/json")
+
             self.test_dataset.refresh_from_db()
             self.assertEqual(self.test_dataset.title, "test_comma_2021")
             self.assertEqual(response.status_code, 200)

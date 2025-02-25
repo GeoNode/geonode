@@ -217,50 +217,6 @@ community."
         # Test that the method returns 200
         self.assertEqual(response.status_code, 200)
 
-    @patch("geonode.thumbs.thumbnails.create_thumbnail")
-    def test_map_metadata(self, thumbnail_mock):
-        """Test that map metadata can be properly rendered"""
-        # first create a map
-        map_created = Map.objects.create(owner=self.u)
-        MapLayer.objects.create(
-            map=map_created,
-            name="base:nic_admin",
-            ows_url="http://localhost:8080/geoserver/wms",
-        )
-        map_id = map_created.id
-        url = reverse("map_metadata", args=(map_id,))
-        self.client.logout()
-
-        # test unauthenticated user to modify map metadata
-        response = self.client.post(url)
-        self.assertEqual(response.status_code, 302)
-
-        # test a user without metadata modify permission
-        self.client.login(username="foo", password="pass")
-        response = self.client.post(url)
-        self.assertTrue(response.status_code in (401, 403))
-        self.client.logout()
-
-        # Now test with a valid user using GET method
-        self.client.login(username=self.user, password=self.passwd)
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-        # Now test with a valid user using POST method
-        user = get_user_model().objects.filter(username="admin").first()
-        self.client.login(username=self.user, password=self.passwd)
-        response = self.client.post(
-            url,
-            data={
-                "resource-owner": user.id,
-                "resource-title": "map_title",
-                "resource-date": "2022-01-24 16:38 pm",
-                "resource-date_type": "creation",
-                "resource-language": "eng",
-            },
-        )
-        self.assertEqual(response.status_code, 200)
-
     @on_ogc_backend(geoserver.BACKEND_PACKAGE)
     @patch("geonode.thumbs.thumbnails.create_thumbnail")
     def test_map_embed(self, thumbnail_mock):
