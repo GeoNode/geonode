@@ -250,7 +250,9 @@ class UserHasPerms(DjangoModelPermissions):
             )
 
             # getting the user permission for that resource
-            available_perms = permissions_registry.get_perms(instance=res, user=request.user, include_user_add_resource=True)
+            available_perms = permissions_registry.get_perms(
+                instance=res, user=request.user, include_user_add_resource=True
+            )
 
             # fixup the permissions name
             perms_without_base = [x.replace("base.", "") for x in perms]
