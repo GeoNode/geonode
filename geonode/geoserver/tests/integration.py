@@ -353,4 +353,3 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
 
     def get_user_resource_perms(self, instance, user):
         return permissions_registry.get_perms(instance=instance, user=user)
-        # return list(instance.get_user_perms(user).union(instance.get_self_resource().get_user_perms(user)))

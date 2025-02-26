@@ -2374,10 +2374,8 @@ class BaseApiTests(APITestCase):
             }
             resource.set_permissions(_perms)
             # checking that bobby is in the original dataset perms list
-            self.assertTrue(
-                "bobby"
-                in "bobby"
-                in [x.username for x in permissions_registry.get_perms(instance=resource).get("users", [])]
+            self.assertIn(
+                "bobby", [x.username for x in permissions_registry.get_perms(instance=resource).get("users", [])]
             )
             # copying the resource, should remove the perms for bobby
             # only the default perms should be available

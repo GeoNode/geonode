@@ -62,12 +62,13 @@ class PermissionsHandlerRegistry:
             payload = handler.fixup_perms(instance, payload, include_virtual=include_virtual, *args, **kwargs)
         return payload
 
-    def get_perms(self, instance, user=None, include_virtual=True, *args, **kwargs):
+    def get_perms(self, instance, user=None, include_virtual=True, include_alias=False, *args, **kwargs):
         """
         Return the payload with the permissions from the handlers.
         The permissions payload can be edited by each permissions handler.
         For example before return the payload, we can virtually remove perms
         to the resource
+        Include_alias -> If true returns the permissions including the add_resorucebase if the user has
         """
         if user:
             payload = {"users": {user: instance.get_user_perms(user)}, "groups": {}}
@@ -78,6 +79,8 @@ class PermissionsHandlerRegistry:
             payload = handler.get_perms(instance, payload, user, include_virtual=include_virtual, *args, **kwargs)
 
         if user:
+            if user.has_perm("base.add_resourcebase"):
+                payload["users"][user].extend(["add_resourcebase"])
             return payload["users"][user]
         return payload
 
