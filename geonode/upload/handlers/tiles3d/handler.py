@@ -79,11 +79,15 @@ class Tiles3DFileHandler(BaseVectorFileHandler):
         the handler is able to handle the file or not
         """
         base = _data.get("base_file")
-        if not base:
+        try:
+            base = _data.get("base_file")
+            if not base:
+                return False
+            ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
+            if ext in ["json"] and Tiles3DFileHandler.is_3dtiles_json(base):
+                return True
+        except Exception:
             return False
-        ext = base.split(".")[-1] if isinstance(base, str) else base.name.split(".")[-1]
-        if ext in ["json"] and Tiles3DFileHandler.is_3dtiles_json(base):
-            return True
         return False
 
     @staticmethod

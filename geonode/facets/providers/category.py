@@ -20,6 +20,7 @@
 import logging
 
 from django.db.models import Count
+from django.utils.translation import gettext_lazy as _
 
 from geonode.base.models import TopicCategory
 from geonode.facets.models import FacetProvider, DEFAULT_FACET_PAGE_SIZE, FACET_TYPE_CATEGORY
@@ -40,7 +41,7 @@ class CategoryFacetProvider(FacetProvider):
         return {
             "name": self.name,
             "filter": "filter{category.identifier.in}",
-            "label": "Category",
+            "label": _("Category"),
             "type": FACET_TYPE_CATEGORY,
         }
 

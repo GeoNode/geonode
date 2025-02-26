@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# start tomcat after installing geoserver
-service tomcat8 restart

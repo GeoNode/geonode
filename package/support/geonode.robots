@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /geoserver/
-Disallow: /geonetwork/
-EOF
