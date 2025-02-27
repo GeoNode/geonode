@@ -130,7 +130,7 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
             # check if the dynamic model is created
             if os.getenv("IMPORTER_ENABLE_DYN_MODELS", False):
-                _schema_id = ModelSchema.objects.filter(name__icontains=initial_name)
+                _schema_id = ModelSchema.objects.filter(name__icontains=initial_name.lower().replace(" ", "_"))
                 self.assertTrue(_schema_id.exists())
                 schema_entity = _schema_id.first()
                 self.assertTrue(FieldSchema.objects.filter(model_schema=schema_entity).exists())
@@ -141,7 +141,8 @@ class BaseImporterEndToEndTest(ImporterBaseTestSupport):
 
             # check if the geonode resource exists
             resource = ResourceBase.objects.filter(
-                Q(alternate__icontains=f"geonode:{initial_name}") | Q(alternate__icontains=initial_name)
+                Q(alternate__icontains=f"geonode:{initial_name.lower().replace(' ', '_')}")
+                | Q(alternate__icontains=initial_name.lower().replace(" ", "_"))
             )
             self.assertTrue(resource.exists())
 

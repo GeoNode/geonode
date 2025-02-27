@@ -60,6 +60,7 @@ from geonode.base.populate_test_data import all_public, create_models, create_si
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
+from geonode.security.registry import permissions_registry
 
 
 TEST_GIF = os.path.join(os.path.dirname(__file__), "tests/data/img.gif")
@@ -401,8 +402,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertFalse(self.anonymous_user.has_perm("view_resourcebase", document.get_self_resource()))
 
         # Test that previous permissions for users other than ones specified in
-        # the perm_spec (and the document owner) were removed
-        current_perms = document.get_all_level_info()
+        # the perm_spec (and the document owner) were
+        current_perms = permissions_registry.get_perms(instance=document)
         self.assertEqual(len(current_perms["users"]), 1)
 
         # Test that the User permissions specified in the perm_spec were

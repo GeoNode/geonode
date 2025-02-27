@@ -22,3 +22,9 @@ from django.apps import AppConfig
 class GeoNodeSecurityAppConfig(AppConfig):
     name = "geonode.security"
     verbose_name = "GeoNode Security"
+
+    def ready(self):
+        super().ready()
+        from geonode.security.registry import permissions_registry
+
+        permissions_registry.init_registry()

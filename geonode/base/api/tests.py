@@ -94,6 +94,7 @@ from geonode.base.populate_test_data import (
 )
 from geonode.resource.api.tasks import resouce_service_dispatcher
 from guardian.shortcuts import assign_perm
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -2374,7 +2375,9 @@ class BaseApiTests(APITestCase):
             }
             resource.set_permissions(_perms)
             # checking that bobby is in the original dataset perms list
-            self.assertTrue("bobby" in "bobby" in [x.username for x in resource.get_all_level_info().get("users", [])])
+            self.assertIn(
+                "bobby", [x.username for x in permissions_registry.get_perms(instance=resource).get("users", [])]
+            )
             # copying the resource, should remove the perms for bobby
             # only the default perms should be available
             copy_url = reverse("importer_resource_copy", kwargs={"pk": resource.pk})
@@ -2389,8 +2392,14 @@ class BaseApiTests(APITestCase):
         self.assertEqual("finished", self.client.get(response.json().get("status_url")).json().get("status"))
         _resource = Dataset.objects.filter(title__icontains="test_copy_with_perms").last()
         self.assertIsNotNone(_resource)
-        self.assertNotIn("bobby", [x.username for x in _resource.get_all_level_info().get("users", [])])
-        self.assertIn("admin", [x.username for x in _resource.get_all_level_info().get("users", [])])
+        self.assertNotIn(
+            "bobby",
+            [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
+        )
+        self.assertIn(
+            "admin",
+            [x.username for x in permissions_registry.get_perms(instance=_resource).get("users", [])],
+        )
 
     def test_resource_service_copy_with_perms_doc(self):
         files = os.path.join(gisdata.GOOD_DATA, "vector/single_point.shp")
@@ -3428,7 +3437,7 @@ class TestBaseResourceBase(GeoNodeBaseTestSupport):
             "groups": {anonymous_group: set(["view_resourcebase"])},
         }
 
-        actual_perms = resource.get_all_level_info().copy()
+        actual_perms = permissions_registry.get_perms(instance=resource).copy()
         self.assertIsNotNone(actual_perms)
         self.assertTrue(self.user in actual_perms["users"].keys())
         self.assertTrue(anonymous_group in actual_perms["groups"].keys())
