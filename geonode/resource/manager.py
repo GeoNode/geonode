@@ -343,7 +343,7 @@ class ResourceManager(ResourceManagerInterface):
                         uuid, resource_type=resource_type, defaults=resource_dict
                     )
                 _resource.save()
-                resourcebase_post_save(_resource.get_real_instance(), **kwargs)
+                resourcebase_post_save(_resource.get_real_instance(), *args, **kwargs)
                 _resource.set_processing_state(enumerations.STATE_PROCESSED)
             except Exception as e:
                 logger.exception(e)
