@@ -41,7 +41,7 @@
     "@material-ui/icons": "4.11.2",
     "@material-ui/lab": "4.0.0-alpha.57",
     "@material-ui/styles": "4.11.3",
-    "axios": "1.6.8",
+    "axios": "1.8.2",
     "babel-polyfill": "6.26.0",
     "chroma-js": "2.0.4",
     "clsx": "1.2.1",
