@@ -57,6 +57,8 @@ from geonode.base.models import (
     HierarchicalKeyword,
     ResourceBase,
     MenuPlaceholder,
+    License,
+    Group,
     Menu,
     MenuItem,
     Configuration,
@@ -1291,6 +1293,28 @@ class TestRegions(GeoNodeBaseTestSupport):
         self.assertTrue(dataset.regions.exists())
         self.assertEqual(1, dataset.regions.count())
         self.assertEqual("Global", dataset.regions.first().name)
+
+
+class TestMetadataStorer(GeoNodeBaseTestSupport):
+    
+    @override_settings(METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"])
+    def test_create_passing_custom_to_post_save(self):
+        from geonode.resource.manager import resource_manager
+        User = get_user_model()
+        user = User.objects.create(username="test", email="test@test.com")
+        license = License.objects.all().first()
+        group = Group.objects.all().first()
+        dataset = resource_manager.create(
+            str(uuid4()),
+            resource_type=Dataset,
+            defaults=dict(owner=user, title="test"),
+            custom=dict(group=group.pk, license=license),
+        )
+        self.assertIsNotNone(dataset.license)
+        self.assertIsNotNone(dataset.group)
+        self.assertEqual(group.pk, dataset.group.pk)
+        
+        resource_manager.delete(dataset)
 
 
 class LinkedResourcesTest(GeoNodeBaseTestSupport):
