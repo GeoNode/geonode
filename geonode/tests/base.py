@@ -66,7 +66,7 @@ class GeoNodeBaseTestSupport(TestCase):
     def setUp(self):
         super().setUp()
         faulthandler.enable()
-    
+
     def tearDown(self):
         # cleanup globally cached items
         globally_cached = ["storer_modules", "user_deletion_modules", "geoapp_subtypes"]
