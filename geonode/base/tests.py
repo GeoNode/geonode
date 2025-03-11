@@ -1299,7 +1299,6 @@ class TestMetadataStorer(GeoNodeBaseTestSupport):
     
     @override_settings(METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"])
     def test_create_passing_custom_to_post_save(self):
-        from geonode.resource.manager import resource_manager
         User = get_user_model()
         user = User.objects.create(username="test", email="test@test.com")
         license = License.objects.all().first()
@@ -1313,8 +1312,6 @@ class TestMetadataStorer(GeoNodeBaseTestSupport):
         self.assertIsNotNone(dataset.license)
         self.assertIsNotNone(dataset.group)
         self.assertEqual(group.pk, dataset.group.pk)
-        
-        resource_manager.delete(dataset)
 
 
 class LinkedResourcesTest(GeoNodeBaseTestSupport):
