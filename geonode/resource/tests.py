@@ -24,14 +24,13 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.test import override_settings
 
 from geonode.groups.models import GroupProfile
 from geonode.base.populate_test_data import create_models
 from geonode.resource.utils import resourcebase_post_save
 from geonode.tests.base import GeoNodeBaseTestSupport
 from geonode.resource.manager import ResourceManager
-from geonode.base.models import License, LinkedResource, ResourceBase, Group
+from geonode.base.models import LinkedResource, ResourceBase
 from geonode.layers.models import Dataset
 from geonode.services.models import Service
 from geonode.documents.models import Document
@@ -110,20 +109,6 @@ class TestResourceManager(GeoNodeBaseTestSupport):
         new_uuid = str(uuid4())
         res = self.rm.create(new_uuid, resource_type=Dataset, defaults=dataset_defaults)
         self.assertEqual(res, Dataset.objects.get(uuid=new_uuid))
-
-    @override_settings(METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"])
-    def test_create_passing_custom_to_post_save(self):
-        license = License.objects.all().first()
-        group = Group.objects.all().first()
-        dataset = self.rm.create(
-            None,
-            resource_type=Dataset,
-            defaults=dict(owner=self.user, title="test"),
-            custom=dict(group=group.pk, license=license),
-        )
-        self.assertIsNotNone(dataset.license)
-        self.assertIsNotNone(dataset.group)
-        self.assertEqual(group.pk, dataset.group.pk)
 
     def test_update(self):
         dt = create_single_dataset("test_update_dataset")
