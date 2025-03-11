@@ -4,7 +4,6 @@
     "title": "UUID",
     "maxLength": 36,
     "readOnly": true,
-    "NO_ui:widget": "hidden",
     "geonode:handler": "base"
   },
   "title": {
@@ -12,7 +11,8 @@
     "title": "title",
     "description": "name by which the cited resource is known",
     "maxLength": 255,
-    "geonode:handler": "base"
+    "geonode:handler": "base",
+    "geonode:required": true
   },
   "abstract": {
     "type": "string",
@@ -23,17 +23,20 @@
       "widget": "textarea",
       "rows": 5
     },
-    "geonode:handler": "base"
+    "geonode:handler": "base",
+    "geonode:required": true
   },
   "date": {
     "type": "string",
     "format": "date-time",
-    "title": "Date"
+    "title": "Date",
+    "geonode:required": true
   },
   "date_type": {
     "type": "string",
     "title": "date type",
-    "maxLength": 255
+    "maxLength": 255,
+    "geonode:required": true
   },
   "category": {
      "type": "object",
@@ -54,7 +57,8 @@
     "type": "string",
     "title": "language",
     "description": "language used within the dataset",
-    "maxLength": 16
+    "maxLength": 16,
+    "geonode:required": true
   },
   "license": {
     "type": "object",
