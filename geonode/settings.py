@@ -1939,7 +1939,7 @@ MAP_CLIENT_USE_CROSS_ORIGIN_CREDENTIALS = ast.literal_eval(
 )
 
 ACCOUNT_OPEN_SIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SIGNUP", "True"))
-# ref https://github.com/GeoNode/geonode/issues/12967 
+# ref https://github.com/GeoNode/geonode/issues/12967
 ACCOUNT_OPEN_SOCIALSIGNUP = ast.literal_eval(os.environ.get("ACCOUNT_OPEN_SOCIALSIGNUP", "True"))
 
 ACCOUNT_APPROVAL_REQUIRED = ast.literal_eval(os.getenv("ACCOUNT_APPROVAL_REQUIRED", "False"))
