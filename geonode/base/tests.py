@@ -27,6 +27,7 @@ from uuid import uuid4
 from unittest.mock import patch, Mock
 from guardian.shortcuts import assign_perm
 
+from django.utils.module_loading import import_string
 from django.db.utils import IntegrityError, OperationalError
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -1246,6 +1247,13 @@ class Test_HierarchicalTagManager(GeoNodeBaseTestSupport):
         )
 
 
+def _cache_less_call_storers(instance, custom={}):
+    storer_module_path = settings.METADATA_STORERS if hasattr(settings, "METADATA_STORERS") else []
+    storers = [import_string(storer_path) for storer_path in storer_module_path]
+    for storer in storers:
+        storer(instance, custom)
+    return instance
+
 class TestRegions(GeoNodeBaseTestSupport):
     def setUp(self):
         self.dataset_inside_region = GEOSGeometry(
@@ -1283,35 +1291,38 @@ class TestRegions(GeoNodeBaseTestSupport):
             region.is_assignable_to_geom(self.dataset_outside_region), "Extent outside a region should be assigned"
         )
 
-    @override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"])
+    @patch("geonode.resource.utils.call_storers", _cache_less_call_storers)
     def test_regions_are_assigned_if_handler_is_used(self):
-        dataset = resource_manager.create(
-            None,
-            resource_type=Dataset,
-            defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),
-        )
-        self.assertTrue(dataset.regions.exists())
-        self.assertEqual(1, dataset.regions.count())
-        self.assertEqual("Global", dataset.regions.first().name)
+        with override_settings(METADATA_STORERS=["geonode.resource.regions_storer.spatial_predicate_region_assignor"]):
+            dataset = resource_manager.create(
+                None,
+                resource_type=Dataset,
+                defaults=dict(owner=get_user_model().objects.first(), title="test_region_dataset", is_approved=True),
+            )
+            self.assertTrue(dataset.regions.exists())
+            self.assertEqual(1, dataset.regions.count())
+            self.assertEqual("Global", dataset.regions.first().name)
 
 
 class TestMetadataStorer(GeoNodeBaseTestSupport):
     
-    @override_settings(METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"])
+    @patch("geonode.resource.utils.call_storers", _cache_less_call_storers)
     def test_create_passing_custom_to_post_save(self):
-        User = get_user_model()
-        user = User.objects.create(username="test", email="test@test.com")
-        license = License.objects.all().first()
-        group = Group.objects.all().first()
-        dataset = resource_manager.create(
-            str(uuid4()),
-            resource_type=Dataset,
-            defaults=dict(owner=user, title="test"),
-            custom=dict(group=group.pk, license=license),
-        )
-        self.assertIsNotNone(dataset.license)
-        self.assertIsNotNone(dataset.group)
-        self.assertEqual(group.pk, dataset.group.pk)
+        
+        with override_settings(METADATA_STORERS=["geonode.resource.metadata_storer.store_metadata"]):
+            User = get_user_model()
+            user = User.objects.create(username="test", email="test@test.com")
+            license = License.objects.all().first()
+            group = Group.objects.all().first()
+            dataset = resource_manager.create(
+                str(uuid4()),
+                resource_type=Dataset,
+                defaults=dict(owner=user, title="test"),
+                custom=dict(group=group.pk, license=license),
+            )
+            self.assertIsNotNone(dataset.license)
+            self.assertIsNotNone(dataset.group)
+            self.assertEqual(group.pk, dataset.group.pk)
 
 
 class LinkedResourcesTest(GeoNodeBaseTestSupport):
