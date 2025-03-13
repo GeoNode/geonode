@@ -346,10 +346,7 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     },
-    "memcached": {
-        "BACKEND": MEMCACHED_BACKEND,
-        "LOCATION": MEMCACHED_LOCATION
-    },
+    "memcached": {"BACKEND": MEMCACHED_BACKEND, "LOCATION": MEMCACHED_LOCATION},
     # MEMCACHED EXAMPLE
     # 'default': {
     #     'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
@@ -845,9 +842,9 @@ MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 # Sessions
 SESSION_SERIALIZER = "django.contrib.sessions.serializers.PickleSerializer"
-SESSION_ENGINE = os.environ.get('SESSION_ENGINE', 'django.contrib.sessions.backends.db')
-if SESSION_ENGINE in ('django.contrib.sessions.backends.cached_db', 'django.contrib.sessions.backends.cached'):
-    SESSION_CACHE_ALIAS = 'memcached' # use memcached cache if a cached backend is requested
+SESSION_ENGINE = os.environ.get("SESSION_ENGINE", "django.contrib.sessions.backends.db")
+if SESSION_ENGINE in ("django.contrib.sessions.backends.cached_db", "django.contrib.sessions.backends.cache"):
+    SESSION_CACHE_ALIAS = "memcached"  # use memcached cache if a cached backend is requested
 
 # Security stuff
 SESSION_EXPIRED_CONTROL_ENABLED = ast.literal_eval(os.environ.get("SESSION_EXPIRED_CONTROL_ENABLED", "True"))
