@@ -51,6 +51,10 @@ class ProxyUrlsRegistry:
         self.proxy_allowed_hosts.remove(host)
 
     def get_proxy_allowed_hosts(self):
+        # We register remote hosts from remote URLs at creation time, inside ImporterViewSet.create().
+        # If for some reason the creation fails we end up having stale or wrong URLs inside the registry.
+        # We check the last time the registry was updated, and after a certain delta we reinitialize the registry 
+        # which removes any URLs that are not connected to remote datasets
         if (
             self._last_registry_load is None
             or (now() - self._last_registry_load).days >= self._registry_reload_threshold
