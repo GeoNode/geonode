@@ -698,7 +698,11 @@ LOGGING = {
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
-        "console": {"level": "ERROR", "class": "logging.StreamHandler", "formatter": "simple"},
+        "console": {"level": "DEBUG" if DEBUG else "INFO", 
+                "class": "logging.StreamHandler", 
+                "stream": sys.stdout, 
+                "formatter": "verbose" if DEBUG else "simple",
+                },
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
@@ -708,32 +712,50 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "level": "WARN",
+            "level": "DEBUG" if DEBUG else "WARN",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "geonode": {
-            "level": "WARN",
+            "level": "DEBUG" if DEBUG else "WARN",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "importer": {
-            "level": "INFO",
+            "level": "DEBUG" if DEBUG else "INFO",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "geonode.br": {"level": "INFO", "handlers": ["br"], "propagate": False},
         "geoserver-restconfig.catalog": {
             "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "owslib": {
             "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "pycsw": {
             "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "celery": {
-            "level": "WARN",
+            "level": "DEBUG" if DEBUG else "WARN",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "mapstore2_adapter.plugins.serializers": {
             "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
         },
         "geonode_logstash.logstash": {
             "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": False,
         },
     },
 }
