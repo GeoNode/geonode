@@ -698,11 +698,12 @@ LOGGING = {
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
-        "console": {"level": "DEBUG" if DEBUG else "INFO", 
-                "class": "logging.StreamHandler", 
-                "stream": sys.stdout, 
-                "formatter": "verbose" if DEBUG else "simple",
-                },
+        "console": {
+            "level": "DEBUG" if DEBUG else "INFO",
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "verbose" if DEBUG else "simple",
+        },
         "mail_admins": {
             "level": "ERROR",
             "filters": ["require_debug_false"],
