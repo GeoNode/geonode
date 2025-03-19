@@ -144,14 +144,31 @@ class MetadataManager:
                 handler.update_resource(resource, fieldname, json_instance, context, errors)
             except Exception as e:
                 MetadataHandler._set_error(errors, [fieldname], f"Error while processing this field: {e}")
+
+        for handler in self.handlers.values():
+            try:
+                handler.pre_save(resource, json_instance, context, errors)
+            except Exception as e:
+                err = f"Error in pre_save: handler {handler.__class__.__name__}"
+                logger.error(err, exc_info=e)
+                MetadataHandler._set_error(errors, [], f"{err} : {e}")
+
         try:
             resource.save()
         except Exception as e:
             logger.warning(f"Error while updating schema instance: {e}")
             MetadataHandler._set_error(errors, [], f"Error while saving the resource: {e}")
 
+        for handler in self.handlers.values():
+            try:
+                handler.post_save(resource, json_instance, context, errors)
+            except Exception as e:
+                err = f"Error in post_save: handler {handler.__class__.__name__}"
+                logger.error(err, exc_info=e)
+                MetadataHandler._set_error(errors, [], f"{err} : {e}")
+
         # TESTING ONLY
-        if "error" in resource.title.lower():
+        if "_error_" in resource.title.lower():
             _create_test_errors(schema, errors, [], "TEST: field <{schema_type}>'{path}' PUT request")
 
         return errors
