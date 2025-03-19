@@ -64,6 +64,18 @@ class MetadataHandler(metaclass=ABCMeta):
         """
         pass
 
+    def pre_save(self, resource: ResourceBase, json_instance: dict, context: dict, errors: dict, **kwargs):
+        """
+        Called just after all the calls to update_resource, and just before ResourceBase.save()
+        """
+        pass
+
+    def post_save(self, resource: ResourceBase, json_instance: dict, context: dict, errors: dict, **kwargs):
+        """
+        Called after ResourceBase.save()
+        """
+        pass
+
     def load_serialization_context(self, resource: ResourceBase, jsonschema: dict, context: dict):
         """
         Called before calls to get_jsonschema_instance in order to initialize info needed by the handler
