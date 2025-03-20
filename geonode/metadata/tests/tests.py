@@ -826,13 +826,18 @@ class MetadataApiTests(APITestCase):
     @patch("cachetools.FIFOCache.get")
     # Mock FIFOCache's __setitem__ method (cache setting)
     @patch("cachetools.FIFOCache.__setitem__")
-    def test_get_schema(self, mock_setitem, mock_get, mock_build_schema):
+    @patch("geonode.metadata.manager.Thesaurus.objects.filter")
+    def test_get_schema(self, mock_db_value, mock_setitem, mock_get, mock_build_schema):
 
         lang = "en"
         expected_schema = self.fake_schema
+        thesaurus_date = "some_date_value"
+
+        # Mock the Thesaurus.objects.filter().first() method to return the thesaurus_date
+        mock_db_value.return_value.values_list.return_value.first.return_value = thesaurus_date
 
         # Case when the schema is already in cache
-        mock_get.return_value = expected_schema
+        mock_get.return_value = {"schema": expected_schema, "date": thesaurus_date}
         result = metadata_manager.get_schema(lang)
 
         # Assert that the schema was retrieved from the cache
@@ -852,7 +857,7 @@ class MetadataApiTests(APITestCase):
 
         mock_get.assert_called_once_with(str(lang), None)
         mock_build_schema.assert_called_once_with(lang)
-        mock_setitem.assert_called_once_with(str(lang), expected_schema)
+        mock_setitem.assert_called_once_with(str(lang), {"schema": expected_schema, "date": "some_date_value"})
         self.assertEqual(result, expected_schema)
 
     @patch("geonode.metadata.manager.metadata_manager.get_schema")

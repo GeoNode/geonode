@@ -20,10 +20,11 @@
 import logging
 import copy
 from cachetools import FIFOCache
+from datetime import datetime
 
 from django.utils.translation import gettext as _
 
-from geonode.base.models import Thesaurus, ThesaurusKeyword, ThesaurusKeywordLabel
+from geonode.base.models import Thesaurus
 from geonode.metadata.handlers.abstract import MetadataHandler
 from geonode.metadata.exceptions import UnsetFieldException
 from geonode.metadata.i18n import get_localized_labels, I18N_THESAURUS_IDENTIFIER
@@ -88,13 +89,23 @@ class MetadataManager:
 
     def get_schema(self, lang=None):
         cache_key = str(lang)
-        ret = MetadataManager._schema_cache.get(cache_key, None)
-        if not ret:
-            logger.info(f"Building schema for {cache_key}")
-            ret = self.build_schema(lang)
-            MetadataManager._schema_cache[cache_key] = ret
-            logger.info("Schema built")
-        return ret
+        cached_entry = MetadataManager._schema_cache.get(cache_key, None)
+
+        thesaurus_date = (
+            Thesaurus.objects.filter(identifier=I18N_THESAURUS_IDENTIFIER).values_list("date", flat=True).first()
+        )
+        if cached_entry:
+            if thesaurus_date == cached_entry["date"]:
+                # only return cached schema if thesaurus has not been modified
+                return cached_entry["schema"]
+            else:
+                logger.info(f"Schema for {cache_key} needs to be recreated")
+
+        logger.info(f"Building schema for {cache_key}")
+        schema = self.build_schema(lang)
+        logger.debug("Schema built")
+        MetadataManager._schema_cache[cache_key] = {"schema": schema, "date": thesaurus_date}
+        return schema
 
     def build_schema_instance(self, resource, lang=None):
         schema = self.get_schema(lang)
@@ -186,18 +197,35 @@ def _create_test_errors(schema, errors, path, msg_template, create_message=True)
         _create_test_errors(schema["items"], errors, path, msg_template, create_message=False)
 
 
-# signals for invalidating cached data
 def thesaurus_changed(sender, instance, **kwargs):
-    base = f"Thesaurus changed: class {sender.__class__.__name__} -->"
-    if sender == Thesaurus and instance.identifier == I18N_THESAURUS_IDENTIFIER:
-        logger.debug(f"{base} {instance.identifier}")
-        MetadataManager.clear_schema_cache()
-    elif sender == ThesaurusKeyword and instance.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
-        logger.debug(f"{base} {instance.about} ALT:{instance.alt_label}")
-        MetadataManager.clear_schema_cache()
-    elif sender == ThesaurusKeywordLabel and instance.keyword.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
-        logger.debug(f"{base} {instance.keyword.about} ALT:{instance.keyword.alt_label} L:{instance.lang}")
-        MetadataManager.clear_schema_cache()
+    if instance.identifier == I18N_THESAURUS_IDENTIFIER:
+        if hasattr(instance, "_signal_handled"):  # avoid signal recursion
+            return
+        logger.debug(f"Thesaurus changed: {instance.identifier}")
+        _update_thesaurus_date()
+
+
+def thesaurusk_changed(sender, instance, **kwargs):
+    if instance.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
+        logger.debug(f"ThesaurusKeyword changed: {instance.about} ALT:{instance.alt_label}")
+        _update_thesaurus_date()
+
+
+def thesauruskl_changed(sender, instance, **kwargs):
+    if instance.keyword.thesaurus.identifier == I18N_THESAURUS_IDENTIFIER:
+        logger.debug(
+            f"ThesaurusKeywordLabel changed: {instance.keyword.about} ALT:{instance.keyword.alt_label} L:{instance.lang}"
+        )
+        _update_thesaurus_date()
+
+
+def _update_thesaurus_date():
+    logger.debug("Updating label thesaurus date")
+    # update timestamp to invalidate other processes also
+    i18n_thesaurus = Thesaurus.objects.get(identifier=I18N_THESAURUS_IDENTIFIER)
+    i18n_thesaurus.date = datetime.now().replace(microsecond=0).isoformat()
+    i18n_thesaurus._signal_handled = True
+    i18n_thesaurus.save()
 
 
 metadata_manager = MetadataManager()
