@@ -15,24 +15,41 @@ def get_localized_tkeywords(lang, thesaurus_identifier: str):
         "	tk.id,"
         "	tk.about,"
         "	tk.alt_label,"
-        "	tkl.label"
+        "	tkl.label,"
+        "	tkl.lang"
         " from"
         "	base_thesaurus th,"
         "   base_thesauruskeyword tk"
         " left outer join "
         "  (select keyword_id, lang, label from base_thesauruskeywordlabel"
-        "   where lang = %s) as tkl"
+        "   where lang like %s) as tkl"
         " on (tk.id = tkl.keyword_id)"
         " where th.identifier = %s"
         " and tk.thesaurus_id = th.id"
         " order by label, alt_label"
     )
-    ret = []
+    ret = {}
+    ovr = {}
     with connection.cursor() as cursor:
-        cursor.execute(query, [lang, thesaurus_identifier])
-        for id, about, alt, label in cursor.fetchall():
-            ret.append({"id": id, "about": about, "label": label or alt})
-    return sorted(ret, key=lambda i: i["label"].lower())
+        cursor.execute(query, [f"{lang}%", thesaurus_identifier])
+        for id, about, alt, label, dblang in cursor.fetchall():
+            if not dblang or dblang == lang:
+                # this is a properly localized label or an altlabel (when dblang is null)
+                ret[id] = {"id": id, "about": about, "label": label or alt}
+            elif dblang and dblang.endswith("-ovr"):
+                # store overrides to be applied later
+                ovr[id] = {"id": id, "about": about, "label": label or alt}
+            else:
+                logger.warning(f"Found unexpected lang {dblang}")
+        for ovr_id, ovr_row in ovr.items():  # apply overrides
+            if ovr_id in ret:
+                logger.debug(f"overriding TK {ret[ovr_id]['about']}")
+                ret[ovr_id]["label"] = ovr_row["label"]
+            else:
+                logger.debug(f"Setting ovr TK {ovr_row}")
+                ret[ovr_id] = ovr_row
+
+    return sorted(ret.values(), key=lambda i: i["label"].lower())
 
 
 def get_localized_labels(lang, key="about"):
