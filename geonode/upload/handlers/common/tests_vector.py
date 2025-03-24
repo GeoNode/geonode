@@ -327,8 +327,8 @@ class TestBaseVectorFileHandler(TestCase):
         The other one are discarded
         """
         all_layers = GPKGFileHandler().get_ogr2ogr_driver().Open(self.no_crs_gpkg)
-
-        with self.assertLogs(level="ERROR") as _log:
+        
+        with self.assertLogs("importer", level="ERROR") as _log:
             valid_layer = GPKGFileHandler()._select_valid_layers(all_layers)
 
         self.assertIn(

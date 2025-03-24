@@ -230,7 +230,7 @@ class ImporterNoCRSImportTest(BaseImporterEndToEndTest):
         self._cleanup_layers(name="mattia_test")
         payload = {"base_file": open(self.no_crs_gpkg, "rb"), "store_spatial_file": True, "action": "upload"}
 
-        with self.assertLogs(level="ERROR") as _log:
+        with self.assertLogs("importer", level="ERROR") as _log:
             self.client.force_login(self.admin)
 
             response = self.client.post(self.url, data=payload)
