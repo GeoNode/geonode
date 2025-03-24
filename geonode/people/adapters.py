@@ -220,7 +220,8 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     """
 
     def is_open_for_signup(self, request, sociallogin):
-        return _site_allows_signup(request)
+        # https://github.com/GeoNode/geonode/issues/12967
+        return settings.ACCOUNT_OPEN_SOCIALSIGNUP
 
     def populate_user(self, request, sociallogin, data):
         """This method is called when a new sociallogin is created"""
