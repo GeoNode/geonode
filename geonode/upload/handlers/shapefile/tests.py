@@ -137,7 +137,7 @@ class TestShapeFileFileHandler(TestCase):
             actual = self.handler.create_ogr2ogr_command(shp_with_cst, "a", False, "a")
 
             _file.assert_called_once_with(cst_file, "r")
-            self.assertIn("ENCODING=UTF-8", actual)
+            self.assertIn("--config SHAPE_ENCODING UTF-8", actual)
 
     @patch("geonode.upload.handlers.common.vector.Popen")
     def test_import_with_ogr2ogr_without_errors_should_call_the_right_command(self, _open):
