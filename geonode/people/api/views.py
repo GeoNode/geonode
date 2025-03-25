@@ -162,9 +162,7 @@ class UserViewSet(DynamicModelViewSet):
 
         if transfer_resource_subset:
             # transfer_resources
-            ResourceBase.objects\
-                .filter(owner=user, pk__in=transfer_resource_subset)\
-                .update(owner=target or user)
+            ResourceBase.objects.filter(owner=user, pk__in=transfer_resource_subset).update(owner=target or user)
         else:
             # transfer all the resources to target
             ResourceBase.objects.filter(owner=user).update(owner=target or user)
