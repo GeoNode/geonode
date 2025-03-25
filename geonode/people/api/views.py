@@ -148,7 +148,7 @@ class UserViewSet(DynamicModelViewSet):
         user = self.get_object()
         admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
         target_user = request.data.get("owner")
-
+        transfer_resource_subset = request.POST.getlist("resources", None)
         target = None
         if target_user == "DEFAULT":
             if not admin:
@@ -160,7 +160,13 @@ class UserViewSet(DynamicModelViewSet):
         if target == user:
             return Response("Cannot reassign to self", status=400)
 
-        # transfer to target
-        ResourceBase.objects.filter(owner=user).update(owner=target or user)
+        if transfer_resource_subset:
+            # transfer_resources
+            ResourceBase.objects\
+                .filter(owner=user, pk__in=transfer_resource_subset)\
+                .update(owner=target or user)
+        else:
+            # transfer all the resources to target
+            ResourceBase.objects.filter(owner=user).update(owner=target or user)
 
         return Response("Resources transfered successfully", status=200)

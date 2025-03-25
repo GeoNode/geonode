@@ -1286,3 +1286,32 @@ class PeopleAndProfileTests(GeoNodeBaseTestSupport):
         self.assertTrue(bobby_resources.exists())
         later_bobby_resources = ResourceBase.objects.filter(owner=bobby).all()
         self.assertTrue(set(prior_bobby_resources) == set(later_bobby_resources))
+
+    def test_transfer_resource_subset(self):
+        """
+        user wants to transfer resources to target
+        """
+        bobby = get_user_model().objects.get(username="bobby")
+        self.assertTrue(self.client.login(username="bobby", password="bob"))
+        self.assertTrue(bobby.is_authenticated)
+        # check bobbys resources
+        resource_to_transfer = ResourceBase.objects.filter(owner=bobby).first()
+        second_resource = ResourceBase.objects.filter(owner=bobby).last()
+        new_owner = get_user_model().objects.exclude(username__in=["bobby", "AnonymousUser"]).first()
+
+        # call api to transfer bobby resource to the other user
+        response = self.client.post(
+            path=f"{reverse('users-list')}/{bobby.pk}/transfer_resources",
+            data={"owner": new_owner.pk, "resources": [resource_to_transfer.pk, second_resource.pk]},
+        )
+        # response should be 200
+        self.assertEqual(response.status_code, 200)
+
+        resource_to_transfer.refresh_from_db()
+        second_resource.refresh_from_db()
+        # Check that bobby does not own the resource anymore
+        self.assertTrue(resource_to_transfer.owner != bobby)
+        self.assertTrue(second_resource.owner != bobby)
+        # since the payload say "default"
+        self.assertTrue(resource_to_transfer.owner == new_owner)
+        self.assertTrue(second_resource.owner == new_owner)
