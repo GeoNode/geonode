@@ -2,6 +2,8 @@ import logging
 
 from django.db import connection
 
+from geonode.base.models import ThesaurusKeywordLabel
+
 logger = logging.getLogger(__name__)
 
 I18N_THESAURUS_IDENTIFIER = "labels-i18n"
@@ -54,3 +56,13 @@ def get_localized_tkeywords(lang, thesaurus_identifier: str):
 
 def get_localized_labels(lang, key="about"):
     return {i[key]: i["label"] for i in get_localized_tkeywords(lang, I18N_THESAURUS_IDENTIFIER)}
+
+
+def get_localized_label(lang, about):
+    return (
+        ThesaurusKeywordLabel.objects.filter(
+            keyword__thesaurus__identifier=I18N_THESAURUS_IDENTIFIER, keyword__about=about, lang=lang
+        )
+        .values_list("label", flat=True)
+        .first()
+    )

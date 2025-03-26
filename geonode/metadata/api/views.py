@@ -38,6 +38,7 @@ from geonode.base.models import ResourceBase, ThesaurusKeyword, ThesaurusKeyword
 from geonode.base.utils import remove_country_from_languagecode
 from geonode.base.views import LinkedResourcesAutocomplete, RegionAutocomplete, HierarchicalKeywordAutocomplete
 from geonode.groups.models import GroupProfile
+from geonode.metadata.i18n import get_localized_label
 from geonode.metadata.manager import metadata_manager
 from geonode.people.utils import get_available_users
 
@@ -96,15 +97,15 @@ class MetadataViewSet(ViewSet):
     def schema_instance(self, request, pk=None):
         try:
             resource = ResourceBase.objects.get(pk=pk)
+            lang = request.query_params.get("lang", get_language_from_request(request)[:2])
 
             if request.method == "GET":
-                lang = request.query_params.get("lang", get_language_from_request(request)[:2])
                 schema_instance = metadata_manager.build_schema_instance(resource, lang)
                 return JsonResponse(
                     schema_instance, content_type="application/schema-instance+json", json_dumps_params={"indent": 3}
                 )
 
-            elif request.method in ("PUT"):
+            elif request.method == "PUT":
                 logger.debug(f"handling request {request.method}")
                 # try:
                 #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
@@ -112,16 +113,19 @@ class MetadataViewSet(ViewSet):
                 #     logger.warning(f"Can't parse JSON {request.data}: {e}")
                 errors = metadata_manager.update_schema_instance(resource, request.data)
 
+                msg_t = (
+                    ("m_metadata_update_error", "Some errors were found while updating the resource")
+                    if errors
+                    else ("m_metadata_update_ok", "The resource was updated successfully")
+                )
+                msg = get_localized_label(lang, msg_t[0]) or msg_t[1]
+
                 response = {
-                    "message": (
-                        "Some errors were found while updating the resource"
-                        if errors
-                        else "The resource was updated successfully"
-                    ),
+                    "message": msg,
                     "extraErrors": errors,
                 }
 
-                return Response(response, status=400 if errors else 200)
+                return Response(response, status=422 if errors else 200)
 
         except ResourceBase.DoesNotExist:
             result = {"message": "The dataset was not found"}

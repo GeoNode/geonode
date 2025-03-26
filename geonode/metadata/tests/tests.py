@@ -245,7 +245,7 @@ class MetadataApiTests(APITestCase):
         mock_update_schema_instance.return_value = errors
 
         response = self.client.put(url, data=fake_payload, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertJSONEqual(
             response.content,
             {"message": "Some errors were found while updating the resource", "extraErrors": errors},
