@@ -30,7 +30,7 @@ zipstream-ng==1.8.0
 
 # Django Apps
 django-allauth==0.63.6
-django-appconf==1.0.6
+django-appconf==1.1.0
 django-celery-results==2.5.1
 django-filter==24.2
 django-imagekit==5.0.0
