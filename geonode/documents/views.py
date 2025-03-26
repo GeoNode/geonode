@@ -41,6 +41,8 @@ from geonode.storage.manager import storage_manager
 from geonode.resource.manager import resource_manager
 from geonode.base import enumerations
 
+from pathlib import Path
+
 from .utils import get_download_response
 
 from .models import Document
@@ -137,7 +139,8 @@ class DocumentUploadView(CreateView):
         if file:
             tempdir = mkdtemp()
             dirname = os.path.basename(tempdir)
-            filepath = storage_manager.save(f"{dirname}/{file.name}", file)
+            name = Path(file.name)
+            filepath = storage_manager.save(f"{dirname}/{name.stem}{name.suffix.lower()}", file)
             storage_path = storage_manager.path(filepath)
             self.object = resource_manager.create(
                 None,

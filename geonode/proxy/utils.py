@@ -2,7 +2,7 @@ from urllib.parse import urlsplit
 
 from django.conf import settings
 from django.db.models import signals
-
+from django.utils.timezone import now
 
 site_url = urlsplit(settings.SITEURL)
 
@@ -11,6 +11,8 @@ PROXIED_LINK_TYPES = ["OGC:WMS", "OGC:WFS", "data"]
 
 class ProxyUrlsRegistry:
     _first_init = True
+    _last_registry_load = None
+    _registry_reload_threshold = getattr(settings, "PROXY_RELOAD_REGISTRY_THRESHOLD_DAYS", 1)
 
     def initialize(self):
         from geonode.base.models import Link
@@ -30,12 +32,16 @@ class ProxyUrlsRegistry:
             signals.post_delete.connect(link_post_delete, sender=Link)
             self._first_init = False
 
+        self._last_registry_load = now()
+
     def set(self, hosts):
         self.proxy_allowed_hosts = set(hosts)
+        self._last_registry_load = now()
         return self
 
     def clear(self):
         self.proxy_allowed_hosts = set()
+        self._last_registry_load = now()
         return self
 
     def register_host(self, host):
@@ -45,6 +51,15 @@ class ProxyUrlsRegistry:
         self.proxy_allowed_hosts.remove(host)
 
     def get_proxy_allowed_hosts(self):
+        # We register remote hosts from remote URLs at creation time, inside ImporterViewSet.create().
+        # If for some reason the creation fails we end up having stale or wrong URLs inside the registry.
+        # We check the last time the registry was updated, and after a certain delta we reinitialize the registry
+        # which removes any URLs that are not connected to remote datasets
+        if (
+            self._last_registry_load is None
+            or (now() - self._last_registry_load).days >= self._registry_reload_threshold
+        ):
+            self.initialize()
         return self.proxy_allowed_hosts
 
 

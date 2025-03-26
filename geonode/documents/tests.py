@@ -32,6 +32,7 @@ from io import BytesIO
 
 from unittest.mock import patch
 from urllib.parse import urlparse
+from pathlib import Path
 
 from django.urls import reverse
 from django.conf import settings
@@ -41,7 +42,7 @@ from django.template.defaultfilters import filesizeformat
 
 from guardian.shortcuts import get_anonymous_user
 
-from geonode.assets.utils import create_asset_and_link
+from geonode.assets.utils import create_asset_and_link, get_default_asset
 from geonode.maps.models import Map
 from geonode.compat import ensure_string
 from geonode.base.enumerations import SOURCE_TYPE_REMOTE
@@ -56,6 +57,7 @@ from geonode.base.populate_test_data import all_public, create_models, create_si
 from geonode.upload.api.exceptions import FileUploadLimitException
 
 from .forms import DocumentCreateForm
+from geonode.security.registry import permissions_registry
 
 
 TEST_GIF = os.path.join(os.path.dirname(__file__), "tests/data/img.gif")
@@ -188,6 +190,25 @@ class DocumentsTest(GeoNodeBaseTestSupport):
 
         d = Document.objects.get(title="GeoNode Map")
         self.assertEqual(d.doc_url, "http://www.geonode.org/map.pdf")
+
+    def test_uploaded_csv_with_uppercase_extension(self):
+        """
+        The extension of the file should always be lowercase
+        """
+
+        self.client.login(username="admin", password="admin")
+        try:
+            with open(os.path.join(os.path.dirname(__file__), "tests/data/test.CSV"), "rb") as f:
+                data = {"title": "CSV with uppercase extension", "doc_file": f, "extension": "CSV"}
+                self.client.post(reverse("document_upload"), data=data)
+            d = Document.objects.get(title="CSV with uppercase extension")
+            # verify that the extension is not lowercase
+            self.assertEqual(d.extension, "csv")
+            # be sure that also the file extension is not lowercase
+            asset = get_default_asset(d)
+            self.assertEqual(Path(asset.location[0]).suffix, ".csv")
+        finally:
+            Document.objects.filter(title="CSV with uppercase extension").delete()
 
     def test_upload_document_form(self):
         """
@@ -397,8 +418,8 @@ class DocumentsTest(GeoNodeBaseTestSupport):
         self.assertFalse(self.anonymous_user.has_perm("view_resourcebase", document.get_self_resource()))
 
         # Test that previous permissions for users other than ones specified in
-        # the perm_spec (and the document owner) were removed
-        current_perms = document.get_all_level_info()
+        # the perm_spec (and the document owner) were
+        current_perms = permissions_registry.get_perms(instance=document)
         self.assertEqual(len(current_perms["users"]), 1)
 
         # Test that the User permissions specified in the perm_spec were

@@ -47,6 +47,7 @@ from geonode.services.models import Service
 from geonode.base import register_event
 from geonode.utils import check_ogc_backend, resolve_object
 from geonode.geoserver.helpers import ogc_server_settings
+from geonode.security.registry import permissions_registry
 
 if check_ogc_backend(geoserver.BACKEND_PACKAGE):
     from geonode.geoserver.helpers import gs_catalog

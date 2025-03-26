@@ -58,6 +58,7 @@ from geonode.base.models import Region, ResourceBase, HierarchicalKeyword, Thesa
 from geonode.base.auth import get_or_create_token
 from geonode.security.views import _perms_info_json
 
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -415,8 +416,7 @@ def resourcebase_embed(request, resourcebaseid, template="base/base_edit.html"):
 
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(resourcebase_obj)
-
-    perms_list = resourcebase_obj.get_user_perms(request.user)
+    perms_list = permissions_registry.get_perms(instance=resourcebase_obj, user=request.user)
 
     group = None
     if resourcebase_obj.group:

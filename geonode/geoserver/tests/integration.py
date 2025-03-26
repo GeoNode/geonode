@@ -42,6 +42,7 @@ from geonode.tests.utils import check_dataset
 from geonode.decorators import on_ogc_backend
 from geonode.base.models import TopicCategory, Link
 from geonode.geoserver.helpers import set_attributes_from_geoserver
+from geonode.security.registry import permissions_registry
 
 LOCAL_TIMEOUT = 300
 
@@ -351,4 +352,4 @@ class GeoNodePermissionsTest(GeoNodeLiveTestSupport):
             saved_dataset.delete()
 
     def get_user_resource_perms(self, instance, user):
-        return list(instance.get_user_perms(user).union(instance.get_self_resource().get_user_perms(user)))
+        return permissions_registry.get_perms(instance=instance, user=user)

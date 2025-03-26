@@ -48,6 +48,7 @@ from .permissions import (
 )
 
 from .utils import get_users_with_perms, get_user_obj_perms_model, skip_registered_members_common_group
+from geonode.security.registry import permissions_registry
 
 logger = logging.getLogger(__name__)
 
@@ -185,7 +186,7 @@ class PermissionLevelMixin:
         if not anonymous_group:
             raise Exception("Could not acquire 'anonymous' Group.")
 
-        perm_spec = copy.deepcopy(self.get_all_level_info())
+        perm_spec = copy.deepcopy(permissions_registry.get_perms(instance=self, include_virtual=False))
         if "users" not in perm_spec:
             perm_spec["users"] = {}
         if "groups" not in perm_spec:
@@ -450,7 +451,7 @@ class PermissionLevelMixin:
         """
         Checks if a has a given permission to the resource.
         """
-        user_perms = self.get_user_perms(user)
+        user_perms = permissions_registry.get_perms(instance=self, user=user)
 
         if permission not in user_perms:
             # TODO cater for permissions with syntax base.permission_codename

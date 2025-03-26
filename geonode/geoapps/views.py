@@ -36,6 +36,7 @@ from geonode.geoapps.models import GeoApp
 from geonode.resource.manager import resource_manager
 
 from geonode.utils import resolve_object
+from geonode.security.registry import permissions_registry
 
 
 logger = logging.getLogger("geonode.geoapps.views")
@@ -90,7 +91,7 @@ def geoapp_edit(request, geoappid, template="apps/app_edit.html"):
     # Call this first in order to be sure "perms_list" is correct
     permissions_json = _perms_info_json(geoapp_obj)
 
-    perms_list = geoapp_obj.get_user_perms(request.user)
+    perms_list = permissions_registry.get_perms(instance=geoapp_obj, user=request.user)
 
     group = None
     if geoapp_obj.group:
