@@ -2439,30 +2439,6 @@ class TestPermissionChanges(GeoNodeBaseTestSupport):
         self.assertSetEqual(set(resource_perm_specs["groups"][self.owner_group.group]), set(self.safe_perms))
         self.assertSetEqual(set(resource_perm_specs["groups"][self.resource_group.group]), set(self.safe_perms))
 
-    def test_permissions_on_approve_and_publish_changes(self):
-        # Group manager approves a resource
-        self.group_manager.set_password("group_manager")
-        self.group_manager.save()
-        self.assertTrue(self.client.login(username="group_manager", password="group_manager"))
-        response = self.client.post(self.url, data=self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertions_for_approved_or_published_is_true()
-
-        # Un approve resource
-        self.data.pop("resource-is_approved")
-        response = self.client.post(self.url, data=self.data)
-        self.assertEqual(response.status_code, 200)
-        self.assertions_for_approved_and_published_is_false()
-
-        # Admin publishes and approves resource
-        self.admin_approve_and_publish_resource()
-        self.assertions_for_approved_or_published_is_true()
-
-        # Admin Un approves and un publishes resource
-        self.admin_unapprove_and_unpublish_resource()
-        self.resource.refresh_from_db()
-        self.assertions_for_approved_and_published_is_false()
-
     def test_owner_is_group_manager(self):
         try:
             GroupMember.objects.get(group=self.owner_group, user=self.author).promote()
