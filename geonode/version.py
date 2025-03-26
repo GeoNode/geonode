@@ -48,6 +48,7 @@ def get_version(version=None):
         sub = ""
     return main + sub
 
+
 @user_passes_test(lambda u: u.is_superuser)
 def version(request, version=None):
     from django.http import HttpResponse
