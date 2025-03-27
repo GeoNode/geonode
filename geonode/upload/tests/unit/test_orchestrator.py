@@ -295,7 +295,7 @@ class TestsImporterOrchestrator(GeoNodeBaseTestSupport):
 
             started_entry = TaskResult.objects.create(task_id="task_id_started", status="STARTED", task_args=exec_id)
             success_entry = TaskResult.objects.create(task_id="task_id_success", status="SUCCESS", task_args=exec_id)
-            with self.assertLogs(level="INFO") as _log:
+            with self.assertLogs("importer", level="INFO") as _log:
                 result = self.orchestrator.evaluate_execution_progress(exec_id)
 
             self.assertIsNone(result)
