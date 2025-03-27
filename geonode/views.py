@@ -92,12 +92,6 @@ def ajax_lookup(request):
     return HttpResponse(content=json.dumps(json_dict), content_type="text/plain")
 
 
-def err403(request, exception):
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(f"{reverse('account_login')}?next={request.get_full_path()}")
-    else:
-        return TemplateResponse(request, "401.html", {}, status=401).render()
-
 
 def ident_json(request):
     site_url = settings.SITEURL.rstrip("/") if settings.SITEURL.startswith("http") else settings.SITEURL
