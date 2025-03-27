@@ -17,17 +17,16 @@
 #
 #########################################################################
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from geonode.client.hooks import hookset
 import json
 
 from django import forms
 from django.apps import apps
 from django.db.models import Q
-from django.urls import reverse
 from django.conf import settings
 from django.template.response import TemplateResponse
 from geonode.base.templatetags.base_tags import facets
-from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, get_user_model
 
 from geonode import get_version
@@ -90,7 +89,6 @@ def ajax_lookup(request):
     }
     json_dict["groups"] = [({"name": g.slug, "title": g.title}) for g in groups]
     return HttpResponse(content=json.dumps(json_dict), content_type="text/plain")
-
 
 
 def ident_json(request):

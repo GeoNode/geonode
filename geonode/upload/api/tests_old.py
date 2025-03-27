@@ -23,7 +23,6 @@ import os
 import shutil
 import logging
 import tempfile
-from io import IOBase
 from urllib.request import urljoin
 
 from django.conf import settings
@@ -31,8 +30,6 @@ from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import authenticate, get_user_model
 from django.test.utils import override_settings
-
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 from rest_framework.test import APITestCase
 
