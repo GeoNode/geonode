@@ -203,18 +203,17 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
         # checking if the services is under basic auth
         # getting the service
         from geonode.services.models import Service
+
         # check if the connected service has username and password
         has_basic_auth = Service.objects.filter(
-            harvester__pk=self.harvester_id,
-            username__isnull=False,
-            password__isnull=False
+            harvester__pk=self.harvester_id, username__isnull=False, password__isnull=False
         )
         basic_auth = None
         if has_basic_auth.exists():
             # if the username and password are set, we can prepare the basic auth for the request
             service = has_basic_auth.first()
             basic_auth = HTTPBasicAuth(service.username, service.get_password())
-            
+
         get_capabilities_response = self.http_session.get(
             self.get_ogc_wms_url(wms_url, version=_version), params=params, auth=basic_auth
         )
