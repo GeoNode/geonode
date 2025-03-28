@@ -12,10 +12,54 @@
 <div class="page-header">
   <h2>{% trans "Register New Service" %}</h2>
 </div>
-    <form method="POST" id="service_register_form">
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            {{ form.errors }}
+        </div>
+    {% endif %}
+    <form method="POST" id="service_register_form" autocomplete="off">
     {% csrf_token %}
-    {{ form|as_bootstrap }}
-    <input type="submit" class="btn btn-primary" data-toggle="modal" data-target="progressModal" id="submit_button" value="{% trans "Create" %}" />
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <label for="url">Service URL</label>
+                <input type="url" name="url" class="inputText form-control"placeholder="Service URL" id="id_url">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="type">Service Type</label><br>
+                <select id="id_type" name="type" placeholder="Service Type">
+                    {% for x, y in form.fields.type.choices %}
+                        <option value="{{ x }}">{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <br>
+        <div id="basic_auth">
+            If the service is under Basic Authentication, please fill the following inputs
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="lastName">Username</label><br>
+                    <input type="text" name="username" class="inputText form-control"placeholder="example: admin" id="id_username">
+
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="lastName">Password</label><br>
+                    <input type="password" name="password" class="inputText form-control" id="id_password" autocomplete="new-password">
+                </div>
+            </div>
+        </div>
+        
+        <br>
+        <br>
+        <div class="row">
+            <input type="submit" class="btn btn-primary" data-toggle="modal" data-target="progressModal" id="submit_button" value="{% trans "Create" %}" />
+        </div>
     </form>
     <div class="modal fade" data-backdrop="static" data-keyboard="false" id="progressModal" tabindex="-1" role="dialog" aria-labelledby="progressModalLabel">
         <div class="modal-dialog" role="document">
@@ -42,4 +86,19 @@ $(document).ready(function () {
     });
 })
 </script>
+<script>  
+    $(document).ready(function(){
+        $('#id_type').on('change', function() {
+            console.log(this.value)
+          if ( this.value == 'WMS')
+          {
+            $("#basic_auth").show();
+          }
+          else
+          {
+            $("#basic_auth").hide();
+          }
+        });
+    });
+    </script>
 {% endblock %}
