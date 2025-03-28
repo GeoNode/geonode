@@ -79,7 +79,7 @@ class Service(ResourceBase):
     # Supported Capabilities
 
     def save(self, notify=False, *args, **kwargs):
-        if kwargs.get("force_insert", False):
+        if kwargs.get("force_insert", False) and self.password:
             # if is the first creation, we must encrypt the password
             self.password = self.set_password(self.password)
         return super().save(notify, *args, **kwargs)
