@@ -17,6 +17,7 @@
 #
 #########################################################################
 import logging
+import base64
 
 from urllib.parse import urlparse, ParseResult
 
@@ -30,10 +31,15 @@ from geonode.harvesting.models import Harvester
 from geonode.layers.enumerations import GXP_PTYPES
 from geonode.people.enumerations import ROLE_VALUES
 from geonode.services.serviceprocessors import get_available_service_types
-
+from cryptography.fernet import Fernet
 from . import enumerations
 
 service_type_as_tuple = [(k, v["label"]) for k, v in get_available_service_types().items()]
+
+SECRET_KEY = settings.SECRET_KEY  # Ensure it's unique per project
+ENCRYPTION_KEY = base64.urlsafe_b64encode(SECRET_KEY[:32].encode())
+
+cipher = Fernet(ENCRYPTION_KEY)
 
 logger = logging.getLogger("geonode.services")
 
@@ -61,6 +67,8 @@ class Service(ResourceBase):
     description = models.CharField(max_length=255, null=True, blank=True)
     extra_queryparams = models.TextField(null=True, blank=True)
     operations = models.JSONField(default=dict, null=True, blank=True)
+    username = models.CharField(max_length=150, null=True, default=None)
+    password = models.CharField(_("password"), max_length=250, null=True, default=None)
 
     # Foreign Keys
 
@@ -69,6 +77,12 @@ class Service(ResourceBase):
     )
 
     # Supported Capabilities
+
+    def save(self, notify=False, *args, **kwargs):
+        if kwargs.get("force_insert", False):
+            # if is the first creation, we must encrypt the password
+            self.password = self.set_password(self.password)
+        return super().save(notify, *args, **kwargs)
 
     def __str__(self):
         return str(self.name)
@@ -108,6 +122,12 @@ class Service(ResourceBase):
 
     def get_absolute_url(self):
         return "/services/%i" % self.id
+
+    def set_password(self, password):
+        return cipher.encrypt(password.encode()).decode()
+
+    def get_password(self):
+        return cipher.decrypt(self.password.encode()).decode()
 
     class Meta:
         # custom permissions,

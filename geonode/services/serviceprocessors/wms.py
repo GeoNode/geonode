@@ -56,8 +56,10 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
 
     service_type = enumerations.WMS
 
-    def __init__(self, url, geonode_service_id=None):
+    def __init__(self, url, geonode_service_id=None, *args, **kwargs):
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
+        self.args = args
+        self.kwargs = kwargs
         self._parsed_service = None
         self.indexing_method = INDEXED if self._offers_geonode_projection() else CASCADED
         self.name = slugify(self.url)[:255]
@@ -93,7 +95,12 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
     @property
     def parsed_service(self):
         cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
-        _url, _parsed_service = WebMapService(cleaned_url.geturl(), version=version)
+        _url, _parsed_service = WebMapService(
+            cleaned_url.geturl(),
+            version=version,
+            username=self.kwargs.get("username"),
+            password=self.kwargs.get("password"),
+        )
         return _parsed_service
 
     def probe(self):
@@ -122,43 +129,52 @@ class WmsServiceHandler(base.ServiceHandlerBase, base.CascadableServiceHandlerMi
         :type owner: geonode.people.models.Profile
 
         """
-        cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
-        with transaction.atomic():
-            instance = models.Service.objects.create(
-                uuid=str(uuid4()),
-                base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode(
-                    "utf-8", "ignore"
-                ).decode("utf-8"),
-                extra_queryparams=cleaned_url.query,
-                type=self.service_type,
-                method=self.indexing_method,
-                owner=owner,
-                metadata_only=True,
-                version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode("utf-8"),
-                name=self.name,
-                title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
-                or self.name,
-                abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode("utf-8")
-                or _("Not provided"),
-                operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
-            )
-            service_harvester = Harvester.objects.create(
-                name=self.name,
-                default_owner=owner,
-                scheduling_enabled=False,
-                remote_url=instance.service_url,
-                delete_orphan_resources_automatically=True,
-                harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
-                harvester_type_specific_configuration=self.get_harvester_configuration_options(),
-            )
-            if service_harvester.update_availability():
-                service_harvester.initiate_update_harvestable_resources()
-            else:
-                logger.exception(GeoNodeException("Could not reach remote endpoint."))
-            instance.harvester = service_harvester
+        service = None
+        try:
+            cleaned_url, service, version, request = WmsServiceHandler.get_cleaned_url_params(self.url)
+            with transaction.atomic():
+                service = models.Service.objects.create(
+                    uuid=str(uuid4()),
+                    base_url=f"{cleaned_url.scheme}://{cleaned_url.netloc}{cleaned_url.path}".encode(
+                        "utf-8", "ignore"
+                    ).decode("utf-8"),
+                    extra_queryparams=cleaned_url.query,
+                    type=self.service_type,
+                    method=self.indexing_method,
+                    owner=owner,
+                    metadata_only=True,
+                    version=str(self.parsed_service.identification.version).encode("utf-8", "ignore").decode("utf-8"),
+                    name=self.name,
+                    title=str(self.parsed_service.identification.title).encode("utf-8", "ignore").decode("utf-8")
+                    or self.name,
+                    abstract=str(self.parsed_service.identification.abstract).encode("utf-8", "ignore").decode("utf-8")
+                    or _("Not provided"),
+                    operations=OgcWmsHarvester.get_wms_operations(self.parsed_service.url, version=version),
+                    username=self.kwargs.get("username", None),
+                    password=self.kwargs.get("password", None),
+                )
+                service_harvester = Harvester.objects.create(
+                    name=self.name,
+                    default_owner=owner,
+                    scheduling_enabled=False,
+                    remote_url=service.service_url,
+                    delete_orphan_resources_automatically=True,
+                    harvester_type=enumerations.HARVESTER_TYPES[self.service_type],
+                    harvester_type_specific_configuration=self.get_harvester_configuration_options(),
+                )
+                service.harvester = service_harvester
+                service.save()
+                if service_harvester.update_availability():
+                    service_harvester.initiate_update_harvestable_resources()
+                else:
+                    logger.exception(GeoNodeException("Could not reach remote endpoint."))
 
-        self.geonode_service_id = instance.id
-        return instance
+            self.geonode_service_id = service.id
+        except Exception as e:
+            logger.exception(e)
+            if service:
+                service.delete()
+        return service
 
     def get_keywords(self):
         return self.parsed_service.identification.keywords
@@ -261,8 +277,11 @@ class GeoNodeServiceHandler(WmsServiceHandler):
 
     service_type = enumerations.GN_WMS
 
-    def __init__(self, url, geonode_service_id=None):
+    def __init__(self, url, geonode_service_id=None, *args, **kwargs):
         base.ServiceHandlerBase.__init__(self, url, geonode_service_id)
+        self.args = args
+        self.kwargs = kwargs
+
         self.indexing_method = INDEXED
         self.name = slugify(self.url)[:255]
 

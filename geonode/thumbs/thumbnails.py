@@ -158,6 +158,7 @@ def create_thumbnail(
                     styles=styles,
                     width=width,
                     height=height,
+                    instance=instance
                 )
             )
         except Exception as e:
