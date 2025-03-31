@@ -261,7 +261,7 @@ class MetadataApiTests(APITestCase):
         url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
         fake_payload = "I_AM_BAD"
 
-        response = self.client.put(url, data=fake_payload, format="json")
+        response = self.client.put(url, data=fake_payload, content_type="application/json")
         self.assertEqual(response.status_code, 400)
 
     @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)

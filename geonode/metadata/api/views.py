@@ -16,7 +16,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 #########################################################################
-import json
 import logging
 
 from dal import autocomplete
@@ -108,12 +107,10 @@ class MetadataViewSet(ViewSet):
 
             elif request.method == "PUT":
                 logger.debug(f"handling request {request.method}")
-                try:
-                    json.loads(request.data)
-                except Exception as e:
-                    message = f"Can't parse JSON {request.data}: {e}"
-                    logger.warning(message)
-                    return Response(message, status=400)
+                # try:
+                #     logger.debug(f"handling content {json.dumps(request.data, indent=3)}")
+                # except Exception as e:
+                #     logger.warning(f"Can't parse JSON {request.data}: {e}")
                 errors = metadata_manager.update_schema_instance(resource, request.data)
 
                 msg_t = (
