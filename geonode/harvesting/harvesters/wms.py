@@ -32,9 +32,9 @@ from owslib.util import clean_ows_url
 from django.conf import settings
 from django.contrib.gis import geos
 from django.template.defaultfilters import slugify
-
+from requests.auth import HTTPBasicAuth
 from geonode.layers.models import Dataset
-from geonode.base.models import ResourceBase
+from geonode.base.models import Link, ResourceBase
 from geonode.layers.enumerations import GXP_PTYPES
 from geonode.thumbs.thumbnails import create_thumbnail
 
@@ -184,27 +184,43 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             logger.exception(e)
         return ogc_wms_url
 
-    def get_capabilities(self) -> requests.Response:
+    def wms_call(self, kind="GetCapabilities", override_version=None, additional_params={}) -> requests.Response:
         params = self._base_wms_parameters.copy()
         params.update(
             {
-                "request": "GetCapabilities",
+                "request": kind,
             }
         )
         (wms_url, _service, _version, _request) = self._get_cleaned_url_params(self.remote_url)
         if _service:
             params["service"] = _service
-        if _version:
-            params["version"] = _version
+        if override_version or _version:
+            params["version"] = override_version or _version
         if wms_url.query:
             for _param in parse_qsl(wms_url.query):
                 params[_param[0]] = _param[1]
+        # updating default params with custom ones
+        params = {**params, **additional_params}
 
-        get_capabilities_response = self.http_session.get(
-            self.get_ogc_wms_url(wms_url, version=_version), params=params
+        # checking if the services is under basic auth
+        # getting the service
+        from geonode.services.models import Service
+
+        # check if the connected service has username and password
+        has_basic_auth = Service.objects.filter(
+            harvester__pk=self.harvester_id, username__isnull=False, password__isnull=False
         )
-        get_capabilities_response.raise_for_status()
-        return get_capabilities_response
+        basic_auth = None
+        if has_basic_auth.exists():
+            # if the username and password are set, we can prepare the basic auth for the request
+            service = has_basic_auth.first()
+            basic_auth = HTTPBasicAuth(service.username, service.get_password())
+
+        response = self.http_session.get(
+            self.get_ogc_wms_url(wms_url, version=_version), params=params, auth=basic_auth
+        )
+        response.raise_for_status()
+        return response
 
     def get_num_available_resources(self) -> int:
         data = self._get_data()
@@ -237,7 +253,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def check_availability(self, timeout_seconds: typing.Optional[int] = 5) -> bool:
         try:
-            response = self.get_capabilities()
+            response = self.wms_call()
         except (requests.HTTPError, requests.ConnectionError):
             result = False
         else:
@@ -326,7 +342,7 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
 
     def _get_data(self) -> typing.Dict:
         """Return data from the harvester URL in JSON format."""
-        get_capabilities_response = self.get_capabilities()
+        get_capabilities_response = self.wms_call()
         root = etree.fromstring(get_capabilities_response.content, parser=XML_PARSER)
         nsmap = _get_nsmap(root.nsmap)
 
@@ -532,6 +548,29 @@ class OgcWmsHarvester(base.BaseHarvesterWorker):
             forced_crs=target_crs,
             overwrite=True,
         )
+        # ref GeoNode #13010
+        # A describeLayer is perfomed to see if we can add the WDS link
+        # to the resource
+        response = self.wms_call(
+            kind="DescribeLayer", override_version="1.1.1", additional_params={"layers": geonode_resource.alternate}
+        )
+        # check if the owsType is WFS
+        if response:
+            if (
+                etree.fromstring(response.content, parser=XML_PARSER).find("LayerDescription").attrib.get("owsType")
+                == "WFS"
+            ):
+                Link.objects.get_or_create(
+                    resource=geonode_resource,
+                    url=geonode_resource.ows_url,
+                    name=f"OGC WFS: {geonode_resource.workspace} Service",
+                    defaults=dict(
+                        extension="html",
+                        url=geonode_resource.ows_url,
+                        mime="text/html",
+                        link_type="OGC:WFS",
+                    ),
+                )
 
 
 def _get_nsmap(original: typing.Dict):
