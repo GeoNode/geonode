@@ -18,6 +18,7 @@
   	<th>{% trans "Title" %}</th>
   	<th>{% trans "URL" %}</th>
     <th>{% trans "Type" %}</th>
+    <th>{% trans "Protected (wms only)" %}</th>
   </thead>
   {% for service in services %}
   <tr>
@@ -28,6 +29,9 @@
       <a href='{{ service.base_url }}' target="_blank" rel="noopener noreferrer">{{ service.base_url }}</a>
       </td>
       <td>{{ service.service_type }}</td>
+      {% if service.needs_authentication and service.type == 'WMS' %}
+      <td>basic auth</td>
+      {% endif %}
   </tr>
   {% endfor %}
 </table>
