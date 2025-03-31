@@ -99,11 +99,11 @@ class CreateServiceForm(forms.Form):
 
     def clean_username(self):
         # the form return empty string, we want None if is not provided
-        return self.cleaned_data['username'] or None
+        return self.cleaned_data["username"] or None
 
     def clean_password(self):
         # the form return empty string, we want None if is not provided
-        return self.cleaned_data['password'] or None
+        return self.cleaned_data["password"] or None
 
 
 class ServiceForm(forms.ModelForm):
