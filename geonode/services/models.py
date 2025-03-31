@@ -79,7 +79,7 @@ class Service(ResourceBase):
     # Supported Capabilities
 
     def save(self, notify=False, *args, **kwargs):
-        if kwargs.get("force_insert", False) and self.password:
+        if kwargs.get("force_insert", False) and self.needs_authentication:
             # if is the first creation, we must encrypt the password
             self.password = self.set_password(self.password)
         return super().save(notify, *args, **kwargs)
@@ -92,6 +92,10 @@ class Service(ResourceBase):
         if self.harvester:
             return self.harvester.remote_available
         return False
+
+    @property
+    def needs_authentication(self):
+        return self.password and self.username
 
     def _get_service_url(self):
         parsed_url = urlparse(self.base_url)

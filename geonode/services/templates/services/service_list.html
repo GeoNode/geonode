@@ -29,7 +29,7 @@
       <a href='{{ service.base_url }}' target="_blank" rel="noopener noreferrer">{{ service.base_url }}</a>
       </td>
       <td>{{ service.service_type }}</td>
-      {% if service.username and service.type == 'WMS' %}
+      {% if service.needs_authentication and service.type == 'WMS' %}
       <td>basic auth</td>
       {% endif %}
   </tr>
