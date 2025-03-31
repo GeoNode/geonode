@@ -144,6 +144,7 @@ def get_map(
     height: int = 200,
     max_retries: int = 3,
     retry_delay: int = 1,
+    instance=None,
 ):
     """
     Function fetching an image from OGC server.
@@ -199,6 +200,17 @@ def get_map(
             headers["Authorization"] = f"Basic {encoded_credentials}"
         else:
             headers["Authorization"] = f"Bearer {additional_kwargs['access_token']}"
+
+    if instance and instance.subtype == "remote" and instance.remote_typename:
+        from geonode.services.models import Service
+
+        service = Service.objects.filter(name=instance.remote_typename, username__isnull=False, password__isnull=False)
+        if service.exists():
+            service = service.first()
+            encoded_credentials = base64.b64encode(
+                f"{service.username}:{service.get_password()}".encode("UTF-8")
+            ).decode("ascii")
+            headers["Authorization"] = f"Basic {encoded_credentials}"
 
     image = None
     for retry in range(max_retries):

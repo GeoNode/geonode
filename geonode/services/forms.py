@@ -33,22 +33,34 @@ logger = logging.getLogger(__name__)
 
 
 class CreateServiceForm(forms.Form):
+
     url = forms.CharField(
         label=_("Service URL"),
         max_length=512,
         widget=forms.TextInput(
-            attrs={
-                "size": "65",
-                "class": "inputText",
-                "required": "",
-                "type": "url",
-            }
+            attrs={"size": "65", "class": "inputText", "required": "", "type": "url", "autocomplete": "off"}
         ),
     )
     type = forms.ChoiceField(
         label=_("Service Type"),
         choices=[(k, v["label"]) for k, v in get_available_service_types().items()],  # from dictionary to tuple
         initial="AUTO",
+    )
+
+    username = forms.CharField(
+        required=False,
+        initial=None,
+        label=_("Username (optional)"),
+        max_length=200,
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
+
+    password = forms.CharField(
+        required=False,
+        initial=None,
+        label=_("password (optional)"),
+        max_length=200,
+        widget=forms.PasswordInput(attrs={"autocomplete": "off"}),
     )
 
     def clean_url(self):
@@ -65,7 +77,12 @@ class CreateServiceForm(forms.Form):
         service_type = self.cleaned_data.get("type")
         if url is not None and service_type is not None:
             try:
-                service_handler = get_service_handler(base_url=url, service_type=service_type)
+                service_handler = get_service_handler(
+                    base_url=url,
+                    service_type=service_type,
+                    username=self.cleaned_data.get("username", None),
+                    password=self.cleaned_data.get("password", None),
+                )
             except Exception as e:
                 logger.error(f"CreateServiceForm cleaning error: {e}")
                 raise ValidationError(_("Could not connect to the service at %(url)s"), params={"url": url})
@@ -79,6 +96,14 @@ class CreateServiceForm(forms.Form):
                     )
             self.cleaned_data["service_handler"] = service_handler
             self.cleaned_data["type"] = service_handler.service_type
+
+    def clean_username(self):
+        # the form return empty string, we want None if is not provided
+        return self.cleaned_data["username"] or None
+
+    def clean_password(self):
+        # the form return empty string, we want None if is not provided
+        return self.cleaned_data["password"] or None
 
 
 class ServiceForm(forms.ModelForm):

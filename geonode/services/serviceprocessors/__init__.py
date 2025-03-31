@@ -57,7 +57,7 @@ def get_available_service_types():
     return OrderedDict({**default, **parse_services_types()})
 
 
-def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=None):
+def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=None, *args, **kwargs):
     """Return the appropriate remote service handler for the input URL.
     If the service type is not explicitly passed in it will be guessed from
     """
@@ -65,8 +65,9 @@ def get_service_handler(base_url, service_type=enumerations.AUTO, service_id=Non
 
     handler = handlers.get(service_type, {}).get("handler")
     try:
-        service = handler(base_url, service_id)
-    except Exception:
+        service = handler(base_url, service_id, *args, **kwargs)
+    except Exception as e:
+        logger.exception(e)
         logger.exception(msg=f"Could not parse service {base_url}")
         raise
     return service
