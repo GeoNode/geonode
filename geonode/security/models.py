@@ -384,6 +384,8 @@ class PermissionLevelMixin:
             if instance.subtype == "raster":
                 PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
             elif isinstance(instance.get_real_instance(), Dataset):
+                # remote layers are included, since https://github.com/GeoNode/geonode/issues/13011
+                # introduces an "optimistic" approach to editing remote layers
                 PERMISSIONS_TO_FETCH += DATASET_ADMIN_PERMISSIONS
 
             resource_perms = Permission.objects.filter(
