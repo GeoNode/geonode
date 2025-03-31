@@ -81,7 +81,7 @@ class CreateServiceForm(forms.Form):
                     base_url=url,
                     service_type=service_type,
                     username=self.cleaned_data.get("username", None),
-                    password=self.cleaned_data.get("password", ""),
+                    password=self.cleaned_data.get("password", None),
                 )
             except Exception as e:
                 logger.error(f"CreateServiceForm cleaning error: {e}")
@@ -96,6 +96,14 @@ class CreateServiceForm(forms.Form):
                     )
             self.cleaned_data["service_handler"] = service_handler
             self.cleaned_data["type"] = service_handler.service_type
+
+    def clean_username(self):
+        # the form return empty string, we want None if is not provided
+        return self.cleaned_data['username'] or None
+
+    def clean_password(self):
+        # the form return empty string, we want None if is not provided
+        return self.cleaned_data['password'] or None
 
 
 class ServiceForm(forms.ModelForm):
