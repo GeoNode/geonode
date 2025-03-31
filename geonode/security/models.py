@@ -380,7 +380,7 @@ class PermissionLevelMixin:
 
             PERMISSIONS_TO_FETCH = VIEW_PERMISSIONS + DOWNLOAD_PERMISSIONS + ADMIN_PERMISSIONS + SERVICE_PERMISSIONS
             # include explicit permissions appliable to "subtype == 'vector'"
-            
+
             if instance.subtype == "raster":
                 PERMISSIONS_TO_FETCH += DATASET_EDIT_STYLE_PERMISSIONS
             elif isinstance(instance.get_real_instance(), Dataset):

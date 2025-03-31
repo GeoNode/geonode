@@ -1734,6 +1734,23 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
             middleware.process_request(request)
             self.assertTrue(request.user.is_superuser)
 
+    def test_remote_dataset_must_have_change_dataset_data_permission(self):
+        """
+        Ref GeoNode#13011
+        Remote dataset should have "change_dataset_data" permission
+        """
+        dataset = create_single_dataset("remote_dataset")
+        dataset.subtype = "remote"
+        dataset.save()
+        url = reverse("datasets-detail", args=[dataset.id])
+        self.client.force_login(dataset.owner)
+        response = self.client.get(url)
+
+        perms = response.json().get("dataset", {}).get("perms", {})
+        self.assertNotEqual(perms, {})
+
+        self.assertIn("change_dataset_data", perms)
+
 
 class SecurityRulesTests(TestCase):
     """
