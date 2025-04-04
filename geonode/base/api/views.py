@@ -733,48 +733,45 @@ class ResourceBaseViewSet(ApiPresetsInitializer, DynamicModelViewSet, Advertised
         methods=["post"],
         permission_classes=[IsAuthenticated, UserHasPerms(perms_dict={"default": {"POST": ["base.add_resourcebase"]}})],
     )
-
     def delete_thumbnail(self, request, resource_id, *args, **kwargs):
-        
+
         try:
             resource = ResourceBase.objects.get(id=int(resource_id))
-
-            if not isinstance(resource.get_real_instance(), (Dataset, Map)):
-                return Response(
-                {"message": "Endpoint only available for Datasets and Maps.", "success": False},
-                status=status.HTTP_400_BAD_REQUEST
-            )
 
             # Check if thumbnail exists
             if not resource.thumbnail_url:
                 return Response(
                     {"message": "The thumbnail URL field is already empty.", "success": False},
-                    status=status.HTTP_200_OK
+                    status=status.HTTP_200_OK,
                 )
 
-            # request_body = request.data if request.data else json.loads(request.body)
             thumb_parsed_url = urlparse(resource.thumbnail_url)
             thumb_filename = thumb_parsed_url.path.split("/")[-1]
+            if thumb_filename.rsplit(".")[-1] not in ["png", "jpeg", "jpg"]:
+                return Response(
+                    "The file name is not a valid image with a format png, jpeg or jpg",
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             # remove_thumb will call the thumb_path function and then the storage_manager which will delete it
             remove_thumb(thumb_filename)
 
-            # Clear the field in the database
-            resource.thumbnail_url = ""
-            resource.save(update_fields=["thumbnail_url"])
+            # Clear the related fields in the database
+            resource.thumbnail_url = None
+            resource.thumbnail_path = None
+            resource.save(update_fields=["thumbnail_url", "thumbnail_path"])
 
-            return Response(
-                    {"message": "Thumbnail deleted successfully.", "success": True}, status=status.HTTP_200_OK
-            )
+            return Response({"message": "Thumbnail deleted successfully.", "success": True}, status=status.HTTP_200_OK)
 
         except ResourceBase.DoesNotExist:
             return Response({"message": "Resource not found.", "success": False}, status=status.HTTP_404_NOT_FOUND)
-        except ValueError:
-            return Response({"message": "Invalid resource ID.", "success": False}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             logger.error(e)
-            return Response({"message": "Unexpected error occurred.", "success": False}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"message": "Unexpected error occurred.", "success": False},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
-    
     @extend_schema(
         methods=["post"], responses={200}, description="Instructs the Async dispatcher to execute a 'INGEST' operation."
     )
