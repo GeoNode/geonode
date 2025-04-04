@@ -792,7 +792,7 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
 
         url = (
             f"{settings.GEOSERVER_LOCATION}ows?"
-            "LAYERS=geonode%3Asan_andres_y_providencia_poi&STYLES="
+            f"LAYERS={layer.alternate}&STYLES="
             "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"
             "&SRS=EPSG%3A4326"
             "&BBOX=-81.394599749999,13.316009005566,"
