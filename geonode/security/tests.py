@@ -755,7 +755,11 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         bobby = get_user_model().objects.get(username="bobby")
 
         self.client.force_login(get_user_model().objects.get(username="admin"))
-        payload = {"base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"), "action": "upload"}
+        payload = {
+            "base_file": open(f"{project_dir}/tests/fixture/valid.geojson", "rb"),
+            "action": "upload",
+            "override_existing_layer": True,
+        }
         response = self.client.post(reverse("importer_upload"), data=payload)
         layer = ResourceHandlerInfo.objects.filter(execution_request=response.json()["execution_id"]).first().resource
         if layer is None:
@@ -806,6 +810,18 @@ class SecurityTests(ResourceTestCaseMixin, GeoNodeBaseTestSupport):
         self.assertTrue(b"Could not find layer" in response.content)
         self.assertEqual(response.headers.get("Content-Type"), "application/vnd.ogc.se_xml;charset=UTF-8")
 
+        # In circleCI we load some sample data via paver, but is not a mandatory action
+        # in other cases when we dont have those layer, we have to rely on the one
+        # we upload earlier on line 763 (same test)
+        url = (
+            f"{settings.GEOSERVER_LOCATION}ows?"
+            f"LAYERS={layer.alternate}&STYLES="
+            "&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap"
+            "&SRS=EPSG%3A4326"
+            "&BBOX=-81.394599749999,13.316009005566,"
+            "-81.370560451855,13.372728455566"
+            "&WIDTH=217&HEIGHT=512"
+        )
         # test WMS with authenticated user that has access to the Dataset
         response = requests.get(
             url,
