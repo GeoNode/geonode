@@ -96,7 +96,7 @@ class FeatureInfoTemplateField(DynamicComputedField):
                         _template += (
                             '<div class="col-xs-6" style="font-weight: bold; word-wrap: break-word;">%s:</div> \
                             <div class="col-xs-6" style="word-wrap: break-word;"><a href="${properties[\'%s\']}" target="_new">${properties[\'%s\']}</a></div>'
-                            % (_label, _field, _field)
+                            % (_label, _field.attribute, _field.attribute)
                         )
                     elif _field.featureinfo_type == Attribute.TYPE_IMAGE:
                         _template += (
