@@ -92,7 +92,7 @@ services:
 
   # Geoserver backend
   geoserver:
-    image: geonode/geoserver:2.24.3-latest
+    image: geonode/geoserver:2.24.4-latest
     container_name: geoserver4${COMPOSE_PROJECT_NAME}
     healthcheck:
       test: "curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}\n' --output /dev/null http://geoserver:8080/geoserver/ows"
@@ -118,7 +118,7 @@ services:
         condition: service_healthy
 
   data-dir-conf:
-    image: geonode/geoserver_data:2.24.3-latest
+    image: geonode/geoserver_data:2.24.4-latest
     container_name: gsconf4${COMPOSE_PROJECT_NAME}
     entrypoint: sleep infinity
     volumes:
