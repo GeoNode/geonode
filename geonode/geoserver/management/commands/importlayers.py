@@ -29,7 +29,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.management.base import BaseCommand
 from geonode.resource.models import ExecutionRequest
-from importer.handlers.base import BaseHandler
+from geonode.upload.handlers.base import BaseHandler
 
 
 class Command(BaseCommand):
