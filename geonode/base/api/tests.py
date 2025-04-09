@@ -2000,16 +2000,16 @@ class BaseApiTests(APITestCase):
 
     @patch("geonode.base.api.views.remove_thumb")
     def test_delete_thumbnail(self, mock_remove_thumb):
-        
+
         resource = Dataset.objects.first()
-        
+
         # Set a thumbnail url and path
         resource.thumbnail_url = "http://example.com/thumb/test.png"
         resource.thumbnail_path = "thumb/test.png"
         resource.save()
 
         url = reverse("base-resources-delete-thumbnail", kwargs={"resource_id": resource.id})
-        
+
         # Anonymous user
         response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
@@ -2047,7 +2047,7 @@ class BaseApiTests(APITestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data["message"], "Resource not found.")
         self.assertFalse(response.data["success"])
-    
+
     def test_set_thumbnail_from_bbox_from_Anonymous_user_raise_permission_error(self):
         """
         Given a request with Anonymous user, should raise an authentication error.
