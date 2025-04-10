@@ -11,16 +11,12 @@ from multiprocessing import Process, Queue, Event
 from queue import Empty
 from typing import Collection
 
-from twisted.scripts.trial import Options, _getSuite
-from twisted.trial.runner import TrialRunner
-
 from django.conf import settings
 
 from django.test.runner import DiscoverRunner
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.exceptions import ImproperlyConfigured
 
-from .base import setup_test_db
 
 # "auto" - one worker per Django application
 # "cpu" - one worker per process core
@@ -286,12 +282,7 @@ class ParallelTestSuiteRunner:
                         results_queue.put((group, result))
                         logger.debug(f"Worker {index} has finished running tests {tests}")
                     except (KeyboardInterrupt, SystemExit):
-                        if isinstance(self, TwistedParallelTestSuiteRunner):
-                            # Twisted raises KeyboardInterrupt when the tests
-                            # have completed
-                            pass
-                        else:
-                            raise
+                        raise
                     except Exception as e:
                         logger.debug(f"Running tests failed, reason: {e}")
                         result = TestResult().from_exception(e)
@@ -515,60 +506,6 @@ class DjangoParallelTestRunner(DiscoverRunner):
     def __init__(self, verbosity=2, failfast=True, **kwargs):
         stream = BufferWritesDevice()
         super().__init__(stream=stream, verbosity=verbosity, failfast=failfast)
-
-
-class TwistedParallelTestSuiteRunner(ParallelTestSuiteRunner):
-    def __init__(self, config, verbosity=1, interactive=False, failfast=True, **kwargs):
-        self.config = config
-        super().__init__(verbosity, interactive, failfast, **kwargs)
-
-    def run_tests(self, test_labels, extra_tests=None, **kwargs):
-        app_tests = self._group_by_app(test_labels)
-        return self._run_tests(tests=app_tests)
-
-    def run_suite(self):
-        # config = self.config
-        tests = self.config.opts["tests"]
-
-        tests = self._group_by_file(tests)
-        self._run_tests(tests=tests)
-
-    def _tests_func(self, tests, worker_index):
-        if not isinstance(tests, (list, set)):
-            tests = [tests]
-
-        args = ["-e"]
-        args.extend(tests)
-
-        config = Options()
-        config.parseOptions(args)
-
-        stream = BufferWritesDevice()
-        runner = self._make_runner(config=config, stream=stream)
-        suite = _getSuite(config)
-        result = setup_test_db(worker_index, None, runner.run, suite)
-        result = TestResult().from_trial_result(result)
-        return result
-
-    def _make_runner(self, config, stream):
-        # Based on twisted.scripts.trial._makeRunner
-        mode = None
-        if config["debug"]:
-            mode = TrialRunner.DEBUG
-        if config["dry-run"]:
-            mode = TrialRunner.DRY_RUN
-        return TrialRunner(
-            config["reporter"],
-            mode=mode,
-            stream=stream,
-            profile=config["profile"],
-            logfile=config["logfile"],
-            tracebackFormat=config["tbformat"],
-            realTimeErrors=config["rterrors"],
-            uncleanWarnings=config["unclean-warnings"],
-            workingDirectory=config["temp-directory"],
-            forceGarbageCollection=config["force-gc"],
-        )
 
 
 class TestResult:
