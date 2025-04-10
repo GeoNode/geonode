@@ -30,7 +30,7 @@ RUN apt-get install -y devscripts build-essential debhelper pkg-kde-tools sharut
 # Install pip packages
 RUN pip3 install uwsgi \
     && pip install pip --upgrade \
-    && pip install pygdal==$(gdal-config --version).* flower==0.9.4
+    && pip install pygdal==$(gdal-config --version).*
 
 # Install "sherlock" to be used with "memcached"
 RUN pip install sherlock
