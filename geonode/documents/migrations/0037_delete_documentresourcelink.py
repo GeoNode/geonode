@@ -11,9 +11,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            "INSERT INTO base_linkedresource(source_id, target_id, internal)"
+            "INSERT INTO base_linkedresource(source_id, target_id, internal) "
             "SELECT document_id, object_id, false as internal "
-            "FROM documents_documentresourcelink;"
+            "FROM documents_documentresourcelink "
+            "WHERE EXISTS (SELECT 1 FROM base_resourcebase base WHERE base.id=object_id);"
         ),
         migrations.DeleteModel(
             name="DocumentResourceLink",
