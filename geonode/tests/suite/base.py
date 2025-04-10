@@ -37,4 +37,3 @@ def destroy_test_db(database_name):
 
 def load_db_fixtures(fixtures):
     call_command("loaddata", *fixtures)
-
