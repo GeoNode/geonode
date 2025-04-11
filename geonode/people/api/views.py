@@ -148,8 +148,9 @@ class UserViewSet(DynamicModelViewSet):
     def transfer_resources(self, request, pk=None):
         user = self.get_object()
         admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
-        target_user = request.data.get("owner")  # 1002
-        transfer_resource_subset = request.POST.getlist("resources", None)
+        target_user = request.data.get("newOwner")  # the new owner
+        previous_owner = request.data.get("currentOwner")  # the previous owner, usually it match the user
+        transfer_resource_subset = request.data.get("resources", None)
         target = None
         if target_user == "DEFAULT":
             if not admin:
@@ -161,18 +162,12 @@ class UserViewSet(DynamicModelViewSet):
         if target == user:
             return Response("Cannot reassign to self", status=400)
 
-        filter_payload = {}
+        # we need to filter by the previous owner id
+        filter_payload = dict(owner=previous_owner or user)
 
         if transfer_resource_subset:
             # transfer_resources
             filter_payload["pk__in"] = transfer_resource_subset
-
-        if not user.is_superuser:
-            """
-            if the request user is not admin, we will filter for the resources
-            thats owns
-            """
-            filter_payload["owner"] = user
 
         for instance in ResourceBase.objects.filter(**filter_payload).iterator():
             """
@@ -180,6 +175,6 @@ class UserViewSet(DynamicModelViewSet):
             we can use the resource manager because inside it will automatically update
             the owner
             """
-            resource_manager.set_permissions(instance.uuid, instance, owner=target or user)
+            resource_manager.set_permissions(instance.uuid, instance, owner=target or user, permissions=None)
 
         return Response("Resources transfered successfully", status=200)
