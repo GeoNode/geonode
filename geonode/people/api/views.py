@@ -21,6 +21,7 @@ from geonode.people.api.serializers import UserSerializer
 from geonode.people.utils import get_available_users
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from geonode.resource.manager import resource_manager
 
 
 class UserViewSet(DynamicModelViewSet):
@@ -147,7 +148,7 @@ class UserViewSet(DynamicModelViewSet):
     def transfer_resources(self, request, pk=None):
         user = self.get_object()
         admin = get_user_model().objects.filter(is_superuser=True, is_staff=True).first()
-        target_user = request.data.get("owner")
+        target_user = request.data.get("owner")  # 1002
         transfer_resource_subset = request.POST.getlist("resources", None)
         target = None
         if target_user == "DEFAULT":
@@ -160,11 +161,25 @@ class UserViewSet(DynamicModelViewSet):
         if target == user:
             return Response("Cannot reassign to self", status=400)
 
+        filter_payload = {}
+
         if transfer_resource_subset:
             # transfer_resources
-            ResourceBase.objects.filter(owner=user, pk__in=transfer_resource_subset).update(owner=target or user)
-        else:
-            # transfer all the resources to target
-            ResourceBase.objects.filter(owner=user).update(owner=target or user)
+            filter_payload["pk__in"] = transfer_resource_subset
+
+        if not user.is_superuser:
+            """
+            if the request user is not admin, we will filter for the resources
+            thats owns
+            """
+            filter_payload["owner"] = user
+
+        for instance in ResourceBase.objects.filter(**filter_payload).iterator():
+            """
+            We should reassing all the permissions to the new resource owner
+            we can use the resource manager because inside it will automatically update
+            the owner
+            """
+            resource_manager.set_permissions(instance.uuid, instance, owner=target or user)
 
         return Response("Resources transfered successfully", status=200)
