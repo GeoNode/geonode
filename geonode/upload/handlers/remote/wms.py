@@ -157,7 +157,8 @@ class RemoteWMSResourceHandler(BaseRemoteResourceHandler):
             .encode("utf-8", "ignore")
             .decode("utf-8")
             .replace(".", "")
-            .replace("/", ""),
+            .replace("/", "")
+            .replace(":", ""),
             ptype="gxp_wmscsource",
             ows_url=_exec.input_params.get("ows_url"),
         )

@@ -245,12 +245,24 @@ class MetadataApiTests(APITestCase):
         mock_update_schema_instance.return_value = errors
 
         response = self.client.put(url, data=fake_payload, format="json")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertJSONEqual(
             response.content,
             {"message": "Some errors were found while updating the resource", "extraErrors": errors},
         )
         mock_update_schema_instance.assert_called_with(self.resource, fake_payload)
+
+    @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
+    def test_put_patch_schema_instance_with_bad_payload(self, mock_has_permission):
+        """
+        Test the PUT method with an invalid json payload
+        """
+
+        url = reverse("metadata-schema_instance", kwargs={"pk": self.resource.pk})
+        fake_payload = "I_AM_BAD"
+
+        response = self.client.put(url, data=fake_payload, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
 
     @patch("geonode.base.api.permissions.UserHasPerms.has_permission", return_value=True)
     def test_resource_not_found(self, mock_has_permission):

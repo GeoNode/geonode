@@ -163,7 +163,7 @@ class DocumentCreateForm(TranslationModelForm):
             raise forms.ValidationError(_("A document cannot have both a file and a url."))
 
         if extension:
-            cleaned_data["extension"] = extension.replace(".", "")
+            cleaned_data["extension"] = extension.replace(".", "").lower()
 
         return cleaned_data
 
