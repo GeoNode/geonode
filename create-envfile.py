@@ -42,12 +42,8 @@ def shuffle(chars):
     random.shuffle(chars_as_list)
     return "".join(chars_as_list)
 
-
 _simple_chars = shuffle(string.ascii_letters + string.digits)
-_strong_chars = shuffle(
-    string.ascii_letters + string.digits + string.punctuation.replace('"', "").replace("'", "").replace("`", "")
-)
-
+_strong_chars = shuffle(string.ascii_letters + string.digits + "#%*._~")
 
 def generate_env_file(args):
     # validity checks
